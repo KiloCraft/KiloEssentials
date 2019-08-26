@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "KiloEssentials",
-  "description": "Essentials for fabric made for the KiloCraft server",
+  "description": "Important Essentials for the Fabric",
   "authors": [
     "CODY_AI",
     "MCrafterzz",
@@ -24,11 +24,12 @@
     ]
   },
   "mixins": [
+    "kiloessentials.mixins.json"
   ],
 
   "depends": {
     "fabricloader": ">=0.4.9+build.161",
-    "fabric": ">=0.3.1+build.208"
+    "fabric": ">=0.3.0+build.207"
   },
   "suggests": {
     "flamingo": "*"

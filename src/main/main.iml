@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="minecraft" name="Minecraft">
+      <configuration>
+        <autoDetectTypes>
+          <platformType>MCP</platformType>
+        </autoDetectTypes>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/java" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: net.fabricmc.mapped:net.fabricmc.yarn.19w34a.6.net.fabricmc.fabric-loader:0.4.9+build.161" level="project" />
+    <orderEntry type="library" name="Gradle: net.fabricmc.mapped:net.fabricmc.yarn.19w34a.6.net.fabricmc.fabric-api.fabric-commands-v0:0.1.1+b494ebeb42" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.8.1" level="project" />
+    <orderEntry type="library" name="Gradle: net.minecraft:minecraft:19w34a-mapped-net.fabricmc.yarn-6" level="project" />
+    <orderEntry type="library" name="Gradle: com.mojang:brigadier:1.0.17" level="project" />
+  </component>
+</module>
