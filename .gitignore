@@ -7,11 +7,19 @@
 # BlueJ files
 *.ctxt
 
-# Gradle and idea files
+# Gradle
 .gradle/
-.idea/
+build/
+out/
+classes/
 
-# Run dir
+# idea
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Fabric
 run/
 
 # Mobile Tools for Java (J2ME)
