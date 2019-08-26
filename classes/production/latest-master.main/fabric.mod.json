@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "kiloessentials",
+  "version": "${version}",
+
+  "name": "KiloEssentials",
+  "description": "Essentials for fabric made for the KiloCraft server",
+  "authors": [
+    "CODY_AI",
+    "MCrafterzz",
+    "hansi132"
+  ],
+  "contact": {
+    "homepage": "https://50kilo.org/",
+    "sources": "https://github.com/KiloCraft-Custom-Fabric-Mods/KiloEssentials"
+  },
+
+  "license": "MIT",
+
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "org.kilocraft.essentials.Init"
+    ]
+  },
+  "mixins": [
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.4.9+build.161",
+    "fabric": ">=0.3.1+build.208"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
