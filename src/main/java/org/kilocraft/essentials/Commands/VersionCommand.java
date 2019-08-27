@@ -9,6 +9,7 @@ import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 
 public class VersionCommand {
+	
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         String mcVer = MinecraftVersion.create().getName();
 
@@ -22,4 +23,5 @@ public class VersionCommand {
                 })
         );
     }
+    
 }
