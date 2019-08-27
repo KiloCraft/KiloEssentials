@@ -29,8 +29,5 @@
   "depends": {
     "fabricloader": ">=0.4.8+build.159",
     "fabric": ">=0.3.0+build.207"
-  },
-  "suggests": {
-    "flamingo": "*"
   }
 }
