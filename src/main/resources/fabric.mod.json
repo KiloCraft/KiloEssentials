@@ -1,18 +1,17 @@
 {
   "schemaVersion": 1,
-  "id": "kiloessentials",
+  "id": "kilo_essentials",
   "version": "${version}",
 
-  "name": "KiloEssentials",
-  "description": "Important Essentials for the Fabric",
+  "name": "Kilo Essentials",
+  "description": "Server essentials made for fabric",
   "authors": [
     "CODY_AI",
-    "MCrafterzz",
-    "hansi132"
+    "MCrafterzz"
   ],
   "contact": {
-    "homepage": "https://50kilo.org/",
-    "sources": "https://github.com/KiloCraft-Custom-Fabric-Mods/KiloEssentials"
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
   },
 
   "license": "MIT",
@@ -20,15 +19,15 @@
   "environment": "server",
   "entrypoints": {
     "main": [
-      "org.kilocraft.essentials.Init"
+      "org.kilocraft.essentials.KiloEssentials"
     ]
   },
   "mixins": [
-    "kiloessentials.mixins.json"
+    "kilo_essentials.mixins.json"
   ],
 
   "depends": {
-    "fabricloader": ">=0.4.9+build.161",
+    "fabricloader": ">=0.4.8+build.159",
     "fabric": ">=0.3.0+build.207"
   },
   "suggests": {
