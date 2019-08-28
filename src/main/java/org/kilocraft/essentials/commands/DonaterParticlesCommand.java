@@ -22,7 +22,7 @@ public class DonaterParticlesCommand {
 							.setStyle(new Style().setColor(Formatting.RED)),
 					false);
 			return 1;
-		}).then(CommandManager.literal("tpdp").executes(context -> {
+		}).then(CommandManager.argument("name", DonatorParticlesCommandArgument.particles()).executes(context -> {
 			// TODO: Change particle
 			context.getSource().sendFeedback(
 					new LiteralText(Mod.messages.getProperty("command.donatorparticles.particleset")), false);
