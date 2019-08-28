@@ -11,6 +11,6 @@ public class Init implements ModInitializer {
     @Override
     public void onInitialize() {
         KiloEssentials.getLogger.info("KiloEssentials is loading...");
-        kiloCommands = new KiloCommands();
+        KiloCommands.register();
     }
 }
