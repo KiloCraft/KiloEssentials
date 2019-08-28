@@ -3,6 +3,7 @@ package org.kilocraft.essentials;
 import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.commands.KiloCommands;
 import org.kilocraft.essentials.config.ConfigFileHelper;
 
 

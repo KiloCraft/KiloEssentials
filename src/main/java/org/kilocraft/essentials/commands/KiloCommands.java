@@ -1,8 +1,6 @@
-package org.kilocraft.essentials;
+package org.kilocraft.essentials.commands;
 
 import org.kilocraft.essentials.commands.DiscordCommands.DiscordCommand;
-import org.kilocraft.essentials.commands.RankCommand;
-import org.kilocraft.essentials.commands.VersionCommand;
 
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 

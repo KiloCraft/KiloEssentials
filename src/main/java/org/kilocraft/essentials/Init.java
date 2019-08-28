@@ -1,5 +1,7 @@
 package org.kilocraft.essentials;
 
+import org.kilocraft.essentials.commands.KiloCommands;
+
 import net.fabricmc.api.ModInitializer;
 
 public class Init implements ModInitializer {
