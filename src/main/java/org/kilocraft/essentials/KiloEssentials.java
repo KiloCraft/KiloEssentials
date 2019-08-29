@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.commands.KiloCommands;
 import org.kilocraft.essentials.config.ConfigHandler;
 
-
 public class KiloEssentials implements DedicatedServerModInitializer {
 	public static Logger getLogger = LogManager.getFormatterLogger("KiloEssentials");
 
