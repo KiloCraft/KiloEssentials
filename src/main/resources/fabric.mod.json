@@ -23,7 +23,7 @@
     ]
   },
   "mixins": [
-    "kilo_essentials.mixins.json"
+    "kiloessentials.mixins.json"
   ],
 
   "depends": {

@@ -7,6 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.Mod;
 
 public class VersionCommand {
 	
@@ -16,7 +17,7 @@ public class VersionCommand {
         dispatcher.register(
                 CommandManager.literal("version").executes(context -> {
                     context.getSource().sendFeedback(new LiteralText(
-                                    "This server is running Fabric for Minecraft (" + mcVer + ")")
+                            Mod.lang.getProperty("commands.version.info".replace("%s", mcVer)))
                             .setStyle(new Style().setColor(Formatting.AQUA)),
                             false);
                     return 1;
