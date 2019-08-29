@@ -22,7 +22,7 @@ public class DonatorParticlesCommandArgument implements ArgumentType<String> {
 	private static final Collection<String> NAMES = Arrays.asList("flames", "glass");
 	public static final DynamicCommandExceptionType INVALID_PARTICLE_EXCEPTION = new DynamicCommandExceptionType(
 			(name) -> {
-				return new LiteralText(Mod.messages.getProperty("particlenotfound") + name);
+				return new LiteralText(Mod.lang.getProperty("particlenotfound") + name);
 			});
 
 	public static DonatorParticlesCommandArgument particles() {
