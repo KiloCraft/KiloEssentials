@@ -1,7 +1,6 @@
 # KiloEssentials
+A essentials mod for fabric developed for the KiloCraft server
 
-## Info
-This mod is developed for the KiloCraft server
 IP: mc.50kilo.org
 
 ## Setup
