@@ -1,10 +1,13 @@
-# Fabric Example Mod
+# KiloEssentials
+A essentials mod for fabric developed for the KiloCraft server
+
+IP: mc.50kilo.org
 
 ## Setup
 
 1. Edit build.gradle and mod.json to suit your needs.
     * The "mixins" object can be removed from mod.json if you do not need to use mixins.
-    * Please replace all occurences of "modid" with your own mod ID - sometimes, a different string may also suffice.
+    * This mod required Fabric (API) make sure you are using the last version of it
 2. Run the following command:
 
 ```
@@ -13,4 +16,4 @@
 
 ## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+This mod is available under the MIT license
