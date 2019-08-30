@@ -14,7 +14,8 @@ public class ConfigHandler {
                 config,
                 "^KiloEssentials^Config^".replace("^", File.separator),
                 "ConfigFiles",
-                false
+                false,
+                true
         ));
     }
 }

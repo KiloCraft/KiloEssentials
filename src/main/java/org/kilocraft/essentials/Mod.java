@@ -8,6 +8,8 @@ public class Mod {
     public static Properties properties = new Properties();
     public static Properties lang = new Properties();
 
+    private static String version;
+
     public Mod() {
         try {
             properties.load(Mod.class.getClassLoader().getResourceAsStream("Mod.properties"));
@@ -15,6 +17,10 @@ public class Mod {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String getVersion() {
+        return properties.getProperty("version");
     }
 
 

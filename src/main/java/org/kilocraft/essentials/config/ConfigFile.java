@@ -15,19 +15,19 @@ public class ConfigFile {
     boolean dontGenerate;
     private static final String currentDir = System.getProperty("user.dir");
 
-    public ConfigFile(String configFileName, String configFileDirectory, @Nullable String resourceBaseFile, boolean dontGenerateCfg) {
+    public ConfigFile(String configFileName, String configFileDirectory, @Nullable String resourceBaseFile, boolean dontGenerateCfg, boolean logToConsole) {
         this.configDir = new File(currentDir + configFileDirectory);
         this.config = new File(configDir.getAbsolutePath() + File.separator + configFileName);
         this.configRes = resourceBaseFile + File.separator + config.getName();
         this.dontGenerate = dontGenerateCfg;
 
-        load(config, configDir, configRes, dontGenerate);
+        load(config, configDir, configRes, dontGenerate, logToConsole);
     }
 
-    private static void load(File configFile, File configDirectory, @Nullable String fileToCopyFrom, boolean dontGenerate) {
+    private static void load(File configFile, File configDirectory, @Nullable String fileToCopyFrom, boolean dontGenerate, boolean log) {
 
         try (InputStream inputStream = new FileInputStream(configFile)){
-            if (configFile.exists()) KiloEssentials.getLogger.info(Mod.lang.getProperty("cfghandler.load.successfull"), configFile.getName());
+            if (configFile.exists() && log) KiloEssentials.getLogger.info(Mod.lang.getProperty("cfghandler.load.successfull"), configFile.getName());
         } catch (FileNotFoundException e) {
             KiloEssentials.getLogger.warn(Mod.lang.getProperty("cfghandler.generate.start"), configFile.getName());
             if (!dontGenerate) generate(configFile, configDirectory, fileToCopyFrom);
