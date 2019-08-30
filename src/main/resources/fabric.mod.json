@@ -18,7 +18,7 @@
 
   "environment": "server",
   "entrypoints": {
-    "main": [
+    "server": [
       "org.kilocraft.essentials.KiloEssentials"
     ]
   },

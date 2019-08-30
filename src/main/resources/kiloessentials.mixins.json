@@ -5,6 +5,7 @@
   "mixins": [
   ],
   "server": [
+    "MixinCommandManager"
   ],
   "injectors": {
     "defaultRequire": 1
