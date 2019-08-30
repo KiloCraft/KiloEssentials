@@ -1,5 +1,6 @@
 package org.kilocraft.essentials;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -9,8 +10,8 @@ public class Mod {
 
     public Mod() {
         try {
-            //properties.load(Mod.class.getResource("Mod.properties").openStream());
-            lang.load(Mod.class.getClassLoader().getResourceAsStream("Lang.properties"));
+            properties.load(Mod.class.getClassLoader().getResourceAsStream("Mod.properties"));
+            lang.load(Mod.class.getClassLoader().getResourceAsStream("assets" + File.separator + "Lang.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }

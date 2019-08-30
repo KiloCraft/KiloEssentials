@@ -16,45 +16,45 @@ public class RankCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(CommandManager.literal("rank").executes(context -> {
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.onlyoneargument"))
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.onlyoneargument"))
 					.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
 		}).then(CommandManager.literal("add").executes(context -> {
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.noranktoadd"))
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.noranktoadd"))
 					.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
 		}).then(CommandManager.argument("name", StringArgumentType.string()).executes(context -> {
 			// TODO: Add rank
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.addrank")), false);
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.addrank")), false);
 			return 0;
 		})).then(CommandManager.literal("remove").executes(context -> {
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.noranktoremove"))
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.noranktoremove"))
 					.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
 		}).then(CommandManager.argument("name", StringArgumentType.string()).executes(context -> {
 			// TODO: Remove rank
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.removerank")),
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.removerank")),
 					false);
 			return 0;
 		})).then(CommandManager.literal("join").executes(context -> {
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.noplayertojoin"))
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.noplayertojoin"))
 					.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
 		}).then(CommandManager.argument("player", EntityArgumentType.players()).executes(context -> {
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.noranktojoin"))
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.noranktojoin"))
 					.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
 		}).then(CommandManager.argument("name", StringArgumentType.string()).executes(context -> {
 			// TODO: Join rank
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.joinrank")), false);
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.joinrank")), false);
 			return 0;
 		}))).then(CommandManager.literal("list").executes(context -> {
 			// TODO: List ranks
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.list")), false);
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.list")), false);
 			return 0;
 		}).then(CommandManager.argument("player", EntityArgumentType.players()).executes(context -> {
 			// TODO: List player ranks
-			context.getSource().sendFeedback(new LiteralText(Mod.messages.getProperty("command.rank.list.player")),
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.list.player")),
 					false);
 			return 0;
 		})))))));

@@ -1,11 +1,8 @@
 package org.kilocraft.essentials.commands;
 
-import org.kilocraft.essentials.commands.DiscordCommands.DiscordCommand;
-import org.kilocraft.essentials.commands.RankCommand;
-import org.kilocraft.essentials.commands.ReloadCommand;
-import org.kilocraft.essentials.commands.VersionCommand;
-
 import net.fabricmc.fabric.api.registry.CommandRegistry;
+import org.kilocraft.essentials.KiloEssentials;
+import org.kilocraft.essentials.commands.DiscordCommands.DiscordCommand;
 
 public class KiloCommands {
 
@@ -15,6 +12,8 @@ public class KiloCommands {
         CommandRegistry.INSTANCE.register(true, ReloadCommand::register);
         CommandRegistry.INSTANCE.register(true, RankCommand::register);
         CommandRegistry.INSTANCE.register(true, DonaterParticlesCommand::register);
+
+        KiloEssentials.getLogger.info("Successfully registered the commands!");
     }
 
 }
