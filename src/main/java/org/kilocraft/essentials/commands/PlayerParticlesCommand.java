@@ -8,7 +8,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 
-public class DonaterParticlesCommand {
+public class PlayerParticlesCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(CommandManager.literal("donatorparticles").executes(context -> {
@@ -22,7 +22,7 @@ public class DonaterParticlesCommand {
 							.setStyle(new Style().setColor(Formatting.RED)),
 					false);
 			return 1;
-		}).then(CommandManager.argument("name", DonatorParticlesCommandArgument.particles()).executes(context -> {
+		}).then(CommandManager.argument("name", PlayerParticlesCommandArgument.particles()).executes(context -> {
 			// TODO: Change particle
 			context.getSource().sendFeedback(
 					new LiteralText(Mod.lang.getProperty("command.donatorparticles.particleset")), false);

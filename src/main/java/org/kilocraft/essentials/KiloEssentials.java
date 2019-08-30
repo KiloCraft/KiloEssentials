@@ -14,7 +14,7 @@ public class KiloEssentials implements DedicatedServerModInitializer {
 		getLogger.info("Loading KiloEssentials...");
 		ConfigHandler.handle();
 
-		new KiloCommands(false);
+		KiloCommands.register(true);
 
 	}
 }
