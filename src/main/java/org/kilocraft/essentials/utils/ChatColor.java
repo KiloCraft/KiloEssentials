@@ -98,6 +98,17 @@ public enum ChatColor {
         return new String(b);
     }
 
+    public static String removeAlternateColorCodes(char altColorChar, @NotNull String text) {
+        char[] b = text.toCharArray();
+        for (int i = 0; i < b.length - 1; i++) {
+            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
+                b[i] = ' ';
+                b[i+1] = Character.toLowerCase(b[i+1]);
+            }
+        }
+        return new String(b);
+    }
+
     @NotNull
     public static String getLastColors(@NotNull String input) {
         final StringBuilder result = new StringBuilder();
