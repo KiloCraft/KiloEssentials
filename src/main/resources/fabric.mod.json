@@ -9,16 +9,12 @@
     "CODY_AI",
     "MCrafterzz"
   ],
-  "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
-  },
 
   "license": "MIT",
 
   "environment": "server",
   "entrypoints": {
-    "main": [
+    "server": [
       "org.kilocraft.essentials.KiloEssentials"
     ]
   },
