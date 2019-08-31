@@ -38,9 +38,9 @@ public class EnderchestCommand {
         LiteralText literalText = new LiteralText("");
         ServerPlayerEntity target = source.getPlayer();
         ServerPlayerEntity sender = context.getSource().getPlayer();
-        literalText.append("You have opened the ").setStyle(new Style().setColor(Formatting.YELLOW));
-        literalText.append(target.getName()).setStyle(new Style().setColor(Formatting.GOLD)
-                .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new LiteralText(target.getName().getString()))));
+        literalText.append("You have opened ").setStyle(new Style().setColor(Formatting.YELLOW));
+        literalText.append(new LiteralText(target.getName().getString()).setStyle(new Style().setColor(Formatting.GOLD)
+                .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new LiteralText(target.getName().getString())))));
         literalText.append("'s Ender chest").setStyle(new Style().setColor(Formatting.YELLOW));
 
         sender.sendChatMessage(literalText, MessageType.CHAT);
