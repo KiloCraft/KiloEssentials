@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands;
+package org.kilocraft.essentials.commands.CommandArguments;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands;
+package org.kilocraft.essentials.commands.PlayerSpecialCommands;
 
 import org.kilocraft.essentials.Mod;
 import com.mojang.brigadier.CommandDispatcher;
@@ -7,18 +7,19 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.commands.CommandArguments.PlayerParticlesCommandArgument;
 
 public class PlayerParticlesCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(CommandManager.literal("donatorparticles").executes(context -> {
+		dispatcher.register(CommandManager.literal("particles").executes(context -> {
 			context.getSource()
-					.sendFeedback(new LiteralText(Mod.lang.getProperty("command.donatorparticles.onlyoneargument"))
+					.sendFeedback(new LiteralText(Mod.lang.getProperty("command.playerparticles.onlyoneargument"))
 							.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
 		}).then(CommandManager.literal("set").executes(context -> {
 			context.getSource()
-					.sendFeedback(new LiteralText(Mod.lang.getProperty("command.donatorparticles.noparticleschosen"))
+					.sendFeedback(new LiteralText(Mod.lang.getProperty("command.playerparticles.noparticleschosen"))
 							.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
 		}).then(CommandManager.argument("name", PlayerParticlesCommandArgument.particles()).executes(context -> {
@@ -26,18 +27,18 @@ public class PlayerParticlesCommand {
 			String particle = PlayerParticlesCommandArgument.getParticleName(context, "name");
 			if (PlayerParticlesCommandArgument.NAMES.contains(particle)) {
 				context.getSource().sendFeedback(
-						new LiteralText(Mod.lang.getProperty("command.donatorparticles.particleset")), false);
+						new LiteralText(Mod.lang.getProperty("command.playerparticles.particleset")), false);
 				return 0;
 			} else {
 				context.getSource().sendFeedback(
-						new LiteralText(Mod.lang.getProperty("command.donatorparticles.incorrectparticle"))
+						new LiteralText(Mod.lang.getProperty("command.playerparticles.incorrectparticle"))
 								.setStyle(new Style().setColor(Formatting.RED)),
 						false);
 				return 1;
 			}
 		}))).then(CommandManager.literal("disable").executes(context -> {
 			// TODO: Disable particles
-			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.donatorparticles.disable")),
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.playerparticles.disable")),
 					false);
 			return 0;
 		})));
