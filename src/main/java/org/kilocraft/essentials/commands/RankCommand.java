@@ -27,7 +27,7 @@ public class RankCommand {
 			// TODO: Add rank
 			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.addrank")), false);
 			return 0;
-		})).then(CommandManager.literal("remove").executes(context -> {
+		}))).then(CommandManager.literal("remove").executes(context -> {
 			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.noranktoremove"))
 					.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
@@ -36,7 +36,7 @@ public class RankCommand {
 			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.removerank")),
 					false);
 			return 0;
-		})).then(CommandManager.literal("join").executes(context -> {
+		}))).then(CommandManager.literal("join").executes(context -> {
 			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.noplayertojoin"))
 					.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
@@ -48,7 +48,7 @@ public class RankCommand {
 			// TODO: Join rank
 			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.joinrank")), false);
 			return 0;
-		}))).then(CommandManager.literal("list").executes(context -> {
+		})))).then(CommandManager.literal("list").executes(context -> {
 			// TODO: List ranks
 			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.list")), false);
 			return 0;
@@ -57,7 +57,7 @@ public class RankCommand {
 			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.rank.list.player")),
 					false);
 			return 0;
-		})))))));
+		}))));
 	}
 
 }

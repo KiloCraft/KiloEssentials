@@ -17,20 +17,28 @@ public class PlayerParticlesCommand {
 							.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
 		}).then(CommandManager.literal("set").executes(context -> {
-			context.getSource().sendFeedback(
-					new LiteralText(Mod.lang.getProperty("command.donatorparticles.noparticleschosen"))
-							.setStyle(new Style().setColor(Formatting.RED)),
-					false);
+			context.getSource()
+					.sendFeedback(new LiteralText(Mod.lang.getProperty("command.donatorparticles.noparticleschosen"))
+							.setStyle(new Style().setColor(Formatting.RED)), false);
 			return 1;
 		}).then(CommandManager.argument("name", PlayerParticlesCommandArgument.particles()).executes(context -> {
 			// TODO: Change particle
-			context.getSource().sendFeedback(
-					new LiteralText(Mod.lang.getProperty("command.donatorparticles.particleset")), false);
-			return 0;
-		})).then(CommandManager.literal("disable")).executes(context -> {
+			String particle = PlayerParticlesCommandArgument.getParticleName(context, "name");
+			if (PlayerParticlesCommandArgument.NAMES.contains(particle)) {
+				context.getSource().sendFeedback(
+						new LiteralText(Mod.lang.getProperty("command.donatorparticles.particleset")), false);
+				return 0;
+			} else {
+				context.getSource().sendFeedback(
+						new LiteralText(Mod.lang.getProperty("command.donatorparticles.incorrectparticle"))
+								.setStyle(new Style().setColor(Formatting.RED)),
+						false);
+				return 1;
+			}
+		}))).then(CommandManager.literal("disable").executes(context -> {
 			// TODO: Disable particles
-			context.getSource()
-					.sendFeedback(new LiteralText(Mod.lang.getProperty("command.donatorparticles.disable")), false);
+			context.getSource().sendFeedback(new LiteralText(Mod.lang.getProperty("command.donatorparticles.disable")),
+					false);
 			return 0;
 		})));
 	}
