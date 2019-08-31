@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.config;
 
-import com.sun.istack.internal.Nullable;
 import org.kilocraft.essentials.KiloEssentials;
 import org.kilocraft.essentials.Mod;
 
@@ -15,7 +14,7 @@ public class ConfigFile {
     boolean dontGenerate;
     private static final String currentDir = System.getProperty("user.dir");
 
-    public ConfigFile(String configFileName, String configFileDirectory, @Nullable String resourceBaseFile, boolean dontGenerateCfg, boolean logToConsole) {
+    public ConfigFile(String configFileName, String configFileDirectory, String resourceBaseFile, boolean dontGenerateCfg, boolean logToConsole) {
         this.configDir = new File(currentDir + configFileDirectory);
         this.config = new File(configDir.getAbsolutePath() + File.separator + configFileName);
         this.configRes = resourceBaseFile + File.separator + config.getName();
@@ -24,7 +23,7 @@ public class ConfigFile {
         load(config, configDir, configRes, dontGenerate, logToConsole);
     }
 
-    private static void load(File configFile, File configDirectory, @Nullable String fileToCopyFrom, boolean dontGenerate, boolean log) {
+    private static void load(File configFile, File configDirectory, String fileToCopyFrom, boolean dontGenerate, boolean log) {
 
         try (InputStream inputStream = new FileInputStream(configFile)){
             if (configFile.exists() && log) KiloEssentials.getLogger.info(Mod.lang.getProperty("cfghandler.load.successfull"), configFile.getName());
@@ -37,7 +36,7 @@ public class ConfigFile {
         }
     }
 
-    private static void generate(File cfg, File cfgDir, @Nullable String fileToCopyFrom) {
+    private static void generate(File cfg, File cfgDir, String fileToCopyFrom) {
         if (!cfgDir.exists()) cfgDir.mkdirs();
         try {
             cfg.createNewFile();

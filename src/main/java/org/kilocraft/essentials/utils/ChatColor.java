@@ -1,8 +1,5 @@
 package org.kilocraft.essentials.utils;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -57,7 +54,6 @@ public enum ChatColor {
         return code;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return toString;
@@ -71,23 +67,19 @@ public enum ChatColor {
         return !isFormat && this != RESET;
     }
 
-    @Nullable
     public static ChatColor getByChar(char code) {
         return BY_CHAR.get(code);
     }
 
-    @Nullable
-    public static ChatColor getByChar(@NotNull String code) {
+    public static ChatColor getByChar(String code) {
         return BY_CHAR.get(code.charAt(0));
     }
 
-    @NotNull
-    public static String stripColor(@NotNull final String input) {
+    public static String stripColor(final String input) {
         return STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
     }
 
-    @NotNull
-    public static String translateAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
+    public static String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
@@ -98,7 +90,7 @@ public enum ChatColor {
         return new String(b);
     }
 
-    public static String removeAlternateColorCodes(char altColorChar, @NotNull String text) {
+    public static String removeAlternateColorCodes(char altColorChar, String text) {
         char[] b = text.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
@@ -109,8 +101,7 @@ public enum ChatColor {
         return new String(b);
     }
 
-    @NotNull
-    public static String getLastColors(@NotNull String input) {
+    public static String getLastColors(String input) {
         final StringBuilder result = new StringBuilder();
         int length = input.length();
 

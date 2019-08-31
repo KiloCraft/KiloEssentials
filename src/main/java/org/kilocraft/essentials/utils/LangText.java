@@ -1,13 +1,11 @@
 package org.kilocraft.essentials.utils;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.Mod;
 
 public class LangText {
 
-    public static LiteralText getFormatter (boolean allowColorCodes, String key, @NotNull Object... objects) {
+    public static LiteralText getFormatter (boolean allowColorCodes, String key, Object... objects) {
         String lang = Mod.lang.getProperty(key);
         LiteralText literalText = new LiteralText ("");
         String result = null;
