@@ -22,7 +22,7 @@ public class PlayerParticlesCommandArgument implements ArgumentType<String> {
 
 	public static String getParticleName(CommandContext<ServerCommandSource> commandContext_1, String string_1)
 			throws CommandSyntaxException {
-		return commandContext_1.getArgument(string_1, PlayerParticlesCommandArgument.class).toString();
+		return commandContext_1.getArgument(string_1, String.class);
 	}
 
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext_1,
