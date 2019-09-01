@@ -37,7 +37,7 @@ public class PlayerParticlesCommand {
 		setNode.addChild(flamesNode);
 	}
 
-	private static void setParticle(CommandContext context, String name) {
+	private static void setParticle(CommandContext<ServerCommandSource> context, String name) {
 		((ServerCommandSource) context.getSource())
 				.sendFeedback(LangText.getFormatter(true, "command.playerparticles.particleset", name), false);
 	}

@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.commands;
 
-import org.kilocraft.essentials.Mod;
 import org.kilocraft.essentials.utils.LangText;
 
 import com.mojang.brigadier.CommandDispatcher;
