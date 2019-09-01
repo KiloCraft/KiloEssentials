@@ -1,6 +1,7 @@
 package org.kilocraft.essentials;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.config.ConfigHandler;
@@ -20,6 +21,5 @@ public class KiloEssentials implements DedicatedServerModInitializer {
 		DataHandler.handle();
 
 		KiloCommands.register(true);
-
 	}
 }
