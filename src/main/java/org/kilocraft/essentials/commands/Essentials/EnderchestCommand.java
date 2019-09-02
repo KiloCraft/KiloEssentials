@@ -24,8 +24,8 @@ public class EnderchestCommand {
         LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
                 CommandManager.literal("enderchest")
                         .requires(source -> source.hasPermissionLevel(2))
-                        .then(CommandManager.argument("craft", EntityArgumentType.player())
-                                .executes(context -> execute(context, EntityArgumentType.getPlayer(context, "craft").getCommandSource())))
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(context -> execute(context, EntityArgumentType.getPlayer(context, "player").getCommandSource())))
                         .executes(context -> execute(context, context.getSource()))
         );
 
