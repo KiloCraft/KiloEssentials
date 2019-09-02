@@ -1,6 +1,7 @@
 package org.kilocraft.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
+
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.command.TestCommand;
 import org.kilocraft.essentials.commands.*;
