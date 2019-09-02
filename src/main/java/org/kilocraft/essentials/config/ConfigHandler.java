@@ -8,6 +8,7 @@ public class ConfigHandler {
         ArrayList<String> configFiles = new ArrayList<String>(){{
             add("General.yml");
             add("Messages.yml");
+            add("Ranks.yml");
         }};
 
         configFiles.forEach((config) -> new ConfigFile(

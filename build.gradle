@@ -30,8 +30,10 @@ processResources {
 	inputs.property "version", project.version
 
 	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json", "Mod.properties"
+		include "fabric.mod.json"
+		include "Mod.properties"
 		expand "version": project.version
+		expand "mod_version": project.version
 	}
 
 	from(sourceSets.main.resources.srcDirs) {

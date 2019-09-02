@@ -11,10 +11,8 @@ public class DataHandler {
         ArrayList<String> dataFiles = new ArrayList<String>(){{
             add("Homes.json");
             add("Permissions.json");
-            add("onVanished.json");
-            add("onStaffchat.json");
-            add("onGodmode.json");
-            add("onFlymode.json");
+            add("Roles.json");
+            add("CachedData.josn");
         }};
 
         dataFiles.forEach((file) -> new ConfigFile(
