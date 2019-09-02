@@ -20,6 +20,7 @@ public class PlayerParticlesCommand {
 			return 0;
 		}).build();
 		
+		// Particles
 		LiteralCommandNode<ServerCommandSource> flamesNode = CommandManager.literal("flames").executes((context) -> {
 			setParticle(context, "flames");
 			return 0;
