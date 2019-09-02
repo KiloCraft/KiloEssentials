@@ -19,7 +19,7 @@ import net.minecraft.util.Formatting;
 
 public class AnvilCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("craftingbench")
+        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("anvil")
                 .requires(source -> source.hasPermissionLevel(2))
                     .then(CommandManager.argument("target", EntityArgumentType.player())
                             .executes(context -> execute(context, EntityArgumentType.getPlayer(context, "target").getCommandSource(), true)))
@@ -42,7 +42,7 @@ public class AnvilCommand {
 
         target.openContainer(new ClientDummyContainerProvider((i, inv, pEntity) -> {
             return new AnvilContainer(i, inv);
-        }, new TranslatableText("container.anvil")));
+        }, new TranslatableText("container.repair")));
 
         return 1;
     }
