@@ -8,6 +8,9 @@ import org.kilocraft.essentials.config.ConfigHandler;
 import org.kilocraft.essentials.config.DataHandler;
 import org.kilocraft.essentials.utils.ServerModName;
 
+import javax.naming.NamingException;
+import java.sql.SQLException;
+
 public class KiloEssentials implements DedicatedServerModInitializer {
 	public static Logger getLogger = LogManager.getFormatterLogger("KiloEssentials");
 
@@ -21,5 +24,15 @@ public class KiloEssentials implements DedicatedServerModInitializer {
 		DataHandler.handle();
 
 		KiloCommands.register(true);
+
+		try {
+			KiloDatabase.connect();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (NamingException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
