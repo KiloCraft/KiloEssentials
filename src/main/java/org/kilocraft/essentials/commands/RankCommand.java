@@ -32,7 +32,7 @@ public class RankCommand {
 		}))).then(CommandManager.literal("join").executes(context -> {
 			context.getSource().sendFeedback(LangText.get(true, "command.rank.noplayertojoin"), false);
 			return 1;
-		}).then(CommandManager.argument("player", EntityArgumentType.players()).executes(context -> {
+		}).then(CommandManager.argument("craft", EntityArgumentType.players()).executes(context -> {
 			context.getSource().sendFeedback(LangText.get(true, "command.rank.noranktojoin"), false);
 			return 1;
 		}).then(CommandManager.argument("name", StringArgumentType.string()).executes(context -> {

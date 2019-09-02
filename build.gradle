@@ -18,7 +18,7 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
-	compile group: 'commons-configuration', name: 'commons-configuration', version: "${project.commons_configuration}"
+	compile group: "org.cfg4j", name:"cfg4j-core", version: "${project.cfg4j_version}"
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	//modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 

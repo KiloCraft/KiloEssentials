@@ -12,7 +12,7 @@ public class ConfigFile {
     private File config, configDir;
     private String configRes;
     boolean dontGenerate;
-    private static final String currentDir = System.getProperty("user.dir");
+    public static final String currentDir = System.getProperty("user.dir");
 
     public ConfigFile(String configFileName, String configFileDirectory, String resourceBaseFile, boolean dontGenerateCfg, boolean logToConsole) {
         this.configDir = new File(currentDir + configFileDirectory);
@@ -27,6 +27,7 @@ public class ConfigFile {
 
         try (InputStream inputStream = new FileInputStream(configFile)){
             if (configFile.exists() && log) KiloEssentials.getLogger.info(Mod.lang.getProperty("cfghandler.load.successfull"), configFile.getName());
+
         } catch (FileNotFoundException e) {
             KiloEssentials.getLogger.warn(Mod.lang.getProperty("cfghandler.generate.start"), configFile.getName());
             if (!dontGenerate) generate(configFile, configDirectory, fileToCopyFrom);

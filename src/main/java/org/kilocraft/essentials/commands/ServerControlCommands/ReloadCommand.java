@@ -13,7 +13,7 @@ public class ReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(CommandManager.literal("reload")
             .requires(source -> source.hasPermissionLevel(3))
-                .then(CommandManager.literal("world").executes(c -> reloadWorld(c.getSource())))
+                .then(CommandManager.literal("World").executes(c -> reloadWorld(c.getSource())))
                 .then(CommandManager.literal("config").executes(c -> reloadConfig(c.getSource(), true)))
             .executes(c -> {
                 reloadConfig(c.getSource(), false);
