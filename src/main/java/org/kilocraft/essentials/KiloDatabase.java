@@ -2,15 +2,13 @@ package org.kilocraft.essentials;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
-import javax.naming.NamingException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public class KiloDatabase {
 
     public static Connection connection;
 
-    public static void connect() throws ClassNotFoundException, NamingException, SQLException {
+    public static void connect() throws Exception {
         MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setServerName("88.198.50.85");
         dataSource.setPort(3306);

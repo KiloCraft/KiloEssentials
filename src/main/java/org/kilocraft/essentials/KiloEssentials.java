@@ -1,15 +1,11 @@
 package org.kilocraft.essentials;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.config.ConfigHandler;
 import org.kilocraft.essentials.config.DataHandler;
 import org.kilocraft.essentials.utils.ServerModName;
-
-import javax.naming.NamingException;
-import java.sql.SQLException;
 
 public class KiloEssentials implements DedicatedServerModInitializer {
 	public static Logger getLogger = LogManager.getFormatterLogger("KiloEssentials");
@@ -25,13 +21,11 @@ public class KiloEssentials implements DedicatedServerModInitializer {
 
 		KiloCommands.register(true);
 
+
+
 		try {
 			KiloDatabase.connect();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (NamingException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
