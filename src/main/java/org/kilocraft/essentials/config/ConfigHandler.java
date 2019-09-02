@@ -23,14 +23,12 @@ public class ConfigHandler {
                     true
             );
 
-            try {
-                new KiloConfig(configPath, config);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                new KiloConfig(configPath, config);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
         });
-
-
 
     }
 }

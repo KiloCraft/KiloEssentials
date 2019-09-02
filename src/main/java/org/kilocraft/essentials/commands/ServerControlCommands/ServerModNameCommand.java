@@ -25,7 +25,7 @@ public class ServerModNameCommand {
 
     private static int execute(ServerCommandSource source, String s) {
         ServerModName.setName(ChatColor.translateAlternateColorCodes('&',
-                String.format(s + " <- Fabric/KiloEssentials (%s, %s)", MinecraftVersion.create().getName(), Mod.getVersion())));
+                String.format(s + "&r <- Fabric/KiloEssentials (%s, %s)", MinecraftVersion.create().getName(), Mod.getVersion())));
 
         source.sendFeedback(new LiteralText("You have successfully changed the server custom brand name to:\n "
         + ServerModName.getName()), true);
