@@ -39,7 +39,6 @@ public class RenameCommand {
 						player.experienceLevel -= 1;
 						String name = context.getArgument("name", String.class);
 						name = ChatColor.translateAlternateColorCodes('&', name);
-						name = ChatColor.removeAlternateColorCodes('&', name);
 						item.setCustomName(new LiteralText(name));
 						context.getSource().sendFeedback(LangText.getFormatter(true, "command.rename.success", name),
 								false);
