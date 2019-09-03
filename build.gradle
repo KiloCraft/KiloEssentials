@@ -19,7 +19,7 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 	compile group: "org.cfg4j", name:"cfg4j-core", version: "${project.cfg4j_version}"
-	compile group: 'mysql', name: 'mysql-connector-java', version: "${projecy.jdbc_sql_version}"
+	compile group: 'mysql', name: 'mysql-connector-java', version: "${project.jdbc_sql_version}"
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	//modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
