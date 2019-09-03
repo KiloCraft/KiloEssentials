@@ -31,7 +31,7 @@ public class RenameCommand {
 						context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
 						return 1;
 					} else {
-						if (player.experienceLevel < 1) {
+						if (player.experienceLevel < 1 || player.isCreative() == true) {
 							context.getSource().sendFeedback(LangText.get(true, "command.rename.noxp"), false);
 							return 1;
 						}
