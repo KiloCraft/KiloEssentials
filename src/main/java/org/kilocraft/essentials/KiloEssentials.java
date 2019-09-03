@@ -21,12 +21,5 @@ public class KiloEssentials implements DedicatedServerModInitializer {
 
 		KiloCommands.register(true);
 
-
-
-		try {
-			KiloDatabase.connect();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 }
