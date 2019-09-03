@@ -17,6 +17,8 @@ public class Mod {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        KiloCommands.register(true);
     }
 
     public static String getVersion() {

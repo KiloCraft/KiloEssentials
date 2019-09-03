@@ -31,12 +31,15 @@ public class RenameCommand {
 						context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
 						return 1;
 					} else {
-						if (player.experienceLevel < 1) {
+						if (player.experienceLevel < 1 && player.isCreative() == false) {
 							context.getSource().sendFeedback(LangText.get(true, "command.rename.noxp"), false);
 							return 1;
 						}
 
-						player.experienceLevel -= 1;
+						if (player.isCreative() == false) {
+							player.addExperienceLevels(-1);
+						}
+
 						String name = context.getArgument("name", String.class);
 						name = ChatColor.translateAlternateColorCodes('&', name);
 						item.setCustomName(new LiteralText(name));

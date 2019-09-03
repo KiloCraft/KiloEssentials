@@ -15,21 +15,7 @@ public class RankCommand {
 		dispatcher.register(CommandManager.literal("rank").executes(context -> {
 			context.getSource().sendFeedback(LangText.get(true, "command.rank.onlyoneargument"), false);
 			return 1;
-		}).then(CommandManager.literal("add").executes(context -> {
-			context.getSource().sendFeedback(LangText.get(true, "command.rank.noranktoadd"), false);
-			return 1;
-		}).then(CommandManager.argument("name", StringArgumentType.string()).executes(context -> {
-			// TODO: Add rank
-			context.getSource().sendFeedback(LangText.get(true, "command.rank.addrank"), false);
-			return 0;
-		}))).then(CommandManager.literal("remove").executes(context -> {
-			context.getSource().sendFeedback(LangText.get(true, "command.rank.noranktoremove"), false);
-			return 1;
-		}).then(CommandManager.argument("name", StringArgumentType.string()).executes(context -> {
-			// TODO: Remove rank
-			context.getSource().sendFeedback(LangText.get(true, "command.rank.removerank"), false);
-			return 0;
-		}))).then(CommandManager.literal("join").executes(context -> {
+		}).then(CommandManager.literal("join").executes(context -> {
 			context.getSource().sendFeedback(LangText.get(true, "command.rank.noplayertojoin"), false);
 			return 1;
 		}).then(CommandManager.argument("player", EntityArgumentType.players()).executes(context -> {
