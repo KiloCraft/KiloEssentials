@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft;
+package org.kilocraft.essentials;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.SpawnRestriction;

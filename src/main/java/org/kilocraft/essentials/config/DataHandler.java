@@ -9,10 +9,11 @@ import java.util.ArrayList;
 public class DataHandler {
     public static void handle() {
         ArrayList<String> dataFiles = new ArrayList<String>(){{
-            add("Homes.json");
-            add("Permissions.json");
-            add("Roles.json");
-            add("CachedData.josn");
+            add("CachedData.json");
+            add("onFlymode.json");
+            add("onVanishmode.json");
+            add("onGodmode.json");
+            add("onStaffchat.json");
         }};
 
         dataFiles.forEach((file) -> new ConfigFile(
