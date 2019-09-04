@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.utils;
+package org.kilocraft.essentials.api.util;
 
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.craft.Mod;

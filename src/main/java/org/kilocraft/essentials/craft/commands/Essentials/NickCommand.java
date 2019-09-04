@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.craft.commands.Essentials;
 
-import org.kilocraft.essentials.craft.utils.LangText;
+import org.kilocraft.essentials.api.util.LangText;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;

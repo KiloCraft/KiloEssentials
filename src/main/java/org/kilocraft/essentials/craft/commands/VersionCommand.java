@@ -5,7 +5,7 @@ import net.minecraft.MinecraftVersion;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.craft.Mod;
-import org.kilocraft.essentials.craft.utils.LangText;
+import org.kilocraft.essentials.api.util.LangText;
 
 public class VersionCommand {
 	

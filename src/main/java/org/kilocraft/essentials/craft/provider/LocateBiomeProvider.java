@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import org.kilocraft.essentials.craft.utils.LangText;
+import org.kilocraft.essentials.api.util.LangText;
 
 public class LocateBiomeProvider {
 

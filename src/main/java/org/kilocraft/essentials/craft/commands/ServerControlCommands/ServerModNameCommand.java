@@ -8,7 +8,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.craft.Mod;
-import org.kilocraft.essentials.craft.utils.ChatColor;
 import org.kilocraft.essentials.craft.utils.ServerModName;
 
 public class ServerModNameCommand {
