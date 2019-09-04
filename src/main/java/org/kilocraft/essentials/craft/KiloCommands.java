@@ -7,8 +7,8 @@ import net.minecraft.server.command.TestCommand;
 import org.kilocraft.essentials.craft.commands.*;
 import org.kilocraft.essentials.craft.commands.Essentials.*;
 import org.kilocraft.essentials.craft.commands.donatorcommands.PlayerParticlesCommand;
-import org.kilocraft.essentials.craft.commands.staffcommands.ReloadCommand;
-import org.kilocraft.essentials.craft.commands.staffcommands.ServerModNameCommand;
+import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
+import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
 
 public class KiloCommands {
     private static CommandDispatcher<ServerCommandSource> dispatcher;

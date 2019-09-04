@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.staffcommands;
+package org.kilocraft.essentials.craft.commands.servermanagement;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;

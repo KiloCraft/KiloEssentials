@@ -57,7 +57,7 @@ public class ConfigFile {
         } catch (IOException e) {
             Mod.getLogger.error(Mod.lang.getProperty("cfghandler.generate.copy.failed"));
             Mod.getLogger.error("An unexpected error occured during getting the config file \"{}\"\n Caused by: \"{}\"\n" +
-                    "Restarting the server might help you to resolve this issue.", cfg.getName(), e.getCause());
+                    "Restarting the servermanagement might help you to resolve this issue.", cfg.getName(), e.getCause());
         }
     }
 

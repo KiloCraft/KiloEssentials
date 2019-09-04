@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.staffcommands;
+package org.kilocraft.essentials.craft.commands.servermanagement;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -13,7 +13,7 @@ import org.kilocraft.essentials.api.util.ChatColor;
 
 public class ServerModNameCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("server")
+        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("servermanagement")
                 .requires(source -> source.hasPermissionLevel(4))
                 .then(CommandManager.literal("config").then(CommandManager.literal("brandName")
                         .then(CommandManager.argument("name", StringArgumentType.greedyString())
@@ -27,7 +27,7 @@ public class ServerModNameCommand {
         ServerModName.setName(ChatColor.translateAlternateColorCodes('&',
                 String.format(s + "&r <- Fabric/KiloEssentials (%s, %s)", MinecraftVersion.create().getName(), Mod.getVersion())));
 
-        source.sendFeedback(new LiteralText("You have successfully changed the server custom brand name to:\n "
+        source.sendFeedback(new LiteralText("You have successfully changed the servermanagement custom brand name to:\n "
         + ServerModName.getName()), true);
         return 1;
     }
