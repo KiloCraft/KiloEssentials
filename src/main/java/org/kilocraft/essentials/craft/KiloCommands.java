@@ -34,7 +34,6 @@ public class KiloCommands {
         CraftingbenchCommand.register(dispatcher);
         AnvilCommand.register(dispatcher);
         RenameCommand.register(dispatcher);
-        HomeCommand.register(dispatcher);
     }
 
 }

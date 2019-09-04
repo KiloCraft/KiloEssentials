@@ -15,11 +15,11 @@
   "environment": "server",
   "entrypoints": {
     "server": [
-      "org.kilocraft.essentials.KiloEssentials"
+      "org.kilocraft.essentials.craft.KiloEssentials"
     ]
   },
   "mixins": [
-    "kiloessentials.mixins.json"
+    "kiloapi.mixins.json"
   ],
 
   "depends": {
