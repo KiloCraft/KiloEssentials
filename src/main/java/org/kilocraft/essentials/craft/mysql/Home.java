@@ -8,7 +8,7 @@ import org.kilocraft.essentials.craft.KiloEssentials;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-public class home {
+public class Home {
 
     public static void setHome(ServerPlayerEntity player, String home_name, World entityWorld) {
         KiloEssentials.getLogger.info("setHome executed!");

@@ -7,7 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.craft.KiloEssentials;
-import org.kilocraft.essentials.craft.mysql.home;
+import org.kilocraft.essentials.craft.mysql.Home;
 
 import java.sql.SQLException;
 
@@ -28,7 +28,7 @@ public class HomeCommand {
     private static int execute(CommandContext<ServerCommandSource> context, ServerCommandSource source) throws CommandSyntaxException, SQLException {
         KiloEssentials.getLogger.info("execute executed");
         try {
-            home.setHome(source.getPlayer(),"test",source.getPlayer().getEntityWorld());
+            Home.setHome(source.getPlayer(),"test",source.getPlayer().getEntityWorld());
         } catch (Exception e) {
             KiloEssentials.getLogger.error(e);
         }
