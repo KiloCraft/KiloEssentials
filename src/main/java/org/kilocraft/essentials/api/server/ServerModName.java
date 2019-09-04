@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.Server;
+package org.kilocraft.essentials.api.server;
 
 public class ServerModName {
     private static String name;

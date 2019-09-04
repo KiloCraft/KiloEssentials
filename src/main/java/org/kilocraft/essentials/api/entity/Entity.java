@@ -1,7 +1,7 @@
-package org.kilocraft.essentials.api.Entity;
+package org.kilocraft.essentials.api.entity;
 
 import net.minecraft.util.math.Vec3d;
-import org.kilocraft.essentials.api.World.World;
+import org.kilocraft.essentials.api.world.World;
 
 import java.util.UUID;
 

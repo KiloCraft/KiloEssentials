@@ -1,7 +1,7 @@
-package org.kilocraft.essentials.api.Util;
+package org.kilocraft.essentials.api.util;
 
 import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.craft.Mod;
+import org.kilocraft.essentials.api.Mod;
 
 public class LangText {
 

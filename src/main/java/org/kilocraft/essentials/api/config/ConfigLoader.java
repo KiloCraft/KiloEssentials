@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.Config;
+package org.kilocraft.essentials.api.config;
 
 import org.cfg4j.provider.ConfigurationProvider;
 import org.cfg4j.source.ConfigurationSource;

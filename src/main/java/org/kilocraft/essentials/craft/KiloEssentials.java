@@ -3,9 +3,10 @@ package org.kilocraft.essentials.craft;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.config.ConfigHandler;
 import org.kilocraft.essentials.craft.config.DataHandler;
-import org.kilocraft.essentials.api.Server.ServerModName;
+import org.kilocraft.essentials.api.server.ServerModName;
 
 public class KiloEssentials implements DedicatedServerModInitializer {
 	public static Logger getLogger = LogManager.getFormatterLogger();

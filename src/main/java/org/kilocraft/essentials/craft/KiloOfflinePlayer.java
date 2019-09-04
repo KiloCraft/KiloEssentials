@@ -7,7 +7,7 @@ import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorEntry;
 import net.minecraft.server.WhitelistEntry;
-import org.kilocraft.essentials.api.Entity.OfflinePlayer;
+import org.kilocraft.essentials.api.entity.OfflinePlayer;
 
 import java.util.HashMap;
 import java.util.UUID;

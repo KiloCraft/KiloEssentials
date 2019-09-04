@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.World;
+package org.kilocraft.essentials.api.world;
 
 import jdk.nashorn.internal.ir.Block;
 import net.minecraft.block.Blocks;

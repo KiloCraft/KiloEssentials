@@ -1,8 +1,8 @@
 package org.kilocraft.essentials.craft.config;
 
-import org.kilocraft.essentials.api.Config.ConfigFile;
+import org.kilocraft.essentials.api.config.ConfigFile;
 import org.kilocraft.essentials.craft.KiloEssentials;
-import org.kilocraft.essentials.craft.Mod;
+import org.kilocraft.essentials.api.Mod;
 
 import java.io.File;
 import java.util.ArrayList;

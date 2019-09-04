@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.craft.config;
 
-import org.kilocraft.essentials.api.Config.ConfigFile;
+import org.kilocraft.essentials.api.config.ConfigFile;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,12 +12,12 @@ public class ConfigHandler {
         add("Ranks.yml");
     }};
 
-    private static String configPath = "^KiloEssentials^Config^".replace("^", File.separator);
+    private static String configPath = "^KiloEssentials^config^".replace("^", File.separator);
     public static void handle() {
 
         configFiles.forEach((config) -> new ConfigFile(
                 config,
-                "^KiloEssentials^Config^".replace("^", File.separator),
+                "^KiloEssentials^config^".replace("^", File.separator),
                 "ConfigFiles",
                 false,
                 true

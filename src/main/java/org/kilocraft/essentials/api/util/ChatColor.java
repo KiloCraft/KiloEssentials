@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.Util;
+package org.kilocraft.essentials.api.util;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.Validate;

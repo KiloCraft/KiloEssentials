@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.Entity;
+package org.kilocraft.essentials.api.entity;
 
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.player.PlayerInventory;
