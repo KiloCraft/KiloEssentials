@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.DiscordCommands;
+package org.kilocraft.essentials.craft.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
