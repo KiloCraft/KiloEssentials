@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.mixin;
+package org.kilocraft.essentials.api.Mixin;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.CommandManager;

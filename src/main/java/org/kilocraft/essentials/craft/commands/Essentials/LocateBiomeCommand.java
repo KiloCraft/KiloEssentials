@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.Registry;
-import org.kilocraft.essentials.craft.provider.LocateBiomeProvider;
+import org.kilocraft.essentials.api.provider.LocateBiomeProvider;
 
 import java.util.Objects;
 

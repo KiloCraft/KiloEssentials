@@ -8,7 +8,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.craft.Mod;
-import org.kilocraft.essentials.craft.utils.ServerModName;
+import org.kilocraft.essentials.api.Server.ServerModName;
 
 public class ServerModNameCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

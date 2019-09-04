@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.util.LangText;
+import org.kilocraft.essentials.api.Util.LangText;
 
 public class PlayerParticlesCommand {
 

@@ -1,10 +1,10 @@
-package org.kilocraft.essentials.craft.mixin;
+package org.kilocraft.essentials.api.Mixin;
 
 import net.minecraft.MinecraftVersion;
 import net.minecraft.server.MinecraftServer;
 import org.kilocraft.essentials.craft.Mod;
-import org.kilocraft.essentials.craft.utils.ServerModName;
-import org.kilocraft.essentials.craft.wrapper.ServerBrand;
+import org.kilocraft.essentials.api.Server.ServerModName;
+import org.kilocraft.essentials.api.wrapper.ServerBrand;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(MinecraftServer.class)

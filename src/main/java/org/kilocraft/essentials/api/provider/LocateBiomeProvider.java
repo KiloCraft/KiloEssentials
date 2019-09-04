@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.provider;
+package org.kilocraft.essentials.api.provider;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import org.kilocraft.essentials.api.util.LangText;
+import org.kilocraft.essentials.api.Util.LangText;
 
 public class LocateBiomeProvider {
 
