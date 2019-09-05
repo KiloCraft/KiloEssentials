@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.craft.commands.Essentials;
 
-import org.kilocraft.essentials.api.util.ChatColor;
+import org.kilocraft.essentials.api.chat.ChatColor;
 import org.kilocraft.essentials.api.util.LangText;
 
 import com.mojang.brigadier.CommandDispatcher;

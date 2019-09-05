@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.event.impl;
+package org.kilocraft.essentials.api.event.eventImpl;
 
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.event.Event;

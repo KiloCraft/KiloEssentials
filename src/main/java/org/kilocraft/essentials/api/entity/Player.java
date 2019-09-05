@@ -1,75 +1,54 @@
 package org.kilocraft.essentials.api.entity;
 
-import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.LiteralText;
-import com.mojang.authlib.GameProfile;
+import net.minecraft.network.MessageType;
+import org.kilocraft.essentials.api.world.Block;
 
-import java.net.SocketAddress;
+import java.util.Optional;
 
-public interface Player extends OfflinePlayer {
+public interface Player extends Entity {
 
-    GameProfile getProfile();
+    /**
+     * Gets the block the player is looking at
+     *
+     * @param distance     How far should we check before giving up
+     * @param returnFluids Should we return fluids?
+     * @return Block, or empty if we couldn't find anything or we found an entity
+     */
+    Optional<Block> getTargetBlock(double distance, boolean returnFluids);
 
-    SocketAddress getAddress();
+    /**
+     * Send a chat message to this player
+     *
+     * @param message Message to send
+     */
+    void send(String message);
 
-    void kickPlayer(String message);
+    /**
+     * Send a message to this player
+     *
+     * @param message Message to send
+     * @param type    Type of the sent message
+     */
+    void send(String message, MessageType type);
 
-    boolean performCommand(String command);
+    /**
+     * Kick a player from the server
+     *
+     * @param message The kick message
+     */
+    void kick(String message);
 
-    boolean isSneaking();
+    /**
+     * Is this player an OP
+     *
+     * @return true if this player is an OP
+     */
+    boolean isOp();
 
-    void setSneaking(boolean sneak);
-
-    boolean isSprinting();
-
-    void setSprinting(boolean sprinting);
-
-    void giveExp(int amount);
-
-    float getExp();
-
-    void setExp(float exp);
-
-    int getLevel();
-
-    void setLevel(int level);
-
-    int getTotalExperience();
-
-    void setTotalExperience(int exp);
-
-    float getSaturation();
-
-    void setSaturation(float value);
-
-    int getFoodLevel();
-
-    void setFoodLevel(int value);
-
-    boolean getAllowFlight();
-
-    void setAllowFlight(boolean flight);
-
-    void hidePlayer(Player player);
-
-    void showPlayer(Player player);
-
-    boolean canSee(Player player);
-
-    boolean isOnGround();
-
-    boolean isFlying();
-
-    void setFlying(boolean value);
-
-    void setGroup(String name);
-
-    SpawnRestriction.Location getLocation();
-
-    PlayerInventory getInventory();
-
-    void sendMessage(String message);
-
-    void sendMessage(LiteralText message);
+    /**
+     * Set this player's OP status
+     *
+     * @param isOp the new OP status
+     */
+    void setOp(boolean isOp);
 }

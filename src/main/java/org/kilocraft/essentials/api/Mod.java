@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api;
 
+import net.minecraft.MinecraftVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.craft.KiloCommands;
@@ -36,6 +37,10 @@ public class Mod {
 
     public static String getLoaderVersion() {
         return properties.getProperty("fabric_loader_version");
+    }
+
+    public static String getMinecraftVersion() {
+        return MinecraftVersion.create().getName();
     }
 
 }

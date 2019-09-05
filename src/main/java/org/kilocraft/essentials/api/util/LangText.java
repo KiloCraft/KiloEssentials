@@ -2,6 +2,7 @@ package org.kilocraft.essentials.api.util;
 
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.Mod;
+import org.kilocraft.essentials.api.chat.ChatColor;
 
 public class LangText {
 
