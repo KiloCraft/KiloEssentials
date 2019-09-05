@@ -26,5 +26,4 @@ public class BlockImpl implements Block {
     public World getWorld() {
         return world;
     }
-
 }

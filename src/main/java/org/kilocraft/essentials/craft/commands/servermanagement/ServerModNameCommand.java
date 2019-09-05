@@ -7,6 +7,7 @@ import net.minecraft.MinecraftVersion;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.chat.ChatColor;
 
@@ -23,11 +24,11 @@ public class ServerModNameCommand {
     }
 
     private static int execute(ServerCommandSource source, String s) {
-        ServerModName.setName(ChatColor.translateAlternateColorCodes('&',
+        KiloServer.getServer().setDisplayBrandName(ChatColor.translateAlternateColorCodes('&',
                 String.format(s + "&r <- Fabric/KiloEssentials (%s, %s)", MinecraftVersion.create().getName(), Mod.getVersion())));
 
         source.sendFeedback(new LiteralText("You have successfully changed the servermanagement custom brand name to:\n "
-        + ServerModName.getName()), true);
+        + KiloServer.getServer().getDisplayBrandName()), true);
         return 1;
     }
 }

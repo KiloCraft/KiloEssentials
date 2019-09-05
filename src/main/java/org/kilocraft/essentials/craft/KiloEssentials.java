@@ -3,6 +3,7 @@ package org.kilocraft.essentials.craft;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.config.ConfigHandler;
 import org.kilocraft.essentials.craft.config.DataHandler;
@@ -14,7 +15,6 @@ public class KiloEssentials implements DedicatedServerModInitializer {
 	public void onInitializeServer() {
 		new Mod();
 		getLogger.info("Running KiloEssentials version " + Mod.getVersion());
-		ServerModName.setName("§bKiloCraft§r");
 
 		ConfigHandler.handle();
 		DataHandler.handle();
