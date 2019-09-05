@@ -1,22 +1,17 @@
-package org.kilocraft.essentials.api.util;
+package org.kilocraft.essentials.api.chat;
 
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.Mod;
-import org.kilocraft.essentials.api.chat.ChatColor;
 
 public class LangText {
 
     public static LiteralText getFormatter (boolean allowColorCodes, String key, Object... objects) {
-        String lang = Mod.lang.getProperty(key);
+        String lang = Mod.getLang().getProperty(key);
         LiteralText literalText = new LiteralText ("");
         String result = null;
-        Object tmpObject;
 
         if (objects[0] != null) {
-            for (int i = 0; i < objects.length; i++) {
-                Object object = objects[i];
-                result = lang.replaceFirst("%s", object.toString());
-            }
+            result = String.format(lang, objects);
         }
 
         if (allowColorCodes) {
@@ -31,7 +26,7 @@ public class LangText {
     }
 
     public static LiteralText get(boolean allowColorCodes, String key) {
-        String lang = Mod.lang.getProperty(key);
+        String lang = Mod.getLang().getProperty(key);
         LiteralText literalText = new LiteralText ("");
         String result = lang;
 

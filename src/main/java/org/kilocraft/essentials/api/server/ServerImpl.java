@@ -98,8 +98,7 @@ public class ServerImpl implements Server {
 
     @Override
     public String getDisplayBrandName() {
-        if (serverDisplayBrand.isEmpty())
-            return serverBrand;
+        if (serverDisplayBrand.isEmpty()) return serverBrand;
         else return serverDisplayBrand;
     }
 

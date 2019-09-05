@@ -6,7 +6,10 @@
   ],
   "server": [
     "MixinCommandManager",
-    "MixinMinecraftServer"
+    "MixinMinecraftServer",
+    "MixinEntityAccessor",
+    "MixinMinecraftServerAccessor",
+    "MixinMinecraftServerCommandOutput"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -10,21 +10,33 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Mod {
-    public static Logger getLogger = LogManager.getFormatterLogger();
-    public static Properties properties = new Properties();
-    public static Properties lang = new Properties();
+    private static Logger logger = LogManager.getFormatterLogger();
+    private static Properties properties = new Properties();
+    private static Properties lang = new Properties();
 
     private static String version;
 
     public Mod() {
         try {
             properties.load(Mod.class.getClassLoader().getResourceAsStream("info.properties"));
-            lang.load(Mod.class.getClassLoader().getResourceAsStream("assets" + File.separator + "Lang.properties"));
+            lang.load(Mod.class.getClassLoader().getResourceAsStream("assets/Lang.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         
-        KiloCommands.register(true);
+        KiloCommands.register(false);
+    }
+
+    public static Logger getLogger() {
+        return logger;
+    }
+
+    public static Properties getProperties() {
+        return properties;
+    }
+
+    public static Properties getLang() {
+        return lang;
     }
 
     public static String getVersion() {

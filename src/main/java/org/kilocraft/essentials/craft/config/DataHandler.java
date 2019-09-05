@@ -26,7 +26,7 @@ public class DataHandler {
                 false
         ));
 
-        KiloEssentials.getLogger.info(String.format(Mod.lang.getProperty("datahandler.load.successfull"), dataFiles.size()));
+        KiloEssentials.getLogger.info(String.format(Mod.getLang().getProperty("datahandler.load.successfull"), dataFiles.size()));
         KiloEssentials.getLogger.info(dataFiles.toString());
     }
 }

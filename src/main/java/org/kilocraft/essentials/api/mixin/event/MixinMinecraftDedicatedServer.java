@@ -3,6 +3,8 @@ package org.kilocraft.essentials.api.mixin.event;
 
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.event.eventImpl.ReadyEventImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,6 +23,7 @@ public abstract class MixinMinecraftDedicatedServer {
     private void kilo$setupServer$ready(CallbackInfoReturnable<Boolean> cir) {
         LOGGER.info("Starting the event manager...");
 
+        KiloServer.getServer().triggerEvent(new ReadyEventImpl());
     }
 
 }

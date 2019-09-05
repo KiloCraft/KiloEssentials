@@ -48,7 +48,7 @@ public abstract class MixinMinecraftServer implements ServerBrand {
 
     @Override
     public String getServerModName() {
-        return KiloServer.getServer().getDisplayBrandName();
+        return KiloServer.getServer().getBrandName();
     }
 
 }

@@ -17,7 +17,7 @@ import java.util.Map;
 public class EventRegistryImpl implements EventRegistry {
 
     private Map<String, List<EventHandler>> handlers = new HashMap<>();
-    private Logger logger = Mod.getLogger;
+    private Logger logger = Mod.getLogger();
 
     public void register(EventHandler eventClass) {
         for (Type type : eventClass.getClass().getGenericInterfaces()) {

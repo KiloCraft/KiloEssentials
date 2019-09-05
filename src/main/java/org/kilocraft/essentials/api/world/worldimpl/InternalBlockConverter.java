@@ -12,7 +12,7 @@ class InternalBlockConverter {
         try {
             return Optional.ofNullable((Block) Blocks.class.getDeclaredField(block.toString()).get(null));
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            Mod.getLogger.error("Error getting block for " + block.toString()+ "!");
+            Mod.getLogger().error("Error getting block for " + block.toString()+ "!");
             e.printStackTrace();
         }
 

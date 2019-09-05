@@ -26,8 +26,7 @@ public class KiloServer{
     public static void setServer(Server server) {
         if (KiloServer.server != null)
             throw new RuntimeException("Server is already set!");
-
-        KiloServer.server = server;
+        else KiloServer.server = server;
     }
 
     //PermissionService

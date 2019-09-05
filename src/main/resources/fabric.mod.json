@@ -19,7 +19,8 @@
     ]
   },
   "mixins": [
-    "kiloapi.mixins.json"
+    "kiloapi.mixins.json",
+    "kiloapievents.mixins.json"
   ],
 
   "depends": {
