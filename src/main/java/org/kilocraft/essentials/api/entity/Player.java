@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.api.entity;
 
 import net.minecraft.network.MessageType;
+import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.world.Block;
 
 import java.util.Optional;
@@ -30,6 +31,13 @@ public interface Player extends Entity {
      * @param type    Type of the sent message
      */
     void send(String message, MessageType type);
+
+    /**
+     * Send a message to this player
+     *
+     * @param message LiteralText to send
+     */
+    void send(LiteralText message);
 
     /**
      * Kick a player from the server

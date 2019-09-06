@@ -1,6 +1,9 @@
 package org.kilocraft.essentials.api.chat;
 
 import com.google.common.collect.Maps;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -13,91 +16,91 @@ public enum ChatColor {
     /**
      * Represents black
      */
-    BLACK('0', 0x00),
+    BLACK('0', 0x00, Formatting.BLACK),
     /**
      * Represents dark blue
      */
-    DARK_BLUE('1', 0x1),
+    DARK_BLUE('1', 0x1, Formatting.DARK_BLUE),
     /**
      * Represents dark green
      */
-    DARK_GREEN('2', 0x2),
+    DARK_GREEN('2', 0x2, Formatting.DARK_GREEN),
     /**
      * Represents dark blue (aqua)
      */
-    DARK_AQUA('3', 0x3),
+    DARK_AQUA('3', 0x3, Formatting.DARK_AQUA),
     /**
      * Represents dark red
      */
-    DARK_RED('4', 0x4),
+    DARK_RED('4', 0x4, Formatting.DARK_RED),
     /**
      * Represents dark purple
      */
-    DARK_PURPLE('5', 0x5),
+    DARK_PURPLE('5', 0x5, Formatting.DARK_PURPLE),
     /**
      * Represents gold
      */
-    GOLD('6', 0x6),
+    GOLD('6', 0x6, Formatting.GOLD),
     /**
      * Represents gray
      */
-    GRAY('7', 0x7),
+    GRAY('7', 0x7, Formatting.GRAY),
     /**
      * Represents dark gray
      */
-    DARK_GRAY('8', 0x8),
+    DARK_GRAY('8', 0x8, Formatting.DARK_GRAY),
     /**
      * Represents blue
      */
-    BLUE('9', 0x9),
+    BLUE('9', 0x9, Formatting.BLUE),
     /**
      * Represents green
      */
-    GREEN('a', 0xA),
+    GREEN('a', 0xA, Formatting.GREEN),
     /**
      * Represents aqua
      */
-    AQUA('b', 0xB),
+    AQUA('b', 0xB, Formatting.AQUA),
     /**
      * Represents red
      */
-    RED('c', 0xC),
+    RED('c', 0xC, Formatting.RED),
     /**
      * Represents light purple
      */
-    LIGHT_PURPLE('d', 0xD),
+    LIGHT_PURPLE('d', 0xD, Formatting.LIGHT_PURPLE),
     /**
      * Represents yellow
      */
-    YELLOW('e', 0xE),
+    YELLOW('e', 0xE, Formatting.YELLOW),
     /**
      * Represents white
      */
-    WHITE('f', 0xF),
+    WHITE('f', 0xF, Formatting.WHITE),
     /**
      * Represents magical characters that change around randomly
      */
-    MAGIC('k', 0x10, true),
+    OBFUSCATED('k', 0x10, Formatting.OBFUSCATED, true),
     /**
      * Makes the text bold.
      */
-    BOLD('l', 0x11, true),
+    BOLD('l', 0x11, Formatting.BOLD ,true),
     /**
      * Makes a line appear through the text.
      */
-    STRIKETHROUGH('m', 0x12, true),
+    STRIKETHROUGH('m', 0x12, Formatting.STRIKETHROUGH, true),
     /**
      * Makes the text appear underlined.
      */
-    UNDERLINE('n', 0x13, true),
+    UNDERLINE('n', 0x13, Formatting.UNDERLINE,true),
     /**
      * Makes the text italic.
      */
-    ITALIC('o', 0x14, true),
+    ITALIC('o', 0x14, Formatting.ITALIC,true),
     /**
      * Resets all previous chat colors or formats.
      */
-    RESET('r', 0x15);
+    RESET('r', 0x15, Formatting.RESET);
 
     public static final char COLOR_CHAR = '\u00A7';
     private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf(COLOR_CHAR) + "[0-9A-FK-OR]");
@@ -105,18 +108,20 @@ public enum ChatColor {
     private final int intCode;
     private final char code;
     private final boolean isFormat;
+    private final Formatting formatting;
     private final String toString;
     private static final Map<Integer, ChatColor> BY_ID = Maps.newHashMap();
     private static final Map<Character, ChatColor> BY_CHAR = Maps.newHashMap();
 
-    private ChatColor(char code, int intCode) {
-        this(code, intCode, false);
+    private ChatColor(char code, int intCode, Formatting formatting) {
+        this(code, intCode, formatting, false);
     }
 
-    private ChatColor(char code, int intCode, boolean isFormat) {
+    private ChatColor(char code, int intCode, Formatting formatting, boolean isFormat) {
         this.code = code;
         this.intCode = intCode;
         this.isFormat = isFormat;
+        this.formatting = formatting;
         this.toString = new String(new char[] {COLOR_CHAR, code});
     }
 
@@ -128,6 +133,10 @@ public enum ChatColor {
      */
     public char getChar() {
         return code;
+    }
+
+    public Formatting getFormattingByChar(char code) {
+        return formatting;
     }
 
     @NotNull
@@ -207,11 +216,13 @@ public enum ChatColor {
      * @param textToTranslate Text containing the alternate color code character.
      * @return Text containing the ChatColor.COLOR_CODE color code character.
      */
+
+
     @NotNull
     public static String translateAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
-
         char[] b = textToTranslate.toCharArray();
+
         for (int i = 0; i < b.length - 1; i++) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
                 b[i] = ChatColor.COLOR_CHAR;
@@ -221,10 +232,26 @@ public enum ChatColor {
         return new String(b);
     }
 
-    public static String removeAlternateColorCodes(char altColorChat, @NotNull String textToTranslate) {
+    public static LiteralText translateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
+        Validate.notNull(textToTranslate, "Cannot translate null text");
+        LiteralText literalText = new LiteralText("");
+        char[] b = textToTranslate.toCharArray();
+
+        for (int i = 0; i < b.length -1; i++) {
+            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
+
+            }
+
+        }
+
+        return literalText;
+    }
+
+
+    public static String removeAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot remove color codes from null text");
 
-        return textToTranslate.replaceAll(String.valueOf(altColorChat), "");
+        return textToTranslate.replaceAll(String.valueOf(altColorChar), "");
     }
 
     /**

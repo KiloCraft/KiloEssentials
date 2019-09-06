@@ -42,6 +42,11 @@ public class PlayerImpl extends EntityImpl implements Player {
     }
 
     @Override
+    public void send(LiteralText message) {
+        send(message);
+    }
+
+    @Override
     public void kick(String message) {
         player.networkHandler.disconnect(new LiteralText(message));
     }

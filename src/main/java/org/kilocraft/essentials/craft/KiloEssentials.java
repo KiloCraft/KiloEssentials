@@ -4,6 +4,7 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
+import org.kilocraft.essentials.api.chat.ChatColor;
 import org.kilocraft.essentials.craft.config.ConfigHandler;
 import org.kilocraft.essentials.craft.config.DataHandler;
 

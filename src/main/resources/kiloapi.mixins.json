@@ -1,5 +1,5 @@
 {
-  "required": false,
+  "required": true,
   "package": "org.kilocraft.essentials.api.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [

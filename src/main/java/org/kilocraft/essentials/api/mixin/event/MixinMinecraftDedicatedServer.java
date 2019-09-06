@@ -15,15 +15,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MinecraftDedicatedServer.class)
 public abstract class MixinMinecraftDedicatedServer {
 
-    @Shadow
-    @Final
-    private static Logger LOGGER;
+        @Shadow
+        @Final
+        private static Logger LOGGER;
 
-    @Inject(at = @At(value = "INVOKE", target = "net.minecraft.util.SystemUtil.getMeasuringTimeNano()J", ordinal = 1), method = "setupServer")
-    private void kilo$setupServer$ready(CallbackInfoReturnable<Boolean> cir) {
-        LOGGER.info("Starting the event manager...");
-
-        KiloServer.getServer().triggerEvent(new ReadyEventImpl());
-    }
+        @Inject(at = @At(value = "INVOKE", target = "net.minecraft.util.SystemUtil.getMeasuringTimeNano()J", ordinal = 1), method = "setupServer")
+        private void oky$setupServer$ready(CallbackInfoReturnable<Boolean> cir) {
+            LOGGER.info("KiloAPI: Triggered ReadyEvent");
+            KiloServer.getServer().triggerEvent(new ReadyEventImpl());
+        }
 
 }
