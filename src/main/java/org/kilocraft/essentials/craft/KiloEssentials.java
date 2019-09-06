@@ -17,6 +17,7 @@ public class KiloEssentials implements DedicatedServerModInitializer {
 
 		ConfigHandler.handle();
 		DataHandler.handle();
+		new KiloEvents();
 
 		KiloCommands.register(false);
 
