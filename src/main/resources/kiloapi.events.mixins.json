@@ -5,10 +5,11 @@
   "mixins": [
   ],
   "server": [
-    "MixinBlockItem",
+    "MixinBlockItem$PlayerEvent$OnPlaceBlock",
     "MixinMinecraftDedicatedServer",
+    "MixinMinecraftServer$OnStop",
     "MixinPlayerManager$PlayerEvent$OnConnect",
-    "MixinServerPlayerNetworkHandler$PlayerEvent$OnBlockBroken"
+    "MixinServerPlayerNetworkHandler$PlayerEvent$OnBreakingBlock"
   ],
   "injectors": {
     "defaultRequire": 1

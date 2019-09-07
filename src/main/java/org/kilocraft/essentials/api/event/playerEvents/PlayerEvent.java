@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api.event.playerEvents;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.event.Event;
 
 public interface PlayerEvent extends Event {
@@ -10,6 +10,6 @@ public interface PlayerEvent extends Event {
      *
      * @return the player that fired this event
      */
-    PlayerEntity getPlayer();
+    ServerPlayerEntity getPlayer();
 
 }

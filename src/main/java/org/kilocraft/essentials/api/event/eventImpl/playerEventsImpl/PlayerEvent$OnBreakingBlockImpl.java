@@ -2,26 +2,25 @@ package org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.util.math.BlockPos;
-import org.kilocraft.essentials.api.event.playerEvents.OnPlayerBreakingBlockEvent;
-import org.kilocraft.essentials.api.math.Vec3d;
+import net.minecraft.util.math.Vec3d;
+import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnBreakingBlockEvent;
 
-public class OnPlayerBreakingBlockImpl implements OnPlayerBreakingBlockEvent {
+public class PlayerEvent$OnBreakingBlockImpl implements PlayerEvent$OnBreakingBlockEvent {
 
     private PlayerActionC2SPacket packet;
-    private PlayerEntity playerEntity;
+    private ServerPlayerEntity playerEntity;
 
     private boolean isCancelled;
 
-    public OnPlayerBreakingBlockImpl(PlayerActionC2SPacket packet, ServerPlayerEntity playerEntity) {
+    public PlayerEvent$OnBreakingBlockImpl(PlayerActionC2SPacket packet, ServerPlayerEntity playerEntity) {
         this.packet = packet;
         this.playerEntity = playerEntity;
     }
 
-    public PlayerEntity getPlayer() {
+    public ServerPlayerEntity getPlayer() {
         return playerEntity;
     }
 
@@ -42,11 +41,11 @@ public class OnPlayerBreakingBlockImpl implements OnPlayerBreakingBlockEvent {
 
     @Override
     public BlockState getBlockState() {
-        return playerEntity.getEntityWorld().getBlockState(new BlockPos(getLocation().getX(), getLocation().getY(), getLocation().getZ()));
+        return playerEntity.getEntityWorld().getBlockState(new BlockPos(packet.getPos().getX(), packet.getPos().getY(), packet.getPos().getZ()));
     }
 
     @Override
     public Block getBlock() {
-        return getBlockState().getBlock();
+        return playerEntity.getEntityWorld().getBlockState(new BlockPos(packet.getPos().getX(), packet.getPos().getY(), packet.getPos().getZ())).getBlock();
     }
 }

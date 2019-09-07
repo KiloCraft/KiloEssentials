@@ -8,12 +8,10 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl.OnPlayerPlaceBlockEventImpl;
-import org.kilocraft.essentials.api.math.Vec3d;
-import org.kilocraft.essentials.api.world.worldimpl.BlockImpl;
-import org.kilocraft.essentials.api.world.worldimpl.WorldImpl;
+import org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl.PlayerEvent$OnPlaceBlockImpl;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BlockItem.class)
-public abstract class MixinBlockItem {
+public abstract class MixinBlockItem$PlayerEvent$OnPlaceBlock {
 
     @Shadow
     public abstract Block getBlock();
@@ -37,8 +35,10 @@ public abstract class MixinBlockItem {
         BlockPos mcPos = itemPlacementContext_1.getBlockPos();
         Vec3d pos = new Vec3d(mcPos.getX(), mcPos.getY(), mcPos.getZ());
 
-        org.kilocraft.essentials.api.world.worldimpl.BlockImpl block = new BlockImpl(new WorldImpl(itemPlacementContext_1.getWorld()), getPlacementState(itemPlacementContext_1), pos);
-        OnPlayerPlaceBlockEventImpl e = KiloServer.getServer().triggerEvent(new OnPlayerPlaceBlockEventImpl(itemPlacementContext_1, player, block));
+//        org.kilocraft.essentials.api.world.worldimpl.BlockImpl block = new BlockImpl(new WorldImpl(itemPlacementContext_1.getWorld()), getPlacementState(itemPlacementContext_1), pos);
+        PlayerEvent$OnPlaceBlockImpl e = KiloServer.getServer().triggerEvent(
+                new PlayerEvent$OnPlaceBlockImpl(itemPlacementContext_1, player, getBlock()
+                ));
 
         if (e.isCancelled()) {
             player.world.setBlockState(itemPlacementContext_1.getBlockPos(), Blocks.AIR.getDefaultState()); // This might be bad, not sure

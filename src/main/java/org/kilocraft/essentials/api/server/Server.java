@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.api.server;
 
+import net.minecraft.entity.player.PlayerEntity;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.api.entity.Player;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.world.World;
@@ -38,7 +38,7 @@ public interface Server {
      *
      * @return online players in the Server
      */
-    Collection<Player> getPlayerList();
+    Collection<PlayerEntity> getPlayerList();
 
     /**
      * Gets all worlds in this Server
@@ -76,7 +76,7 @@ public interface Server {
      * @param playerName Name of the player to get
      * @return the player instance
      */
-    Optional<Player> getPlayerByName(String playerName);
+    Optional<PlayerEntity> getPlayerByName(String playerName);
 
     /**
      * Execute a console command

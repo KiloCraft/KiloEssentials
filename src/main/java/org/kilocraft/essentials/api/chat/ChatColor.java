@@ -98,7 +98,7 @@ public enum ChatColor {
      */
     ITALIC('o', 0x14, Formatting.ITALIC,true),
     /**
-     * Resets all previous chat colors or formats.
+     * Resets all previous events colors or formats.
      */
     RESET('r', 0x15, Formatting.RESET);
 

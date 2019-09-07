@@ -1,28 +1,26 @@
 package org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
-import org.kilocraft.essentials.api.event.playerEvents.OnPlayerConnectEvent;
-
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnConnect;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class OnPlayerConnectEventImpl implements org.kilocraft.essentials.api.event.playerEvents.OnPlayerConnectEvent {
+public class PlayerEvent$OnConnectImpl implements PlayerEvent$OnConnect {
 
     private String cancelReason = "Disconnected";
 
     private ClientConnection connection;
-    private PlayerEntity player;
+    private ServerPlayerEntity player;
     private boolean isCancelled = false;
 
-    public OnPlayerConnectEventImpl(ClientConnection connection, ServerPlayerEntity playerEntity) {
+    public PlayerEvent$OnConnectImpl(ClientConnection connection, ServerPlayerEntity playerEntity) {
         this.connection = connection;
         this.player = playerEntity;
     }
 
-    public PlayerEntity getPlayer() {
+    public ServerPlayerEntity getPlayer() {
         return player;
     }
 

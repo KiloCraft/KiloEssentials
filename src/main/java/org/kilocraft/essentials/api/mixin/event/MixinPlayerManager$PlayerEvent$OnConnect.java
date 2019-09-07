@@ -6,7 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl.OnPlayerConnectEventImpl;
+import org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl.PlayerEvent$OnConnectImpl;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,8 +18,8 @@ public abstract class MixinPlayerManager$PlayerEvent$OnConnect {
 
     @Inject(at = @At("HEAD"), method = "onPlayerConnect", cancellable = true)
     private void oky$onPlayerConnect(ClientConnection connection, ServerPlayerEntity playerEntity, CallbackInfo ci) {
-        OnPlayerConnectEventImpl e = KiloServer.getServer().triggerEvent(
-                new OnPlayerConnectEventImpl(
+        PlayerEvent$OnConnectImpl e = KiloServer.getServer().triggerEvent(
+                new PlayerEvent$OnConnectImpl(
                         connection,
                         playerEntity
                 )

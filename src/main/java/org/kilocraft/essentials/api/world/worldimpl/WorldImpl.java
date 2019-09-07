@@ -2,9 +2,9 @@ package org.kilocraft.essentials.api.world.worldimpl;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.world.Block;
 import org.kilocraft.essentials.api.world.World;
-import org.kilocraft.essentials.api.math.Vec3d;
 
 import java.util.Optional;
 

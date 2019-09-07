@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api.event;
 
-import org.kilocraft.essentials.api.math.Vec3d;
+import net.minecraft.util.math.Vec3d;
 
 public interface Locatable extends Event {
 

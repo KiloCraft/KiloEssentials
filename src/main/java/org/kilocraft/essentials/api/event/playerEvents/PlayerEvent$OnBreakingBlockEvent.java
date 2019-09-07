@@ -5,7 +5,7 @@ import net.minecraft.block.BlockState;
 import org.kilocraft.essentials.api.event.Cancellable;
 import org.kilocraft.essentials.api.event.Locatable;
 
-public interface OnPlayerBreakingBlockEvent extends PlayerEvent, Cancellable, Locatable {
+public interface PlayerEvent$OnBreakingBlockEvent extends PlayerEvent, Cancellable, Locatable {
 
     /**
      * Gets the block that has been broken

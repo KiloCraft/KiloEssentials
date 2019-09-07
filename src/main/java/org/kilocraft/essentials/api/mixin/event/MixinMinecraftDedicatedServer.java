@@ -4,7 +4,7 @@ package org.kilocraft.essentials.api.mixin.event;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.event.eventImpl.ReadyEventImpl;
+import org.kilocraft.essentials.api.event.eventImpl.serverEventsImpl.ServerEvent$OnReadyImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,8 +21,8 @@ public abstract class MixinMinecraftDedicatedServer {
 
         @Inject(at = @At(value = "INVOKE", target = "net.minecraft.util.SystemUtil.getMeasuringTimeNano()J", ordinal = 1), method = "setupServer")
         private void oky$setupServer$ready(CallbackInfoReturnable<Boolean> cir) {
-            LOGGER.info("KiloAPI: Triggered ReadyEvent");
-            KiloServer.getServer().triggerEvent(new ReadyEventImpl());
+            LOGGER.info("KiloAPI: Triggered ServerEvent$OnReady");
+            KiloServer.getServer().triggerEvent(new ServerEvent$OnReadyImpl());
         }
 
 }

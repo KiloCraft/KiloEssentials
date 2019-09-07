@@ -5,7 +5,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl.OnPlayerBreakingBlockImpl;
+import org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl.PlayerEvent$OnBreakingBlockImpl;
 import org.kilocraft.essentials.api.server.Server;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public abstract class MixinServerPlayerNetworkHandler$PlayerEvent$OnBlockBroken {
+public abstract class MixinServerPlayerNetworkHandler$PlayerEvent$OnBreakingBlock {
 
     @Shadow
     public ServerPlayerEntity player;
@@ -29,7 +29,7 @@ public abstract class MixinServerPlayerNetworkHandler$PlayerEvent$OnBlockBroken 
         if (!s.isMainThread())
             return;
 
-        OnPlayerBreakingBlockImpl e = s.triggerEvent(new OnPlayerBreakingBlockImpl(playerActionC2SPacket_1, player));
+        PlayerEvent$OnBreakingBlockImpl e = s.triggerEvent(new PlayerEvent$OnBreakingBlockImpl(playerActionC2SPacket_1, player));
         if (e.isCancelled()) {
             this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(player.world, playerActionC2SPacket_1.getPos()));
             ci.cancel();

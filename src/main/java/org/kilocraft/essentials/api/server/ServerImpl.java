@@ -1,10 +1,9 @@
 package org.kilocraft.essentials.api.server;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.api.entity.Player;
-import org.kilocraft.essentials.api.entity.entityImpl.PlayerImpl;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
@@ -35,7 +34,7 @@ public class ServerImpl implements Server {
 
     @Override
     public String getVersion() {
-        return server.getName();
+        return server.getVersion();
     }
 
     @Override
@@ -44,11 +43,11 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public Collection<Player> getPlayerList() {
-        Set<Player> players = new HashSet<>();
+    public Collection<PlayerEntity> getPlayerList() {
+        Set<PlayerEntity> players = new HashSet<>();
 
         server.getPlayerManager().getPlayerList().forEach(e ->
-                players.add(new PlayerImpl(e))
+                players.add(e)
         );
 
         return players;
@@ -78,12 +77,12 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public Optional<Player> getPlayerByName(String playerName) {
+    public Optional<PlayerEntity> getPlayerByName(String playerName) {
         ServerPlayerEntity e = server.getPlayerManager().getPlayer(playerName);
         if (e == null)
             return Optional.empty();
 
-        return Optional.of(new PlayerImpl(e));
+        return Optional.of(e);
     }
 
     @Override

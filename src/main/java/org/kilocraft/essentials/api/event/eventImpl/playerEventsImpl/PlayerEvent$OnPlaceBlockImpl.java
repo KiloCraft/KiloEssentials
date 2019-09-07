@@ -1,30 +1,28 @@
 package org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import org.kilocraft.essentials.api.entity.entityImpl.PlayerImpl;
-import org.kilocraft.essentials.api.event.playerEvents.OnPlayerPlaceBlockEvent;
-import org.kilocraft.essentials.api.math.Vec3d;
-import org.kilocraft.essentials.api.world.Block;
+import net.minecraft.util.math.Vec3d;
+import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnPlaceBlock;
 
-public class OnPlayerPlaceBlockEventImpl implements OnPlayerPlaceBlockEvent {
+public class PlayerEvent$OnPlaceBlockImpl implements PlayerEvent$OnPlaceBlock {
 
-    private final PlayerImpl player;
+    private final ServerPlayerEntity player;
     private final ItemUsageContext context;
     private final Block block;
 
 
     private boolean isCancelled;
 
-    public OnPlayerPlaceBlockEventImpl(ItemUsageContext itemUsageContext_1, PlayerEntity player, Block block) {
+    public PlayerEvent$OnPlaceBlockImpl(ItemUsageContext itemUsageContext_1, ServerPlayerEntity player, Block block) {
         this.context = itemUsageContext_1;
-        this.player = new PlayerImpl((ServerPlayerEntity) player);
+        this.player = player;
         this.block = block;
     }
 
-    public PlayerImpl getPlayer() {
+    public ServerPlayerEntity getPlayer() {
         return player;
     }
 

@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.api.world;
 
 import net.minecraft.block.Blocks;
-import org.kilocraft.essentials.api.math.Vec3d;
+import net.minecraft.util.math.Vec3d;
 
 public interface World {
     /**

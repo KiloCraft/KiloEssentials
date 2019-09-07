@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.api.world.worldimpl;
 
 import net.minecraft.block.BlockState;
-import org.kilocraft.essentials.api.math.Vec3d;
+import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.world.Block;
 import org.kilocraft.essentials.api.world.World;
 

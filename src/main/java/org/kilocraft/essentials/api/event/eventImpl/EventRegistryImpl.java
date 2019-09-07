@@ -32,13 +32,15 @@ public class EventRegistryImpl implements EventRegistry {
                 String eventKey = genericType.getTypeName().replace("class ", "");
 
                 if (!handlers.containsKey(eventKey)) {
-                    logger.debug("Creating event " + eventKey);
                     handlers.put(eventKey, new ArrayList<>());
                 }
 
-                logger.debug("Registering event class " + eventClass.getClass().getName() + " for event " + eventKey);
+                logger.debug("KiloAPI: Registering event class " + eventClass.getClass().getName() + " for event " + eventKey);
                 handlers.get(eventKey).add(eventClass);
             }
+
+            logger.debug("KiloAPI: Successfully registered the events!");
+            logger.debug(handlers.toString());
         }
     }
 

@@ -7,7 +7,7 @@ public interface MessagedEvent {
     /**
      * Gets the message that has been sent
      *
-     * @return The chat message
+     * @return The events message
      */
     LiteralText getMessage();
 

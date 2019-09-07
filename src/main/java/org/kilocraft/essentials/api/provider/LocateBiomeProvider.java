@@ -22,11 +22,11 @@ public class LocateBiomeProvider {
     private static Text sendSuccessFeedback(ServerCommandSource source, String biomeName , BlockPos finalBiomePos, BlockPos sourcePos) {
         LiteralText literalText;
         int dist = MathHelper.floor(getDistance(sourcePos.getX(), sourcePos.getZ(), finalBiomePos.getX(), finalBiomePos.getZ()));
-        Text coords = Texts.bracketed(new TranslatableText("chat.coordinates", finalBiomePos.getX(), "~", finalBiomePos.getZ()))
+        Text coords = Texts.bracketed(new TranslatableText("events.coordinates", finalBiomePos.getX(), "~", finalBiomePos.getZ()))
                 .setStyle(new Style()
                         .setColor(Formatting.GREEN)
                         .setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + finalBiomePos.getX() + " ~ " + finalBiomePos.getZ()))
-                        .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip"))));
+                        .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("events.coordinates.tooltip"))));
 
         source.sendFeedback(new TranslatableText("commands.locate.success", biomeName, coords, dist), false);
         return coords;
