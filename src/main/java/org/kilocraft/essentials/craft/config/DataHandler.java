@@ -1,32 +1,56 @@
 package org.kilocraft.essentials.craft.config;
 
-import org.kilocraft.essentials.api.config.ConfigFile;
+import blue.endless.jankson.JsonArray;
+import blue.endless.jankson.JsonPrimitive;
+import io.github.indicode.fabric.tinyconfig.DefaultedJsonArray;
+import io.github.indicode.fabric.tinyconfig.ModConfig;
+import net.fabricmc.loader.FabricLoader;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.api.Mod;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.*;
 
 public class DataHandler {
-    public static ArrayList<String> dataFiles = new ArrayList<String>(){{
-        add("CachedData.json");
-        add("onFlymode.json");
-        add("onVanishmode.json");
-        add("onGodmode.json");
-        add("onStaffchat.json");
-    }};
+    public enum DataType {
+        FLYING, VANISH, GODMODE, STAFFCHAT
+    }
+    public static final ModConfig CONFIG = new ModConfig(null) {
+        @Override
+        public File getConfigFile() {
+            return new File(FabricLoader.INSTANCE.getGameDirectory() + "/KiloCraft/DataFiles.json5");
+        }
+    };
+    private static Map<DataType, List<UUID>> DATA_MAP = new HashMap<>();
+    public static void handle(boolean overwrite) {
+        CONFIG.configure(overwrite, config -> Arrays.stream(DataType.values()).forEach(type -> {
+                JsonArray array = config.getArray(type.name().toLowerCase(), () -> {
+                    DefaultedJsonArray defaultArray = new DefaultedJsonArray();
+                    if (DATA_MAP.containsKey(type)) {
+                        DATA_MAP.get(type).forEach(uuid -> defaultArray.add(new JsonPrimitive(uuid.toString())));
+                    }
+                    return defaultArray;
+                });
+                if (!DATA_MAP.containsKey(type)) DATA_MAP.put(type, new ArrayList<>());
+                List<UUID> playerList = DATA_MAP.get(type);
+                array.forEach(element -> {
+                    playerList.add(UUID.fromString(((JsonPrimitive)element).asString()));
+                });
+            })
+        );
 
-    public static void handle() {
-
-        dataFiles.forEach((file) -> new ConfigFile(
-                file,
-                "^KiloEssentials^Data".replace("^", File.separator),
-                "DataFiles",
-                false,
-                false
-        ));
-
-        KiloEssentials.getLogger.info(String.format(Mod.getLang().getProperty("datahandler.load.successfull"), dataFiles.size()));
-        KiloEssentials.getLogger.info(dataFiles.toString());
+        KiloEssentials.getLogger.info(String.format(Mod.getLang().getProperty("datahandler.load.successfull"), DataType.values().length));
+        KiloEssentials.getLogger.info(DataType.values().toString());
+    }
+    public static void setActive(UUID player, DataType type,  boolean active) {
+        if (!DATA_MAP.containsKey(type)) DATA_MAP.put(type, new ArrayList<>());
+        List<UUID> playerList = DATA_MAP.get(type);
+        playerList.remove(player);
+        if (active) playerList.add(player);
+    }
+    public static boolean isActive(UUID player, DataType type) {
+        if (!DATA_MAP.containsKey(type)) DATA_MAP.put(type, new ArrayList<>());
+        List<UUID> playerList = DATA_MAP.get(type);
+        return playerList.contains(player);
     }
 }
