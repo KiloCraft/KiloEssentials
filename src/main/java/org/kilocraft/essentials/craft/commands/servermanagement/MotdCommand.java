@@ -9,6 +9,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
 
 public class MotdCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -21,6 +22,7 @@ public class MotdCommand {
 			String text = context.getArgument("text", String.class);
 			context.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.success", text), false);
 			context.getSource().getMinecraftServer().setMotd(text);
+			context.getSource().getMinecraftServer().getServerMetadata().setDescription(new LiteralText(text));
 			return 0;
 		}).build();
 
