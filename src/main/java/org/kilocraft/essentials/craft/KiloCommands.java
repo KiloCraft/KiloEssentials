@@ -7,6 +7,7 @@ import net.minecraft.server.command.TestCommand;
 import org.kilocraft.essentials.craft.commands.*;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.donatorcommands.PlayerParticlesCommand;
+import org.kilocraft.essentials.craft.commands.servermanagement.MotdCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
 
@@ -26,6 +27,7 @@ public class KiloCommands {
         ReloadCommand.register(dispatcher);
         RankCommand.register(dispatcher);
         ServerModNameCommand.register(dispatcher);
+        MotdCommand.register(dispatcher);
         
         // Donators
         PlayerParticlesCommand.register(dispatcher);
