@@ -54,7 +54,7 @@ public class ConfigFile {
         try {
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileToCopyFrom);
             Files.copy(inputStream, Paths.get(cfg.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             Mod.getLogger().error(Mod.getLang().getProperty("cfghandler.generate.copy.failed"));
             Mod.getLogger().error("An unexpected error occured during getting the config file \"{}\"\n Caused by: \"{}\"\n" +
                     "Restarting the servermanagement might help you to resolve this issue.", cfg.getName(), e.getCause());

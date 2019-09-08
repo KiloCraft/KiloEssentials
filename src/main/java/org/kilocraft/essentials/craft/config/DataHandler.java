@@ -18,7 +18,7 @@ public class DataHandler {
     public static final ModConfig CONFIG = new ModConfig(null) {
         @Override
         public File getConfigFile() {
-            return new File(FabricLoader.INSTANCE.getGameDirectory() + "/KiloCraft/DataFiles.json5");
+            return new File(FabricLoader.INSTANCE.getGameDirectory() + "/KiloEssentials/data.json5");
         }
     };
     private static Map<DataType, List<UUID>> DATA_MAP = new HashMap<>();
