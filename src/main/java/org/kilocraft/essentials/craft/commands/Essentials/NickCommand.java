@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.Essentials;
+package org.kilocraft.essentials.craft.commands.essentials;
 
 import org.kilocraft.essentials.api.chat.LangText;
 import com.mojang.brigadier.CommandDispatcher;

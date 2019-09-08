@@ -5,7 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.command.TestCommand;
 import org.kilocraft.essentials.craft.commands.*;
-import org.kilocraft.essentials.craft.commands.Essentials.*;
+import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.donatorcommands.PlayerParticlesCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
