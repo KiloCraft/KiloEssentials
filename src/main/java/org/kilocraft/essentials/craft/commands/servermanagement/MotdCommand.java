@@ -3,6 +3,8 @@ package org.kilocraft.essentials.craft.commands.servermanagement;
 import org.kilocraft.essentials.api.chat.LangText;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import net.minecraft.server.command.CommandManager;
@@ -15,7 +17,7 @@ public class MotdCommand {
 			return 1;
 		}).build();
 
-		LiteralCommandNode<ServerCommandSource> textNode = CommandManager.literal("text").executes((context) -> {
+		ArgumentCommandNode<ServerCommandSource, String> textNode = CommandManager.argument("text", StringArgumentType.string()).executes((context) -> {
 			String text = context.getArgument("text", String.class);
 			context.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.success", text), false);
 			context.getSource().getMinecraftServer().setMotd(text);
