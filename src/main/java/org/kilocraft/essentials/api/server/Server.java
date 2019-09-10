@@ -1,9 +1,11 @@
 package org.kilocraft.essentials.api.server;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
+import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.world.World;
 
 import java.util.Collection;
@@ -11,6 +13,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface Server {
+
+    /**
+     *  Gets the Minecraft Server
+     *
+     * @return instance of MinecraftServer
+     */
+    MinecraftServer getVanillaServer();
 
     /**
      * Gets the Server name
@@ -60,6 +69,20 @@ public interface Server {
      * @param e event to register
      */
     void registerEvent(EventHandler e);
+
+    /**
+     * Gets the EventRegistry
+     *
+     * @return eventRegistry
+     */
+    EventRegistry getEventRegistry();
+
+    /**
+     * Registers a command
+     *
+     * @param dispatcher command source dispatcher to register
+     */
+    //void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher);
 
     /**
      * Triggers an event

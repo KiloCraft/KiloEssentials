@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl;
 
 import net.minecraft.network.ClientConnection;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnConnect;
 
@@ -49,4 +50,8 @@ public class PlayerEvent$OnConnectImpl implements PlayerEvent$OnConnect {
         return ((InetSocketAddress) connection.getAddress()).getAddress();
     }
 
+    @Override
+    public MinecraftServer getServer() {
+        return player.getServer();
+    }
 }

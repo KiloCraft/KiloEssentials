@@ -4,6 +4,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.ServerCommandOutput;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.Mod;
+import org.kilocraft.essentials.api.command.CommandRegistry;
 import org.kilocraft.essentials.api.event.eventImpl.EventRegistryImpl;
 import org.kilocraft.essentials.api.server.ServerImpl;
 import org.spongepowered.asm.mixin.Mixin;

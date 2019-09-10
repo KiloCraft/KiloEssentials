@@ -9,6 +9,7 @@
     "MixinMinecraftDedicatedServer",
     "MixinMinecraftServer$OnStop",
     "MixinPlayerManager$PlayerEvent$OnConnect",
+    "MixinServerPlayerNetworkHandler$PlayerEvent$OnDisconnect",
     "MixinServerPlayerNetworkHandler$PlayerEvent$OnBreakingBlock"
   ],
   "injectors": {

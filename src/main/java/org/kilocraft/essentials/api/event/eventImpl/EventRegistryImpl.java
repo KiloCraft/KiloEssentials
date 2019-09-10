@@ -56,4 +56,9 @@ public class EventRegistryImpl implements EventRegistry {
         return e;
     }
 
+    @Override
+    public Map getHandlers() {
+        return handlers;
+    }
+
 }

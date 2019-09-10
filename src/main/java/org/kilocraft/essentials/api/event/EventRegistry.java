@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.api.event;
 
+import java.util.Map;
+
 /**
  * This is the global event registry class.
  *
@@ -24,5 +26,7 @@ public interface EventRegistry {
      * @return The modified event
      */
     <E extends Event> E trigger(E e);
+
+    Map getHandlers();
 
 }
