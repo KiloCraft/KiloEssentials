@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.craft;
 
 import com.mojang.brigadier.CommandDispatcher;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.command.TestCommand;
 import org.kilocraft.essentials.api.commands.KiloAPICommands;
@@ -12,6 +13,7 @@ public class KiloCommands {
     private static CommandDispatcher<ServerCommandSource> dispatcher;
     public KiloCommands(boolean dev) {
         dispatcher = SomeGlobals.commandDispatcher;
+        // Thimble.registerDispatcherCommands(dispatcher); uncomment when we have a custom dispatcher
         register(dev);
     }
 

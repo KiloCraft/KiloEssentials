@@ -30,7 +30,7 @@ dependencies {
 
 	modImplementation "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
 	modImplementation "io.github.indicode.fabric:thimble-permissions:${project.thimble_permissions_version}"
-	
+
 }
 
 processResources {
