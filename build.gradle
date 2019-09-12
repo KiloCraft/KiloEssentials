@@ -15,6 +15,7 @@ minecraft {
 repositories {
 	maven { url 'https://jitpack.io' }
 	maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
+	flatDir { dir "libs" }
 }
 dependencies {
 	//to change the versions see the gradle.properties file
@@ -26,10 +27,12 @@ dependencies {
 	compile group: 'mysql', name: 'mysql-connector-java', version: "${project.jdbc_sql_version}"
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	//modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+
 	modImplementation "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
-	//modImplementation "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
-	
+	modImplementation "io.github.indicode.fabric:thimble-permissions:${project.thimble_permissions_version}"
+	modCompile "net.fabricmc.fabric-api:fabric-api-base:${project.fabric_api_base_version}"
+	modCompile "net.fabricmc.fabric-api:fabric-commands-v0:${project.fabric_commands_version}"
+
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 }
