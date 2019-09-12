@@ -30,8 +30,6 @@ dependencies {
 
 	modImplementation "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
 	modImplementation "io.github.indicode.fabric:thimble-permissions:${project.thimble_permissions_version}"
-	modCompile "net.fabricmc.fabric-api:fabric-api-base:${project.fabric_api_base_version}"
-	modCompile "net.fabricmc.fabric-api:fabric-commands-v0:${project.fabric_commands_version}"
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
