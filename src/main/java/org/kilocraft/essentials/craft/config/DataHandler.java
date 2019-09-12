@@ -18,7 +18,7 @@ public class DataHandler {
     public static final ModConfig CONFIG = new ModConfig(null) {
         @Override
         public File getConfigFile() {
-            return new File(FabricLoader.INSTANCE.getGameDirectory() + "/KiloEssentials/data.json5");
+            return new File(FabricLoader.INSTANCE.getGameDirectory() + "/KiloEssentials/cache/players.json5");
         }
     };
     private static Map<DataType, List<UUID>> DATA_MAP = new HashMap<>();
@@ -40,7 +40,6 @@ public class DataHandler {
         );
 
         KiloEssentials.getLogger.info(String.format(Mod.getLang().getProperty("datahandler.load.successfull"), DataType.values().length));
-        KiloEssentials.getLogger.info(DataType.values().toString());
     }
     public static void setActive(UUID player, DataType type,  boolean active) {
         if (!DATA_MAP.containsKey(type)) DATA_MAP.put(type, new ArrayList<>());

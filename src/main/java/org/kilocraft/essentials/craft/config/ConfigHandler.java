@@ -15,6 +15,7 @@ public class ConfigHandler {
     private static String configPath = "^KiloEssentials^config^".replace("^", File.separator);
     public static void handle() {
 
+        System.out.println("CONFIG: " + Configs.GENERAL.getFile().getAbsolutePath());
         configFiles.forEach((config) -> new ConfigFile(
                 config,
                 "^KiloEssentials^config^".replace("^", File.separator),
@@ -22,6 +23,7 @@ public class ConfigHandler {
                 false,
                 true
         ));
+
 
     }
 }

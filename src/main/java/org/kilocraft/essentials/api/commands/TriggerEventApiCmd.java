@@ -3,8 +3,10 @@ package org.kilocraft.essentials.api.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
@@ -12,33 +14,30 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 
 import java.util.List;
+import java.util.Map;
 
 public class TriggerEventApiCmd {
+    private static Map handlers = KiloServer.getServer().getEventRegistry().getHandlers();
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("kiloserver").then(
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("kapi").then(
                 CommandManager.literal("triggerEvent")
-                        .requires(source -> source.hasPermissionLevel(4))
+                    .then(CommandManager.argument("group", StringArgumentType.string()).then(
+                            CommandManager.argument("event", StringArgumentType.string()).then(
+                                CommandManager.argument("player", EntityArgumentType.player())
+                            )
+                    ))
         );
 
-        argumentBuilder.then(CommandManager.argument("event", StringArgumentType.string())
-                .then(CommandManager.argument("FakeServerPlayerEntity", StringArgumentType.string()))
-                .then(CommandManager.argument("setMessage", StringArgumentType.greedyString())
-                    .executes(context -> execute(context.getSource(),
-                            StringArgumentType.getString(context, "event"),
-                            StringArgumentType.getString(context, "FakeServerPlayerEntity"),
-                            StringArgumentType.getString(context, "setMessage")))
-                )
-        );
-
-
+        buildSuggestion(argumentBuilder);
         dispatcher.register(argumentBuilder);
     }
 
-    private static int execute(ServerCommandSource source, String event, String player, String message) {
-        LiteralText literalText = new LiteralText(String.format("Triggering \"%s\" (playerEntity: %s, message: %s)", event, player, message));
-        source.sendFeedback(literalText.setStyle(new Style().setColor(Formatting.GRAY).setItalic(true)), false);
+    private static int execute(ServerCommandSource source, String event, ServerPlayerEntity player, String message) {
+        LiteralText literalText = new LiteralText(String.format("Triggering the event (playerEntity: %s, message: %s)", event, player.getName(), message));
+        source.sendFeedback(literalText.formatted(Formatting.GRAY, Formatting.ITALIC), false);
 
-        Class<?> eventClass = null;
+        Class<?> eventClass;
 
         try {
             eventClass = Class.forName(event);
@@ -57,7 +56,10 @@ public class TriggerEventApiCmd {
         return 1;
     }
 
-    private static void buildSuggestion() {
+    private static void buildSuggestion(LiteralArgumentBuilder argumentBuilder) {
+        handlers.forEach((name, event) -> {
+
+        });
 
     }
 }
