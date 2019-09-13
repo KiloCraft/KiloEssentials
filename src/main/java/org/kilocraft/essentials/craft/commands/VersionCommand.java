@@ -17,8 +17,7 @@ public class VersionCommand {
 
         List<String> list = new ArrayList<String>(){{
             add("version");
-            add("info");
-            add("kiloessentials");
+            add("kiloversion");
         }};
 
         list.forEach((name) -> dispatcher.register(
