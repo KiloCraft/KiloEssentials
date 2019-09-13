@@ -25,8 +25,6 @@ dependencies {
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 	compile group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_yaml_version}"
 	compile group: 'mysql', name: 'mysql-connector-java', version: "${project.jdbc_sql_version}"
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	//modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
 	modImplementation "io.github.indicode.fabric:thimble-permissions:${project.thimble_permissions_version}"

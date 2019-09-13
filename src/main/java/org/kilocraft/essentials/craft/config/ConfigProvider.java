@@ -14,7 +14,6 @@ public class ConfigProvider {
             switch (file[i].getName()) {
                 case "General.yml":
                     config$General = FileConfig.of(file[i]);
-                    config$General.load();
                 case "Messages.yml":
                     config$Messages = FileConfig.of(file[i]);
                 case "Ranks.yml":
@@ -24,25 +23,25 @@ public class ConfigProvider {
         }
     }
 
-    public static void loadAll() {
+    protected static void loadAll() {
         config$General.load();
         config$Messages.load();
         config$Ranks.load();
     }
 
-    public static void saveAll() {
+    protected static void saveAll() {
         config$General.save();
         config$Messages.save();
         config$Ranks.save();
     }
 
-    public static void closeAll() {
+    protected static void closeAll() {
         config$General.close();
         config$Messages.close();
         config$Ranks.close();
     }
 
-    public static void reloadAll() {
+    protected static void reloadAll() {
         closeAll();
         loadAll();
     }
