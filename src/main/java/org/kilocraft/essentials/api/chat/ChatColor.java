@@ -262,15 +262,11 @@ public enum ChatColor {
 
     public static String removeAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
-        char[] b = textToTranslate.toCharArray();
-        for (int i = 0; i < b.length -1; i++) {
-            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
-                b[i] = ChatColor.COLOR_CHAR;
-                b[i+1] = Character.toLowerCase(b[i+1]);
-            }
+        for (char c : "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".toCharArray()) {
+            textToTranslate = textToTranslate.replace(String.valueOf(ChatColor.COLOR_CHAR) + c, "");
+            textToTranslate = textToTranslate.replace(String.valueOf(altColorChar) + c, "");
         }
-
-        return new String(b);
+        return textToTranslate;
     }
 
     public static LiteralText removeAlternateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
