@@ -1,13 +1,14 @@
 package org.kilocraft.essentials.api.chat;
 
 import com.google.common.collect.Maps;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.util.CommandSender;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -102,6 +103,13 @@ public enum ChatColor {
      */
     RESET('r', 0x15, Formatting.RESET);
 
+    private static String[] list() {
+        return new String[] {
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
+                "a", "b", "c", "d", "e", "f", "i", "k", "l", "m", "o", "r"
+        };
+    }
+
     public static final char COLOR_CHAR = '\u00A7';
     private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf(COLOR_CHAR) + "[0-9A-FK-OR]");
 
@@ -133,6 +141,10 @@ public enum ChatColor {
      */
     public char getChar() {
         return code;
+    }
+
+    public String[] getList() {
+        return list();
     }
 
     public Formatting getFormattingByChar(char code) {
@@ -239,9 +251,9 @@ public enum ChatColor {
 
         for (int i = 0; i < b.length -1; i++) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
-
+                b[i] = ChatColor.COLOR_CHAR;
+                b[i+1] = Character.toLowerCase(b[i+1]);
             }
-
         }
 
         return literalText;
@@ -249,9 +261,35 @@ public enum ChatColor {
 
 
     public static String removeAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
-        Validate.notNull(textToTranslate, "Cannot remove color codes from null text");
+        Validate.notNull(textToTranslate, "Cannot translate null text");
+        char[] b = textToTranslate.toCharArray();
+        for (int i = 0; i < b.length -1; i++) {
+            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
+                b[i] = ChatColor.COLOR_CHAR;
+                b[i+1] = Character.toLowerCase(b[i+1]);
+            }
+        }
 
-        return textToTranslate.replaceAll(String.valueOf(altColorChar), "");
+        return new String(b);
+    }
+
+    public static LiteralText removeAlternateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
+        return new LiteralText(removeAlternateColorCodes(altColorChar, textToTranslate));
+    }
+
+    public static void sendToUniversalSource(ServerCommandSource source, String text, boolean log) {
+        LiteralText literalText;
+        if (CommandSender.isConsole(source)) {
+            literalText = new LiteralText(removeAlternateColorCodes('&', text));
+        } else {
+            literalText = new LiteralText(translateAlternateColorCodes('&', text));
+        }
+
+        source.sendFeedback(literalText, log);
+    }
+
+    public static void sendToUniversalSource(ServerCommandSource source, LiteralText text, boolean log) {
+        sendToUniversalSource(source, text.asString(), log);
     }
 
     /**

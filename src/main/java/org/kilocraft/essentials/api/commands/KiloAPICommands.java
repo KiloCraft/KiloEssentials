@@ -8,6 +8,7 @@ public class KiloAPICommands {
 
         TpsCommand.register(dispatcher);
         ModsCommand.register(dispatcher);
-        TriggerEventApiCmd.register(dispatcher);
+
+//        TriggerEventApiCmd.register(dispatcher);
     }
 }

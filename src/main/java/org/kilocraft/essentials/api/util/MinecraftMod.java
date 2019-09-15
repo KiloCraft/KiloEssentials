@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.api.util;
 
 import com.google.gson.JsonElement;
-import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.metadata.*;

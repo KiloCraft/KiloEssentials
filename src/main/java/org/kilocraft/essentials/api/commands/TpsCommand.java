@@ -12,9 +12,9 @@ import org.kilocraft.essentials.api.util.SomeGlobals;
 
 public class TpsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
-                CommandManager.literal("tps").requires(source -> KiloPerms.testFor(source, "kiloapi.command.tps"))
-                    .executes(TpsCommand::run)
+        dispatcher.register(CommandManager.literal("tps")
+                .requires(source -> KiloPerms.testFor(source, "kiloapi.command.tps"))
+                .executes(TpsCommand::run)
         );
     }
 

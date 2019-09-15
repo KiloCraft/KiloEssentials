@@ -7,7 +7,8 @@ import java.io.File;
 public enum Configs {
     GENERAL("General"),
     MESSAGES("Messages"),
-    RANKS("Ranks");
+    RANKS("Ranks"),
+    DATABASE("Database");
 
     private final String format = "yml";
     private String name;

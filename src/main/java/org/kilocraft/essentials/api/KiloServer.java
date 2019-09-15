@@ -1,6 +1,8 @@
 package org.kilocraft.essentials.api;
 
+import org.kilocraft.essentials.api.commands.KiloAPICommands;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.util.SomeGlobals;
 
 public class KiloServer{
     private static Server server;
@@ -27,6 +29,8 @@ public class KiloServer{
         if (KiloServer.server != null)
             throw new RuntimeException("Server is already set!");
         else KiloServer.server = server;
+
+        KiloAPICommands.register(SomeGlobals.commandDispatcher);
     }
 
     //PermissionService
