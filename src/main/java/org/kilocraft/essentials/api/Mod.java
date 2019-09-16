@@ -4,7 +4,6 @@ import net.minecraft.MinecraftVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.util.MinecraftMod;
-import org.kilocraft.essentials.craft.KiloCommands;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -18,7 +17,7 @@ public class Mod {
 
     public Mod() {
         try {
-            properties.load(Mod.class.getClassLoader().getResourceAsStream("info.properties"));
+            properties.load(Mod.class.getClassLoader().getResourceAsStream("mod.properties"));
             lang.load(Mod.class.getClassLoader().getResourceAsStream("assets/Lang.properties"));
         } catch (IOException e) {
             e.printStackTrace();

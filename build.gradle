@@ -20,9 +20,11 @@ repositories {
 dependencies {
 	//to change the versions see the gradle.properties file
 	compile group: 'org.jetbrains', name: 'annotations', version: "${project.jetbrains_annotations}"
+
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
+
 	compile group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_yaml_version}"
 	compile group: 'mysql', name: 'mysql-connector-java', version: "${project.jdbc_sql_version}"
 
@@ -35,13 +37,17 @@ processResources {
 	inputs.property "version", project.version
 
 	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json", "info.properties"
-		expand "version": project.version, "fabric_version": project.loader_version,
-				"yarn_version": project.yarn_mappings
+		include "fabric.mod.json"
+		expand "version": project.version
+
+//		include "mod.properties"
+//		expand "mod_version": project.version, "fabric_loader_version": project.loader_version,
+//				"fabric_yarn_mappings": project.yarn_mappings
 	}
 
 	from(sourceSets.main.resources.srcDirs) {
 		exclude "fabric.mod.json"
+//		exclude "mod.properties"
 	}
 }
 

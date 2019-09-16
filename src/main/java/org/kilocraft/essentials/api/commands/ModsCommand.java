@@ -36,9 +36,10 @@ public class ModsCommand {
 
     private static int executeMultiple(CommandContext<ServerCommandSource> context) {
         ArrayList<String> mods = new ArrayList<>();
+        int i = FabricLoader.getInstance().getAllMods().size();
         FabricLoader.getInstance().getAllMods().forEach(modContainer -> mods.add(modContainer.getMetadata().getName()));
 
-        LiteralText text = new LiteralText("&6Mods:&f " + mods.toString());
+        LiteralText text = new LiteralText("&6Mods (" + i + " loaded):&f " + mods.toString().replace("[","").replace("]", ""));
         ChatColor.sendToUniversalSource(context.getSource(), text, false);
         return 1;
     }
@@ -67,7 +68,7 @@ public class ModsCommand {
                         "&6Mod meta:\n&b -info:&a %s &7(%s@%s)\n &b-Description:&f %s\n &b-Authors:&e %s",
                         meta.getName(), meta.getId(), meta.getVersion().toString(),
                         meta.getDescription(),
-                        authors.toString()
+                        authors.toString().replace("[","").replace("]", "")
                 ));
 
             } else {
