@@ -3,17 +3,17 @@ package org.kilocraft.essentials.api.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.api.KiloPerms;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 
 public class TpsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("tps")
-                .requires(source -> KiloPerms.testFor(source, "kiloapi.command.tps"))
+                .requires(source -> Thimble.hasPermissionOrOp(source, "kiloapi.command.tps", 2))
                 .executes(TpsCommand::run)
         );
     }

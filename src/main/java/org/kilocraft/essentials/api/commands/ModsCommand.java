@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -12,7 +13,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.api.KiloPerms;
 import org.kilocraft.essentials.api.chat.ChatColor;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class ModsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("mods")
-                .requires(s -> KiloPerms.testFor(s, "kapi.command.mods"))
+                .requires(s -> Thimble.hasPermissionOrOp(s, "kapi.command.mods", 2))
                 .executes(ModsCommand::executeMultiple);
 
         RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = CommandManager.argument("Mod Name/ID", StringArgumentType.greedyString())
