@@ -1,7 +1,13 @@
+//NOTE: This file is customized only for this project!
+
 plugins {
 	id 'fabric-loom' version '0.2.5-SNAPSHOT'
+	id "com.github.johnrengelman.shadow" version "5.1.0"
 	id 'maven-publish'
 }
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -16,6 +22,12 @@ repositories {
 	maven { url 'https://jitpack.io' }
 	maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
 }
+
+shadowJar {
+	classifier = "shadow"
+	configurations = [project.configurations.shadow]
+}
+
 dependencies {
 	//to change the versions see the gradle.properties file
 	compile group: 'org.jetbrains', name: 'annotations', version: "${project.jetbrains_annotations}"
@@ -24,29 +36,26 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	compile group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_yaml_version}"
-	compile group: 'mysql', name: 'mysql-connector-java', version: "${project.jdbc_sql_version}"
-
 	modImplementation "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
 	modImplementation "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
 
+	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_yaml_version}"
+	shadow group: 'mysql', name: 'mysql-connector-java', version: "${project.jdbc_sql_version}"
+
 }
+
 
 processResources {
 	inputs.property "version", project.version
 
 	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
-		expand "version": project.version
-
-//		include "mod.properties"
-//		expand "mod_version": project.version, "fabric_loader_version": project.loader_version,
-//				"fabric_yarn_mappings": project.yarn_mappings
+		include "fabric.mod.json", "mod.properties"
+		expand "version": project.version, "fabric_loader_version": project.loader_version,
+				"fabric_yarn_mappings": project.yarn_mappings
 	}
 
 	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
-//		exclude "mod.properties"
+		exclude "fabric.mod.json", "mod.properties"
 	}
 }
 

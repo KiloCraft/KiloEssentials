@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "kilo_essentials",
-  "version": "1.0-SNAPSHOT+Build.18",
+  "version": "${version}",
 
   "name": "Kilo Essentials",
   "description": "Server essentials made for fabric",
