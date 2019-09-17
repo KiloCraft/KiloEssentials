@@ -15,7 +15,6 @@ minecraft {
 repositories {
 	maven { url 'https://jitpack.io' }
 	maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
-	flatDir { dir "libs" }
 }
 dependencies {
 	//to change the versions see the gradle.properties file
@@ -29,7 +28,7 @@ dependencies {
 	compile group: 'mysql', name: 'mysql-connector-java', version: "${project.jdbc_sql_version}"
 
 	modImplementation "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
-	modImplementation "io.github.indicode.fabric:thimble-permissions:${project.thimble_permissions_version}"
+	modImplementation "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
 
 }
 
