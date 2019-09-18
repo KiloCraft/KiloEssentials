@@ -22,7 +22,7 @@ import java.util.Optional;
 public class ModsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("mods")
-                .requires(s -> Thimble.hasPermissionOrOp(s, "kapi.command.mods", 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, "kiloapi.command.mods", 2))
                 .executes(ModsCommand::executeMultiple);
 
         RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = CommandManager.argument("Mod Name/ID", StringArgumentType.greedyString())
