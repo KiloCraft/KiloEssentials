@@ -41,6 +41,9 @@ dependencies {
 	modImplementation "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
 	modImplementation "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
 
+	include "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
+	include "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
+
 	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_yaml_version}"
 	shadow group: 'mysql', name: 'mysql-connector-java', version: "${project.jdbc_sql_version}"
 
