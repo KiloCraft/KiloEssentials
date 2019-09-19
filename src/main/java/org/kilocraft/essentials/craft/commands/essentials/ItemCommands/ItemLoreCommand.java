@@ -15,61 +15,65 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.api.chat.ChatColor;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.yaml.snakeyaml.nodes.Tag;
 
 public class ItemLoreCommand {
-    public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("name")
-                .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.lore", 3));
+	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
+		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("lore")
+				.requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.lore", 3));
 
-        LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
-        LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
-        RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = CommandManager.argument("line", IntegerArgumentType.integer(0, 10));
+		LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
+		LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
+		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = CommandManager.argument("line",
+				IntegerArgumentType.integer(0, 10));
+		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = CommandManager
+				.argument("name...", StringArgumentType.greedyString()).executes(context -> {
+					PlayerEntity player = context.getSource().getPlayer();
+					ItemStack item = player.getMainHandStack();
 
-        builder.then(setArgument);
-        builder.then(resetArgument);
-		resetArgument.then(lineArgument);
-        argumentBuilder.then(builder);
+					if (item == null) {
+						context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
+					} else {
+						if (player.experienceLevel < 1 && !player.isCreative()) {
+							context.getSource().sendFeedback(LangText.get(true, "command.rename.noxp"), false);
+						}
 
-        resetArgument.executes(context -> {
-            ItemStack item = context.getSource().getPlayer().getMainHandStack();
-            CompoundTag itemTag = item.getTag();
-            System.out.println(itemTag.getCompound("display").getType("Lore"));
-            //item.gett(new TranslatableText(item.getItem().getTranslationKey()));
+						if (player.isCreative() == false) {
+							player.addExperienceLevels(-1);
+						}
 
-            if (item == null) {
+						item.setCustomName(new LiteralText(ChatColor.translateAlternateColorCodes('&',
+								StringArgumentType.getString(context, "name..."))));
+
+						player.sendMessage(LangText.getFormatter(true, "command.rename.success",
+								StringArgumentType.getString(context, "name...")));
+					}
+
+					return 1;
+				});
+		
+		builder.then(setArgument);
+		builder.then(resetArgument);
+		setArgument.then(nameArgument);
+		nameArgument.then(lineArgument);
+		argumentBuilder.then(builder);
+
+		resetArgument.executes(context -> {
+			ItemStack item = context.getSource().getPlayer().getMainHandStack();
+			CompoundTag itemTag = item.getTag();
+
+			if (item.isEmpty() == true) {
 				context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
 			} else {
-				item.setCustomName(new TranslatableText(item.getItem().getTranslationKey()));
+				if (itemTag == null || !itemTag.containsKey("display")
+						|| !itemTag.getCompound("display").containsKey("Lore")) {
+					context.getSource().sendFeedback(LangText.get(true, "command.rename.nolore"), false);
+				} else {
+					itemTag.getCompound("display").remove("Lore");
+					item.setCustomName(new TranslatableText(item.getItem().getTranslationKey()));
+				}
 			}
-            
-            return 1;
-        });
 
-        setArgument.then(CommandManager.argument("name...", StringArgumentType.greedyString()).executes(context -> {
-            PlayerEntity player = context.getSource().getPlayer();
-            ItemStack item = player.getMainHandStack();
-
-            if (item == null) {
-                context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
-            } else {
-                if (player.experienceLevel < 1 && !player.isCreative()) {
-                    context.getSource().sendFeedback(LangText.get(true, "command.rename.noxp"), false);
-                }
-
-                if (player.isCreative() == false) {
-                    player.addExperienceLevels(-1);
-                }
-
-                item.setCustomName(new LiteralText(
-                        ChatColor.translateAlternateColorCodes('&', StringArgumentType.getString(context, "name..."))
-                ));
-
-                player.sendMessage(LangText.getFormatter(true, "command.rename.success", StringArgumentType.getString(context, "name...")));
-            }
-
-            return 1;
-        }));
-
-    }
+			return 1;
+		});
+	}
 }
