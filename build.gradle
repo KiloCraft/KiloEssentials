@@ -1,13 +1,14 @@
 //NOTE: This file is customized only for this project!
 
 plugins {
+	id 'com.github.johnrengelman.shadow' version '5.1.0'
+	id 'java'
 	id 'fabric-loom' version '0.2.5-SNAPSHOT'
-	id "com.github.johnrengelman.shadow" version "5.1.0"
 	id 'maven-publish'
 }
 
-apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
