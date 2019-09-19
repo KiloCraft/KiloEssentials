@@ -31,11 +31,14 @@ public class ServerCommand {
 
 		ArgumentCommandNode<ServerCommandSource, String> textNode = CommandManager
 				.argument("text", StringArgumentType.string()).executes((context) -> {
+				.argument("text", StringArgumentType.greedyString()).executes((context) -> {
 					String text = context.getArgument("text", String.class);
 					context.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.success", text), false);
 					File properties = new File(context.getSource().getMinecraftServer().getRunDirectory().getPath()
 							+ "/server.properties");
-					Mod.getLogger().debug(properties.getName());
+					//Mod.getLogger().debug(properties.getName());
+					System.out.println("TEST");
+					System.out.println(context.getSource().getMinecraftServer().getRunDirectory().getPath());
 					try {
 						List<String> lines = Files.readAllLines(properties.toPath());
 
