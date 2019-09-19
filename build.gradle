@@ -48,9 +48,12 @@ dependencies {
 
 tasks.jar.archiveClassifier = "compile"
 
-remapJar {
-	classifier = "snapshot"
-	from shadowJar
+//remapJar {
+//	classifier = "snapshot"
+//}
+
+task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
+	from zipTree(shadowJar.archiveFile) dependsOn shadowJar
 }
 
 
