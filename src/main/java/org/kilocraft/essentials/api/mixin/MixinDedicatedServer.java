@@ -10,8 +10,5 @@ import net.minecraft.server.dedicated.DedicatedServer;
 @Mixin(DedicatedServer.class)
 public class MixinDedicatedServer {
 
-	@Inject(at = { @At("HEAD") }, method = { "getMotd" })
-	String getMotd() {
-		return KiloEssentials.motd;
-	}
+
 }

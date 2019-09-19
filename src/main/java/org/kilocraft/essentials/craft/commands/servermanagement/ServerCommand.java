@@ -27,7 +27,7 @@ public class ServerCommand {
 				.argument("text", StringArgumentType.greedyString()).executes((context) -> {
 					String text = context.getArgument("text", String.class);
 					context.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.success", text), false);
-					KiloEssentials.motd = text;
+					//KiloEssentials.motd = text;
 
 					return 0;
 				}).build();
