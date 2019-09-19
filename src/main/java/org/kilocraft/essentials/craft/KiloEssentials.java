@@ -10,6 +10,8 @@ import org.kilocraft.essentials.craft.config.KiloConfig;
 public class KiloEssentials implements DedicatedServerModInitializer {
 	public static Logger getLogger = LogManager.getFormatterLogger();
 
+	private String string;
+
 	@Override
 	public void onInitializeServer() {
 		getLogger.info("Running KiloEssentials version " + Mod.getVersion());

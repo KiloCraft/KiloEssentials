@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.api;
 
-import net.minecraft.MinecraftVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.util.MinecraftMod;
@@ -51,7 +50,7 @@ public class Mod {
     }
 
     public static String getMinecraftVersion() {
-        return MinecraftVersion.create().getName();
+        return "1.15-SNAPSHOT";
     }
 
 
