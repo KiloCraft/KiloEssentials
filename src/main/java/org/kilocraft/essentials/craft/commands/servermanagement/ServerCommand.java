@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.craft.commands.servermanagement;
 
-import java.io.FileWriter;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.craft.KiloEssentials;
 
