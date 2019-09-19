@@ -31,10 +31,10 @@ public class ItemLoreCommand {
 					ItemStack item = player.getMainHandStack();
 
 					if (item == null) {
-						context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
+						context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 					} else {
 						if (player.experienceLevel < 1 && !player.isCreative()) {
-							context.getSource().sendFeedback(LangText.get(true, "command.rename.noxp"), false);
+							context.getSource().sendFeedback(LangText.get(true, "command.item.name.noxp"), false);
 						}
 
 						if (player.isCreative() == false) {
@@ -44,7 +44,7 @@ public class ItemLoreCommand {
 						item.setCustomName(new LiteralText(ChatColor.translateAlternateColorCodes('&',
 								StringArgumentType.getString(context, "name..."))));
 
-						player.sendMessage(LangText.getFormatter(true, "command.rename.success",
+						player.sendMessage(LangText.getFormatter(true, "command.item.lore.success",
 								StringArgumentType.getString(context, "name...")));
 					}
 
@@ -62,14 +62,14 @@ public class ItemLoreCommand {
 			CompoundTag itemTag = item.getTag();
 
 			if (item.isEmpty() == true) {
-				context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
+				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 			} else {
 				if (itemTag == null || !itemTag.containsKey("display")
 						|| !itemTag.getCompound("display").containsKey("Lore")) {
-					context.getSource().sendFeedback(LangText.get(true, "command.rename.nolore"), false);
+					context.getSource().sendFeedback(LangText.get(true, "command.item.lore.nolore"), false);
 				} else {
 					itemTag.getCompound("display").remove("Lore");
-					item.setCustomName(new TranslatableText(item.getItem().getTranslationKey()));
+					context.getSource().sendFeedback(LangText.get(true, "command.item.lore.reset.success"), false);
 				}
 			}
 

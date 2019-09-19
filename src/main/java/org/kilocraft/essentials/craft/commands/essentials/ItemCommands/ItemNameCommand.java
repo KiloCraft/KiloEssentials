@@ -27,10 +27,10 @@ public class ItemNameCommand {
 					ItemStack item = player.getMainHandStack();
 
 					if (item == null) {
-						context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
+						context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 					} else {
 						if (player.experienceLevel < 1 && !player.isCreative()) {
-							context.getSource().sendFeedback(LangText.get(true, "command.rename.noxp"), false);
+							context.getSource().sendFeedback(LangText.get(true, "command.item.name.noxp"), false);
 						}
 
 						if (player.isCreative() == false) {
@@ -40,7 +40,7 @@ public class ItemNameCommand {
 						item.setCustomName(new LiteralText(ChatColor.translateAlternateColorCodes('&',
 								StringArgumentType.getString(context, "name..."))));
 
-						player.sendMessage(LangText.getFormatter(true, "command.rename.success",
+						player.sendMessage(LangText.getFormatter(true, "command.item.name.success",
 								StringArgumentType.getString(context, "name...")));
 					}
 
@@ -55,8 +55,9 @@ public class ItemNameCommand {
 		resetArgument.executes(context -> {
 			ItemStack item = context.getSource().getPlayer().getMainHandStack();
 			if (item.isEmpty() == true) {
-				context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
+				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 			} else {
+				context.getSource().sendFeedback(LangText.get(true, "command.item.name.reset.success"), false);
 				item.setCustomName(new TranslatableText(item.getItem().getTranslationKey()));
 			}
 
