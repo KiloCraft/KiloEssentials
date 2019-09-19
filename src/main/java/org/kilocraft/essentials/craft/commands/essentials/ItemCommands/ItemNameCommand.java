@@ -13,48 +13,52 @@ import org.kilocraft.essentials.api.chat.ChatColor;
 import org.kilocraft.essentials.api.chat.LangText;
 
 public class ItemNameCommand {
-    public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("name")
-                .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.name", 3));
+	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
+		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("name")
+				.requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.name", 3));
 
-        LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
-        LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
+		LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
+		LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
 
-        builder.then(setArgument);
-        builder.then(resetArgument);
-        argumentBuilder.then(builder);
+		builder.then(setArgument);
+		builder.then(resetArgument);
+		argumentBuilder.then(builder);
 
-        resetArgument.executes(context -> {
-            ItemStack item = context.getSource().getPlayer().getMainHandStack();
-            item.setCustomName(new TranslatableText(item.getItem().getTranslationKey()));
+		resetArgument.executes(context -> {
+			ItemStack item = context.getSource().getPlayer().getMainHandStack();
+			if (item == null) {
+				context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
+			} else {
+				item.setCustomName(new TranslatableText(item.getItem().getTranslationKey()));
+			}
 
-            return 1;
-        });
+			return 1;
+		});
 
-        setArgument.then(CommandManager.argument("name...", StringArgumentType.greedyString()).executes(context -> {
-            PlayerEntity player = context.getSource().getPlayer();
-            ItemStack item = player.getMainHandStack();
+		setArgument.then(CommandManager.argument("name...", StringArgumentType.greedyString()).executes(context -> {
+			PlayerEntity player = context.getSource().getPlayer();
+			ItemStack item = player.getMainHandStack();
 
-            if (item == null) {
-                context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
-            } else {
-                if (player.experienceLevel < 1 && !player.isCreative()) {
-                    context.getSource().sendFeedback(LangText.get(true, "command.rename.noxp"), false);
-                }
+			if (item == null) {
+				context.getSource().sendFeedback(LangText.get(true, "command.rename.noitem"), false);
+			} else {
+				if (player.experienceLevel < 1 && !player.isCreative()) {
+					context.getSource().sendFeedback(LangText.get(true, "command.rename.noxp"), false);
+				}
 
-                if (player.isCreative() == false) {
-                    player.addExperienceLevels(-1);
-                }
+				if (player.isCreative() == false) {
+					player.addExperienceLevels(-1);
+				}
 
-                item.setCustomName(new LiteralText(
-                        ChatColor.translateAlternateColorCodes('&', StringArgumentType.getString(context, "name..."))
-                ));
+				item.setCustomName(new LiteralText(
+						ChatColor.translateAlternateColorCodes('&', StringArgumentType.getString(context, "name..."))));
 
-                player.sendMessage(LangText.getFormatter(true, "command.rename.success", StringArgumentType.getString(context, "name...")));
-            }
+				player.sendMessage(LangText.getFormatter(true, "command.rename.success",
+						StringArgumentType.getString(context, "name...")));
+			}
 
-            return 1;
-        }));
+			return 1;
+		}));
 
-    }
+	}
 }

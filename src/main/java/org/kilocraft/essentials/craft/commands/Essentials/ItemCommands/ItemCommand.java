@@ -12,7 +12,7 @@ public class ItemCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         ItemNameCommand.registerChild(argumentBuilder);
-
+        ItemLoreCommand.registerChild(argumentBuilder);
 
         dispatcher.register(argumentBuilder);
     }
