@@ -31,5 +31,6 @@
     <orderEntry type="library" name="Gradle: net.fabricmc.mapped:net.fabricmc.yarn.19w38b.4.com.github.indi-code.Thimble-Permissions:6b05acffc0" level="project" />
     <orderEntry type="library" name="Gradle: com.google.protobuf:protobuf-java:3.6.1" level="project" />
     <orderEntry type="library" name="Gradle: net.fabricmc:sponge-mixin:0.7.11.36" level="project" />
+    <orderEntry type="library" name="Gradle: io.netty:netty-all:4.1.25.Final" level="project" />
   </component>
 </module>

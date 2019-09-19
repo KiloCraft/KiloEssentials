@@ -1,10 +1,8 @@
 package org.kilocraft.essentials.craft.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.MinecraftVersion;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.chat.LangText;
 
@@ -17,20 +15,19 @@ public class VersionCommand {
 
         List<String> list = new ArrayList<String>(){{
             add("version");
-            add("kiloversion");
+            add("kiloessentials");
+            add("mod");
         }};
 
         list.forEach((name) -> dispatcher.register(
                 CommandManager.literal(name).executes(context -> {
-                    context.getSource().sendFeedback(
-                            LangText.getFormatter(
-                                    true,
-                                    "commands.version.info",
-                                    Mod.getMinecraftVersion(),
-                                    Mod.getLoaderVersion(),
-                                    Mod.getMappingsVersion(),
-                                    Mod.getVersion()
-                            ), false);
+                    LangText.sendToUniversalSource(context.getSource(),
+                            "commands.version.info",
+                            false,
+                            Mod.getMinecraftVersion(),
+                            Mod.getLoaderVersion(),
+                            Mod.getMappingsVersion(),
+                            Mod.getVersion());
                     return 1;
                 })
         ));

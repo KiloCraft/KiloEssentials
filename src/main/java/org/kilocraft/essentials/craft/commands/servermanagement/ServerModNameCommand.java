@@ -3,9 +3,12 @@ package org.kilocraft.essentials.craft.commands.servermanagement;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import io.netty.buffer.Unpooled;
+import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.PacketByteBuf;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.chat.ChatColor;
@@ -26,8 +29,11 @@ public class ServerModNameCommand {
         KiloServer.getServer().setDisplayBrandName(ChatColor.translateAlternateColorCodes('&',
                 String.format(s + "&r <- Fabric/KiloEssentials (%s, %s)", Mod.getMinecraftVersion(), Mod.getVersion())));
 
-        source.sendFeedback(new LiteralText("You have successfully changed the servermanagement custom brand name to:\n "
+        source.sendFeedback(new LiteralText("You have successfully changed the custom brand name to:\n "
         + KiloServer.getServer().getDisplayBrandName()), true);
+
+        CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, (new PacketByteBuf(Unpooled.buffer())).writeString(KiloServer.getServer().getDisplayBrandName()));
+        KiloServer.getServer().getVanillaServer().getPlayerManager().sendToAll(packet);
         return 1;
     }
 }
