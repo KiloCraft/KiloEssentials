@@ -1,13 +1,8 @@
 package org.kilocraft.essentials.craft.commands.servermanagement;
 
-import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
-
-import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.craft.KiloEssentials;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -30,33 +25,10 @@ public class ServerCommand {
 		}).build();
 
 		ArgumentCommandNode<ServerCommandSource, String> textNode = CommandManager
-				.argument("text", StringArgumentType.string()).executes((context) -> {
 				.argument("text", StringArgumentType.greedyString()).executes((context) -> {
 					String text = context.getArgument("text", String.class);
 					context.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.success", text), false);
-					File properties = new File(context.getSource().getMinecraftServer().getRunDirectory().getPath()
-							+ "/server.properties");
-					//Mod.getLogger().debug(properties.getName());
-					System.out.println("TEST");
-					System.out.println(context.getSource().getMinecraftServer().getRunDirectory().getPath());
-					try {
-						List<String> lines = Files.readAllLines(properties.toPath());
-
-						for (int i = 0; i < lines.size(); i++) {
-							if (lines.get(i).startsWith("motd=")) {
-								lines.set(i, "motd=" + text);
-							}
-						}
-
-						FileWriter fileWriter = new FileWriter(properties);
-						for (int i = 0; i < lines.size(); i++) {
-							fileWriter.write(lines.get(i));
-						}
-						
-						fileWriter.close();
-					} catch (IOException e) {
-						Mod.getLogger().debug(e.getStackTrace().toString());
-					}
+					KiloEssentials.motd = text;
 
 					return 0;
 				}).build();

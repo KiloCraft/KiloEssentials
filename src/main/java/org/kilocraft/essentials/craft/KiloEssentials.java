@@ -9,7 +9,8 @@ import org.kilocraft.essentials.craft.config.KiloConfig;
 
 public class KiloEssentials implements DedicatedServerModInitializer {
 	public static Logger getLogger = LogManager.getFormatterLogger();
-
+	public static String motd = "";
+	
 	@Override
 	public void onInitializeServer() {
 		getLogger.info("Running KiloEssentials version " + Mod.getVersion());
@@ -18,6 +19,5 @@ public class KiloEssentials implements DedicatedServerModInitializer {
 		DataHandler.handle(false);
 		new KiloEvents();
 		new KiloCommands(KiloConfig.getGeneral().get("Dev.environment"));
-
 	}
 }
