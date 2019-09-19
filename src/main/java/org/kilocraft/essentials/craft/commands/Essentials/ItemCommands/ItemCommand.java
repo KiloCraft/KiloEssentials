@@ -11,7 +11,7 @@ public class ItemCommand {
             .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item", 3));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        ItemNameCommnad.registerChild(argumentBuilder);
+        ItemNameCommand.registerChild(argumentBuilder);
 
 
         dispatcher.register(argumentBuilder);

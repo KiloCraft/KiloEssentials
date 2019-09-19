@@ -12,7 +12,7 @@ import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.api.chat.ChatColor;
 import org.kilocraft.essentials.api.chat.LangText;
 
-public class ItemNameCommnad {
+public class ItemNameCommand {
     public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("name")
                 .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.name", 3));
