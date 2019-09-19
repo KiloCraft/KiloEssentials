@@ -17,8 +17,13 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
-public class MotdCommand {
+public class ServerCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		LiteralCommandNode<ServerCommandSource> serverNode = CommandManager.literal("server").executes((context) -> {
+			context.getSource().sendFeedback(LangText.get(true, "command.server.nosubcommand"), false);
+			return 1;
+		}).build();
+		
 		LiteralCommandNode<ServerCommandSource> motdNode = CommandManager.literal("motd").executes((context) -> {
 			context.getSource().sendFeedback(LangText.get(true, "command.motd.nomotd"), false);
 			return 1;
