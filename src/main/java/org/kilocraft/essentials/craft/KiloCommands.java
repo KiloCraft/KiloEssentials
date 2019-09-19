@@ -5,9 +5,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.command.TestCommand;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.util.SomeGlobals;
-import org.kilocraft.essentials.craft.commands.Essentials.TpaCommand;
 import org.kilocraft.essentials.craft.commands.VersionCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
+import org.kilocraft.essentials.craft.commands.servermanagement.ServerCommand;
 
 public class KiloCommands {
     private static CommandDispatcher<ServerCommandSource> dispatcher;
@@ -25,9 +25,8 @@ public class KiloCommands {
 
         VersionCommand.register(dispatcher);
         ReloadCommand.register(dispatcher);
-        TpaCommand.register(dispatcher);
-
-
+        //TpaCommand.register(dispatcher);
+        ServerCommand.register(dispatcher);
     }
 
 }

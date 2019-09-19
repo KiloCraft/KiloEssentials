@@ -58,7 +58,8 @@ public class ServerCommand {
 					return 0;
 				}).build();
 
-		dispatcher.getRoot().addChild(motdNode);
+		dispatcher.getRoot().addChild(serverNode);
+		serverNode.addChild(motdNode);
 		motdNode.addChild(textNode);
 	}
 }
