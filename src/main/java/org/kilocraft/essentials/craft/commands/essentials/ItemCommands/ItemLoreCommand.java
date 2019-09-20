@@ -11,8 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.api.chat.ChatColor;
 import org.kilocraft.essentials.api.chat.LangText;
 
 public class ItemLoreCommand {
@@ -34,14 +32,22 @@ public class ItemLoreCommand {
 					} else {
 						if (player.experienceLevel < 1 && !player.isCreative()) {
 							context.getSource().sendFeedback(LangText.get(true, "command.item.name.noxp"), false);
+							return 1;
 						}
 
 						if (player.isCreative() == false) {
 							player.addExperienceLevels(-1);
 						}
 
-						item.setCustomName(new LiteralText(ChatColor.translateAlternateColorCodes('&',
-								StringArgumentType.getString(context, "name..."))));
+						CompoundTag itemTag = item.getTag();
+						if (!itemTag.containsKey("display")) {
+							CompoundTag displayTag = new CompoundTag();
+							displayTag.putString("Lore", StringArgumentType.getString(context, "name..."));
+							item.getTag().put("display", displayTag);
+						} else {
+							item.getTag().getCompound("display").putString("Lore",
+									StringArgumentType.getString(context, "name..."));
+						}
 
 						player.sendMessage(LangText.getFormatter(true, "command.item.lore.success",
 								StringArgumentType.getString(context, "name...")));
@@ -49,7 +55,7 @@ public class ItemLoreCommand {
 
 					return 1;
 				});
-		
+
 		builder.then(setArgument);
 		builder.then(resetArgument);
 		setArgument.then(nameArgument);

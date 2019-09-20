@@ -31,6 +31,7 @@ public class ItemNameCommand {
 					} else {
 						if (player.experienceLevel < 1 && !player.isCreative()) {
 							context.getSource().sendFeedback(LangText.get(true, "command.item.name.noxp"), false);
+							return 1;
 						}
 
 						if (player.isCreative() == false) {
@@ -39,7 +40,7 @@ public class ItemNameCommand {
 
 						item.setCustomName(new LiteralText(ChatColor.translateAlternateColorCodes('&',
 								StringArgumentType.getString(context, "name..."))));
-
+						
 						player.sendMessage(LangText.getFormatter(true, "command.item.name.success",
 								StringArgumentType.getString(context, "name...")));
 					}
