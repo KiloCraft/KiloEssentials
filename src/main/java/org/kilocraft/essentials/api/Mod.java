@@ -50,7 +50,7 @@ public class Mod {
     }
 
     public static String getMinecraftVersion() {
-        return "1.15-SNAPSHOT";
+        return getProperties().getProperty("minecraft_version");
     }
 
 

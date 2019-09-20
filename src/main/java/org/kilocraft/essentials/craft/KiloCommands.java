@@ -10,7 +10,6 @@ import org.kilocraft.essentials.craft.commands.VersionCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
-import org.kilocraft.essentials.craft.commands.servermanagement.ServerCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
 
 public class KiloCommands {
@@ -31,7 +30,7 @@ public class KiloCommands {
         ReloadCommand.register(dispatcher);
         EnderchestCommand.register(dispatcher);
         TpaCommand.register(dispatcher);
-        ServerCommand.register(dispatcher);
+        //ServerCommand.register(dispatcher);
         ItemCommand.register(dispatcher);
         AnvilCommand.register(dispatcher);
         CraftingbenchCommand.register(dispatcher);

@@ -20,7 +20,7 @@ public class ConfigHandler {
         configFiles.forEach((config) -> {
             new ConfigFile(
                     config,
-                    "^KiloEssentials^config^".replace("^", File.separator),
+                    "^KiloEssentials^Config^".replace("^", File.separator),
                     "ConfigFiles",
                     false,
                     false
