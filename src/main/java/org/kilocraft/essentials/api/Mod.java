@@ -53,5 +53,9 @@ public class Mod {
         return getProperties().getProperty("minecraft_version");
     }
 
+    public static boolean isDebugEnabled() {
+        return Boolean.parseBoolean(getProperties().getProperty("enabledebug"));
+    }
+
 
 }
