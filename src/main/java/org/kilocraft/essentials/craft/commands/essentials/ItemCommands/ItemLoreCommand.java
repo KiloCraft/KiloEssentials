@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import io.github.indicode.fabric.permissions.Thimble;
+import io.github.indicode.fabric.permissions.command.CommandPermission;
 import net.minecraft.command.CommandException;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -16,8 +17,17 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.LangText;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class ItemLoreCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
+		Thimble.permissionWriters.add(pair -> {
+			try {
+				Thimble.PERMISSIONS.getPermission("kiloessentials.command.item.lore", CommandPermission.class); // Permission that updates command tree
+			} catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		});
 		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("lore")
 				.requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.lore", 3));
 
