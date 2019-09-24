@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import io.github.indicode.fabric.permissions.Thimble;
+import io.github.indicode.fabric.permissions.command.CommandPermission;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
@@ -14,8 +15,17 @@ import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.api.chat.ChatColor;
 import org.kilocraft.essentials.api.chat.LangText;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class ItemNameCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
+		Thimble.permissionWriters.add(pair -> {
+			try {
+				Thimble.PERMISSIONS.getPermission("kiloessentials.command.item.name", CommandPermission.class); // Permission that updates command tree
+			} catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		});
 		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("name")
 				.requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.name", 3));
 
@@ -31,6 +41,7 @@ public class ItemNameCommand {
 					} else {
 						if (player.experienceLevel < 1 && !player.isCreative()) {
 							context.getSource().sendFeedback(LangText.get(true, "command.item.name.noxp"), false);
+							return 1;
 						}
 
 						if (player.isCreative() == false) {
@@ -39,7 +50,7 @@ public class ItemNameCommand {
 
 						item.setCustomName(new LiteralText(ChatColor.translateAlternateColorCodes('&',
 								StringArgumentType.getString(context, "name..."))));
-
+						
 						player.sendMessage(LangText.getFormatter(true, "command.item.name.success",
 								StringArgumentType.getString(context, "name...")));
 					}

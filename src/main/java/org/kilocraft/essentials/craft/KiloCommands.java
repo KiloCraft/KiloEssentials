@@ -17,10 +17,21 @@ import org.kilocraft.essentials.craft.config.KiloConfig;
 
 import java.util.Map;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class KiloCommands {
     private static CommandDispatcher<ServerCommandSource> dispatcher;
     public KiloCommands(boolean dev) {
         dispatcher = SomeGlobals.commandDispatcher;
+        /*Thimble.permissionWriters.add(pair -> { // How to "register" permissions
+            Thimble.PERMISSIONS.getPermission("xxx"); // Normal JSON permission. Saves to file & dosen't update command tree
+            try {
+                Thimble.PERMISSIONS.getPermission("yyy", CommandPermission.class); // Permission that updates command tree, and dosen't save to file
+                // Syntax is getPermission(name, default class); Note that default class must have the constructor (String name, Permission parent)
+            } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });*/
         // Thimble.registerDispatcherCommands(dispatcher); uncomment when we have a custom dispatcher
         register(dev);
     }
