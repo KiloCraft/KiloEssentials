@@ -1,19 +1,13 @@
 package org.kilocraft.essentials.api.commands;
 
-import org.kilocraft.essentials.api.command.KiloCommand;
+import org.kilocraft.essentials.api.command.KiloCommandManager;
 
 import java.util.ArrayList;
 
-public class ServerStatusCommand extends KiloCommand{
+public class ServerStatusCommand extends KiloCommandManager {
 
     public ServerStatusCommand(String name, String permissionNode, int permissionLevel) {
         super("test", "kapi.command.test", 4);
-
-    }
-
-
-    @Override
-    public void getCommand() {
 
     }
 

@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "org.kilocraft.essentials.craft.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "server": [
+    "MixinMinecraftDedicatedServer$setupServer"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,2 +1,6 @@
 #Messages config File
 Schema: 1.0
+
+command:
+  context:
+    unknown: "Unknown command! please do /help for help"

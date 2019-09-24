@@ -1,46 +1,19 @@
 package org.kilocraft.essentials.api.command;
 
-import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.util.SomeGlobals;
+import java.util.ArrayList;
 
-import java.util.List;
+public interface KiloCommand {
 
-public abstract class KiloCommand implements IKiloCommand {
-    private CommandDispatcher<ServerCommandSource> dispatcher = SomeGlobals.commandDispatcher;
-    private String name;
-    private String permissionNode;
-    private int permissionLevel;
-    private boolean registered;
-    private List<String> commandAliases;
+    
+    /**
+     * @return command usage string
+     */
 
-    public KiloCommand(String name, String permissionNode, int permissionLevel) {
-        this.name = name;
-        this.permissionNode = name;
-        this.permissionLevel = permissionLevel;
-        this.registered = true;
-    }
+    String getUsage();
 
+    /**
+     * @return a List of the command aliases
+     */
 
-    public String getName() {
-        return this.name;
-    }
-
-    public String getPermissionNode() {
-        return this.permissionNode;
-    }
-
-    public int getPermissionLevel() {
-        return this.permissionLevel;
-    }
-
-    public void setRegistered(boolean registered) {
-        this.registered = registered;
-    }
-
-    public CommandDispatcher<ServerCommandSource> getDispatcher() {
-        return dispatcher;
-    }
-
-
+    ArrayList<String> getAliases();
 }

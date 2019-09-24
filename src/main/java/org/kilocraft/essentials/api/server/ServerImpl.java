@@ -1,13 +1,11 @@
 package org.kilocraft.essentials.api.server;
 
-import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.command.CommandRegistry;
-import org.kilocraft.essentials.api.command.commandImpl.CommandRegistryImpl;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
@@ -21,19 +19,26 @@ public class ServerImpl implements Server {
 
     private final MinecraftServer server;
     private final EventRegistry eventRegistry;
+    private final CommandRegistry commandRegistry;
     private final String serverBrand;
     private String serverDisplayBrand;
 
-    public ServerImpl(MinecraftServer server, EventRegistry eventManager, String serverBrand) {
+    public ServerImpl(MinecraftServer server, EventRegistry eventManager, CommandRegistry commandRegistry , String serverBrand) {
         this.server = server;
         this.serverBrand = serverBrand;
 
         this.eventRegistry = eventManager;
+        this.commandRegistry = commandRegistry;
     }
 
     @Override
     public MinecraftServer getVanillaServer() {
         return this.server;
+    }
+
+    @Override
+    public PlayerManager getPlayerManager() {
+        return this.server.getPlayerManager();
     }
 
     @Override
@@ -85,10 +90,11 @@ public class ServerImpl implements Server {
         return eventRegistry;
     }
 
-//    @Override
-//    public void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
-//
-//    }
+    @Override
+    public CommandRegistry getCommandRegistry() {
+        return this.commandRegistry;
+    }
+
 
     @Override
     public <E extends Event> E triggerEvent(E e) {

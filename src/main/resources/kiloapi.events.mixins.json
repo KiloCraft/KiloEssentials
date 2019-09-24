@@ -10,7 +10,8 @@
     "MixinMinecraftServer$OnStop",
     "MixinPlayerManager$PlayerEvent$OnConnect",
     "MixinServerPlayerNetworkHandler$PlayerEvent$OnDisconnect",
-    "MixinServerPlayerNetworkHandler$PlayerEvent$OnBreakingBlock"
+    "MixinServerPlayerNetworkHandler$PlayerEvent$OnBreakingBlock",
+    "MixinCommandManager$ServerEvent$OnCommandExecution"
   ],
   "injectors": {
     "defaultRequire": 1

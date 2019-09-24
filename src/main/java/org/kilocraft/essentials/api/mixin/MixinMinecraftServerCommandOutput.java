@@ -4,7 +4,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.ServerCommandOutput;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.Mod;
-import org.kilocraft.essentials.api.command.CommandRegistry;
+import org.kilocraft.essentials.api.command.commandImpl.CommandRegistryImpl;
 import org.kilocraft.essentials.api.event.eventImpl.EventRegistryImpl;
 import org.kilocraft.essentials.api.server.ServerImpl;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,6 +22,7 @@ public abstract class MixinMinecraftServerCommandOutput {
                 new ServerImpl(
                     minecraftServer,
                     new EventRegistryImpl(),
+                    new CommandRegistryImpl(),
                     String.format(
                             Mod.getProperties().getProperty("server.brand"),
                                 Mod.getVersion(),
@@ -31,6 +32,6 @@ public abstract class MixinMinecraftServerCommandOutput {
         );
 
         Mod.getLogger().info("Successfully started the minecraft server with KiloAPI");
-        Mod.getLogger().info("Server: " + KiloServer.getServer().getBrandName());
+        Mod.getLogger().info("Server set: " + KiloServer.getServer().getBrandName());
     }
 }

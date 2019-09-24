@@ -2,8 +2,10 @@ package org.kilocraft.essentials.craft;
 
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.command.TestCommand;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.commands.VersionCommand;
@@ -11,6 +13,9 @@ import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
+import org.kilocraft.essentials.craft.config.KiloConfig;
+
+import java.util.Map;
 
 public class KiloCommands {
     private static CommandDispatcher<ServerCommandSource> dispatcher;
@@ -22,8 +27,8 @@ public class KiloCommands {
 
     private static void register(boolean devEnv) {
         if (devEnv) {
-            Mod.getLogger().info("Registering developer commands...");
-            TestCommand.register(dispatcher);
+            Mod.getLogger().debug("Server is running in debug mode!");
+            SharedConstants.isDevelopment = true;
         }
 
         VersionCommand.register(dispatcher);
@@ -40,4 +45,14 @@ public class KiloCommands {
 
     }
 
+    public static String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
+        String string = KiloConfig.getMessages().get("commands.usage");
+        Map<CommandNode<ServerCommandSource>, String> usage = dispatcher.getSmartUsage(literalCommandNode, source);
+        return string.replaceFirst("%s", usage.toString());
+    }
+
+    public static String buildUsage(String usage, ServerCommandSource source) {
+        String string = KiloConfig.getMessages().get("commands.usage");
+        return string.replaceFirst("%s", usage);
+    }
 }
