@@ -1,11 +1,11 @@
 #Database config File
 Schema: 1.0
 
-#Main
-#The database that the homes system will user
-Databases:
-  home_manager:
-    jdbc_connection: jdbc:mysql://1.1.1.1/Database
-    username: usr
-    password: pas
-    table_name: home
+#The database that you want the home manager to use
+home_manager_tablename: player_homes
+
+#The Database information
+Database:
+  jdbc_connection: jdbc:mysql://1.1.1.1/database_name
+  username: uname
+  password: pass

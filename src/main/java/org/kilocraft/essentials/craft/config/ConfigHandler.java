@@ -31,6 +31,7 @@ public class ConfigHandler {
             );
         });
 
-        KiloEssentials.getLogger.info("Successfully loaded the config files!\n", configFiles.toString());
+        KiloEssentials.getLogger.info("Successfully loaded the config files!");
+        KiloEssentials.getLogger.info(configFiles.toString());
     }
 }
