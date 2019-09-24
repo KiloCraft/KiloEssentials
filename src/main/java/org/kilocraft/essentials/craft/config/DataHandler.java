@@ -7,7 +7,7 @@ import java.io.File;
 
 public class DataHandler {
     private static final String dir = "^KiloEssentials^data^".replace("^", File.separator);
-    private static NbtFile homesNbt = new NbtFile(dir, "homes", true);
+    private static NbtFile homesNbt = new NbtFile(dir, "homes");
 
     public DataHandler() {
         Mod.getLogger().info("Loading the data files...");

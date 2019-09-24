@@ -10,6 +10,7 @@ import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.commands.VersionCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
+import org.kilocraft.essentials.craft.commands.home.HomeCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
 import org.kilocraft.essentials.craft.config.KiloConfig;
@@ -50,6 +51,7 @@ public class KiloCommands {
         LocateBiomeCommand.register(dispatcher);
         NickCommand.register(dispatcher);
         ServerModNameCommand.register(dispatcher);
+        HomeCommand.register(dispatcher);
 
     }
 

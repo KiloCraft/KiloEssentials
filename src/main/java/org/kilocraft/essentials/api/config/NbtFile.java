@@ -18,9 +18,7 @@ public class NbtFile {
     private File file;
     private CompoundTag compoundTag;
 
-    public NbtFile(String path, String name, boolean oldDat) {
-        String type = ".dat";
-        if (oldDat) type = ".dat_old";
+    public NbtFile(String path, String name) {
         this.name = name;
         this.fileDir = new File(ConfigFile.currentDir + path);
         this.file = new File(ConfigFile.currentDir + path + name + ".dat");
