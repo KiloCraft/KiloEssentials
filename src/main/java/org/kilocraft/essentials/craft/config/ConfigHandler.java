@@ -12,7 +12,6 @@ public class ConfigHandler {
         add("General.yml");
         add("Messages.yml");
         add("Ranks.yml");
-        add("Database.yml");
     }};
 
     public static void handle() {

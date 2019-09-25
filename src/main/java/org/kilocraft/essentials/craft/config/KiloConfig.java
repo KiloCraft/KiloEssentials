@@ -40,10 +40,6 @@ public class KiloConfig {
         return ConfigProvider.getConfig$Ranks();
     }
 
-    public static FileConfig getDatabase() {
-        return ConfigProvider.getConfig$Database();
-    }
-
     public static double getConfigVersion() {
         return schemaVersion;
     }

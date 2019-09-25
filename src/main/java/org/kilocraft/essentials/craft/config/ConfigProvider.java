@@ -8,7 +8,6 @@ public class ConfigProvider {
     private static FileConfig config$General;
     private static FileConfig config$Messages;
     private static FileConfig config$Ranks;
-    private static FileConfig config$Database;
 
     public static void provide(File... file) {
         for (int i = 0; i < file.length; i++) {
@@ -19,8 +18,6 @@ public class ConfigProvider {
                     config$Messages = FileConfig.of(file[i]);
                 case "Ranks.yml":
                     config$Ranks = FileConfig.of(file[i]);
-                case "Database.yml":
-                    config$Database = FileConfig.of(file[i]);
 
                 break;
             }
@@ -31,21 +28,18 @@ public class ConfigProvider {
         config$General.load();
         config$Messages.load();
         config$Ranks.load();
-        config$Database.load();
     }
 
     protected static void saveAll() {
         config$General.save();
         config$Messages.save();
         config$Ranks.save();
-        config$Database.save();
     }
 
     protected static void closeAll() {
         config$General.close();
         config$Messages.close();
         config$Ranks.close();
-        config$Database.close();
     }
 
     protected static void reloadAll() {
@@ -63,10 +57,6 @@ public class ConfigProvider {
 
     protected static FileConfig getConfig$Ranks() {
         return config$Ranks;
-    }
-
-    protected static FileConfig getConfig$Database() {
-        return config$Database;
     }
 
 }

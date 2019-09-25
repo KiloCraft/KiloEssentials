@@ -48,12 +48,7 @@ public class HomeCommand {
 
 
     private static SuggestionProvider<ServerCommandSource> provideSuggestion = (context, builder) -> {
-        if (context.getSource().getPlayer().isCreative()) {
-            builder.suggest("oof");
-        } else builder.suggest("ok");
 
-        builder.suggest("home2");
-        builder.suggest("no_u");
         return builder.buildFuture();
     };
 
