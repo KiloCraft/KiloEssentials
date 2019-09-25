@@ -21,15 +21,15 @@ import java.lang.reflect.InvocationTargetException;
 
 public class ItemLoreCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		Thimble.permissionWriters.add(pair -> {
+		/*Thimble.permissionWriters.add(pair -> {
 			try {
 				Thimble.PERMISSIONS.getPermission("kiloessentials.command.item.lore", CommandPermission.class); // Permission that updates command tree
 			} catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
-		});
-		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("lore")
-				.requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.lore", 3));
+		});*/
+		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("lore")/*
+				.requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.lore", 3))*/;
 
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
@@ -60,6 +60,7 @@ public class ItemLoreCommand {
 						|| !itemTag.getCompound("display").containsKey("Lore")) {
 					context.getSource().sendFeedback(LangText.get(true, "command.item.lore.nolore"), false);
 				} else {
+					System.out.println(itemTag.getCompound("display").getType("Lore"));
 					itemTag.getCompound("display").remove("Lore");
 					context.getSource().sendFeedback(LangText.get(true, "command.item.lore.reset.success"), false);
 				}

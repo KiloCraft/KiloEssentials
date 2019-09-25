@@ -10,6 +10,7 @@ import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.commands.VersionCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
+import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.home.HomeCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
@@ -45,7 +46,7 @@ public class KiloCommands {
         EnderchestCommand.register(dispatcher);
         TpaCommand.register(dispatcher);
         //ServerCommand.register(dispatcher);
-        //ItemCommand.register(dispatcher);
+        ItemCommand.register(dispatcher);
         AnvilCommand.register(dispatcher);
         CraftingbenchCommand.register(dispatcher);
         LocateBiomeCommand.register(dispatcher);

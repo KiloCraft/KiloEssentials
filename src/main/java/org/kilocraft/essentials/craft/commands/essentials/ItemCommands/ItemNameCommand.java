@@ -15,15 +15,15 @@ import org.kilocraft.essentials.api.chat.LangText;
 
 public class ItemNameCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		Thimble.permissionWriters.add(pair -> {
+		/*Thimble.permissionWriters.add(pair -> {
 //			try {
 //				Thimble.PERMISSIONS.getPermission("kiloessentials.command.item.name", CommandPermission.class); // Permission that updates command tree
 //			} catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
 //				e.printStackTrace();
 //			}
-		});
-		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("name")
-				.requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.name", 3));
+		});*/
+		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("name")/*
+				.requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item.name", 3))*/;
 
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
@@ -51,7 +51,7 @@ public class ItemNameCommand {
 								StringArgumentType.getString(context, "name...")));
 					}
 
-					return 1;
+					return 0;
 				});
 
 		builder.then(setArgument);
@@ -68,7 +68,7 @@ public class ItemNameCommand {
 				item.setCustomName(new TranslatableText(item.getItem().getTranslationKey()));
 			}
 
-			return 1;
+			return 0;
 		});
 	}
 }

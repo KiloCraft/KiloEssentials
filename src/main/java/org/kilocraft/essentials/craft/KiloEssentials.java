@@ -22,6 +22,6 @@ public class KiloEssentials implements DedicatedServerModInitializer {
 		new KiloCommands(KiloConfig.getGeneral().get("Dev.environment"));
 
 		new DataHandler();
-		PlayerHomeManager playerHomeManager = new PlayerHomeManager();
+		//PlayerHomeManager playerHomeManager = new PlayerHomeManager();
 	}
 }
