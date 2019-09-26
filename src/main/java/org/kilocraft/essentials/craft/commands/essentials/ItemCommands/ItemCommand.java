@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public class ItemCommand {
     private static LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("item")
-            .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item", 3));
+           /* .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.item", 3))*/;
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 //        Thimble.permissionWriters.add(pair -> {
