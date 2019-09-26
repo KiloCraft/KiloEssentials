@@ -9,6 +9,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.LangText;
@@ -30,14 +32,12 @@ public class ItemLoreCommand {
 
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
-		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = CommandManager
-				.argument("line", IntegerArgumentType.integer(0, 10)).executes(context -> {
-					return changeLore(context, IntegerArgumentType.getInteger(context, "line"));
-				});
+		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = CommandManager.argument("line",
+				IntegerArgumentType.integer(0, 10));
 
 		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = CommandManager
 				.argument("name...", StringArgumentType.greedyString()).executes(context -> {
-					return changeLore(context, 0);
+					return changeLore(context, IntegerArgumentType.getInteger(context, "line"));
 				});
 
 		resetArgument.executes(context -> {
@@ -49,9 +49,8 @@ public class ItemLoreCommand {
 			} else {
 				if (itemTag == null || !itemTag.containsKey("display")
 						|| !itemTag.getCompound("display").containsKey("Lore")) {
-					context.getSource().sendFeedback(LangText.get(true, "command.item.lore.nolore"), false);
+					return 1;
 				} else {
-					System.out.println(itemTag.getCompound("display").getType("Lore"));
 					itemTag.getCompound("display").remove("Lore");
 					context.getSource().sendFeedback(LangText.get(true, "command.item.lore.reset.success"), false);
 				}
@@ -59,10 +58,10 @@ public class ItemLoreCommand {
 
 			return 1;
 		});
-	
+
 		builder.then(resetArgument);
-		nameArgument.then(lineArgument);
-		setArgument.then(nameArgument);		
+		lineArgument.then(nameArgument);
+		setArgument.then(lineArgument);
 		builder.then(setArgument);
 		argumentBuilder.then(builder);
 	}
@@ -86,14 +85,19 @@ public class ItemLoreCommand {
 			CompoundTag itemTag = item.getTag();
 			if (!itemTag.containsKey("display")) {
 				CompoundTag displayTag = new CompoundTag();
-				displayTag.putString("Lore", StringArgumentType.getString(context, "name..."));
-				item.getTag().put("display", displayTag);
-			} else {
-				item.getTag().getCompound("display").putString("Lore",
-						StringArgumentType.getString(context, "name..."));
+				itemTag.put("display", displayTag);
 			}
 
-			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success",
+			ListTag lore = itemTag.getCompound("display").getList("Lore", 8);
+			if (lore == null) {
+				lore = new ListTag();
+			}
+
+			lore.add(line, new StringTag("\"text\":\"" + StringArgumentType.getString(context, "name...") + "\""));
+			item.getTag().getCompound("display").put("Lore", lore);
+			item.setTag(itemTag);
+
+			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", line,
 					StringArgumentType.getString(context, "name...")));
 		}
 
