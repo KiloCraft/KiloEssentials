@@ -97,7 +97,7 @@ public class ItemLoreCommand {
 			}
 
 			if (line > lore.size() - 1) {
-				for (int i = 0; i <= line; i++) {
+				for (int i = lore.size(); i <= line; i++) {
 					lore.add(new StringTag("{\"text\":\"\"}"));
 				}
 			}
