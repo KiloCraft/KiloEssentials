@@ -93,7 +93,7 @@ public class ItemLoreCommand {
 				lore = new ListTag();
 			}
 
-			lore.add(line, new StringTag("\"text\":\"" + StringArgumentType.getString(context, "name...") + "\""));
+			lore.add(line, new StringTag("{\"text\":\"" + StringArgumentType.getString(context, "name...") + "\"}"));
 			item.getTag().getCompound("display").put("Lore", lore);
 			item.setTag(itemTag);
 
