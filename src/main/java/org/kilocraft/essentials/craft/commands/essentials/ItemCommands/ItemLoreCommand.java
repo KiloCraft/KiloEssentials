@@ -97,7 +97,7 @@ public class ItemLoreCommand {
 			}
 
 			lore.set(line, new StringTag("{\"text\":\"" + StringArgumentType.getString(context, "name...") + "\"}"));
-			item.getTag().getCompound("display").put("Lore", lore);
+			itemTag.getCompound("display").put("Lore", lore);
 			item.setTag(itemTag);
 
 			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", line,
