@@ -86,7 +86,7 @@ public class ItemLoreCommand {
 			if (item.hasTag() == false || itemTag == null) {
 				itemTag = new CompoundTag();
 			}
-			
+
 			if (!itemTag.containsKey("display")) {
 				itemTag.put("display", new CompoundTag());
 			}
@@ -94,6 +94,12 @@ public class ItemLoreCommand {
 			ListTag lore = itemTag.getCompound("display").getList("Lore", 8);
 			if (lore == null) {
 				lore = new ListTag();
+			}
+
+			if (line > lore.size() - 1) {
+				for (int i = 0; i <= line; i++) {
+					lore.add(new StringTag("{\"text\":\"\"}"));
+				}
 			}
 
 			lore.set(line, new StringTag("{\"text\":\"" + StringArgumentType.getString(context, "name...") + "\"}"));
