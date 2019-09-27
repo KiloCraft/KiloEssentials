@@ -41,14 +41,16 @@ public class PlayerHomeManager {
         return tag;
     }
 
-    public void fronNbt(ListTag listTag) {
+    public void fronNbt(CompoundTag tag) {
         hashMap.clear();
-        listTag.forEach((tag) -> {
-            Home home = new Home();
-            home.fromTag((CompoundTag) tag);
-            hashMap.put(home.name, home);
+        tag.getKeys().forEach(key -> {
+            ListTag playerTag = (ListTag) tag.getTag(key);
+            playerTag.forEach(homeTag -> {
+                Home home = new Home((CompoundTag) homeTag);
+                home.owner_uuid = key;
+                hashMap.put(home.name, home);
+            });
         });
-
     }
 
 
