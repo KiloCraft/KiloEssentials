@@ -1,10 +1,8 @@
 package org.kilocraft.essentials.craft.homesystem;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class Home {
@@ -14,7 +12,10 @@ public class Home {
     public double pitch, yaw;
     public List<Home> homes;
 
-    Home() {
+    public Home(String uuid, String name, BlockPos blockPos, double pitch, double yaw) {
+        this.owner_uuid = uuid;
+        this.name = name;
+        this.blockPos = blockPos;
     }
 
     Home(CompoundTag compoundTag) {
