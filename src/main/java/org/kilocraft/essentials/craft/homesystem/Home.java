@@ -11,7 +11,7 @@ public class Home {
     public String owner_uuid;
     public String name;
     public BlockPos blockPos;
-    public double dX, dZ;
+    public double pitch, yaw;
     public List<Home> homes;
 
     Home() {
@@ -34,8 +34,8 @@ public class Home {
         }
         {
             CompoundTag dir = new CompoundTag();
-            dir.putDouble("dX", dX);
-            dir.putDouble("dZ", dZ);
+            dir.putDouble("pitch", pitch);
+            dir.putDouble("yaw", yaw);
             homeTag.put("dir", dir);
         }
 
@@ -55,8 +55,8 @@ public class Home {
         }
         {
             CompoundTag dir = compoundTag.getCompound("dir");
-            this.dX = dir.getDouble("dX");
-            this.dZ = dir.getDouble("dZ");
+            this.pitch = dir.getDouble("pitch");
+            this.yaw = dir.getDouble("yaw");
         }
 
         ListTag homesTag = (ListTag) compoundTag.getTag(owner_uuid);
