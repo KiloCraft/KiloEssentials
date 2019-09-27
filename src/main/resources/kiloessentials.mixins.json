@@ -5,9 +5,7 @@
   "mixins": [
   ],
   "server": [
-    "MixinMinecraftDedicatedServer$setupServer",
-    "MinecraftServerMixin",
-    "WorldSaveHandlerMixin"
+    "MixinMinecraftDedicatedServer$setupServer"
   ],
   "injectors": {
     "defaultRequire": 1
