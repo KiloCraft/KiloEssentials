@@ -21,7 +21,7 @@ public class HomeCommand {
         argumentAdd = CommandManager.literal("add");
         argumentSet = CommandManager.literal("set");
         argumentRemove = CommandManager.literal("remove");
-        argumentTeleport = CommandManager.literal("teleport");
+        argumentTeleport = CommandManager.literal("tp");
 
         secondArgumentTeleport = CommandManager.argument("home", StringArgumentType.string());
         secondArgumentAdd = CommandManager.argument("name...", StringArgumentType.string());

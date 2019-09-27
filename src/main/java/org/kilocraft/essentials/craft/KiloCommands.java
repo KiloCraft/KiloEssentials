@@ -53,7 +53,7 @@ public class KiloCommands {
         NickCommand.register(dispatcher);
         ServerModNameCommand.register(dispatcher);
         HomeCommand.register(dispatcher);
-
+        ColoursCommand.register(dispatcher);
     }
 
     public static String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
