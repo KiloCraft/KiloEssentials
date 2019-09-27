@@ -22,11 +22,14 @@ public class NbtFile {
         this.name = name;
         this.fileDir = new File(ConfigFile.currentDir + path);
         this.file = new File(ConfigFile.currentDir + path + name + ".dat");
+        this.compoundTag = new CompoundTag();
     }
 
 
     public void load() {
-        if (!this.file.exists()) generate();
+        if (!this.file.exists())
+            generate();
+
         else {
             try {
                 this.compoundTag = NbtIo.readCompressed(new FileInputStream(this.file));
@@ -54,6 +57,9 @@ public class NbtFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void close() {
     }
 
     public File getFile() {

@@ -11,6 +11,8 @@ import net.minecraft.server.command.ServerCommandSource;
 public class HomeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home");
+        LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome");
+        LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome");
         LiteralArgumentBuilder<ServerCommandSource> homeAlias = CommandManager.literal("h");
         LiteralArgumentBuilder<ServerCommandSource> argumentList, argumentRemove, argumentAdd, argumentSet, argumentTeleport;
         RequiredArgumentBuilder<ServerCommandSource, String> secondArgumentAdd, secondArgumentRemove, secondArgumentSet, secondArgumentTeleport;
@@ -41,6 +43,8 @@ public class HomeCommand {
         homeLiteral.then(argumentList);
         homeLiteral.then(argumentTeleport);
         homeAlias.then(secondArgumentTeleport);
+        sethomeLiteral.then(secondArgumentSet);
+        delhomeLiteral.then(secondArgumentRemove);
 
         dispatcher.register(homeLiteral);
         dispatcher.register(homeAlias);
