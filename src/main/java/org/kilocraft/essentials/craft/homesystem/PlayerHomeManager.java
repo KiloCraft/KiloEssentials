@@ -32,10 +32,13 @@ public class PlayerHomeManager {
     }
 
 
-    public ListTag toNbt() {
-        ListTag listTag = new ListTag();
-        hashMap.values().forEach((home) -> listTag.add(home.toTag()));
-        return listTag;
+    public CompoundTag toNbt() {
+        CompoundTag tag = new CompoundTag();
+        hashMap.values().forEach(home -> {
+            ListTag listTag = tag.containsKey(home.owner_uuid) ? (ListTag) tag.getTag(home.owner_uuid) : new ListTag();
+            listTag.add(home.toTag());
+        });
+        return tag;
     }
 
     public void fronNbt(ListTag listTag) {
