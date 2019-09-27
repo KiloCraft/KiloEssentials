@@ -58,15 +58,6 @@ public class Home {
             this.pitch = dir.getDouble("pitch");
             this.yaw = dir.getDouble("yaw");
         }
-
-        ListTag homesTag = (ListTag) compoundTag.getTag(owner_uuid);
-
-
-        for (Iterator i = homesTag.iterator(); i.hasNext();) {
-
-            //HERE
-
-        }
     }
 
 }
