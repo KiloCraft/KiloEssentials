@@ -8,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.LevelGeneratorType;
 import org.kilocraft.essentials.craft.homesystem.PlayerHomeManager;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,9 +24,9 @@ import java.io.IOException;
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
     @Inject(method = "loadWorld", at = @At("RETURN"))
-    private void loadClaims(String string_1, String string_2, long long_1, LevelGeneratorType levelGeneratorType_1, JsonElement jsonElement_1, CallbackInfo ci) {
-        File homes = new File(((MinecraftServer)(Object)this).getLevelStorage().getSavesDirectory() + "/" + string_1 + "/homes.dat");
-        File homes_old = new File(((MinecraftServer)(Object)this).getLevelStorage().getSavesDirectory() + "/" + string_1 + "/homes.dat_old");
+    private void loadHomes(String string_1, String string_2, long long_1, LevelGeneratorType levelGeneratorType_1, JsonElement jsonElement_1, CallbackInfo ci) {
+        File homes = new File(gameDir.getPath() + "/" + string_1 + "/homes.dat");
+        File homes_old = new File(gameDir.getPath() + "/" + string_1 + "/homes.dat_old");
         PlayerHomeManager.INSTANCE = new PlayerHomeManager();
         if (!homes.exists()) {
             if (homes_old.exists()) {}
@@ -50,4 +51,6 @@ public abstract class MinecraftServerMixin {
             }
         }
     }
+    @Shadow
+    private File gameDir;
 }
