@@ -25,7 +25,7 @@ public class PlayerHomeManager {
     public List<Home> getPlayerHomes(UUID uuid) {
         List<Home> homes = new ArrayList<>();
         hashMap.values().forEach((home) -> {
-            if (home.owner_uuid.equals(uuid)) homes.add(home);
+            if (home.owner_uuid.equals(uuid.toString())) homes.add(home);
         });
 
         return homes;
