@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class PlayerHomeManager {
     NbtFile nbt = new NbtFile("/KiloEssentials/data/", "homes");
-    protected static PlayerHomeManager INSTANCE = null;
+    public static PlayerHomeManager INSTANCE = null;
     private HashMap<String, Home> hashMap = new HashMap<>();
 
     public void addHome(Home home) {
@@ -41,7 +41,7 @@ public class PlayerHomeManager {
         return tag;
     }
 
-    public void fronNbt(CompoundTag tag) {
+    public void fromNbt(CompoundTag tag) {
         hashMap.clear();
         tag.getKeys().forEach(key -> {
             ListTag playerTag = (ListTag) tag.getTag(key);
@@ -51,13 +51,6 @@ public class PlayerHomeManager {
                 hashMap.put(home.name, home);
             });
         });
-    }
-
-
-
-
-    public static PlayerHomeManager getInstance() {
-        return INSTANCE;
     }
 
     public HashMap<String, Home> getHashMap() {
