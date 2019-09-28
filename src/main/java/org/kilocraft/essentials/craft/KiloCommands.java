@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class KiloCommands {
     private static CommandDispatcher<ServerCommandSource> dispatcher;
-    public KiloCommands(boolean dev) {
+    public KiloCommands() {
         dispatcher = SomeGlobals.commandDispatcher;
         /*Thimble.permissionWriters.add(pair -> { // How to "register" permissions
             Thimble.PERMISSIONS.getPermission("xxx"); // Normal JSON permission. Saves to file & dosen't update command tree
@@ -34,7 +34,7 @@ public class KiloCommands {
             }
         });*/
         // Thimble.registerDispatcherCommands(dispatcher); uncomment when we have a custom dispatcher
-        register(dev);
+        register(false);
     }
 
     private static void register(boolean devEnv) {

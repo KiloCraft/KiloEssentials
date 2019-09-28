@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -29,7 +30,7 @@ public class ModsCommand {
                 .executes(c -> executeSingle(c, StringArgumentType.getString(c, "Mod Name/ID")));
 
         literalArgumentBuilder.then(modIdArgument);
-        buildSuggestions(literalArgumentBuilder);
+        modIdArgument.suggests(provideSuggestion);
 
         dispatcher.register(literalArgumentBuilder);
     }
@@ -76,7 +77,7 @@ public class ModsCommand {
                         "&6Mod meta:\n&b -info:&a %s &7(%s@%s)\n &b-Description:&f %s\n &b-Authors:&e %s",
                         meta.getName(), meta.getId(), meta.getVersion().toString(),
                         "Minecraft source code deobfuscation mappings by the fabric-yarn",
-                        "[fabric]"
+                        "fabric"
                 ));
             }
 
@@ -86,10 +87,18 @@ public class ModsCommand {
         return 1;
     }
 
-    private static void buildSuggestions(LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder) {
-        FabricLoader.getInstance().getAllMods().forEach(modContainer -> literalArgumentBuilder.then(
-                CommandManager.literal(modContainer.getMetadata().getId()).executes(c -> executeSingle(c, modContainer.getMetadata().getId()))
-        ));
-    }
+
+    private static SuggestionProvider<ServerCommandSource> provideSuggestion = (context, builder) -> {
+        builder.suggest("kilo_essentials");
+        FabricLoader.getInstance().getAllMods().forEach((modContainer) -> {
+            builder.suggest(modContainer.getMetadata().getId());
+        });
+        if (context.getInput().equals("kilo")) {
+            builder.suggest("OK");
+            context.getSource().sendFeedback(new LiteralText("nice!"), false);
+        }
+
+        return builder.buildFuture();
+    };
 
 }

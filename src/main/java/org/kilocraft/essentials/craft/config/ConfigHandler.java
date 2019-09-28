@@ -9,9 +9,10 @@ import java.util.ArrayList;
 
 public class ConfigHandler {
     public static ArrayList<String> configFiles = new ArrayList<String>(){{
-        add("general.yml");
-        add("messages.yml");
-        add("ranks.yml");
+        add("General.yml");
+        add("Messages.yml");
+        add("Ranks.yml");
+        add("CustomCommands.yml");
     }};
 
     public static void handle() {

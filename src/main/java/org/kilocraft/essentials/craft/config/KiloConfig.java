@@ -40,6 +40,10 @@ public class KiloConfig {
         return ConfigProvider.getConfig$Ranks();
     }
 
+    public static FileConfig getCustomCommands() {
+        return ConfigProvider.getConfig$CustomCommands();
+    }
+
     public static double getConfigVersion() {
         return schemaVersion;
     }

@@ -8,7 +8,7 @@ public enum Configs {
     GENERAL("General"),
     MESSAGES("Messages"),
     RANKS("Ranks"),
-    DATABASE("Database");
+    CUSTOMCOMMANDS("CustomCommands");
 
     private final String format = "yml";
     private String name;
