@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class PlayerHomeManager {
     NbtFile nbt = new NbtFile("/KiloEssentials/data/", "homes");
-    protected static PlayerHomeManager INSTANCE = null;
+    public static PlayerHomeManager INSTANCE = null;
     private HashMap<String, Home> hashMap = new HashMap<>();
 
     public void addHome(Home home) {
