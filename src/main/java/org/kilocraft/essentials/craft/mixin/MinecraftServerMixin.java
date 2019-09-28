@@ -2,7 +2,6 @@ package org.kilocraft.essentials.craft.mixin;
 
 import com.google.gson.JsonElement;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.LevelGeneratorType;
@@ -35,7 +34,7 @@ public abstract class MinecraftServerMixin {
         try {
             if (!homes.exists() && homes_old.exists()) throw new FileNotFoundException();
             CompoundTag tag = NbtIo.readCompressed(new FileInputStream(homes));
-            PlayerHomeManager.INSTANCE.fromNbt(tag);
+            PlayerHomeManager.INSTANCE.fronNbt(tag);
         } catch (IOException e) {
             System.err.println("Could not load homes.dat:");
             e.printStackTrace();
@@ -43,7 +42,7 @@ public abstract class MinecraftServerMixin {
                 System.out.println("Attempting to load backup homes...");
                 try {
                     CompoundTag tag = NbtIo.readCompressed(new FileInputStream(homes));
-                    PlayerHomeManager.INSTANCE.fromNbt(tag);
+                    PlayerHomeManager.INSTANCE.fronNbt(tag);
                 } catch (IOException e2) {
                     throw new RuntimeException("Could not load homes.dat_old - Crashing server to save data. Remove or fix homes.dat or homes.dat_old to continue");
 

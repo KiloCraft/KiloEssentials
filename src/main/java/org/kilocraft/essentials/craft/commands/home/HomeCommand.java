@@ -14,6 +14,7 @@ public class HomeCommand {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home");
         LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome");
         LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome");
+        LiteralArgumentBuilder<ServerCommandSource> addhomeLiteral = CommandManager.literal("addhome");
         LiteralArgumentBuilder<ServerCommandSource> homeAlias = CommandManager.literal("h");
         LiteralArgumentBuilder<ServerCommandSource> argumentList, argumentRemove, argumentAdd, argumentSet, argumentTeleport;
         RequiredArgumentBuilder<ServerCommandSource, String> secondArgumentAdd, secondArgumentRemove, secondArgumentSet, secondArgumentTeleport;
@@ -46,6 +47,7 @@ public class HomeCommand {
         homeAlias.then(secondArgumentTeleport);
         sethomeLiteral.then(secondArgumentSet);
         delhomeLiteral.then(secondArgumentRemove);
+        addhomeLiteral.then(secondArgumentAdd);
 
         dispatcher.register(homeLiteral);
         dispatcher.register(sethomeLiteral);
