@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.craft.homesystem.PlayerHomeManager;
 
 public class HomeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -54,6 +55,13 @@ public class HomeCommand {
 
 
     private static SuggestionProvider<ServerCommandSource> provideSuggestion = (context, builder) -> {
+        PlayerHomeManager.INSTANCE.getPlayerHomes(context.getSource().getPlayer().getUuid()).forEach((home) -> {
+            builder.suggest(home.name);
+        });
+
+        if (builder.getInput().equals("OK")) {
+            builder.suggest("NOU");
+        }
 
         return builder.buildFuture();
     };
