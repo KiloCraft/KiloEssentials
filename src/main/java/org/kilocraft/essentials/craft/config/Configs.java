@@ -20,7 +20,7 @@ public enum Configs {
     }
 
     public static String getConfigPath() {
-        return ConfigFile.currentDir + "^KiloEssentials^Config^".replace("^", File.separator);
+        return ConfigFile.currentDir + "^KiloEssentials^config^".replace("^", File.separator);
     }
 
     public String getName() {

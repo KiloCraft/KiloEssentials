@@ -47,6 +47,8 @@ public class HomeCommand {
         delhomeLiteral.then(secondArgumentRemove);
 
         dispatcher.register(homeLiteral);
+        dispatcher.register(sethomeLiteral);
+        dispatcher.register(delhomeLiteral);
         dispatcher.register(homeAlias);
     }
 

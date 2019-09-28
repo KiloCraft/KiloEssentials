@@ -30,7 +30,7 @@ public class ConfigHandler {
             );
         });
 
-        KiloEssentials.getInstance().getLogger().info("Successfully loaded the configuration files!");
-        KiloEssentials.getInstance().getLogger().info(configFiles.toString());
+        KiloEssentials.getLogger().info("Successfully loaded the configuration files!");
+        KiloEssentials.getLogger().info(configFiles.toString());
     }
 }

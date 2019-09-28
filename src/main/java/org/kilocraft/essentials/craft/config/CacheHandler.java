@@ -39,7 +39,7 @@ public class CacheHandler {
             })
         );
 
-        KiloEssentials.getInstance().getLogger().info(String.format(Mod.getLang().getProperty("datahandler.load.successfull"), DataType.values().length));
+        KiloEssentials.getLogger().info(String.format(Mod.getLang().getProperty("datahandler.load.successfull"), DataType.values().length));
     }
     public static void setActive(UUID player, DataType type,  boolean active) {
         if (!DATA_MAP.containsKey(type)) DATA_MAP.put(type, new ArrayList<>());

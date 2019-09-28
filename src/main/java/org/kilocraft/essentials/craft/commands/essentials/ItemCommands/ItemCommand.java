@@ -18,7 +18,7 @@ public class ItemCommand {
 //            }
 //        });
         ItemNameCommand.registerChild(argumentBuilder);
-        ItemLoreCommand.registerChild(argumentBuilder);
+        //ItemLoreCommand.registerChild(argumentBuilder);
 
         dispatcher.register(argumentBuilder);
     }
