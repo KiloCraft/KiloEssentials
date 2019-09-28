@@ -98,11 +98,11 @@ public class ItemLoreCommand {
 
 			if (line > lore.size() - 1) {
 				for (int i = lore.size(); i <= line; i++) {
-					lore.add(new StringTag("{\"text\":\"\"}"));
+					lore.add(StringTag.method_23256("{\"text\":\"\"}"));
 				}
 			}
 
-			lore.set(line, new StringTag("{\"text\":\"" + StringArgumentType.getString(context, "name...") + "\"}"));
+			lore.set(line, StringTag.method_23256("{\"text\":\"" + StringArgumentType.getString(context, "name...") + "\"}"));
 			itemTag.getCompound("display").put("Lore", lore);
 			item.setTag(itemTag);
 
