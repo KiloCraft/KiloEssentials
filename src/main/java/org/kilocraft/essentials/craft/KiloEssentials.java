@@ -28,12 +28,19 @@ public class KiloEssentials {
 		this.dataHandler = dataHandler;
 		this.configurableFeatures = configurableFeatures;
 
+		/**
+		 * IN
+		 * @TEST
+		 */
+		new KiloConfig();
 		CacheHandler.handle(false);
 
 		this.configurableFeatures.tryToRegister(new WarpManager(), "Warps");
 		this.configurableFeatures.tryToRegister(new CustomCommands(), "CustomCommands");
 
 		configurableFeatures.close();
+
+		//
 	}
 
 	public static Logger getLogger() {

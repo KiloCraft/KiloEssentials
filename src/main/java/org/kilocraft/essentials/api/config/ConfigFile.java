@@ -11,8 +11,10 @@ public class ConfigFile {
     private File config, configDir;
     private String configRes;
     boolean dontGenerate;
+    @Deprecated
     public static final String currentDir = System.getProperty("user.dir");
 
+    @Deprecated()
     public ConfigFile(String configFileName, String configFileDirectory, String resourceBaseFile, boolean dontGenerateCfg, boolean logToConsole) {
         this.configDir = new File(currentDir + configFileDirectory);
         this.config = new File(configDir.getAbsolutePath() + File.separator + configFileName);
