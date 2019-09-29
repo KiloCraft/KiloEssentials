@@ -17,14 +17,12 @@ public class ConfigBuilder {
     }
 
     public void build() {
-        this.config.load();
         try {
             hashMap.forEach((key, value) -> {
                 this.config.add(key, value);
             });
         } finally {
             this.config.save();
-            this.config.close();
         }
     }
 

@@ -31,7 +31,6 @@ public class ConfigurableFeatures {
     }
 
     public <F extends ConfigurableFeature> F tryToRegister(F f, String configID) {
-        config.load();
         boolean isEnabled = false;
         try {
             if (config.get("ConfigurableFeatures." + configID) == null) {
@@ -48,7 +47,6 @@ public class ConfigurableFeatures {
             if (isEnabled) register(f);
         }
 
-        config.close();
         return f;
     }
 

@@ -6,6 +6,7 @@ import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.config.CacheHandler;
 import org.kilocraft.essentials.craft.config.DataHandler;
 import org.kilocraft.essentials.craft.config.KiloConfig;
+import org.kilocraft.essentials.craft.customcommands.CustomCommands;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
 import org.kilocraft.essentials.craft.warps.WarpManager;
 
@@ -30,6 +31,7 @@ public class KiloEssentials {
 		CacheHandler.handle(false);
 
 		this.configurableFeatures.tryToRegister(new WarpManager(), "Warps");
+		this.configurableFeatures.tryToRegister(new CustomCommands(), "CustomCommands");
 
 		configurableFeatures.close();
 	}

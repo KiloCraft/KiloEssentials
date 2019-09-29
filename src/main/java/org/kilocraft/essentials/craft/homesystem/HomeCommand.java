@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.home;
+package org.kilocraft.essentials.craft.homesystem;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -7,7 +7,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.craft.homesystem.PlayerHomeManager;
 
 public class HomeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -31,6 +30,7 @@ public class HomeCommand {
         secondArgumentSet = CommandManager.argument("home", StringArgumentType.string());
 
         secondArgumentSet.suggests(provideSuggestion);
+        secondArgumentAdd.suggests(provideSuggestion);
         secondArgumentRemove.suggests(provideSuggestion);
         secondArgumentTeleport.suggests(provideSuggestion);
 

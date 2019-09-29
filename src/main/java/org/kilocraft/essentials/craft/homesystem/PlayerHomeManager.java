@@ -3,6 +3,7 @@ package org.kilocraft.essentials.craft.homesystem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.config.ConfigFile;
 import org.kilocraft.essentials.api.config.NbtFile;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
@@ -24,6 +25,12 @@ public class PlayerHomeManager implements ConfigurableFeature {
     NbtFile nbt = new NbtFile("/KiloEssentials/data/", "homes");
     public static PlayerHomeManager INSTANCE = null;
     private HashMap<String, Home> hashMap = new HashMap<>();
+
+    @Override
+    public boolean register() {
+        HomeCommand.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
+        return true;
+    }
 
     public void load() {
         File homes = new File(ConfigFile.currentDir + "/data/homes.dat");
@@ -93,10 +100,5 @@ public class PlayerHomeManager implements ConfigurableFeature {
         return hashMap;
     }
 
-    @Override
-    public boolean register() {
-
-        return true;
-    }
 }
 

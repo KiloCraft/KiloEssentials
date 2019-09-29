@@ -12,7 +12,6 @@ import org.kilocraft.essentials.craft.commands.GamemodeCommand;
 import org.kilocraft.essentials.craft.commands.VersionCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
-import org.kilocraft.essentials.craft.commands.home.HomeCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
@@ -55,7 +54,6 @@ public class KiloCommands {
         LocateBiomeCommand.register(dispatcher);
         NickCommand.register(dispatcher);
         ServerModNameCommand.register(dispatcher);
-        HomeCommand.register(dispatcher);
         ColoursCommand.register(dispatcher);
     }
 
