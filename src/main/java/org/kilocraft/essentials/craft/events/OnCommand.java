@@ -7,6 +7,6 @@ import org.kilocraft.essentials.api.event.serverEvents.ServerEvent$OnCommandExec
 public class OnCommand implements EventHandler<ServerEvent$OnCommandExecution> {
     @Override
     public void handle(ServerEvent$OnCommandExecution event) {
-        Mod.getLogger().info("%s: %s", event.getSource().getName(), event.getCommand());
+        Mod.getLogger().info("[%s]: %s", event.getSource().getName(), event.getCommand().replace("/", ""));
     }
 }

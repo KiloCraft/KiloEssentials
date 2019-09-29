@@ -1,0 +1,21 @@
+#Warps config File
+Schema: 1.0
+
+#- example:
+#      name: <name of the warp>
+#      permission_node: <permission node required to use, can be null>
+#      pos: <Integers (BlockPos) of the warp>
+#        x: 200
+#        y: 103
+#        z: 482
+#      dimension: <Enum Dimension, overworld | the_nether | the_end>
+
+Warps:
+  - example:
+      name: example_warp
+      permission_node: warp.example
+      pos:
+        x: 10
+        y: 10
+        z: 10
+      dimension: overworld

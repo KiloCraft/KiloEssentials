@@ -8,8 +8,8 @@ public class KiloConfig {
 
     public KiloConfig() {
         ConfigHandler.handle();
-        load();
     }
+
 
     public static void load() {
         ConfigProvider.loadAll();
@@ -42,6 +42,10 @@ public class KiloConfig {
 
     public static FileConfig getCustomCommands() {
         return ConfigProvider.getConfig$CustomCommands();
+    }
+
+    public static FileConfig getWarps() {
+        return ConfigProvider.getConfig$Warps();
     }
 
     public static double getConfigVersion() {

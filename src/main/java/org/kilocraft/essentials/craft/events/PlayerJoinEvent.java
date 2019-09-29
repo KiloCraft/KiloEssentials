@@ -1,14 +1,20 @@
 package org.kilocraft.essentials.craft.events;
 
+import io.netty.buffer.Unpooled;
+import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.PacketByteBuf;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnConnect;
 
 public class PlayerJoinEvent implements EventHandler<PlayerEvent$OnConnect> {
     @Override
     public void handle(PlayerEvent$OnConnect event) {
-        LiteralText text = (LiteralText) new LiteralText(String.format("%s Joined.", event.getPlayer().getName())).formatted(Formatting.GRAY);
-        event.getServer().getPlayerManager().broadcastChatMessage(text, false);
+        event.getServer().getPlayerManager().sendToAll(new LiteralText(event.getPlayer().getName().asFormattedString() + "joined.").formatted(Formatting.GRAY));
+
+        CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, (new PacketByteBuf(Unpooled.buffer())).writeString(KiloServer.getServer().getDisplayBrandName()));
+        event.getPlayer().getServer().getPlayerManager().sendToAll(packet);
     }
 }

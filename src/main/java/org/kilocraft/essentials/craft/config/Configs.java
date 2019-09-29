@@ -8,7 +8,8 @@ public enum Configs {
     GENERAL("General"),
     MESSAGES("Messages"),
     RANKS("Ranks"),
-    CUSTOMCOMMANDS("CustomCommands");
+    CUSTOMCOMMANDS("CustomCommands"),
+    WARPS("Warps.yml");
 
     private final String format = "yml";
     private String name;

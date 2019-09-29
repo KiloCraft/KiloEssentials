@@ -27,9 +27,10 @@ public class ServerModNameCommand {
 
     private static int execute(ServerCommandSource source, String s) {
         KiloServer.getServer().setDisplayBrandName(ChatColor.translateAlternateColorCodes('&',
-                String.format(s + "&r <- Fabric/KiloEssentials (%s, %s)", Mod.getMinecraftVersion(), Mod.getVersion())));
+                String.format(s + "&r <- Fabric/KiloEssentials (%s, %s)", Mod.getMinecraftVersion(), Mod.getVersion()))
+        );
 
-        source.sendFeedback(new LiteralText("You have successfully changed the custom brand name to:\n "
+        source.sendFeedback(new LiteralText("Changed displayBrandName to:\n "
         + KiloServer.getServer().getDisplayBrandName()), true);
 
         CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, (new PacketByteBuf(Unpooled.buffer())).writeString(KiloServer.getServer().getDisplayBrandName()));

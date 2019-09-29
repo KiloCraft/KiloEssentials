@@ -2,6 +2,7 @@ package org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl;
 
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnConnect;
 
@@ -14,11 +15,13 @@ public class PlayerEvent$OnConnectImpl implements PlayerEvent$OnConnect {
 
     private ClientConnection connection;
     private ServerPlayerEntity player;
+    private ServerPlayNetworkHandler networkHandler;
     private boolean isCancelled = false;
 
     public PlayerEvent$OnConnectImpl(ClientConnection connection, ServerPlayerEntity playerEntity) {
         this.connection = connection;
         this.player = playerEntity;
+        this.networkHandler = networkHandler;
     }
 
     public ServerPlayerEntity getPlayer() {
@@ -48,6 +51,16 @@ public class PlayerEvent$OnConnectImpl implements PlayerEvent$OnConnect {
     @Override
     public InetAddress getAddress() {
         return ((InetSocketAddress) connection.getAddress()).getAddress();
+    }
+
+    @Override
+    public ClientConnection getClientConnection() {
+        return this.connection;
+    }
+
+    @Override
+    public ServerPlayNetworkHandler getNetworkHandler() {
+        return this.networkHandler;
     }
 
     @Override

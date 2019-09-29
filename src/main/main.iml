@@ -33,5 +33,6 @@
     <orderEntry type="library" name="Gradle: net.fabricmc:sponge-mixin:0.7.11.36" level="project" />
     <orderEntry type="library" name="Gradle: io.netty:netty-all:4.1.25.Final" level="project" />
     <orderEntry type="library" name="Gradle: net.minecraft:minecraft:19w38b-mapped-net.fabricmc.yarn-4" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.0" level="project" />
   </component>
 </module>

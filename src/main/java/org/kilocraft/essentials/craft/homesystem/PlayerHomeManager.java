@@ -2,8 +2,15 @@ package org.kilocraft.essentials.craft.homesystem;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtIo;
+import org.kilocraft.essentials.api.config.ConfigFile;
 import org.kilocraft.essentials.api.config.NbtFile;
+import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +20,39 @@ import java.util.UUID;
  * @Author CODY_AI
  */
 
-public class PlayerHomeManager {
+public class PlayerHomeManager implements ConfigurableFeature {
     NbtFile nbt = new NbtFile("/KiloEssentials/data/", "homes");
     public static PlayerHomeManager INSTANCE = null;
     private HashMap<String, Home> hashMap = new HashMap<>();
+
+    public void load() {
+        File homes = new File(ConfigFile.currentDir + "/data/homes.dat");
+        File homes_old = new File(ConfigFile.currentDir + "/data/homes_old.dat");
+
+        PlayerHomeManager.INSTANCE = new PlayerHomeManager();
+        if (!homes.exists()) {
+            if (homes_old.exists()) {}
+            else return;
+        }
+        try {
+            if (!homes.exists() && homes_old.exists()) throw new FileNotFoundException();
+            CompoundTag tag = NbtIo.readCompressed(new FileInputStream(homes));
+            PlayerHomeManager.INSTANCE.fronNbt(tag);
+        } catch (IOException e) {
+            System.err.println("Could not load homes.dat:");
+            e.printStackTrace();
+            if (homes_old.exists()) {
+                System.out.println("Attempting to load backup homes...");
+                try {
+                    CompoundTag tag = NbtIo.readCompressed(new FileInputStream(homes));
+                    PlayerHomeManager.INSTANCE.fronNbt(tag);
+                } catch (IOException e2) {
+                    throw new RuntimeException("Could not load homes.dat_old - Crashing server to save data. Remove or fix homes.dat or homes.dat_old to continue");
+
+                }
+            }
+        }
+    }
 
     public void addHome(Home home) {
         hashMap.put(home.name, home);
@@ -53,15 +89,14 @@ public class PlayerHomeManager {
         });
     }
 
-
-
-
-    public static PlayerHomeManager getInstance() {
-        return INSTANCE;
-    }
-
     public HashMap<String, Home> getHashMap() {
         return hashMap;
+    }
+
+    @Override
+    public boolean register() {
+
+        return true;
     }
 }
 

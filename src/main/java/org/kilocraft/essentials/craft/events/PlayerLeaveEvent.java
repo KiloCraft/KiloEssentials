@@ -8,6 +8,6 @@ import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnDisconnect;
 public class PlayerLeaveEvent implements EventHandler<PlayerEvent$OnDisconnect> {
     @Override
     public void handle(PlayerEvent$OnDisconnect event) {
-        LiteralText text = (LiteralText) new LiteralText(String.format("%s Left.", event.getPlayer().getName())).formatted(Formatting.GRAY);
-        event.getServer().getPlayerManager().broadcastChatMessage(text, false);    }
+        event.getServer().getPlayerManager().sendToAll(new LiteralText(event.getPlayer().getName().asFormattedString() + "left.").formatted(Formatting.GRAY));
+    }
 }

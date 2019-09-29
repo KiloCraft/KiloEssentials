@@ -26,7 +26,7 @@ public class ServerImpl implements Server {
     public ServerImpl(MinecraftServer server, EventRegistry eventManager, CommandRegistry commandRegistry , String serverBrand) {
         this.server = server;
         this.serverBrand = serverBrand;
-
+        this.serverDisplayBrand = serverBrand;
         this.eventRegistry = eventManager;
         this.commandRegistry = commandRegistry;
     }
@@ -122,8 +122,7 @@ public class ServerImpl implements Server {
 
     @Override
     public String getDisplayBrandName() {
-        if (serverDisplayBrand.isEmpty()) return serverBrand;
-        else return serverDisplayBrand;
+        return this.serverDisplayBrand;
     }
 
     public String getBrandName() {

@@ -13,6 +13,7 @@ public class ConfigHandler {
         add("Messages.yml");
         add("Ranks.yml");
         add("CustomCommands.yml");
+        add("Warps.yml");
     }};
 
     public static void handle() {

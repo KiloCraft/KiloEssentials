@@ -6,29 +6,32 @@ import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.config.CacheHandler;
 import org.kilocraft.essentials.craft.config.DataHandler;
 import org.kilocraft.essentials.craft.config.KiloConfig;
+import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
+import org.kilocraft.essentials.craft.warps.WarpManager;
 
 public class KiloEssentials {
-	private static KiloEssentials INSTANCE;
+	public static KiloEssentials INSTANCE;
 	private static Logger logger = LogManager.getFormatterLogger("KiloEssentials");
 	private KiloConfig config;
 	private KiloEvents events;
 	private KiloCommands commands;
 	private DataHandler dataHandler;
+	private ConfigurableFeatures configurableFeatures;
 
-	public KiloEssentials(KiloConfig config, KiloEvents events, KiloCommands commands, DataHandler dataHandler) {
+	public KiloEssentials(KiloConfig config, KiloEvents events, KiloCommands commands, DataHandler dataHandler, ConfigurableFeatures configurableFeatures) {
 		logger.info("Running KiloEssentials version " + Mod.getVersion());
 
 		this.config = config;
 		this.events = events;
 		this.commands = commands;
 		this.dataHandler = dataHandler;
+		this.configurableFeatures = configurableFeatures;
 
 		CacheHandler.handle(false);
 
-	}
+		this.configurableFeatures.tryToRegister(new WarpManager(), "Warps");
 
-	public static KiloEssentials getInstance() {
-		return INSTANCE;
+		configurableFeatures.close();
 	}
 
 	public static Logger getLogger() {

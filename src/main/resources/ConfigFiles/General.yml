@@ -1,6 +1,2 @@
 #General config File
 Schema: 1.0
-
-#Developer options
-Dev:
- environment: false

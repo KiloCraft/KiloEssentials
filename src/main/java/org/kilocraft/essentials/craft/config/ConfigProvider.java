@@ -9,6 +9,7 @@ public class ConfigProvider {
     private static FileConfig config$Messages;
     private static FileConfig config$Ranks;
     private static FileConfig config$CustomCommands;
+    private static FileConfig config$Warps;
 
     public static void provide(File... file) {
         for (int i = 0; i < file.length; i++) {
@@ -21,10 +22,13 @@ public class ConfigProvider {
                     config$Ranks = FileConfig.of(file[i]);
                 case "CustomCommands.yml":
                     config$CustomCommands = FileConfig.of(file[i]);
+                case "Warps.yml":
+                    config$Warps = FileConfig.of(file[i]);
 
                 break;
             }
         }
+
     }
 
     protected static void loadAll() {
@@ -32,6 +36,7 @@ public class ConfigProvider {
         config$Messages.load();
         config$Ranks.load();
         config$CustomCommands.load();
+        config$Warps.load();
     }
 
     protected static void saveAll() {
@@ -39,6 +44,7 @@ public class ConfigProvider {
         config$Messages.save();
         config$Ranks.save();
         config$CustomCommands.save();
+        config$Warps.save();
     }
 
     protected static void closeAll() {
@@ -46,6 +52,7 @@ public class ConfigProvider {
         config$Messages.close();
         config$Ranks.close();
         config$CustomCommands.close();
+        config$Warps.close();
     }
 
     protected static void reloadAll() {
@@ -67,6 +74,10 @@ public class ConfigProvider {
 
     protected static FileConfig getConfig$CustomCommands() {
         return config$CustomCommands;
+    }
+
+    protected static FileConfig getConfig$Warps() {
+        return config$Warps;
     }
 
 }
