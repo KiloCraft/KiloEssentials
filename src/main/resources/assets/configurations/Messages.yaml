@@ -43,6 +43,6 @@ schema: 1.0
 #Alternate color character
 #Instead of using '§' you can use your own color chars
 #for defining the color/formatting codes!
-# [<Char> Default: '*']
+# [<Char> Default: *]
 altcolorchar: '*'
 #

@@ -1,14 +1,13 @@
 package org.kilocraft.essentials.craft.customcommands;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
-import org.kilocraft.essentials.craft.config.KiloConfig;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CustomCommands implements ConfigurableFeature {
-    private static FileConfig config = KiloConfig.getCustomCommands();
+    private static FileConfig config = null;
     private HashMap<String, CCommand> commandsMap = new HashMap<>();
 
     public static void handle() {

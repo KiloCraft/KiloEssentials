@@ -15,7 +15,6 @@ import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemComma
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
-import org.kilocraft.essentials.craft.config.KiloConfig;
 
 import java.util.Map;
 
@@ -58,13 +57,13 @@ public class KiloCommands {
     }
 
     public static String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
-        String string = KiloConfig.getMessages().get("commands.usage");
+        String string = KiloEssentials.INSTANCE.getConfig().getMessages().get("command.context.usage");
         Map<CommandNode<ServerCommandSource>, String> usage = dispatcher.getSmartUsage(literalCommandNode, source);
         return string.replaceFirst("%s", usage.toString());
     }
 
     public static String buildUsage(String usage, ServerCommandSource source) {
-        String string = KiloConfig.getMessages().get("commands.usage");
+        String string = KiloEssentials.INSTANCE.getConfig().getMessages().get("command.context.usage");
         return string.replaceFirst("%s", usage);
     }
 }

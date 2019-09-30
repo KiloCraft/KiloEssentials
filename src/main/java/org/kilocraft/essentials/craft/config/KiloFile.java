@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.newconfig;
+package org.kilocraft.essentials.craft.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,13 +9,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class KiloFile {
+    private File dir;
     private File file;
     private String name, path;
 
     public KiloFile(String name, String path) {
-        this.name = name;
         this.path = path;
-        this.file = new File(path);
+        this.dir = new File(path);
+        this.file = new File(path + name);
     }
 
     public KiloFile(String name, File file) {
@@ -34,6 +35,13 @@ public class KiloFile {
         else return createFile();
     }
 
+    public boolean tryToLoad(String resourcesFilePath) {
+        if (this.file.exists()) return true;
+        else if (createFile()) pasteFromResources(resourcesFilePath);
+
+        return this.file.exists();
+    }
+
     public void setPath(String path) {
         this.path = path;
     }
@@ -45,6 +53,7 @@ public class KiloFile {
     public boolean createFile() {
         if (!this.file.exists()) {
             try {
+                this.dir.mkdirs();
                 this.file.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -64,7 +73,7 @@ public class KiloFile {
 
     public void pasteFromResources(String resourcesPath) {
         try {
-            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcesPath);
             Files.copy(inputStream, Paths.get(this.file.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
