@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.newconfig;
+package org.kilocraft.essentials.craft.newconfig;
 
 import java.io.File;
 import java.io.IOException;

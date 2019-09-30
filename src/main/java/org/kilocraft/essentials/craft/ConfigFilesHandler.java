@@ -1,4 +1,6 @@
-package org.kilocraft.essentials.newconfig;
+package org.kilocraft.essentials.craft;
+
+import org.kilocraft.essentials.craft.newconfig.KiloFile;
 
 import java.util.HashMap;
 
@@ -10,13 +12,14 @@ public class ConfigFilesHandler {
 
     private HashMap<String, String> configFiles = new HashMap<String, String>(){{
         put("KiloEssentials.yaml", currentDir + "/");
-        put("Messages.yml", configDir);
+        put("Messages.yaml", configDir);
     }};
 
     public void handle() {
         configFiles.forEach((name, path) -> {
             KiloFile file = new KiloFile(name, path);
             file.tryToLoad();
+
         });
     }
 }

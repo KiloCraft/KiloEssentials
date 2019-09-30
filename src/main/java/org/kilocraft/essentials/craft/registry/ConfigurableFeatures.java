@@ -8,7 +8,7 @@ import org.kilocraft.essentials.craft.config.KiloConfig;
 import java.util.HashMap;
 
 public class ConfigurableFeatures {
-    private FileConfig config = FileConfig.of(KiloConfig.getGeneral().getFile().getAbsolutePath());
+    private FileConfig config = FileConfig.of("");
     private HashMap<String, Object> hashMap = new HashMap<>();
 
     public ConfigurableFeatures() {

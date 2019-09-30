@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.newconfig;
+package org.kilocraft.essentials.craft.newconfig;
 
 public class NewKiloConifg {
 
