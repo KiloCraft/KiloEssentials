@@ -1,0 +1,64 @@
+#> KILO ESSENTIALS MAIN CONFIG
+#Copyright (c) 2019 KiloCraft, All rights reserved.
+#Licensed under the MIT license.
+#Config author: CODY_AI (github: OnBlock)
+#
+# [COLOR/FORMATTING CODES]
+#                          Most of the fields support color codes!
+# You can use either '§' or '*' as the alternative color char!
+# If you see "(c/f)" in a parameter's name this means that field
+# support either the color code (c), formatting code (f) or both!
+# Example: "*b I'M AQUA!" Learn more at the link below:
+# https://minecraft.tools/en/color-code.php
+#
+# [GLOBAL VARIABLES]
+#                     You can use them in Strings
+# (or Integers) that supports variables!
+# If you see "(GV)" in a parameter's name this means that field
+# supports the variables! some parameters might only support
+# local variables "(LV)" but there will be a hint to what variables
+# You can use inside the string/integer!
+# You can get a value of a parameter from this file by requesting it
+# e.g: %PATH_TO_VARIABLE% like %SERVER_NAME% or %SERVER_MOTD_LINE1%
+#
+# [PARAMETER TYPES]
+#                   Parameter types are a good hint for you!
+# You can see what type of data the parameter needs to use!
+# e.g: [<greedyString> (c/f/GV)]
+# This means the parameter wants a greedy string that supports
+# Color/Formatting codes with global variables!
+#
+# [-] These are the parameter types:
+# String: a normal string without spaces and special characters.
+# Char: only a single character allowed.
+# greedyString: a String that allows both spaces and special characters.
+# Integer: just a normal integer without any decimal points.
+# Boolean: a boolean, its either true or false.
+# Double: a type of data, that allows decimal points.
+# MixedInteger: any type of integers are allows.
+#
+#Config Schema
+#Used by the mod to define the config schema/version
+schema: 1.0
+#Alternate color character
+#Instead of using '§' you can use your own color chars
+#for defining the color/formatting codes!
+# [<Char> Default: '*']
+altcolorchar: '*'
+#
+server:
+# [-] META
+  # Server name
+  # [<String>]
+  name: Cool Server
+  # Message of the day!
+  motd:
+    # [<greedyString> c/f/GV]
+    # - The message you can see in the server list
+    line1: "%server_name% *7-*b JOIN NOW!"
+    line2: "Use *6/help*r for more info!"
+
+  # Player count custom text
+  # The message you'll see on when you hover your cursor
+  # over the player count
+  playercountmessage: "%SERVER_NAME% is waiting for you to join!\n*b Use /help for more info!"

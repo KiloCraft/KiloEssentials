@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "kilo_essentials",
+  "version": "${version}",
+
+  "name": "Kilo Essentials",
+  "description": "Server essentials made for fabric",
+  "authors": [
+    "CODY_AI",
+    "MCrafterzz",
+    "Indicode",
+    "DrexHD"
+  ],
+
+  "license": "MIT",
+
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "org.kilocraft.essentials.onInit"
+    ]
+  },
+  "mixins": [
+    "kiloapi.mixins.json",
+    "kiloapi.events.mixins.json",
+    "kiloessentials.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.6.1+build.165"
+  }
+}
