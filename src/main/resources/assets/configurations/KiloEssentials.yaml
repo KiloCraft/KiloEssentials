@@ -5,7 +5,7 @@
 #
 # [COLOR/FORMATTING CODES]
 #                          Most of the fields support color codes!
-# You can use either '§' or '*' as the alternative color char!
+# You can use '*' as the alternative color char!
 # If you see "(c/f)" in a parameter's name this means that field
 # support either the color code (c), formatting code (f) or both!
 # Example: "*b I'M AQUA!" Learn more at the link below:
