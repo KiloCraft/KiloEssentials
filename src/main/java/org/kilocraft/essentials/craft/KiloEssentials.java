@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.config.DataHandler;
-import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
 import org.kilocraft.essentials.craft.threaded.ThreadedKiloConfig;
 
@@ -44,10 +43,6 @@ public class KiloEssentials {
 
 	public static Logger getLogger() {
 		return logger;
-	}
-
-	public KiloConifg getConfig() {
-		return config;
 	}
 
 	public KiloEvents getEvents() {
