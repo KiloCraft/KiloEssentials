@@ -5,7 +5,6 @@ import com.mojang.brigadier.context.CommandContext;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.chat.ChatColor;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 
@@ -18,11 +17,15 @@ public class TpsCommand {
     }
 
     public static int run(CommandContext<ServerCommandSource> context) {
-        LiteralText literalText = new LiteralText("tps ");
-        literalText.append(String.format("&6tps &8(&71m&8/&75m&8/&715m&8)&d %s&8,&d %s&8,&d %s&r",
-                SomeGlobals.tps1.getShortAverage(), SomeGlobals.tps5.getShortAverage(), SomeGlobals.tps15.getShortAverage()));
-
-        ChatColor.sendToUniversalSource(context.getSource(), literalText, false);
+        ChatColor.sendToUniversalSource(
+                context.getSource(),
+                String.format(
+                        "&6tps &8(&71m&8/&75m&8/&715m&8)&d %s&8,&d %s&8,&d %s&r",
+                        SomeGlobals.tps1.getShortAverage(),
+                        SomeGlobals.tps5.getShortAverage(),
+                        SomeGlobals.tps15.getShortAverage()
+                ),
+                false);
 
         return 1;
     }
