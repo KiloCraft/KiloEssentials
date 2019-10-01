@@ -16,14 +16,13 @@ public class KiloEssentials {
 	private KiloCommands commands;
 	private DataHandler dataHandler;
 	private ConfigurableFeatures configurableFeatures;
-	private ThreadedKiloConfig threadedKiloConfig;
+	private ThreadManager threadManager;
 
-	public KiloEssentials(KiloEvents events, KiloCommands commands, DataHandler dataHandler) {
-		this.threadedKiloConfig = new ThreadedKiloConfig("KiloConfig");
-		this.threadedKiloConfig.start();
+	public KiloEssentials(ThreadManager threadManager, KiloEvents events, KiloCommands commands, DataHandler dataHandler) {
+		threadManager.r
 
-		this.threadedKiloConfig.run();
-		this.config = this.threadedKiloConfig.getKiloConfig();
+
+		//this.config = threadedKiloConfig.getKiloConfig();
 		this.events = events;
 		this.commands = commands;
 		this.dataHandler = dataHandler;

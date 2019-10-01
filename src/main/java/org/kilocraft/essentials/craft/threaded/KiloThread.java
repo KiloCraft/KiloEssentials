@@ -3,10 +3,12 @@ package org.kilocraft.essentials.craft.threaded;
 import org.apache.logging.log4j.Logger;
 
 public interface KiloThread {
+
     /**
-     * The method to start the thread
+     * Name of the thread
+     * @return ""
      */
-    void start();
+    String getName();
 
     /**
      * The method that runs everything inside of it when called
@@ -18,4 +20,5 @@ public interface KiloThread {
      * @return a instance of the log manager with the same name as the thread
      */
     Logger getLogger();
+
 }
