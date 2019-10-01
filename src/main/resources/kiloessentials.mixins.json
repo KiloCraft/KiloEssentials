@@ -6,7 +6,8 @@
   "mixins": [
   ],
   "server": [
-    "MixinMinecraftDedicatedServer$setupServer"
+    "MixinMinecraftDedicatedServer$setupServer",
+    "MixinCommandManager"
   ],
   "injectors": {
     "defaultRequire": 1
