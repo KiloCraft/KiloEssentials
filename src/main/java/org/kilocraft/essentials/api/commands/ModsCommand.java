@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -30,7 +29,7 @@ public class ModsCommand {
                 .executes(c -> executeSingle(c, StringArgumentType.getString(c, "Mod Name/ID")));
 
         literalArgumentBuilder.then(modIdArgument);
-        modIdArgument.suggests(provideSuggestion);
+        buildSuggestions(literalArgumentBuilder);
 
         dispatcher.register(literalArgumentBuilder);
     }
@@ -88,17 +87,10 @@ public class ModsCommand {
     }
 
 
-    private static SuggestionProvider<ServerCommandSource> provideSuggestion = (context, builder) -> {
-        builder.suggest("kilo_essentials");
+    private static void buildSuggestions(LiteralArgumentBuilder<ServerCommandSource> builder) {
         FabricLoader.getInstance().getAllMods().forEach((modContainer) -> {
-            builder.suggest(modContainer.getMetadata().getId());
+            builder.then(CommandManager.literal(modContainer.getMetadata().getId())).executes(context -> executeSingle(context, modContainer.getMetadata().getId()));
         });
-        if (context.getInput().equals("kilo")) {
-            builder.suggest("OK");
-            context.getSource().sendFeedback(new LiteralText("nice!"), false);
-        }
-
-        return builder.buildFuture();
-    };
+    }
 
 }

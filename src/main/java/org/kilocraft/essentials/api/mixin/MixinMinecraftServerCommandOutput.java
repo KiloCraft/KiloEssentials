@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinMinecraftServerCommandOutput {
     @Inject(at = @At("RETURN"), method = "<init>")
     private void kilo$init(MinecraftServer minecraftServer, CallbackInfo ci) {
+
         new Mod();
 
         KiloServer.setServer(
@@ -31,7 +32,6 @@ public abstract class MixinMinecraftServerCommandOutput {
             )
         );
 
-        Mod.getLogger().info("Successfully started the minecraft server with KiloAPI");
         Mod.getLogger().info("Server set: " + KiloServer.getServer().getBrandName());
     }
 }

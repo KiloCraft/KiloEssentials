@@ -19,7 +19,6 @@ public class GamemodeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> fullLiteral = CommandManager.literal("gamemode");
         LiteralArgumentBuilder<ServerCommandSource> shortLiteral = CommandManager.literal("gm");
-        LiteralArgumentBuilder<ServerCommandSource> shortCommand;
 
         buildFullLiteral(fullLiteral);
         buildFullLiteral(shortLiteral);
@@ -36,14 +35,14 @@ public class GamemodeCommand {
         for (int i = 0; i < var; ++i) {
             GameMode mode = gameModes[i];
             if (!mode.equals(GameMode.NOT_SET)) {
-
+                builder.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.gamemode", 2));
                 builder.then(CommandManager.literal(mode.getName())
                         .then(
                                 CommandManager.argument("target", EntityArgumentType.players())
-                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kc.command.gamemode." + mode.getName() + ".others", 2))
+                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName() + ".others", 2))
                                         .executes(context -> execute(EntityArgumentType.getPlayers(context, "target"), mode, context.getSource()))
                         )
-                    .requires(source -> Thimble.hasPermissionChildOrOp(source, "kc.command.gamemode." + mode.getName() + ".self", 2))
+                    .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName() + ".self", 2))
                     .executes(context -> execute(Collections.singleton(context.getSource().getPlayer()), mode, context.getSource()))
                 );
 
@@ -53,10 +52,10 @@ public class GamemodeCommand {
 
         builder.then(CommandManager.argument("GameType", IntegerArgumentType.integer(0, 3))
                     .then(CommandManager.argument("target(s)", EntityArgumentType.players())
-                            .requires(source -> Thimble.hasPermissionChildOrOp(source, "kc.command.gamemode", 2))
+                            .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode", 2))
                             .executes(context -> executeByInteger(EntityArgumentType.getPlayers(context, "target(s)"), IntegerArgumentType.getInteger(context, "GameType"), context.getSource()))
                     )
-                .requires(source -> Thimble.hasPermissionChildOrOp(source, "kc.command.gamemode", 2))
+                .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode", 2))
                 .executes(context -> executeByInteger(Collections.singleton(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "GameType"), context.getSource()))
         );
 
@@ -75,10 +74,10 @@ public class GamemodeCommand {
                     CommandManager.literal(name)
                             .then(
                                     CommandManager.argument("target(s)", EntityArgumentType.players())
-                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kc.command.gamemode." + mode.getName(), 2))
+                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName(), 2))
                                         .executes(context -> execute(EntityArgumentType.getPlayers(context, "target(s)"), mode, context.getSource()))
                             )
-                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kc.command.gamemode." + mode.getName() + ".self", 2))
+                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName() + ".self", 2))
                         .executes(context -> execute(Collections.singleton(context.getSource().getPlayer()), mode, context.getSource()))
             );
 
@@ -88,7 +87,7 @@ public class GamemodeCommand {
     private static int execute(Collection<ServerPlayerEntity> playerEntities, GameMode gameMode, ServerCommandSource source) {
         playerEntities.forEach((player) -> {
             player.setGameMode(gameMode);
-            player.addChatMessage(new LiteralText("set gamemode to " + gameMode.getName()), false);
+            player.addChatMessage(new LiteralText("You have set the game type to: " + gameMode.getName()), false);
         });
         return 0;
     }

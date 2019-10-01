@@ -3,6 +3,7 @@ package org.kilocraft.essentials.api.server;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.command.CommandRegistry;
 import org.kilocraft.essentials.api.event.Event;
@@ -114,7 +115,14 @@ public interface Server {
      *
      * @param command Command to execute
      */
-    void exec(String command);
+    void execute(String command);
+
+    /**
+     * Execute a command
+     * @param source source (usually player) to execute the command
+     * @param command the string that contains the command to execute
+     */
+    void execute(ServerCommandSource source, String command);
 
     /**
      * Sets the brand name of the server
@@ -129,9 +137,12 @@ public interface Server {
      *
      * @return ""
      */
-
-    String getDisplayBrandName();
-
     String getBrandName();
 
+    /**
+     * Gets the custom brand name of the server
+     *
+     * @return ""
+     */
+    String getDisplayBrandName();
 }

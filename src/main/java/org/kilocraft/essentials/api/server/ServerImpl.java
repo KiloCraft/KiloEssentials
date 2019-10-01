@@ -3,6 +3,7 @@ package org.kilocraft.essentials.api.server;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.command.CommandRegistry;
@@ -111,8 +112,13 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void exec(String command) {
+    public void execute(String command) {
         server.getCommandManager().execute(server.getCommandSource(), command);
+    }
+
+    @Override
+    public void execute(ServerCommandSource source, String command) {
+        server.getCommandManager().execute(source, command);
     }
 
     @Override

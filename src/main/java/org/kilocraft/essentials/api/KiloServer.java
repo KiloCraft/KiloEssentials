@@ -33,6 +33,4 @@ public class KiloServer{
         KiloAPICommands.register(SomeGlobals.commandDispatcher);
     }
 
-    //PermissionService
-
 }
