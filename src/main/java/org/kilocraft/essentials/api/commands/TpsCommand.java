@@ -6,7 +6,7 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.api.chat.ChatColor;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 
 public class TpsCommand {
@@ -18,16 +18,12 @@ public class TpsCommand {
     }
 
     public static int run(CommandContext<ServerCommandSource> context) {
-        LiteralText literalText = new LiteralText("");
+        LiteralText literalText = new LiteralText("tps ");
+        literalText.append(String.format("&6tps &8(&71m&8/&75m&8/&715m&8)&d %s&8,&d %s&8,&d %s&r",
+                SomeGlobals.tps1.getShortAverage(), SomeGlobals.tps5.getShortAverage(), SomeGlobals.tps15.getShortAverage()));
 
-        literalText.append("TPS").formatted(Formatting.YELLOW);
-        literalText.append("(1m/5m/15m)").formatted(Formatting.GRAY);
-        literalText.append(": ").formatted(Formatting.YELLOW);
-        literalText.append(String.format("%sf", SomeGlobals.tps1.getAverage())).formatted(Formatting.GOLD);
-        literalText.append(String.format("%sf", SomeGlobals.tps5.getAverage())).formatted(Formatting.GOLD);
-        literalText.append(String.format("%sf", SomeGlobals.tps15.getAverage())).formatted(Formatting.GOLD);
+        ChatColor.sendToUniversalSource(context.getSource(), literalText, false);
 
-        context.getSource().sendFeedback(literalText, false);
         return 1;
     }
 }
