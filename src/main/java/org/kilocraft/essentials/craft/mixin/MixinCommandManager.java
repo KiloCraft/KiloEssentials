@@ -18,18 +18,14 @@ public abstract class MixinCommandManager {
     )
 
     private static void modify(String string_1, CallbackInfoReturnable<LiteralArgumentBuilder<ServerCommandSource>> cir) {
-        if (Commands.keCommandsToRename.contains(string_1.replace(Commands.keCommandsPrefix, ""))) {
-            cir.setReturnValue(LiteralArgumentBuilder.literal(string_1.replace(Commands.keCommandsPrefix, "")));
-        }
-        else if (Commands.vanillaCommandsToRename.contains(string_1)) {
+        if (Commands.vanillaCommandsToRename.contains(string_1)) {
             cir.setReturnValue(LiteralArgumentBuilder.literal(Commands.vanillaCommandsPrefix + string_1));
         }
-        else if (Commands.vanillaCommandsToRemove.contains(string_1)) {
-            cir.cancel();
+        else if (Commands.keCommandsToKeep.contains(string_1)) {
+            cir.setReturnValue(LiteralArgumentBuilder.literal(string_1.replace("ke_", "")));
         }
         else
             cir.setReturnValue(LiteralArgumentBuilder.literal(string_1));
-
     }
 
 }

@@ -39,7 +39,7 @@ public class StopCommand {
         return 1;
     }
 
-    synchronized private static void stopServer(ServerCommandSource source, String s) {
+    private synchronized static void stopServer(ServerCommandSource source, String s) {
         Iterator iterator = source.getMinecraftServer().getPlayerManager().getPlayerList().iterator();
         String reason = s;
         if (s.isEmpty()) reason = "&cServer closed!";
