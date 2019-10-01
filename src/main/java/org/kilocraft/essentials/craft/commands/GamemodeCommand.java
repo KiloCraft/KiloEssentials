@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class GamemodeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> fullLiteral = CommandManager.literal("gamemode");
+        LiteralArgumentBuilder<ServerCommandSource> fullLiteral = CommandManager.literal("ke_gamemode");
         LiteralArgumentBuilder<ServerCommandSource> shortLiteral = CommandManager.literal("gm");
 
         buildFullLiteral(fullLiteral);

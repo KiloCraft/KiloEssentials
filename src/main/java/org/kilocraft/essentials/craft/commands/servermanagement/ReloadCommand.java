@@ -10,7 +10,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 
 public class ReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(CommandManager.literal("reload")
+        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(CommandManager.literal("ke_reload")
             .requires(source -> source.hasPermissionLevel(3))
                 .then(CommandManager.literal("world").executes(c -> reloadWorld(c.getSource())))
                 .then(CommandManager.literal("config").executes(c -> reloadConfig(c.getSource(), true)))

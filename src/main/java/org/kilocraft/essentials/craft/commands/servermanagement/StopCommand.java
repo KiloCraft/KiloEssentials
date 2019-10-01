@@ -15,7 +15,7 @@ import java.util.Iterator;
 
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("stop")
+        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("ke_stop")
                 .then(CommandManager.argument("args", StringArgumentType.greedyString())
                     .executes(c -> execute(c, StringArgumentType.getString(c, "args"))))
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.server.stop", 2))
@@ -35,11 +35,11 @@ public class StopCommand {
             ChatColor.sendToUniversalSource(context.getSource(), "&cPlease confirm your action by doing:\n &8\"&7/stop -confirmed <optional: reason>&8\"", false);
         }
 
-        isConfirmed = false;
+        //isConfirmed = false;
         return 1;
     }
 
-    private static void stopServer(ServerCommandSource source, String s) {
+    synchronized private static void stopServer(ServerCommandSource source, String s) {
         Iterator iterator = source.getMinecraftServer().getPlayerManager().getPlayerList().iterator();
         String reason = s;
         if (s.isEmpty()) reason = "&cServer closed!";
