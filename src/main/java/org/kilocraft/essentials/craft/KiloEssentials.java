@@ -11,18 +11,17 @@ import org.kilocraft.essentials.craft.threaded.ThreadedKiloConfig;
 public class KiloEssentials {
 	public static KiloEssentials INSTANCE;
 	private static Logger logger = LogManager.getFormatterLogger("KiloEssentials");
-	private KiloConifg config;
 	private KiloEvents events;
 	private KiloCommands commands;
 	private DataHandler dataHandler;
 	private ConfigurableFeatures configurableFeatures;
-	private ThreadManager threadManager;
+	//Threads
+	ThreadManager kiloConfigThread;
 
-	public KiloEssentials(ThreadManager threadManager, KiloEvents events, KiloCommands commands, DataHandler dataHandler) {
-		threadManager.r
+	public KiloEssentials(KiloEvents events, KiloCommands commands, DataHandler dataHandler) {
+		kiloConfigThread = new ThreadManager(new ThreadedKiloConfig());
+		kiloConfigThread.start();
 
-
-		//this.config = threadedKiloConfig.getKiloConfig();
 		this.events = events;
 		this.commands = commands;
 		this.dataHandler = dataHandler;

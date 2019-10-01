@@ -1,23 +1,22 @@
 package org.kilocraft.essentials.craft;
 
+import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.craft.threaded.KiloThread;
 
 public class ThreadManager {
-    private String name;
+    private static String name;
     private KiloThread kiloThread;
     private Thread thread;
+    private ThreadManager threadManager;
 
-    public ThreadManager() {
-    }
-
-    public void setMainName(String string) {
-        name = string;
-    }
-
-    public <T extends KiloThread & Runnable> void register(T t) {
+    public <T extends KiloThread & Runnable> ThreadManager(T t) {
         this.kiloThread = t;
         this.thread = new Thread(t);
         this.thread.setName(getName());
+    }
+
+    public static void setMainName(String string) {
+        name = string;
     }
 
     public void start() {
@@ -34,6 +33,10 @@ public class ThreadManager {
 
     public Thread getThread() {
         return this.thread;
+    }
+
+    public Logger getLogger() {
+        return this.kiloThread.getLogger();
     }
 
     public KiloThread getKiloThread() {

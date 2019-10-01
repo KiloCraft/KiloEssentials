@@ -14,8 +14,8 @@ public class KiloConifg {
         put("Messages.yaml", configPath);
     }};
 
-    private FileConfig config;
-    private FileConfig messages;
+    private static FileConfig config;
+    private static FileConfig messages;
 
     public KiloConifg() {
         handle();
@@ -34,7 +34,7 @@ public class KiloConifg {
         }
     }
 
-    private void defineConfig(KiloFile kiloFile) {
+    private static void defineConfig(KiloFile kiloFile) {
         switch (kiloFile.getFile().getName()) {
             case "KiloEssentials.yaml":
                 config = FileConfig.of(kiloFile.getFile());
@@ -43,11 +43,11 @@ public class KiloConifg {
         }
     }
 
-    public FileConfig getMain() {
+    public static FileConfig getMain() {
         return config;
     }
 
-    public FileConfig getMessages() {
+    public static FileConfig getMessages() {
         return messages;
     }
 

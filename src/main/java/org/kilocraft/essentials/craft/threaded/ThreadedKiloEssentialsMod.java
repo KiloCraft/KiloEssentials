@@ -4,7 +4,6 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.KiloEvents;
-import org.kilocraft.essentials.craft.ThreadManager;
 import org.kilocraft.essentials.craft.config.DataHandler;
 
 public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
@@ -14,9 +13,13 @@ public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
     }
 
     @Override
+    public String getName() {
+        return "MAIN";
+    }
+
+    @Override
     public void run() {
         new KiloEssentials(
-                new ThreadManager("KiloEssentials"),
                 new KiloEvents(),
                 new KiloCommands(),
                 new DataHandler()
