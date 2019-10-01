@@ -15,6 +15,7 @@ import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemComma
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
+import org.kilocraft.essentials.craft.commands.servermanagement.StopCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 import java.util.Map;
@@ -55,6 +56,7 @@ public class KiloCommands {
         NickCommand.register(dispatcher);
         ServerModNameCommand.register(dispatcher);
         ColoursCommand.register(dispatcher);
+        StopCommand.register(dispatcher);
     }
 
     public static String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
