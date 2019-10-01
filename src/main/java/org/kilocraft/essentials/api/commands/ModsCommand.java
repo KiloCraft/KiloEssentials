@@ -25,8 +25,8 @@ public class ModsCommand {
                 .requires(s -> Thimble.hasPermissionOrOp(s, "kiloapi.command.mods", 2))
                 .executes(ModsCommand::executeMultiple);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = CommandManager.argument("Mod Name/ID", StringArgumentType.greedyString())
-                .executes(c -> executeSingle(c, StringArgumentType.getString(c, "Mod Name/ID")));
+        RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = CommandManager.argument("name/id", StringArgumentType.greedyString())
+                .executes(c -> executeSingle(c, StringArgumentType.getString(c, "name/id")));
 
         literalArgumentBuilder.then(modIdArgument);
         buildSuggestions(literalArgumentBuilder);
@@ -89,7 +89,8 @@ public class ModsCommand {
 
     private static void buildSuggestions(LiteralArgumentBuilder<ServerCommandSource> builder) {
         FabricLoader.getInstance().getAllMods().forEach((modContainer) -> {
-            builder.then(CommandManager.literal(modContainer.getMetadata().getId())).executes(context -> executeSingle(context, modContainer.getMetadata().getId()));
+            builder.then(CommandManager.literal(modContainer.getMetadata().getId())
+                    .executes(context -> executeSingle(context, modContainer.getMetadata().getId())));
         });
     }
 
