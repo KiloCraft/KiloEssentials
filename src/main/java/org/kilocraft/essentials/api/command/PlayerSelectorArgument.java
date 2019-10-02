@@ -16,11 +16,11 @@ public class PlayerSelectorArgument {
         return serverPlayerEntityFinder(StringArgumentType.getString(context, argumentName));
     }
 
-
     private static SuggestionProvider<ServerCommandSource> provideSuggestion = (context, builder) -> {
         KiloServer.getServer().getPlayerManager().getPlayerList().forEach((player) -> {
             builder.suggest(player.getName().asFormattedString());
         });
+
         return builder.buildFuture();
     };
 

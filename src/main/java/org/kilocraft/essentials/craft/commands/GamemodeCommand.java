@@ -2,6 +2,7 @@ package org.kilocraft.essentials.craft.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.arguments.EntityArgumentType;
@@ -10,6 +11,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.GameMode;
+import org.kilocraft.essentials.api.command.PlayerSelectorArgument;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,25 +37,27 @@ public class GamemodeCommand {
         for (int i = 0; i < var; ++i) {
             GameMode mode = gameModes[i];
             if (!mode.equals(GameMode.NOT_SET)) {
+
                 builder.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.gamemode", 2));
                 builder.then(CommandManager.literal(mode.getName())
                         .then(
-                                CommandManager.argument("target", EntityArgumentType.players())
+                                CommandManager.argument("target(s)", StringArgumentType.string())
+                                        .suggests(PlayerSelectorArgument.getSuggestions())
                                         .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName() + ".others", 2))
-                                        .executes(context -> execute(EntityArgumentType.getPlayers(context, "target"), mode, context.getSource()))
+                                        .executes(context -> execute(Collections.singletonList(PlayerSelectorArgument.getPlayer(context, "target(s)")), mode, context.getSource()))
                         )
                     .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName() + ".self", 2))
                     .executes(context -> execute(Collections.singleton(context.getSource().getPlayer()), mode, context.getSource()))
                 );
 
-
             }
         }
 
         builder.then(CommandManager.argument("GameType", IntegerArgumentType.integer(0, 3))
-                    .then(CommandManager.argument("target(s)", EntityArgumentType.players())
+                    .then(CommandManager.argument("target(s)", StringArgumentType.string())
+                            .suggests(PlayerSelectorArgument.getSuggestions())
                             .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode", 2))
-                            .executes(context -> executeByInteger(EntityArgumentType.getPlayers(context, "target(s)"), IntegerArgumentType.getInteger(context, "GameType"), context.getSource()))
+                            .executes(context -> executeByInteger(Collections.singletonList(PlayerSelectorArgument.getPlayer(context, "target(s)")), IntegerArgumentType.getInteger(context, "GameType"), context.getSource()))
                     )
                 .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode", 2))
                 .executes(context -> executeByInteger(Collections.singleton(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "GameType"), context.getSource()))

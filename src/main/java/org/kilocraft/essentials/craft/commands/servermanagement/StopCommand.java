@@ -35,7 +35,7 @@ public class StopCommand {
             ChatColor.sendToUniversalSource(context.getSource(), "&cPlease confirm your action by doing:\n &8\"&7/stop -confirmed <optional: reason>&8\"", false);
         }
 
-        //isConfirmed = false;
+        isConfirmed = false;
         return 1;
     }
 

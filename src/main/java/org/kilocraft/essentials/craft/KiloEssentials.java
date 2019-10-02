@@ -21,6 +21,7 @@ public class KiloEssentials {
 		kiloConfigThread = new ThreadManager(new ThreadedKiloConfig());
 		kiloConfigThread.start();
 
+
 		this.events = events;
 		this.commands = commands;
 		this.dataHandler = dataHandler;
