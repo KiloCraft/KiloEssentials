@@ -78,7 +78,7 @@ public class PlayerHomeManager implements ConfigurableFeature {
     public CompoundTag toNbt() {
         CompoundTag tag = new CompoundTag();
         hashMap.values().forEach(home -> {
-            ListTag listTag = tag.containsKey(home.owner_uuid) ? (ListTag) tag.getTag(home.owner_uuid) : new ListTag();
+            ListTag listTag = tag.contains(home.owner_uuid) ? (ListTag) tag.get(home.owner_uuid) : new ListTag();
             listTag.add(home.toTag());
         });
         return tag;
@@ -87,7 +87,7 @@ public class PlayerHomeManager implements ConfigurableFeature {
     public void fronNbt(CompoundTag tag) {
         hashMap.clear();
         tag.getKeys().forEach(key -> {
-            ListTag playerTag = (ListTag) tag.getTag(key);
+            ListTag playerTag = (ListTag) tag.get(key);
             playerTag.forEach(homeTag -> {
                 Home home = new Home((CompoundTag) homeTag);
                 home.owner_uuid = key;

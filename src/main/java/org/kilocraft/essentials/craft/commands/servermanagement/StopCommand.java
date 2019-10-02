@@ -30,7 +30,16 @@ public class StopCommand {
 
         if (isConfirmed) {
             TextColor.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
-            stopServer(context.getSource(), s.replace("-confirmed", ""));
+            Iterator iterator = context.getSource().getMinecraftServer().getPlayerManager().getPlayerList().iterator();
+            String reason = s.replace("-confirmed", "");
+            if (s.isEmpty()) reason = "&cServer closed!";
+
+            while (iterator.hasNext()) {
+                ServerPlayerEntity playerEntity = (ServerPlayerEntity) iterator.next();
+                playerEntity.networkHandler.disconnect(new LiteralText(TextColor.translateAlternateColorCodes('&', reason)));
+            }
+
+            stopServer(context.getSource());
         } else {
             TextColor.sendToUniversalSource(context.getSource(), "&cPlease confirm your action by doing:\n &8\"&7/stop -confirmed <optional: reason>&8\"", false);
         }
@@ -39,16 +48,7 @@ public class StopCommand {
         return 1;
     }
 
-    private synchronized static void stopServer(ServerCommandSource source, String s) {
-        Iterator iterator = source.getMinecraftServer().getPlayerManager().getPlayerList().iterator();
-        String reason = s;
-        if (s.isEmpty()) reason = "&cServer closed!";
-
-        while (iterator.hasNext()) {
-            ServerPlayerEntity playerEntity = (ServerPlayerEntity) iterator.next();
-            playerEntity.networkHandler.disconnect(new LiteralText(TextColor.translateAlternateColorCodes('&', reason)));
-        }
-
+    private synchronized static void stopServer(ServerCommandSource source) {
         source.getMinecraftServer().stop(false);
     }
 }

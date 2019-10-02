@@ -47,8 +47,8 @@ public class ItemLoreCommand {
 			if (item == null || item.isEmpty() == true) {
 				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 			} else {
-				if (itemTag == null || !itemTag.containsKey("display")
-						|| !itemTag.getCompound("display").containsKey("Lore")) {
+				if (itemTag == null || !itemTag.contains("lore")
+						|| !itemTag.getCompound("display").contains("Lore")) {
 					return 1;
 				} else {
 					itemTag.getCompound("display").remove("Lore");
@@ -87,7 +87,7 @@ public class ItemLoreCommand {
 				itemTag = new CompoundTag();
 			}
 
-			if (!itemTag.containsKey("display")) {
+			if (!itemTag.contains("display")) {
 				itemTag.put("display", new CompoundTag());
 			}
 
@@ -98,11 +98,11 @@ public class ItemLoreCommand {
 
 			if (line > lore.size() - 1) {
 				for (int i = lore.size(); i <= line; i++) {
-					lore.add(StringTag.method_23256("{\"text\":\"\"}"));
+					lore.add(StringTag.of("{\"text\":\"\"}"));
 				}
 			}
 
-			lore.set(line, StringTag.method_23256("{\"text\":\"" + StringArgumentType.getString(context, "name...") + "\"}"));
+			lore.set(line, StringTag.of("{\"text\":\"" + StringArgumentType.getString(context, "name...") + "\"}"));
 			itemTag.getCompound("display").put("Lore", lore);
 			item.setTag(itemTag);
 
