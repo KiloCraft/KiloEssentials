@@ -1,6 +1,5 @@
-package org.kilocraft.essentials.craft.commands.essentials;
+package org.kilocraft.essentials.craft.commands.essentials.locateCommands;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
@@ -12,10 +11,7 @@ import org.kilocraft.essentials.craft.provider.LocateBiomeProvider;
 import org.kilocraft.essentials.craft.provider.ThreadedBiomeLocator;
 
 public class LocateBiomeCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("ke_locate")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.locate", 2));
+    public static void registerAsChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
 
         LiteralArgumentBuilder<ServerCommandSource> literalBiome = CommandManager.literal("biome")
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.locate.biome", 2));
@@ -26,7 +22,6 @@ public class LocateBiomeCommand {
         });
 
         builder.then(literalBiome);
-        dispatcher.register(builder);
     }
 
     private static int execute(ServerCommandSource source, Biome biome) {

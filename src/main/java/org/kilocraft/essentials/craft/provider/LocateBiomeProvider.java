@@ -1,9 +1,8 @@
 package org.kilocraft.essentials.craft.provider;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.entity.player.PlayerEntity;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -16,15 +15,18 @@ import org.kilocraft.essentials.api.chat.LangText;
 import java.util.Objects;
 
 public class LocateBiomeProvider {
+    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Could not find that Biome nearby!"));
+
 
     public static String getBiomeName(Biome biome) {
         return Objects.requireNonNull(Registry.BIOME.getId(biome)).toString().replace("minecraft:", "");
     }
 
     public static int execute(ServerCommandSource source, Biome biome) {
+        source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.scanning", getBiomeName(biome)), false);
         BlockPos executorPos = new BlockPos(source.getPosition());
         BlockPos biomePos = null;
-        String biomeName = biome.getName().toString();
+        String biomeName = getBiomeName(biome);
         try {
             biomePos = spiralOutwardsLookingForBiome(source, source.getWorld(), biome, executorPos.getX(), executorPos.getZ());
         } catch (CommandSyntaxException e) {
@@ -60,6 +62,7 @@ public class LocateBiomeProvider {
         double x, z;
         double dist = 0;
         long start = System.currentTimeMillis();
+
         BlockPos.PooledMutable pos = BlockPos.PooledMutable.get();
         int previous = 0;
         int i = 0;
@@ -74,8 +77,6 @@ public class LocateBiomeProvider {
             if (previous == 3)
                 previous = 0;
             String dots = (previous == 0 ? "." : previous == 1 ? ".." : "...");
-            if (source.getEntity() instanceof PlayerEntity && !(source.getMinecraftServer() instanceof DedicatedServer))
-                source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.scanning", dots), false);
             if (i == 9216) {
                 previous++;
                 i = 0;
@@ -83,11 +84,13 @@ public class LocateBiomeProvider {
             i++;
             if (world.getBiome(pos).equals(biomeToFind)) {
                 pos.close();
-                if (source.getEntity() instanceof PlayerEntity && !(source.getMinecraftServer() instanceof DedicatedServer))
-                    source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.found", biomeToFind.getName(), (System.currentTimeMillis() - start) / 1000), false);
+                //Feedback: Success
+                source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.found", getBiomeName(biomeToFind).toLowerCase(), (System.currentTimeMillis() - start) / 1000), false);
                 return new BlockPos((int) x, 0, (int) z);
+
             }
         }
+        source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.failed", getBiomeName(biomeToFind), (System.currentTimeMillis() - start) / 1000), false);
         return null;
     }
 

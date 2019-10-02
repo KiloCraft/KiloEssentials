@@ -2,8 +2,8 @@ package org.kilocraft.essentials.craft.provider;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.biome.Biome;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.threaded.KiloThread;
 
 public class ThreadedBiomeLocator implements KiloThread, Runnable {
@@ -29,6 +29,6 @@ public class ThreadedBiomeLocator implements KiloThread, Runnable {
 
     @Override
     public Logger getLogger() {
-        return KiloEssentials.getLogger();
+        return LogManager.getFormatterLogger(getName());
     }
 }
