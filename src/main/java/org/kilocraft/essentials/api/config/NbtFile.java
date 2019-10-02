@@ -2,6 +2,7 @@ package org.kilocraft.essentials.api.config;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import org.kilocraft.essentials.craft.config.KiloConifg;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,8 +21,8 @@ public class NbtFile {
 
     public NbtFile(String path, String name) {
         this.name = name;
-        this.fileDir = new File(ConfigFile.currentDir + path);
-        this.file = new File(ConfigFile.currentDir + path + name + ".dat");
+        this.fileDir = new File(KiloConifg.getWorkingDirectory() + path);
+        this.file = new File(KiloConifg.getWorkingDirectory() + path + name + ".dat");
         this.compoundTag = new CompoundTag();
     }
 

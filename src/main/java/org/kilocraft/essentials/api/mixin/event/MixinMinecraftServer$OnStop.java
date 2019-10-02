@@ -4,7 +4,6 @@ import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.eventImpl.serverEventsImpl.ServerEvent$OnStopImpl;
-import org.kilocraft.essentials.api.event.serverEvents.ServerEvent$OnStop;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

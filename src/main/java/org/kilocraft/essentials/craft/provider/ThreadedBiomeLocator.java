@@ -10,9 +10,9 @@ public class ThreadedBiomeLocator implements KiloThread, Runnable {
     private ServerCommandSource source;
     private Biome biome;
 
-    public ThreadedBiomeLocator(ServerCommandSource source, Biome biome) {
-        this.source = source;
-        this.biome = biome;
+    public ThreadedBiomeLocator(ServerCommandSource commandSource, Biome biomeToFind) {
+        source = commandSource;
+        biome = biomeToFind;
 
         getLogger().info("Started thread BiomeLocator by %s for biome \"%s\"", source.getName(), LocateBiomeProvider.getBiomeName(biome));
     }
@@ -24,7 +24,7 @@ public class ThreadedBiomeLocator implements KiloThread, Runnable {
 
     @Override
     public void run() {
-        LocateBiomeProvider.execute(this.source, this.biome);
+        LocateBiomeProvider.execute(source, biome);
     }
 
     @Override

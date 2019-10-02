@@ -7,11 +7,10 @@ import com.mojang.brigadier.context.CommandContext;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextColor;
-
-import java.util.Iterator;
+import org.kilocraft.essentials.api.util.CommandSender;
+import org.kilocraft.essentials.craft.KiloEssentials;
 
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -30,25 +29,13 @@ public class StopCommand {
 
         if (isConfirmed) {
             TextColor.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
-            Iterator iterator = context.getSource().getMinecraftServer().getPlayerManager().getPlayerList().iterator();
-            String reason = s.replace("-confirmed", "");
-            if (s.isEmpty()) reason = "&cServer closed!";
-
-            while (iterator.hasNext()) {
-                ServerPlayerEntity playerEntity = (ServerPlayerEntity) iterator.next();
-                playerEntity.networkHandler.disconnect(new LiteralText(TextColor.translateAlternateColorCodes('&', reason)));
-            }
-
-            stopServer(context.getSource());
+            if (!CommandSender.isConsole(context.getSource())) KiloEssentials.getLogger().warn("%s is trying to stop the server", context.getSource().getName());
+            KiloServer.getServer().shutdown();
         } else {
-            TextColor.sendToUniversalSource(context.getSource(), "&cPlease confirm your action by doing:\n &8\"&7/stop -confirmed <optional: reason>&8\"", false);
+            TextColor.sendToUniversalSource(context.getSource(), "&cPlease confirm your action by doing:\n &8\"&7/stop -confirmed\"", false);
         }
 
-        isConfirmed = false;
         return 1;
     }
 
-    private synchronized static void stopServer(ServerCommandSource source) {
-        source.getMinecraftServer().stop(false);
-    }
 }

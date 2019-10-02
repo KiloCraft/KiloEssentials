@@ -4,16 +4,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.command.CommandRegistry;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
+import org.kilocraft.essentials.api.player.OfflinePlayer;
 import org.kilocraft.essentials.api.world.World;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public interface Server {
 
@@ -31,6 +32,31 @@ public interface Server {
      */
 
     PlayerManager getPlayerManager();
+
+    /**
+     * Gets the OfflinePlayers
+     *
+     * @return an Array of OfflinePlayers
+     */
+    ArrayList<OfflinePlayer> getOfflinePlayers();
+
+    /**
+     * Gets a player object by the given username.
+     * <p>
+     * This method may not return objects for offline players.
+     *
+     * @param name the name to look up
+     * @return a player if one was found, null otherwise
+     */
+    ServerPlayerEntity getPlayer(String name);
+
+    /**
+     * Gets the player with the given UUID.
+     *
+     * @param uuid UUID of the player to retrieve
+     * @return a player object if one was found, null otherwise
+     */
+    ServerPlayerEntity getPlayer(UUID uuid);
 
     /**
      * Gets the Server name
@@ -145,4 +171,32 @@ public interface Server {
      * @return ""
      */
     String getDisplayBrandName();
+
+    /**
+     * Stops the server
+     */
+    void shutdown();
+
+    /**
+     * Stops the server
+     * @param reason is used for kicking the players
+     */
+    void shutdown(String reason);
+
+    void shutdown(LiteralText reason);
+
+    /**
+     * Kicks all the players on the server
+     * @param reason to kick the player
+     */
+    void kickAll(String reason);
+
+    void kickAll(LiteralText reason);
+
+    /**
+     * Sends a message to console
+     *
+     * @param message you want to send
+     */
+    void sendMessage(String message);
 }

@@ -17,7 +17,6 @@ import java.util.Objects;
 public class LocateBiomeProvider {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Could not find that Biome nearby!"));
 
-
     public static String getBiomeName(Biome biome) {
         return Objects.requireNonNull(Registry.BIOME.getId(biome)).toString().replace("minecraft:", "");
     }
@@ -33,27 +32,26 @@ public class LocateBiomeProvider {
             e.printStackTrace();
         }
         if (biomePos == null) {
-            source.sendFeedback(new TranslatableText("optimizeWorld.stage.failed",
-                    biomeName, timeout / 1000).formatted(Formatting.RED), true);
+            source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.failed",  getBiomeName(biome), (System.currentTimeMillis() - start) / 1000), false);
         }
         BlockPos finalBiomePos = biomePos;
-        source.getMinecraftServer().execute(() -> {
-            int distance = MathHelper.floor(getDistance(executorPos.getX(), executorPos.getZ(), finalBiomePos.getX(), finalBiomePos.getZ()));
-            Text coordinates = Texts.bracketed(new TranslatableText("chat.coordinates", finalBiomePos.getX(), "~", finalBiomePos.getZ())
+
+        int distance = MathHelper.floor(getDistance(executorPos.getX(), executorPos.getZ(), finalBiomePos.getX(), finalBiomePos.getZ()));
+        Text coordinates = Texts.bracketed(new TranslatableText("chat.coordinates", finalBiomePos.getX(), "~", finalBiomePos.getZ())
                 .styled((style) -> {
                     style.setColor(Formatting.GREEN);
                     style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + source.getName() + " " + finalBiomePos.getX() + " ~ " + finalBiomePos.getZ()));
                     style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")));
                 })
-            );
+        );
 
-            source.sendFeedback(new TranslatableText("commands.locate.success", biomeName, coordinates, distance), false);
-        });
+        source.sendFeedback(new TranslatableText("commands.locate.success", biomeName, coordinates, distance), false);
 
         return 0;
     }
 
-    static int timeout = 120_000;
+    static long start;
+    static int timeout = 123_000;
     private static boolean SuccessfullLocate = false;
 
     private static BlockPos spiralOutwardsLookingForBiome(ServerCommandSource source, World world, Biome biomeToFind, double startX, double startZ) throws CommandSyntaxException {
@@ -61,7 +59,7 @@ public class LocateBiomeProvider {
         double b = 2 * Math.sqrt(Math.PI);
         double x, z;
         double dist = 0;
-        long start = System.currentTimeMillis();
+        start = System.currentTimeMillis();
 
         BlockPos.PooledMutable pos = BlockPos.PooledMutable.get();
         int previous = 0;
@@ -83,6 +81,7 @@ public class LocateBiomeProvider {
             }
             i++;
             if (world.getBiome(pos).equals(biomeToFind)) {
+                SuccessfullLocate = true;
                 pos.close();
                 //Feedback: Success
                 source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.found", getBiomeName(biomeToFind).toLowerCase(), (System.currentTimeMillis() - start) / 1000), false);

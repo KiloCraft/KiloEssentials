@@ -4,8 +4,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.config.ConfigFile;
 import org.kilocraft.essentials.api.config.NbtFile;
+import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
 import java.io.File;
@@ -33,8 +33,8 @@ public class PlayerHomeManager implements ConfigurableFeature {
     }
 
     public void load() {
-        File homes = new File(ConfigFile.currentDir + "/data/homes.dat");
-        File homes_old = new File(ConfigFile.currentDir + "/data/homes_old.dat");
+        File homes = new File(KiloConifg.getWorkingDirectory() + "/data/homes.dat");
+        File homes_old = new File(KiloConifg.getWorkingDirectory() + "/data/homes_old.dat");
 
         PlayerHomeManager.INSTANCE = new PlayerHomeManager();
         if (!homes.exists()) {

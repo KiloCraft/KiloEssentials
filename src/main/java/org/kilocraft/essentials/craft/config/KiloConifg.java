@@ -6,7 +6,7 @@ import org.kilocraft.essentials.craft.KiloEssentials;
 import java.util.HashMap;
 
 public class KiloConifg {
-    private String workingDir = System.getProperty("user.dir");
+    private static String workingDir = System.getProperty("user.dir");
     private String configPath = workingDir + "/KiloEssentials/config/";
     private String resourcePath = "assets/configurations/";
     private HashMap<String, String> configFiles = new HashMap<String, String>(){{
@@ -49,6 +49,10 @@ public class KiloConifg {
 
     public static FileConfig getMessages() {
         return messages;
+    }
+
+    public static String getWorkingDirectory() {
+        return workingDir;
     }
 
 }

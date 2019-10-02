@@ -12,7 +12,6 @@ import org.kilocraft.essentials.craft.provider.ThreadedBiomeLocator;
 
 public class LocateBiomeCommand {
     public static void registerAsChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
-
         LiteralArgumentBuilder<ServerCommandSource> literalBiome = CommandManager.literal("biome")
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.locate.biome", 2));
 

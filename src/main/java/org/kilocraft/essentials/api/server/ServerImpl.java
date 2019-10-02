@@ -1,15 +1,20 @@
 package org.kilocraft.essentials.api.server;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.command.CommandRegistry;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
+import org.kilocraft.essentials.api.player.OfflinePlayer;
 import org.kilocraft.essentials.api.util.MinecraftServerLoggable;
 import org.kilocraft.essentials.api.world.World;
 import org.kilocraft.essentials.api.world.worldimpl.WorldImpl;
@@ -17,12 +22,15 @@ import org.kilocraft.essentials.api.world.worldimpl.WorldImpl;
 import java.util.*;
 
 public class ServerImpl implements Server {
-
     private final MinecraftServer server;
     private final EventRegistry eventRegistry;
     private final CommandRegistry commandRegistry;
     private final String serverBrand;
     private String serverDisplayBrand;
+    private Gson gson;
+    private Logger logger = LogManager.getLogger();
+    private ArrayList<OfflinePlayer> offlinePlayers;
+    private String workingDir = System.getProperty("user.dir");
 
     public ServerImpl(MinecraftServer server, EventRegistry eventManager, CommandRegistry commandRegistry , String serverBrand) {
         this.server = server;
@@ -30,6 +38,23 @@ public class ServerImpl implements Server {
         this.serverDisplayBrand = serverBrand;
         this.eventRegistry = eventManager;
         this.commandRegistry = commandRegistry;
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
+
+//        logger.info("Loading player data...");
+//        try {
+//            offlinePlayers = gson.fromJson(new FileReader(workingDir + "userdata.json"), new TypeToken<ArrayList<OfflinePlayer>>(){}.getType());
+//            offlinePlayers.forEach((offlinePlayer) -> {
+//                offlinePlayer.setProfile(server.getUserCache().getByUuid(offlinePlayer.getUniqueId()));
+//                offlinePlayer.setServer(this);
+//            });
+//        } catch (FileNotFoundException e) {
+//            logger.info("Creating new userdata map...");
+//            offlinePlayers = new ArrayList<>();
+//        }
+
+    }
+
+    public void savePlayers() {
     }
 
     @Override
@@ -40,6 +65,21 @@ public class ServerImpl implements Server {
     @Override
     public PlayerManager getPlayerManager() {
         return this.server.getPlayerManager();
+    }
+
+    @Override
+    public ArrayList<OfflinePlayer> getOfflinePlayers() {
+        return offlinePlayers;
+    }
+
+    @Override
+    public ServerPlayerEntity getPlayer(String name) {
+        return getPlayerManager().getPlayer(name);
+    }
+
+    @Override
+    public ServerPlayerEntity getPlayer(UUID uuid) {
+        return getPlayerManager().getPlayer(uuid);
     }
 
     @Override
@@ -129,6 +169,42 @@ public class ServerImpl implements Server {
     @Override
     public String getDisplayBrandName() {
         return this.serverDisplayBrand;
+    }
+
+    @Override
+    public void shutdown() {
+        savePlayers();
+
+        this.server.stop(false);
+    }
+
+    @Override
+    public void shutdown(String reason) {
+        kickAll(reason);
+        shutdown();
+    }
+
+    @Override
+    public void shutdown(LiteralText reason) {
+        kickAll(reason);
+        shutdown();
+    }
+
+    @Override
+    public void kickAll(String reason) {
+        kickAll(new LiteralText(reason));
+    }
+
+    @Override
+    public void kickAll(LiteralText reason) {
+        this.server.getPlayerManager().getPlayerList().forEach((playerEntity) -> {
+            playerEntity.networkHandler.disconnect(reason);
+        });
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        getLogger().info(message);
     }
 
     public String getBrandName() {
