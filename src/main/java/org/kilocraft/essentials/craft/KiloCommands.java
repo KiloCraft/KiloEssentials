@@ -56,7 +56,7 @@ public class KiloCommands {
         CraftingbenchCommand.register(dispatcher);
         NickCommand.register(dispatcher);
         ServerModNameCommand.register(dispatcher);
-        ColoursCommand.register(dispatcher);
+        ColorsCommand.register(dispatcher);
         StopCommand.register(dispatcher);
     }
 

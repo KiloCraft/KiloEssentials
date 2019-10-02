@@ -9,7 +9,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
-import org.kilocraft.essentials.api.chat.ChatColor;
+import org.kilocraft.essentials.api.chat.TextColor;
 import org.kilocraft.essentials.api.chat.LangText;
 
 public class ItemNameCommand {
@@ -49,7 +49,7 @@ public class ItemNameCommand {
 				}
 
 				item.setCustomName(new LiteralText(
-						ChatColor.translateAlternateColorCodes('&', StringArgumentType.getString(context, "name..."))));
+						TextColor.translateAlternateColorCodes('&', StringArgumentType.getString(context, "name..."))));
 
 				player.sendMessage(LangText.getFormatter(true, "command.item.name.success",
 						StringArgumentType.getString(context, "name...")));

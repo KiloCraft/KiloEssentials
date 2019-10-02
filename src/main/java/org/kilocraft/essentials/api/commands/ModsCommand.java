@@ -13,7 +13,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.api.chat.ChatColor;
+import org.kilocraft.essentials.api.chat.TextColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ModsCommand {
         FabricLoader.getInstance().getAllMods().forEach(modContainer -> mods.add(modContainer.getMetadata().getName()));
 
         LiteralText text = new LiteralText("&6Mods (" + i + " loaded):&f " + mods.toString().replace("[","").replace("]", ""));
-        ChatColor.sendToUniversalSource(context.getSource(), text, false);
+        TextColor.sendToUniversalSource(context.getSource(), text, false);
         return 1;
     }
 
@@ -80,7 +80,7 @@ public class ModsCommand {
                 ));
             }
 
-            ChatColor.sendToUniversalSource(context.getSource(), text, false);
+            TextColor.sendToUniversalSource(context.getSource(), text, false);
         }
 
         return 1;

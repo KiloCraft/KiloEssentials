@@ -13,7 +13,7 @@ import org.kilocraft.essentials.api.util.CommandSender;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public enum ChatColor {
+public enum TextColor {
     /**
      * Represents black
      */
@@ -118,14 +118,14 @@ public enum ChatColor {
     private final boolean isFormat;
     private final Formatting formatting;
     private final String toString;
-    private static final Map<Integer, ChatColor> BY_ID = Maps.newHashMap();
-    private static final Map<Character, ChatColor> BY_CHAR = Maps.newHashMap();
+    private static final Map<Integer, TextColor> BY_ID = Maps.newHashMap();
+    private static final Map<Character, TextColor> BY_CHAR = Maps.newHashMap();
 
-    private ChatColor(char code, int intCode, Formatting formatting) {
+    private TextColor(char code, int intCode, Formatting formatting) {
         this(code, intCode, formatting, false);
     }
 
-    private ChatColor(char code, int intCode, Formatting formatting, boolean isFormat) {
+    private TextColor(char code, int intCode, Formatting formatting, boolean isFormat) {
         this.code = code;
         this.intCode = intCode;
         this.isFormat = isFormat;
@@ -183,7 +183,7 @@ public enum ChatColor {
      *     or null if it doesn't exist
      */
     @Nullable
-    public static ChatColor getByChar(char code) {
+    public static TextColor getByChar(char code) {
         return BY_CHAR.get(code);
     }
 
@@ -195,7 +195,7 @@ public enum ChatColor {
      *     or null if it doesn't exist
      */
     @Nullable
-    public static ChatColor getByChar(@NotNull String code) {
+    public static TextColor getByChar(@NotNull String code) {
         Validate.notNull(code, "Code cannot be null");
         Validate.isTrue(code.length() > 0, "Code must have at least one char");
 
@@ -237,7 +237,7 @@ public enum ChatColor {
 
         for (int i = 0; i < b.length - 1; i++) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
-                b[i] = ChatColor.COLOR_CHAR;
+                b[i] = TextColor.COLOR_CHAR;
                 b[i+1] = Character.toLowerCase(b[i+1]);
             }
         }
@@ -251,7 +251,7 @@ public enum ChatColor {
 
         for (int i = 0; i < b.length -1; i++) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
-                b[i] = ChatColor.COLOR_CHAR;
+                b[i] = TextColor.COLOR_CHAR;
                 b[i+1] = Character.toLowerCase(b[i+1]);
             }
         }
@@ -263,7 +263,7 @@ public enum ChatColor {
     public static String removeAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
         for (char c : "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".toCharArray()) {
-            textToTranslate = textToTranslate.replace(String.valueOf(ChatColor.COLOR_CHAR) + c, "");
+            textToTranslate = textToTranslate.replace(String.valueOf(TextColor.COLOR_CHAR) + c, "");
             textToTranslate = textToTranslate.replace(String.valueOf(altColorChar) + c, "");
         }
         return textToTranslate;
@@ -279,6 +279,17 @@ public enum ChatColor {
             literalText = new LiteralText(removeAlternateColorCodes('&', text));
         } else {
             literalText = new LiteralText(translateAlternateColorCodes('&', text));
+        }
+
+        source.sendFeedback(literalText, log);
+    }
+
+    public static void sendToUniversalSource(char altColorChar, ServerCommandSource source, String text, boolean log) {
+        LiteralText literalText;
+        if (CommandSender.isConsole(source)) {
+            literalText = new LiteralText(removeAlternateColorCodes(altColorChar, text));
+        } else {
+            literalText = new LiteralText(translateAlternateColorCodes(altColorChar, text));
         }
 
         source.sendFeedback(literalText, log);
@@ -306,7 +317,7 @@ public enum ChatColor {
             char section = input.charAt(index);
             if (section == COLOR_CHAR && index < length - 1) {
                 char c = input.charAt(index + 1);
-                ChatColor color = getByChar(c);
+                TextColor color = getByChar(c);
 
                 if (color != null) {
                     result = color.toString() + result;
@@ -323,7 +334,7 @@ public enum ChatColor {
     }
 
     static {
-        for (ChatColor color : values()) {
+        for (TextColor color : values()) {
             BY_ID.put(color.intCode, color);
             BY_CHAR.put(color.code, color);
         }

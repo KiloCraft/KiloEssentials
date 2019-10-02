@@ -9,7 +9,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.api.chat.ChatColor;
+import org.kilocraft.essentials.api.chat.TextColor;
 
 import java.util.Iterator;
 
@@ -29,10 +29,10 @@ public class StopCommand {
         if (s.startsWith("-confirmed")) isConfirmed = true;
 
         if (isConfirmed) {
-            ChatColor.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
+            TextColor.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
             stopServer(context.getSource(), s.replace("-confirmed", ""));
         } else {
-            ChatColor.sendToUniversalSource(context.getSource(), "&cPlease confirm your action by doing:\n &8\"&7/stop -confirmed <optional: reason>&8\"", false);
+            TextColor.sendToUniversalSource(context.getSource(), "&cPlease confirm your action by doing:\n &8\"&7/stop -confirmed <optional: reason>&8\"", false);
         }
 
         isConfirmed = false;
@@ -46,7 +46,7 @@ public class StopCommand {
 
         while (iterator.hasNext()) {
             ServerPlayerEntity playerEntity = (ServerPlayerEntity) iterator.next();
-            playerEntity.networkHandler.disconnect(new LiteralText(ChatColor.translateAlternateColorCodes('&', reason)));
+            playerEntity.networkHandler.disconnect(new LiteralText(TextColor.translateAlternateColorCodes('&', reason)));
         }
 
         source.getMinecraftServer().stop(false);
