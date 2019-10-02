@@ -8,16 +8,23 @@ import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.kilocraft.essentials.api.chat.LangText;
 
+import java.util.Objects;
+
 public class LocateBiomeProvider {
+
+    public static String getBiomeName(Biome biome) {
+        return Objects.requireNonNull(Registry.BIOME.getId(biome)).toString().replace("minecraft:", "");
+    }
 
     public static int execute(ServerCommandSource source, Biome biome) {
         BlockPos executorPos = new BlockPos(source.getPosition());
         BlockPos biomePos = null;
-        String biomeName = biome.getName().asFormattedString();
+        String biomeName = biome.getName().toString();
         try {
             biomePos = spiralOutwardsLookingForBiome(source, source.getWorld(), biome, executorPos.getX(), executorPos.getZ());
         } catch (CommandSyntaxException e) {

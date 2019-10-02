@@ -8,6 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.kilocraft.essentials.craft.ThreadManager;
+import org.kilocraft.essentials.craft.provider.LocateBiomeProvider;
 import org.kilocraft.essentials.craft.provider.ThreadedBiomeLocator;
 
 public class LocateBiomeCommand {
@@ -19,8 +20,8 @@ public class LocateBiomeCommand {
         LiteralArgumentBuilder<ServerCommandSource> literalBiome = CommandManager.literal("biome")
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.locate.biome", 2));
 
-        Registry.BIOME.forEach((biome) -> {
-            literalBiome.then(CommandManager.literal(biome.getName().asFormattedString())
+        Registry.BIOME.stream().forEach((biome) -> {
+            literalBiome.then(CommandManager.literal(LocateBiomeProvider.getBiomeName(biome))
                 .executes(c -> execute(c.getSource(), biome)));
         });
 
