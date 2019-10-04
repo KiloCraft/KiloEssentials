@@ -16,7 +16,7 @@ public class LocateBiomeCommand {
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.locate.biome", 2));
 
         Registry.BIOME.stream().forEach((biome) -> {
-            literalBiome.then(CommandManager.literal(LocateBiomeProvider.getBiomeName(biome))
+            literalBiome.then(CommandManager.literal(LocateBiomeProvider.getBiomeId(biome))
                 .executes(c -> execute(c.getSource(), biome)));
         });
 

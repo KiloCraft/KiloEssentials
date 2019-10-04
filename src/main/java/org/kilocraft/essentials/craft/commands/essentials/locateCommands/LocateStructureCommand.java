@@ -4,8 +4,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.world.Structures;
 import org.kilocraft.essentials.craft.ThreadManager;
+import org.kilocraft.essentials.craft.provider.LocateStructureProvider;
 import org.kilocraft.essentials.craft.provider.ThreadedStructureLocator;
 
 public class LocateStructureCommand {
@@ -24,6 +26,7 @@ public class LocateStructureCommand {
     }
 
     private static int execute(ServerCommandSource source, String structure) {
+        source.sendFeedback(LangText.getFormatter(true, "command.locate.scanning", LocateStructureProvider.getStructureName(structure)), false);
         ThreadManager thread = new ThreadManager(new ThreadedStructureLocator(source, structure));
         thread.start();
 

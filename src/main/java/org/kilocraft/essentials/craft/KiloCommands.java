@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
-import org.kilocraft.essentials.craft.commands.VersionCommand;
+import org.kilocraft.essentials.craft.commands.InfoCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateCommand;
@@ -44,7 +44,7 @@ public class KiloCommands {
             SharedConstants.isDevelopment = true;
         }
 
-        VersionCommand.register(dispatcher);
+        InfoCommand.register(dispatcher);
         ReloadCommand.register(dispatcher);
         GamemodeCommand.register(dispatcher);
         LocateCommand.register(dispatcher);

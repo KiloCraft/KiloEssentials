@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.craft.provider;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
@@ -15,14 +14,17 @@ import org.kilocraft.essentials.api.chat.LangText;
 import java.util.Objects;
 
 public class LocateBiomeProvider {
-    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Could not find that Biome nearby!"));
-
-    public static String getBiomeName(Biome biome) {
+    public static String getBiomeId(Biome biome) {
         return Objects.requireNonNull(Registry.BIOME.getId(biome)).toString().replace("minecraft:", "");
     }
 
+    public static String getBiomeName(Biome biome) {
+        String s = getBiomeId(biome).replaceAll("_", " ");
+        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
+    }
+
     public static int execute(ServerCommandSource source, Biome biome) {
-        source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.scanning", getBiomeName(biome)), false);
+        source.sendFeedback(LangText.getFormatter(true, "command.locate.scanning", getBiomeName(biome)), false);
         BlockPos executorPos = new BlockPos(source.getPosition());
         BlockPos biomePos = null;
         String biomeName = getBiomeName(biome);
@@ -84,7 +86,7 @@ public class LocateBiomeProvider {
                 SuccessfullLocate = true;
                 pos.close();
                 //Feedback: Success
-                source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.found", getBiomeName(biomeToFind).toLowerCase(), (System.currentTimeMillis() - start) / 1000), false);
+                source.sendFeedback(LangText.getFormatter(true, "command.locate.found", getBiomeName(biomeToFind).toLowerCase(), (System.currentTimeMillis() - start) / 1000), false);
                 return new BlockPos((int) x, 0, (int) z);
 
             }
