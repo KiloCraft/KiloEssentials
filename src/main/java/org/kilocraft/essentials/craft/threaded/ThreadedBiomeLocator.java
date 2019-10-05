@@ -1,10 +1,10 @@
-package org.kilocraft.essentials.craft.provider;
+package org.kilocraft.essentials.craft.threaded;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.craft.threaded.KiloThread;
+import org.kilocraft.essentials.craft.provider.LocateBiomeProvider;
 
 public class ThreadedBiomeLocator implements KiloThread, Runnable {
     private ServerCommandSource source;

@@ -8,8 +8,8 @@ public class onInit implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
         ThreadManager.setMainName("KiloEssentials");
-        ThreadManager main = new ThreadManager(new ThreadedKiloEssentialsMod());
+        ThreadManager mainThread = new ThreadManager(new ThreadedKiloEssentialsMod());
 
-        main.start();
+        mainThread.start();
     }
 }

@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.KiloEvents;
-import org.kilocraft.essentials.craft.config.DataHandler;
+import org.kilocraft.essentials.craft.data.KiloData;
 
 public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
     private Logger logger;
@@ -14,7 +14,7 @@ public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
 
     @Override
     public String getName() {
-        return "MAIN";
+        return "Main";
     }
 
     @Override
@@ -22,7 +22,7 @@ public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
         new KiloEssentials(
                 new KiloEvents(),
                 new KiloCommands(),
-                new DataHandler()
+                new KiloData()
         );
     }
 

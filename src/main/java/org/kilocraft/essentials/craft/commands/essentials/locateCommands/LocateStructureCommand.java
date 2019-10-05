@@ -8,7 +8,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.world.Structures;
 import org.kilocraft.essentials.craft.ThreadManager;
 import org.kilocraft.essentials.craft.provider.LocateStructureProvider;
-import org.kilocraft.essentials.craft.provider.ThreadedStructureLocator;
+import org.kilocraft.essentials.craft.threaded.ThreadedStructureLocator;
 
 public class LocateStructureCommand {
     public static void registerAsChild(LiteralArgumentBuilder<ServerCommandSource> builder) {

@@ -1,17 +1,17 @@
-package org.kilocraft.essentials.craft.provider;
+package org.kilocraft.essentials.craft.threaded;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.craft.threaded.KiloThread;
+import org.kilocraft.essentials.craft.provider.LocateStructureProvider;
 
 public class ThreadedStructureLocator implements KiloThread, Runnable {
     private ServerCommandSource source;
     private String name;
-    public ThreadedStructureLocator(ServerCommandSource source, String name) {
-        this.source = source;
-        this.name = name;
+    public ThreadedStructureLocator(ServerCommandSource commandSource, String structureName) {
+        source = commandSource;
+        name = structureName;
         getLogger().info("Started thread StructureLocator by %s for structure \"%s\"", source.getName(), name);
     }
 
@@ -23,7 +23,7 @@ public class ThreadedStructureLocator implements KiloThread, Runnable {
     @Override
     public void run() {
         try {
-            LocateStructureProvider.execute(this.source, this.name);
+            LocateStructureProvider.execute(source, name);
         } catch (CommandSyntaxException e) {
             e.printStackTrace();
         }

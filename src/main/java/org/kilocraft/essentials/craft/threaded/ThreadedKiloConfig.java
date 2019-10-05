@@ -13,7 +13,7 @@ public class ThreadedKiloConfig implements Runnable, KiloThread {
 
     @Override
     public String getName() {
-        return "CONFIG";
+        return "Config";
     }
 
     public void run() {
