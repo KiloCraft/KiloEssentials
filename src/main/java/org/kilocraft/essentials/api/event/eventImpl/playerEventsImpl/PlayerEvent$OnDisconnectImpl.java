@@ -2,7 +2,6 @@ package org.kilocraft.essentials.api.event.eventImpl.playerEventsImpl;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnDisconnect;
 
 public class PlayerEvent$OnDisconnectImpl implements PlayerEvent$OnDisconnect {
