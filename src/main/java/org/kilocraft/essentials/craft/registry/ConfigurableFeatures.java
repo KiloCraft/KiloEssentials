@@ -39,7 +39,7 @@ public class ConfigurableFeatures {
                 configBuilder.addValue("ConfigurableFeatures." + configID, true);
                 configBuilder.build();
 
-                if (KiloConfig.getGeneral().get("ConfigurableFeatures." + configID)) {
+                if (KiloConfig.getGeneral().get("ConfigurableFeatures." + configID) != null) {
                     register(f);
                 }
             }
