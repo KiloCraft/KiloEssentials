@@ -12,13 +12,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class MixinServerPlayerEntity$PlayerEvent$OnKill {
+public abstract class MixinServerPlayerEntity$PlayerEvent$OnDeath {
 
-    @Shadow
-    public ServerPlayerEntity player;
     @Inject(at = @At("HEAD"), method = "onDeath")
     private void oky$death(DamageSource damageSource_1, CallbackInfo ci) {
-        PlayerEvent$OnDeath event = KiloServer.getServer().triggerEvent(new PlayerEvent$OnDeathImpl(player));
+        PlayerEvent$OnDeath event = KiloServer.getServer().triggerEvent(new PlayerEvent$OnDeathImpl(this));
     }
 
 }
