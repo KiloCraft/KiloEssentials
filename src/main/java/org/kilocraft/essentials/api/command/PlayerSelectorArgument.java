@@ -18,14 +18,16 @@ public class PlayerSelectorArgument {
 
     private static SuggestionProvider<ServerCommandSource> provideSuggestion = (context, builder) -> {
         KiloServer.getServer().getPlayerManager().getPlayerList().forEach((player) -> {
-            builder.suggest(player.getName().asFormattedString());
+            builder.suggest(player.getName().asString());
         });
 
         return builder.buildFuture();
     };
 
     private static ServerPlayerEntity serverPlayerEntityFinder(String name) {
-        return KiloServer.getServer().getPlayerManager().getPlayer(name);
+        ServerPlayerEntity player;
+        player = KiloServer.getServer().getPlayerManager().getPlayer(name);
+        return player;
     }
 
 }
