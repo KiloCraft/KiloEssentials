@@ -28,7 +28,7 @@ public class BackCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(CommandManager.literal("back").executes(context -> {
 			return goBack(context.getSource().getPlayer());
-		}).then(CommandManager.argument("player", EntityArgumentType.players()).executes(context -> {
+		}).then(CommandManager.argument("players", EntityArgumentType.players()).executes(context -> {
 			return goBack(EntityArgumentType.getPlayers(context, "player"));
 		})));
 	}
@@ -44,6 +44,7 @@ public class BackCommand {
 		if (backLocations.containsKey(player)) {
 			player.teleport(backLocations.get(player).getX(), backLocations.get(player).getY(),
 					backLocations.get(player).getZ());
+			backLocations.remove(player);
 			player.sendMessage(LangText.getFormatter(true, "command.back.success", player.getName()));
 		} else {
 			player.sendMessage(LangText.get(true, "command.back.failture"));
