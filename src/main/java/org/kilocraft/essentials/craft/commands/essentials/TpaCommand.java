@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.Thimble;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -17,6 +18,7 @@ import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.craft.commands.back.BackLocationsManager;
 
 import javax.xml.transform.Source;
 import java.util.Date;
@@ -100,6 +102,7 @@ public class TpaCommand {
                 sender.sendMessage(new LiteralText("").append(new LiteralText("Your teleportation request to ").formatted(Formatting.GOLD)).append(victim.getDisplayName()).append(new LiteralText(" was ").formatted(Formatting.GOLD).append(accepted ? new LiteralText("ACCEPTED").formatted(Formatting.GREEN) : new LiteralText("DENIED").formatted(Formatting.RED))));
                 boolean toSender = useTPRequest(sender);
                 ServerPlayerEntity tpTo = (toSender ? sender : victim);
+				BackLocationsManager.setLocation(victim, new Vector3f((float) victim.x, (float) victim.y, (float) victim.z));
                 (toSender ? victim : sender).teleport(tpTo.getServerWorld(), tpTo.x, tpTo.y, tpTo.z, tpTo.yaw, tpTo.pitch);
             } else {
                 sender.sendMessage(new LiteralText("Your teleportation requrest was denied.").formatted(Formatting.RED));

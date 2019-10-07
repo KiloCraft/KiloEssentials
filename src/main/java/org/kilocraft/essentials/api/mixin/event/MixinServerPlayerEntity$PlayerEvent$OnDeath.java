@@ -16,7 +16,7 @@ public abstract class MixinServerPlayerEntity$PlayerEvent$OnDeath {
 
     @Inject(at = @At("HEAD"), method = "onDeath")
     private void oky$death(DamageSource damageSource_1, CallbackInfo ci) {
-        PlayerEvent$OnDeath event = KiloServer.getServer().triggerEvent(new PlayerEvent$OnDeathImpl(this));
+        //PlayerEvent$OnDeath event = KiloServer.getServer().triggerEvent(new PlayerEvent$OnDeathImpl(this));
     }
 
 }
