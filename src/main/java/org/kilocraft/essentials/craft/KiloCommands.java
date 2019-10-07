@@ -8,6 +8,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.util.SomeGlobals;
+import org.kilocraft.essentials.craft.commands.BackCommand;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
 import org.kilocraft.essentials.craft.commands.InfoCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
@@ -58,6 +59,7 @@ public class KiloCommands {
         ServerModNameCommand.register(dispatcher);
         ColorsCommand.register(dispatcher);
         StopCommand.register(dispatcher);
+        BackCommand.register(dispatcher);
     }
 
     public static String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
