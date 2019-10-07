@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.craft.homesystem;
 
+import io.github.indicode.fabric.worlddata.NBTWorldData;
+import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -21,44 +23,16 @@ import java.util.UUID;
  * @Author CODY_AI
  */
 
-public class PlayerHomeManager implements ConfigurableFeature {
+public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeature {
     NbtFile nbt = new NbtFile("/KiloEssentials/data/", "homes");
     public static PlayerHomeManager INSTANCE = null;
     private HashMap<String, Home> hashMap = new HashMap<>();
 
     @Override
     public boolean register() {
+        WorldDataLib.addIOCallback(this);
         HomeCommand.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
         return true;
-    }
-
-    public void load() {
-        File homes = new File(KiloConifg.getWorkingDirectory() + "/data/homes.dat");
-        File homes_old = new File(KiloConifg.getWorkingDirectory() + "/data/homes_old.dat");
-
-        PlayerHomeManager.INSTANCE = new PlayerHomeManager();
-        if (!homes.exists()) {
-            if (homes_old.exists()) {}
-            else return;
-        }
-        try {
-            if (!homes.exists() && homes_old.exists()) throw new FileNotFoundException();
-            CompoundTag tag = NbtIo.readCompressed(new FileInputStream(homes));
-            PlayerHomeManager.INSTANCE.fronNbt(tag);
-        } catch (IOException e) {
-            System.err.println("Could not load homes.dat:");
-            e.printStackTrace();
-            if (homes_old.exists()) {
-                System.out.println("Attempting to load backup homes...");
-                try {
-                    CompoundTag tag = NbtIo.readCompressed(new FileInputStream(homes));
-                    PlayerHomeManager.INSTANCE.fronNbt(tag);
-                } catch (IOException e2) {
-                    throw new RuntimeException("Could not load homes.dat_old - Crashing server to save data. Remove or fix homes.dat or homes.dat_old to continue");
-
-                }
-            }
-        }
     }
 
     public void addHome(Home home) {
@@ -74,20 +48,22 @@ public class PlayerHomeManager implements ConfigurableFeature {
         return homes;
     }
 
-
-    public CompoundTag toNbt() {
-        CompoundTag tag = new CompoundTag();
+    @Override
+    public CompoundTag toNBT(CompoundTag tag) {
         hashMap.values().forEach(home -> {
-            ListTag listTag = tag.contains(home.owner_uuid) ? (ListTag) tag.get(home.owner_uuid) : new ListTag();
-            listTag.add(home.toTag());
+            if (tag.containsKey(home.owner_uuid)) {
+                ListTag listTag =  (ListTag) tag.getTag(home.owner_uuid);
+                listTag.add(home.toTag());
+            }
         });
         return tag;
     }
 
-    public void fronNbt(CompoundTag tag) {
+    @Override
+    public void fromNBT(CompoundTag tag) {
         hashMap.clear();
         tag.getKeys().forEach(key -> {
-            ListTag playerTag = (ListTag) tag.get(key);
+            ListTag playerTag = (ListTag) tag.getTag(key);
             playerTag.forEach(homeTag -> {
                 Home home = new Home((CompoundTag) homeTag);
                 home.owner_uuid = key;
@@ -100,5 +76,9 @@ public class PlayerHomeManager implements ConfigurableFeature {
         return hashMap;
     }
 
+    @Override
+    public File getSaveFile(File worldDir, File rootDir, boolean backup) {
+        return new File(KiloConifg.getWorkingDirectory() + "/data/homes." + (backup ? "dat_old" : "dat"));
+    }
 }
 
