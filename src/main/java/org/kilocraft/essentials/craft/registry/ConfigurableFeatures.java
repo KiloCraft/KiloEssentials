@@ -2,8 +2,7 @@ package org.kilocraft.essentials.craft.registry;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.craft.KiloEssentials;
-import org.kilocraft.essentials.craft.config.ConfigBuilder;
-import org.kilocraft.essentials.craft.config.KiloConfig;
+import org.kilocraft.essentials.craft.config.KiloConifg;
 
 import java.util.HashMap;
 
@@ -35,11 +34,12 @@ public class ConfigurableFeatures {
         try {
             if (config.get("ConfigurableFeatures." + configID) == null) {
 
-                ConfigBuilder configBuilder = new ConfigBuilder(KiloConfig.getGeneral());
-                configBuilder.addValue("ConfigurableFeatures." + configID, true);
-                configBuilder.build();
+//                ConfigBuilder configBuilder = new ConfigBuilder(KiloEssentials.INSTANCE.getConfig().getMain());
+//                configBuilder.addValue("ConfigurableFeatures." + configID, true);
+//                configBuilder.build();
 
-                if (KiloConfig.getGeneral().get("ConfigurableFeatures." + configID) != null) {
+                if (KiloConifg.getMain().get("ConfigurableFeatures." + configID)) {
+
                     register(f);
                 }
             }

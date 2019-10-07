@@ -11,9 +11,9 @@ public class TextMessage {
     public static void sendToUniversalSource(ServerCommandSource source, String text, boolean log) {
         LiteralText literalText;
         if (CommandSender.isConsole(source)) {
-            literalText = ChatColor.removeAlternateToLiteralText('&', text);
+            literalText = TextColor.removeAlternateToLiteralText('&', text);
         } else {
-            literalText = ChatColor.translateToLiteralText('&', text);
+            literalText = TextColor.translateToLiteralText('&', text);
         }
 
         source.sendFeedback(literalText, log);
@@ -22,9 +22,9 @@ public class TextMessage {
     public static void sendToUniversalSource(ServerCommandSource source, LiteralText text, boolean log) {
         LiteralText literalText;
         if (CommandSender.isConsole(source)) {
-            literalText = ChatColor.removeAlternateToLiteralText('&', text.getString());
+            literalText = TextColor.removeAlternateToLiteralText('&', text.getString());
         } else {
-            literalText = ChatColor.translateToLiteralText('&', text.getString());
+            literalText = TextColor.translateToLiteralText('&', text.getString());
         }
 
         source.sendFeedback(literalText, log);

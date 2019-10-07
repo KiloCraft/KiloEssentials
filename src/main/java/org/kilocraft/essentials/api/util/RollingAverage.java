@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.api.util;
 
+import java.text.DecimalFormat;
+
 public class RollingAverage {
     public static final int SAMPLE_INTERVAL = 20;
     public static final java.math.BigDecimal TPS_BASE = new java.math.BigDecimal(1E9).multiply(new java.math.BigDecimal(SAMPLE_INTERVAL));
@@ -44,5 +46,10 @@ public class RollingAverage {
 
     public double getAverage() {
         return total.divide(dec(time), 30, java.math.RoundingMode.HALF_UP).doubleValue();
+    }
+
+    public String getShortAverage() {
+        DecimalFormat decimalFormat = new DecimalFormat("##.##");
+        return decimalFormat.format(getAverage());
     }
 }

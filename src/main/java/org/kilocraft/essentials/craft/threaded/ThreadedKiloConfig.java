@@ -2,46 +2,31 @@ package org.kilocraft.essentials.craft.threaded;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.craft.newconfig.NewKiloConifg;
+import org.kilocraft.essentials.craft.config.KiloConifg;
 
-public class ThreadedKiloConfig extends Thread implements Runnable, KiloThread {
-    private Thread thread;
-    private String name;
+public class ThreadedKiloConfig implements Runnable, KiloThread {
     private Logger logger;
-    private NewKiloConifg newKiloConifg;
+    private KiloConifg KiloConifg;
 
-    public ThreadedKiloConfig(String threadName) {
-        name = threadName;
-
-        if (thread == null) {
-            thread = new Thread(name);
-        }
-        if (logger == null) {
-            logger = LogManager.getFormatterLogger(name);
-        }
+    public ThreadedKiloConfig() {
     }
 
-    public void start() {
-        if (thread == null) {
-            thread = new Thread(name);
-        }
-        if (logger == null) {
-            logger = LogManager.getFormatterLogger(name);
-        }
+    @Override
+    public String getName() {
+        return "Config";
     }
 
     public void run() {
-        logger.info("Running thread \"%s@%s\"", thread.getName(), thread.getId());
-
-        newKiloConifg = new NewKiloConifg();
+        this.logger = LogManager.getFormatterLogger();
+        KiloConifg = new KiloConifg();
     }
 
-    public NewKiloConifg getKiloConfig() {
-        return newKiloConifg;
+    public KiloConifg getKiloConfig() {
+        return KiloConifg;
     }
 
     @Override
     public Logger getLogger() {
-        return null;
+        return this.logger;
     }
 }

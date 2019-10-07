@@ -8,5 +8,6 @@ public class SomeGlobals {
     public static final RollingAverage tps5 = new RollingAverage(60 * 5);
     public static final RollingAverage tps15 = new RollingAverage(60 * 15);
 
+    @Deprecated
     public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 }

@@ -17,9 +17,9 @@ public class LangText {
         }
 
         if (allowColorCodes) {
-            result = ChatColor.translateAlternateColorCodes('&', result);
+            result = TextColor.translateAlternateColorCodes('&', result);
         } else {
-            result = ChatColor.removeAlternateColorCodes('&', result);
+            result = TextColor.removeAlternateColorCodes('&', result);
         }
 
 
@@ -33,9 +33,9 @@ public class LangText {
         String result = lang;
 
         if (allowColorCodes) {
-            result = ChatColor.translateAlternateColorCodes('&', result);
+            result = TextColor.translateAlternateColorCodes('&', result);
         } else {
-            result = ChatColor.removeAlternateColorCodes('&', result);
+            result = TextColor.removeAlternateColorCodes('&', result);
         }
 
         literalText.append(result);
@@ -46,9 +46,9 @@ public class LangText {
         String text = Mod.getLang().getProperty(key);
         LiteralText literalText;
         if (CommandSender.isConsole(source)) {
-            literalText = ChatColor.removeAlternateToLiteralText('&', text);
+            literalText = TextColor.removeAlternateToLiteralText('&', text);
         } else {
-            literalText = ChatColor.translateToLiteralText('&', text);
+            literalText = TextColor.translateToLiteralText('&', text);
         }
 
         source.sendFeedback(literalText, log);
@@ -63,9 +63,9 @@ public class LangText {
         }
         LiteralText literalText;
         if (CommandSender.isConsole(source)) {
-            literalText = new LiteralText(ChatColor.removeAlternateColorCodes('&', result));
+            literalText = new LiteralText(TextColor.removeAlternateColorCodes('&', result));
         } else {
-            literalText = new LiteralText(ChatColor.translateAlternateColorCodes('&', result));
+            literalText = new LiteralText(TextColor.translateAlternateColorCodes('&', result));
         }
 
         source.sendFeedback(literalText, log);

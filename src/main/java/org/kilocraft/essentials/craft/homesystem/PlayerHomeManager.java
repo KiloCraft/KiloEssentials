@@ -4,8 +4,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.config.ConfigFile;
 import org.kilocraft.essentials.api.config.NbtFile;
+import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
 import java.io.File;
@@ -33,8 +33,8 @@ public class PlayerHomeManager implements ConfigurableFeature {
     }
 
     public void load() {
-        File homes = new File(ConfigFile.currentDir + "/data/homes.dat");
-        File homes_old = new File(ConfigFile.currentDir + "/data/homes_old.dat");
+        File homes = new File(KiloConifg.getWorkingDirectory() + "/data/homes.dat");
+        File homes_old = new File(KiloConifg.getWorkingDirectory() + "/data/homes_old.dat");
 
         PlayerHomeManager.INSTANCE = new PlayerHomeManager();
         if (!homes.exists()) {
@@ -78,7 +78,7 @@ public class PlayerHomeManager implements ConfigurableFeature {
     public CompoundTag toNbt() {
         CompoundTag tag = new CompoundTag();
         hashMap.values().forEach(home -> {
-            ListTag listTag = tag.containsKey(home.owner_uuid) ? (ListTag) tag.getTag(home.owner_uuid) : new ListTag();
+            ListTag listTag = tag.contains(home.owner_uuid) ? (ListTag) tag.get(home.owner_uuid) : new ListTag();
             listTag.add(home.toTag());
         });
         return tag;
@@ -87,7 +87,7 @@ public class PlayerHomeManager implements ConfigurableFeature {
     public void fronNbt(CompoundTag tag) {
         hashMap.clear();
         tag.getKeys().forEach(key -> {
-            ListTag playerTag = (ListTag) tag.getTag(key);
+            ListTag playerTag = (ListTag) tag.get(key);
             playerTag.forEach(homeTag -> {
                 Home home = new Home((CompoundTag) homeTag);
                 home.owner_uuid = key;

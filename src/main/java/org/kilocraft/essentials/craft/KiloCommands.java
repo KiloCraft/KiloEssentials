@@ -10,13 +10,15 @@ import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.commands.BackCommand;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
-import org.kilocraft.essentials.craft.commands.VersionCommand;
+import org.kilocraft.essentials.craft.commands.InfoCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
+import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
-import org.kilocraft.essentials.craft.config.KiloConfig;
+import org.kilocraft.essentials.craft.commands.servermanagement.StopCommand;
+import org.kilocraft.essentials.craft.config.KiloConifg;
 
 import java.util.Map;
 
@@ -43,30 +45,31 @@ public class KiloCommands {
             SharedConstants.isDevelopment = true;
         }
 
-        VersionCommand.register(dispatcher);
+        InfoCommand.register(dispatcher);
         ReloadCommand.register(dispatcher);
         GamemodeCommand.register(dispatcher);
+        LocateCommand.register(dispatcher);
         EnderchestCommand.register(dispatcher);
         TpaCommand.register(dispatcher);
         ServerCommand.register(dispatcher);
         ItemCommand.register(dispatcher);
         AnvilCommand.register(dispatcher);
         CraftingbenchCommand.register(dispatcher);
-        LocateBiomeCommand.register(dispatcher);
         NickCommand.register(dispatcher);
         ServerModNameCommand.register(dispatcher);
-        ColoursCommand.register(dispatcher);
+        ColorsCommand.register(dispatcher);
+        StopCommand.register(dispatcher);
         BackCommand.register(dispatcher);
     }
 
     public static String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
-        String string = KiloConfig.getMessages().get("commands.usage");
+        String string = KiloConifg.getMessages().get("command.context.usage");
         Map<CommandNode<ServerCommandSource>, String> usage = dispatcher.getSmartUsage(literalCommandNode, source);
         return string.replaceFirst("%s", usage.toString());
     }
 
     public static String buildUsage(String usage, ServerCommandSource source) {
-        String string = KiloConfig.getMessages().get("commands.usage");
+        String string = KiloConifg.getMessages().get("command.context.usage");
         return string.replaceFirst("%s", usage);
     }
 }
