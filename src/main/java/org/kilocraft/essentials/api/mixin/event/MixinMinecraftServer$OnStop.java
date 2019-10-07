@@ -19,9 +19,13 @@ public abstract class MixinMinecraftServer$OnStop {
     private static Logger LOGGER;
 
     @Inject(at = @At("HEAD"), method = "shutdown")
-    private void oky$shutdown(CallbackInfo ci) {
-        LOGGER.info("KiloAPI: Triggering \"OnStop\" event...");
+    private void modify$shutdown(CallbackInfo ci) {
+        LOGGER.info("KiloAPI: Shutting down the server");
         KiloServer.getServer().triggerEvent(new ServerEvent$OnStopImpl());
     }
 
+    @Inject(at = @At("HEAD"), method = "close")
+    private void modify$close(CallbackInfo ci) {
+        KiloServer.getServer().shutdown();
+    }
 }

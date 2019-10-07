@@ -46,16 +46,10 @@ dependencies {
 	include "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
 	include "com.github.indi-code:WorldDataLib:${project.worlddatalib_version}"
 
-	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_yaml_version}"
-	shadow group: 'mysql', name: 'mysql-connector-java', version: "${project.jdbc_sql_version}"
-
+	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
 }
 
 tasks.jar.archiveClassifier = "compile"
-
-//remapJar {
-//	classifier = "snapshot"
-//}
 
 task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
 	from zipTree(shadowJar.archiveFile) dependsOn shadowJar

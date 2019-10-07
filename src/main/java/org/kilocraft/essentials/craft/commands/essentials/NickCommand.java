@@ -8,6 +8,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.craft.player.KiloPlayer;
 
 public class NickCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -21,7 +22,9 @@ public class NickCommand {
 				.argument("name", StringArgumentType.string()).executes(context -> {
 					ServerPlayerEntity player = context.getSource().getPlayer();
 					String name = context.getArgument("name", String.class);
-					//TODO: Change nick on database
+
+					KiloPlayer.get(player).setNickname(name);
+
 					context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.success", name), false);
 
 					return 0;
