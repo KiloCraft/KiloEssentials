@@ -29,7 +29,7 @@ public class BackCommand {
 		dispatcher.register(CommandManager.literal("back").executes(context -> {
 			return goBack(context.getSource().getPlayer());
 		}).then(CommandManager.argument("players", EntityArgumentType.players()).executes(context -> {
-			return goBack(EntityArgumentType.getPlayers(context, "player"));
+			return goBack(EntityArgumentType.getPlayers(context, "players"));
 		})));
 	}
 
