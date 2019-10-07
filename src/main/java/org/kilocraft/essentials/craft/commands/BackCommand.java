@@ -1,11 +1,11 @@
-package org.kilocraft.essentials.craft.commands.back;
+package org.kilocraft.essentials.craft.commands;
 
 import java.util.HashMap;
 
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class BackLocationsManager {
+public class BackCommand {
 
 	public static HashMap<ServerPlayerEntity, Vector3f> backLocations = new HashMap<ServerPlayerEntity, Vector3f>();
 
@@ -16,5 +16,5 @@ public class BackLocationsManager {
 			backLocations.put(player, position);
 		}
 	}
-
+	
 }
