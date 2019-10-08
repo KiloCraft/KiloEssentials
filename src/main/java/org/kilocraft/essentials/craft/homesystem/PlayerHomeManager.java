@@ -4,18 +4,12 @@ import io.github.indicode.fabric.worlddata.NBTWorldData;
 import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtIo;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.config.NbtFile;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,9 +18,8 @@ import java.util.UUID;
  */
 
 public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeature {
-    NbtFile nbt = new NbtFile("/KiloEssentials/data/", "homes");
-    public static PlayerHomeManager INSTANCE = null;
-    private HashMap<String, Home> hashMap = new HashMap<>();
+    public static PlayerHomeManager INSTANCE = new PlayerHomeManager();
+    private List<Home> homes = new ArrayList<>();
 
     @Override
     public boolean register() {
@@ -36,23 +29,24 @@ public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeatu
     }
 
     public void addHome(Home home) {
-        hashMap.put(home.name, home);
+        homes.add(home);
     }
 
     public List<Home> getPlayerHomes(UUID uuid) {
-        List<Home> homes = new ArrayList<>();
-        hashMap.values().forEach((home) -> {
-            if (home.owner_uuid.equals(uuid.toString())) homes.add(home);
+        List<Home> list = new ArrayList<>();
+        homes.forEach((home) -> {
+            if (home.owner_uuid.equals(uuid.toString()))
+                list.add(home);
         });
 
-        return homes;
+        return list;
     }
 
     @Override
     public CompoundTag toNBT(CompoundTag tag) {
-        hashMap.values().forEach(home -> {
-            if (tag.containsKey(home.owner_uuid)) {
-                ListTag listTag =  (ListTag) tag.getTag(home.owner_uuid);
+        homes.forEach(home -> {
+            if (tag.contains(home.owner_uuid)) {
+                ListTag listTag =  (ListTag) tag.get(home.owner_uuid);
                 listTag.add(home.toTag());
             }
         });
@@ -61,24 +55,24 @@ public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeatu
 
     @Override
     public void fromNBT(CompoundTag tag) {
-        hashMap.clear();
+        homes.clear();
         tag.getKeys().forEach(key -> {
-            ListTag playerTag = (ListTag) tag.getTag(key);
+            ListTag playerTag = (ListTag) tag.get(key);
             playerTag.forEach(homeTag -> {
                 Home home = new Home((CompoundTag) homeTag);
                 home.owner_uuid = key;
-                hashMap.put(home.name, home);
+                homes.add(home);
             });
         });
     }
 
-    public HashMap<String, Home> getHashMap() {
-        return hashMap;
+    public List<Home> getHomes() {
+        return homes;
     }
 
     @Override
     public File getSaveFile(File worldDir, File rootDir, boolean backup) {
-        return new File(KiloConifg.getWorkingDirectory() + "/data/homes." + (backup ? "dat_old" : "dat"));
+        return new File(KiloConifg.getWorkingDirectory() + "/homes." + (backup ? "dat_old" : "dat"));
     }
 }
 

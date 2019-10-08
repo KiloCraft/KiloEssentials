@@ -61,10 +61,6 @@ public class HomeCommand {
             builder.suggest(home.name);
         });
 
-        if (builder.getInput().equals("OK")) {
-            builder.suggest("NOU");
-        }
-
         return builder.buildFuture();
     };
 

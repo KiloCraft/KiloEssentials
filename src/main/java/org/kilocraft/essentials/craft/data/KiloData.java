@@ -28,7 +28,7 @@ public class KiloData {
     }
 
     private void load() {
-        PLAYERS = FileConfig.of(workingDir + "players.json");
+
     }
 
 

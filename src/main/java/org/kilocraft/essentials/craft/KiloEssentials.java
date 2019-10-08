@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.data.KiloData;
+import org.kilocraft.essentials.craft.homesystem.PlayerHomeManager;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
 import org.kilocraft.essentials.craft.threaded.ThreadedKiloConfig;
 
@@ -21,7 +22,6 @@ public class KiloEssentials {
 		kiloConfigThread = new ThreadManager(new ThreadedKiloConfig());
 		kiloConfigThread.start();
 
-
 		this.events = events;
 		this.commands = commands;
 		this.data = data;
@@ -34,13 +34,7 @@ public class KiloEssentials {
 		 * @TEST
 		 */
 
-
-		//this.configurableFeatures = new ConfigurableFeatures();
-
-		//this.configurableFeatures.tryToRegister(new WarpManager(), "Warps");
-		//this.configurableFeatures.tryToRegister(new CustomCommands(), "CustomCommands");
-
-		//configurableFeatures.close();
+		PlayerHomeManager.INSTANCE.register();
 	}
 
 	public static Logger getLogger() {
