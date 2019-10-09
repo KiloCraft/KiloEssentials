@@ -1,57 +1,31 @@
 package org.kilocraft.essentials.craft.registry;
 
-import com.electronwill.nightconfig.core.file.FileConfig;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
-import java.util.HashMap;
+import java.util.List;
 
 public class ConfigurableFeatures {
-    private FileConfig config = FileConfig.of("");
-    private HashMap<String, Object> hashMap = new HashMap<>();
 
     public ConfigurableFeatures() {
         KiloEssentials.getLogger().info("Registering the Configurable features...");
     }
 
-    public void registerFeatures() {
-    }
-
-    private void addToConfig() {
-
-    }
-
-    public void close() {
-        config.close();
-    }
-
-    public HashMap<String, Object> getFeaturesMap() {
-        return hashMap;
-    }
-
-    public <F extends ConfigurableFeature> F tryToRegister(F f, String configID) {
+    public <F extends ConfigurableFeature> F tryToRegister(F feature, String configID) {
         boolean isEnabled = false;
         try {
-            if (config.get("ConfigurableFeatures." + configID) == null) {
-
-//                ConfigBuilder configBuilder = new ConfigBuilder(KiloEssentials.INSTANCE.getConfig().getMain());
-//                configBuilder.addValue("ConfigurableFeatures." + configID, true);
-//                configBuilder.build();
-
-                if (KiloConifg.getMain().get("ConfigurableFeatures." + configID)) {
-
-                    register(f);
-                }
-            }
+            @Nullable List<String> list = KiloConifg.getConfigurableFeatures().get("configurableFeatures.");
+            if (list.contains(configID)) isEnabled = true;
         } finally {
-            if (isEnabled) register(f);
+            if (isEnabled) register(feature);
         }
 
-        return f;
+        return feature;
     }
 
-    private <C extends ConfigurableFeature> void register(C c) {
-        c.register();
+    private <F extends ConfigurableFeature> void register(F feature) {
+        feature.register();
     }
 
 }

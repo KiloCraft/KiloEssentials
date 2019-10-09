@@ -17,6 +17,7 @@ public class KiloConifg {
 
     private static FileConfig config;
     private static FileConfig messages;
+    private static FileConfig configurableFeatures;
 
     public KiloConifg() {
         handle();
@@ -40,7 +41,9 @@ public class KiloConifg {
             case "KiloEssentials.yaml":
                 config = FileConfig.of(kiloFile.getFile());
             case "Messages.yaml":
-                messages = FileConfig.of(kiloFile.getFile().getName());
+                messages = FileConfig.of(kiloFile.getFile());
+            case "configurableFeatures.yaml":
+                configurableFeatures = FileConfig.of(kiloFile.getFile());
         }
     }
 
@@ -50,6 +53,10 @@ public class KiloConifg {
 
     public static FileConfig getMessages() {
         return messages;
+    }
+
+    public static FileConfig getConfigurableFeatures() {
+        return configurableFeatures;
     }
 
     public static String getWorkingDirectory() {
