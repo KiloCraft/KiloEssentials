@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.craft.worldwarps;
 
 import io.github.indicode.fabric.worlddata.NBTWorldData;
+import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import org.kilocraft.essentials.api.KiloServer;
@@ -20,6 +21,7 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
 
     @Override
     public boolean register() {
+        WorldDataLib.addIOCallback(this);
         fromConfig();
         WarpCommand.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
         return true;
@@ -76,6 +78,7 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
 
     @Override
     public File getSaveFile(File file, File file1, boolean b) {
+        System.out.println(KiloConifg.getWorkingDirectory());
         return new File(KiloConifg.getWorkingDirectory() + "/warps." + (b ? "dat_old" : "dat"));
     }
 
@@ -83,19 +86,15 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     public CompoundTag toNBT(CompoundTag compoundTag) {
         warps.forEach((warp) -> {
             ListTag listTag = (ListTag) compoundTag.get("warps");
-            listTag.forEach((w) -> {
-                System.out.println(w);
-            });
+            listTag.forEach((w) -> compoundTag.put(warp.getName(), warp.toTag()));
         });
 
-        return null;
+        return compoundTag;
     }
 
     @Override
     public void fromNBT(CompoundTag compoundTag) {
         warps.clear();
-        compoundTag.getKeys().forEach((key) -> {
-
-        });
+        compoundTag.getKeys().forEach((key) -> warps.add(new Warp(key, compoundTag.getCompound(key))));
     }
 }

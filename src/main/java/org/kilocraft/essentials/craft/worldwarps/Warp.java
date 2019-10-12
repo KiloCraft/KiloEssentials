@@ -18,6 +18,10 @@ public class Warp {
         this.pitch = pitch;
         this.yaw = yaw;
     }
+    public Warp(String name, CompoundTag tag) {
+        this.name = name;
+        fromTag(tag);
+    }
 
     public String getPermissionBaseName() {
         return permissionBaseName;
