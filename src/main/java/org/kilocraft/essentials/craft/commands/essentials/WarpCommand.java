@@ -25,7 +25,7 @@ public class WarpCommand {
         warpArg.executes(c -> executeTeleport(c.getSource(), StringArgumentType.getString(c, "warp")));
         literalList.executes(c -> executeList(c.getSource()));
 
-        //warpArg.suggests(suggestionProvider);
+        warpArg.suggests(suggestionProvider);
         builder.then(warpArg);
         builder.then(literalList);
         registerAdmin(builder, dispatcher);

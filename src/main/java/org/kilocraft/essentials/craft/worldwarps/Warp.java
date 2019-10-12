@@ -35,6 +35,10 @@ public class Warp {
         return this.requirePermission;
     }
 
+    public String getPermissionNode() {
+        return "" + (this.requirePermission ? permissionBaseName + "." + this.name : "");
+    }
+
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
         CompoundTag list = new CompoundTag();
