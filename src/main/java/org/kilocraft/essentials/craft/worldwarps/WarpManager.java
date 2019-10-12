@@ -2,6 +2,7 @@ package org.kilocraft.essentials.craft.worldwarps;
 
 import io.github.indicode.fabric.worlddata.NBTWorldData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.commands.essentials.WarpCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
@@ -81,7 +82,10 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     @Override
     public CompoundTag toNBT(CompoundTag compoundTag) {
         warps.forEach((warp) -> {
-            
+            ListTag listTag = (ListTag) compoundTag.get("warps");
+            listTag.forEach((w) -> {
+                System.out.println(w);
+            });
         });
 
         return null;

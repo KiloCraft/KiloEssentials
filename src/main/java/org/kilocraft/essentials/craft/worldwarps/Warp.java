@@ -52,10 +52,11 @@ public class Warp {
             direction.putDouble("pitch", this.pitch);
             direction.putDouble("yaw", this.yaw);
         }
-        
+
         warpTag.put("direction", direction);
         warpTag.putBoolean("requires_permission", this.requirePermission);
-        compoundTag.put(this.name, warpTag);
+        list.put(this.name, warpTag);
+        compoundTag.put("warps", list);
 
         return compoundTag;
     }
