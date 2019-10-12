@@ -4,7 +4,6 @@ import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 public class ConfigurableFeatures {
-
     public ConfigurableFeatures() {
         KiloEssentials.getLogger().info("Registering the Configurable features...");
     }

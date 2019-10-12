@@ -46,8 +46,7 @@ dependencies {
 	include "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
 	include "com.github.indi-code:WorldDataLib:${project.worlddatalib_version}"
 
-	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
-	shadow group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+	shadow group: 'com.electronwill.night-config', name: 'core', version: "${night_config_version}"
 }
 
 tasks.jar.archiveClassifier = "compile"

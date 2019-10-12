@@ -7,6 +7,7 @@ import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.data.KiloData;
 import org.kilocraft.essentials.craft.homesystem.PlayerHomeManager;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
+import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
 public class KiloEssentials {
 	public static KiloEssentials INSTANCE;
@@ -27,6 +28,7 @@ public class KiloEssentials {
 
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new PlayerHomeManager(), "PlayerHomes");
+		features.tryToRegister(new WarpManager(), "ServerWideWarps");
 
 		KiloConifg.load();
 

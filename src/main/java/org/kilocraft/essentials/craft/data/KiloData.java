@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.craft.data;
 
-import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.provider.KiloFile;
 
@@ -11,8 +10,9 @@ public class KiloData {
     static String workingDir = System.getProperty("user.dir") + "/";
     static List<String> files = new ArrayList<String>(){{
         add("players.dat");
+        add("warps.dat");
     }};
-    private static FileConfig PLAYERS;
+
 
     public KiloData() {
         files.forEach((file) -> {
@@ -21,20 +21,14 @@ public class KiloData {
 
             if (kiloFile.exists()) {
                 KiloEssentials.getLogger().info("Loaded data file \"" + file + "\"");
-                load();
             }
         });
 
     }
 
-    private void load() {
-
+    public static String getDataDirectoryPath() {
+        return workingDir + "/KiloEssentials/data/";
     }
 
 
-
-
-    public static FileConfig getPlayersData() {
-        return PLAYERS;
-    }
 }

@@ -41,8 +41,8 @@
 #Used by the mod to define the config schema/version
 schema: 1.0
 #Alternate color character
-#Instead of using '§' you can use your own color chars
+#Instead of using the special character you can use your own color char
 #for defining the color/formatting codes!
-# [<Char> Default: *]
+# [<Char> Default: '*']
 altcolorchar: '*'
 #
