@@ -15,8 +15,6 @@ public class KiloEssentials {
 	private KiloCommands commands;
 	private KiloData data;
 	private ConfigurableFeatures configurableFeatures;
-	//Threads
-	ThreadManager kiloConfigThread;
 
 	public KiloEssentials(KiloEvents events, KiloCommands commands, KiloData data) {
 		logger.info("Running KiloEssentials version " + Mod.getVersion());
