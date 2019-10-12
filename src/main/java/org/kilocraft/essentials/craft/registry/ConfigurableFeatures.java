@@ -1,10 +1,7 @@
 package org.kilocraft.essentials.craft.registry;
 
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
-
-import java.util.List;
 
 public class ConfigurableFeatures {
 
@@ -13,19 +10,16 @@ public class ConfigurableFeatures {
     }
 
     public <F extends ConfigurableFeature> F tryToRegister(F feature, String configID) {
-        boolean isEnabled = false;
         try {
-            @Nullable List<String> list = KiloConifg.getConfigurableFeatures().get("configurableFeatures.");
-            if (list.contains(configID)) isEnabled = true;
-        } finally {
-            if (isEnabled) register(feature);
+            if (KiloConifg.getMain().getOrElse("features." + configID, false)) {
+                KiloEssentials.getLogger().info("Initialing \"" + configID + "\"");
+                feature.register();
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            //Don't enable the feature:: PASS
         }
 
         return feature;
     }
-
-    private <F extends ConfigurableFeature> void register(F feature) {
-        feature.register();
-    }
-
 }

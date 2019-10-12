@@ -8,6 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.craft.config.KiloConifg;
 
 public class ReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -30,9 +31,11 @@ public class ReloadCommand {
     }
 
     private static int reloadConfig(ServerCommandSource source, boolean bool) {
-        if (bool) source.sendFeedback(LangText.get(false, "command.reload.config")
-                            .setStyle(new Style().setColor(Formatting.GREEN)),
-                    false);
+        if (bool) LangText.sendToUniversalSource(source, "command.reload.config", false);
+
+        KiloConifg.load();
+
+        if (bool) LangText.sendToUniversalSource(source, "command.reload.all.end", false);
 
         return 1;
     }

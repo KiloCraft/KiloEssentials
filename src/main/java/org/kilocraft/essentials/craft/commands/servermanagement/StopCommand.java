@@ -14,7 +14,7 @@ import org.kilocraft.essentials.craft.KiloEssentials;
 
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("ke_stop")
+        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("stop")
                 .then(CommandManager.argument("args", StringArgumentType.greedyString())
                     .executes(c -> execute(c, StringArgumentType.getString(c, "args"))))
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.server.stop", 2))

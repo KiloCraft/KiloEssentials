@@ -6,61 +6,60 @@ import org.kilocraft.essentials.craft.provider.KiloFile;
 
 import java.util.HashMap;
 
+/**
+ * @author  CODY_AI
+ * @version 1.2
+ */
+
 public class KiloConifg {
+
     private static String workingDir = System.getProperty("user.dir");
-    private String configPath = workingDir + "/KiloEssentials/config/";
-    private String resourcePath = "assets/configurations/";
-    private HashMap<String, String> configFiles = new HashMap<String, String>(){{
+    private static String configPath = workingDir + "/KiloEssentials/config/";
+    private static String resourcePath = "assets/configurations/";
+
+    private static HashMap<String, String> configFiles = new HashMap<String, String>(){{
         put("KiloEssentials.yaml", workingDir + "/");
         put("Messages.yaml", configPath);
     }};
 
-    private static FileConfig config;
-    private static FileConfig messages;
-    private static FileConfig configurableFeatures;
-
     public KiloConifg() {
         handle();
-        KiloEssentials.getLogger().info("Config files are loaded successfully");
+        KiloEssentials.getLogger().info("Configurations are now loaded");
     }
+
+    static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
+    static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");
 
     private void handle() {
         try {
             configFiles.forEach((name, path) -> {
                 KiloFile file = new KiloFile(name, path);
                 file.tryToLoad(resourcePath + name);
-                defineConfig(file);
             });
+
+            load();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void defineConfig(KiloFile kiloFile) {
-        switch (kiloFile.getFile().getName()) {
-            case "KiloEssentials.yaml":
-                config = FileConfig.of(kiloFile.getFile());
-            case "Messages.yaml":
-                messages = FileConfig.of(kiloFile.getFile());
-            case "configurableFeatures.yaml":
-                configurableFeatures = FileConfig.of(kiloFile.getFile());
-        }
-    }
 
     public static FileConfig getMain() {
-        return config;
+        return MAIN;
     }
 
     public static FileConfig getMessages() {
-        return messages;
-    }
-
-    public static FileConfig getConfigurableFeatures() {
-        return configurableFeatures;
+        return MESSAGES;
     }
 
     public static String getWorkingDirectory() {
         return workingDir;
+    }
+
+    public static void load() {
+        MAIN.load();
+        MESSAGES.load();
     }
 
 }

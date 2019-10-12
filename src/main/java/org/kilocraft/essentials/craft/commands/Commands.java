@@ -8,7 +8,6 @@ public class Commands {
 
     public static List<String> keCommandsToKeep = new ArrayList<String>(){{
         add("ke_gamemode");
-        add("ke_stop");
         add("ke_reload");
         add("ke_locate");
     }};

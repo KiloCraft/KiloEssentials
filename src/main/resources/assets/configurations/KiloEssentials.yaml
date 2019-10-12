@@ -62,3 +62,8 @@ server:
   # The message you'll see on when you hover your cursor
   # over the player count
   playercountmessage: "%SERVER_NAME% is waiting for you to join!\n*b Use /help for more info!"
+#
+features:
+  #A list of the features you want to enable!
+  PlayerHomes: true
+  ServerWideWarps: true

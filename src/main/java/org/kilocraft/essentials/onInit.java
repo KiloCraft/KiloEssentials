@@ -10,6 +10,6 @@ public class onInit implements DedicatedServerModInitializer {
         ThreadManager.setMainName("KiloEssentials");
         ThreadManager mainThread = new ThreadManager(new ThreadedKiloEssentialsMod());
 
-        mainThread.run();
+        mainThread.start();
     }
 }
