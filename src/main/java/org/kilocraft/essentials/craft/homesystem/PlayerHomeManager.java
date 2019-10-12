@@ -33,9 +33,13 @@ public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeatu
     }
 
     public List<Home> getPlayerHomes(UUID uuid) {
+        return getPlayerHomes(uuid.toString());
+    }
+
+    public List<Home> getPlayerHomes(String uuid) {
         List<Home> list = new ArrayList<>();
         homes.forEach((home) -> {
-            if (home.owner_uuid.equals(uuid.toString()))
+            if (home.owner_uuid.equals(uuid))
                 list.add(home);
         });
 

@@ -13,7 +13,6 @@ public class Commands {
     }};
 
     public static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
-        add("stop");
         add("help");
         add("reload");
         add("gamemode");

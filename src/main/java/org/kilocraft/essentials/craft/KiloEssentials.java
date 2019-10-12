@@ -29,6 +29,7 @@ public class KiloEssentials {
 		features.tryToRegister(new PlayerHomeManager(), "PlayerHomes");
 
 		KiloConifg.load();
+
 	}
 
 	public static Logger getLogger() {

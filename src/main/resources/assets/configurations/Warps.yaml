@@ -1,0 +1,14 @@
+#Server world warps
+#The base name of the permission required
+#It will be 'permission.warp_name'
+permission: warp
+warps:
+  - exampleWarp:
+      requires_permission: true
+      display_name: Example warp
+      pos:
+        x: 10
+        y: 100
+        z: 30
+        dX: 10.0
+        dZ: 20
