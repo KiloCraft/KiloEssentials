@@ -5,7 +5,7 @@ import net.minecraft.util.math.BlockPos;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 public class Warp {
-    private String permissionBaseName = KiloConifg.getWarps().getOrElse("permissionNode_baseName", "warp");
+    private String permissionBaseName = KiloConifg.getMain().getOrElse("warps.permission_prefix", "warp");
     private String name;
     private BlockPos blockPos;
     private boolean requirePermission;
