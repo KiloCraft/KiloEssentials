@@ -20,23 +20,23 @@ public class WarpCommand {
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp", 2));
 
         RequiredArgumentBuilder<ServerCommandSource, String> warpArg = CommandManager.argument("warp", StringArgumentType.string());
-        LiteralArgumentBuilder<ServerCommandSource> literalList = CommandManager.literal("- list");
+        LiteralArgumentBuilder<ServerCommandSource> literalList = CommandManager.literal("-list");
 
         warpArg.executes(c -> executeTeleport(c.getSource(), StringArgumentType.getString(c, "warp")));
         literalList.executes(c -> executeList(c.getSource()));
 
-
-
-        warpArg.suggests(suggestionProvider);
+        //warpArg.suggests(suggestionProvider);
         builder.then(warpArg);
         builder.then(literalList);
-        registerAdmin(builder);
+        registerAdmin(builder, dispatcher);
         dispatcher.register(builder);
     }
 
-    private static void registerAdmin(LiteralArgumentBuilder<ServerCommandSource> builder) {
-        LiteralArgumentBuilder<ServerCommandSource> literalAdd = CommandManager.literal("- add");
-        LiteralArgumentBuilder<ServerCommandSource> literalRemove = CommandManager.literal("- remove");
+    private static void registerAdmin(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
+        LiteralArgumentBuilder<ServerCommandSource> literalAdd = CommandManager.literal("-add");
+        LiteralArgumentBuilder<ServerCommandSource> literalRemove = CommandManager.literal("-remove");
+        LiteralArgumentBuilder<ServerCommandSource> aliasAdd = CommandManager.literal("addwarp");
+        LiteralArgumentBuilder<ServerCommandSource> aliasRemove = CommandManager.literal("delwarp");
         RequiredArgumentBuilder<ServerCommandSource, String> removeArg = CommandManager.argument("warp", StringArgumentType.string());
         RequiredArgumentBuilder<ServerCommandSource, String> addArg = CommandManager.argument("name", StringArgumentType.string());
         RequiredArgumentBuilder<ServerCommandSource, PosArgument> addArgBlockPos = CommandManager.argument("blockPos", BlockPosArgumentType.blockPos());
@@ -44,6 +44,8 @@ public class WarpCommand {
 
         literalAdd.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.add", 2));
         literalRemove.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.remove", 2));
+        aliasAdd.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.add", 2));
+        aliasRemove.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.remove", 2));
 
         removeArg.executes(c -> executeRemove(c.getSource(), StringArgumentType.getString(c, "warp")));
         addArgPermission.executes(c -> executeAdd(
@@ -58,6 +60,12 @@ public class WarpCommand {
         literalAdd.then(addArg);
 
         literalRemove.then(removeArg);
+
+        aliasAdd.then(addArg);
+        aliasRemove.then(removeArg);
+
+        dispatcher.register(aliasAdd);
+        dispatcher.register(aliasRemove);
 
         builder.then(literalAdd);
         builder.then(literalRemove);
