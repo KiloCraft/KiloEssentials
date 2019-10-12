@@ -20,7 +20,6 @@ public class KiloConifg {
     private static HashMap<String, String> configFiles = new HashMap<String, String>(){{
         put("KiloEssentials.yaml", workingDir + "/");
         put("Messages.yaml", configPath);
-        put("Warps.yaml", configPath);
     }};
 
     public KiloConifg() {
@@ -30,7 +29,6 @@ public class KiloConifg {
 
     static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
     static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");
-    static FileConfig WARPS = FileConfig.of(configPath + "/Warps.yaml");
 
     private void handle() {
         try {
@@ -55,10 +53,6 @@ public class KiloConifg {
         return MESSAGES;
     }
 
-    public static FileConfig getWarps() {
-        return WARPS;
-    }
-
     public static String getWorkingDirectory() {
         return workingDir;
     }
@@ -66,7 +60,6 @@ public class KiloConifg {
     public static void load() {
         MAIN.load();
         MESSAGES.load();
-        WARPS.load();
     }
 
 }
