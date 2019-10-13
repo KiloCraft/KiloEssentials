@@ -69,9 +69,7 @@ public class OperatorCommand {
 
                 p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
 
-                LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName());
-
-                playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
+                LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
 
             } else {
                 if (playerManager.isOperator(gameProfile)) {
@@ -81,11 +79,10 @@ public class OperatorCommand {
 
                     LangText.sendToUniversalSource(source, "command.operator.removed", true, gameProfile.getName());
 
-                    playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
-
                 }
             }
 
+            playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
         }
 
         return level;

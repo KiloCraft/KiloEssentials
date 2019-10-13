@@ -10,7 +10,7 @@ public class LangText {
     public static LiteralText getFormatter (boolean allowColorCodes, String key, Object... objects) {
         String lang = Mod.getLang().getProperty(key);
         LiteralText literalText = new LiteralText ("");
-        String result = null;
+        String result = "";
 
         if (objects[0] != null) {
             result = String.format(lang, objects);
@@ -56,7 +56,7 @@ public class LangText {
 
 
     public static void sendToUniversalSource(ServerCommandSource source, String key, boolean log, Object... objects) {
-        String result = null;
+        String result = "";
         String lang = Mod.getLang().getProperty(key);
         if (objects[0] != null) {
             result = String.format(lang, objects);
