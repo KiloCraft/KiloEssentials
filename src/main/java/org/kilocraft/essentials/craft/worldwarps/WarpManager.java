@@ -78,16 +78,12 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
 
     @Override
     public File getSaveFile(File file, File file1, boolean b) {
-        System.out.println(KiloConifg.getWorkingDirectory());
         return new File(KiloConifg.getWorkingDirectory() + "/warps." + (b ? "dat_old" : "dat"));
     }
 
     @Override
     public CompoundTag toNBT(CompoundTag compoundTag) {
-        warps.forEach((warp) -> {
-            ListTag listTag = (ListTag) compoundTag.get("warps");
-            listTag.forEach((w) -> compoundTag.put(warp.getName(), warp.toTag()));
-        });
+        warps.forEach(warp -> compoundTag.put(warp.getName(), warp.toTag()));
 
         return compoundTag;
     }

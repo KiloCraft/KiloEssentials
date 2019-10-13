@@ -10,7 +10,6 @@ public class KiloData {
     static String workingDir = System.getProperty("user.dir") + "/";
     static List<String> files = new ArrayList<String>(){{
         add("players.dat");
-        add("warps.dat");
     }};
 
 
