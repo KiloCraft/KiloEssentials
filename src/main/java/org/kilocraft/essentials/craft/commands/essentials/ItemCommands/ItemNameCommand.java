@@ -3,6 +3,8 @@ package org.kilocraft.essentials.craft.commands.essentials.ItemCommands;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
@@ -14,19 +16,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 
 public class ItemNameCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		/*
-		 * Thimble.permissionWriters.add(pair -> { // try { //
-		 * Thimble.PERMISSIONS.getPermission("kiloessentials.command.item.name",
-		 * CommandPermission.class); // Permission that updates command tree // } catch
-		 * (NoSuchMethodException | InstantiationException | InvocationTargetException |
-		 * IllegalAccessException e) { // e.printStackTrace(); // } });
-		 */
 		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("name");
-		/*
-		 * .requires(source -> Thimble.hasPermissionChildOrOp(source,
-		 * "kiloessentials.command.item.name", 3))
-		 */;
-
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
 		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = CommandManager.argument("name...",
@@ -48,8 +38,13 @@ public class ItemNameCommand {
 					player.addExperienceLevels(-1);
 				}
 
-				item.setCustomName(new LiteralText(
-						TextColor.translateAlternateColorCodes('&', StringArgumentType.getString(context, "name..."))));
+				if (Thimble.hasPermissionChildOrOp(context.getSource(), "kiloessentials.command.item.name.colour", 2)) {
+					item.setCustomName(new LiteralText(TextColor.translateAlternateColorCodes('&',
+							StringArgumentType.getString(context, "name..."))));
+				} else {
+					item.setCustomName(new LiteralText(TextColor.removeAlternateColorCodes('&',
+							StringArgumentType.getString(context, "name..."))));
+				}
 
 				player.sendMessage(LangText.getFormatter(true, "command.item.name.success",
 						StringArgumentType.getString(context, "name...")));
@@ -69,7 +64,9 @@ public class ItemNameCommand {
 
 			return 0;
 		});
-		
+
+		builder.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.item.name", 2));
+
 		setArgument.then(nameArgument);
 		builder.then(setArgument);
 		builder.then(resetArgument);
