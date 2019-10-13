@@ -2,6 +2,8 @@ package org.kilocraft.essentials.craft.worldwarps;
 
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.FileConfig;
+import io.github.indicode.fabric.worlddata.NBTWorldData;
+import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import org.kilocraft.essentials.api.KiloServer;
@@ -13,7 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WarpManager implements ConfigurableFeature {
+public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     private static FileConfig data = KiloConifg.getWarps();
 
     private static ArrayList<String> byName = new ArrayList<>();
@@ -21,7 +23,7 @@ public class WarpManager implements ConfigurableFeature {
 
     @Override
     public boolean register() {
-        fromConfig();
+        WorldDataLib.addIOCallback(this);
         WarpCommand.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
         return true;
     }
