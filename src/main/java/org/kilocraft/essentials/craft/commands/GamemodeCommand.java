@@ -1,30 +1,29 @@
 package org.kilocraft.essentials.craft.commands;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.arguments.GameProfileArgumentType;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.world.GameMode;
-import org.kilocraft.essentials.api.command.PlayerSelectorArgument;
+import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.util.CommandHelper;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Objects;
 
 public class GamemodeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> fullLiteral = CommandManager.literal("ke_gamemode");
         LiteralArgumentBuilder<ServerCommandSource> shortLiteral = CommandManager.literal("gm");
 
-        buildFullLiteral(fullLiteral);
-        buildFullLiteral(shortLiteral);
-        buildShortCommand(dispatcher);
+        buildCommand(fullLiteral);
+        buildCommand(shortLiteral);
 
         dispatcher.register(fullLiteral);
         dispatcher.register(shortLiteral);
@@ -33,73 +32,64 @@ public class GamemodeCommand {
     private static GameMode[] gameModes = GameMode.values();
     private static int var = gameModes.length;
 
-    private static void buildFullLiteral(LiteralArgumentBuilder<ServerCommandSource> builder) {
+    private static void buildCommand(LiteralArgumentBuilder<ServerCommandSource> builder) {
+        String pNode = "kiloessentials.command.gamemode";
+        builder.requires(s -> Thimble.hasPermissionChildOrOp(s, pNode,2));
+
+        GameMode[] gameModes = GameMode.values();
+        int var = gameModes.length;
+
         for (int i = 0; i < var; ++i) {
             GameMode mode = gameModes[i];
             if (!mode.equals(GameMode.NOT_SET)) {
-
-                builder.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.gamemode", 2));
-                builder.then(CommandManager.literal(mode.getName())
-                        .then(
-                                CommandManager.argument("target(s)", StringArgumentType.string())
-                                        .suggests(PlayerSelectorArgument.getSuggestions())
-                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode.others." + mode.getName(), 2))
-                                        .executes(context -> execute(Collections.singletonList(PlayerSelectorArgument.getPlayer(context, "target(s)")), mode, context.getSource()))
-                        )
-                    .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName() + ".self", 2))
-                    .executes(context -> execute(Collections.singleton(context.getSource().getPlayer()), mode, context.getSource()))
+                builder.then(
+                        CommandManager.literal(mode.getName())
+                                .then(
+                                        CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                                                .requires(s -> Thimble.hasPermissionChildOrOp(s, pNode + ".others." + mode, 2))
+                                                .suggests(CommandHelper.getAllPlayers())
+                                                .executes(c -> execute(GameProfileArgumentType.getProfileArgument(c, "gameProfile"), mode, c.getSource()))
+                                )
+                                .requires(s -> Thimble.hasPermissionChildOrOp(s, pNode + ".self." + mode.getName(), 2))
+                                .executes(c -> execute(Collections.singleton(c.getSource().getPlayer().getGameProfile()), mode, c.getSource()))
                 );
-
             }
+
         }
 
-        builder.then(CommandManager.argument("GameType", IntegerArgumentType.integer(0, 3))
-                    .then(CommandManager.argument("target(s)", StringArgumentType.string())
-                            .suggests(PlayerSelectorArgument.getSuggestions())
-                            .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode.others", 2))
-                            .executes(context -> executeByInteger(Collections.singletonList(PlayerSelectorArgument.getPlayer(context, "target(s)")), IntegerArgumentType.getInteger(context, "GameType"), context.getSource()))
-                    )
-                .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode", 2))
-                .executes(context -> executeByInteger(Collections.singleton(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "GameType"), context.getSource()))
-        );
-
     }
 
-    private static void buildShortCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
-        HashMap<String, GameMode> hashMap = new HashMap<String, GameMode>(){{
-            put("gms", GameMode.SURVIVAL);
-            put("gmc", GameMode.CREATIVE);
-            put("gma", GameMode.ADVENTURE);
-            put("gmsp", GameMode.SPECTATOR);
-        }};
+    private static int executeByName(Collection<GameProfile> gameProfiles, String string, ServerCommandSource source) {
 
-        hashMap.forEach((name, mode) -> {
-            dispatcher.register(
-                    CommandManager.literal(name)
-                            .then(
-                                    CommandManager.argument("target(s)", EntityArgumentType.players())
-                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode.others." + mode.getName(), 2))
-                                        .executes(context -> execute(EntityArgumentType.getPlayers(context, "target(s)"), mode, context.getSource()))
-                            )
-                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode.self." + mode.getName(), 2))
-                        .executes(context -> execute(Collections.singleton(context.getSource().getPlayer()), mode, context.getSource()))
-            );
 
-        });
+        return 1;
     }
 
-    private static int execute(Collection<ServerPlayerEntity> playerEntities, GameMode gameMode, ServerCommandSource source) {
-        playerEntities.forEach((player) -> {
-            player.setGameMode(gameMode);
-            player.addChatMessage(new LiteralText("You have set the game type to: " + gameMode.getName()), false);
-        });
-        return 0;
+    private static int execute(Collection<GameProfile> gameProfiles, GameMode gameMode, ServerCommandSource source) {
+        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
+        String status;
+
+        if (gameProfiles.size() == 1) {
+            gameProfiles.forEach((gameProfile) -> {
+                ServerPlayerEntity playerEntity = playerManager.getPlayer(gameProfile.getId());
+
+                Objects.requireNonNull(playerEntity).setGameMode(gameMode);
+
+                if (source.getName() != playerEntity.getName().asString()) {
+                    playerEntity.addChatMessage(LangText.getFormatter(true, "command.gamemode.announce", gameMode.getName(), source.getName(), "test"), false);
+                }
+
+                LangText.sendToUniversalSource(source, "command.gamemode.success", false, gameMode.getName() , gameProfile.getName());
+            });
+        }
+
+        return 1;
     }
 
-    private static int executeByInteger(Collection<ServerPlayerEntity> playerEntities, int int_1, ServerCommandSource source) {
+    private static int executeByInteger(Collection<GameProfile> gameProfiles, int int_1, ServerCommandSource source) {
         GameMode gameMode = GameMode.byId(int_1);
-        execute(playerEntities, gameMode, source);
-        return 0;
+
+        return 1;
     }
 
 }

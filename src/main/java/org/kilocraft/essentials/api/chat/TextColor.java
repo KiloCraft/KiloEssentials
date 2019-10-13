@@ -8,7 +8,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.util.CommandSender;
+import org.kilocraft.essentials.api.util.CommandHelper;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -275,7 +275,7 @@ public enum TextColor {
 
     public static void sendToUniversalSource(ServerCommandSource source, String text, boolean log) {
         LiteralText literalText;
-        if (CommandSender.isConsole(source)) {
+        if (CommandHelper.isConsole(source)) {
             literalText = new LiteralText(removeAlternateColorCodes('&', text));
         } else {
             literalText = new LiteralText(translateAlternateColorCodes('&', text));
@@ -286,7 +286,7 @@ public enum TextColor {
 
     public static void sendToUniversalSource(char altColorChar, ServerCommandSource source, String text, boolean log) {
         LiteralText literalText;
-        if (CommandSender.isConsole(source)) {
+        if (CommandHelper.isConsole(source)) {
             literalText = new LiteralText(removeAlternateColorCodes(altColorChar, text));
         } else {
             literalText = new LiteralText(translateAlternateColorCodes(altColorChar, text));

@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Commands {
-    public static String vanillaCommandsPrefix = "minecraft:";
+    public static String vanillaCommandsPrefix = "mc:";
 
     public static List<String> keCommandsToKeep = new ArrayList<String>(){{
         add("ke_gamemode");
         add("ke_reload");
+        add("ke_stop");
         add("ke_locate");
     }};
 

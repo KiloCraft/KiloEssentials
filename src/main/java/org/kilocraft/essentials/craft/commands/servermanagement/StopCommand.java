@@ -9,12 +9,12 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextColor;
-import org.kilocraft.essentials.api.util.CommandSender;
+import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.craft.KiloEssentials;
 
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("stop")
+        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("ke_stop")
                 .then(CommandManager.argument("args", StringArgumentType.greedyString())
                     .executes(c -> execute(c, StringArgumentType.getString(c, "args"))))
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.server.stop", 2))
@@ -29,7 +29,7 @@ public class StopCommand {
 
         if (isConfirmed) {
             TextColor.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
-            if (!CommandSender.isConsole(context.getSource())) KiloEssentials.getLogger().warn("%s is trying to stop the server", context.getSource().getName());
+            if (!CommandHelper.isConsole(context.getSource())) KiloEssentials.getLogger().warn("%s is trying to stop the server", context.getSource().getName());
             KiloServer.getServer().shutdown();
         } else {
             TextColor.sendToUniversalSource(context.getSource(), "&cPlease confirm your action by doing:\n &8\"&7/stop -confirmed\"", false);

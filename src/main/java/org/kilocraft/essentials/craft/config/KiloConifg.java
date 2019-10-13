@@ -67,7 +67,7 @@ public class KiloConifg {
     public static void load() {
         MAIN.load();
         MESSAGES.load();
-        WARPS.load();
+        //WARPS.load();
     }
 
 }
