@@ -15,11 +15,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.chat.TextColor;
 import org.kilocraft.essentials.api.command.PlayerSelectorArgument;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class OperatorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -54,30 +54,37 @@ public class OperatorCommand {
     }
 
     private static int execute(ServerCommandSource source, Collection<GameProfile> gameProfiles, boolean set, int level) {
-        PlayerManager playerManager_1 = source.getMinecraftServer().getPlayerManager();
+        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
         int i = 0;
         Iterator v = gameProfiles.iterator();
 
-        if (set)
-            while(v.hasNext()) {
-                GameProfile gameProfile = (GameProfile) v.next();
-                ServerPlayerEntity p = source.getMinecraftServer().getPlayerManager().getPlayer(gameProfile.getId());
-                source.getMinecraftServer().getPlayerManager().getOpList().add(
-                        new OperatorEntry(gameProfile, level, source.getMinecraftServer().getPlayerManager().getOpList().isOp(gameProfile))
+        while(v.hasNext()) {
+            GameProfile gameProfile = (GameProfile) v.next();
+            ServerPlayerEntity p = playerManager.getPlayer(gameProfile.getId());
+
+            if (set) {
+                playerManager.getOpList().add(
+                        new OperatorEntry(gameProfile, level, playerManager.getOpList().isOp(gameProfile))
                 );
 
                 p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
 
-                TextColor.sendToUniversalSource(
-                        source,
-                        LangText.getFormatter(true, "command.operator.success", gameProfile.getName(), level),
-                        false
-                );
+                LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName());
 
+                playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
+
+            } else {
+                if (playerManager.isOperator(gameProfile)) {
+                    playerManager.getOpList().remove(gameProfile);
+
+                    p.addChatMessage(LangText.get(true, "command.operator.announce.removed"), false);
+
+                    LangText.sendToUniversalSource(source, "command.operator.removed", true, gameProfile.getName());
+
+                    playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
+
+                }
             }
-
-        else {
-
 
         }
 
