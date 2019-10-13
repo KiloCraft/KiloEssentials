@@ -6,6 +6,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -14,31 +16,21 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.chat.TextColor;
 
 public class ItemLoreCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		/*
-		 * Thimble.permissionWriters.add(pair -> { try {
-		 * Thimble.PERMISSIONS.getPermission("kiloessentials.command.item.lore",
-		 * CommandPermission.class); // Permission that updates command tree } catch
-		 * (NoSuchMethodException | InstantiationException | InvocationTargetException |
-		 * IllegalAccessException e) { e.printStackTrace(); } });
-		 */
-		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager
-				.literal("lore")/*
-								 * .requires(source -> Thimble.hasPermissionChildOrOp(source,
-								 * "kiloessentials.command.item.lore", 3))
-								 */;
-
+		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("lore");
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
 		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = CommandManager.argument("line",
 				IntegerArgumentType.integer(0, 10));
-
 		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = CommandManager
 				.argument("name...", StringArgumentType.greedyString()).executes(context -> {
 					return changeLore(context, IntegerArgumentType.getInteger(context, "line"));
 				});
+
+		builder.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.item.lore", 2));
 
 		resetArgument.executes(context -> {
 			ItemStack item = context.getSource().getPlayer().getMainHandStack();
@@ -47,8 +39,7 @@ public class ItemLoreCommand {
 			if (item == null || item.isEmpty() == true) {
 				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 			} else {
-				if (itemTag == null || !itemTag.contains("lore")
-						|| !itemTag.getCompound("display").contains("Lore")) {
+				if (itemTag == null || !itemTag.contains("lore") || !itemTag.getCompound("display").contains("Lore")) {
 					return 1;
 				} else {
 					itemTag.getCompound("display").remove("Lore");
@@ -102,7 +93,14 @@ public class ItemLoreCommand {
 				}
 			}
 
-			lore.set(line, StringTag.of("{\"text\":\"" + StringArgumentType.getString(context, "name...") + "\"}"));
+			String text = StringArgumentType.getString(context, "name...");
+			if (Thimble.hasPermissionChildOrOp(context.getSource(), "kiloessentials.command.item.lore.colour", 2)) {
+				text = TextColor.translateAlternateColorCodes('&', text);
+			} else {
+				text = TextColor.removeAlternateColorCodes('&', text);
+			}
+
+			lore.set(line, StringTag.of("{\"text\":\"" + text + "\"}"));
 			itemTag.getCompound("display").put("Lore", lore);
 			item.setTag(itemTag);
 
