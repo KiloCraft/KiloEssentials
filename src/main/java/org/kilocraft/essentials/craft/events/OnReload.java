@@ -7,7 +7,7 @@ import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 public class OnReload implements EventHandler<ServerEvent$OnReload> {
     @Override
     public void handle(ServerEvent$OnReload event) {
-        WarpManager.INSTANCE.reload();
+        WarpManager.reload();
 
     }
 }

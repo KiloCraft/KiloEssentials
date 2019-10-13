@@ -12,6 +12,7 @@ import net.minecraft.command.arguments.PosArgument;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.math.BlockPos;
+import org.kilocraft.essentials.craft.worldwarps.Warp;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
 public class WarpCommand {
@@ -25,7 +26,7 @@ public class WarpCommand {
         warpArg.executes(c -> executeTeleport(c.getSource(), StringArgumentType.getString(c, "warp")));
         literalList.executes(c -> executeList(c.getSource()));
 
-        warpArg.suggests(suggestionProvider);
+        //warpArg.suggests(suggestionProvider);
         builder.then(warpArg);
         builder.then(literalList);
         registerAdmin(builder, dispatcher);
@@ -72,7 +73,7 @@ public class WarpCommand {
     }
 
     private static SuggestionProvider<ServerCommandSource> suggestionProvider = ((context, builder) -> {
-        WarpManager.INSTANCE.getWarpsByName().forEach(builder::suggest);
+        WarpManager.getWarpsByName().forEach(builder::suggest);
         return builder.buildFuture();
     });
 
@@ -85,6 +86,20 @@ public class WarpCommand {
     }
 
     private static int executeAdd(ServerCommandSource source, String warp, boolean permission, BlockPos blockPos) {
+        Double pitch = 0.0;
+        Double yaw = 0.0;
+
+
+        WarpManager.addWarp(
+                new Warp(
+                        warp,
+                        blockPos,
+                        1,
+                        1,
+                        permission
+                )
+        );
+
         return 1;
     }
 

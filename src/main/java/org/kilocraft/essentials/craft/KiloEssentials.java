@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.craft;
 
+import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
@@ -7,6 +8,7 @@ import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.data.KiloData;
 import org.kilocraft.essentials.craft.homesystem.PlayerHomeManager;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
+import org.kilocraft.essentials.craft.worldwarps.Warp;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
 public class KiloEssentials {
@@ -21,6 +23,7 @@ public class KiloEssentials {
 		logger.info("Running KiloEssentials version " + Mod.getVersion());
 
 		new KiloConifg();
+		KiloConifg.load();
 
 		this.events = events;
 		this.commands = commands;
@@ -30,7 +33,15 @@ public class KiloEssentials {
 		features.tryToRegister(new PlayerHomeManager(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
 
-		KiloConifg.load();
+
+		WarpManager.addWarp(
+				new Warp(
+						"test",
+						new BlockPos(1, 1, 1),
+						10, 20,
+						false
+				)
+		);
 
 	}
 

@@ -43,7 +43,7 @@ public class GamemodeCommand {
                         .then(
                                 CommandManager.argument("target(s)", StringArgumentType.string())
                                         .suggests(PlayerSelectorArgument.getSuggestions())
-                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName() + ".others", 2))
+                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode.others." + mode.getName(), 2))
                                         .executes(context -> execute(Collections.singletonList(PlayerSelectorArgument.getPlayer(context, "target(s)")), mode, context.getSource()))
                         )
                     .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName() + ".self", 2))
@@ -56,7 +56,7 @@ public class GamemodeCommand {
         builder.then(CommandManager.argument("GameType", IntegerArgumentType.integer(0, 3))
                     .then(CommandManager.argument("target(s)", StringArgumentType.string())
                             .suggests(PlayerSelectorArgument.getSuggestions())
-                            .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode", 2))
+                            .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode.others", 2))
                             .executes(context -> executeByInteger(Collections.singletonList(PlayerSelectorArgument.getPlayer(context, "target(s)")), IntegerArgumentType.getInteger(context, "GameType"), context.getSource()))
                     )
                 .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode", 2))
@@ -78,10 +78,10 @@ public class GamemodeCommand {
                     CommandManager.literal(name)
                             .then(
                                     CommandManager.argument("target(s)", EntityArgumentType.players())
-                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName(), 2))
+                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode.others." + mode.getName(), 2))
                                         .executes(context -> execute(EntityArgumentType.getPlayers(context, "target(s)"), mode, context.getSource()))
                             )
-                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode." + mode.getName() + ".self", 2))
+                        .requires(source -> Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.gamemode.self." + mode.getName(), 2))
                         .executes(context -> execute(Collections.singleton(context.getSource().getPlayer()), mode, context.getSource()))
             );
 
