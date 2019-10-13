@@ -60,6 +60,7 @@ public class KiloCommands {
         ColorsCommand.register(dispatcher);
         StopCommand.register(dispatcher);
         BackCommand.register(dispatcher);
+        OperatorCommand.register(dispatcher);
     }
 
     public static String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {

@@ -2,6 +2,7 @@ package org.kilocraft.essentials.api.server;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -199,4 +200,10 @@ public interface Server {
      * @param message you want to send
      */
     void sendMessage(String message);
+
+    /**
+     * Gets the OperatorList
+     * @return a instance of OperatorList
+     */
+    OperatorList getOperatorList();
 }
