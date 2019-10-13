@@ -2,12 +2,14 @@ package org.kilocraft.essentials.craft.worldwarps;
 
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.FileConfig;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.commands.essentials.WarpCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class WarpManager implements ConfigurableFeature {
         return true;
     }
 
-    private static void fromConfig() {
+    /*private static void fromConfig() {
         ArrayList<String> warpNames = data.get("warp_names");
 
         warpNames.forEach((name) -> {
@@ -45,7 +47,7 @@ public class WarpManager implements ConfigurableFeature {
         });
     }
 
-    private static void toConfig(Warp warp) {
+    /*private static void toConfig(Warp warp) {
         Config config = data.get("warps." + warp.getName());
 
         config.set("pos.x", warp.getBlockPos().getX());
@@ -57,7 +59,7 @@ public class WarpManager implements ConfigurableFeature {
 
         data.add("warp_names", warp.getName());
         data.save();
-    }
+    }*/
 
     public static List<Warp> getWarps() {
         return warps;
@@ -69,11 +71,11 @@ public class WarpManager implements ConfigurableFeature {
 
     public static void addWarp(Warp warp) {
         warps.add(warp);
-        toConfig(warp);
+        //toConfig(warp);
     }
 
     public static void reload() {
-        fromConfig();
+        //fromConfig();
     }
 
     @Override
