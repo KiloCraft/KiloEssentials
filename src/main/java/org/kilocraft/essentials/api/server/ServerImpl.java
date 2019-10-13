@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -205,6 +206,11 @@ public class ServerImpl implements Server {
     @Override
     public void sendMessage(String message) {
         getLogger().info(message);
+    }
+
+    @Override
+    public OperatorList getOperatorList() {
+        return server.getPlayerManager().getOpList();
     }
 
     public String getBrandName() {

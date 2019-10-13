@@ -8,14 +8,15 @@ import java.util.List;
 
 public class KiloData {
     static String workingDir = System.getProperty("user.dir") + "/";
+    static String dataDir = workingDir + "/KiloEssentials/data/";
+
     static List<String> files = new ArrayList<String>(){{
-        add("players.dat");
     }};
 
 
     public KiloData() {
         files.forEach((file) -> {
-            KiloFile kiloFile = new KiloFile(file, workingDir);
+            KiloFile kiloFile = new KiloFile(file, getDataDirectoryPath());
             kiloFile.tryToLoad();
 
             if (kiloFile.exists()) {
@@ -26,8 +27,7 @@ public class KiloData {
     }
 
     public static String getDataDirectoryPath() {
-        return workingDir + "/KiloEssentials/data/";
+        return dataDir;
     }
-
 
 }
