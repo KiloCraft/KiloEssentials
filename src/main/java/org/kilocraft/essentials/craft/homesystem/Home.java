@@ -1,18 +1,21 @@
 package org.kilocraft.essentials.craft.homesystem;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.BlockPos;
 
 public class Home {
     private String owner_uuid;
     private String name;
-    private BlockPos blockPos;
+    private int dimension;
+    private double x, y, z;
     private float dX, dY;
 
-    public Home(String uuid, String name, BlockPos blockPos, double yaw, double pitch) {
+    public Home(String uuid, String name, double x, double y, double z, int dimension, float yaw, float pitch) {
         this.owner_uuid = uuid;
         this.name = name;
-        this.blockPos = blockPos;
+        this.dimension = dimension;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     Home(CompoundTag compoundTag) {
@@ -21,41 +24,39 @@ public class Home {
 
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
-        CompoundTag homeTag = new CompoundTag();
         {
             CompoundTag pos = new CompoundTag();
-            pos.putInt("x", blockPos.getX());
-            pos.putInt("y", blockPos.getY());
-            pos.putInt("z", blockPos.getZ());
+            pos.putDouble("x", this.x);
+            pos.putDouble("y", this.y);
+            pos.putDouble("z", this.z);
 
-            homeTag.put("pos", pos);
+            compoundTag.put("pos", pos);
         }
         {
             CompoundTag dir = new CompoundTag();
-            dir.putDouble("pitch", dX);
-            dir.putDouble("yaw", dY);
-            homeTag.put("dir", dir);
+            dir.putDouble("dX", dX);
+            dir.putDouble("dY", dY);
+            compoundTag.put("dir", dir);
         }
 
-        compoundTag.put(name, homeTag);
-
+        compoundTag.putInt("dim", this.dimension);
         return compoundTag;
     }
 
     public void fromTag(CompoundTag compoundTag) {
         {
             CompoundTag pos = compoundTag.getCompound("pos");
-            this.blockPos = new BlockPos(
-                    pos.getInt("x"),
-                    pos.getInt("y"),
-                    pos.getInt("z")
-            );
+            this.x = pos.getDouble("x");
+            this.y = pos.getDouble("y");
+            this.z = pos.getDouble("z");
         }
         {
             CompoundTag dir = compoundTag.getCompound("dir");
-            this.dX = dir.getFloat("pitch");
-            this.dY = dir.getFloat("yaw");
+            this.dX = dir.getFloat("dX");
+            this.dY = dir.getFloat("dY");
         }
+
+        this.dimension = compoundTag.getInt("dim");
     }
 
     public String getOwner() {
@@ -74,12 +75,36 @@ public class Home {
         this.name = name;
     }
 
-    public BlockPos getBlockPos() {
-        return blockPos;
+    public double getX() {
+        return x;
     }
 
-    public void setBlockPos(BlockPos blockPos) {
-        this.blockPos = blockPos;
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public void setZ(double z) {
+        this.z = z;
+    }
+
+    public int getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
     }
 
     public float getPitch() {
