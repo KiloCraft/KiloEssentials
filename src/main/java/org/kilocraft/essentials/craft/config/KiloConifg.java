@@ -31,7 +31,7 @@ public class KiloConifg {
 
     static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
     static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");
-    static FileConfig WARPS = FileConfig.of(configPath + "/Warps.yaml");
+    //static FileConfig WARPS = FileConfig.of(configPath + "/Warps.yaml");
 
     private void handle() {
         try {
@@ -56,9 +56,9 @@ public class KiloConifg {
         return MESSAGES;
     }
 
-    public static FileConfig getWarps() {
-        return WARPS;
-    }
+//    public static FileConfig getWarps() {
+//        return WARPS;
+//    }
 
     public static String getWorkingDirectory() {
         return workingDir;

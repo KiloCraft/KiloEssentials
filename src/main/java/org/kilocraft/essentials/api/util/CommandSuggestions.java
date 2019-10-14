@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.util;
 
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
@@ -7,10 +8,16 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.KiloServer;
 
 public class CommandSuggestions {
+    private static Message argumentTooltip = () -> "args...";
+
     private static PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 
     public static SuggestionProvider<ServerCommandSource> allPlayers = ((context, builder) -> {
         return CommandSource.suggestMatching(playerManager.getPlayerNames(), builder);
+    });
+
+    public static SuggestionProvider<ServerCommandSource> suggestInput = ((context, builder) -> {
+        return builder.buildFuture();
     });
 
     public static SuggestionProvider<ServerCommandSource> nonOperators = ((context, builder) -> {

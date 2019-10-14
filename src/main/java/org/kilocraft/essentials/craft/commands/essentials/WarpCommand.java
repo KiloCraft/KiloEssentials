@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.arguments.BlockPosArgumentType;
@@ -18,24 +19,22 @@ import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 public class WarpCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("warp")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp", 2));
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp", 2))
+                .executes(c -> executeList(c.getSource()));
 
         RequiredArgumentBuilder<ServerCommandSource, String> warpArg = CommandManager.argument("warp", StringArgumentType.string());
-        LiteralArgumentBuilder<ServerCommandSource> literalList = CommandManager.literal("-list");
 
         warpArg.executes(c -> executeTeleport(c.getSource(), StringArgumentType.getString(c, "warp")));
-        literalList.executes(c -> executeList(c.getSource()));
+        warpArg.suggests((context, builder1) -> {
+            return WarpManager.suggestWarps.getSuggestions(context, builder1);
+        });
 
-        //warpArg.suggests(suggestionProvider);
         builder.then(warpArg);
-        builder.then(literalList);
         registerAdmin(builder, dispatcher);
         dispatcher.register(builder);
     }
 
     private static void registerAdmin(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> literalAdd = CommandManager.literal("-add");
-        LiteralArgumentBuilder<ServerCommandSource> literalRemove = CommandManager.literal("-remove");
         LiteralArgumentBuilder<ServerCommandSource> aliasAdd = CommandManager.literal("addwarp");
         LiteralArgumentBuilder<ServerCommandSource> aliasRemove = CommandManager.literal("delwarp");
         RequiredArgumentBuilder<ServerCommandSource, String> removeArg = CommandManager.argument("warp", StringArgumentType.string());
@@ -43,8 +42,6 @@ public class WarpCommand {
         RequiredArgumentBuilder<ServerCommandSource, PosArgument> addArgBlockPos = CommandManager.argument("blockPos", BlockPosArgumentType.blockPos());
         RequiredArgumentBuilder<ServerCommandSource, Boolean> addArgPermission = CommandManager.argument("requiresPermission", BoolArgumentType.bool());
 
-        literalAdd.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.add", 2));
-        literalRemove.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.remove", 2));
         aliasAdd.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.add", 2));
         aliasRemove.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.remove", 2));
 
@@ -56,20 +53,18 @@ public class WarpCommand {
                 BlockPosArgumentType.getBlockPos(c, "blockPos")
         ));
 
+        removeArg.suggests((context, builder1) -> {
+            return WarpManager.suggestWarps.getSuggestions(context, builder1);
+        });
+
         addArgBlockPos.then(addArgPermission);
         addArg.then(addArgBlockPos);
-        literalAdd.then(addArg);
-
-        literalRemove.then(removeArg);
 
         aliasAdd.then(addArg);
         aliasRemove.then(removeArg);
 
         dispatcher.register(aliasAdd);
         dispatcher.register(aliasRemove);
-
-        builder.then(literalAdd);
-        builder.then(literalRemove);
     }
 
     private static SuggestionProvider<ServerCommandSource> suggestionProvider = ((context, builder) -> {
@@ -77,18 +72,21 @@ public class WarpCommand {
         return builder.buildFuture();
     });
 
-    private static int executeTeleport(ServerCommandSource source, String warp) {
+    private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
+        Warp warp = WarpManager.getWarp(name);
+        //source.getPlayer().teleport();
+
+
         return 1;
     }
 
-    private static int executeList(ServerCommandSource source) {
+    private static int executeList(ServerCommandSource source) throws CommandSyntaxException {
         return 1;
     }
 
     private static int executeAdd(ServerCommandSource source, String warp, boolean permission, BlockPos blockPos) {
         Double pitch = 0.0;
         Double yaw = 0.0;
-
 
         WarpManager.addWarp(
                 new Warp(
@@ -104,6 +102,7 @@ public class WarpCommand {
     }
 
     private static int executeRemove(ServerCommandSource source, String warp) {
+        WarpManager.removeWarp(warp);
         return 1;
     }
 

@@ -1,20 +1,24 @@
 package org.kilocraft.essentials.craft.worldwarps;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.Dimension;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 public class Warp {
     private String permissionBaseName = KiloConifg.getMain().getOrElse("warps.permission_prefix", "warp");
     private String name;
-    private BlockPos blockPos;
+    private double x, y, z;
+    private Dimension dimension;
     private boolean requirePermission;
 
     private float pitch, yaw;
 
-    public Warp(String name, BlockPos blockPos, float pitch, float yaw , boolean requirePermission) {
+    public Warp(String name, double x, double y, double z, float pitch, float yaw, Dimension dimension , boolean requirePermission) {
         this.name = name;
-        this.blockPos = blockPos;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.dimension = dimension;
         this.requirePermission = requirePermission;
         this.pitch = pitch;
         this.yaw = yaw;
@@ -32,21 +36,35 @@ public class Warp {
         return this.name;
     }
 
-    public BlockPos getBlockPos() {
-        return this.blockPos;
-    }
 
     public boolean doesRequirePermission() {
         return this.requirePermission;
     }
 
     public float getPitch() {
-        return pitch;
+        return this.pitch;
     }
 
     public float getYaw() {
-        return yaw;
+        return this.yaw;
     }
+
+    public double getX() {
+        return this.x;
+    }
+
+    public double getY() {
+        return this.y;
+    }
+
+    public double getZ() {
+        return this.z;
+    }
+
+    public Dimension getDimension() {
+        return this.dimension;
+    }
+
 
     public String getPermissionNode() {
         return "" + (this.requirePermission ? permissionBaseName + "." + this.name : "");
@@ -58,9 +76,9 @@ public class Warp {
         CompoundTag direction = new CompoundTag();
         {
             CompoundTag pos = new CompoundTag();
-            pos.putInt("x", this.blockPos.getX());
-            pos.putInt("y", this.blockPos.getY());
-            pos.putInt("z", this.blockPos.getZ());
+            pos.putDouble("x", this.x);
+            pos.putDouble("y", this.y);
+            pos.putDouble("z", this.z);
 
             warpTag.put("pos", pos);
         }
@@ -80,11 +98,9 @@ public class Warp {
     public void fromTag(CompoundTag tag) {
         {
             CompoundTag pos = tag.getCompound("pos");
-            this.blockPos = new BlockPos(
-                    pos.getInt("x"),
-                    pos.getInt("y"),
-                    pos.getInt("z")
-            );
+            this.x = pos.getInt("x");
+            this.y = pos.getInt("y");
+            this.z = pos.getInt("z");
         }
         {
             CompoundTag dir = tag.getCompound("direction");

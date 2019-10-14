@@ -40,7 +40,9 @@ public class KillCommand {
             });
         }
 
-        source.sendFeedback(LangText.getFormatter(true, "command.kill.success", 2), false);
+        if (entities.size() > 1)
+            source.sendFeedback(LangText.getFormatter(true, "command.kill.success", entities.size()), false);
+
         return entities.size();
     }
 }

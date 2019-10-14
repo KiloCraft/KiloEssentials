@@ -12,6 +12,7 @@ public class Commands {
         add("ke_stop");
         add("ke_locate");
         add("ke_op");
+        add("ke_kill");
     }};
 
     public static List<String> vanillaCommandsToRename = new ArrayList<String>(){{

@@ -1,11 +1,11 @@
 package org.kilocraft.essentials.craft.worldwarps;
 
-import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.core.file.FileConfig;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.worlddata.NBTWorldData;
 import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.commands.essentials.WarpCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
@@ -14,10 +14,9 @@ import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class WarpManager extends NBTWorldData implements ConfigurableFeature {
-    private static FileConfig data = KiloConifg.getWarps();
-
     private static ArrayList<String> byName = new ArrayList<>();
     private static List<Warp> warps = new ArrayList<>();
 
@@ -27,41 +26,6 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
         WarpCommand.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
         return true;
     }
-
-    /*private static void fromConfig() {
-        ArrayList<String> warpNames = data.get("warp_names");
-
-        warpNames.forEach((name) -> {
-            Config config = data.get("warps." + name);
-            Warp warp = new Warp(
-                    name,
-                    new BlockPos(
-                            config.getIntOrElse("pos.x", 0),
-                            config.getIntOrElse("pos.y", 0),
-                            config.getIntOrElse("pos.z", 0)
-                    ),
-                    config.getOrElse("dir.pitch", 0),
-                    config.getOrElse("dir.yaw", 90),
-                    config.getOrElse("permission_required", false)
-            );
-
-            warps.add(warp);
-        });
-    }
-
-    /*private static void toConfig(Warp warp) {
-        Config config = data.get("warps." + warp.getName());
-
-        config.set("pos.x", warp.getBlockPos().getX());
-        config.set("pos.y", warp.getBlockPos().getY());
-        config.set("pos.z", warp.getBlockPos().getZ());
-        config.set("permission_required", warp.doesRequirePermission());
-        config.set("dir.pitch", warp.getPitch());
-        config.set("dir.yaw", warp.getYaw());
-
-        data.add("warp_names", warp.getName());
-        data.save();
-    }*/
 
     public static List<Warp> getWarps() {
         return warps;
@@ -73,12 +37,38 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
 
     public static void addWarp(Warp warp) {
         warps.add(warp);
-        //toConfig(warp);
+    }
+
+    public static void removeWarp(Warp warp) {
+        warps.remove(warp);
+    }
+
+    public static void removeWarp(String warp) {
+        warps.forEach((var) -> {
+            if (var.getName().equals(warp)) warps.remove(var);
+        });
+    }
+
+    public static Warp getWarp(String warp) {
+        AtomicReference<Warp> var = null;
+        warps.stream().filter((var2) -> {
+            if (var2.getName().equals(warp)) {
+                var.set(var2);
+            }
+            return var.get().getName().equals(var2.getName());
+        });
+
+        return var.get();
     }
 
     public static void reload() {
-        //fromConfig();
     }
+
+    public static String[] getWarpsAsArray() {
+        return warps.stream().toArray(String[]::new);
+    }
+
+    public static SuggestionProvider<ServerCommandSource> suggestWarps = ((context, builder) -> CommandSource.suggestMatching(warps.stream().map(Warp::getName), builder));
 
     @Override
     public File getSaveFile(File file, File file1, boolean b) {
