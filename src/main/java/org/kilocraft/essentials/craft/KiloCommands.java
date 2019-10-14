@@ -59,7 +59,6 @@ public class KiloCommands {
         AnvilCommand.register(this.dispatcher);
         CraftingbenchCommand.register(this.dispatcher);
         NickCommand.register(this.dispatcher);
-        SuicideCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
 
         /**
