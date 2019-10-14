@@ -28,10 +28,16 @@ import java.util.Objects;
 
 public class OperatorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-
+        String pNode = "kiloessentials.server.manage.operators";
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("operator")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.server.manage.operators", 2));
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, pNode, 2));
+        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("ke_op")
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, pNode, 2));
+
         LiteralArgumentBuilder<ServerCommandSource> setLiteral = CommandManager.literal("set");
+        LiteralArgumentBuilder<ServerCommandSource> addLiteral = CommandManager.literal("add");
+        LiteralArgumentBuilder<ServerCommandSource> removeLiteral = CommandManager.literal("remove");
+
         LiteralArgumentBuilder<ServerCommandSource> listLiteral = CommandManager.literal("list");
         LiteralArgumentBuilder<ServerCommandSource> getLiteral = CommandManager.literal("get");
 
@@ -56,17 +62,54 @@ public class OperatorCommand {
         );
 
         listLiteral.executes(
-                c -> executeList(c.getSource())
+                c -> executeList(
+                        c.getSource()
+                )
         );
 
         getLiteral.executes(
-                c -> executeGet(c.getSource(), Collections.singleton(c.getSource().getPlayer().getGameProfile()))
+                c -> executeGet(
+                        c.getSource(),
+                        Collections.singleton(c.getSource().getPlayer().getGameProfile())
+                )
         );
 
-        getLiteral.then(
-                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile()).executes(
-                        c -> executeGet(c.getSource(), GameProfileArgumentType.getProfileArgument(c, "gameProfile"))
-                )
+        addLiteral.then(
+                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                        .suggests(CommandHelper.getAllPlayers())
+                        .then(
+                                CommandManager.argument("level", IntegerArgumentType.integer(0, 4))
+                                        .executes(
+                                                c -> execute(
+                                                        c.getSource(),
+                                                        GameProfileArgumentType.getProfileArgument(c, "gameProfile"),
+                                                        true,
+                                                        IntegerArgumentType.getInteger(c, "level")
+                                                )
+                                        )
+                        )
+        );
+
+        removeLiteral.then(
+                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                        .suggests(CommandHelper.getAllPlayers())
+                        .then(
+                                CommandManager.argument("level", IntegerArgumentType.integer(0, 4))
+                                        .executes(
+                                                c -> execute(
+                                                        c.getSource(),
+                                                        GameProfileArgumentType.getProfileArgument(c, "gameProfile"),
+                                                        false,
+                                                        IntegerArgumentType.getInteger(c, "level")
+                                                )
+                                        )
+                        )
+        );
+
+        addLiteral.then(
+                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                        .suggests(CommandHelper.getAllPlayers())
+                        .executes(c -> execute(c.getSource(), GameProfileArgumentType.getProfileArgument(c, "gameProfile"), false, 4))
         );
 
         selectorArg.suggests(PlayerSelectorArgument.getSuggestions());
@@ -77,7 +120,16 @@ public class OperatorCommand {
         builder.then(getLiteral);
         builder.then(setLiteral);
         builder.then(listLiteral);
+        builder.then(addLiteral);
+        boolArg.then(removeLiteral);
 
+        aliasBuilder.then(getLiteral);
+        aliasBuilder.then(setLiteral);
+        aliasBuilder.then(listLiteral);
+        aliasBuilder.then(addLiteral);
+        aliasBuilder.then(removeLiteral);
+
+        dispatcher.register(aliasBuilder);
         dispatcher.register(builder);
     }
 
@@ -97,12 +149,17 @@ public class OperatorCommand {
         String text = "&eOperator &b%s&e, Permission level: &a%s&r";
 
         gameProfiles.forEach((gameProfile) -> {
-            if (playerManager.getOpList().isOp(gameProfile)){
-                int opLevel = playerManager.getOpList().get(gameProfile).getPermissionLevel();
-                TextColor.sendToUniversalSource(source, String.format(text, gameProfile.getName(), opLevel), false);
-            } else {
+            if (!playerManager.getOpList().isOp(gameProfile))
                 source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!"));
-            }
+            else
+                TextColor.sendToUniversalSource(
+                        source,
+                        String.format(
+                                text,
+                                gameProfile.getName(),
+                                playerManager.getOpList().get(gameProfile).getPermissionLevel()
+                        ),
+                        false);
         });
 
         return 1;
@@ -117,28 +174,27 @@ public class OperatorCommand {
             GameProfile gameProfile = (GameProfile) v.next();
             ServerPlayerEntity p = playerManager.getPlayer(gameProfile.getId());
             int leastPermLevelReq = playerManager.getOpList().get(gameProfile).getPermissionLevel();
-            if (CommandHelper.isConsole(source)) leastPermLevelReq = 4;
+            if (CommandHelper.isConsole(source)) leastPermLevelReq = 5;
 
-            if (level < leastPermLevelReq) {
+            if (level < leastPermLevelReq && !source.getName().equals(Objects.requireNonNull(p).getName().asString())) {
                 if (set) {
+                    p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
+                    LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
+
                     playerManager.getOpList().add(
                             new OperatorEntry(gameProfile, level, playerManager.getOpList().isOp(gameProfile))
                     );
-
-                    p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
-
-                    LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
 
                 } else {
                     if (playerManager.isOperator(gameProfile)) {
                         playerManager.getOpList().remove(gameProfile);
 
                         p.addChatMessage(LangText.get(true, "command.operator.announce.removed"), false);
-
                         LangText.sendToUniversalSource(source, "command.operator.removed", true, gameProfile.getName());
-
                     }
                 }
+            } else if (source.getName().equals(Objects.requireNonNull(p).getName().asString())) {
+                source.sendError(LangText.get(false, "command.operator.exception"));
             } else {
                 source.sendFeedback(KiloCommands.getPermissionError("Operator permission required, Level " + leastPermLevelReq), false);
             }
