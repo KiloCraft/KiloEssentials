@@ -3,34 +3,72 @@ package org.kilocraft.essentials.craft.commands.essentials;
 import org.kilocraft.essentials.api.chat.LangText;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
+import io.github.indicode.fabric.permissions.Thimble;
+import net.minecraft.command.EntitySelector;
+import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-//import org.kilocraft.essentials.craft.player.KiloPlayer;
 
 public class NickCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralCommandNode<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("nick")
-				.requires(source -> source.hasPermissionLevel(2)).executes(context -> {
-					context.getSource().sendFeedback(LangText.get(true, "command.nick.onlyoneargument"), false);
-					return 1;
+		LiteralCommandNode<ServerCommandSource> nick = CommandManager.literal("nick")
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick", 2)).build();
+
+		LiteralCommandNode<ServerCommandSource> set = CommandManager.literal("set")
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick.set", 2)).build();
+
+		LiteralCommandNode<ServerCommandSource> reset = CommandManager.literal("reset")
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick.reset", 2))
+				.executes(context -> {
+					resetNick(context, context.getSource().getPlayer());
+					return 0;
 				}).build();
 
-		ArgumentCommandNode<ServerCommandSource, String> argument = CommandManager
+		ArgumentCommandNode<ServerCommandSource, String> name = CommandManager
 				.argument("name", StringArgumentType.string()).executes(context -> {
-					ServerPlayerEntity player = context.getSource().getPlayer();
-					String name = context.getArgument("name", String.class);
-
-					//KiloPlayer.get(player).setNickname(name);
-
-					context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.success", name), false);
+					// KiloPlayer.get(player).setNickname(name);
+					changeNick(context, context.getSource().getPlayer());
 
 					return 0;
 				}).build();
 
-		dispatcher.getRoot().addChild(literalArgumentBuilder);
-		literalArgumentBuilder.addChild(argument);
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> nameTarget = CommandManager
+				.argument("target", EntityArgumentType.player())
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick.set.others", 2))
+				.executes(context -> {
+					changeNick(context, EntityArgumentType.getPlayer(context, "target"));
+					return 0;
+				}).build();
+
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> resetTarget = CommandManager
+				.argument("target", EntityArgumentType.player())
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick.reset.others", 2))
+				.executes(context -> {
+					resetNick(context, EntityArgumentType.getPlayer(context, "target"));
+					return 0;
+				}).build();
+
+		name.addChild(nameTarget);
+		reset.addChild(resetTarget);
+		set.addChild(name);
+		nick.addChild(set);
+		nick.addChild(reset);
+		dispatcher.getRoot().addChild(nick);
+	}
+
+	private static void changeNick(CommandContext<ServerCommandSource> context, PlayerEntity player) {
+		String nick = StringArgumentType.getString(context, "name");
+		context.getSource().sendFeedback(
+				LangText.getFormatter(true, "command.nick.success", player.getName().asString(), nick), false);
+	}
+
+	private static void resetNick(CommandContext<ServerCommandSource> context, PlayerEntity player) {
+		context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.reset", player.getName().asString()),
+				false);
 	}
 }
