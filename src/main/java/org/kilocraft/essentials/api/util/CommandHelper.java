@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.api.util;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
@@ -33,16 +32,5 @@ public class CommandHelper {
         return bool.get();
     }
 
-    public static SuggestionProvider<ServerCommandSource> getAllPlayers() {
-        return forAllPlayer;
-    }
-
-    private static SuggestionProvider<ServerCommandSource> forAllPlayer = (context, builder) -> {
-        KiloServer.getServer().getPlayerManager().getPlayerList().forEach((player) -> {
-            builder.suggest(player.getName().asString());
-        });
-
-        return builder.buildFuture();
-    };
 
 }
