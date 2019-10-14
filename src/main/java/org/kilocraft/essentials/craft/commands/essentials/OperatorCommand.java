@@ -18,9 +18,11 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextColor;
 import org.kilocraft.essentials.api.command.PlayerSelectorArgument;
+import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.craft.KiloCommands;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -31,6 +33,7 @@ public class OperatorCommand {
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.server.manage.operators", 2));
         LiteralArgumentBuilder<ServerCommandSource> setLiteral = CommandManager.literal("set");
         LiteralArgumentBuilder<ServerCommandSource> listLiteral = CommandManager.literal("list");
+        LiteralArgumentBuilder<ServerCommandSource> getLiteral = CommandManager.literal("get");
 
         RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile());
         RequiredArgumentBuilder<ServerCommandSource, Boolean> boolArg = CommandManager.argument("set", BoolArgumentType.bool());
@@ -56,11 +59,22 @@ public class OperatorCommand {
                 c -> executeList(c.getSource())
         );
 
+        getLiteral.executes(
+                c -> executeGet(c.getSource(), Collections.singleton(c.getSource().getPlayer().getGameProfile()))
+        );
+
+        getLiteral.then(
+                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile()).executes(
+                        c -> executeGet(c.getSource(), GameProfileArgumentType.getProfileArgument(c, "gameProfile"))
+                )
+        );
+
         selectorArg.suggests(PlayerSelectorArgument.getSuggestions());
         boolArg.then(levelArg);
         selectorArg.then(boolArg);
         setLiteral.then(selectorArg);
 
+        builder.then(getLiteral);
         builder.then(setLiteral);
         builder.then(listLiteral);
 
@@ -68,14 +82,29 @@ public class OperatorCommand {
     }
 
     private static int executeList(ServerCommandSource source) {
-        String[] list = source.getMinecraftServer().getPlayerManager().getOpList().getNames();
-        LiteralText literalText = new LiteralText("&6Operators: ");
+        LiteralText literalText = new LiteralText("&6Operators: &fServer");
 
-        for (String s : list) {
-            literalText.append(String.format("&f%s&7,", s));
+        for (String name : source.getMinecraftServer().getPlayerManager().getOpList().getNames()) {
+            literalText.append("&7, &f" + name);
         }
 
         TextColor.sendToUniversalSource(source, literalText, false);
+        return 1;
+    }
+
+    private static int executeGet(ServerCommandSource source, Collection<GameProfile> gameProfiles) {
+        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
+        String text = "&eOperator &b%s&e, Permission level: &a%s&r";
+
+        gameProfiles.forEach((gameProfile) -> {
+            if (playerManager.getOpList().isOp(gameProfile)){
+                int opLevel = playerManager.getOpList().get(gameProfile).getPermissionLevel();
+                TextColor.sendToUniversalSource(source, String.format(text, gameProfile.getName(), opLevel), false);
+            } else {
+                source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!"));
+            }
+        });
+
         return 1;
     }
 
@@ -88,6 +117,7 @@ public class OperatorCommand {
             GameProfile gameProfile = (GameProfile) v.next();
             ServerPlayerEntity p = playerManager.getPlayer(gameProfile.getId());
             int leastPermLevelReq = playerManager.getOpList().get(gameProfile).getPermissionLevel();
+            if (CommandHelper.isConsole(source)) leastPermLevelReq = 4;
 
             if (level < leastPermLevelReq) {
                 if (set) {
