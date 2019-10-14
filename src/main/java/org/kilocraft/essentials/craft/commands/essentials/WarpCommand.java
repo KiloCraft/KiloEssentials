@@ -12,6 +12,7 @@ import net.minecraft.command.arguments.PosArgument;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -76,8 +77,8 @@ public class WarpCommand {
 
     private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
         Warp warp = WarpManager.getWarp(name);
-        //source.getPlayer().teleport();
-
+        ServerWorld world = source.getWorld().getServer().getWorld(Registry.DIMENSION.get(warp.getDimension()));
+        source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
 
         return 1;
     }

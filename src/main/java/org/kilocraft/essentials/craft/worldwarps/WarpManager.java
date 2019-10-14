@@ -6,6 +6,7 @@ import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.commands.essentials.WarpCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
@@ -14,7 +15,6 @@ import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     private static ArrayList<String> byName = new ArrayList<>();
@@ -44,21 +44,17 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     }
 
     public static void removeWarp(String warp) {
-        warps.forEach((var) -> {
-            if (var.getName().equals(warp)) warps.remove(var);
-        });
+        warps.remove(getWarp(warp));
     }
 
     public static Warp getWarp(String warp) {
-        AtomicReference<Warp> var = null;
-        warps.stream().filter((var2) -> {
-            if (var2.getName().equals(warp)) {
-                var.set(var2);
-            }
-            return var.get().getName().equals(var2.getName());
-        });
+        @Nullable Warp var = null;
+        for (Warp var2 : warps) {
+            if (var2.getName().toLowerCase().equals(warp.toLowerCase()))
+                var = var2;
+        }
 
-        return var.get();
+        return var;
     }
 
     public static void reload() {

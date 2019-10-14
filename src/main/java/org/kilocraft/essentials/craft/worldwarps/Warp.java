@@ -12,15 +12,15 @@ public class Warp {
 
     private float dX, dY;
 
-    public Warp(String name, double x, double y, double z, float pitch, float yaw, int dimension, boolean requirePermission) {
+    public Warp(String name, double x, double y, double z, float yaw, float pitch, int dimension, boolean requirePermission) {
         this.name = name;
         this.x = x;
         this.y = y;
         this.z = z;
         this.dimension = dimension;
         this.requirePermission = requirePermission;
-        this.dX = pitch;
-        this.dY = yaw;
+        this.dX = yaw;
+        this.dY = pitch;
     }
     public Warp(String name, CompoundTag tag) {
         this.name = name;
