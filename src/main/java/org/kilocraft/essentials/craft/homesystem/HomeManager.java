@@ -1,9 +1,14 @@
 package org.kilocraft.essentials.craft.homesystem;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.worlddata.NBTWorldData;
 import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
@@ -17,9 +22,9 @@ import java.util.UUID;
  * @Author CODY_AI
  */
 
-public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeature {
-    public static PlayerHomeManager INSTANCE = new PlayerHomeManager();
-    private List<Home> homes = new ArrayList<>();
+public class HomeManager extends NBTWorldData implements ConfigurableFeature {
+    public static HomeManager INSTANCE = new HomeManager();
+    private static List<Home> homes = new ArrayList<>();
 
     @Override
     public boolean register() {
@@ -28,8 +33,30 @@ public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeatu
         return true;
     }
 
-    public void addHome(Home home) {
+    public static void addHome(Home home) {
         homes.add(home);
+    }
+
+    public static Home getHome(String uuid, String name) {
+        @Nullable Home var = null;
+        for (Home var2 : homes) {
+            if (var2.getOwner().equals(uuid)) {
+                if (var2.getName().equals(name))
+                    var = var2;
+            }
+        }
+
+        return var;
+    }
+
+    public static List<Home> getHomes(String uuid) {
+        List<Home> var = new ArrayList<>();
+        for (Home var2 : homes) {
+            if (var2.getOwner().equals(uuid))
+                var.add(var2);
+        }
+
+        return var;
     }
 
     public List<Home> getPlayerHomes(UUID uuid) {
@@ -39,7 +66,7 @@ public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeatu
     public List<Home> getPlayerHomes(String uuid) {
         List<Home> list = new ArrayList<>();
         homes.forEach((home) -> {
-            if (home.owner_uuid.equals(uuid))
+            if (home.getOwner().equals(uuid))
                 list.add(home);
         });
 
@@ -49,8 +76,8 @@ public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeatu
     @Override
     public CompoundTag toNBT(CompoundTag tag) {
         homes.forEach(home -> {
-            if (tag.contains(home.owner_uuid)) {
-                ListTag listTag =  (ListTag) tag.get(home.owner_uuid);
+            if (tag.contains(home.getOwner())) {
+                ListTag listTag =  (ListTag) tag.get(home.getOwner());
                 listTag.add(home.toTag());
             }
         });
@@ -64,7 +91,7 @@ public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeatu
             ListTag playerTag = (ListTag) tag.get(key);
             playerTag.forEach(homeTag -> {
                 Home home = new Home((CompoundTag) homeTag);
-                home.owner_uuid = key;
+                home.setOwner(key);
                 homes.add(home);
             });
         });
@@ -74,9 +101,22 @@ public class PlayerHomeManager extends NBTWorldData implements ConfigurableFeatu
         return homes;
     }
 
+
+
     @Override
     public File getSaveFile(File worldDir, File rootDir, boolean backup) {
         return new File(KiloConifg.getWorkingDirectory() + "/homes." + (backup ? "dat_old" : "dat"));
     }
+
+    public static SuggestionProvider<ServerCommandSource> suggestHomes = ((context, builder) -> {
+        return CommandSource.suggestMatching(homes.stream().filter((var) -> {
+            try {
+                return var.getOwner().equals(context.getSource().getPlayer().getUuidAsString());
+            } catch (CommandSyntaxException e) {
+                return false;
+            }
+        }).map(Home::getName), builder);
+    });
+
 }
 
