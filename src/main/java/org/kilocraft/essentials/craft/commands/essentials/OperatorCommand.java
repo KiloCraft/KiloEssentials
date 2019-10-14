@@ -13,6 +13,7 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextColor;
@@ -67,13 +68,14 @@ public class OperatorCommand {
     }
 
     private static int executeList(ServerCommandSource source) {
-        String list = source.getMinecraftServer().getPlayerManager().getOpList().getNames().toString().replace("[", "").replace("]", "");
-        TextColor.sendToUniversalSource(
-                source,
-                "&6Operators: &f" + list ,
-                false
-        );
+        String[] list = source.getMinecraftServer().getPlayerManager().getOpList().getNames();
+        LiteralText literalText = new LiteralText("&6Operators: ");
 
+        for (String s : list) {
+            literalText.append(String.format("&f%s&7,", s));
+        }
+
+        TextColor.sendToUniversalSource(source, literalText, false);
         return 1;
     }
 
@@ -85,9 +87,9 @@ public class OperatorCommand {
         while(v.hasNext()) {
             GameProfile gameProfile = (GameProfile) v.next();
             ServerPlayerEntity p = playerManager.getPlayer(gameProfile.getId());
-            int leastPermLevelReq = playerManager.getOpList().get(gameProfile).getPermissionLevel() - 1;
+            int leastPermLevelReq = playerManager.getOpList().get(gameProfile).getPermissionLevel();
 
-            if (level <= leastPermLevelReq) {
+            if (level < leastPermLevelReq) {
                 if (set) {
                     playerManager.getOpList().add(
                             new OperatorEntry(gameProfile, level, playerManager.getOpList().isOp(gameProfile))
@@ -108,7 +110,7 @@ public class OperatorCommand {
                     }
                 }
             } else {
-                source.sendFeedback(KiloCommands.getPermissionError("Operator permission required, Level " + leastPermLevelReq + 1), false);
+                source.sendFeedback(KiloCommands.getPermissionError("Operator permission required, Level " + leastPermLevelReq), false);
             }
 
             playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
