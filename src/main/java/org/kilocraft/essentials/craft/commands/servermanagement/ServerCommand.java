@@ -1,19 +1,17 @@
 package org.kilocraft.essentials.craft.commands.servermanagement;
 
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.craft.KiloEssentials;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class ServerCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralCommandNode<ServerCommandSource> serverNode = CommandManager.literal("server").executes((context) -> {
+		LiteralCommandNode<ServerCommandSource> serverNode = CommandManager.literal("server").requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.server", 2)).executes((context) -> {
 			context.getSource().sendFeedback(LangText.get(true, "command.server.nosubcommand"), false);
 			return 1;
 		}).build();
