@@ -50,6 +50,7 @@ public class KiloCommands {
         /**
          * @Essentials
          */
+        RandomTeleportCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         LocateCommand.register(this.dispatcher);

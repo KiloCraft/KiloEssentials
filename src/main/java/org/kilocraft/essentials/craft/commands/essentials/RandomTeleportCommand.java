@@ -3,7 +3,6 @@ package org.kilocraft.essentials.craft.commands.essentials;
 import java.util.Random;
 
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.craft.util.BlockHelper;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -12,12 +11,15 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class RandomTeleportCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		LiteralArgumentBuilder<ServerCommandSource> randomTeleport = CommandManager.literal("randomteleport");
 		LiteralArgumentBuilder<ServerCommandSource> rtp = CommandManager.literal("rtp");
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = CommandManager.argument("target",
 				EntityArgumentType.player());
@@ -35,7 +37,9 @@ public class RandomTeleportCommand {
 			return 0;
 		});
 
+		randomTeleport.then(target);
 		rtp.then(target);
+		dispatcher.register(randomTeleport);
 		dispatcher.register(rtp);
 	}
 
@@ -53,9 +57,9 @@ public class RandomTeleportCommand {
 			randomZ *= -1;
 		}
 
-		int y = BlockHelper.getHighestY(player.world, randomX, randomZ);
-		player.teleport(randomX, y, randomZ);
-		player.sendMessage(LangText.getFormatter(true, "command.randomteleport.success",
-				"X: " + randomX + ", Y: " + y + ", Z: " + randomZ));
+		player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 30, 255, false, true, true));
+		player.teleport(randomX, 255, randomZ);
+		player.sendMessage(
+				LangText.getFormatter(true, "command.randomteleport.success", "X: " + randomX + ", Z: " + randomZ));
 	}
 }
