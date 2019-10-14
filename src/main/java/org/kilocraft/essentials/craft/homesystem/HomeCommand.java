@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -29,10 +28,21 @@ public class HomeCommand {
         secondArgumentRemove = CommandManager.argument("home", StringArgumentType.string());
         secondArgumentSet = CommandManager.argument("home", StringArgumentType.string());
 
-        secondArgumentSet.suggests(provideSuggestion);
-        secondArgumentAdd.suggests(provideSuggestion);
-        secondArgumentRemove.suggests(provideSuggestion);
-        secondArgumentTeleport.suggests(provideSuggestion);
+
+
+
+        secondArgumentSet.suggests((context, builder) -> {
+            return HomeManager.suggestHomes.getSuggestions(context, builder);
+        });
+        secondArgumentAdd.suggests((context, builder) -> {
+            return HomeManager.suggestHomes.getSuggestions(context, builder);
+        });
+        secondArgumentRemove.suggests((context, builder) -> {
+            return HomeManager.suggestHomes.getSuggestions(context, builder);
+        });
+        secondArgumentTeleport.suggests((context, builder) -> {
+            return HomeManager.suggestHomes.getSuggestions(context, builder);
+        });
 
         argumentTeleport.then(secondArgumentTeleport);
         argumentAdd.then(secondArgumentAdd);
@@ -55,13 +65,5 @@ public class HomeCommand {
         dispatcher.register(homeAlias);
     }
 
-
-    private static SuggestionProvider<ServerCommandSource> provideSuggestion = (context, builder) -> {
-        PlayerHomeManager.INSTANCE.getPlayerHomes(context.getSource().getPlayer().getUuid()).forEach((home) -> {
-            builder.suggest(home.name);
-        });
-
-        return builder.buildFuture();
-    };
 
 }
