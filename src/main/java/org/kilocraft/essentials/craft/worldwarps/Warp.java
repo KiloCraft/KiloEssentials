@@ -22,6 +22,7 @@ public class Warp {
         this.dX = yaw;
         this.dY = pitch;
     }
+
     public Warp(String name, CompoundTag tag) {
         this.name = name;
         fromTag(tag);

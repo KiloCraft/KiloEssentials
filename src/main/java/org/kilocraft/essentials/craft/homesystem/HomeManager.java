@@ -101,8 +101,6 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         return homes;
     }
 
-
-
     @Override
     public File getSaveFile(File worldDir, File rootDir, boolean backup) {
         return new File(KiloConifg.getWorkingDirectory() + "/homes." + (backup ? "dat_old" : "dat"));

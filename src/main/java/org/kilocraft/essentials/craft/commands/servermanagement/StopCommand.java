@@ -19,7 +19,7 @@ import org.kilocraft.essentials.craft.KiloEssentials;
 
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("ke_stop")
+        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("stop")
                 .then(CommandManager.argument("args", StringArgumentType.greedyString())
                         .suggests((context, builder1) -> {
                             return CommandSuggestions.suggestInput.getSuggestions(context, builder1);
@@ -45,7 +45,7 @@ public class StopCommand {
                 LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
                 literalText.styled((style) -> {
                     style.setColor(Formatting.RED);
-                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click here to stop the server").formatted(Formatting.YELLOW)));
+                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW)));
                     style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));
                 });
 

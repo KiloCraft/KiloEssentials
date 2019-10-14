@@ -22,7 +22,6 @@ public abstract class MixinCommandManager {
     @Inject(method = "<init>", at = {@At("RETURN")})
     public void CommandManager(boolean boolean_1, CallbackInfo ci) {
         SomeGlobals.commandDispatcher = dispatcher;
-        LOGGER.info("KiloAPI: CommandDispatcher set to {}", dispatcher);
     }
 
 }
