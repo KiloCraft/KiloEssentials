@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.craft;
 
+import net.minecraft.SharedConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
@@ -17,6 +18,9 @@ public class KiloEssentials {
 	private ConfigurableFeatures configurableFeatures;
 
 	public KiloEssentials(KiloEvents events, KiloCommands commands, KiloData data) {
+		//DEV ENV ONLY
+		SharedConstants.isDevelopment = true;
+
 		logger.info("Running KiloEssentials version " + Mod.getVersion());
 
 		new KiloConifg();

@@ -16,6 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.PlayerSelectorArgument;
+import org.kilocraft.essentials.craft.KiloCommands;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -61,25 +62,30 @@ public class OperatorCommand {
         while(v.hasNext()) {
             GameProfile gameProfile = (GameProfile) v.next();
             ServerPlayerEntity p = playerManager.getPlayer(gameProfile.getId());
+            int leastPermLevelReq = playerManager.getOpList().get(gameProfile).getPermissionLevel() - 1;
 
-            if (set) {
-                playerManager.getOpList().add(
-                        new OperatorEntry(gameProfile, level, playerManager.getOpList().isOp(gameProfile))
-                );
+            if (level <= leastPermLevelReq) {
+                if (set) {
+                    playerManager.getOpList().add(
+                            new OperatorEntry(gameProfile, level, playerManager.getOpList().isOp(gameProfile))
+                    );
 
-                p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
+                    p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
 
-                LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
+                    LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
 
-            } else {
-                if (playerManager.isOperator(gameProfile)) {
-                    playerManager.getOpList().remove(gameProfile);
+                } else {
+                    if (playerManager.isOperator(gameProfile)) {
+                        playerManager.getOpList().remove(gameProfile);
 
-                    p.addChatMessage(LangText.get(true, "command.operator.announce.removed"), false);
+                        p.addChatMessage(LangText.get(true, "command.operator.announce.removed"), false);
 
-                    LangText.sendToUniversalSource(source, "command.operator.removed", true, gameProfile.getName());
+                        LangText.sendToUniversalSource(source, "command.operator.removed", true, gameProfile.getName());
 
+                    }
                 }
+            } else {
+                source.sendFeedback(KiloCommands.getPermissionError("Operator permission required, Level " + leastPermLevelReq), false);
             }
 
             playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));

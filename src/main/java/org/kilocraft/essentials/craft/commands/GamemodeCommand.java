@@ -8,9 +8,9 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.world.GameMode;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.craft.KiloCommands;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,9 +30,9 @@ public class GamemodeCommand {
 
     private static GameMode[] gameModes = GameMode.values();
     private static int var = gameModes.length;
+    private static String pNode = "kiloessentials.command.gamemode";
 
     private static void build(LiteralArgumentBuilder<ServerCommandSource> builder) {
-        String pNode = "kiloessentials.command.gamemode";
         builder.requires(s -> Thimble.hasPermissionChildOrOp(s, pNode, 2));
         for (int i = 0; i < var; ++i) {
             GameMode mode = gameModes[i];
@@ -66,31 +66,37 @@ public class GamemodeCommand {
                         .executes(context -> executeByInteger(EntityArgumentType.getPlayers(context, "target(s)"), IntegerArgumentType.getInteger(context, "gameType"), context.getSource(), true))
                 )
                 .requires(source -> Thimble.hasPermissionChildOrOp(source, pNode + ".self", 2))
-                .executes(context -> executeByInteger(Collections.singleton(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "GameType"), context.getSource(), true))
+                .executes(context -> executeByInteger(Collections.singleton(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "gameType"), context.getSource(), true))
         );
 
     }
 
     private static int execute(Collection<ServerPlayerEntity> playerEntities, GameMode gameMode, ServerCommandSource source, boolean log) {
-        playerEntities.forEach((player) -> {
-            player.setGameMode(gameMode);
-            player.addChatMessage(new LiteralText("You have set the game type to: " + gameMode.getName()), false);
-        });
-
         if (playerEntities.size() == 1) {
             playerEntities.forEach((player) -> {
                 player.setGameMode(gameMode);
-                if (player.getName().equals(source.getName())) {
-                    player.addChatMessage(LangText.getFormatter(true, "command.gamemode.self.success", gameMode.getName()), false);
+                if (!source.getName().equals(player.getName())) {
+                    if (log) {
+                        player.addChatMessage(
+                                LangText.getFormatter(true, "command.gamemode.others.announce", gameMode.getName(), source.getName())
+                                , false
+                        );
+
+                    }
+                    LangText.sendToUniversalSource(source, "command.gamemode.others.success", false, gameMode.getName(), player.getName());
                 } else {
-                    player.addChatMessage(LangText.getFormatter(true, "command.gamemode.others.announce", gameMode.getName()), false);
-                    LangText.sendToUniversalSource(source, "command.gamemode.others.success", false, player.getName(), gameMode.getName());
+                    player.addChatMessage(
+                            LangText.getFormatter(true, "command.gamemode.self.success", false, gameMode.getName()),
+                            false
+                    );
                 }
+
             });
         } else {
             playerEntities.forEach((player) -> {
                 player.setGameMode(gameMode);
-                if (log) player.addChatMessage(LangText.getFormatter(true, "command.gamemode.others.announce", gameMode.getName()), false);
+                if (log)
+                    player.addChatMessage(LangText.getFormatter(true, "command.gamemode.others.announce", gameMode.getName()), false);
             });
 
             LangText.sendToUniversalSource(source, "command.gamemode.others.multiple", false, gameMode.getName(), playerEntities.size());
@@ -99,10 +105,31 @@ public class GamemodeCommand {
         return 0;
     }
 
-    private static int executeByInteger(Collection<ServerPlayerEntity> playerEntities, int int_1, ServerCommandSource source, boolean log) {
-        GameMode gameMode = GameMode.byId(int_1);
-        execute(playerEntities, gameMode, source, log);
-        return 0;
-    }
+    private static int executeByInteger(Collection<ServerPlayerEntity> playerEntities, int i, ServerCommandSource source, boolean log) {
+        GameMode gameMode = GameMode.byId(i);
 
+        if (playerEntities.size() == 1) {
+            playerEntities.forEach((player) -> {
+                if (player.getName().equals(source.getName())) {
+                    if (Thimble.hasPermissionChildOrOp(source, pNode + ".self." + gameMode.getName(), 2)) {
+                        execute(playerEntities, gameMode, source, log);
+                    } else
+                        source.sendFeedback(KiloCommands.getPermissionError(pNode + ".self." + gameMode.getName()), false);
+                } else {
+                    if (Thimble.hasPermissionChildOrOp(source, pNode + ".others." + gameMode.getName(), 2)) {
+                        execute(playerEntities, gameMode, source, log);
+                    } else
+                        source.sendFeedback(KiloCommands.getPermissionError(pNode + ".self." + gameMode.getName()), false);
+                }
+            });
+
+        } else {
+            if (Thimble.hasPermissionChildOrOp(source, pNode + ".others.multiple" + gameMode.getName(), 2)) {
+                execute(playerEntities, gameMode, source, log);
+            } else
+                source.sendFeedback(KiloCommands.getPermissionError(pNode + ".self." + gameMode.getName()), false);
+        }
+
+        return playerEntities.size();
+    }
 }

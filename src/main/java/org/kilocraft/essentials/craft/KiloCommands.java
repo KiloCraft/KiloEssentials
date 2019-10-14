@@ -6,7 +6,11 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.Mod;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.commands.BackCommand;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
@@ -73,4 +77,13 @@ public class KiloCommands {
         String string = KiloConifg.getMessages().get("command.context.usage");
         return string.replaceFirst("%s", usage);
     }
+
+    public static LiteralText getPermissionError(String permissionNode) {
+        LiteralText literalText = LangText.get(true, "command.exception.permission");
+        literalText.styled((style) -> {
+           style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(permissionNode).formatted(Formatting.YELLOW)));
+        });
+        return literalText;
+    }
+
 }
