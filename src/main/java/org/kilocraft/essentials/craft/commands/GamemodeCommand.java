@@ -83,7 +83,7 @@ public class GamemodeCommand {
                         );
 
                     }
-                    LangText.sendToUniversalSource(source, "command.gamemode.others.success", false, gameMode.getName(), player.getName());
+                    LangText.sendToUniversalSource(source, "command.gamemode.others.success", false, gameMode.getName(), player.getName(), "Online");
                 } else {
                     player.addChatMessage(
                             LangText.getFormatter(true, "command.gamemode.self.success", false, gameMode.getName()),
