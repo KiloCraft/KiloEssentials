@@ -73,7 +73,7 @@ public class Warp {
         CompoundTag compoundTag = new CompoundTag();
         CompoundTag list = new CompoundTag();
         CompoundTag warpTag = new CompoundTag();
-        CompoundTag direction = new CompoundTag();
+
         {
             CompoundTag pos = new CompoundTag();
             pos.putDouble("x", this.x);
@@ -83,12 +83,14 @@ public class Warp {
             warpTag.put("pos", pos);
         }
         {
+            CompoundTag direction = new CompoundTag();
             direction.putFloat("dX", this.dX);
             direction.putFloat("dY", this.dY);
+
+            warpTag.put("direction", direction);
         }
 
         warpTag.putInt("dimension", this.dimension);
-        warpTag.put("direction", direction);
         warpTag.putBoolean("requires_permission", this.requirePermission);
         list.put(this.name, warpTag);
         compoundTag.put("warps", list);

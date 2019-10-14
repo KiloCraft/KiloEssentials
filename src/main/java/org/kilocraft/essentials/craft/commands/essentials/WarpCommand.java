@@ -16,6 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.craft.worldwarps.Warp;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
@@ -77,7 +78,15 @@ public class WarpCommand {
 
     private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
         Warp warp = WarpManager.getWarp(name);
-        ServerWorld world = source.getWorld().getServer().getWorld(Registry.DIMENSION.get(warp.getDimension()));
+        ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimension() + 1));
+
+        System.out.println("test: " + warp.getDimension());
+        System.out.println(source.getWorld().getDimension().getType().getRawId());
+        System.out.println(source.getMinecraftServer().getWorld(DimensionType.byRawId(warp.getDimension())));
+        System.out.println(DimensionType.byRawId(warp.getDimension()));
+        System.out.println(Registry.DIMENSION.getId(DimensionType.byRawId(warp.getDimension())));
+        System.out.println(Registry.DIMENSION.get(warp.getDimension()));
+
         source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
 
         return 1;
@@ -87,18 +96,15 @@ public class WarpCommand {
         return 1;
     }
 
-    private static int executeAdd(ServerCommandSource source, String warp, boolean permission, PosArgument posArgument) throws CommandSyntaxException {
+    private static int executeAdd(ServerCommandSource source, String name, boolean permission, PosArgument posArgument) throws CommandSyntaxException {
         Vec2f dir = posArgument.toAbsoluteRotation(source);
         Vec3d pos = posArgument.toAbsolutePos(source);
         WarpManager.addWarp(
                 new Warp(
-                        warp,
-                        pos.x,
-                        pos.y,
-                        pos.z,
-                        dir.x,
-                        dir.y,
-                        Registry.DIMENSION.getRawId(source.getPlayer().getServerWorld().getDimension().getType()),
+                        name,
+                        pos.x, pos.y, pos.z,
+                        dir.x, dir.y,
+                        source.getWorld().getDimension().getType().getRawId(),
                         permission
                 )
         );

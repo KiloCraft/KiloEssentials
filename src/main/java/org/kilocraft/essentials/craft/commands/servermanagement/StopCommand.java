@@ -36,19 +36,23 @@ public class StopCommand {
         boolean isConfirmed = false;
         if (s.startsWith("-confirmed")) isConfirmed = true;
 
-        if (isConfirmed) {
-            TextColor.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
-            if (!CommandHelper.isConsole(context.getSource())) KiloEssentials.getLogger().warn("%s is trying to stop the server", context.getSource().getName());
-            KiloServer.getServer().shutdown();
-        } else {
-            LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
-            literalText.styled((style) -> {
-                style.setColor(Formatting.RED);
-                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click here to stop the server").formatted(Formatting.YELLOW)));
-                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));
-            });
+        if (!CommandHelper.isConsole(context.getSource())) {
+            if (isConfirmed) {
+                TextColor.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
+                if (!CommandHelper.isConsole(context.getSource())) KiloEssentials.getLogger().warn("%s is trying to stop the server", context.getSource().getName());
+                KiloServer.getServer().shutdown();
+            } else {
+                LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
+                literalText.styled((style) -> {
+                    style.setColor(Formatting.RED);
+                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click here to stop the server").formatted(Formatting.YELLOW)));
+                    style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));
+                });
 
-            context.getSource().sendFeedback(literalText, false);
+                context.getSource().sendFeedback(literalText, false);
+            }
+        } else if (CommandHelper.isConsole(context.getSource())) {
+            KiloServer.getServer().shutdown();
         }
 
         return 1;
