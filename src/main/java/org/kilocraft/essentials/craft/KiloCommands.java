@@ -50,6 +50,7 @@ public class KiloCommands {
         /**
          * @Essentials
          */
+        RandomTeleportCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         LocateCommand.register(this.dispatcher);
@@ -59,7 +60,6 @@ public class KiloCommands {
         AnvilCommand.register(this.dispatcher);
         CraftingbenchCommand.register(this.dispatcher);
         NickCommand.register(this.dispatcher);
-        SuicideCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
 
         /**
@@ -70,7 +70,6 @@ public class KiloCommands {
         StopCommand.register(this.dispatcher);
         BackCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
-
     }
 
     public String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
