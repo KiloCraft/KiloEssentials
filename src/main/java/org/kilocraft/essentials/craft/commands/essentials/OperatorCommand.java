@@ -85,7 +85,7 @@ public class OperatorCommand {
                     }
                 }
             } else {
-                source.sendFeedback(KiloCommands.getPermissionError("Operator permission required, Level " + leastPermLevelReq), false);
+                source.sendFeedback(KiloCommands.getPermissionError("Operator permission required, Level " + leastPermLevelReq + 1), false);
             }
 
             playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
