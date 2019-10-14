@@ -61,7 +61,8 @@ public class KiloCommands {
         CraftingbenchCommand.register(this.dispatcher);
         NickCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
-
+        RealNameCommand.register(this.dispatcher);
+        
         /**
          * @ServerManagement
          */
@@ -90,19 +91,4 @@ public class KiloCommands {
         });
         return literalText;
     }
-
-    /*
-      Thimble
-     *
-     *       Thimble.permissionWriters.add(pair - > { / / How to " register " permissions
-     *          Thimble.PERMISSIONS.getPermission ( " xxx "); // Normal JSON permission. Saves to file & dosen't update command tree
-     *             try {
-     *                 Thimble.PERMISSIONS.getPermission("yyy", CommandPermission.class); // Permission that updates command tree, and dosen't save to file
-     *                  Syntax is getPermission(name, default class); Note that default class must have the constructor (String name, Permission parent)
-     *             } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
-     *                 e.printStackTrace();
-     *             }
-     *         });
-     */
-
 }
