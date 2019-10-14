@@ -8,11 +8,13 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.PosArgument;
+import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.craft.worldwarps.Warp;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
@@ -39,26 +41,26 @@ public class WarpCommand {
         LiteralArgumentBuilder<ServerCommandSource> aliasRemove = CommandManager.literal("delwarp");
         RequiredArgumentBuilder<ServerCommandSource, String> removeArg = CommandManager.argument("warp", StringArgumentType.string());
         RequiredArgumentBuilder<ServerCommandSource, String> addArg = CommandManager.argument("name", StringArgumentType.string());
-        RequiredArgumentBuilder<ServerCommandSource, PosArgument> addArgBlockPos = CommandManager.argument("blockPos", BlockPosArgumentType.blockPos());
-        RequiredArgumentBuilder<ServerCommandSource, Boolean> addArgPermission = CommandManager.argument("requiresPermission", BoolArgumentType.bool());
+        RequiredArgumentBuilder<ServerCommandSource, PosArgument> posArgument = CommandManager.argument("vec3Pos", Vec3ArgumentType.vec3());
+        RequiredArgumentBuilder<ServerCommandSource, Boolean> argPermission = CommandManager.argument("requiresPermission", BoolArgumentType.bool());
 
         aliasAdd.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.add", 2));
         aliasRemove.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.remove", 2));
 
         removeArg.executes(c -> executeRemove(c.getSource(), StringArgumentType.getString(c, "warp")));
-        addArgPermission.executes(c -> executeAdd(
+        argPermission.executes(c -> executeAdd(
                 c.getSource(),
                 StringArgumentType.getString(c, "name"),
                 BoolArgumentType.getBool(c, "requiresPermission"),
-                BlockPosArgumentType.getBlockPos(c, "blockPos")
+                Vec3ArgumentType.getPosArgument(c, "vec3Pos")
         ));
 
         removeArg.suggests((context, builder1) -> {
             return WarpManager.suggestWarps.getSuggestions(context, builder1);
         });
 
-        addArgBlockPos.then(addArgPermission);
-        addArg.then(addArgBlockPos);
+        posArgument.then(argPermission);
+        addArg.then(posArgument);
 
         aliasAdd.then(addArg);
         aliasRemove.then(removeArg);
@@ -84,16 +86,18 @@ public class WarpCommand {
         return 1;
     }
 
-    private static int executeAdd(ServerCommandSource source, String warp, boolean permission, BlockPos blockPos) {
-        Double pitch = 0.0;
-        Double yaw = 0.0;
-
+    private static int executeAdd(ServerCommandSource source, String warp, boolean permission, PosArgument posArgument) throws CommandSyntaxException {
+        Vec2f dir = posArgument.toAbsoluteRotation(source);
+        Vec3d pos = posArgument.toAbsolutePos(source);
         WarpManager.addWarp(
                 new Warp(
                         warp,
-                        blockPos,
-                        1,
-                        1,
+                        pos.x,
+                        pos.y,
+                        pos.z,
+                        dir.x,
+                        dir.y,
+                        Registry.DIMENSION.getRawId(source.getPlayer().getServerWorld().getDimension().getType()),
                         permission
                 )
         );

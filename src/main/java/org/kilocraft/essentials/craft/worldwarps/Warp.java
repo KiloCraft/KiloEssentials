@@ -1,27 +1,26 @@
 package org.kilocraft.essentials.craft.worldwarps;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.dimension.Dimension;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 public class Warp {
     private String permissionBaseName = KiloConifg.getMain().getOrElse("warps.permission_prefix", "warp");
     private String name;
     private double x, y, z;
-    private Dimension dimension;
+    private int dimension;
     private boolean requirePermission;
 
-    private float pitch, yaw;
+    private float dX, dY;
 
-    public Warp(String name, double x, double y, double z, float pitch, float yaw, Dimension dimension , boolean requirePermission) {
+    public Warp(String name, double x, double y, double z, float pitch, float yaw, int dimension, boolean requirePermission) {
         this.name = name;
         this.x = x;
         this.y = y;
         this.z = z;
         this.dimension = dimension;
         this.requirePermission = requirePermission;
-        this.pitch = pitch;
-        this.yaw = yaw;
+        this.dX = pitch;
+        this.dY = yaw;
     }
     public Warp(String name, CompoundTag tag) {
         this.name = name;
@@ -42,11 +41,11 @@ public class Warp {
     }
 
     public float getPitch() {
-        return this.pitch;
+        return this.dX;
     }
 
     public float getYaw() {
-        return this.yaw;
+        return this.dY;
     }
 
     public double getX() {
@@ -61,7 +60,7 @@ public class Warp {
         return this.z;
     }
 
-    public Dimension getDimension() {
+    public int getDimension() {
         return this.dimension;
     }
 
@@ -69,6 +68,7 @@ public class Warp {
     public String getPermissionNode() {
         return "" + (this.requirePermission ? permissionBaseName + "." + this.name : "");
     }
+
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
         CompoundTag list = new CompoundTag();
@@ -83,10 +83,11 @@ public class Warp {
             warpTag.put("pos", pos);
         }
         {
-            direction.putFloat("pitch", this.pitch);
-            direction.putFloat("yaw", this.yaw);
+            direction.putFloat("dX", this.dX);
+            direction.putFloat("dY", this.dY);
         }
 
+        warpTag.putInt("dimension", this.dimension);
         warpTag.put("direction", direction);
         warpTag.putBoolean("requires_permission", this.requirePermission);
         list.put(this.name, warpTag);
@@ -104,8 +105,9 @@ public class Warp {
         }
         {
             CompoundTag dir = tag.getCompound("direction");
-            this.pitch = dir.getFloat("pitch");
-            this.yaw = dir.getFloat("yaw");
+            this.dimension = tag.getInt("dimension");
+            this.dX = dir.getFloat("dX");
+            this.dY = dir.getFloat("dY");
         }
 
         this.requirePermission = tag.getBoolean("requires_permission");
