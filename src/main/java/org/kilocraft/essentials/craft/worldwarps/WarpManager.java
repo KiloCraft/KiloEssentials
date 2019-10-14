@@ -1,11 +1,14 @@
 package org.kilocraft.essentials.craft.worldwarps;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.worlddata.NBTWorldData;
 import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.commands.essentials.WarpCommand;
@@ -24,6 +27,7 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     public boolean register() {
         WorldDataLib.addIOCallback(this);
         WarpCommand.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
+        WarpCommands.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
         return true;
     }
 
@@ -58,6 +62,14 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     }
 
     public static void reload() {
+        WarpCommands.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
+    }
+
+    public static int teleport(ServerCommandSource source, Warp warp) throws CommandSyntaxException {
+        ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimension() + 1));
+        source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
+
+        return 1;
     }
 
     public static String[] getWarpsAsArray() {
