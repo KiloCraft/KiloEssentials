@@ -43,8 +43,8 @@ dependencies {
 	modImplementation "com.github.indi-code:WorldDataLib:${project.worlddatalib_version}"
 
 	include "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
-	include "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
-	include "com.github.indi-code:WorldDataLib:${project.worlddatalib_version}"
+	//include "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
+	//include "com.github.indi-code:WorldDataLib:${project.worlddatalib_version}"
 
 	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
 }
