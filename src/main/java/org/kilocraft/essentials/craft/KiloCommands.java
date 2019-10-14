@@ -27,53 +27,59 @@ import org.kilocraft.essentials.craft.config.KiloConifg;
 import java.util.Map;
 
 public class KiloCommands {
-    private static CommandDispatcher<ServerCommandSource> dispatcher;
+    private CommandDispatcher<ServerCommandSource> dispatcher;
     public KiloCommands() {
-        dispatcher = SomeGlobals.commandDispatcher;
-        /*Thimble.permissionWriters.add(pair -> { // How to "register" permissions
-            Thimble.PERMISSIONS.getPermission("xxx"); // Normal JSON permission. Saves to file & dosen't update command tree
-            try {
-                Thimble.PERMISSIONS.getPermission("yyy", CommandPermission.class); // Permission that updates command tree, and dosen't save to file
-                // Syntax is getPermission(name, default class); Note that default class must have the constructor (String name, Permission parent)
-            } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        });*/
-        // Thimble.registerDispatcherCommands(dispatcher); uncomment when we have a custom dispatcher
-        register(false);
+        this.dispatcher = SomeGlobals.commandDispatcher;
+        register(true);
     }
 
-    private static void register(boolean devEnv) {
+    public static KiloCommands INSTANCE;
+
+    private void register(boolean devEnv) {
         if (devEnv) {
             Mod.getLogger().debug("Server is running in debug mode!");
             SharedConstants.isDevelopment = true;
         }
 
-        InfoCommand.register(dispatcher);
-        ReloadCommand.register(dispatcher);
-        GamemodeCommand.register(dispatcher);
-        LocateCommand.register(dispatcher);
-        EnderchestCommand.register(dispatcher);
-        TpaCommand.register(dispatcher);
-        ServerCommand.register(dispatcher);
-        ItemCommand.register(dispatcher);
-        AnvilCommand.register(dispatcher);
-        CraftingbenchCommand.register(dispatcher);
-        NickCommand.register(dispatcher);
-        ServerModNameCommand.register(dispatcher);
-        ColorsCommand.register(dispatcher);
-        StopCommand.register(dispatcher);
-        BackCommand.register(dispatcher);
-        OperatorCommand.register(dispatcher);
+        /**
+         * @Misc
+         */
+        InfoCommand.register(this.dispatcher);
+        ReloadCommand.register(this.dispatcher);
+
+        /**
+         * @Essentials
+         */
+        ColorsCommand.register(this.dispatcher);
+        GamemodeCommand.register(this.dispatcher);
+        LocateCommand.register(this.dispatcher);
+        EnderchestCommand.register(this.dispatcher);
+        TpaCommand.register(this.dispatcher);
+        ItemCommand.register(this.dispatcher);
+        AnvilCommand.register(this.dispatcher);
+        CraftingbenchCommand.register(this.dispatcher);
+        NickCommand.register(this.dispatcher);
+        SuicideCommand.register(this.dispatcher);
+        KillCommand.register(this.dispatcher);
+
+        /**
+         * @ServerManagement
+         */
+        ServerCommand.register(this.dispatcher);
+        ServerModNameCommand.register(this.dispatcher);
+        StopCommand.register(this.dispatcher);
+        BackCommand.register(this.dispatcher);
+        OperatorCommand.register(this.dispatcher);
+
     }
 
-    public static String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
+    public String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
         String string = KiloConifg.getMessages().get("command.context.usage");
-        Map<CommandNode<ServerCommandSource>, String> usage = dispatcher.getSmartUsage(literalCommandNode, source);
+        Map<CommandNode<ServerCommandSource>, String> usage = this.dispatcher.getSmartUsage(literalCommandNode, source);
         return string.replaceFirst("%s", usage.toString());
     }
 
-    public static String buildUsage(String usage, ServerCommandSource source) {
+    public String buildUsage(String usage, ServerCommandSource source) {
         String string = KiloConifg.getMessages().get("command.context.usage");
         return string.replaceFirst("%s", usage);
     }
@@ -85,5 +91,19 @@ public class KiloCommands {
         });
         return literalText;
     }
+
+    /*
+      Thimble
+     *
+     *       Thimble.permissionWriters.add(pair - > { / / How to " register " permissions
+     *          Thimble.PERMISSIONS.getPermission ( " xxx "); // Normal JSON permission. Saves to file & dosen't update command tree
+     *             try {
+     *                 Thimble.PERMISSIONS.getPermission("yyy", CommandPermission.class); // Permission that updates command tree, and dosen't save to file
+     *                  Syntax is getPermission(name, default class); Note that default class must have the constructor (String name, Permission parent)
+     *             } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
+     *                 e.printStackTrace();
+     *             }
+     *         });
+     */
 
 }
