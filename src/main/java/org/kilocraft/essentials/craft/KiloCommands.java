@@ -30,7 +30,7 @@ public class KiloCommands {
     private CommandDispatcher<ServerCommandSource> dispatcher;
     public KiloCommands() {
         this.dispatcher = SomeGlobals.commandDispatcher;
-        register(true);
+        register(false);
     }
 
     public static KiloCommands INSTANCE;
