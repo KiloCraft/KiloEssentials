@@ -8,13 +8,13 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.permissions.Thimble;
+import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.PosArgument;
-import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.craft.worldwarps.Warp;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
@@ -42,7 +42,7 @@ public class WarpCommand {
         LiteralArgumentBuilder<ServerCommandSource> aliasRemove = CommandManager.literal("delwarp");
         RequiredArgumentBuilder<ServerCommandSource, String> removeArg = CommandManager.argument("warp", StringArgumentType.string());
         RequiredArgumentBuilder<ServerCommandSource, String> addArg = CommandManager.argument("name", StringArgumentType.string());
-        RequiredArgumentBuilder<ServerCommandSource, PosArgument> posArgument = CommandManager.argument("vec3Pos", Vec3ArgumentType.vec3());
+        RequiredArgumentBuilder<ServerCommandSource, PosArgument> posArgument = CommandManager.argument("blockPos", BlockPosArgumentType.blockPos());
         RequiredArgumentBuilder<ServerCommandSource, Boolean> argPermission = CommandManager.argument("requiresPermission", BoolArgumentType.bool());
 
         aliasAdd.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp.manage.add", 2));
@@ -53,7 +53,7 @@ public class WarpCommand {
                 c.getSource(),
                 StringArgumentType.getString(c, "name"),
                 BoolArgumentType.getBool(c, "requiresPermission"),
-                Vec3ArgumentType.getPosArgument(c, "vec3Pos")
+                BlockPosArgumentType.getBlockPos(c, "blockPos")
         ));
 
         removeArg.suggests((context, builder1) -> {
@@ -76,11 +76,13 @@ public class WarpCommand {
     });
 
     private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
-        Warp warp = WarpManager.getWarp(name);
-        ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimension() + 1));
+        if (WarpManager.getWarp(name).getName().equals(name)) {
+            Warp warp = WarpManager.getWarp(name);
+            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimension() + 1));
 
-        source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
-
+            source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
+        } else
+            source.sendError(new LiteralText("That warp doesn't exist!"));
         return 1;
     }
 
@@ -88,14 +90,12 @@ public class WarpCommand {
         return 1;
     }
 
-    private static int executeAdd(ServerCommandSource source, String name, boolean permission, PosArgument posArgument) throws CommandSyntaxException {
-        Vec2f dir = posArgument.toAbsoluteRotation(source);
-        Vec3d pos = posArgument.toAbsolutePos(source);
+    private static int executeAdd(ServerCommandSource source, String name, boolean permission, BlockPos pos) throws CommandSyntaxException {
         WarpManager.addWarp(
                 new Warp(
                         name,
-                        pos.x, pos.y, pos.z,
-                        dir.x, dir.y,
+                        pos.getX(), pos.getY(), pos.getZ(),
+                        source.getPlayer().getYaw(0), source.getPlayer().getPitch(0),
                         source.getWorld().getDimension().getType().getRawId(),
                         permission
                 )
