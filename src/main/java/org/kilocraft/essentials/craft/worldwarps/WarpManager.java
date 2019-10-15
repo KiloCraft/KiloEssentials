@@ -42,14 +42,17 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
 
     public static void addWarp(Warp warp) {
         warps.add(warp);
+        byName.add(warp.getName());
     }
 
     public static void removeWarp(Warp warp) {
         warps.remove(warp);
+        byName.remove(warp.getName());
     }
 
     public static void removeWarp(String warp) {
         warps.remove(getWarp(warp));
+        byName.remove(getWarp(warp).getName());
     }
 
     public static Warp getWarp(String warp) {
