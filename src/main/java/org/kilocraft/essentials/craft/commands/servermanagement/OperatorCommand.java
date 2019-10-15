@@ -138,13 +138,9 @@ public class OperatorCommand {
 
     private static int executeList(ServerCommandSource source) {
         String s = Arrays.toString(source.getMinecraftServer().getPlayerManager().getOpList().getNames());
-        LiteralText literalText = (LiteralText) new LiteralText("Operators ").setStyle(new Style().setColor(Formatting.YELLOW));
-        literalText.append(new LiteralText(": ").setStyle(new Style().setColor(Formatting.DARK_GRAY)));
-
-        for (String name : KiloServer.getServer().getOperatorList().getNames()) {
-            literalText.append(new LiteralText(", ").setStyle(new Style().setColor(Formatting.GRAY)));
-            literalText.append(new LiteralText(name).setStyle(new Style().setColor(Formatting.WHITE)));
-        }
+        LiteralText literalText = (LiteralText) new LiteralText(
+                "&eOperators&8: " + s.replace("[", "").replace("]", "").replaceAll(",", "&8,&r")
+        ).setStyle(new Style().setColor(Formatting.GRAY));
 
         TextColor.sendToUniversalSource(source, literalText, false);
         return 1;
