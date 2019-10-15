@@ -186,7 +186,7 @@ public class OperatorCommand {
                 else if (!source.getName().equals(gameProfile.getName())){
                     if (!operatorList.isOp(gameProfile)) {
                         LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
-                        p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
+                        if (CommandHelper.isOnline(p)) p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
                         addOperator(gameProfile, level, byPass);
                     }
                     else if (operatorList.get(gameProfile).getPermissionLevel() < level && operatorList.isOp(gameProfile)) {
@@ -205,7 +205,7 @@ public class OperatorCommand {
             }
             else if (!set && operatorList.isOp(gameProfile) && !source.getName().equals(gameProfile.getName())){
                 removeOperator(gameProfile);
-                p.addChatMessage(LangText.get(true, "command.operator.announce.removed"), false);
+                if (CommandHelper.isOnline(p)) p.addChatMessage(LangText.get(true, "command.operator.announce.removed"), false);
                 LangText.sendToUniversalSource(source, "command.operator.removed", false, gameProfile.getName());
             }
             else if (!set && !operatorList.isOp(gameProfile) && !source.getName().equals(gameProfile.getName())) {
@@ -214,7 +214,7 @@ public class OperatorCommand {
             else if (source.getName().equals(gameProfile.getName()))
                 source.sendError(LangText.get(false, "command.operator.exception"));
 
-            playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
+            if (CommandHelper.isOnline(p)) playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
         }
 
         return level;
