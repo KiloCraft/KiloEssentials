@@ -6,12 +6,18 @@ import java.util.List;
 public class Commands {
     public static String vanillaCommandsPrefix = "minecraft:";
 
+    /**
+     * @see org.kilocraft.essentials.craft.mixin.MixinCommandManager
+     *
+     * This only works for Command literals and their sub commands
+     */
     public static List<String> keCommandsToKeep = new ArrayList<String>(){{
         add("ke_gamemode");
         add("ke_reload");
         add("ke_locate");
         add("ke_op");
         add("ke_kill");
+        add("ke_tp");
     }};
 
     public static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
@@ -43,7 +49,6 @@ public class Commands {
         add("forceload");
         add("gamerule");
         add("locate");
-        add("replaceitem");
         add("schedule");
         add("seed");
         add("spectate");

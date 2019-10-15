@@ -18,10 +18,7 @@ import org.kilocraft.essentials.craft.commands.InfoCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateCommand;
-import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
-import org.kilocraft.essentials.craft.commands.servermanagement.ServerCommand;
-import org.kilocraft.essentials.craft.commands.servermanagement.ServerModNameCommand;
-import org.kilocraft.essentials.craft.commands.servermanagement.StopCommand;
+import org.kilocraft.essentials.craft.commands.servermanagement.*;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 import java.util.Map;
@@ -30,7 +27,7 @@ public class KiloCommands {
     private CommandDispatcher<ServerCommandSource> dispatcher;
     public KiloCommands() {
         this.dispatcher = SomeGlobals.commandDispatcher;
-        register(false);
+        register(true);
     }
 
     public static KiloCommands INSTANCE;
@@ -84,10 +81,10 @@ public class KiloCommands {
         return string.replaceFirst("%s", usage);
     }
 
-    public static LiteralText getPermissionError(String permissionNode) {
+    public static LiteralText getPermissionError(String hoverText) {
         LiteralText literalText = LangText.get(true, "command.exception.permission");
         literalText.styled((style) -> {
-           style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(permissionNode).formatted(Formatting.YELLOW)));
+           style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW)));
         });
         return literalText;
     }

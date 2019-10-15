@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.essentials;
+package org.kilocraft.essentials.craft.commands.servermanagement;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
@@ -9,11 +9,14 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.OperatorEntry;
+import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextColor;
@@ -135,7 +138,15 @@ public class OperatorCommand {
 
     private static int executeList(ServerCommandSource source) {
         String s = Arrays.toString(source.getMinecraftServer().getPlayerManager().getOpList().getNames());
-        TextColor.sendToUniversalSource(source, "&6Operators: &f" + s.replace("[", "").replace("]", ""), false);
+        LiteralText literalText = (LiteralText) new LiteralText("Operators ").setStyle(new Style().setColor(Formatting.YELLOW));
+        literalText.append(new LiteralText(": ").setStyle(new Style().setColor(Formatting.DARK_GRAY)));
+
+        for (String name : KiloServer.getServer().getOperatorList().getNames()) {
+            literalText.append(new LiteralText(", ").setStyle(new Style().setColor(Formatting.GRAY)));
+            literalText.append(new LiteralText(name).setStyle(new Style().setColor(Formatting.WHITE)));
+        }
+
+        TextColor.sendToUniversalSource(source, literalText, false);
         return 1;
     }
 
@@ -144,18 +155,17 @@ public class OperatorCommand {
         String text = "&eOperator &b%s&e:\n &7-&e Permission level&8: &a%s&e\n &7-&e Can bypass the player limit&8: &6%s&r";
 
         gameProfiles.forEach((gameProfile) -> {
-            if (!playerManager.getOpList().isOp(gameProfile))
-                source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!"));
-            else
-                TextColor.sendToUniversalSource(
-                        source,
+            if (playerManager.getOpList().isOp(gameProfile)) {
+                TextColor.sendToUniversalSource(source,
                         String.format(
                                 text,
                                 gameProfile.getName(),
-                                playerManager.getOpList().get(gameProfile).getPermissionLevel(),
-                                playerManager.getOpList().get(gameProfile).canBypassPlayerLimit()
-                        ),
-                        false);
+                                Objects.requireNonNull(playerManager.getOpList().get(gameProfile)).getPermissionLevel(),
+                                Objects.requireNonNull(playerManager.getOpList().get(gameProfile)).canBypassPlayerLimit()
+                        ), false);
+            } else
+                source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!"));
+
         });
 
         return 1;
@@ -165,6 +175,7 @@ public class OperatorCommand {
         PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
         int i = 0;
         Iterator v = gameProfiles.iterator();
+        OperatorList operatorList = playerManager.getOpList();
 
         while(v.hasNext()) {
             GameProfile gameProfile = (GameProfile) v.next();
@@ -172,26 +183,40 @@ public class OperatorCommand {
             int leastPermLevelReq = 0;
             if (CommandHelper.isConsole(source))
                 leastPermLevelReq = 5;
-            else if (!CommandHelper.isConsole(source))
-                leastPermLevelReq = playerManager.getOpList().get(gameProfile).getPermissionLevel();
+            else leastPermLevelReq = Objects.requireNonNull(operatorList.get(gameProfile)).getPermissionLevel();
 
-            if (source.getName().equals(p.getName().asString())) {
-                source.sendError(LangText.get(false, "command.operator.exception"));
-            } else {
-                if (set) {
-                    if (level < leastPermLevelReq) {
+            if (set) {
+                if (level > leastPermLevelReq) source.sendError(KiloCommands.getPermissionError("Operator permission level " + (leastPermLevelReq + 1)));
+                else if (!source.getName().equals(gameProfile.getName())){
+                    if (!operatorList.isOp(gameProfile)) {
+                        LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
                         p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
-                        LangText.sendToUniversalSource(source, "command.operator.success", false, gameProfile.getName(), level);
                         addOperator(gameProfile, level, byPass);
-                    } else {
-                        source.sendError(KiloCommands.getPermissionError("Requires a higher permission level (" + leastPermLevelReq + ")"));
                     }
-                } else {
-                    p.addChatMessage(LangText.get(true, "command.operator.announce.removed"), false);
-                    LangText.sendToUniversalSource(source, "command.operator.removed", false, gameProfile.getName(), level);
-                    removeOperator(gameProfile);
+                    else if (operatorList.get(gameProfile).getPermissionLevel() < level && operatorList.isOp(gameProfile)) {
+                        removeOperator(gameProfile);
+                        addOperator(gameProfile, level, byPass);
+                        LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
+                    }
+                    else if (operatorList.isOp(gameProfile)) {
+                        source.sendError(new LiteralText(gameProfile.getName() + " is already a operator!"));
+                    }
+
+                }
+                else if (source.getName().equals(gameProfile.getName())) {
+                    source.sendError(LangText.get(false, "command.operator.exception"));
                 }
             }
+            else if (!set && operatorList.isOp(gameProfile) && !source.getName().equals(gameProfile.getName())){
+                removeOperator(gameProfile);
+                p.addChatMessage(LangText.get(true, "command.operator.announce.removed"), false);
+                LangText.sendToUniversalSource(source, "command.operator.removed", false, gameProfile.getName());
+            }
+            else if (!set && !operatorList.isOp(gameProfile) && !source.getName().equals(gameProfile.getName())) {
+                source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!"));
+            }
+            else if (source.getName().equals(gameProfile.getName()))
+                source.sendError(LangText.get(false, "command.operator.exception"));
 
             playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
         }

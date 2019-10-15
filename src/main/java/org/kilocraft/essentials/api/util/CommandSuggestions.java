@@ -31,5 +31,13 @@ public class CommandSuggestions {
     public static SuggestionProvider<ServerCommandSource> operators = ((context, builder) -> {
         return CommandSource.suggestMatching(playerManager.getOpNames(), builder);
     });
+
+    public static SuggestionProvider<ServerCommandSource> getAllPlayersWithSelfSelector = ((context, builder) -> {
+       builder.suggest("@s");
+        for (String playerName : playerManager.getPlayerNames()) {
+            builder.suggest(playerName);
+        }
+        return builder.buildFuture();
+    });
 }
 

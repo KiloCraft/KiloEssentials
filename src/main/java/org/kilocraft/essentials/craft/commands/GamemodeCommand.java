@@ -44,7 +44,7 @@ public class GamemodeCommand {
                         .then(
                                 CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
                                         .suggests((context, builder1) -> {
-                                            return CommandSuggestions.allPlayers.getSuggestions(context, builder1);
+                                            return CommandSuggestions.getAllPlayersWithSelfSelector.getSuggestions(context, builder1);
                                         })
                                         .then(
                                                 CommandManager.literal("-silent").executes(context -> {
@@ -64,7 +64,7 @@ public class GamemodeCommand {
         builder.then(CommandManager.argument("gameType", IntegerArgumentType.integer(0, 3))
                 .then(CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
                         .suggests((context, builder1) -> {
-                            return CommandSuggestions.allPlayers.getSuggestions(context, builder1);
+                            return CommandSuggestions.getAllPlayersWithSelfSelector.getSuggestions(context, builder1);
                         })
                         .then(
                                 CommandManager.literal("-silent").executes(context -> {
