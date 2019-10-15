@@ -99,6 +99,10 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     @Override
     public void fromNBT(CompoundTag compoundTag) {
         warps.clear();
-        compoundTag.getKeys().forEach((key) -> warps.add(new Warp(key, compoundTag.getCompound(key))));
+        byName.clear();
+        compoundTag.getKeys().forEach((key) -> {
+            warps.add(new Warp(key, compoundTag.getCompound(key)));
+            byName.add(key);
+        });
     }
 }
