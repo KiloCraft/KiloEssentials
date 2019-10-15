@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WarpManager extends NBTWorldData implements ConfigurableFeature {
+    public static WarpManager INSTANCE = new WarpManager();
     private static ArrayList<String> byName = new ArrayList<>();
     private static List<Warp> warps = new ArrayList<>();
 
@@ -61,8 +62,13 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
         return var;
     }
 
-    public static void reload() {
+    public void reload() {
+        WorldDataLib.triggerCallbackLoad(this);
         WarpCommands.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
+    }
+
+    public void save() {
+        WorldDataLib.triggerCallbackSave(this);
     }
 
     public static int teleport(ServerCommandSource source, Warp warp) throws CommandSyntaxException {

@@ -244,6 +244,7 @@ public enum TextColor {
         return new String(b);
     }
 
+
     public static LiteralText translateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
         LiteralText literalText = new LiteralText("");
@@ -297,6 +298,10 @@ public enum TextColor {
 
     public static void sendToUniversalSource(ServerCommandSource source, LiteralText text, boolean log) {
         sendToUniversalSource(source, text.asString(), log);
+    }
+
+    public static void sendToSource(ServerCommandSource source, boolean log, String text, Object... objects) {
+        sendToUniversalSource(source, String.format(text, objects), log);
     }
 
     /**

@@ -1,49 +1,72 @@
 package org.kilocraft.essentials.craft.commands.essentials;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.network.ClientDummyContainerProvider;
-import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.network.MessageType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.TextColor;
+import org.kilocraft.essentials.api.util.CommandHelper;
+import org.kilocraft.essentials.api.util.CommandSuggestions;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 public class EnderchestCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
-                CommandManager.literal("enderchest")
-                        .requires(source -> source.hasPermissionLevel(2))
-                        .then(CommandManager.argument("player", EntityArgumentType.player())
-                                .executes(context -> execute(context, EntityArgumentType.getPlayer(context, "player").getCommandSource())))
-                        .executes(context -> execute(context, context.getSource()))
-        );
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("enderchest").requires(EnderchestCommand::permission)
+                .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));
+        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("ec").requires(EnderchestCommand::permission)
+                .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));;
 
-        dispatcher.register(CommandManager.literal("ec")
-                .requires(source -> source.hasPermissionLevel(2))
-                .executes(context -> execute(context, context.getSource())));
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.enderchest.others", 2))
+                .suggests((context, builder) -> {
+                    return CommandSuggestions.allPlayers.getSuggestions(context, builder);
+                })
+                .executes(context -> execute(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "gameProfile")));
+
+        argumentBuilder.then(selectorArg);
+        aliasBuilder.then(selectorArg);
+
+        dispatcher.register(aliasBuilder);
+        dispatcher.register(argumentBuilder);
     }
 
-    private static int execute(CommandContext<ServerCommandSource> context, ServerCommandSource source) throws CommandSyntaxException {
-        LiteralText literalText = new LiteralText("");
-        ServerPlayerEntity target = source.getPlayer();
-        ServerPlayerEntity sender = context.getSource().getPlayer();
-        literalText.append("You have opened ").setStyle(new Style().setColor(Formatting.YELLOW));
-        literalText.append(new LiteralText(target.getName().getString()).setStyle(new Style().setColor(Formatting.GOLD)
-                .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new LiteralText(target.getName().getString())))));
-        literalText.append("'s Ender chest").setStyle(new Style().setColor(Formatting.YELLOW));
+    private static boolean permission(ServerCommandSource source) {
+        return Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.enderchest", 2);
+    }
 
-        sender.sendChatMessage(literalText, MessageType.CHAT);
-        EnderChestInventory enderChestInventory = target.getEnderChestInventory();
+    private static int execute(ServerCommandSource source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
+        Iterator v = gameProfiles.iterator();
+
+        if (gameProfiles.size() > 1) source.sendError(new LiteralText("You can only select one player but the provided selector includes more!"));
+        else if (!CommandHelper.isConsole(source)) {
+            GameProfile gameProfile = (GameProfile) v.next();
+            ServerPlayerEntity ecSource = KiloServer.getServer().getPlayerManager().getPlayer(gameProfile.getId());
+
+            TextColor.sendToSource(source, false, "&eNow looking at &6%s's&e enderchest", gameProfile.getName());
+
+            openEnderchest(source.getPlayer(), ecSource);
+        }
+        else source.sendError(new LiteralText("Only players can use this command!"));
+
+        return 1;
+    }
+
+    public static int openEnderchest(ServerPlayerEntity sender, ServerPlayerEntity targetEnderChest) {
+        EnderChestInventory enderChestInventory = targetEnderChest.getEnderChestInventory();
         sender.openContainer(new ClientDummyContainerProvider((i, pInv, pEntity) -> {
             return GenericContainer.createGeneric9x3(i, pInv, enderChestInventory);
         }, new TranslatableText("container.enderchest")));

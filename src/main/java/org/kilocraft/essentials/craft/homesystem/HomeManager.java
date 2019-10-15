@@ -101,6 +101,14 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         });
     }
 
+    public void reload() {
+        WorldDataLib.triggerCallbackLoad(this);
+    }
+
+    public void save() {
+        WorldDataLib.triggerCallbackSave(this);
+    }
+
     public List<Home> getHomes() {
         return homes;
     }
