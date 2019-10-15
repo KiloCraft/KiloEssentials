@@ -19,5 +19,6 @@ public class Structures {
         add("Buried_Treasure");
         add("Shipwreck");
         add("Village");
+        add("Mansion");
     }};
 }

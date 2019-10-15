@@ -1,16 +1,28 @@
 package org.kilocraft.essentials.craft.mixin;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.craft.commands.Commands;
+import org.kilocraft.essentials.craft.commands.CustomCommandSuggestions;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(CommandManager.class)
 public abstract class MixinCommandManager {
+
+    @Shadow @Final private CommandDispatcher<ServerCommandSource> dispatcher;
+
+    @Shadow public abstract int execute(ServerCommandSource serverCommandSource_1, String string_1);
+
+    @Shadow public abstract CommandDispatcher<ServerCommandSource> getDispatcher();
 
     @Inject(
             method = "literal", cancellable = true,
@@ -18,14 +30,24 @@ public abstract class MixinCommandManager {
     )
 
     private static void modify(String string_1, CallbackInfoReturnable<LiteralArgumentBuilder<ServerCommandSource>> cir) {
-        if (Commands.vanillaCommandsToRename.contains(string_1)) {
+        if (Commands.isVanillaCommand(string_1)) {
             cir.setReturnValue(LiteralArgumentBuilder.literal(Commands.vanillaCommandsPrefix + string_1));
         }
-        else if (Commands.keCommandsToKeep.contains(string_1)) {
+        else if (Commands.isCustomCommand(string_1)) {
             cir.setReturnValue(LiteralArgumentBuilder.literal(string_1.replace("ke_", "")));
         }
         else
             cir.setReturnValue(LiteralArgumentBuilder.literal(string_1));
+    }
+
+
+    @Redirect(
+            method = "makeTreeForSource",
+            at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/tree/CommandNode;canUse(Ljava/lang/Object;)Z")
+    )
+
+    private <S> boolean modifySuggestions(CommandNode<S> commandNode, S source) {
+        return CustomCommandSuggestions.buildForSource(commandNode, source);
     }
 
 }

@@ -21,43 +21,35 @@ public class Commands {
     }};
 
     public static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
-        add("help");
-        add("reload");
         add("gamemode");
         add("kill");
+        add("help");
         add("kick");
-        add("ban");
-        add("ban-ip");
         add("pardon");
         add("pardon-ip");
         add("locate");
-        add("debug");
         add("say");
         add("banlist");
-        add("clear");
         add("op");
         add("deop");
-        add("save-all");
-        add("save-off");
-        add("save-on");
         add("me");
         add("w");
         add("msg");
         add("whisper");
         add("tell");
-        add("clone");
-        add("forceload");
-        add("gamerule");
-        add("locate");
-        add("schedule");
-        add("seed");
-        add("spectate");
-        add("spreadplayers");
         add("teammsg");
-        add("teleport");
         add("tm");
-        add("trigger");
         add("xp");
     }};
+
+    public static boolean isVanillaCommand(String nodeName) {
+        if  (vanillaCommandsToRename.contains(vanillaCommandsPrefix + nodeName)) return true;
+        else return false;
+    }
+
+    public static boolean isCustomCommand(String nodeName) {
+        if  (keCommandsToKeep.contains(nodeName)) return true;
+        else return false;
+    }
 
 }
