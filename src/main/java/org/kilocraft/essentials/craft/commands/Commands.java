@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Commands {
     public static String vanillaCommandsPrefix = "minecraft:";
+    public static String customCommandsPrefix = "ke_";
 
     /**
      * @see org.kilocraft.essentials.craft.mixin.MixinCommandManager
@@ -43,7 +44,7 @@ public class Commands {
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
-        if  (vanillaCommandsToRename.contains(vanillaCommandsPrefix + nodeName)) return true;
+        if  (Commands.vanillaCommandsToRename.contains(nodeName)) return true;
         else return false;
     }
 
