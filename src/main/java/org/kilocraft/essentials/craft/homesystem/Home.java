@@ -2,14 +2,16 @@ package org.kilocraft.essentials.craft.homesystem;
 
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.UUID;
+
 public class Home {
-    private String owner_uuid;
+    private UUID owner_uuid;
     private String name;
     private int dimension;
     private double x, y, z;
     private float dX, dY;
 
-    public Home(String uuid, String name, double x, double y, double z, int dimension, float yaw, float pitch) {
+    public Home(UUID uuid, String name, double x, double y, double z, int dimension, float yaw, float pitch) {
         this.owner_uuid = uuid;
         this.name = name;
         this.dimension = dimension;
@@ -59,11 +61,11 @@ public class Home {
         this.dimension = compoundTag.getInt("dim");
     }
 
-    public String getOwner() {
+    public UUID getOwner() {
         return owner_uuid;
     }
 
-    public void setOwner(String uuid) {
+    public void setOwner(UUID uuid) {
         this.owner_uuid = uuid;
     }
 

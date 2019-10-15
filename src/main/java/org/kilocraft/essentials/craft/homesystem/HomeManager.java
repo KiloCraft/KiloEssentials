@@ -77,14 +77,15 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
     public CompoundTag toNBT(CompoundTag tag) {
         homes.forEach(home -> {
             ListTag listTag;
-            if (tag.contains(home.getOwner())) {
-                listTag =  (ListTag) tag.get(home.getOwner());
+            if (tag.contains(home.getOwner().toString())) {
+                listTag =  (ListTag) tag.get(home.getOwner().toString());
             } else {
                 listTag = new ListTag();
             }
             listTag.add(home.toTag());
-            tag.put(home.getOwner(), listTag);
+            tag.put(home.getOwner().toString(), listTag);
         });
+        System.out.println("Saved tag: " + tag.toText().asString());
         return tag;
     }
 
@@ -95,10 +96,11 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
             ListTag playerTag = (ListTag) tag.get(key);
             playerTag.forEach(homeTag -> {
                 Home home = new Home((CompoundTag) homeTag);
-                home.setOwner(key);
+                home.setOwner(UUID.fromString(key));
                 homes.add(home);
             });
         });
+        System.out.println("Loading homes: " + homes);
     }
 
     public void reload() {
