@@ -10,6 +10,8 @@ import org.kilocraft.essentials.craft.homesystem.HomeManager;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
+import java.util.UUID;
+
 public class KiloEssentials {
 	public static KiloEssentials INSTANCE;
 	private static Logger logger = LogManager.getFormatterLogger("KiloEssentials");
@@ -34,7 +36,7 @@ public class KiloEssentials {
 
 		HomeManager.addHome(
 				new Home(
-						"#######",
+						UUID.randomUUID(),
 						"test",
 						10,
 						100,

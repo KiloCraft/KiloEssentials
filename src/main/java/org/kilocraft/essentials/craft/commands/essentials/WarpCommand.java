@@ -76,7 +76,7 @@ public class WarpCommand {
     });
 
     private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
-        if (WarpManager.getWarp(name).getName().equals(name)) {
+        if (WarpManager.getWarpsByName().contains(name)) {
             Warp warp = WarpManager.getWarp(name);
             ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimension() + 1));
 
