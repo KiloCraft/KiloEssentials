@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.OperatorEntry;
@@ -139,7 +140,7 @@ public class OperatorCommand {
     private static int executeList(ServerCommandSource source) {
         String s = Arrays.toString(source.getMinecraftServer().getPlayerManager().getOpList().getNames());
         LiteralText literalText = (LiteralText) new LiteralText(
-                "&eOperators&8: " + s.replace("[", "").replace("]", "").replaceAll(",", "&8,&r")
+                "&eOperators&8:&r " + s.replace("[", "").replace("]", "").replaceAll(",", "&8,&r")
         ).setStyle(new Style().setColor(Formatting.GRAY));
 
         TextColor.sendToUniversalSource(source, literalText, false);
@@ -167,9 +168,8 @@ public class OperatorCommand {
         return 1;
     }
 
-    private static int execute(ServerCommandSource source, Collection<GameProfile> gameProfiles, boolean set, int level, boolean byPass) {
+    private static int execute(ServerCommandSource source, Collection<GameProfile> gameProfiles, boolean set, int level, boolean byPass) throws CommandSyntaxException {
         PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
-        int i = 0;
         Iterator v = gameProfiles.iterator();
         OperatorList operatorList = playerManager.getOpList();
 
@@ -179,7 +179,7 @@ public class OperatorCommand {
             int leastPermLevelReq = 0;
             if (CommandHelper.isConsole(source))
                 leastPermLevelReq = 5;
-            else leastPermLevelReq = Objects.requireNonNull(operatorList.get(gameProfile)).getPermissionLevel();
+            else if (!CommandHelper.isConsole(source)) leastPermLevelReq = operatorList.get(source.getPlayer().getGameProfile()).getPermissionLevel();
 
             if (set) {
                 if (level > leastPermLevelReq) source.sendError(KiloCommands.getPermissionError("Operator permission level " + (leastPermLevelReq + 1)));
