@@ -22,5 +22,6 @@ public class OnServerReady implements EventHandler<ServerEvent$OnReady> {
         );
 
         HomeManager.addHome(home);
+
     }
 }

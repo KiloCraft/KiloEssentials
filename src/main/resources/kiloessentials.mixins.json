@@ -6,7 +6,7 @@
   "mixins": [
   ],
   "server": [
-    "MixinMinecraftDedicatedServer$setupServer",
+    "MixinMinecraftServer$run",
     "MixinCommandManager"
   ],
   "injectors": {
