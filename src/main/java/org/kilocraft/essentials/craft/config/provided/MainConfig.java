@@ -3,27 +3,32 @@ package org.kilocraft.essentials.craft.config.provided;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
-public class MainConfig {
-    public MainConfig() {
-        provide();
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainConfig implements ConfigProvided {
+
+    @Override
+    public List<String> configValues() {
+        return new ArrayList<String>(){{
+            add("server_name");
+            add("server_description");
+            add("server_playercountmessage");
+        }};
     }
 
-    /**
-     * Server
-     */
-    private char altColorChar;
-    private String name;
-    private String motd;
-    private String playerCountMessage;
+    public String server_name = "";
+    public String server_description = "";
+    public String server_playercountmessage = "";
 
-    private FileConfig config = KiloConifg.getMain();
+    @Override
+    public FileConfig config() {
+        return KiloConifg.getMain();
+    }
 
-    private void provide() {
-        name = config.getOrElse("server.name", "Minecraft server");
-        motd = config.getOrElse("server.motd", "NULL");
-        playerCountMessage = config.getOrElse("server.playercountmessage", "NULL");
-
-
+    @Override
+    public <T> T get(String key) {
+        return config().get(key);
     }
 
 }

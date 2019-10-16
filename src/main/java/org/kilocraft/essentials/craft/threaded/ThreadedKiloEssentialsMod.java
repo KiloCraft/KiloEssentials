@@ -1,17 +1,10 @@
 package org.kilocraft.essentials.craft.threaded;
 
-import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.KiloEvents;
-import org.kilocraft.essentials.craft.data.KiloData;
 
 public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
-    private Logger logger;
-
-    public ThreadedKiloEssentialsMod() {
-    }
-
     @Override
     public String getName() {
         return "Main";
@@ -21,14 +14,8 @@ public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
     public void run() {
         new KiloEssentials(
                 new KiloEvents(),
-                new KiloCommands(),
-                new KiloData()
+                new KiloCommands()
         );
-    }
-
-    @Override
-    public Logger getLogger() {
-        return logger;
     }
 
 }

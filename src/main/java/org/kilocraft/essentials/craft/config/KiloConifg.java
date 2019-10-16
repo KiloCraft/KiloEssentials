@@ -2,6 +2,8 @@ package org.kilocraft.essentials.craft.config;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.craft.KiloEssentials;
+import org.kilocraft.essentials.craft.config.provided.MainConfig;
+import org.kilocraft.essentials.craft.config.provided.MessagesConfig;
 import org.kilocraft.essentials.craft.provider.KiloFile;
 
 import java.util.HashMap;
@@ -24,8 +26,14 @@ public class KiloConifg {
 
     public KiloConifg() {
         handle();
+        ConfigProvider configProvider = new ConfigProvider();
+        configProvider.provide(new MainConfig());
+
         KiloEssentials.getLogger().info("Configurations are now loaded");
     }
+
+    private MainConfig mainConfig;
+    private MessagesConfig messagesConfig;
 
     static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
     static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");
