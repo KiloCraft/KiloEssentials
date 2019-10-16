@@ -10,7 +10,6 @@ import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
 public class KiloEssentials {
-	public static KiloEssentials INSTANCE;
 	private static Logger logger = LogManager.getFormatterLogger("KiloEssentials");
 	private KiloEvents events;
 	private KiloCommands commands;
