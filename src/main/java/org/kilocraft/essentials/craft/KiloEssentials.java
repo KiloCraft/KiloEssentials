@@ -5,12 +5,9 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.data.KiloData;
-import org.kilocraft.essentials.craft.homesystem.Home;
 import org.kilocraft.essentials.craft.homesystem.HomeManager;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
-
-import java.util.UUID;
 
 public class KiloEssentials {
 	public static KiloEssentials INSTANCE;
@@ -33,19 +30,6 @@ public class KiloEssentials {
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new HomeManager(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
-
-		HomeManager.addHome(
-				new Home(
-						UUID.randomUUID(),
-						"test",
-						10,
-						100,
-						10,
-						0,
-						1F,
-						5F
-				)
-		);
 
 	}
 

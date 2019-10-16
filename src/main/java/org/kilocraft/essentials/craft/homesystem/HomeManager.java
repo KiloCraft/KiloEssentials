@@ -102,7 +102,6 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
             listTag.add(home.toTag());
             tag.put(home.getOwner().toString(), listTag);
         });
-        System.out.println("Saved tag: " + tag.toText().asString());
         return tag;
     }
 
@@ -116,6 +115,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
                 Home home = new Home((CompoundTag) homeTag);
                 home.setOwner(UUID.fromString(key));
                 homes.add(home);
+                home.setName(key);
                 byName.put(key, home.getName());
             });
         });
