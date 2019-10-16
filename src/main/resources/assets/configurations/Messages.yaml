@@ -45,4 +45,5 @@ schema: 1.0
 #for defining the color/formatting codes!
 # [<Char> Default: '*']
 altcolorchar: '*'
-#
+#Messages used by commands
+commands:

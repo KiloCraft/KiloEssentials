@@ -52,12 +52,9 @@ server:
   # [<String>]
   name: Cool Server
   # Message of the day!
-  motd:
-    # [<greedyString> c/f/GV]
-    # - The message you can see in the server list
-    line1: "%server_name% *7-*b JOIN NOW!"
-    line2: "Use *6/help*r for more info!"
-
+  # [<greedyString> c/f/GV]
+  # - The message you can see in the server list
+  motd: "%server_name% *7-*b JOIN NOW!"
   # Player count custom text
   # The message you'll see on when you hover your cursor
   # over the player count

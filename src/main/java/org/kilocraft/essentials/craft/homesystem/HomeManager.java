@@ -109,7 +109,6 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
             ListTag listTag;
             if (tag.contains(home.getOwner().toString()))
                 listTag = (ListTag) tag.get(home.getOwner().toString());
-            } else {
             else
                 listTag = new ListTag();
 

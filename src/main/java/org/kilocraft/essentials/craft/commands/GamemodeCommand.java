@@ -93,7 +93,7 @@ public class GamemodeCommand {
         } else {
             playerEntities.forEach((playerEntity) -> {
                 playerEntity.setGameMode(gameMode);
-                if (!log)
+                if (log)
                     playerEntity.addChatMessage(LangText.getFormatter(true, "command.gamemode.others.announce", gameMode.getName(), source.getName()), false);
             });
 
