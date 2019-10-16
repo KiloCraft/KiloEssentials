@@ -60,7 +60,7 @@ public class HomeCommand {
 
 
         secondArgumentSet.suggests((context, builder) -> {
-            return HomeManager.suggestHomes.getSuggestions(context, builder);
+            return HomeManager.suggestHomesOLD.getSuggestions(context, builder);
         });
         secondArgumentRemove.suggests((context, builder) -> {
             return HomeManager.suggestHomes.getSuggestions(context, builder);
@@ -132,7 +132,7 @@ public class HomeCommand {
     private static int executeTeleport(ServerCommandSource source, Collection<GameProfile> gameProfiles, String name) throws CommandSyntaxException {
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            HomeManager.teleportToHome(source.getPlayer(), HomeManager.getHome(gameProfile.getId().toString(), name));
+            HomeManager.teleportToHome(source, HomeManager.getHome(gameProfile.getId().toString(), name));
 
             source.sendFeedback(new LiteralText("Teleporting to home " + name), false);
         } else

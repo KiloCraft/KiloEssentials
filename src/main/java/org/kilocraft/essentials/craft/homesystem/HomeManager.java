@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +17,7 @@ import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +28,7 @@ import java.util.UUID;
 public class HomeManager extends NBTWorldData implements ConfigurableFeature {
     public static HomeManager INSTANCE = new HomeManager();
     private static List<Home> homes = new ArrayList<>();
+    private static HashMap<String, String> byName = new HashMap<>();
 
     @Override
     public boolean register() {
@@ -50,6 +51,10 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         }
 
         return var;
+    }
+
+    public static HashMap<String, String> getHomesByName() {
+        return byName;
     }
 
     public static List<Home> getHomes(String uuid) {
@@ -80,9 +85,9 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         homes.remove(home);
     }
 
-    public static void teleportToHome(ServerPlayerEntity playerEntity, Home home) {
-        ServerWorld serverWorld = KiloServer.getServer().getVanillaServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
-        playerEntity.teleport(serverWorld, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+    public static void teleportToHome(ServerCommandSource source, Home home) throws CommandSyntaxException {
+        ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
+        source.getPlayer().teleport(world, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
     }
 
     @Override
@@ -103,6 +108,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
 
     @Override
     public void fromNBT(CompoundTag tag) {
+        byName.clear();
         homes.clear();
         tag.getKeys().forEach(key -> {
             ListTag playerTag = (ListTag) tag.get(key);
@@ -110,9 +116,10 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
                 Home home = new Home((CompoundTag) homeTag);
                 home.setOwner(UUID.fromString(key));
                 homes.add(home);
+                byName.put(key, home.getName());
             });
         });
-        System.out.println("Loading homes: " + homes);
+
     }
 
     public void reload() {
@@ -132,7 +139,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         return new File(KiloConifg.getWorkingDirectory() + "/homes." + (backup ? "dat_old" : "dat"));
     }
 
-    public static SuggestionProvider<ServerCommandSource> suggestHomes = ((context, builder) -> {
+    public static SuggestionProvider<ServerCommandSource> suggestHomesOLD = ((context, builder) -> {
         return CommandSource.suggestMatching(homes.stream().filter((var) -> {
             try {
                 return var.getOwner().equals(context.getSource().getPlayer().getUuidAsString());
@@ -141,6 +148,15 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
             }
         }).map(Home::getName), builder);
     });
+
+    public static SuggestionProvider<ServerCommandSource> suggestHomes = ((context, builder) -> {
+        getHomes(context.getSource().getPlayer().getUuidAsString()).forEach((home) -> {
+            builder.suggest(home.getName());
+        });
+
+        return builder.buildFuture();
+    });
+
 
 }
 

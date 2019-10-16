@@ -43,6 +43,7 @@ public class Home {
             compoundTag.put("dir", dir);
         }
 
+        compoundTag.putString("name", this.name);
         compoundTag.putInt("dim", this.dimension);
         return compoundTag;
     }
@@ -60,6 +61,7 @@ public class Home {
             this.dY = dir.getFloat("dY");
         }
 
+        this.name = compoundTag.getString("name");
         this.dimension = compoundTag.getInt("dim");
     }
 
