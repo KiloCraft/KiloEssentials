@@ -2,7 +2,6 @@ package org.kilocraft.essentials.craft.config;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.craft.KiloEssentials;
-import org.kilocraft.essentials.craft.data.KiloData;
 import org.kilocraft.essentials.craft.provider.KiloFile;
 
 import java.util.HashMap;
@@ -21,7 +20,6 @@ public class KiloConifg {
     private static HashMap<String, String> configFiles = new HashMap<String, String>(){{
         put("KiloEssentials.yaml", workingDir + "/");
         put("Messages.yaml", configPath);
-        put("Warps.yaml", KiloData.getDataDirectoryPath());
     }};
 
     public KiloConifg() {
@@ -31,7 +29,6 @@ public class KiloConifg {
 
     static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
     static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");
-    //static FileConfig WARPS = FileConfig.of(configPath + "/Warps.yaml");
 
     private void handle() {
         try {
@@ -56,10 +53,6 @@ public class KiloConifg {
         return MESSAGES;
     }
 
-//    public static FileConfig getWarps() {
-//        return WARPS;
-//    }
-
     public static String getWorkingDirectory() {
         return workingDir;
     }
@@ -67,7 +60,6 @@ public class KiloConifg {
     public static void load() {
         MAIN.load();
         MESSAGES.load();
-        //WARPS.load();
     }
 
 }

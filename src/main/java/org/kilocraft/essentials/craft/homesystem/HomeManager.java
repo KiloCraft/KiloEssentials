@@ -8,6 +8,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.config.KiloConifg;
@@ -59,11 +62,11 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         return var;
     }
 
-    public List<Home> getPlayerHomes(UUID uuid) {
+    public static List<Home> getPlayerHomes(UUID uuid) {
         return getPlayerHomes(uuid.toString());
     }
 
-    public List<Home> getPlayerHomes(String uuid) {
+    public static List<Home> getPlayerHomes(String uuid) {
         List<Home> list = new ArrayList<>();
         homes.forEach((home) -> {
             if (home.getOwner().equals(uuid))
@@ -73,12 +76,21 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         return list;
     }
 
+    public static void removeHome(Home home) {
+        homes.remove(home);
+    }
+
+    public static void teleportToHome(ServerPlayerEntity playerEntity, Home home) {
+        ServerWorld serverWorld = KiloServer.getServer().getVanillaServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
+        playerEntity.teleport(serverWorld, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+    }
+
     @Override
     public CompoundTag toNBT(CompoundTag tag) {
         homes.forEach(home -> {
             ListTag listTag;
             if (tag.contains(home.getOwner().toString())) {
-                listTag =  (ListTag) tag.get(home.getOwner().toString());
+                listTag = (ListTag) tag.get(home.getOwner().toString());
             } else {
                 listTag = new ListTag();
             }
@@ -111,7 +123,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         WorldDataLib.triggerCallbackSave(this);
     }
 
-    public List<Home> getHomes() {
+    public static List<Home> getHomes() {
         return homes;
     }
 

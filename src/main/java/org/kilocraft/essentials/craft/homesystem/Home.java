@@ -18,6 +18,8 @@ public class Home {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.dY = yaw;
+        this.dX = pitch;
     }
 
     Home(CompoundTag compoundTag) {
