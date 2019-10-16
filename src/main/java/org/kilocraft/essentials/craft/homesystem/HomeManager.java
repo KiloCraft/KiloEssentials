@@ -106,14 +106,15 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
 //        });
 
         homes.forEach((home) -> {
-            ListTag listTag;
-            if (tag.contains(home.getOwner().toString()))
-                listTag = (ListTag) tag.get(home.getOwner().toString());
-            else
-                listTag = new ListTag();
+            CompoundTag playerTag;
+            if (tag.contains(home.getOwner().toString())) {
+                playerTag = tag.getCompound(home.getOwner().toString());
+            } else {
+                playerTag = new CompoundTag();
+            }
 
-            listTag.add(home.toTag());
-            tag.put(home.getOwner().toString(), listTag);
+            playerTag.put(home.getName(), home.toTag());
+            tag.put(home.getOwner().toString(), playerTag);
         });
         return tag;
     }
@@ -123,13 +124,13 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         byName.clear();
         homes.clear();
         tag.getKeys().forEach(key -> {
-            ListTag playerTag = (ListTag) tag.get(key);
-            playerTag.forEach(homeTag -> {
-                Home home = new Home((CompoundTag) homeTag);
+            CompoundTag playerTag = tag.getCompound(key);
+            playerTag.getKeys().forEach(homeKey -> {
+                Home home = new Home(tag.getCompound(key).getCompound(homeKey));
+                home.setName(homeKey);
                 home.setOwner(UUID.fromString(key));
                 homes.add(home);
-                home.setName(key);
-                byName.put(key, home.getName());
+                byName.put(homeKey, home.getName());
             });
         });
 
