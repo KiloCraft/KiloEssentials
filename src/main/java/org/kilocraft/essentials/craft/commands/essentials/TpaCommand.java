@@ -3,24 +3,23 @@ package org.kilocraft.essentials.craft.commands.essentials;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.dedicated.ServerCommandOutput;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
-import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.commands.BackCommand;
 
-import javax.xml.transform.Source;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,8 +49,12 @@ public class TpaCommand {
                     return false;
                 }
             });
-            ArgumentBuilder playerA = CommandManager.argument("player", EntityArgumentType.player());
-            ArgumentBuilder playerB = CommandManager.argument("player", EntityArgumentType.player());
+            RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerA = CommandManager.argument("player", EntityArgumentType.player());
+            RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerB = CommandManager.argument("player", EntityArgumentType.player());
+
+            playerA.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
+            playerA.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
+
             playerA.executes(context -> executeRequest(context, false));
             playerB.executes(context -> executeRequest(context, true));
             tpa.then(playerA);
