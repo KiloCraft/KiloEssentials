@@ -19,8 +19,8 @@ public class Warp {
         this.z = z;
         this.dimension = dimension;
         this.requirePermission = requirePermission;
-        this.dX = yaw;
-        this.dY = pitch;
+        this.dX = pitch;
+        this.dY = yaw;
     }
 
     public Warp(String name, CompoundTag tag) {

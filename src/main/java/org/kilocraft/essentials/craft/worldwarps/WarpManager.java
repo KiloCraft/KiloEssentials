@@ -51,8 +51,8 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     }
 
     public static void removeWarp(String warp) {
-        warps.remove(getWarp(warp));
         byName.remove(getWarp(warp).getName());
+        warps.remove(getWarp(warp));
     }
 
     public static Warp getWarp(String warp) {
