@@ -95,7 +95,7 @@ public class WarpCommand {
                 new Warp(
                         name,
                         pos.getX(), pos.getY(), pos.getZ(),
-                        source.getPlayer().getYaw(0), source.getPlayer().getPitch(0),
+                        source.getPlayer().yaw, source.getPlayer().pitch,
                         source.getWorld().getDimension().getType().getRawId(),
                         permission
                 )
@@ -105,7 +105,9 @@ public class WarpCommand {
     }
 
     private static int executeRemove(ServerCommandSource source, String warp) {
-        WarpManager.removeWarp(warp);
+        if (WarpManager.getWarpsByName().contains(warp))
+            WarpManager.removeWarp(warp);
+        else source.sendError(new LiteralText("That warp doesn't exist!"));
         return 1;
     }
 
