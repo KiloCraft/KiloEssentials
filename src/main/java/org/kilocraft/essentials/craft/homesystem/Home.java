@@ -28,7 +28,6 @@ public class Home {
 
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
-        CompoundTag homeTag = new CompoundTag();
         {
             CompoundTag pos = new CompoundTag();
             pos.putDouble("x", this.x);
@@ -45,8 +44,7 @@ public class Home {
         }
 
         compoundTag.putInt("dim", this.dimension);
-        homeTag.put(this.name, compoundTag);
-        return homeTag;
+        return compoundTag;
     }
 
     public void fromTag(CompoundTag compoundTag) {
