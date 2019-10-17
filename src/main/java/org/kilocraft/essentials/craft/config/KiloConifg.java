@@ -32,8 +32,8 @@ public class KiloConifg {
         KiloEssentials.getLogger().info("Configurations are now loaded");
     }
 
-    private MainConfig mainConfig;
-    private MessagesConfig messagesConfig;
+    private static MainConfig mainConfig;
+    private static MessagesConfig messagesConfig;
 
     static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
     static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");
@@ -53,12 +53,16 @@ public class KiloConifg {
     }
 
 
-    public static FileConfig getMain() {
+    public static FileConfig getFileConfigOfMain() {
         return MAIN;
     }
 
-    public static FileConfig getMessages() {
+    public static FileConfig getFileConfigOfMessages() {
         return MESSAGES;
+    }
+
+    public static MainConfig getMain() {
+        return mainConfig;
     }
 
     public static String getWorkingDirectory() {

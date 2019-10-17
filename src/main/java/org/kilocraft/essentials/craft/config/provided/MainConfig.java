@@ -11,19 +11,21 @@ public class MainConfig implements ConfigProvided {
     @Override
     public List<String> configValues() {
         return new ArrayList<String>(){{
-            add("server_name");
-            add("server_description");
-            add("server_playercountmessage");
+            add("server$name");
+            add("server$description");
+            add("server$playercountmessage");
+            add("warps$permission_prefix");
         }};
     }
 
-    public String server_name = "";
-    public String server_description = "";
-    public String server_playercountmessage = "";
+    public String server$name = "";
+    public String server$description = "";
+    public String server$playercountmessage = "";
+    public String warps$permission_prefix = "";
 
     @Override
     public FileConfig config() {
-        return KiloConifg.getMain();
+        return KiloConifg.getFileConfigOfMain();
     }
 
     @Override

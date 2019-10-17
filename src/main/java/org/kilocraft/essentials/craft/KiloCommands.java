@@ -71,13 +71,13 @@ public class KiloCommands {
     }
 
     public String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
-        String string = KiloConifg.getMessages().get("command.context.usage");
+        String string = KiloConifg.getFileConfigOfMain().get("command.context.usage");
         Map<CommandNode<ServerCommandSource>, String> usage = this.dispatcher.getSmartUsage(literalCommandNode, source);
         return string.replaceFirst("%s", usage.toString());
     }
 
     public String buildUsage(String usage, ServerCommandSource source) {
-        String string = KiloConifg.getMessages().get("command.context.usage");
+        String string = KiloConifg.getFileConfigOfMain().get("command.context.usage");
         return string.replaceFirst("%s", usage);
     }
 

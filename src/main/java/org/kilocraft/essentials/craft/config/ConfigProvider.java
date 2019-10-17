@@ -11,7 +11,7 @@ public class ConfigProvider {
     public <C extends ConfigProvided> C provide(C config) {
         config.configValues().forEach((var) -> {
             try {
-                config.getClass().getField(var).set(config, config.get(var.replace("_", ".")));
+                config.getClass().getField(var).set(config, config.get(var.replaceAll("$", ".")));
             } catch (IllegalAccessException | NoSuchFieldException e) {
                 e.printStackTrace();
             }

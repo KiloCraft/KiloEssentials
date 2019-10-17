@@ -10,7 +10,7 @@ public class ConfigurableFeatures {
 
     public <F extends ConfigurableFeature> F tryToRegister(F feature, String configID) {
         try {
-            if (KiloConifg.getMain().getOrElse("features." + configID, false)) {
+            if (KiloConifg.getFileConfigOfMain().getOrElse("features." + configID, false)) {
                 KiloEssentials.getLogger().info("Initialing \"" + configID + "\"");
                 feature.register();
             }
