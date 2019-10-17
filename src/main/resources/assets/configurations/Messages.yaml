@@ -47,3 +47,4 @@ schema: 1.0
 altcolorchar: '*'
 #Messages used by commands
 commands:
+  prefix: '*e[*6%MAIN$SERVER_NAME%*e]'

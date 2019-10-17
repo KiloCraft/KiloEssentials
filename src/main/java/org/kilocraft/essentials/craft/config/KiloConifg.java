@@ -2,8 +2,6 @@ package org.kilocraft.essentials.craft.config;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.craft.KiloEssentials;
-import org.kilocraft.essentials.craft.config.provided.MainConfig;
-import org.kilocraft.essentials.craft.config.provided.MessagesConfig;
 import org.kilocraft.essentials.craft.provider.KiloFile;
 
 import java.util.HashMap;

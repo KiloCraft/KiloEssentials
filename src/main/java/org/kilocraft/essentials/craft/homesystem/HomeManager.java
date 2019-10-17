@@ -5,10 +5,10 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.worlddata.NBTWorldData;
 import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
@@ -92,19 +92,6 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
 
     @Override
     public CompoundTag toNBT(CompoundTag tag) {
-//        homes.forEach(home -> {
-//            ListTag listTag;
-//            ListTag homeTag;
-//            if (tag.contains(home.getOwner().toString())) {
-//                listTag = (ListTag) tag.get(home.getOwner().toString());
-//            } else {
-//                listTag = new ListTag();
-//            }
-//            listTag.add(home.toTag());
-//
-//            tag.put(home.getOwner().toString(), listTag);
-//        });
-
         homes.forEach((home) -> {
             CompoundTag playerTag;
             if (tag.contains(home.getOwner().toString())) {
@@ -158,6 +145,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
             try {
                 return var.getOwner().equals(context.getSource().getPlayer().getUuidAsString());
             } catch (CommandSyntaxException e) {
+                context.getSource().sendError(new LiteralText("An exception happened when getting the auto-completion suggestions"));
                 return false;
             }
         }).map(Home::getName), builder);
