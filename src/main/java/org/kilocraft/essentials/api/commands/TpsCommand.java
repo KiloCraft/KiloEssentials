@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.chat.TextColor;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 
 public class TpsCommand {
@@ -17,7 +17,7 @@ public class TpsCommand {
     }
 
     public static int run(CommandContext<ServerCommandSource> context) {
-        TextColor.sendToUniversalSource(
+        TextFormat.sendToUniversalSource(
                 context.getSource(),
                 String.format(
                         "&6tps &8(&71m&8/&75m&8/&715m&8)&d %s&8,&d %s&8,&d %s&r",

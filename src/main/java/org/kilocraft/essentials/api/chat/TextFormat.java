@@ -13,7 +13,7 @@ import org.kilocraft.essentials.api.util.CommandHelper;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public enum TextColor {
+public enum TextFormat {
     /**
      * Represents black
      */
@@ -118,14 +118,14 @@ public enum TextColor {
     private final boolean isFormat;
     private final Formatting formatting;
     private final String toString;
-    private static final Map<Integer, TextColor> BY_ID = Maps.newHashMap();
-    private static final Map<Character, TextColor> BY_CHAR = Maps.newHashMap();
+    private static final Map<Integer, TextFormat> BY_ID = Maps.newHashMap();
+    private static final Map<Character, TextFormat> BY_CHAR = Maps.newHashMap();
 
-    private TextColor(char code, int intCode, Formatting formatting) {
+    private TextFormat(char code, int intCode, Formatting formatting) {
         this(code, intCode, formatting, false);
     }
 
-    private TextColor(char code, int intCode, Formatting formatting, boolean isFormat) {
+    private TextFormat(char code, int intCode, Formatting formatting, boolean isFormat) {
         this.code = code;
         this.intCode = intCode;
         this.isFormat = isFormat;
@@ -183,7 +183,7 @@ public enum TextColor {
      *     or null if it doesn't exist
      */
     @Nullable
-    public static TextColor getByChar(char code) {
+    public static TextFormat getByChar(char code) {
         return BY_CHAR.get(code);
     }
 
@@ -195,7 +195,7 @@ public enum TextColor {
      *     or null if it doesn't exist
      */
     @Nullable
-    public static TextColor getByChar(@NotNull String code) {
+    public static TextFormat getByChar(@NotNull String code) {
         Validate.notNull(code, "Code cannot be null");
         Validate.isTrue(code.length() > 0, "Code must have at least one char");
 
@@ -237,7 +237,7 @@ public enum TextColor {
 
         for (int i = 0; i < b.length - 1; i++) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
-                b[i] = TextColor.COLOR_CHAR;
+                b[i] = TextFormat.COLOR_CHAR;
                 b[i+1] = Character.toLowerCase(b[i+1]);
             }
         }
@@ -252,7 +252,7 @@ public enum TextColor {
 
         for (int i = 0; i < b.length -1; i++) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
-                b[i] = TextColor.COLOR_CHAR;
+                b[i] = TextFormat.COLOR_CHAR;
                 b[i+1] = Character.toLowerCase(b[i+1]);
             }
         }
@@ -264,7 +264,7 @@ public enum TextColor {
     public static String removeAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
         for (char c : "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".toCharArray()) {
-            textToTranslate = textToTranslate.replace(String.valueOf(TextColor.COLOR_CHAR) + c, "");
+            textToTranslate = textToTranslate.replace(String.valueOf(TextFormat.COLOR_CHAR) + c, "");
             textToTranslate = textToTranslate.replace(String.valueOf(altColorChar) + c, "");
         }
         return textToTranslate;
@@ -322,7 +322,7 @@ public enum TextColor {
             char section = input.charAt(index);
             if (section == COLOR_CHAR && index < length - 1) {
                 char c = input.charAt(index + 1);
-                TextColor color = getByChar(c);
+                TextFormat color = getByChar(c);
 
                 if (color != null) {
                     result = color.toString() + result;
@@ -339,7 +339,7 @@ public enum TextColor {
     }
 
     static {
-        for (TextColor color : values()) {
+        for (TextFormat color : values()) {
             BY_ID.put(color.intCode, color);
             BY_CHAR.put(color.code, color);
         }

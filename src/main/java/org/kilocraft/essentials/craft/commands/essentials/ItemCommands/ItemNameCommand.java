@@ -11,7 +11,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
-import org.kilocraft.essentials.api.chat.TextColor;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.chat.LangText;
 
 public class ItemNameCommand {
@@ -39,10 +39,10 @@ public class ItemNameCommand {
 				}
 
 				if (Thimble.hasPermissionChildOrOp(context.getSource(), "kiloessentials.command.item.name.colour", 2)) {
-					item.setCustomName(new LiteralText(TextColor.translateAlternateColorCodes('&',
+					item.setCustomName(new LiteralText(TextFormat.translateAlternateColorCodes('&',
 							StringArgumentType.getString(context, "name..."))));
 				} else {
-					item.setCustomName(new LiteralText(TextColor.removeAlternateColorCodes('&',
+					item.setCustomName(new LiteralText(TextFormat.removeAlternateColorCodes('&',
 							StringArgumentType.getString(context, "name..."))));
 				}
 

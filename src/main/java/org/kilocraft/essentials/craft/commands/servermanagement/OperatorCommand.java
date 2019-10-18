@@ -20,7 +20,7 @@ import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.chat.TextColor;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
@@ -143,7 +143,7 @@ public class OperatorCommand {
                 "&eOperators&8:&r " + s.replace("[", "").replace("]", "").replaceAll(",", "&7,&r")
         ).setStyle(new Style().setColor(Formatting.GRAY));
 
-        TextColor.sendToUniversalSource(source, literalText, false);
+        TextFormat.sendToUniversalSource(source, literalText, false);
         return 1;
     }
 
@@ -154,7 +154,7 @@ public class OperatorCommand {
         gameProfiles.forEach((gameProfile) -> {
             OperatorList operatorList = playerManager.getOpList();
             if (playerManager.isOperator(gameProfile)) {
-                TextColor.sendToUniversalSource(source,
+                TextFormat.sendToUniversalSource(source,
                         String.format(
                                 text,
                                 gameProfile.getName(),

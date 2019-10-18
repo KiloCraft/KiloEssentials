@@ -1,16 +1,27 @@
 package org.kilocraft.essentials.craft.chat;
 
-import org.kilocraft.essentials.api.chat.TextColor;
+import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.chat.TextFormat;
 
 public class ChatMessage {
-    private String message;
+    private String original;
+    private LiteralText formatted;
 
-    public ChatMessage(String message, boolean colorCodes) {
-        this.message = colorCodes ? TextColor.translateAlternateColorCodes('&', message) : message;
+    public ChatMessage(String message, boolean formatText) {
+        this.original = message;
+        this.formatted = new LiteralText(formatText ? TextFormat.translateAlternateColorCodes('&', message) : message);
     }
 
-    public String getMessage() {
-        return this.message;
+    public LiteralText getFormattedMessage() {
+        return this.formatted;
+    }
+
+    public String getFormattedAsString() {
+        return this.formatted.asString();
+    }
+
+    public String getOriginal() {
+        return this.original;
     }
 
 }

@@ -16,7 +16,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.chat.TextColor;
+import org.kilocraft.essentials.api.chat.TextFormat;
 
 public class ItemLoreCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
@@ -95,9 +95,9 @@ public class ItemLoreCommand {
 
 			String text = StringArgumentType.getString(context, "name...");
 			if (Thimble.hasPermissionChildOrOp(context.getSource(), "kiloessentials.command.item.lore.colour", 2)) {
-				text = TextColor.translateAlternateColorCodes('&', text);
+				text = TextFormat.translateAlternateColorCodes('&', text);
 			} else {
-				text = TextColor.removeAlternateColorCodes('&', text);
+				text = TextFormat.removeAlternateColorCodes('&', text);
 			}
 
 			lore.set(line, StringTag.of("{\"text\":\"" + text + "\"}"));

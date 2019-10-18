@@ -13,7 +13,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.PacketByteBuf;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.Mod;
-import org.kilocraft.essentials.api.chat.TextColor;
+import org.kilocraft.essentials.api.chat.TextFormat;
 
 public class ServerModNameCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -28,7 +28,7 @@ public class ServerModNameCommand {
     }
 
     private static int execute(ServerCommandSource source, String s) {
-        KiloServer.getServer().setDisplayBrandName(TextColor.translateAlternateColorCodes('&',
+        KiloServer.getServer().setDisplayBrandName(TextFormat.translateAlternateColorCodes('&',
                 String.format(s + "&r <- Fabric/KiloEssentials (%s, %s)", Mod.getMinecraftVersion(), Mod.getVersion()))
         );
 

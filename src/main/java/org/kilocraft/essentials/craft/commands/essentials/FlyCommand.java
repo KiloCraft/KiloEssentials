@@ -11,7 +11,7 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.chat.TextColor;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
@@ -44,7 +44,7 @@ public class FlyCommand {
         playerEntity.sendAbilitiesUpdate();
 
         String text = String.format("&eYou have set the fly ability to &b%s&e for &6%s&e.", playerEntity.abilities.allowFlying, playerEntity.getName().asString());
-        TextColor.sendToUniversalSource(source, text, false);
+        TextFormat.sendToUniversalSource(source, text, false);
 
         if (!source.getPlayer().getName().equals(playerEntity.getName())) {
             String s = String.format("&e&a%s set the fly ability to &b%s for you!", source.getName(), playerEntity.abilities.allowFlying);

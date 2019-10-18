@@ -16,7 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.chat.TextColor;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 
@@ -56,7 +56,7 @@ public class EnderchestCommand {
             GameProfile gameProfile = (GameProfile) v.next();
             ServerPlayerEntity ecSource = KiloServer.getServer().getPlayerManager().getPlayer(gameProfile.getId());
 
-            TextColor.sendToSource(source, false, "&eNow looking at &6%s's&e enderchest", gameProfile.getName());
+            TextFormat.sendToSource(source, false, "&eNow looking at &6%s's&e enderchest", gameProfile.getName());
 
             openEnderchest(source.getPlayer(), ecSource);
         }

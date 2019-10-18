@@ -12,7 +12,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.chat.TextColor;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloEssentials;
@@ -38,7 +38,7 @@ public class StopCommand {
 
         if (!CommandHelper.isConsole(context.getSource())) {
             if (isConfirmed) {
-                TextColor.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
+                TextFormat.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
                 if (!CommandHelper.isConsole(context.getSource())) KiloEssentials.getLogger().warn("%s is trying to stop the server", context.getSource().getName());
                 KiloServer.getServer().shutdown();
             } else {
