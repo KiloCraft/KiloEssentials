@@ -8,15 +8,16 @@ public class LocalVariableReplaced {
     }
 
     public <L extends LocalConfigVariable> String replace(String string, L localConfigVariable) {
-        String result = string;
+        final String[] result = {string};
+
         localConfigVariable.variables().forEach((key, value) -> {
             String valueToReplace = "%" + localConfigVariable.getPrefix() + "_" + key + "%";
-            System.out.println("VAL TO REPLACE: " + valueToReplace);
-            System.out.println("RE: " + key);
-            result.replace(valueToReplace, value);
+            if (string.contains(valueToReplace))
+                System.out.println("ValToRep: " +  valueToReplace + " RESULT: " + value);
+                result[0] = string.replace(valueToReplace, value);
         });
 
-        return result;
+        return result[0];
     }
 
 }
