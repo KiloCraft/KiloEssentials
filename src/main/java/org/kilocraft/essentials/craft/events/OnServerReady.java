@@ -10,6 +10,7 @@ import java.util.UUID;
 public class OnServerReady implements EventHandler<ServerEvent$OnReady> {
     @Override
     public void handle(ServerEvent$OnReady event) {
+
         Home home = new Home(
                 UUID.randomUUID(),
                 "TESTING",

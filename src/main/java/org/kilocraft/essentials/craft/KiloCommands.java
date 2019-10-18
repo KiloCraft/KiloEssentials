@@ -59,6 +59,7 @@ public class KiloCommands {
         NickCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
+        FlyCommand.register(this.dispatcher);
         
         /**
          * @ServerManagement

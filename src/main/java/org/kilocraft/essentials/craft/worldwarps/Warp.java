@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 public class Warp {
-    private String permissionBaseName = KiloConifg.getMain().warps$permission_prefix;
+    private String permissionBaseName = KiloConifg.getProvider().getMain().getValue("warps.permission_prefix");
     private String name;
     private double x, y, z;
     private int dimension;

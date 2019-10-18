@@ -3,9 +3,9 @@ package org.kilocraft.essentials.craft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
+import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.homesystem.HomeManager;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
-import org.kilocraft.essentials.craft.threaded.ThreadedKiloConfig;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
 public class KiloEssentials {
@@ -13,13 +13,11 @@ public class KiloEssentials {
 	private KiloEvents events;
 	private KiloCommands commands;
 	private ConfigurableFeatures configurableFeatures;
-	private ThreadManager configThread;
 
 	public KiloEssentials(KiloEvents events, KiloCommands commands) {
 		logger.info("Running KiloEssentials version " + Mod.getVersion());
 
-		configThread = new ThreadManager(new ThreadedKiloConfig());
-		configThread.start();
+		new KiloConifg();
 
 		this.events = events;
 		this.commands = commands;
