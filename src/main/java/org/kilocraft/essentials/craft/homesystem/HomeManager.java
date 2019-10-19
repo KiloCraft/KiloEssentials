@@ -10,7 +10,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.registry.Registry;
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
@@ -152,12 +151,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         }).map(Home::getName), builder);
     });
 
-    public static SuggestionProvider<ServerCommandSource> suggestHomes = ((context, builder) -> {
-        getHomes(context.getSource().getPlayer().getUuid()).stream().forEach((home) -> builder.suggest(home.getName()));
-
-        return builder.buildFuture();
-    });
-
+    public static SuggestionProvider<ServerCommandSource> suggestHomes = ((context, builder) -> CommandSource.suggestMatching(getHomes(context.getSource().getPlayer().getUuid()).stream().map(Home::getName), builder));
 
 }
 
