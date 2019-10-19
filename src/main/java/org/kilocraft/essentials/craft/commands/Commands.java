@@ -20,7 +20,6 @@ public class Commands {
         add("ke_kill");
         add("ke_tp");
         add("ke_msg");
-        add("ke_message");
         add("ke_whisper");
         add("ke_tell");
     }};

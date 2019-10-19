@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.network.MessageType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -28,7 +29,6 @@ public class MessageCommand {
         );
 
         dispatcher.register(CommandManager.literal("ke_tell").redirect(node));
-        dispatcher.register(CommandManager.literal("ke_message").redirect(node));
         dispatcher.register(CommandManager.literal("ke_whisper").redirect(node));
 
     }
@@ -39,15 +39,15 @@ public class MessageCommand {
         String message = StringArgumentType.getString(context, "message");
         String format = "&r%s &r&7-> &r%s&r&8>>&7 %s";
 
-        if (source.getName().equals(target.getName().asString())) {
-            source.sendError(new LiteralText("You can't send a message to your self!"));
-        } else {
-            target.addChatMessage(
-                    new LiteralText(TextFormat.translateAlternateColorCodes('&', String.format(format, source.getName(), "&2ME", message))),
-                    false
+        if (!target.getName().asString().equals(source.getName())) {
+            target.sendChatMessage(
+                    new LiteralText(TextFormat.translateAlternateColorCodes('&', String.format(format, source.getName(), "&bME", message))),
+                    MessageType.CHAT
             );
 
-            TextFormat.sendToUniversalSource(source, String.format(format, "&2ME", target.getName().asString(), message), true);
+            TextFormat.sendToUniversalSource(source, String.format(format, "&bME", target.getName().asString(), message), true);
+        } else {
+            source.sendError(new LiteralText("You can't send a message to your self!"));
         }
 
         return 1;
