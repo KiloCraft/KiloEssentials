@@ -3,6 +3,7 @@ package org.kilocraft.essentials.craft.commands.essentials;
 import java.util.Random;
 
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.player.KiloPlayer;
 import org.kilocraft.essentials.craft.player.KiloPlayerManager;
 
@@ -23,6 +24,8 @@ import net.minecraft.world.biome.Biome.Category;
 
 public class RandomTeleportCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		KiloCommands.getCommandPermission("rtp.self");
+		KiloCommands.getCommandPermission("rtp.others");
 		LiteralArgumentBuilder<ServerCommandSource> randomTeleport = CommandManager.literal("randomteleport");
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = CommandManager.argument("target",
 				EntityArgumentType.player());
