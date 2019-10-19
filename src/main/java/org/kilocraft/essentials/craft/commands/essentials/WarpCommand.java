@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.permissions.Thimble;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.PosArgument;
 import net.minecraft.server.command.CommandManager;
@@ -80,6 +81,7 @@ public class WarpCommand {
             Warp warp = WarpManager.getWarp(name);
             ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimension() + 1));
 
+            BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
             source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
         } else
             source.sendError(new LiteralText("That warp doesn't exist!"));
