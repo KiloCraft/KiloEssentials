@@ -16,14 +16,15 @@ public class DiscordCommand {
     }
 
     public static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        KiloChat.broadCast(new ChatMessage(
-                KiloConifg.getProvider().getMessages().getLocal(
-                        true,
-                        "general.discord",
-                        new PlayerConfigVariables(context.getSource().getPlayer())
-                ),
-                true
-        ));
-        return 0;
+        KiloChat.sendMessageTo(context.getSource().getPlayer(),
+                new ChatMessage(
+                        KiloConifg.getProvider().getMessages().getLocal(
+                                true,
+                                "general.discord",
+                                new PlayerConfigVariables(context.getSource().getPlayer())
+                        ),
+                        true
+                ));
+        return 1;
     }
 }
