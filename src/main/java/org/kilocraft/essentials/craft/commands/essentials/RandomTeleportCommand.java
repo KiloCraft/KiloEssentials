@@ -3,6 +3,8 @@ package org.kilocraft.essentials.craft.commands.essentials;
 import java.util.Random;
 
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.craft.player.KiloPlayer;
+import org.kilocraft.essentials.craft.player.KiloPlayerManager;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -44,22 +46,28 @@ public class RandomTeleportCommand {
 	}
 
 	private static void teleportRandomly(ServerPlayerEntity player) {
-		Random random = new Random();
-		int randomX = random.nextInt(9999000) + 1000; // 1000 - 10000000
-		int randomZ = random.nextInt(9999000) + 1000; // 1000 - 10000000
+		KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
+		if (kiloPlayer.rtpLeft == 0) {
+			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
+		} else {
+			Random random = new Random();
+			int randomX = random.nextInt(9999000) + 1000; // 1000 - 10000000
+			int randomZ = random.nextInt(9999000) + 1000; // 1000 - 10000000
 
-		// Negative coords as well
-		if (random.nextInt(2) == 0) {
-			randomX *= -1;
+			// Negative coords as well
+			if (random.nextInt(2) == 0) {
+				randomX *= -1;
+			}
+
+			if (random.nextInt(2) == 0) {
+				randomZ *= -1;
+			}
+
+			player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 30, 255, false, true, true));
+			player.teleport(randomX, 255, randomZ);
+			kiloPlayer.rtpLeft -= 1;
+			player.sendMessage(
+					LangText.getFormatter(true, "command.randomteleport.success", "X: " + randomX + ", Z: " + randomZ, kiloPlayer.rtpLeft));
 		}
-
-		if (random.nextInt(2) == 0) {
-			randomZ *= -1;
-		}
-
-		player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 30, 255, false, true, true));
-		player.teleport(randomX, 255, randomZ);
-		player.sendMessage(
-				LangText.getFormatter(true, "command.randomteleport.success", "X: " + randomX + ", Z: " + randomZ));
 	}
 }
