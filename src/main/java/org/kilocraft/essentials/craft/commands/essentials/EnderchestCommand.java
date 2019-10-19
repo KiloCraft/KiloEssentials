@@ -19,12 +19,14 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.craft.KiloCommands;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 public class EnderchestCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        KiloCommands.getCommandPermission("enderchest");
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("enderchest").requires(EnderchestCommand::permission)
                 .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));
         LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("ec").requires(EnderchestCommand::permission)
