@@ -19,22 +19,21 @@ public class HomeCommand {
         LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome");
         LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome");
         LiteralArgumentBuilder<ServerCommandSource> addhomeLiteral = CommandManager.literal("addhome");
+        LiteralArgumentBuilder<ServerCommandSource> homesLiteral = CommandManager.literal("homes");
         LiteralArgumentBuilder<ServerCommandSource> homeAlias = CommandManager.literal("h");
-        LiteralArgumentBuilder<ServerCommandSource> argumentList, argumentRemove, argumentAdd, argumentSet, argumentTeleport;
-        RequiredArgumentBuilder<ServerCommandSource, String> secondArgumentAdd, secondArgumentRemove, secondArgumentSet, secondArgumentTeleport;
+        RequiredArgumentBuilder<ServerCommandSource, String> argAdd, argRemove, argSet, argTeleport;
 
-        argumentList = CommandManager.literal("list");
-        argumentAdd = CommandManager.literal("add");
-        argumentSet = CommandManager.literal("set");
-        argumentRemove = CommandManager.literal("remove");
-        argumentTeleport = CommandManager.literal("tp");
+        argAdd = CommandManager.argument("name", StringArgumentType.string());
+        argRemove = CommandManager.argument("home", StringArgumentType.string());
+        argSet = CommandManager.argument("home", StringArgumentType.string());
+        argTeleport = CommandManager.argument("home", StringArgumentType.string());
 
-        secondArgumentTeleport = CommandManager.argument("home", StringArgumentType.string());
-        secondArgumentAdd = CommandManager.argument("name", StringArgumentType.string());
-        secondArgumentRemove = CommandManager.argument("home", StringArgumentType.string());
-        secondArgumentSet = CommandManager.argument("home", StringArgumentType.string());
+        sethomeLiteral.then(argSet);
+        homeLiteral.then(argTeleport);
+        addhomeLiteral.then(argAdd);
+        sethomeLiteral.then(argSet);
 
-        secondArgumentAdd.executes(
+        argAdd.executes(
                 c -> executeAdd(
                         c.getSource(),
                         Collections.singleton(c.getSource().getPlayer().getGameProfile()),
@@ -42,7 +41,7 @@ public class HomeCommand {
                 )
         );
 
-        secondArgumentRemove.executes(
+        argRemove.executes(
                 c -> executeRemove(
                     c.getSource(),
                     Collections.singleton(c.getSource().getPlayer().getGameProfile()),
@@ -50,39 +49,32 @@ public class HomeCommand {
                 )
         );
 
-        secondArgumentTeleport.executes(
+        argTeleport.executes(
                 c -> executeTeleport(
                         c.getSource(),
                         Collections.singleton(c.getSource().getPlayer().getGameProfile()),
                         StringArgumentType.getString(c, "home")
                 )
         );
+        homesLiteral.executes(
+                c -> {return 1;}
+        );
 
 
-        secondArgumentSet.suggests((context, builder) -> {
+        argSet.suggests((context, builder) -> {
             return HomeManager.suggestHomesOLD.getSuggestions(context, builder);
         });
-        secondArgumentRemove.suggests((context, builder) -> {
+        argRemove.suggests((context, builder) -> {
+            return HomeManager.suggestHomesOLD.getSuggestions(context, builder);
+        });
+        argAdd.suggests((context, builder) -> {
             return HomeManager.suggestHomes.getSuggestions(context, builder);
         });
-        secondArgumentTeleport.suggests((context, builder) -> {
+        argTeleport.suggests((context, builder) -> {
             return HomeManager.suggestHomes.getSuggestions(context, builder);
         });
 
-        argumentTeleport.then(secondArgumentTeleport);
-        argumentAdd.then(secondArgumentAdd);
-        argumentRemove.then(secondArgumentRemove);
-        argumentSet.then(secondArgumentSet);
 
-        homeLiteral.then(argumentRemove);
-        homeLiteral.then(argumentAdd);
-        homeLiteral.then(argumentSet);
-        homeLiteral.then(argumentList);
-        homeLiteral.then(argumentTeleport);
-        homeAlias.then(secondArgumentTeleport);
-        sethomeLiteral.then(secondArgumentSet);
-        delhomeLiteral.then(secondArgumentRemove);
-        addhomeLiteral.then(secondArgumentAdd);
 
         dispatcher.register(homeLiteral);
         dispatcher.register(sethomeLiteral);

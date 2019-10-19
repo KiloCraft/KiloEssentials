@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -25,12 +26,11 @@ public class ModsCommand {
                 .requires(s -> Thimble.hasPermissionOrOp(s, "kiloapi.command.mods", 2))
                 .executes(ModsCommand::executeMultiple);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = CommandManager.argument("name/id", StringArgumentType.greedyString())
-                .executes(c -> executeSingle(c, StringArgumentType.getString(c, "name/id")));
+        RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = CommandManager.argument("id", StringArgumentType.greedyString())
+                .executes(c -> executeSingle(c, StringArgumentType.getString(c, "id")));
 
+        modIdArgument.suggests(suggestModIDs);
         literalArgumentBuilder.then(modIdArgument);
-        buildSuggestions(literalArgumentBuilder);
-
         dispatcher.register(literalArgumentBuilder);
     }
 
@@ -87,11 +87,10 @@ public class ModsCommand {
     }
 
 
-    private static void buildSuggestions(LiteralArgumentBuilder<ServerCommandSource> builder) {
-        FabricLoader.getInstance().getAllMods().forEach((modContainer) -> {
-            builder.then(CommandManager.literal(modContainer.getMetadata().getId())
-                    .executes(context -> executeSingle(context, modContainer.getMetadata().getId())));
-        });
-    }
+    private static SuggestionProvider<ServerCommandSource> suggestModIDs = ((context, builder) -> {
+        FabricLoader.getInstance().getAllMods().stream().forEach((mod) -> builder.suggest(mod.getMetadata().getId()));
+
+        return builder.buildFuture();
+    });
 
 }
