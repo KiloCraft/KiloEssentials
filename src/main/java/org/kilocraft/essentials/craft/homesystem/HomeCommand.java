@@ -113,7 +113,7 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            HomeManager.removeHome(HomeManager.getHome(gameProfile.getId().toString(), arg));
+            HomeManager.removeHome(HomeManager.getHome(gameProfile.getId(), arg));
 
             source.sendFeedback(new LiteralText("Removed the home " + arg), false);
         } else
@@ -129,7 +129,7 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId().toString(), arg));
+            HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId(), arg));
             BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
             
             source.sendFeedback(new LiteralText("Teleporting to home " + arg), false);

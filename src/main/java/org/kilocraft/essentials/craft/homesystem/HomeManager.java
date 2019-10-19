@@ -42,21 +42,20 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         byName.put(home.getOwner().toString(), home.getName());
     }
 
-    public static Home getHome(String uuid, String name) {
-        @Nullable Home var = null;
+    public static Home getHome(UUID uuid, String name) {
         for (Home home : getHomes(uuid)) {
             if (home.getName().equals(name))
-                var = home;
+                return home;
         }
 
-        return var;
+        return null;
     }
 
     public static HashMap<String, String> getHomesByName() {
         return byName;
     }
 
-    public static List<Home> getHomes(String uuid) {
+    public static List<Home> getHomes(UUID uuid) {
         List<Home> var = new ArrayList<>();
         for (Home var2 : homes) {
             if (var2.getOwner().equals(uuid))
@@ -67,10 +66,6 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
     }
 
     public static List<Home> getPlayerHomes(UUID uuid) {
-        return getPlayerHomes(uuid.toString());
-    }
-
-    public static List<Home> getPlayerHomes(String uuid) {
         List<Home> list = new ArrayList<>();
         homes.forEach((home) -> {
             if (home.getOwner().equals(uuid))
@@ -127,7 +122,6 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
                 byName.put(homeKey, home.getName());
             });
         });
-
     }
 
     public void reload() {
@@ -159,7 +153,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
     });
 
     public static SuggestionProvider<ServerCommandSource> suggestHomes = ((context, builder) -> {
-        getHomes(context.getSource().getPlayer().getUuidAsString()).stream().forEach((home) -> builder.suggest(home.getName()));
+        getHomes(context.getSource().getPlayer().getUuid()).stream().forEach((home) -> builder.suggest(home.getName()));
 
         return builder.buildFuture();
     });
