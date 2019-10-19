@@ -22,8 +22,8 @@ public class CraftingbenchCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("craftingbench")
                 .requires(source -> source.hasPermissionLevel(2))
-                    .then(CommandManager.argument("target", EntityArgumentType.player())
-                            .executes(context -> execute(context, EntityArgumentType.getPlayer(context, "target").getCommandSource(), true)))
+                    .then(CommandManager.argument("player", EntityArgumentType.player())
+                            .executes(context -> execute(context, EntityArgumentType.getPlayer(context, "player").getCommandSource(), true)))
                 .executes(context -> execute(context, context.getSource(), false));
 
         dispatcher.register(literalArgumentBuilder);
@@ -41,9 +41,11 @@ public class CraftingbenchCommand {
 
         if (sendFeedback) sender.sendChatMessage(literalText, MessageType.CHAT);
 
-        target.openContainer(new ClientDummyContainerProvider((i, inv, pEntity) -> {
-            return new CraftingTableContainer(i, inv, BlockContext.EMPTY);
-        }, new TranslatableText("container.crafting")));
+        target.openContainer(
+                new ClientDummyContainerProvider((i, inv, player) -> {
+                    return new CraftingTableContainer(i, inv, BlockContext.EMPTY);
+                }, new TranslatableText("container.crafting"))
+        );
 
         return 1;
     }

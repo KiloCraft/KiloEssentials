@@ -1,18 +1,19 @@
 package org.kilocraft.essentials.craft.commands.essentials;
 
-import org.kilocraft.essentials.api.chat.LangText;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.chat.TextFormat;
 
 public class NickCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -63,11 +64,13 @@ public class NickCommand {
 
 	private static void changeNick(CommandContext<ServerCommandSource> context, PlayerEntity player) {
 		String nick = StringArgumentType.getString(context, "name");
+		player.setCustomName(new LiteralText(TextFormat.translateAlternateColorCodes('&', nick)));
 		context.getSource().sendFeedback(
 				LangText.getFormatter(true, "command.nick.success", player.getName().asString(), nick), false);
 	}
 
 	private static void resetNick(CommandContext<ServerCommandSource> context, PlayerEntity player) {
+		player.setCustomName(player.getName());
 		context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.reset", player.getName().asString()),
 				false);
 	}

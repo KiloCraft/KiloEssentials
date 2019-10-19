@@ -13,11 +13,21 @@ public class LocalVariableReplaced {
         localConfigVariable.variables().forEach((key, value) -> {
             String valueToReplace = "%" + localConfigVariable.getPrefix() + "_" + key + "%";
             if (string.contains(valueToReplace))
-                System.out.println("ValToRep: " +  valueToReplace + " RESULT: " + value);
                 result[0] = string.replace(valueToReplace, value);
         });
 
         return result[0];
     }
+
+//    public <L extends LocalConfigVariable> String replace(String string, L localConfigVariable) {
+//        StringBuilder builder = new StringBuilder();
+//
+//        localConfigVariable.variables().forEach((key, value) -> {
+//            String valueToReplace = "%" + localConfigVariable.getPrefix() + "_" + key + "%";
+//                result = string.replace(valueToReplace, value);
+//        });
+//
+//        return builder.toString();
+//    }
 
 }

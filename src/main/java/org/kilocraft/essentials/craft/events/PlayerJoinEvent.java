@@ -1,13 +1,24 @@
 package org.kilocraft.essentials.craft.events;
 
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnConnect;
+import org.kilocraft.essentials.craft.chat.ChatMessage;
+import org.kilocraft.essentials.craft.chat.KiloChat;
+import org.kilocraft.essentials.craft.config.KiloConifg;
+import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfigVariables;
 
 public class PlayerJoinEvent implements EventHandler<PlayerEvent$OnConnect> {
     @Override
     public void handle(PlayerEvent$OnConnect event) {
-        event.getServer().getPlayerManager().sendToAll(new LiteralText(event.getPlayer().getName().asFormattedString() + " joined.").formatted(Formatting.GREEN, Formatting.ITALIC));
+
+        KiloChat.broadCast(new ChatMessage(
+                KiloConifg.getProvider().getMessages().getLocal(
+                        true,
+                        "general.joinMessage",
+                        new PlayerConfigVariables(event.getPlayer())
+                ),
+                true
+        ));
+
     }
 }

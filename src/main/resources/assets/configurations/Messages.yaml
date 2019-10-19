@@ -47,7 +47,7 @@ schema: 1.0
 altcolorchar: '&'
 #General
 general:
-  messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %s'
+  messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
   joinMessage: '&8[&a+&8]&7 %PLAYER_NAME%'
   leaveMessage: '&8[&c-&8]&7 %PLAYER_NAME%'
 #Messages used by commands

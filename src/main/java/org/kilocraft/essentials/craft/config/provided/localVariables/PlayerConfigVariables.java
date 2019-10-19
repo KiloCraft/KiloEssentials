@@ -4,10 +4,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
 
-public class PlayerVariables implements LocalConfigVariable {
+public class PlayerConfigVariables implements LocalConfigVariable {
     private ServerPlayerEntity player;
 
-    public PlayerVariables(ServerPlayerEntity playerEntity) {
+    public PlayerConfigVariables(ServerPlayerEntity playerEntity) {
         this.player = playerEntity;
     }
 
@@ -20,7 +20,6 @@ public class PlayerVariables implements LocalConfigVariable {
     public HashMap<String, String> variables() {
         return new HashMap<String, String>(){{
             put("NAME", player.getName().asString());
-            put("DISPLAYNAME", player.getDisplayName().getString());
         }};
     }
 }
