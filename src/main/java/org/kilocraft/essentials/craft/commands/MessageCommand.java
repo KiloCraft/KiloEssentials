@@ -41,7 +41,6 @@ public class MessageCommand {
         if (target.getName().equals(context.getSource().getPlayer())) {
             source.sendError(new LiteralText("You can't send a message to your self!"));
         } else {
-            KiloChat
 
         }
 
