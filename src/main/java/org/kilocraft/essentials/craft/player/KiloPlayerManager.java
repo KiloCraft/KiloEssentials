@@ -27,7 +27,7 @@ public class KiloPlayerManager extends NBTWorldData {
 		byUUID.add(player.playerId.toString());
 	}
 
-	public static void removeWarp(KiloPlayer player) {
+	public static void removePlayer(KiloPlayer player) {
 		players.remove(player);
 		byUUID.remove(player.playerId.toString());
 	}
