@@ -35,6 +35,11 @@ public class RandomTeleportCommand {
 			teleportRandomly(context.getSource().getPlayer());
 			return 0;
 		});
+		
+		randomTeleport.executes(context -> {
+			teleportRandomly(context.getSource().getPlayer());
+			return 0;
+		});
 
 		target.executes(context -> {
 			teleportRandomly(EntityArgumentType.getPlayer(context, "target"));
