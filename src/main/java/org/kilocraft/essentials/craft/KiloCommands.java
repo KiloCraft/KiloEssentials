@@ -40,12 +40,7 @@ public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
     public static String getCommandPermission(String command) {
         if (!initializedPerms.contains(command)) {
-            try {
-                Thimble.PERMISSIONS.getPermission("kiloessentials.command." + command, CommandPermission.class);
-                initializedPerms.add(command);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                e.printStackTrace();
-            }
+            initializedPerms.add(command);
         }
         return "kiloessentials.command." + command;
     }
@@ -64,6 +59,11 @@ public class KiloCommands {
         /**
          * @Essentials
          */
+        try {
+            System.out.println(Thimble.PERMISSIONS.getPermission("kiloessentials.command", CommandPermission.class));
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            e.printStackTrace();
+        }
         RandomTeleportCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
@@ -90,6 +90,16 @@ public class KiloCommands {
         ServerModNameCommand.register(this.dispatcher);
         StopCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
+
+        Thimble.permissionWriters.add(pair -> {
+            initializedPerms.forEach(perm -> {
+                try {
+                    pair.getLeft().getPermission("kiloessentials.command." + perm, CommandPermission.class);
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
     }
 
     public String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
