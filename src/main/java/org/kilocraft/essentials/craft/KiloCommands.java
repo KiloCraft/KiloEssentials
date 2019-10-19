@@ -15,7 +15,7 @@ import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
-import org.kilocraft.essentials.craft.commands.InfoCommand;
+import org.kilocraft.essentials.craft.commands.KiloInfoCommand;
 import org.kilocraft.essentials.craft.commands.MessageCommand;
 import org.kilocraft.essentials.craft.commands.donatorcommands.PlayerParticlesCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
@@ -53,7 +53,7 @@ public class KiloCommands {
         /**
          * @Misc
          */
-        InfoCommand.register(this.dispatcher);
+        KiloInfoCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
 
         /**
@@ -62,7 +62,7 @@ public class KiloCommands {
         RandomTeleportCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
-        InfoCommand.register(this.dispatcher);
+        KiloInfoCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         LocateCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
