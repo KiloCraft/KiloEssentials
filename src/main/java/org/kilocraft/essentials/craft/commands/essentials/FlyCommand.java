@@ -13,13 +13,15 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 
 public class FlyCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        KiloCommands.getCommandPermission("fly");
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("fly")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.fly", 2))
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("fly"), 2))
                 .executes(c -> toggle(c.getSource(), c.getSource().getPlayer()));
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = CommandManager.argument("player", EntityArgumentType.player())
                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
