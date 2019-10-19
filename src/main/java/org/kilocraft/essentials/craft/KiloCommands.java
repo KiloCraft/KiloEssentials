@@ -34,12 +34,13 @@ public class KiloCommands {
     }
 
     public static KiloCommands INSTANCE;
-    public static void getCommandPermission(String command) {
+    public static String getCommandPermission(String command) {
         try {
             Thimble.PERMISSIONS.getPermission("kiloessentials.command." + command, CommandPermission.class);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
+        return "kiloessentials.command." + command;
     }
     private void register(boolean devEnv) {
         if (devEnv) {
