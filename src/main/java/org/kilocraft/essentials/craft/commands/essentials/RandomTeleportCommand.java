@@ -29,6 +29,7 @@ public class RandomTeleportCommand {
 				EntityArgumentType.player());
 
 		rtp.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.rtp.self", 2));
+		randomTeleport.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.rtp.self", 2));
 		target.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.rtp.others", 2));
 
 		rtp.executes(context -> {
