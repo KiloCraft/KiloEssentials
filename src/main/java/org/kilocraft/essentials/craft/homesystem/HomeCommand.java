@@ -8,11 +8,13 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.Thimble;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.craft.commands.essentials.BackCommand;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -128,7 +130,8 @@ public class HomeCommand {
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
             HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId().toString(), arg));
-
+            BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
+            
             source.sendFeedback(new LiteralText("Teleporting to home " + arg), false);
         } else
             source.sendError(new LiteralText("Only one player is allowed but the provided selectors includes more!"));
