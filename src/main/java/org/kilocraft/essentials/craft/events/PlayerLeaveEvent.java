@@ -13,7 +13,7 @@ public class PlayerLeaveEvent implements EventHandler<PlayerEvent$OnDisconnect> 
         KiloChat.broadCast(new ChatMessage(
                 KiloConifg.getProvider().getMessages().getLocal(
                         true,
-                        "general.joinMessage",
+                        "general.leaveMessage",
                         new PlayerConfigVariables(event.getPlayer())
                 ),
                 true

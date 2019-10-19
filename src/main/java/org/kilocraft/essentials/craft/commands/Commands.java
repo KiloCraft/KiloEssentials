@@ -25,22 +25,15 @@ public class Commands {
         add("gamemode");
         add("kill");
         add("help");
-        add("kick");
-        add("pardon");
-        add("pardon-ip");
         add("locate");
-        add("say");
-        add("banlist");
         add("op");
         add("deop");
         add("me");
         add("w");
-        add("msg");
         add("whisper");
         add("tell");
         add("teammsg");
         add("tm");
-        add("xp");
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
