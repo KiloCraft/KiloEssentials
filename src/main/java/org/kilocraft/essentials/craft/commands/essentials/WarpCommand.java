@@ -81,7 +81,7 @@ public class WarpCommand {
             Warp warp = WarpManager.getWarp(name);
             ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimension() + 1));
 
-            TextFormat.sendToUniversalSource(source, "&eTeleporting to warp &6 " + name + "&e.", false);
+            TextFormat.sendToUniversalSource(source, "&eTeleporting to warp&6 " + name + "&e.", false);
 
             BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
             source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());

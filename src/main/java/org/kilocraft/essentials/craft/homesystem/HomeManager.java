@@ -39,6 +39,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
 
     public static void addHome(Home home) {
         homes.add(home);
+        byName.put(home.getOwner().toString(), home.getName());
     }
 
     public static Home getHome(String uuid, String name) {
@@ -115,6 +116,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
     public void fromNBT(CompoundTag tag) {
         byName.clear();
         homes.clear();
+
         tag.getKeys().forEach(key -> {
             CompoundTag playerTag = tag.getCompound(key);
             playerTag.getKeys().forEach(homeKey -> {

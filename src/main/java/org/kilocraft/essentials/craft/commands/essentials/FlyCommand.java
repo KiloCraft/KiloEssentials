@@ -24,6 +24,7 @@ public class FlyCommand {
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("fly"), 2))
                 .executes(c -> toggle(c.getSource(), c.getSource().getPlayer()));
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = CommandManager.argument("player", EntityArgumentType.player())
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("fly.others"), 2))
                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                 .executes(c -> toggle(c.getSource(), EntityArgumentType.getPlayer(c, "player")));;
         RequiredArgumentBuilder<ServerCommandSource, Boolean> boolArg = CommandManager.argument("set", BoolArgumentType.bool())
