@@ -65,7 +65,7 @@ public class RandomTeleportCommand {
 			}
 
 			if (player.world.getBiome(new BlockPos(randomX, 65, randomZ)).getCategory() == Category.OCEAN) {
-				teleportRandomly(player);
+				teleportRandomly(player, source);
 			} else {
 				player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 30, 255, false, true, true));
 				player.teleport(randomX, 255, randomZ);
