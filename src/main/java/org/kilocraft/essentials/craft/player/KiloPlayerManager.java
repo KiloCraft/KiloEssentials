@@ -14,6 +14,10 @@ public class KiloPlayerManager extends NBTWorldData {
 	private static ArrayList<String> byUUID = new ArrayList<>();
 	private static List<KiloPlayer> players = new ArrayList<>();
 
+	public KiloPlayerManager () {
+		WorldDataLib.addIOCallback(this);
+	}
+	
 	public static List<KiloPlayer> getPlayersData() {
 		return players;
 	}
