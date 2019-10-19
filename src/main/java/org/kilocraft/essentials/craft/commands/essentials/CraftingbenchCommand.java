@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.container.BlockContext;
@@ -17,11 +18,13 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.craft.KiloCommands;
 
 public class CraftingbenchCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        KiloCommands.getCommandPermission("craftingbench");
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("craftingbench")
-                .requires(source -> source.hasPermissionLevel(2))
+                .requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("craftingbench"), 2))
                     .then(CommandManager.argument("player", EntityArgumentType.player())
                             .executes(context -> execute(context, EntityArgumentType.getPlayer(context, "player").getCommandSource(), true)))
                 .executes(context -> execute(context, context.getSource(), false));
