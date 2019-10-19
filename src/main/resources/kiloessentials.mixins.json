@@ -8,7 +8,8 @@
   "server": [
     "MixinMinecraftServer$run",
     "MixinCommandManager",
-    "MixinServerPlayNetWorkHandler"
+    "MixinServerPlayNetWorkHandler",
+    "MixinCreeperEntity"
   ],
   "injectors": {
     "defaultRequire": 1
