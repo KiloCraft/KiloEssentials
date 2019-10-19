@@ -25,6 +25,7 @@ public class GamemodeCommand {
         KiloCommands.getCommandPermission("gamemode.self");
         KiloCommands.getCommandPermission("gamemode.others");
         for (GameMode gameMode: GameMode.values()) {
+            if (gameMode.getName().isEmpty()) continue;
             KiloCommands.getCommandPermission("gamemode.self." + gameMode.getName());
             KiloCommands.getCommandPermission("gamemode.others." + gameMode.getName());
         }
