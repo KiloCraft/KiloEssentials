@@ -24,6 +24,8 @@ import org.kilocraft.essentials.craft.commands.servermanagement.*;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class KiloCommands {
@@ -34,11 +36,15 @@ public class KiloCommands {
     }
 
     public static KiloCommands INSTANCE;
+    private static List<String> initializedPerms = new ArrayList<>();
     public static String getCommandPermission(String command) {
-        try {
-            Thimble.PERMISSIONS.getPermission("kiloessentials.command." + command, CommandPermission.class);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            e.printStackTrace();
+        if (!initializedPerms.contains(command)) {
+            try {
+                Thimble.PERMISSIONS.getPermission("kiloessentials.command." + command, CommandPermission.class);
+                initializedPerms.add(command);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+                e.printStackTrace();
+            }
         }
         return "kiloessentials.command." + command;
     }
