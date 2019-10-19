@@ -15,10 +15,12 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.KiloEssentials;
 
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        KiloCommands.getCommandPermission("server.stop");
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("stop")
                 .then(CommandManager.argument("args", StringArgumentType.greedyString())
                         .suggests((context, builder1) -> {
@@ -26,7 +28,7 @@ public class StopCommand {
                         })
                     .executes(c -> execute(c, StringArgumentType.getString(c, "args")))
                 )
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.server.stop", 2))
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("server.stop"), 2))
                 .executes(c -> execute(c, ""));
 
         dispatcher.register(builder);
