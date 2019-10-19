@@ -24,19 +24,12 @@ import net.minecraft.world.biome.Biome.Category;
 public class RandomTeleportCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralArgumentBuilder<ServerCommandSource> randomTeleport = CommandManager.literal("randomteleport");
-		LiteralArgumentBuilder<ServerCommandSource> rtp = CommandManager.literal("rtp");
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = CommandManager.argument("target",
 				EntityArgumentType.player());
 
-		rtp.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.rtp.self", 2));
 		randomTeleport.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.rtp.self", 2));
 		target.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.rtp.others", 2));
 
-		rtp.executes(context -> {
-			teleportRandomly(context.getSource().getPlayer());
-			return 0;
-		});
-		
 		randomTeleport.executes(context -> {
 			teleportRandomly(context.getSource().getPlayer());
 			return 0;
@@ -48,9 +41,8 @@ public class RandomTeleportCommand {
 		});
 
 		randomTeleport.then(target);
-		rtp.then(target);
 		dispatcher.register(randomTeleport);
-		dispatcher.register(rtp);
+		dispatcher.register(CommandManager.literal("rtp").redirect(randomTeleport.build()));
 	}
 
 	private static void teleportRandomly(ServerPlayerEntity player) {
