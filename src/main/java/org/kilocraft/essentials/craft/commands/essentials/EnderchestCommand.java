@@ -28,7 +28,7 @@ public class EnderchestCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("enderchest");
         KiloCommands.getCommandPermission("enderchest.others");
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal(KiloCommands.getCommandPermission("enderchest")).requires(EnderchestCommand::permission)
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("enderchest").requires(EnderchestCommand::permission)
                 .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));
         LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("ec").requires(EnderchestCommand::permission)
                 .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));;
