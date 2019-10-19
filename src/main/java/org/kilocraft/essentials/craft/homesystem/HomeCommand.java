@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.command.arguments.GameProfileArgumentType;
@@ -16,10 +17,14 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.commands.essentials.BackCommand;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
 
 public class HomeCommand {
+
+    private static final SimpleCommandExceptionType HOME_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the home specified!"));
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home");
         LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome");
@@ -35,7 +40,7 @@ public class HomeCommand {
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.home", 2));
 
         argSet.executes(
-                c -> executeAdd(
+                c -> executeSet(
                         c, Collections.singleton(c.getSource().getPlayer().getGameProfile())
                 )
         );
@@ -57,8 +62,8 @@ public class HomeCommand {
         );
 
 
-        argSet.suggests((context, builder) -> HomeManager.suggestHomesOLD.getSuggestions(context, builder));
-        argRemove.suggests((context, builder) -> HomeManager.suggestHomesOLD.getSuggestions(context, builder));
+        argSet.suggests((context, builder) -> HomeManager.suggestHomes.getSuggestions(context, builder));
+        argRemove.suggests((context, builder) -> HomeManager.suggestHomes.getSuggestions(context, builder));
         argTeleport.suggests((context, builder) -> HomeManager.suggestHomes.getSuggestions(context, builder));
 
         argTeleport.then(
@@ -78,9 +83,10 @@ public class HomeCommand {
         dispatcher.register(delhomeLiteral);
     }
 
-    private static int executeAdd(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
+    private static int executeSet(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         String arg = StringArgumentType.getString(context, "name");
+        DecimalFormat decimalFormat = new DecimalFormat("#.#");
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
@@ -89,12 +95,12 @@ public class HomeCommand {
                     new Home(
                             gameProfile.getId(),
                             arg,
-                            source.getPosition().x,
-                            source.getPosition().y,
-                            source.getPosition().z,
+                            Double.parseDouble(decimalFormat.format(source.getPosition().x)),
+                            Double.parseDouble(decimalFormat.format(source.getPosition().x)),
+                            Double.parseDouble(decimalFormat.format(source.getPosition().x)),
                             source.getWorld().getDimension().getType().getRawId(),
-                            source.getPlayer().yaw,
-                            source.getPlayer().pitch
+                            Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
+                            Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))
                     )
             );
 
@@ -111,11 +117,20 @@ public class HomeCommand {
         ServerCommandSource source = context.getSource();
         String arg = StringArgumentType.getString(context, "home");
 
+
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            HomeManager.removeHome(HomeManager.getHome(gameProfile.getId(), arg));
 
-            source.sendFeedback(new LiteralText("Removed the home " + arg), false);
+            System.out.println(HomeManager.getHomes(gameProfile.getId()));
+            HomeManager.getHomes(gameProfile.getId()).forEach((home) -> {
+                System.out.println(home.getOwner() + "  :  " + home.getName());
+            });
+            if (HomeManager.getHomes(gameProfile.getId()).contains(arg)) {
+                HomeManager.removeHome(HomeManager.getHome(gameProfile.getId(), arg));
+                source.sendFeedback(new LiteralText("Removed the home " + arg), false);
+            } else
+                throw HOME_NOT_FOUND_EXCEPTION.create();
+
         } else
             source.sendError(new LiteralText("Only one player is allowed but the provided selectors includes more!"));
 
@@ -129,10 +144,15 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId(), arg));
-            BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
-            
-            source.sendFeedback(new LiteralText("Teleporting to home " + arg), false);
+
+            if (HomeManager.getHomes(gameProfile.getId()).contains(arg)) {
+                HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId(), arg));
+                BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
+
+                source.sendFeedback(new LiteralText("Teleporting to home " + arg), false);
+            } else
+                throw HOME_NOT_FOUND_EXCEPTION.create();
+
         } else
             source.sendError(new LiteralText("Only one player is allowed but the provided selectors includes more!"));
 
