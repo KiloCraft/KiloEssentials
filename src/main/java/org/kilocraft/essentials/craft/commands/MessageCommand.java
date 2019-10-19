@@ -10,8 +10,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
-import org.kilocraft.essentials.craft.chat.KiloChat;
 
 public class MessageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -37,11 +37,17 @@ public class MessageCommand {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
         String message = StringArgumentType.getString(context, "message");
+        String format = "&f[&r%s &r&e-> &r%s&f]&7 %s";
 
         if (target.getName().equals(context.getSource().getPlayer())) {
             source.sendError(new LiteralText("You can't send a message to your self!"));
         } else {
+            target.addChatMessage(
+                    new LiteralText(TextFormat.translateAlternateColorCodes('&', String.format(format, source.getName(), "&aME", message))),
+                    false
+            );
 
+            TextFormat.sendToUniversalSource(source, String.format(format, "&aME", target.getName(), message), true);
         }
 
         return 1;

@@ -6,7 +6,6 @@ import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -39,7 +38,7 @@ public class KiloChat {
                 packet.getChatMessage(),
                 Thimble.hasPermissionChildOrOp(player.getCommandSource(), "kiloessentials.chat.format", 3)
         );
-        
+
         broadCast(
                 new ChatMessage(
                         KiloConifg.getProvider().getMessages().getLocal(
@@ -53,11 +52,5 @@ public class KiloChat {
         );
     }
 
-    public static void sendPrivateMessage(ServerCommandSource source, ServerPlayerEntity target, String message) {
-       sendMessageTo(
-               target,
-               new LiteralText("")
-       );
-    }
 
 }
