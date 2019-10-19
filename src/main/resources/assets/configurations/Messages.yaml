@@ -50,6 +50,7 @@ general:
   messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
   joinMessage: '&8[&a+&8]&7 %PLAYER_NAME%'
   leaveMessage: '&8[&c-&8]&7 %PLAYER_NAME%'
+  discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
 #Messages used by commands
 commands:
   prefix: '*e[*6%MAIN$SERVER_NAME%*e]'

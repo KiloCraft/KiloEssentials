@@ -48,6 +48,7 @@ public class KiloCommands {
          */
         RandomTeleportCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
+        DiscordCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         LocateCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
