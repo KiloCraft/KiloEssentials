@@ -99,6 +99,11 @@ public class KiloCommands {
                     e.printStackTrace();
                 }
             });
+            try {
+                pair.getLeft().getPermission("kiloessentials.command", CommandPermission.class);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+                e.printStackTrace();
+            }
         });
     }
 
