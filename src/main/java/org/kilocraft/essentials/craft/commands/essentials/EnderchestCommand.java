@@ -27,13 +27,14 @@ import java.util.Iterator;
 public class EnderchestCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("enderchest");
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("enderchest").requires(EnderchestCommand::permission)
+        KiloCommands.getCommandPermission("enderchest.others");
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal(KiloCommands.getCommandPermission("enderchest")).requires(EnderchestCommand::permission)
                 .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));
         LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("ec").requires(EnderchestCommand::permission)
                 .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));;
 
         RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.enderchest.others", 2))
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("enderchest.others"), 2))
                 .suggests((context, builder) -> {
                     return CommandSuggestions.allPlayers.getSuggestions(context, builder);
                 })
