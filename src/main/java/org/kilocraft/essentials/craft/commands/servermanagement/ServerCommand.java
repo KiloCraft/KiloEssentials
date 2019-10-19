@@ -8,10 +8,12 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.craft.KiloCommands;
 
 public class ServerCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralCommandNode<ServerCommandSource> serverNode = CommandManager.literal("server").requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.server", 2)).executes((context) -> {
+		KiloCommands.getCommandPermission("server");
+		LiteralCommandNode<ServerCommandSource> serverNode = CommandManager.literal("server").requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("server"), 2)).executes((context) -> {
 			context.getSource().sendFeedback(LangText.get(true, "command.server.nosubcommand"), false);
 			return 1;
 		}).build();
