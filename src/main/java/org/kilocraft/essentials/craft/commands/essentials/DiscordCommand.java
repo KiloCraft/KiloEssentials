@@ -12,7 +12,7 @@ import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfi
 
 public class DiscordCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("discord").executes(ColorsCommand::execute));
+        dispatcher.register(CommandManager.literal("discord").executes(DiscordCommand::execute));
     }
 
     public static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
