@@ -4,6 +4,8 @@ package org.kilocraft.essentials.craft;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.github.indicode.fabric.permissions.Thimble;
+import io.github.indicode.fabric.permissions.command.CommandPermission;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.HoverEvent;
@@ -21,6 +23,7 @@ import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateC
 import org.kilocraft.essentials.craft.commands.servermanagement.*;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public class KiloCommands {
@@ -31,7 +34,13 @@ public class KiloCommands {
     }
 
     public static KiloCommands INSTANCE;
-
+    public static void getCommandPermission(String command) {
+        try {
+            Thimble.PERMISSIONS.getPermission("kiloessentials.command." + command, CommandPermission.class);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            e.printStackTrace();
+        }
+    }
     private void register(boolean devEnv) {
         if (devEnv) {
             Mod.getLogger().debug("Server is running in debug mode!");
