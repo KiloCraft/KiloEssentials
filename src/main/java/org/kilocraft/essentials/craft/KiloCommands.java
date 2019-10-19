@@ -59,11 +59,6 @@ public class KiloCommands {
         /**
          * @Essentials
          */
-        try {
-            System.out.println(Thimble.PERMISSIONS.getPermission("kiloessentials.command", CommandPermission.class));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            e.printStackTrace();
-        }
         RandomTeleportCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
