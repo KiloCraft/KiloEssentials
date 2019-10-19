@@ -34,7 +34,6 @@ public class Commands {
         add("deop");
         add("me");
         add("w");
-        add("message");
         add("msg");
         add("whisper");
         add("tell");
