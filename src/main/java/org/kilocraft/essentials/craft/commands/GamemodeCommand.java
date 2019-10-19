@@ -21,7 +21,13 @@ public class GamemodeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> fullLiteral = CommandManager.literal("ke_gamemode");
         LiteralArgumentBuilder<ServerCommandSource> shortLiteral = CommandManager.literal("gm");
-
+        KiloCommands.getCommandPermission("gamemode");
+        KiloCommands.getCommandPermission("gamemode.self");
+        KiloCommands.getCommandPermission("gamemode.others");
+        for (GameMode gameMode: GameMode.values()) {
+            KiloCommands.getCommandPermission("gamemode.self." + gameMode.getName());
+            KiloCommands.getCommandPermission("gamemode.others." + gameMode.getName());
+        }
         build(fullLiteral);
         build(shortLiteral);
 
