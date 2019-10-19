@@ -2,7 +2,7 @@ package org.kilocraft.essentials.craft.events;
 
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnDeath;
-import org.kilocraft.essentials.craft.commands.BackCommand;
+import org.kilocraft.essentials.craft.commands.essentials.BackCommand;
 
 import net.minecraft.client.util.math.Vector3f;
 

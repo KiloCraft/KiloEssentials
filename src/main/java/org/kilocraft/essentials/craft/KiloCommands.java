@@ -12,7 +12,6 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.SomeGlobals;
-import org.kilocraft.essentials.craft.commands.BackCommand;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
 import org.kilocraft.essentials.craft.commands.InfoCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
