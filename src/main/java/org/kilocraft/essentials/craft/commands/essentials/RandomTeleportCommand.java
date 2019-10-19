@@ -51,8 +51,8 @@ public class RandomTeleportCommand {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
 		} else {
 			Random random = new Random();
-			int randomX = random.nextInt(9999000) + 1000; // 1000 - 10000000
-			int randomZ = random.nextInt(9999000) + 1000; // 1000 - 10000000
+			int randomX = random.nextInt(19000) + 1000; // 1000 - 10000000
+			int randomZ = random.nextInt(19000) + 1000; // 1000 - 10000000
 
 			// Negative coords as well
 			if (random.nextInt(2) == 0) {
