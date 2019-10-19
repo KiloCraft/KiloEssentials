@@ -6,7 +6,6 @@
   "mixins": [
   ],
   "server": [
-    "MixinMinecraftServer$run",
     "MixinCommandManager",
     "MixinServerPlayNetWorkHandler",
     "MixinCreeperEntity"

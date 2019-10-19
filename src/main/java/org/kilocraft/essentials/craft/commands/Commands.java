@@ -19,6 +19,10 @@ public class Commands {
         add("ke_op");
         add("ke_kill");
         add("ke_tp");
+        add("ke_msg");
+        add("ke_message");
+        add("ke_whisper");
+        add("ke_tell");
     }};
 
     public static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
@@ -30,6 +34,8 @@ public class Commands {
         add("deop");
         add("me");
         add("w");
+        add("message");
+        add("msg");
         add("whisper");
         add("tell");
         add("teammsg");

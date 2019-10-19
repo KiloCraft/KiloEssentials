@@ -16,6 +16,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
 import org.kilocraft.essentials.craft.commands.InfoCommand;
+import org.kilocraft.essentials.craft.commands.MessageCommand;
 import org.kilocraft.essentials.craft.commands.donatorcommands.PlayerParticlesCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
@@ -80,6 +81,7 @@ public class KiloCommands {
         FlyCommand.register(this.dispatcher);
         BackCommand.register(this.dispatcher);
         PlayerParticlesCommand.register(this.dispatcher);
+        MessageCommand.register(this.dispatcher);
         
         /**
          * @ServerManagement
