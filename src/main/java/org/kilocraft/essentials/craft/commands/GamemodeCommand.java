@@ -37,10 +37,9 @@ public class GamemodeCommand {
 
     private static GameMode[] gameModes = GameMode.values();
     private static int var = gameModes.length;
-    private static String pNode = "kiloessentials.command.gamemode";
 
     private static void build(LiteralArgumentBuilder<ServerCommandSource> builder) {
-        builder.requires(s -> Thimble.hasPermissionChildOrOp(s, pNode, 2));
+        builder.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("gamemode"), 2));
         for (int i = 0; i < var; ++i) {
             GameMode mode = gameModes[i];
             if (!mode.equals(GameMode.NOT_SET)) {
@@ -55,10 +54,10 @@ public class GamemodeCommand {
                                                     return execute(EntityArgumentType.getPlayers(context, "targets"), mode, context.getSource(), false);
                                                 })
                                         )
-                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, pNode + ".others." + mode.getName(), 2))
+                                        .requires(source -> Thimble.hasPermissionChildOrOp(source, KiloCommands.getCommandPermission("gamemode.others." + mode.getName()), 2))
                                         .executes(context -> execute(EntityArgumentType.getPlayers(context, "targets"), mode, context.getSource(), true))
                         )
-                        .requires(source -> Thimble.hasPermissionChildOrOp(source, pNode + ".self." + mode.getName(), 2))
+                        .requires(source -> Thimble.hasPermissionChildOrOp(source, KiloCommands.getCommandPermission("gamemode.self." + mode.getName()), 2))
                         .executes(context -> execute(Collections.singletonList(context.getSource().getPlayer()), mode, context.getSource(), true))
                 );
 
@@ -75,10 +74,10 @@ public class GamemodeCommand {
                                     return executeByInteger(EntityArgumentType.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "gameType"), context.getSource(), false);
                                 })
                         )
-                        .requires(source -> Thimble.hasPermissionChildOrOp(source, pNode + ".others", 2))
+                        .requires(source -> Thimble.hasPermissionChildOrOp(source, KiloCommands.getCommandPermission("gamemode.others"), 2))
                         .executes(context -> executeByInteger(Collections.singletonList(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "gameType"), context.getSource(), true))
                 )
-                .requires(source -> Thimble.hasPermissionChildOrOp(source, pNode + ".self", 2))
+                .requires(source -> Thimble.hasPermissionChildOrOp(source, KiloCommands.getCommandPermission("gamemode.self"), 2))
                 .executes(context -> executeByInteger(Collections.singletonList(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "gameType"), context.getSource(), true))
         );
 
@@ -115,23 +114,23 @@ public class GamemodeCommand {
         if (playerEntities.size() == 1) {
             playerEntities.forEach((playerEntity) -> {
                 if (playerEntity.getName().equals(source.getName())) {
-                    if (Thimble.hasPermissionChildOrOp(source, pNode + ".self." + gameMode.getName(), 2)) {
+                    if (Thimble.hasPermissionChildOrOp(source, KiloCommands.getCommandPermission("gamemode.self." + gameMode.getName()), 2)) {
                         execute(playerEntities, gameMode, source, log);
                     } else
-                        source.sendFeedback(KiloCommands.getPermissionError(pNode + ".self." + gameMode.getName()), false);
+                        source.sendFeedback(KiloCommands.getPermissionError(KiloCommands.getCommandPermission("gamemode.self." + gameMode.getName())), false);
                 } else {
-                    if (Thimble.hasPermissionChildOrOp(source, pNode + ".others." + gameMode.getName(), 2)) {
+                    if (Thimble.hasPermissionChildOrOp(source, KiloCommands.getCommandPermission("gamemode.others." + gameMode.getName()), 2)) {
                         execute(playerEntities, gameMode, source, log);
                     } else
-                        source.sendFeedback(KiloCommands.getPermissionError(pNode + ".self." + gameMode.getName()), false);
+                        source.sendFeedback(KiloCommands.getPermissionError(KiloCommands.getCommandPermission("gamemode.others." + gameMode.getName())), false);
                 }
             });
 
         } else {
-            if (Thimble.hasPermissionChildOrOp(source, pNode + ".others.multiple" + gameMode.getName(), 2)) {
+            if (Thimble.hasPermissionChildOrOp(source, KiloCommands.getCommandPermission("gamemode.others.multiple" + gameMode.getName()), 2)) {
                 execute(playerEntities, gameMode, source, log);
             } else
-                source.sendFeedback(KiloCommands.getPermissionError(pNode + ".self." + gameMode.getName()), false);
+                source.sendFeedback(KiloCommands.getPermissionError(KiloCommands.getCommandPermission("gamemode.others.multiple" + gameMode.getName())), false);
         }
 
         return 1;
