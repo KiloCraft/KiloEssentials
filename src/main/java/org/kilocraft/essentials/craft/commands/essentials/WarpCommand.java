@@ -23,7 +23,6 @@ import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 public class WarpCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("warp")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.warp", 2))
                 .executes(c -> executeList(c.getSource()));
 
         RequiredArgumentBuilder<ServerCommandSource, String> warpArg = CommandManager.argument("warp", StringArgumentType.string());
