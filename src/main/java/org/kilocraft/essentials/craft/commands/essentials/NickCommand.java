@@ -14,18 +14,22 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.player.KiloPlayerManager;
 
 public class NickCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		KiloCommands.getCommandPermission("nick");
+		KiloCommands.getCommandPermission("nick.self");
+		KiloCommands.getCommandPermission("nick.others");
 		LiteralCommandNode<ServerCommandSource> nick = CommandManager.literal("nick")
-				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick", 2)).build();
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("nick.self"), 2)).build();
 
 		LiteralCommandNode<ServerCommandSource> set = CommandManager.literal("set")
-				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick.set", 2)).build();
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("nick.self"), 2)).build();
 
 		LiteralCommandNode<ServerCommandSource> reset = CommandManager.literal("reset")
-				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick.reset", 2))
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("nick.self"), 2))
 				.executes(context -> {
 					resetNick(context, context.getSource().getPlayer());
 					return 0;
@@ -41,7 +45,7 @@ public class NickCommand {
 
 		ArgumentCommandNode<ServerCommandSource, EntitySelector> nameTarget = CommandManager
 				.argument("target", EntityArgumentType.player())
-				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick.set.others", 2))
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("nick.others"), 2))
 				.executes(context -> {
 					changeNick(context, EntityArgumentType.getPlayer(context, "target"));
 					return 0;
@@ -49,7 +53,7 @@ public class NickCommand {
 
 		ArgumentCommandNode<ServerCommandSource, EntitySelector> resetTarget = CommandManager
 				.argument("target", EntityArgumentType.player())
-				.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.nick.reset.others", 2))
+				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("nick.others"), 2))
 				.executes(context -> {
 					resetNick(context, EntityArgumentType.getPlayer(context, "target"));
 					return 0;
