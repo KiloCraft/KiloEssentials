@@ -18,6 +18,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.Biome.Category;
 
 public class RandomTeleportCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -63,11 +65,16 @@ public class RandomTeleportCommand {
 				randomZ *= -1;
 			}
 
-			player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 30, 255, false, true, true));
-			player.teleport(randomX, 255, randomZ);
-			kiloPlayer.rtpLeft -= 1;
-			player.sendMessage(
-					LangText.getFormatter(true, "command.randomteleport.success", "X: " + randomX + ", Z: " + randomZ, kiloPlayer.rtpLeft));
+			if (player.world.getBiome(new BlockPos(randomX, 65, randomZ)).getCategory() == Category.OCEAN) {
+				teleportRandomly(player);
+			} else {
+				player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 30, 255, false, true, true));
+				player.teleport(randomX, 255, randomZ);
+				kiloPlayer.rtpLeft -= 1;
+
+				player.sendMessage(LangText.getFormatter(true, "command.randomteleport.success",
+						"X: " + randomX + ", Z: " + randomZ, kiloPlayer.rtpLeft));
+			}
 		}
 	}
 }
