@@ -24,6 +24,7 @@ import net.minecraft.world.biome.Biome.Category;
 
 public class RandomTeleportCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		KiloCommands.getCommandPermission("rtp");
 		KiloCommands.getCommandPermission("rtp.self");
 		KiloCommands.getCommandPermission("rtp.others");
 		KiloCommands.getCommandPermission("rtp.ignorelimit");
