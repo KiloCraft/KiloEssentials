@@ -89,16 +89,17 @@ public class KiloCommands {
         Thimble.permissionWriters.add(pair -> {
             initializedPerms.forEach(perm -> {
                 try {
+                    pair.getLeft().getPermission("kiloessentials", CommandPermission.class);
+                    pair.getLeft().getPermission("kiloessentials.command", CommandPermission.class);
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+                    e.printStackTrace();
+                }
+                try {
                     pair.getLeft().getPermission("kiloessentials.command." + perm, CommandPermission.class);
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
                     e.printStackTrace();
                 }
             });
-            try {
-                pair.getLeft().getPermission("kiloessentials.command", CommandPermission.class);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                e.printStackTrace();
-            }
         });
     }
 
