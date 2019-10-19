@@ -10,8 +10,9 @@ import org.kilocraft.essentials.api.util.SomeGlobals;
 
 public class TpsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        KiloAPICommands.getCommandPermission("tps");
         dispatcher.register(CommandManager.literal("tps")
-                .requires(source -> Thimble.hasPermissionOrOp(source, "kiloapi.command.tps", 2))
+                .requires(source -> Thimble.hasPermissionOrOp(source, KiloAPICommands.getCommandPermission("tps"), 2))
                 .executes(TpsCommand::run)
         );
     }
