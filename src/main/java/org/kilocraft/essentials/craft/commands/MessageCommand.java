@@ -37,17 +37,17 @@ public class MessageCommand {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
         String message = StringArgumentType.getString(context, "message");
-        String format = "&f[&r%s &r&e-> &r%s&f]&7 %s";
+        String format = "&r%s &r&7-> &r%s&r&8>>&7 %s";
 
-        if (target.getName().equals(context.getSource().getPlayer())) {
+        if (source.getName().equals(target.getName().asString())) {
             source.sendError(new LiteralText("You can't send a message to your self!"));
         } else {
             target.addChatMessage(
-                    new LiteralText(TextFormat.translateAlternateColorCodes('&', String.format(format, source.getName(), "&aME", message))),
+                    new LiteralText(TextFormat.translateAlternateColorCodes('&', String.format(format, source.getName(), "&2ME", message))),
                     false
             );
 
-            TextFormat.sendToUniversalSource(source, String.format(format, "&aME", target.getName(), message), true);
+            TextFormat.sendToUniversalSource(source, String.format(format, "&2ME", target.getName().asString(), message), true);
         }
 
         return 1;
