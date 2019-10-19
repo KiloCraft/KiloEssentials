@@ -29,6 +29,7 @@ import java.util.*;
 
 public class OperatorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        KiloCommands.getCommandPermission("server.manage");
         String pNode = KiloCommands.getCommandPermission("server.manage.operators");
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("operator")
                 .requires(s -> Thimble.hasPermissionChildOrOp(s, pNode, 2));
