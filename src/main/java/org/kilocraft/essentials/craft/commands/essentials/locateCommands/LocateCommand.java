@@ -11,7 +11,7 @@ public class LocateCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("locate");
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("ke_locate")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.locate", 2));
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("locate"), 2));
 
         LocateBiomeCommand.registerAsChild(builder);
         LocateStructureCommand.registerAsChild(builder);
