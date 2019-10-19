@@ -31,12 +31,12 @@ public class RandomTeleportCommand {
 		target.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.rtp.others", 2));
 
 		randomTeleport.executes(context -> {
-			teleportRandomly(context.getSource().getPlayer());
+			teleportRandomly(context.getSource().getPlayer(), context.getSource());
 			return 0;
 		});
 
 		target.executes(context -> {
-			teleportRandomly(EntityArgumentType.getPlayer(context, "target"));
+			teleportRandomly(EntityArgumentType.getPlayer(context, "target"), context.getSource());
 			return 0;
 		});
 
@@ -45,14 +45,15 @@ public class RandomTeleportCommand {
 		dispatcher.register(CommandManager.literal("rtp").redirect(randomTeleport.build()));
 	}
 
-	private static void teleportRandomly(ServerPlayerEntity player) {
+	private static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {
 		KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
-		if (kiloPlayer.rtpLeft == 0) {
+		if (kiloPlayer.rtpLeft == 0
+				|| Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.rtp.ignorelimit", 4)) {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
 		} else {
 			Random random = new Random();
-			int randomX = random.nextInt(19000) + 1000; // 1000 - 10000000
-			int randomZ = random.nextInt(19000) + 1000; // 1000 - 10000000
+			int randomX = random.nextInt(19000) + 1000; // 1000 - 20000
+			int randomZ = random.nextInt(19000) + 1000; // 1000 - 20000
 
 			// Negative coords as well
 			if (random.nextInt(2) == 0) {
