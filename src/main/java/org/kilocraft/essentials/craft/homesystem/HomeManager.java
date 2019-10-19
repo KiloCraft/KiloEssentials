@@ -43,11 +43,9 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
 
     public static Home getHome(String uuid, String name) {
         @Nullable Home var = null;
-        for (Home var2 : homes) {
-            if (var2.getOwner().equals(uuid)) {
-                if (var2.getName().equals(name))
-                    var = var2;
-            }
+        for (Home home : getHomes(uuid)) {
+            if (home.getName().equals(name))
+                var = home;
         }
 
         return var;
@@ -83,11 +81,18 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
 
     public static void removeHome(Home home) {
         homes.remove(home);
+        byName.remove(home.getOwner().toString());
     }
 
-    public static void teleportToHome(ServerCommandSource source, Home home) throws CommandSyntaxException {
+    public static int teleport(ServerCommandSource source, Home home) throws CommandSyntaxException {
+        System.out.println(home.getName());
+        System.out.println(home.getOwner().toString());
+        System.out.println(Registry.DIMENSION.get(home.getDimension() + 1).getRawId());
+
         ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
         source.getPlayer().teleport(world, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+
+        return 1;
     }
 
     @Override
@@ -152,9 +157,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
     });
 
     public static SuggestionProvider<ServerCommandSource> suggestHomes = ((context, builder) -> {
-        getHomes(context.getSource().getPlayer().getUuidAsString()).forEach((home) -> {
-            builder.suggest(home.getName());
-        });
+        getHomes(context.getSource().getPlayer().getUuidAsString()).stream().forEach((home) -> builder.suggest(home.getName()));
 
         return builder.buildFuture();
     });

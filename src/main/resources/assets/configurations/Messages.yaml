@@ -53,3 +53,5 @@ general:
 #Messages used by commands
 commands:
   prefix: '*e[*6%MAIN$SERVER_NAME%*e]'
+  home:
+    addHome: ''
