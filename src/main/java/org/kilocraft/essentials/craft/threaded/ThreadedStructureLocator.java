@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.craft.provider.LocateStructureProvider;
 
 public class ThreadedStructureLocator implements KiloThread, Runnable {
+    private Logger logger;
     private ServerCommandSource source;
     private String name;
     public ThreadedStructureLocator(ServerCommandSource commandSource, String structureName) {
@@ -22,6 +23,7 @@ public class ThreadedStructureLocator implements KiloThread, Runnable {
 
     @Override
     public void run() {
+        logger = LogManager.getFormatterLogger(getName());
         try {
             LocateStructureProvider.execute(source, name);
         } catch (CommandSyntaxException e) {
@@ -31,7 +33,7 @@ public class ThreadedStructureLocator implements KiloThread, Runnable {
 
     @Override
     public Logger getLogger() {
-        return LogManager.getFormatterLogger(getName());
+        return logger;
     }
 
 }

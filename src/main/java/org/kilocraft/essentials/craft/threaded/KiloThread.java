@@ -11,11 +11,6 @@ public interface KiloThread {
     String getName();
 
     /**
-     * The method that runs everything inside of it when called
-     */
-    void run();
-
-    /**
      * The logger of your thread
      * @return a instance of the LogManager
      */
