@@ -1,16 +1,8 @@
 package org.kilocraft.essentials.craft.commands.essentials;
 
-import java.util.Random;
-
-import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.craft.KiloCommands;
-import org.kilocraft.essentials.craft.player.KiloPlayer;
-import org.kilocraft.essentials.craft.player.KiloPlayerManager;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
@@ -21,6 +13,12 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome.Category;
+import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.craft.KiloCommands;
+import org.kilocraft.essentials.craft.player.KiloPlayer;
+import org.kilocraft.essentials.craft.player.KiloPlayerManager;
+
+import java.util.Random;
 
 public class RandomTeleportCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -57,8 +55,8 @@ public class RandomTeleportCommand {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
 		} else {
 			Random random = new Random();
-			int randomX = random.nextInt(19000) + 1000; // 1000 - 20000
-			int randomZ = random.nextInt(19000) + 1000; // 1000 - 20000
+			int randomX = random.nextInt(14000) + 1000; // 1000 - 15000
+			int randomZ = random.nextInt(14000) + 1000; // 1000 - 15000
 
 			// Negative coords as well
 			if (random.nextInt(2) == 0) {

@@ -50,7 +50,17 @@ general:
   messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
   joinMessage: '&8[&a+&8]&7 %PLAYER_NAME%'
   leaveMessage: '&8[&c-&8]&7 %PLAYER_NAME%'
-  discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
+  prefix: '&e[&6COOL SERVER&e]'
 #Messages used by commands
 commands:
-  prefix: '*e[*6%MAIN$SERVER_NAME%*e]'
+  discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
+  serverWideWarps:
+    teleportTo: '%GENERAL_PREFIX% &eTeleporting to warp &6%WARPNAME%&e...'
+  playerHomes:
+    teleportTo: '&eTeleporting to home &6%HOMENAME%&e...'
+    set: '&eYou have set the home &6%HOMENAME%&e!'
+    remove: '&eYou have removed the home &6%HOMENAME%!'
+    admin:
+      teleportTo: '&eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
+      set: '&eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
+      remove: '&eYou have removed the home &6%HOMENAME%! for &3%OWNER%'

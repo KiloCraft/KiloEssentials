@@ -57,6 +57,15 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
         return var;
     }
 
+    public static boolean hasHome(UUID uuid, String name) {
+        boolean bool = false;
+        for (Home home : getHomes(uuid)) {
+            if (home.getName().equals(name)) bool = true;
+        }
+        
+        return bool;
+    }
+
     public static List<Home> getPlayerHomes(UUID uuid) {
         List<Home> list = new ArrayList<>();
         homes.forEach((home) -> {
@@ -72,10 +81,6 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
     }
 
     public static int teleport(ServerCommandSource source, Home home) throws CommandSyntaxException {
-        System.out.println(home.getName());
-        System.out.println(home.getOwner().toString());
-        System.out.println(Registry.DIMENSION.get(home.getDimension() + 1).getRawId());
-
         ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
         source.getPlayer().teleport(world, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
 

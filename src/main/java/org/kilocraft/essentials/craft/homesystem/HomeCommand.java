@@ -15,7 +15,11 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.craft.KiloCommands;
+import org.kilocraft.essentials.craft.chat.ChatMessage;
+import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.commands.essentials.BackCommand;
+import org.kilocraft.essentials.craft.config.KiloConifg;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -24,6 +28,7 @@ import java.util.Collections;
 public class HomeCommand {
 
     private static final SimpleCommandExceptionType HOME_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the home specified!"));
+    private static final SimpleCommandExceptionType TOO_MANY_PROFILES = new SimpleCommandExceptionType(new LiteralText("Only one player is allowed but the provided selector includes more!"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home");
@@ -58,19 +63,39 @@ public class HomeCommand {
         );
 
         homesLiteral.executes(
-                c -> {return 1;}
+                c -> executeList(c.getSource(), Collections.singleton(c.getSource().getPlayer().getGameProfile()))
+        );
+
+        homesLiteral.then(
+                CommandManager.argument("player", GameProfileArgumentType.gameProfile())
+                        .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home.manage"), 2))
+                        .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
+                        .executes(c -> executeList(c.getSource(), GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
 
-        argSet.suggests((context, builder) -> HomeManager.suggestHomes.getSuggestions(context, builder));
-        argRemove.suggests((context, builder) -> HomeManager.suggestHomes.getSuggestions(context, builder));
         argTeleport.suggests((context, builder) -> HomeManager.suggestHomes.getSuggestions(context, builder));
+        argRemove.suggests((context, builder) -> HomeManager.suggestHomes.getSuggestions(context, builder));
 
         argTeleport.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
-                    .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.home.manage", 2))
+                    .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home.manage"), 2))
                     .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                     .executes(c -> executeTeleport(c, GameProfileArgumentType.getProfileArgument(c, "player")))
+        );
+
+        argSet.then(
+                CommandManager.argument("player", GameProfileArgumentType.gameProfile())
+                        .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home.manage"), 2))
+                        .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
+                        .executes(c -> executeSet(c, GameProfileArgumentType.getProfileArgument(c, "player")))
+        );
+
+        argRemove.then(
+                CommandManager.argument("player", GameProfileArgumentType.gameProfile())
+                        .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home.manage"), 2))
+                        .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
+                        .executes(c -> executeRemove(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
         delhomeLiteral.then(argRemove);
@@ -83,32 +108,67 @@ public class HomeCommand {
         dispatcher.register(delhomeLiteral);
     }
 
+    private static int executeList(ServerCommandSource source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
+        if (gameProfiles.size() == 1) {
+            GameProfile gameProfile = gameProfiles.iterator().next();
+            StringBuilder homes = new StringBuilder();
+            if (source.getPlayer().getUuid().equals(gameProfile.getId())) homes.append("&6Homes&8:");
+            else homes.append("&6" + gameProfile.getName() + "'s homes&8:");
+
+            for (Home home  : HomeManager.getHomes(gameProfile.getId())) {
+                homes.append("&7, &f").append(home.getName());
+            }
+
+            KiloChat.sendMessageTo(source, new ChatMessage(
+                    homes.toString().replaceFirst("&7,", ""), true
+            ));
+
+        } else
+            throw TOO_MANY_PROFILES.create();
+        return 1;
+    }
+
     private static int executeSet(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         String arg = StringArgumentType.getString(context, "name");
-        DecimalFormat decimalFormat = new DecimalFormat("#.#");
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
+
+            if (HomeManager.hasHome(gameProfile.getId(), arg)) {
+                HomeManager.removeHome(HomeManager.getHome(gameProfile.getId(), arg));
+            }
 
             HomeManager.addHome(
                     new Home(
                             gameProfile.getId(),
                             arg,
-                            Double.parseDouble(decimalFormat.format(source.getPosition().x)),
-                            Double.parseDouble(decimalFormat.format(source.getPosition().x)),
-                            Double.parseDouble(decimalFormat.format(source.getPosition().x)),
+                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
+                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getY())),
+                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
                             source.getWorld().getDimension().getType().getRawId(),
                             Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
                             Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))
                     )
             );
 
-            source.sendFeedback(new LiteralText("Added the home " + arg), false);
+            if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
+                KiloChat.sendMessageTo(source, new ChatMessage(
+                        KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.set").replace("%HOMENAME%", arg),
+                        true
+                ));
+            } else {
+                KiloChat.sendMessageTo(source, new ChatMessage(
+                        KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.admin.set")
+                                .replace("%HOMENAME%", arg).replace("%OWNER%", gameProfile.getName()),
+                        true
+                ));
+            }
+
 
         } else
-            source.sendError(new LiteralText("Only one player is allowed but the provided selectors includes more!"));
-
+            throw TOO_MANY_PROFILES.create();
 
         return 1;
     }
@@ -121,19 +181,27 @@ public class HomeCommand {
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
 
-            System.out.println(HomeManager.getHomes(gameProfile.getId()));
-            HomeManager.getHomes(gameProfile.getId()).forEach((home) -> {
-                System.out.println(home.getOwner() + "  :  " + home.getName());
-            });
-            if (HomeManager.getHomes(gameProfile.getId()).contains(arg)) {
+            if (HomeManager.hasHome(gameProfile.getId(), arg)) {
                 HomeManager.removeHome(HomeManager.getHome(gameProfile.getId(), arg));
-                source.sendFeedback(new LiteralText("Removed the home " + arg), false);
+
+                if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
+                    KiloChat.sendMessageTo(source, new ChatMessage(
+                            KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.remove").replace("%HOMENAME%", arg),
+                            true
+                    ));
+                } else {
+                    KiloChat.sendMessageTo(source, new ChatMessage(
+                            KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.admin.remove")
+                                    .replace("%HOMENAME%", arg).replace("%OWNER%", gameProfile.getName()),
+                            true
+                    ));
+                }
+
             } else
                 throw HOME_NOT_FOUND_EXCEPTION.create();
 
         } else
-            source.sendError(new LiteralText("Only one player is allowed but the provided selectors includes more!"));
-
+            throw TOO_MANY_PROFILES.create();
 
         return 1;
     }
@@ -145,17 +213,28 @@ public class HomeCommand {
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
 
-            if (HomeManager.getHomes(gameProfile.getId()).contains(arg)) {
+            if (HomeManager.hasHome(gameProfile.getId(), arg)) {
                 HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId(), arg));
                 BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
 
-                source.sendFeedback(new LiteralText("Teleporting to home " + arg), false);
+                if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
+                    KiloChat.sendMessageTo(source, new ChatMessage(
+                            KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.teleportTo").replace("%HOMENAME%", arg),
+                            true
+                    ));
+                } else {
+                    KiloChat.sendMessageTo(source, new ChatMessage(
+                            KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.admin.teleportTo")
+                                    .replace("%HOMENAME%", arg).replace("%OWNER%", gameProfile.getName()),
+                            true
+                    ));
+                }
+
             } else
                 throw HOME_NOT_FOUND_EXCEPTION.create();
 
         } else
-            source.sendError(new LiteralText("Only one player is allowed but the provided selectors includes more!"));
-
+            throw TOO_MANY_PROFILES.create();
         return 1;
     }
 

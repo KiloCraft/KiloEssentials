@@ -77,7 +77,8 @@ public class KiloCommands {
         BackCommand.register(this.dispatcher);
         PlayerParticlesCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
-        
+        InfoCommand.register(this.dispatcher);
+
         /**
          * @ServerManagement
          */
