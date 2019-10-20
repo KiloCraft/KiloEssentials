@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.server.command.CommandManager;
@@ -23,6 +24,8 @@ import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 import java.text.DecimalFormat;
 
 public class WarpCommand {
+    private static final SimpleCommandExceptionType WARP_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the warp specified!"));
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("warp");
         RequiredArgumentBuilder<ServerCommandSource, String> warpArg = CommandManager.argument("warp", StringArgumentType.string());
@@ -67,12 +70,16 @@ public class WarpCommand {
             Warp warp = WarpManager.getWarp(name);
             ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimension() + 1));
 
-            TextFormat.sendToUniversalSource(source, "&eTeleporting to warp&6 " + name + "&e.", false);
+            KiloChat.sendMessageTo(source, new ChatMessage(
+                    KiloConifg.getProvider().getMessages().get(true, "commands.serverWideWarps.teleportTo")
+                            .replace("%WARPNAME%", name),
+                    false
+            ));
 
             BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
             source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
         } else
-            source.sendError(new LiteralText("That warp doesn't exist!"));
+            throw WARP_NOT_FOUND_EXCEPTION.create();
         return 1;
     }
 
@@ -111,10 +118,11 @@ public class WarpCommand {
         return 1;
     }
 
-    private static int executeRemove(ServerCommandSource source, String warp) {
+    private static int executeRemove(ServerCommandSource source, String warp) throws CommandSyntaxException {
         if (WarpManager.getWarpsByName().contains(warp))
             WarpManager.removeWarp(warp);
-        else source.sendError(new LiteralText("That warp doesn't exist!"));
+        else
+            throw WARP_NOT_FOUND_EXCEPTION.create();
         return 1;
     }
 

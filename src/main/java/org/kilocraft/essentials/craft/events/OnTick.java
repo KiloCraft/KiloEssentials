@@ -24,29 +24,29 @@ public class OnTick implements EventHandler<ServerEvent$OnTick> {
 			String particle = KiloPlayerManager.getPlayerData(players.get(i).getUuid()).particle;
 			if (particle != "") {
 				if (particle == "flames") {
-					// Player, visable to all, position (X, Y, Z), speed, delta (X, Y, Z), count
+					// Player, visable to only you, position (X, Y, Z), speed, delta (X, Y, Z), count
 					world.spawnParticles(players.get(i), ParticleTypes.LAVA, true, players.get(i).getX(),
 							players.get(i).getY(), players.get(i).getZ(), 0, 0.25f, 0, 0.25f, 1);
 				} else if (particle == "glass") {
 					world.spawnParticles(players.get(i),
 							new BlockStateParticleEffect(ParticleTypes.BLOCK,
 									Blocks.WHITE_STAINED_GLASS.getDefaultState()),
-							true, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
+							false, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
 							0.25f, 2);
 					world.spawnParticles(players.get(i),
 							new BlockStateParticleEffect(ParticleTypes.BLOCK,
 									Blocks.YELLOW_STAINED_GLASS.getDefaultState()),
-							true, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
+							false, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
 							0.25f, 2);
 					world.spawnParticles(players.get(i),
 							new BlockStateParticleEffect(ParticleTypes.BLOCK,
 									Blocks.ORANGE_STAINED_GLASS.getDefaultState()),
-							true, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
+							false, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
 							0.25f, 2);
 					world.spawnParticles(players.get(i),
 							new BlockStateParticleEffect(ParticleTypes.BLOCK,
 									Blocks.RED_STAINED_GLASS.getDefaultState()),
-							true, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
+							false, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
 							0.25f, 2);
 				} else if (particle == "rain") {
 					world.spawnParticles(players.get(i), ParticleTypes.CLOUD, true, players.get(i).getX(),
