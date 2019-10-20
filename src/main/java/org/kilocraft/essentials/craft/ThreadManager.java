@@ -11,7 +11,9 @@ public class ThreadManager {
 
     public <T extends KiloThread & Runnable> ThreadManager(T t) {
         this.kiloThread = t;
+        this.isMain = false;
         this.thread = new Thread(t);
+        this.thread.setName(getName());
     }
 
     public static void setMainName(String string) {
@@ -19,22 +21,20 @@ public class ThreadManager {
     }
 
     public void setMainThread(boolean set) {
-        isMain = set;
+        this.isMain = set;
         this.thread.setName(getName());
     }
 
     public void start() {
-        this.thread.setName(getName());
         this.thread.start();
     }
 
     public void run() {
-        this.thread.setName(getName());
         this.thread.run();
     }
 
     public String getName() {
-        return isMain ? name : name + "-" + kiloThread.getName();
+        return name + "-" + kiloThread.getName();
     }
 
     public Thread getThread() {

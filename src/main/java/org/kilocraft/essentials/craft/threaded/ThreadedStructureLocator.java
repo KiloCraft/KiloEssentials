@@ -4,7 +4,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.provider.LocateStructureProvider;
 
 public class ThreadedStructureLocator implements KiloThread, Runnable {
@@ -13,7 +12,7 @@ public class ThreadedStructureLocator implements KiloThread, Runnable {
     public ThreadedStructureLocator(ServerCommandSource commandSource, String structureName) {
         source = commandSource;
         name = structureName;
-        KiloEssentials.getLogger().info("Started thread StructureLocator by %s for structure \"%s\"", source.getName(), name);
+        getLogger().info("Started thread StructureLocator by %s for structure \"%s\"", source.getName(), name);
     }
 
     @Override
@@ -32,7 +31,7 @@ public class ThreadedStructureLocator implements KiloThread, Runnable {
 
     @Override
     public Logger getLogger() {
-        return LogManager.getFormatterLogger();
+        return LogManager.getFormatterLogger(getName());
     }
 
 }

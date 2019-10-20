@@ -2,7 +2,6 @@ package org.kilocraft.essentials.craft.threaded;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.commands.essentials.RandomTeleportCommand;
@@ -14,7 +13,7 @@ public class ThreadedRandomTeleporter implements Runnable, KiloThread {
     public ThreadedRandomTeleporter(ServerPlayerEntity player, ServerCommandSource source) {
         this.playerEntity = player;
         this.commandSource = source;
-        KiloEssentials.getLogger().info("Thread started by " + source.getName());
+        getLogger().info("Thread started by " + source.getName());
     }
 
     @Override
@@ -29,6 +28,6 @@ public class ThreadedRandomTeleporter implements Runnable, KiloThread {
 
     @Override
     public Logger getLogger() {
-        return LogManager.getFormatterLogger();
+        return KiloEssentials.getLogger();
     }
 }

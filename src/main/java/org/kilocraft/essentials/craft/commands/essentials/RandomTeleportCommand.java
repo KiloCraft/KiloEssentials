@@ -35,7 +35,7 @@ public class RandomTeleportCommand {
 				.executes(context -> execute(context.getSource().getPlayer(), context.getSource()))
 				.build();
 
-		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = CommandManager.argument("target", EntityArgumentType.player())
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = CommandManager.argument("player", EntityArgumentType.player())
 				.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
 				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("rtp.others"), 2))
 				.executes(context -> execute(EntityArgumentType.getPlayer(context, "player"), context.getSource()))
@@ -51,7 +51,7 @@ public class RandomTeleportCommand {
 
 	private static int execute(ServerPlayerEntity player, ServerCommandSource source) {
 		ThreadManager thread = new ThreadManager(new ThreadedRandomTeleporter(player, source));
-		thread.run();
+		thread.start();
 
 		return 1;
 	}

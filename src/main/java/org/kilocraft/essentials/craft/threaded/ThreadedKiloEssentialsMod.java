@@ -22,7 +22,7 @@ public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
 
     @Override
     public Logger getLogger() {
-        return LogManager.getFormatterLogger();
+        return LogManager.getFormatterLogger(getName());
     }
 
 }
