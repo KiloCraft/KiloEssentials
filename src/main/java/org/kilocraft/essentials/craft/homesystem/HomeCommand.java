@@ -147,7 +147,7 @@ public class HomeCommand {
 
             if (HomeManager.getHomes(gameProfile.getId()).contains(arg)) {
                 HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId(), arg));
-                BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
+                BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
 
                 source.sendFeedback(new LiteralText("Teleporting to home " + arg), false);
             } else

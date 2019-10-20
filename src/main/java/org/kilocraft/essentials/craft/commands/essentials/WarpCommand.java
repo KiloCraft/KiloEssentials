@@ -83,7 +83,7 @@ public class WarpCommand {
 
             TextFormat.sendToUniversalSource(source, "&eTeleporting to warp&6 " + name + "&e.", false);
 
-            BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
+            BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
             source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
         } else
             source.sendError(new LiteralText("That warp doesn't exist!"));

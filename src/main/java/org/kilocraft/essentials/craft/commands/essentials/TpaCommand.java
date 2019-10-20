@@ -105,7 +105,7 @@ public class TpaCommand {
                 sender.sendMessage(new LiteralText("").append(new LiteralText("Your teleportation request to ").formatted(Formatting.GOLD)).append(victim.getDisplayName()).append(new LiteralText(" was ").formatted(Formatting.GOLD).append(accepted ? new LiteralText("ACCEPTED").formatted(Formatting.GREEN) : new LiteralText("DENIED").formatted(Formatting.RED))));
                 boolean toSender = useTPRequest(sender);
                 ServerPlayerEntity tpTo = (toSender ? sender : victim);
-				BackCommand.setLocation(victim, new Vector3f((float) victim.getPos().x, (float) victim.getPos().y, (float) victim.getPos().z));
+				BackCommand.setLocation(victim, new Vector3f((float) victim.getPos().x, (float) victim.getPos().y, (float) victim.getPos().z), victim.dimension);
                 (toSender ? victim : sender).teleport(tpTo.getServerWorld(), tpTo.getPos().x, tpTo.getPos().y, tpTo.getPos().z, tpTo.yaw, tpTo.pitch);
             } else {
                 sender.sendMessage(new LiteralText("Your teleportation requrest was denied.").formatted(Formatting.RED));
