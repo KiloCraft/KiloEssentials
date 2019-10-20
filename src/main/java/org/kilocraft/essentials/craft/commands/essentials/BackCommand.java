@@ -1,18 +1,17 @@
 package org.kilocraft.essentials.craft.commands.essentials;
 
-import java.util.Collection;
-import java.util.HashMap;
-
-import org.kilocraft.essentials.api.chat.LangText;
-
 import com.mojang.brigadier.CommandDispatcher;
-
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.dimension.DimensionType;
+import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.util.CommandSuggestions;
+
+import java.util.Collection;
+import java.util.HashMap;
 
 public class BackCommand {
 
@@ -32,9 +31,10 @@ public class BackCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(CommandManager.literal("back").executes(context -> {
 			return goBack(context.getSource().getPlayer());
-		}).then(CommandManager.argument("players", EntityArgumentType.players()).executes(context -> {
-			return goBack(EntityArgumentType.getPlayers(context, "players"));
-		})));
+		}).then(CommandManager.argument("players", EntityArgumentType.players())
+				.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
+				.executes(context -> goBack(EntityArgumentType.getPlayers(context, "players"))))
+		);
 	}
 
 	private static int goBack(Collection<ServerPlayerEntity> players) {
