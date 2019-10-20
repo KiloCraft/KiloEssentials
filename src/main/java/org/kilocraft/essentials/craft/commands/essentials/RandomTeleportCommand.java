@@ -15,6 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome.Category;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.player.KiloPlayer;
 import org.kilocraft.essentials.craft.player.KiloPlayerManager;
@@ -34,8 +35,8 @@ public class RandomTeleportCommand {
 					return 0;
 				}).build();
 
-		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = CommandManager
-				.argument("target", EntityArgumentType.player())
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = CommandManager.argument("target", EntityArgumentType.player())
+				.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
 				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("rtp.others"), 2))
 				.executes(context -> {
 					teleportRandomly(EntityArgumentType.getPlayer(context, "target"), context.getSource());

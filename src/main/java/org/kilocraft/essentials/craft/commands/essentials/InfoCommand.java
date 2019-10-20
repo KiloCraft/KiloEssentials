@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.craft.commands.essentials;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.player.KiloPlayer;
 import org.kilocraft.essentials.craft.player.KiloPlayerManager;
 
@@ -25,20 +26,13 @@ public class InfoCommand {
         whois.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.info.self", 2));
         target.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.info.others", 2));
 
-        info.executes(context -> {
-            info(context.getSource().getPlayer());
-            return 0;
-        });
+        target.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
 
-        whois.executes(context -> {
-            info(context.getSource().getPlayer());
-            return 0;
-        });
+        info.executes(context -> info(context.getSource().getPlayer()));
 
-        target.executes(context -> {
-            info(EntityArgumentType.getPlayer(context, "target"));
-            return 0;
-        });
+        whois.executes(context -> info(context.getSource().getPlayer()));
+
+        target.executes(context -> info(EntityArgumentType.getPlayer(context, "target")));
 
         info.then(target);
         whois.then(target);
@@ -46,12 +40,14 @@ public class InfoCommand {
         dispatcher.register(whois);
     }
 
-    private static void info(ServerPlayerEntity player) {
+    private static int info(ServerPlayerEntity player) {
         KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
         player.sendMessage(LangText.getFormatter(true, "command.info.nick", kiloPlayer.nick));
-        player.sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().toString()));
+        player.sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().asString()));
         player.sendMessage(LangText.getFormatter(true, "command.info.rtpleft", kiloPlayer.rtpLeft));
         player.sendMessage(LangText.getFormatter(true, "command.info.uuid", player.getUuid()));
         player.sendMessage(LangText.getFormatter(true, "command.info.pos", player.getPos()));
+
+        return 1;
     }
 }
