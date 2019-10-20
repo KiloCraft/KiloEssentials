@@ -26,17 +26,17 @@ public class InfoCommand {
         target.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.info.others", 2));
 
         info.executes(context -> {
-            info(context.getSource().getPlayer());
+            info(context.getSource().getPlayer(), context.getSource().getPlayer());
             return 0;
         });
 
         whois.executes(context -> {
-            info(context.getSource().getPlayer());
+            info(context.getSource().getPlayer(), context.getSource().getPlayer());
             return 0;
         });
 
         target.executes(context -> {
-            info(EntityArgumentType.getPlayer(context, "target"));
+            info(context.getSource().getPlayer(), EntityArgumentType.getPlayer(context, "target"));
             return 0;
         });
 
@@ -46,12 +46,12 @@ public class InfoCommand {
         dispatcher.register(whois);
     }
 
-    private static void info(ServerPlayerEntity player) {
+    private static void info(ServerPlayerEntity source, ServerPlayerEntity player) {
         KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
-        player.sendMessage(LangText.getFormatter(true, "command.info.nick", kiloPlayer.nick));
-        player.sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().toString()));
-        player.sendMessage(LangText.getFormatter(true, "command.info.rtpleft", kiloPlayer.rtpLeft));
-        player.sendMessage(LangText.getFormatter(true, "command.info.uuid", player.getUuid()));
-        player.sendMessage(LangText.getFormatter(true, "command.info.pos", player.getPos()));
+        source.sendMessage(LangText.getFormatter(true, "command.info.nick", kiloPlayer.nick));
+        source.sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().toString()));
+        source.sendMessage(LangText.getFormatter(true, "command.info.rtpleft", kiloPlayer.rtpLeft));
+        source.sendMessage(LangText.getFormatter(true, "command.info.uuid", player.getUuid()));
+        source.sendMessage(LangText.getFormatter(true, "command.info.pos", player.getPos()));
     }
 }
