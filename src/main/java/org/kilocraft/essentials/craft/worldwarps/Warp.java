@@ -98,9 +98,9 @@ public class Warp {
     public void fromTag(CompoundTag tag) {
         {
             CompoundTag pos = tag.getCompound("pos");
-            this.x = pos.getInt("x");
-            this.y = pos.getInt("y");
-            this.z = pos.getInt("z");
+            this.x = pos.getDouble("x");
+            this.y = pos.getDouble("y");
+            this.z = pos.getDouble("z");
         }
         {
             CompoundTag dir = tag.getCompound("direction");

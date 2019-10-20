@@ -103,9 +103,9 @@ public class WarpCommand {
         WarpManager.addWarp(
                 new Warp(
                         name,
-                        Double.parseDouble(df.format(source.getPlayer().getPos().getX())),
-                        Double.parseDouble(df.format(source.getPlayer().getPos().getY())),
-                        Double.parseDouble(df.format(source.getPlayer().getPos().getZ())),
+                        Double.parseDouble(df.format(source.getPlayer().getPos().x)),
+                        Double.parseDouble(df.format(source.getPlayer().getPos().y)),
+                        Double.parseDouble(df.format(source.getPlayer().getPos().z)),
                         Float.parseFloat(df.format(source.getPlayer().yaw)),
                         Float.parseFloat(df.format(source.getPlayer().pitch)),
                         source.getWorld().getDimension().getType().getRawId(),

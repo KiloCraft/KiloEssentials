@@ -38,11 +38,11 @@ public class HomeCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> argRemove, argSet, argTeleport;
 
         argRemove = CommandManager.argument("home", StringArgumentType.string())
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.home", 2));
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home"), 2));
         argSet = CommandManager.argument("name", StringArgumentType.string())
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.home", 2));
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home"), 2));
         argTeleport = CommandManager.argument("home", StringArgumentType.string())
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.home", 2));
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home"), 2));
 
         argSet.executes(
                 c -> executeSet(

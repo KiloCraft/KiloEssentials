@@ -28,7 +28,10 @@ public class KiloEssentials {
 		features.tryToRegister(new HomeManager(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
 
-		extraPlayerDataManager = new KiloPlayerManager();
+		/**
+		 * @TEST
+		 */
+		//extraPlayerDataManager = new KiloPlayerManager();
 	}
 
 	public static Logger getLogger() {
