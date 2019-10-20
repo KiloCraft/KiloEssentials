@@ -21,7 +21,6 @@ public class OnTick implements EventHandler<ServerEvent$OnTick> {
 		List<ServerPlayerEntity> players = world.getPlayers();
 
 		for (int i = 0; i < players.size(); i++) {
-
 			String particle = KiloPlayerManager.getPlayerData(players.get(i).getUuid()).particle;
 			if (particle != "") {
 				if (particle == "flames") {
