@@ -1,13 +1,14 @@
 package org.kilocraft.essentials.craft.player;
 
+import io.github.indicode.fabric.worlddata.NBTWorldData;
+import io.github.indicode.fabric.worlddata.WorldDataLib;
+import net.minecraft.nbt.CompoundTag;
+import org.kilocraft.essentials.craft.config.KiloConifg;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.kilocraft.essentials.craft.config.KiloConifg;
-import io.github.indicode.fabric.worlddata.NBTWorldData;
-import io.github.indicode.fabric.worlddata.WorldDataLib;
-import net.minecraft.nbt.CompoundTag;
 
 public class KiloPlayerManager extends NBTWorldData {
 	public static KiloPlayerManager INSTANCE = new KiloPlayerManager();
@@ -79,6 +80,6 @@ public class KiloPlayerManager extends NBTWorldData {
 
 	@Override
 	public File getSaveFile(File worldDirectory, File rootDirectory, boolean backup) {
-		return new File(KiloConifg.getWorkingDirectory() + "/extraplayerdata." + (backup ? "dat_old" : "dat"));
+		return new File(KiloConifg.getWorkingDirectory() + "/KiloPlayers." + (backup ? "dat_old" : "dat"));
 	}
 }

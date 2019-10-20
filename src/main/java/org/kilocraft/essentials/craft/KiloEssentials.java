@@ -31,7 +31,7 @@ public class KiloEssentials {
 		/**
 		 * @TEST
 		 */
-		//extraPlayerDataManager = new KiloPlayerManager();
+		extraPlayerDataManager = new KiloPlayerManager();
 	}
 
 	public static Logger getLogger() {

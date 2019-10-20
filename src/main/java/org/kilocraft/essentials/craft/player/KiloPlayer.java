@@ -1,29 +1,29 @@
 package org.kilocraft.essentials.craft.player;
 
-import java.util.UUID;
-
 import net.minecraft.nbt.CompoundTag;
+
+import java.util.UUID;
 
 public class KiloPlayer {
 	public UUID playerId;
-	public String nick;
+	public String nick = "";
 	public int rtpLeft = 3;
-	public String particle;
+	public String particle = "";
 
 	public KiloPlayer(UUID id) {
 		playerId = id;
 	}
 	
 	public KiloPlayer(String id, CompoundTag tag) {
-		playerId = UUID.fromString(id);
+		this.playerId = UUID.fromString(id);
 		fromTag(tag);
 	}
 
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("nick", nick);
-		compoundTag.putInt("rtpLeft", rtpLeft);
-		compoundTag.putString("particle", particle);
+		compoundTag.putString("nick", this.nick);
+		compoundTag.putInt("rtpLeft", this.rtpLeft);
+		compoundTag.putString("particle", this.particle);
 		return compoundTag;
 	}
 
