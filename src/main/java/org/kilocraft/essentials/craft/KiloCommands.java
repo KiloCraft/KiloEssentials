@@ -62,6 +62,7 @@ public class KiloCommands {
         RandomTeleportCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
+        HealCommand.register(this.dispatcher);
         KiloInfoCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         LocateCommand.register(this.dispatcher);
