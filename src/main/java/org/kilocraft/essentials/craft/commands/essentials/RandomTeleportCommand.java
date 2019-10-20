@@ -51,7 +51,7 @@ public class RandomTeleportCommand {
 
 	private static int execute(ServerPlayerEntity player, ServerCommandSource source) {
 		ThreadManager thread = new ThreadManager(new ThreadedRandomTeleporter(player, source));
-		thread.start();
+		thread.run();
 
 		return 1;
 	}
