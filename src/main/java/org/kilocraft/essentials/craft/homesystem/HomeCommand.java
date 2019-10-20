@@ -31,9 +31,12 @@ public class HomeCommand {
     private static final SimpleCommandExceptionType TOO_MANY_PROFILES = new SimpleCommandExceptionType(new LiteralText("Only one player is allowed but the provided selector includes more!"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home");
-        LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome");
-        LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome");
+        LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home")
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home"), 2));
+        LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome")
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home"), 2));;
+        LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome")
+                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home"), 2));;
         LiteralArgumentBuilder<ServerCommandSource> homesLiteral = CommandManager.literal("homes");
         RequiredArgumentBuilder<ServerCommandSource, String> argRemove, argSet, argTeleport;
 
