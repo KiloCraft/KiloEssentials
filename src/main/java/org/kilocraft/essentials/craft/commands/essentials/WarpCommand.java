@@ -73,7 +73,7 @@ public class WarpCommand {
             KiloChat.sendMessageTo(source, new ChatMessage(
                     KiloConifg.getProvider().getMessages().get(true, "commands.serverWideWarps.teleportTo")
                             .replace("%WARPNAME%", name),
-                    false
+                    true
             ));
 
             BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
