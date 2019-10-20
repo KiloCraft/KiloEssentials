@@ -45,7 +45,7 @@ public class MessageCommand {
                     MessageType.CHAT
             );
 
-            TextFormat.sendToUniversalSource(source, String.format(format, "&bME", target.getName().asString(), message), true);
+            TextFormat.sendToUniversalSource(source, String.format(format, "&bME", target.getName().asString(), message), false);
         } else {
             source.sendError(new LiteralText("You can't send a message to your self!"));
         }

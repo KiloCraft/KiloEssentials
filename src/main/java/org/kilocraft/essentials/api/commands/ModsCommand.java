@@ -11,6 +11,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
@@ -88,10 +89,6 @@ public class ModsCommand {
     }
 
 
-    private static SuggestionProvider<ServerCommandSource> suggestModIDs = ((context, builder) -> {
-        FabricLoader.getInstance().getAllMods().stream().forEach((mod) -> builder.suggest(mod.getMetadata().getId()));
-
-        return builder.buildFuture();
-    });
+    private static SuggestionProvider<ServerCommandSource> suggestModIDs = ((context, builder) -> CommandSource.suggestMatching(FabricLoader.getInstance().getAllMods().stream().map((mod) -> mod.getMetadata().getId()), builder));
 
 }
