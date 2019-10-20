@@ -43,12 +43,12 @@ public class HealCommand {
     private static void execute(ServerPlayerEntity source, ServerPlayerEntity player) {
         KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
 
-        player.setHealth(20);
+        player.setHealth(player.getMaximumHealth());
         if(player == source){
-            player.sendMessage(LangText.getFormatter(true, "command.heal.self"));
+            player.sendMessage(LangText.get(true, "command.heal.self"));
         }else{
-            source.sendMessage(LangText.getFormatter(true, "command.heal.announce", source.getName()));
-            player.sendMessage(LangText.getFormatter(true, "command.heal.other", player.getName()));
+            player.sendMessage(LangText.getFormatter(true, "command.heal.announce", source.getName().toString()));
+            source.sendMessage(LangText.getFormatter(true, "command.heal.other", player.getName().toString()));
         }
     }
 }
