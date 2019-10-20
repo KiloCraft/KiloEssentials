@@ -6,9 +6,9 @@ import net.minecraft.nbt.CompoundTag;
 
 public class KiloPlayer {
 	public UUID playerId;
-	public String nick = "";
+	public String nick;
 	public int rtpLeft = 3;
-	public String particle = "none";
+	public String particle;
 
 	public KiloPlayer(UUID id) {
 		playerId = id;

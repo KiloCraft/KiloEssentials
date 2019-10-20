@@ -215,7 +215,7 @@ public class HomeCommand {
 
             if (HomeManager.hasHome(gameProfile.getId(), arg)) {
                 HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId(), arg));
-                BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()));
+                BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
 
                 if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                     KiloChat.sendMessageTo(source, new ChatMessage(

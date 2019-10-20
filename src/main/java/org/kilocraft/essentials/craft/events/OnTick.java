@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.craft.events;
 
+import java.util.List;
+
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.serverEvents.ServerEvent$OnTick;
 import org.kilocraft.essentials.craft.player.KiloPlayerManager;
@@ -16,39 +18,41 @@ public class OnTick implements EventHandler<ServerEvent$OnTick> {
 	@Override
 	public void handle(ServerEvent$OnTick event) {
 		ServerWorld world = event.getServer().getWorld(DimensionType.OVERWORLD);
-		ServerPlayerEntity[] players = (ServerPlayerEntity[]) world.getPlayers().toArray();
-		System.out.println("TEST");
-		System.out.println(players.length);
-		for (int i = 0; i < players.length; i++) {
-			String particle = KiloPlayerManager.getPlayerData(players[i].getUuid()).particle;
-			System.out.println(particle);
-			if (particle != "none") {
+		List<ServerPlayerEntity> players = world.getPlayers();
+
+		for (int i = 0; i < players.size(); i++) {
+			String particle = KiloPlayerManager.getPlayerData(players.get(i).getUuid()).particle;
+			if (particle != "") {
 				if (particle == "flames") {
-					// Player, visable to all, position (X, Y, Z), count, delta (X, Y, Z), speed
-					world.spawnParticles(players[i], ParticleTypes.LAVA, true, players[i].getX(), players[i].getY(),
-							players[i].getZ(), 3, 0.25f, 0, 0.25f, 1);
+					// Player, visable to all, position (X, Y, Z), speed, delta (X, Y, Z), count
+					world.spawnParticles(players.get(i), ParticleTypes.LAVA, true, players.get(i).getX(),
+							players.get(i).getY(), players.get(i).getZ(), 0, 0.25f, 0, 0.25f, 1);
 				} else if (particle == "glass") {
-					world.spawnParticles(players[i],
+					world.spawnParticles(players.get(i),
 							new BlockStateParticleEffect(ParticleTypes.BLOCK,
 									Blocks.WHITE_STAINED_GLASS.getDefaultState()),
-							true, players[i].getX(), players[i].getY(), players[i].getZ(), 3, 0.25f, 0, 0.25f, 1);
-					world.spawnParticles(players[i],
+							true, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
+							0.25f, 2);
+					world.spawnParticles(players.get(i),
 							new BlockStateParticleEffect(ParticleTypes.BLOCK,
 									Blocks.YELLOW_STAINED_GLASS.getDefaultState()),
-							true, players[i].getX(), players[i].getY(), players[i].getZ(), 3, 0.25f, 0, 0.25f, 1);
-					world.spawnParticles(players[i],
+							true, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
+							0.25f, 2);
+					world.spawnParticles(players.get(i),
 							new BlockStateParticleEffect(ParticleTypes.BLOCK,
 									Blocks.ORANGE_STAINED_GLASS.getDefaultState()),
-							true, players[i].getX(), players[i].getY(), players[i].getZ(), 3, 0.25f, 0, 0.25f, 1);
-					world.spawnParticles(players[i],
+							true, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
+							0.25f, 2);
+					world.spawnParticles(players.get(i),
 							new BlockStateParticleEffect(ParticleTypes.BLOCK,
 									Blocks.RED_STAINED_GLASS.getDefaultState()),
-							true, players[i].getX(), players[i].getY(), players[i].getZ(), 3, 0.25f, 0, 0.25f, 1);
+							true, players.get(i).getX(), players.get(i).getY(), players.get(i).getZ(), 2, 0.25f, 0,
+							0.25f, 2);
 				} else if (particle == "rain") {
-					world.spawnParticles(players[i], ParticleTypes.CLOUD, true, players[i].getX(), players[i].getY() + 2.5f,
-							players[i].getZ(), 3, 1, 0.2f, 1, 1);
-					world.spawnParticles(players[i], ParticleTypes.RAIN, true, players[i].getX(), players[i].getY() + 2.6f,
-							players[i].getZ(), 3, 0.8f, 0f, 0.8f, 1);
+					world.spawnParticles(players.get(i), ParticleTypes.CLOUD, true, players.get(i).getX(),
+							players.get(i).getY() + 3.5f, players.get(i).getZ(), 10, 0.6f, 0.15f, 0.6f, 0);
+					world.spawnParticles(players.get(i), ParticleTypes.RAIN, true, players.get(i).getX(),
+							players.get(i).getY() + 3.55f, players.get(i).getZ(), 3, 0.4f, 0f, 0.4f, 2);
 				}
 			}
 		}

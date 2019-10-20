@@ -13,7 +13,7 @@ import java.util.function.BooleanSupplier;
 @Mixin(MinecraftServer.class)
 public class MixinMinecraftServer$OnTick {
 
-	@Inject(method = "tick", at = @At(value = "RETURN"))
+	@Inject(method = "tick", at = @At("HEAD"))
 	private void tick(BooleanSupplier booleanSupplier_1, CallbackInfo ci) {
 		KiloServer.getServer().triggerEvent(new ServerEvent$OnTickImpl((MinecraftServer) (Object) this));
 	}
