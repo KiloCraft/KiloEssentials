@@ -18,7 +18,6 @@ public class CommandSuggestions {
 
     public static SuggestionProvider<ServerCommandSource> suggestInput = ((context, builder) -> {
         builder.suggest(context.getNodes().get(0).getNode().getName());
-        builder.createOffset(1);
         return builder.buildFuture();
     });
 

@@ -20,7 +20,7 @@ public class DiscordCommand {
                 new ChatMessage(
                         KiloConifg.getProvider().getMessages().getLocal(
                                 true,
-                                "general.discord",
+                                "commands.discord",
                                 new PlayerConfigVariables(context.getSource().getPlayer())
                         ),
                         true
