@@ -42,7 +42,7 @@ public class HealCommand {
             }
         } else {
             if (player.getHealth() == player.getMaximumHealth()) {
-                KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.heal.exception.others", player.getName().asString()));
+                KiloChat.sendMessageTo(source, LangText.getFormatter(true, "command.heal.exception.others", player.getName().asString()));
             } else {
                 KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.heal.announce", source.getName()));
                 TextFormat.sendToUniversalSource(source, LangText.getFormatter(true, "command.heal.other", player.getName().toString()), false);

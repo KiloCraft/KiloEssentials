@@ -25,6 +25,10 @@ public class KiloChat {
         player.sendChatMessage(text, MessageType.CHAT);
     }
 
+    public static void sendMessageTo(ServerCommandSource source, Text text) {
+        source.sendFeedback(text, false);
+    }
+
     public static void broadCast(ChatMessage chatMessage) {
         KiloServer.getServer().getPlayerManager().getPlayerList().forEach((playerEntity) -> {
             playerEntity.sendChatMessage(chatMessage.getFormattedMessage(), MessageType.CHAT);
