@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.craft.commands.essentials;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.player.KiloPlayer;
 import org.kilocraft.essentials.craft.player.KiloPlayerManager;
@@ -41,11 +42,12 @@ public class InfoCommand {
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
         KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
-        source.sendFeedback(LangText.getFormatter(true, "command.info.nick", kiloPlayer.nick), false);
-        source.sendFeedback(LangText.getFormatter(true, "command.info.name", player.getName().toString()), false);
-        source.sendFeedback(LangText.getFormatter(true, "command.info.rtpleft", kiloPlayer.rtpLeft), false);
-        source.sendFeedback(LangText.getFormatter(true, "command.info.uuid", player.getUuid()), false);
-        source.sendFeedback(LangText.getFormatter(true, "command.info.pos", player.getPos()), false);
+
+        TextFormat.sendToUniversalSource(source, LangText.getFormatter(true, "command.info.nick", kiloPlayer.nick), false);
+        TextFormat.sendToUniversalSource(source, LangText.getFormatter(true, "command.info.name", player.getName().toString()), false);
+        TextFormat.sendToUniversalSource(source, LangText.getFormatter(true, "command.info.rtpleft", kiloPlayer.rtpLeft), false);
+        TextFormat.sendToUniversalSource(source, LangText.getFormatter(true, "command.info.uuid", player.getUuid()), false);
+        TextFormat.sendToUniversalSource(source, LangText.getFormatter(true, "command.info.pos", player.getPos()), false);
 
         return 1;
     }
