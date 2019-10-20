@@ -113,14 +113,16 @@ public class WarpCommand {
                 )
         );
 
-        KiloChat.sendMessageTo(source, new ChatMessage("&eYou have added the &6" + name + "&e warp!", true));
+        KiloChat.sendMessageTo(source, new ChatMessage("&eYou have &aadded&e the &6" + name + "&e warp!", true));
 
         return 1;
     }
 
     private static int executeRemove(ServerCommandSource source, String warp) throws CommandSyntaxException {
-        if (WarpManager.getWarpsByName().contains(warp))
+        if (WarpManager.getWarpsByName().contains(warp)) {
             WarpManager.removeWarp(warp);
+            KiloChat.sendMessageTo(source, new ChatMessage("&eYou have &cremoved&e the &6" + warp + "&e warp!", true));
+        }
         else
             throw WARP_NOT_FOUND_EXCEPTION.create();
         return 1;

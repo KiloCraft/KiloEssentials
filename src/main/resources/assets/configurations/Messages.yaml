@@ -58,9 +58,9 @@ commands:
     teleportTo: '%GENERAL_PREFIX% &eTeleporting to warp &6%WARPNAME%&e...'
   playerHomes:
     teleportTo: '&eTeleporting to home &6%HOMENAME%&e...'
-    set: '&eYou have set the home &6%HOMENAME%&e!'
-    remove: '&eYou have removed the home &6%HOMENAME%!'
+    set: '&eYou have &aset&e the home &6%HOMENAME%&e!'
+    remove: '&eYou have &cremoved&e the home &6%HOMENAME%!'
     admin:
       teleportTo: '&eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
-      set: '&eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
-      remove: '&eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
+      set: '&eYou have &aset&e the home &6%HOMENAME%&e for &3%OWNER%'
+      remove: '&eYou have &cremoved&e the home &6%HOMENAME%&e for &3%OWNER%'
