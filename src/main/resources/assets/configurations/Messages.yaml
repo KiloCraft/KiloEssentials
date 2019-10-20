@@ -63,4 +63,4 @@ commands:
     admin:
       teleportTo: '&eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
       set: '&eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
-      remove: '&eYou have removed the home &6%HOMENAME%! for &3%OWNER%'
+      remove: '&eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
