@@ -43,7 +43,7 @@ public class PlayerParticlesCommand {
 
 		LiteralCommandNode<ServerCommandSource> disableNode = CommandManager.literal("disable").executes((context) -> {
 			KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(context.getSource().getPlayer().getUuid());
-			kiloPlayer.particle = "none";
+			kiloPlayer.particle = "";
 			context.getSource().sendFeedback(LangText.get(true, "command.playerparticles.disable"), false);
 			return 0;
 		}).build();
