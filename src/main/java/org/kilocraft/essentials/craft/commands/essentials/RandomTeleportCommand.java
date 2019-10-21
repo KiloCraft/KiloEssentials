@@ -31,22 +31,27 @@ public class RandomTeleportCommand {
 		KiloCommands.getCommandPermission("rtp.others");
 		KiloCommands.getCommandPermission("rtp.ignorelimit");
 		LiteralCommandNode<ServerCommandSource> randomTeleport = CommandManager.literal("randomteleport")
-				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("rtp.self"), 2))
-				.executes(context -> execute(context.getSource().getPlayer(), context.getSource()))
-				.build();
+				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.self"), 2))
+				.executes(context -> {
+					teleportRandomly(context.getSource().getPlayer(), context.getSource());
+					return 0;
+				}).build();
 
-		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = CommandManager.argument("player", EntityArgumentType.player())
-				.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("rtp.others"), 2))
-				.executes(context -> execute(EntityArgumentType.getPlayer(context, "player"), context.getSource()))
-				.build();
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = CommandManager
+				.argument("target", EntityArgumentType.player())
+				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.others"), 2))
+				.executes(context -> {
+					teleportRandomly(EntityArgumentType.getPlayer(context, "target"), context.getSource());
+					return 0;
+				}).build();
 
 		randomTeleport.addChild(target);
 		dispatcher.getRoot().addChild(randomTeleport);
-		dispatcher.getRoot().addChild(CommandManager.literal("rtp").requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("rtp.self"), 2))
-				.executes(context -> execute(context.getSource().getPlayer(), context.getSource()))
-				.redirect(randomTeleport).build()
-		);
+		dispatcher.getRoot().addChild(CommandManager.literal("rtp").requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.self"), 2))
+				.executes(context -> {
+					teleportRandomly(context.getSource().getPlayer(), context.getSource());
+					return 0;
+				}).redirect(randomTeleport).build());
 	}
 
 	private static int execute(ServerPlayerEntity player, ServerCommandSource source) {
@@ -58,7 +63,7 @@ public class RandomTeleportCommand {
 
 	public static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {
 		KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
-		if (kiloPlayer.rtpLeft == 0 || !Thimble.hasPermissionChildOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
+		if (kiloPlayer.rtpLeft == 0 || !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
 		} else {
 			Random random = new Random();

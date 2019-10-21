@@ -20,7 +20,7 @@ public class KillCommand {
         KiloCommands.getCommandPermission("kill.single");
         KiloCommands.getCommandPermission("kill.multiple");
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("ke_kill")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("kill.single"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("kill.single"), 2))
                 .executes(c -> execute(c.getSource(), Collections.singleton(c.getSource().getPlayer())));
 
         argumentBuilder.then(
@@ -35,7 +35,7 @@ public class KillCommand {
     }
 
     private static int execute(ServerCommandSource source, Collection<? extends Entity> entities) {
-        if (entities.size() > 1 && !Thimble.hasPermissionChildOrOp(source, KiloCommands.getCommandPermission("kill.multiple"), 2)) {
+        if (entities.size() > 1 && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("kill.multiple"), 2)) {
             source.sendError(KiloCommands.getPermissionError(KiloCommands.getCommandPermission("kill.multiple")));
         } else {
             entities.forEach((entity) -> {

@@ -34,7 +34,7 @@ public class EnderchestCommand {
                 .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));;
 
         RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("enderchest.others"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("enderchest.others"), 2))
                 .suggests((context, builder) -> {
                     return CommandSuggestions.allPlayers.getSuggestions(context, builder);
                 })
@@ -48,7 +48,7 @@ public class EnderchestCommand {
     }
 
     private static boolean permission(ServerCommandSource source) {
-        return Thimble.hasPermissionChildOrOp(source, "kiloessentials.command.enderchest", 2);
+        return Thimble.hasPermissionOrOp(source, "kiloessentials.command.enderchest", 2);
     }
 
     private static int execute(ServerCommandSource source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {

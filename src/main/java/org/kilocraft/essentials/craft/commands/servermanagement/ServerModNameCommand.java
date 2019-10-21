@@ -20,7 +20,7 @@ public class ServerModNameCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("servermodname");
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("server")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("servermodname"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("servermodname"), 2))
                 .then(CommandManager.literal("config").then(CommandManager.literal("brandName")
                         .then(CommandManager.argument("name", StringArgumentType.greedyString())
                                 .executes(context -> execute(context.getSource(), StringArgumentType.getString(context, "name"))))));

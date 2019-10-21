@@ -28,7 +28,7 @@ public class StopCommand {
                         })
                     .executes(c -> execute(c, StringArgumentType.getString(c, "args")))
                 )
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("server.stop"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("server.stop"), 2))
                 .executes(c -> execute(c, ""));
 
         dispatcher.register(builder);

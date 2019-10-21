@@ -38,12 +38,14 @@ public class KiloCommands {
 
     public static KiloCommands INSTANCE;
     private static List<String> initializedPerms = new ArrayList<>();
+
     public static String getCommandPermission(String command) {
         if (!initializedPerms.contains(command)) {
             initializedPerms.add(command);
         }
         return "kiloessentials.command." + command;
     }
+
     private void register(boolean devEnv) {
         if (devEnv) {
             Mod.getLogger().debug("Server is running in debug mode!");

@@ -40,7 +40,7 @@ public class KiloChat {
     public static void sendChatMessage(ServerPlayerEntity player, ChatMessageC2SPacket packet) {
         ChatMessage message = new ChatMessage(
                 packet.getChatMessage(),
-                Thimble.hasPermissionChildOrOp(player.getCommandSource(), "kiloessentials.chat.format", 3)
+                Thimble.hasPermissionOrOp(player.getCommandSource(), "kiloessentials.chat.format", 3)
         );
 
         broadCast(

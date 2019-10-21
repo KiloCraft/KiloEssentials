@@ -30,7 +30,7 @@ public class ItemLoreCommand {
 					return changeLore(context, IntegerArgumentType.getInteger(context, "line"));
 				});
 
-		builder.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.item.lore", 2));
+		builder.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.item.lore", 2));
 
 		resetArgument.executes(context -> {
 			ItemStack item = context.getSource().getPlayer().getMainHandStack();
@@ -94,7 +94,7 @@ public class ItemLoreCommand {
 			}
 
 			String text = StringArgumentType.getString(context, "name...");
-			if (Thimble.hasPermissionChildOrOp(context.getSource(), "kiloessentials.command.item.lore.colour", 2)) {
+			if (Thimble.hasPermissionOrOp(context.getSource(), "kiloessentials.command.item.lore.colour", 2)) {
 				text = TextFormat.translateAlternateColorCodes('&', text);
 			} else {
 				text = TextFormat.removeAlternateColorCodes('&', text);

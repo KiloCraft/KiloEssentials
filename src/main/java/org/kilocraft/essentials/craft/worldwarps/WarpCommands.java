@@ -25,6 +25,6 @@ public class WarpCommands {
     }
 
     private static void buildPermission(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder, Warp warp) {
-        argumentBuilder.requires(s -> Thimble.hasPermissionChildOrOp(s, warp.getPermissionNode() + "." + warp.getName(), 2));
+        argumentBuilder.requires(s -> Thimble.hasPermissionOrOp(s, warp.getPermissionNode() + "." + warp.getName(), 2));
     }
 }

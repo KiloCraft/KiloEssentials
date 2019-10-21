@@ -22,9 +22,9 @@ public class InfoCommand {
         LiteralArgumentBuilder<ServerCommandSource> whois = CommandManager.literal("whois");
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = CommandManager.argument("player", EntityArgumentType.player());
 
-        info.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.info.self", 2));
-        whois.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.info.self", 2));
-        target.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.info.others", 2));
+        info.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.self", 2));
+        whois.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.self", 2));
+        target.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.others", 2));
 
         target.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
 
