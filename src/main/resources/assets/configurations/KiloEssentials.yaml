@@ -82,3 +82,15 @@ chat:
     # [<COLOR/FORMATTING CODE> e.g: 'altColorChar' + Color code, &a]
     #The color of the pinged player's name!
     pinged: '&a%PLAYER_NAME%'
+    #The sound you hear when someone pings you!
+    sound:
+      enable: true
+      # [<Minecraft identifier>]
+      #Sound identifier, you can search for them through the '/playsound' command in the game!
+      id: 'minecraft:entity.experience_orb.pickup'
+      # [string <float>]
+      # Default: 3.0
+      volume: '3.0'
+      # [Float]
+      # Default: 1.0
+      pitch: '1.0'

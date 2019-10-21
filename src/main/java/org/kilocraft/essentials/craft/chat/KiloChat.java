@@ -2,12 +2,16 @@ package org.kilocraft.essentials.craft.chat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.Thimble;
+import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.craft.KiloEssentials;
@@ -44,6 +48,9 @@ public class KiloChat {
                 Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.format"), 2)
         );
 
+        /**
+         * REMINDER: ADD PERMISSION FOR THIS
+         */
         if (config.getValue("chat.ping.enable")) {
             String pingSenderFormat = config.get(false, "chat.ping.format");
             String pingFormat = config.get(false, "chat.ping.pinged");
@@ -57,7 +64,9 @@ public class KiloChat {
                                     thisPing,
                                     pingFormat.replace("%PLAYER_NAME%", playerName) + "&r")
                     );
-                    pingPlayer(player, playerName);
+
+                    if (config.getValue("chat.ping.sound.enable"))
+                        pingPlayer(player, playerName);
                 }
 
             }
@@ -77,7 +86,12 @@ public class KiloChat {
     }
 
     public static void pingPlayer(ServerPlayerEntity player, String playerToPing) {
+        Vec3d vec3d = KiloServer.getServer().getPlayer(playerToPing).getCommandSource().getPosition();
+        String soundId = config.getValue("chat.ping.sound.id");
+        float volume = Float.parseFloat(config.getValue("chat.ping.sound.volume"));
+        float pitch = Float.parseFloat(config.getValue("chat.ping.sound.pitch"));
 
+        player.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
     }
 
 
