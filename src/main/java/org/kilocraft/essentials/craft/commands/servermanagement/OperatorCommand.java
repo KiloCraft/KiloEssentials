@@ -32,9 +32,9 @@ public class OperatorCommand {
         KiloCommands.getCommandPermission("server.manage");
         String pNode = KiloCommands.getCommandPermission("server.manage.operators");
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("operator")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, pNode, 2));
+                .requires(s -> Thimble.hasPermissionOrOp(s, pNode, 2));
         LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("ke_op")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, pNode, 2));
+                .requires(s -> Thimble.hasPermissionOrOp(s, pNode, 2));
 
         LiteralArgumentBuilder<ServerCommandSource> addLiteral = CommandManager.literal("add");
         LiteralArgumentBuilder<ServerCommandSource> removeLiteral = CommandManager.literal("remove");

@@ -15,7 +15,7 @@ public class RealNameCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		KiloCommands.getCommandPermission("realname");
 		dispatcher.register(CommandManager.literal("realname")
-				.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("realname"), 2))
+				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("realname"), 2))
 				.then(CommandManager.argument("target", StringArgumentType.string())).executes(context -> {
 					String input = StringArgumentType.getString(context, "target");
 

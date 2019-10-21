@@ -38,7 +38,7 @@ public class ItemNameCommand {
 					player.addExperienceLevels(-1);
 				}
 
-				if (Thimble.hasPermissionChildOrOp(context.getSource(), "kiloessentials.command.item.name.colour", 2)) {
+				if (Thimble.hasPermissionOrOp(context.getSource(), "kiloessentials.command.item.name.colour", 2)) {
 					item.setCustomName(new LiteralText(TextFormat.translateAlternateColorCodes('&',
 							StringArgumentType.getString(context, "name..."))));
 				} else {
@@ -65,7 +65,7 @@ public class ItemNameCommand {
 			return 0;
 		});
 
-		builder.requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.command.item.name", 2));
+		builder.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.item.name", 2));
 
 		setArgument.then(nameArgument);
 		builder.then(setArgument);
