@@ -51,7 +51,7 @@ public class RandomTeleportCommand {
 				}).redirect(randomTeleport).build());
 	}
 
-	private static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {
+	public static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {
 		KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
 		if (kiloPlayer.rtpLeft == 0 || !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));

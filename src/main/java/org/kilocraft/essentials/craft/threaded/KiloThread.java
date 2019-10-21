@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.craft.threaded;
 
+import org.apache.logging.log4j.Logger;
+
 public interface KiloThread {
 
     /**
@@ -9,8 +11,9 @@ public interface KiloThread {
     String getName();
 
     /**
-     * The method that runs everything inside of it when called
+     * The logger of your thread
+     * @return a instance of the LogManager
      */
-    void run();
+    Logger getLogger();
 
 }
