@@ -47,15 +47,23 @@ schema: 1.0
 altcolorchar: '&'
 #General
 general:
-  messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
   joinMessage: '&8[&a+&8]&7 %PLAYER_NAME%'
   leaveMessage: '&8[&c-&8]&7 %PLAYER_NAME%'
   prefix: '&e[&6COOL SERVER&e]'
+chat:
+  messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
+  ping:
+    enable: true
+    format: '@%PLAYE_NAME%'
+    color: GREEN
+
 #Messages used by commands
 commands:
   discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
+
   serverWideWarps:
     teleportTo: '%GENERAL_PREFIX% &eTeleporting to warp &6%WARPNAME%&e...'
+
   playerHomes:
     teleportTo: '&eTeleporting to home &6%HOMENAME%&e...'
     set: '&eYou have set the home &6%HOMENAME%&e!'
@@ -64,3 +72,18 @@ commands:
       teleportTo: '&eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
       set: '&eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
       remove: '&eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
+
+  tpa:
+    sender:
+      requested: ''
+      cooldownMessage: ''
+      teleporting: ''
+    recever:
+      requested: ''
+  tpahere:
+    sender:
+      requested: ''
+      recever:
+        requested: ''
+        cooldownMessage: ''
+        teleporting: ''
