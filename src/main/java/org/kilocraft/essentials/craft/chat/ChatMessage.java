@@ -1,25 +1,22 @@
 package org.kilocraft.essentials.craft.chat;
 
-import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 
 public class ChatMessage {
     private String original;
-    private LiteralText formatted;
+    private String formatted;
     private boolean formatText;
 
     public ChatMessage(String message, boolean formatText) {
         this.original = message;
         this.formatText = formatText;
-        this.formatted = new LiteralText(formatText ? TextFormat.translateAlternateColorCodes('&', message) : message);
+        this.formatted = formatText ?
+                TextFormat.translateAlternateColorCodes('&', message) :
+                TextFormat.removeAlternateColorCodes('&', message);
     }
 
-    public LiteralText getFormattedMessage() {
+    public String getFormattedMessage() {
         return this.formatted;
-    }
-
-    public String getFormattedAsString() {
-        return this.formatted.asString();
     }
 
     public String getOriginal() {
@@ -28,7 +25,9 @@ public class ChatMessage {
 
     public void setMessage(String string) {
         this.original = string;
-        this.formatted = new LiteralText(formatText ? TextFormat.translateAlternateColorCodes('&', string) : string);
+        this.formatted = formatText ?
+                TextFormat.translateAlternateColorCodes('&', string) :
+                TextFormat.removeAlternateColorCodes('&', string);
     }
 
 }

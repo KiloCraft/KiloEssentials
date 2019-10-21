@@ -32,16 +32,17 @@ public class HomeCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home"), 2));
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.self.tp"), 2));
         LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home"), 2));;
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.set"), 2));
         LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("home"), 2));;
-        LiteralArgumentBuilder<ServerCommandSource> homesLiteral = CommandManager.literal("homes");
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.remove"), 2));
+        LiteralArgumentBuilder<ServerCommandSource> homesLiteral = CommandManager.literal("homes")
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.self"), 2));
         RequiredArgumentBuilder<ServerCommandSource, String> argRemove, argSet, argTeleport;
 
         argRemove = CommandManager.argument("home", StringArgumentType.string())
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home"), 2));
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.tp"), 2));
         argSet = CommandManager.argument("name", StringArgumentType.string())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home"), 2));
         argTeleport = CommandManager.argument("home", StringArgumentType.string())
@@ -71,7 +72,7 @@ public class HomeCommand {
 
         homesLiteral.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
-                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.manage"), 2))
+                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.others"), 2))
                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                         .executes(c -> executeList(c.getSource(), GameProfileArgumentType.getProfileArgument(c, "player")))
         );
@@ -82,21 +83,21 @@ public class HomeCommand {
 
         argTeleport.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
-                    .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.manage"), 2))
+                    .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.tp"), 2))
                     .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                     .executes(c -> executeTeleport(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
         argSet.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
-                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.manage"), 2))
+                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.set"), 2))
                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                         .executes(c -> executeSet(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
         argRemove.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
-                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.manage"), 2))
+                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.remove"), 2))
                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                         .executes(c -> executeRemove(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
