@@ -21,10 +21,10 @@ public class FlyCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("fly");
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("fly")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("fly"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("fly"), 2))
                 .executes(c -> toggle(c.getSource(), c.getSource().getPlayer()));
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = CommandManager.argument("player", EntityArgumentType.player())
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("fly.others"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("fly.others"), 2))
                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                 .executes(c -> toggle(c.getSource(), EntityArgumentType.getPlayer(c, "player")));;
         RequiredArgumentBuilder<ServerCommandSource, Boolean> boolArg = CommandManager.argument("set", BoolArgumentType.bool())

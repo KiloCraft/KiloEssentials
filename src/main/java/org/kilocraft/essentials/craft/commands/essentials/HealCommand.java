@@ -23,8 +23,8 @@ public class HealCommand {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = CommandManager.argument("target",
                 EntityArgumentType.player());
 
-        heal.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
-        target.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("heal.other"), 2));
+        heal.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
+        target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.other"), 2));
 
         heal.executes(context -> {
             execute(context.getSource().getPlayer(), context.getSource().getPlayer());

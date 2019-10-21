@@ -13,7 +13,7 @@ import org.kilocraft.essentials.craft.KiloCommands;
 public class ServerCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		KiloCommands.getCommandPermission("server");
-		LiteralCommandNode<ServerCommandSource> serverNode = CommandManager.literal("server").requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("server"), 2)).executes((context) -> {
+		LiteralCommandNode<ServerCommandSource> serverNode = CommandManager.literal("server").requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("server"), 2)).executes((context) -> {
 			context.getSource().sendFeedback(LangText.get(true, "command.server.nosubcommand"), false);
 			return 1;
 		}).build();

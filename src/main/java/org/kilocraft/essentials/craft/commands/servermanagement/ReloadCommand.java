@@ -13,7 +13,7 @@ import org.kilocraft.essentials.craft.config.KiloConifg;
 public class ReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(CommandManager.literal("ke_reload")
-            .requires(s -> Thimble.hasPermissionChildOrOp(s, "kiloessentials.server.manage.reload", 2))
+            .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.server.manage.reload", 2))
                 .then(CommandManager.literal("world").executes(c -> reloadWorld(c.getSource())))
                 .then(CommandManager.literal("config").executes(c -> reloadConfig(c.getSource(), true)))
             .executes(c -> {

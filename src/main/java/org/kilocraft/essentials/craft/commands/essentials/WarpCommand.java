@@ -49,8 +49,8 @@ public class WarpCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> addArg = CommandManager.argument("name", StringArgumentType.string());
         RequiredArgumentBuilder<ServerCommandSource, Boolean> argPermission = CommandManager.argument("requiresPermission", BoolArgumentType.bool());
 
-        aliasAdd.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("warps.manage"), 2));
-        aliasRemove.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("warps.manage"), 2));
+        aliasAdd.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("warps.manage"), 2));
+        aliasRemove.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("warps.manage"), 2));
 
         removeArg.executes(c -> executeRemove(c.getSource(), StringArgumentType.getString(c, "warp")));
         argPermission.executes(c -> executeAdd(c.getSource(), StringArgumentType.getString(c, "name"), BoolArgumentType.getBool(c, "requiresPermission")));

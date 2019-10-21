@@ -13,7 +13,7 @@ public class ItemCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("item");
-    	argumentBuilder.requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("item"), 2));
+    	argumentBuilder.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("item"), 2));
     	
         ItemNameCommand.registerChild(argumentBuilder);
         ItemLoreCommand.registerChild(argumentBuilder);
