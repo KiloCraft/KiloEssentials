@@ -18,6 +18,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+
 import org.kilocraft.essentials.craft.KiloCommands;
 
 public class CraftingbenchCommand {
@@ -30,7 +32,7 @@ public class CraftingbenchCommand {
                 .executes(context -> execute(context, context.getSource(), false));
 
         dispatcher.register(literalArgumentBuilder);
-        dispatcher.register(CommandManager.literal("craft").requires(source -> source.hasPermissionLevel(2))
+        dispatcher.register(CommandManager.literal("craft").requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("craftingbench"), 2))
                 .executes(context -> execute(context, context.getSource(), false)));
     }
 
@@ -46,7 +48,7 @@ public class CraftingbenchCommand {
 
         target.openContainer(
                 new ClientDummyContainerProvider((i, inv, player) -> {
-                    return new CraftingTableContainer(i, inv, BlockContext.EMPTY);
+                    return new CraftingTableContainer(i, inv, BlockContext.create(source.getWorld(), new BlockPos(0, 0, 0)));
                 }, new TranslatableText("container.crafting"))
         );
 
