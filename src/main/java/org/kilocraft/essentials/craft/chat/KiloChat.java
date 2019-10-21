@@ -6,9 +6,11 @@ import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.ConfigValueGetter;
 import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfigVariables;
@@ -16,17 +18,12 @@ import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfi
 public class KiloChat {
     private static ConfigValueGetter config = KiloConifg.getProvider().getMain();
 
-    private static boolean enablePing = config.getValue("chat.ping.enable");
-    private static String pingSenderFormat = config.get(false, "chat.ping.format");
-    private static String pingFormat = config.get(false, "chat.ping.format");
-
-
     public static void sendMessageTo(ServerPlayerEntity player, ChatMessage chatMessage) {
-        sendMessageTo(player, chatMessage.getFormattedMessage());
+        sendMessageTo(player, new LiteralText(chatMessage.getFormattedMessage()));
     }
 
     public static void sendMessageTo(ServerCommandSource source, ChatMessage chatMessage) throws CommandSyntaxException {
-        sendMessageTo(source.getPlayer(), chatMessage.getFormattedMessage());
+        sendMessageTo(source.getPlayer(), new LiteralText(chatMessage.getFormattedMessage()));
     }
 
     public static void sendMessageTo(ServerPlayerEntity player, Text text) {
@@ -35,25 +32,36 @@ public class KiloChat {
 
     public static void broadCast(ChatMessage chatMessage) {
         KiloServer.getServer().getPlayerManager().getPlayerList().forEach((playerEntity) -> {
-            playerEntity.sendChatMessage(chatMessage.getFormattedMessage(), MessageType.CHAT);
+            playerEntity.sendChatMessage(new LiteralText(chatMessage.getFormattedMessage()), MessageType.CHAT);
         });
 
-        KiloServer.getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedAsString()));
+        KiloServer.getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));
     }
 
     public static void sendChatMessage(ServerPlayerEntity player, ChatMessageC2SPacket packet) {
         ChatMessage message = new ChatMessage(
                 packet.getChatMessage(),
-                Thimble.hasPermissionOrOp(player.getCommandSource(), "kiloessentials.chat.format", 3)
+                Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.format"), 2)
         );
 
-        for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
-            if (packet.getChatMessage().contains(playerName)) {
+        if (config.getValue("chat.ping.enable")) {
+            String pingSenderFormat = config.get(false, "chat.ping.format");
+            String pingFormat = config.get(false, "chat.ping.pinged");
+
+            for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
+                String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", playerName);
+
+                if (packet.getChatMessage().contains(thisPing.replace("%PLAYER_NAME%", playerName))) {
+                    message.setMessage(
+                            message.getFormattedMessage().replaceAll(
+                                    thisPing,
+                                    pingFormat.replace("%PLAYER_NAME%", playerName) + "&r")
+                    );
+                    pingPlayer(player, playerName);
+                }
 
             }
         }
-
-
 
         broadCast(
                 new ChatMessage(
@@ -61,14 +69,14 @@ public class KiloChat {
                                 true,
                                 "chat.messageFormat",
                                 new PlayerConfigVariables(player)
-                        ).replace("%MESSAGE%", message.getFormattedAsString())
-                        .replace("%PLAYER_DISPLAYNAME%", player.getDisplayName().asFormattedString()),
+                        ).replace("%MESSAGE%", message.getFormattedMessage())
+                                .replace("%PLAYER_DISPLAYNAME%", player.getDisplayName().asFormattedString()),
                         true
                 )
         );
     }
 
-    public static void sendChatMessagePingPlayer(ServerPlayerEntity player, ChatMessage chatMessage, String playerToPing) {
+    public static void pingPlayer(ServerPlayerEntity player, String playerToPing) {
 
     }
 

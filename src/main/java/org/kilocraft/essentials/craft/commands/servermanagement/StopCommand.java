@@ -23,9 +23,7 @@ public class StopCommand {
         KiloCommands.getCommandPermission("server.stop");
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("stop")
                 .then(CommandManager.argument("args", StringArgumentType.greedyString())
-                        .suggests((context, builder1) -> {
-                            return CommandSuggestions.suggestInput.getSuggestions(context, builder1);
-                        })
+                        .suggests((context, builder1) -> CommandSuggestions.suggestInput.getSuggestions(context, builder1))
                     .executes(c -> execute(c, StringArgumentType.getString(c, "args")))
                 )
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("server.stop"), 2))

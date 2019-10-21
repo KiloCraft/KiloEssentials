@@ -47,7 +47,7 @@ public class KiloEssentials {
 		Thimble.permissionWriters.add(pair -> {
 			initializedPerms.forEach(perm -> {
 				try {
-					pair.getLeft().getPermission("kiloessentials", CommandPermission.class);
+					pair.getLeft().getPermission("kiloessentials." + perm, CommandPermission.class);
 				} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
 					e.printStackTrace();
 				}
@@ -68,7 +68,7 @@ public class KiloEssentials {
 		return commands;
 	}
 
-	public static String getPermissionNode(String node) {
+	public static String getPermissionFor(String node) {
 		if (!initializedPerms.contains(node))
 			initializedPerms.add(node);
 		return "kiloessentials." + node;

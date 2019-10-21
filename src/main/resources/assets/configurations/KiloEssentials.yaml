@@ -78,7 +78,7 @@ chat:
     enable: true
     # [<String>]
     #This is how you have to type someone's name in order to ping them
-    format: '@%PLAYE_NAME%'
+    format: '%PLAYER_NAME%'
     # [<COLOR/FORMATTING CODE> e.g: 'altColorChar' + Color code, &a]
     #The color of the pinged player's name!
-    color: '&a'
+    pinged: '&a%PLAYER_NAME%'
