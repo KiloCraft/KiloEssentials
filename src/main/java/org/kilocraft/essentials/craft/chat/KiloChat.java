@@ -10,9 +10,17 @@ import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.craft.config.KiloConifg;
+import org.kilocraft.essentials.craft.config.provided.ConfigValueGetter;
 import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfigVariables;
 
 public class KiloChat {
+    private static ConfigValueGetter config = KiloConifg.getProvider().getMain();
+
+    private static boolean enablePing = config.getValue("chat.ping.enable");
+    private static String pingSenderFormat = config.get(false, "chat.ping.format");
+    private static String pingFormat = config.get(false, "chat.ping.format");
+
+
     public static void sendMessageTo(ServerPlayerEntity player, ChatMessage chatMessage) {
         sendMessageTo(player, chatMessage.getFormattedMessage());
     }
@@ -39,17 +47,29 @@ public class KiloChat {
                 Thimble.hasPermissionOrOp(player.getCommandSource(), "kiloessentials.chat.format", 3)
         );
 
+        for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
+            if (packet.getChatMessage().contains(playerName)) {
+
+            }
+        }
+
+
+
         broadCast(
                 new ChatMessage(
-                        KiloConifg.getProvider().getMessages().getLocal(
+                        config.getLocal(
                                 true,
-                                "general.messageFormat",
+                                "chat.messageFormat",
                                 new PlayerConfigVariables(player)
                         ).replace("%MESSAGE%", message.getFormattedAsString())
                         .replace("%PLAYER_DISPLAYNAME%", player.getDisplayName().asFormattedString()),
                         true
                 )
         );
+    }
+
+    public static void sendChatMessagePingPlayer(ServerPlayerEntity player, ChatMessage chatMessage, String playerToPing) {
+
     }
 
 

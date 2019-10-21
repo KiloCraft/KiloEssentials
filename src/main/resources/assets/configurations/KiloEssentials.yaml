@@ -44,17 +44,17 @@ schema: 1.0
 #Instead of using the special character you can use your own color char
 #for defining the color/formatting codes!
 # [<Char> Default: '*']
-altcolorchar: '*'
+altcolorchar: '&'
 #
 server:
 # [-] META
   # Server name
   # [<String>]
-  name: Cool Server
+  name: Minecraft Server
   # Message of the day!
   # [<greedyString> c/f/GV]
   # - The message you can see in the server list
-  description: "%SERVER_NAME% *7-*b JOIN NOW!"
+  description: "%SERVER_NAME% &7-&b JOIN NOW!"
   # Player count custom text
   # The message you'll see on when you hover your cursor
   # over the player count
@@ -67,3 +67,18 @@ features:
 
 #If a warp requires a permission, its gonna be like this: 'permission_prefix.warp_name'
 warps.permission_prefix: 'warp'
+
+chat:
+  # [<greedyString> c/f/GV]
+  #You can set how the messages would look like on  the server
+  messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
+  ping:
+    #Pong! by enabling this players can ping each other inside the game!
+    #ps: they need to have the permission node "kiloessentials.chat.ping"
+    enable: true
+    # [<String>]
+    #This is how you have to type someone's name in order to ping them
+    format: '@%PLAYE_NAME%'
+    # [<COLOR/FORMATTING CODE> e.g: 'altColorChar' + Color code, &a]
+    #The color of the pinged player's name!
+    color: '&a'
