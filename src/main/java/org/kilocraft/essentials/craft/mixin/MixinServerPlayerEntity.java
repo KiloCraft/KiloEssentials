@@ -29,7 +29,6 @@ public abstract class MixinServerPlayerEntity {
             cir.cancel();
         else if (dimensionType_1.equals(DimensionType.THE_END) && !allowTheEnd)
             cir.cancel();
-
     }
 
 }

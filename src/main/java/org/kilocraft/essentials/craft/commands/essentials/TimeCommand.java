@@ -17,18 +17,20 @@ public class TimeCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher){
 
-        LiteralArgumentBuilder<ServerCommandSource> time = CommandManager.literal("test").requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time"),2));
-        RequiredArgumentBuilder<ServerCommandSource, String> argSet;
-        argSet = CommandManager.argument("set", StringArgumentType.string()).requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time"),2));
-
-        dispatcher.register(time);
-        time.then(argSet);
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("ke_time")
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time"),2));
+        RequiredArgumentBuilder<ServerCommandSource, String> argSet = CommandManager.argument("set", StringArgumentType.string())
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time.set"),2));
 
         argSet.executes(c -> executeSet(c));
 
-                argSet.then(CommandManager.argument("ticks", IntegerArgumentType.integer(1))
-                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time.set"),2))
-                        .executes(c -> executeSet(c)));
+        argSet.then(CommandManager.argument("ticks", IntegerArgumentType.integer(1))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time.set"),2))
+                .executes(c -> executeSet(c))
+        );
+
+        argumentBuilder.then(argSet);
+        dispatcher.register(argumentBuilder);
     }
 
     public static int executeSet(CommandContext<ServerCommandSource> context){

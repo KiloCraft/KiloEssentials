@@ -22,6 +22,7 @@ public class Commands {
         add("ke_msg");
         add("ke_whisper");
         add("ke_tell");
+        add("ke_time");
     }};
 
     public static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
@@ -38,6 +39,7 @@ public class Commands {
         add("tell");
         add("teammsg");
         add("tm");
+        add("time");
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
