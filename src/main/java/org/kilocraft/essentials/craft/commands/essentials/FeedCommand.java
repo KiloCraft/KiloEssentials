@@ -1,4 +1,5 @@
 package org.kilocraft.essentials.craft.commands.essentials;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -14,42 +15,41 @@ import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 
-public class HealCommand {
+public class FeedCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> heal = CommandManager.literal("heal")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
+        LiteralArgumentBuilder<ServerCommandSource> feed = CommandManager.literal("feed")
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.self"), 2));
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = CommandManager.argument("target", EntityArgumentType.player())
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.others"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.others"), 2))
                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
 
-        heal.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
-        target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.other"), 2));
+        feed.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.self"), 2));
+        target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.other"), 2));
 
-        heal.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
+        feed.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
         target.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayer(context, "target")));
 
-        heal.then(target);
-        dispatcher.register(heal);
+        feed.then(target);
+        dispatcher.register(feed);
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
 
         if (source.getName().equals(player.getName().asString())){
             if (player.getHealth() == player.getMaximumHealth())
-                KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.exception.self"));
+                KiloChat.sendMessageTo(player, LangText.get(true, "command.feed.exception.self"));
             else {
-                KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.self"));
+                KiloChat.sendMessageTo(player, LangText.get(true, "command.feed.self"));
             }
         } else {
             if (player.getHealth() == player.getMaximumHealth()) {
-                KiloChat.sendMessageTo(source, LangText.getFormatter(true, "command.heal.exception.others", player.getName().asString()));
+                KiloChat.sendMessageTo(source, LangText.getFormatter(true, "command.feed.exception.others", player.getName().asString()));
             } else {
-                KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.heal.announce", source.getName()));
-                TextFormat.sendToUniversalSource(source, LangText.getFormatter(true, "command.heal.other", player.getName().toString()), false);
+                KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.feed.announce", source.getName()));
+                TextFormat.sendToUniversalSource(source, LangText.getFormatter(true, "command.feed.other", player.getName().toString()), false);
             }
         }
 
-        player.setHealth(player.getMaximumHealth());
         player.getHungerManager().setFoodLevel(20);
         player.getHungerManager().setSaturationLevelClient(5.0F);
 

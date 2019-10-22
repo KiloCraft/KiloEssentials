@@ -13,7 +13,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.ConfigValueGetter;
@@ -36,6 +38,27 @@ public class KiloChat {
 
     public static void sendMessageTo(ServerCommandSource source, Text text) {
         source.sendFeedback(text, false);
+    }
+
+    public static void sendMessageToSource(ServerCommandSource source, ChatMessage message) {
+        if (CommandHelper.isConsole(source))
+            source.sendFeedback(new LiteralText(TextFormat.removeAlternateColorCodes('&', message.getFormattedMessage())), false);
+        else
+            source.sendFeedback(new LiteralText(message.getFormattedMessage()), false);
+    }
+
+    public static void sendLangMessageTo(ServerCommandSource source, String key) {
+        if (CommandHelper.isConsole(source))
+            source.sendFeedback(LangText.get(false, key), false);
+        else
+            source.sendFeedback(LangText.get(true, key), false);
+    }
+
+    public static void sendLangMessageTo(ServerCommandSource source, String key, Object... objects) {
+        if (CommandHelper.isConsole(source))
+            source.sendFeedback(LangText.getFormatter(false, key, objects), false);
+        else
+            source.sendFeedback(LangText.getFormatter(true, key, objects), false);
     }
 
     public static void broadCast(ChatMessage chatMessage) {
