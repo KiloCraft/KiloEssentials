@@ -12,9 +12,9 @@ public class CommandSuggestions {
 
     private static PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 
-    public static SuggestionProvider<ServerCommandSource> allPlayers = ((context, builder) -> {
-        return CommandSource.suggestMatching(playerManager.getPlayerNames(), builder);
-    });
+    public static SuggestionProvider<ServerCommandSource> allPlayers = ((context, builder) ->
+            CommandSource.suggestMatching(playerManager.getPlayerNames(), builder)
+    );
 
     public static SuggestionProvider<ServerCommandSource> suggestInput = ((context, builder) -> {
         builder.suggest(context.getNodes().get(0).getNode().getName());

@@ -45,7 +45,7 @@ schema: 1.1
 #for defining the color/formatting codes!
 # [<Char> Default: '*']
 altcolorchar: '&'
-#
+
 server:
 # [-] META
   # Server name
@@ -59,7 +59,12 @@ server:
   # The message you'll see on when you hover your cursor
   # over the player count
   playercountmessage: "%SERVER_NAME% is waiting for you to join!\n*b Use /help for more info!"
-#
+  #Customize the server world!
+  world:
+    #If set to false, no one can go to that dimension
+    allow_nether: true
+    allow_the_end: true
+
 features:
   #A list of the features you want to enable!
   PlayerHomes: true

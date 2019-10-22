@@ -8,7 +8,8 @@
   "server": [
     "MixinCommandManager",
     "MixinServerPlayNetWorkHandler",
-    "MixinCreeperEntity"
+    "MixinCreeperEntity",
+    "MixinServerPlayerEntity"
   ],
   "injectors": {
     "defaultRequire": 1
