@@ -83,6 +83,7 @@ public class KiloCommands {
         MessageCommand.register(this.dispatcher);
         HealCommand.register(this.dispatcher);
         FeedCommand.register(this.dispatcher);
+        SudoCommand.register(this.dispatcher);
         //InfoCommand.register(this.dispatcher);
 
         /**
