@@ -87,7 +87,8 @@ chat:
       enable: true
       # [<Minecraft identifier>]
       #Sound identifier, you can search for them through the '/playsound' command in the game!
-      id: 'minecraft:entity.experience_orb.pickup'
+      #Also make sure to remove the id prefix 'minecraf' from it!
+      id: 'entity.experience_orb.pickup'
       # [string <float>]
       # Default: 3.0
       volume: '3.0'

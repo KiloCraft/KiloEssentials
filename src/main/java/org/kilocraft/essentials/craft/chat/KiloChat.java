@@ -70,7 +70,7 @@ public class KiloChat {
                     );
 
                     if (config.getValue("chat.ping.sound.enable"))
-                        pingPlayer(player, playerName);
+                        pingPlayer(playerName);
                 }
 
             }
@@ -89,13 +89,14 @@ public class KiloChat {
         );
     }
 
-    public static void pingPlayer(ServerPlayerEntity player, String playerToPing) {
-        Vec3d vec3d = KiloServer.getServer().getPlayer(playerToPing).getCommandSource().getPosition();
-        String soundId = config.getValue("chat.ping.sound.id");
+    public static void pingPlayer(String playerToPing) {
+        ServerPlayerEntity target = KiloServer.getServer().getPlayer(playerToPing);
+        Vec3d vec3d = target.getCommandSource().getPosition();
+        String soundId = "minecraft:" + config.getValue("chat.ping.sound.id");
         float volume = Float.parseFloat(config.getValue("chat.ping.sound.volume"));
         float pitch = Float.parseFloat(config.getValue("chat.ping.sound.pitch"));
 
-        player.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
+        target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
     }
 
 
