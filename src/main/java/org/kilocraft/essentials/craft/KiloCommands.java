@@ -66,6 +66,7 @@ public class KiloCommands {
         DiscordCommand.register(this.dispatcher);
         HealCommand.register(this.dispatcher);
         KiloInfoCommand.register(this.dispatcher);
+        TimeCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         LocateCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
