@@ -3,7 +3,6 @@ package org.kilocraft.essentials.craft.commands.essentials;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
@@ -16,8 +15,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome.Category;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.craft.KiloCommands;
+import org.kilocraft.essentials.craft.ThreadManager;
 import org.kilocraft.essentials.craft.player.KiloPlayer;
 import org.kilocraft.essentials.craft.player.KiloPlayerManager;
+import org.kilocraft.essentials.craft.threaded.ThreadedRandomTeleporter;
 
 import java.util.Random;
 
@@ -35,20 +36,21 @@ public class RandomTeleportCommand {
 				}).build();
 
 		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = CommandManager
-				.argument("target", EntityArgumentType.player())
+				.argument("player", EntityArgumentType.player())
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.others"), 2))
-				.executes(context -> {
-					teleportRandomly(EntityArgumentType.getPlayer(context, "target"), context.getSource());
-					return 0;
-				}).build();
+				.executes(context -> execute(EntityArgumentType.getPlayer(context, "player"), context.getSource())).build();
 
 		randomTeleport.addChild(target);
 		dispatcher.getRoot().addChild(randomTeleport);
 		dispatcher.getRoot().addChild(CommandManager.literal("rtp").requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.self"), 2))
-				.executes(context -> {
-					teleportRandomly(context.getSource().getPlayer(), context.getSource());
-					return 0;
-				}).redirect(randomTeleport).build());
+				.executes(context -> execute(context.getSource().getPlayer(), context.getSource())).redirect(randomTeleport).build());
+	}
+
+	private static int execute(ServerPlayerEntity player, ServerCommandSource source) {
+		ThreadManager thread = new ThreadManager(new ThreadedRandomTeleporter(player, source));
+		thread.start();
+
+		return 1;
 	}
 
 	public static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {

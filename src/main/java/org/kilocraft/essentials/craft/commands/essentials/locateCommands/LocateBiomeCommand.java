@@ -27,7 +27,7 @@ public class LocateBiomeCommand {
         ThreadManager thread = new ThreadManager(new ThreadedBiomeLocator(source, biome));
         thread.start();
 
-        return 0;
+        return 1;
     }
 
 }
