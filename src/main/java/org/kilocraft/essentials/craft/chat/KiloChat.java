@@ -69,11 +69,14 @@ public class KiloChat {
                                     pingFormat.replace("%PLAYER_NAME%", playerName) + "&r")
                     );
 
-                    if (config.getValue("chat.ping.sound.enable"))
-                        pingPlayer(playerName);
+                    if (Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.ping.other"), 2))
+                        if (config.getValue("chat.ping.sound.enable"))
+                            pingPlayer(playerName);
                 }
 
             }
+
+
         }
 
         broadCast(
