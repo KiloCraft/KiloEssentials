@@ -52,9 +52,6 @@ public class KiloChat {
                 Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.format"), 2)
         );
 
-        /**
-         * REMINDER: ADD PERMISSION FOR THIS
-         */
         if (config.getValue("chat.ping.enable")) {
             String pingSenderFormat = config.get(false, "chat.ping.format");
             String pingFormat = config.get(false, "chat.ping.pinged");
@@ -69,11 +66,14 @@ public class KiloChat {
                                     pingFormat.replace("%PLAYER_NAME%", playerName) + "&r")
                     );
 
-                    if (config.getValue("chat.ping.sound.enable"))
-                        pingPlayer(playerName);
+                    if (Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.ping.other"), 2))
+                        if (config.getValue("chat.ping.sound.enable"))
+                            pingPlayer(playerName);
                 }
 
             }
+
+
         }
 
         broadCast(
