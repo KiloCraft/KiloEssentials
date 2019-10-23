@@ -23,16 +23,16 @@ public class KiloAPICommands {
         ModsCommand.register(dispatcher);
 
 //        TriggerEventApiCmd.register(dispatcher);
-        Thimble.permissionWriters.add(pair -> {
+        Thimble.permissionWriters.add((map, server) -> {
+            try {
+                map.getPermission("kiloapi", CommandPermission.class);
+                map.getPermission("kiloapi.command", CommandPermission.class);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+                e.printStackTrace();
+            }
             initializedPerms.forEach(perm -> {
                 try {
-                    pair.getLeft().getPermission("kiloapi", CommandPermission.class);
-                    pair.getLeft().getPermission("kiloapi.command", CommandPermission.class);
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    pair.getLeft().getPermission("kiloapi.command." + perm, CommandPermission.class);
+                    map.getPermission("kiloapi.command." + perm, CommandPermission.class);
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
                     e.printStackTrace();
                 }

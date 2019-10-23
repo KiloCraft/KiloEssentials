@@ -94,16 +94,16 @@ public class KiloCommands {
         StopCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
 
-        Thimble.permissionWriters.add(pair -> {
+        Thimble.permissionWriters.add((map, server) -> {
             try {
-                pair.getLeft().getPermission("kiloessentials", CommandPermission.class);
-                pair.getLeft().getPermission("kiloessentials.command", CommandPermission.class);
+                map.getPermission("kiloessentials", CommandPermission.class);
+                map.getPermission("kiloessentials.command", CommandPermission.class);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
                 e.printStackTrace();
             }
             initializedPerms.forEach(perm -> {
                 try {
-                    pair.getLeft().getPermission("kiloessentials.command." + perm, CommandPermission.class);
+                    map.getPermission("kiloessentials.command." + perm, CommandPermission.class);
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
                     e.printStackTrace();
                 }
