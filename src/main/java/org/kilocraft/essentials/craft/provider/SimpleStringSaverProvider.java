@@ -1,15 +1,20 @@
 package org.kilocraft.essentials.craft.provider;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public class SimpleStringSaver {
-    private Map<String, String> map;
+public class SimpleStringSaverProvider {
+    private Map<String, String> map = new HashMap<>();
 
-    public SimpleStringSaver() {
+    public SimpleStringSaverProvider() {
     }
 
     public void save(String key, String value) {
         map.put(key, value);
+    }
+
+    public void remove(String key) {
+        map.remove(key);
     }
 
     public String getValue(String key) {

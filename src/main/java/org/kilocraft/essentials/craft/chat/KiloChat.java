@@ -69,12 +69,13 @@ public class KiloChat {
     }
 
     public static void sendPrivateMessageTo(ServerCommandSource source, ServerPlayerEntity player, String message) throws CommandSyntaxException {
-        String format = KiloConifg.getProvider().getMain().getValue("privateMessageFormat");
-        String toSource = format.replace("%SOURCE%", "&r&aME&r").replace("%TARGET%", "&r" + player.getName().asString() + "&r");
-        String toTarget = format.replace("%SOURCE%", "&7" + source.getName() + "&r&aME");
+        String format = config.getValue("chat.privateMessageFormat");
 
-        sendMessageTo(player, new ChatMessage(toTarget, true));
+        String toSource = format.replace("%SOURCE%", "&r&aME&r").replace("%TARGET%", "&r" + player.getName().asString() + "&r").replace("%MESSAGE%", message);
+        String toTarget = format.replace("%SOURCE%", source.getName()).replace("%TARGET%",  "&r&aME").replace("%MESSAGE%", message);;
+
         sendMessageTo(source, new ChatMessage(toSource, true));
+        sendMessageTo(player, new ChatMessage(toTarget, true));
     }
 
     public static void broadCast(ChatMessage chatMessage) {

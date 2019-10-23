@@ -4,6 +4,7 @@ import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnDisconnect;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
+import org.kilocraft.essentials.craft.commands.essentials.MessageCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfigVariables;
 
@@ -17,5 +18,8 @@ public class PlayerLeaveEvent implements EventHandler<PlayerEvent$OnDisconnect> 
                         new PlayerConfigVariables(event.getPlayer())
                 ),
                 true
-        ));    }
+        ));
+
+        MessageCommand.playerProvider.remove(event.getPlayer().getCommandSource().getName());
+    }
 }
