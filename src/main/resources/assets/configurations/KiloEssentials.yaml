@@ -77,6 +77,7 @@ chat:
   # [<greedyString> c/f/GV]
   #You can set how the messages would look like on  the server
   messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
+  privateMessageFormat: '&r&7%SOURCE% &7-> &7%TARGET% &8>&7>'
   ping:
     #Pong! by enabling this players can ping each other inside the game!
     #ps: they need to have the permission node "kiloessentials.chat.ping"
