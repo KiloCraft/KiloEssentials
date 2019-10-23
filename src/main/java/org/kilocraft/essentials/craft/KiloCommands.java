@@ -83,7 +83,7 @@ public class KiloCommands {
         InvulnerablemodeCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
         KiloInfoCommand.register(this.dispatcher);
-        //TimeCommand.register(this.dispatcher);
+        TimeCommand.register(this.dispatcher);
         //InfoCommand.register(this.dispatcher);
 
         /**
