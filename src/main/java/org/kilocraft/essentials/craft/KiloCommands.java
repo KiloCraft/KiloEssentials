@@ -16,8 +16,6 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
 import org.kilocraft.essentials.craft.commands.KiloInfoCommand;
-import org.kilocraft.essentials.craft.commands.essentials.MessageCommand;
-import org.kilocraft.essentials.craft.commands.donatorcommands.PlayerParticlesCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateCommand;
@@ -61,11 +59,7 @@ public class KiloCommands {
         /**
          * @Essentials
          */
-        RandomTeleportCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
-        DiscordCommand.register(this.dispatcher);
-        KiloInfoCommand.register(this.dispatcher);
-        TimeCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         LocateCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
@@ -73,19 +67,23 @@ public class KiloCommands {
         ItemCommand.register(this.dispatcher);
         AnvilCommand.register(this.dispatcher);
         CraftingbenchCommand.register(this.dispatcher);
-        NickCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
         FlyCommand.register(this.dispatcher);
         SpeedCommand.register(this.dispatcher);
-        BackCommand.register(this.dispatcher);
-        PlayerParticlesCommand.register(this.dispatcher);
+        //RandomTeleportCommand.register(this.dispatcher);
+        //NickCommand.register(this.dispatcher);
+        //BackCommand.register(this.dispatcher);
+        //PlayerParticlesCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
         HealCommand.register(this.dispatcher);
         FeedCommand.register(this.dispatcher);
         SudoCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
         InvulnerablemodeCommand.register(this.dispatcher);
+        DiscordCommand.register(this.dispatcher);
+        KiloInfoCommand.register(this.dispatcher);
+        //TimeCommand.register(this.dispatcher);
         //InfoCommand.register(this.dispatcher);
 
         /**

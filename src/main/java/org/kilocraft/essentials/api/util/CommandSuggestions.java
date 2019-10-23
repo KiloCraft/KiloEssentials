@@ -40,5 +40,6 @@ public class CommandSuggestions {
         }
         return builder.buildFuture();
     });
+
 }
 

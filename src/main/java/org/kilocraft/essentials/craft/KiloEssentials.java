@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.homesystem.HomeManager;
-import org.kilocraft.essentials.craft.player.KiloPlayerManager;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
@@ -20,7 +19,6 @@ public class KiloEssentials {
 	private KiloEvents events;
 	private KiloCommands commands;
 	private ConfigurableFeatures configurableFeatures;
-	private KiloPlayerManager extraPlayerDataManager;
 	private static List<String> initializedPerms = new ArrayList<>();
 
 	public KiloEssentials(KiloEvents events, KiloCommands commands) {
@@ -34,11 +32,6 @@ public class KiloEssentials {
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new HomeManager(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
-
-		/**
-		 * @TEST
-		 */
-		extraPlayerDataManager = new KiloPlayerManager();
 
 		/**
 		 * Initializing the permissions

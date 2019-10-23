@@ -1,6 +1,8 @@
 package org.kilocraft.essentials.craft.commands.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -9,8 +11,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.craft.KiloCommands;
 
-import java.util.Collection;
 import java.util.HashMap;
 
 public class BackCommand {
@@ -29,19 +31,22 @@ public class BackCommand {
 	}
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(CommandManager.literal("back").executes(context -> {
-			return goBack(context.getSource().getPlayer());
-		}).then(CommandManager.argument("players", EntityArgumentType.players())
-				.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-				.executes(context -> goBack(EntityArgumentType.getPlayers(context, "players"))))
-		);
+		LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("back")
+				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("back.self"), 2))
+				.executes(c -> execute(c.getSource(), c.getSource().getPlayer()))
+				.then(
+						CommandManager.argument("player", EntityArgumentType.player())
+								.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("back.others"), 2))
+								.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
+								.executes(c -> execute(c.getSource(), EntityArgumentType.getPlayer(c, "player")))
+				);
+
+		dispatcher.register(argumentBuilder);
 	}
 
-	private static int goBack(Collection<ServerPlayerEntity> players) {
-		for (int i = 0; i < players.size(); i++) {
-			goBack((ServerPlayerEntity) players.toArray()[i]);
-		}
-		return 0;
+	private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
+
+		return 1;
 	}
 
 	public static int goBack(ServerPlayerEntity player) {

@@ -13,7 +13,6 @@ public class ThreadedStructureLocator implements KiloThread, Runnable {
     public ThreadedStructureLocator(ServerCommandSource commandSource, String structureName) {
         source = commandSource;
         name = structureName;
-        getLogger().info("Started thread StructureLocator by %s for structure \"%s\"", source.getName(), name);
     }
 
     @Override
@@ -24,6 +23,8 @@ public class ThreadedStructureLocator implements KiloThread, Runnable {
     @Override
     public void run() {
         logger = LogManager.getFormatterLogger(getName());
+        getLogger().info("Started thread StructureLocator by %s for structure \"%s\"", source.getName(), name);
+
         try {
             LocateStructureProvider.execute(source, name);
         } catch (CommandSyntaxException e) {
