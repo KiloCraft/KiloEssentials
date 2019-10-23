@@ -85,6 +85,7 @@ public class KiloCommands {
         FeedCommand.register(this.dispatcher);
         SudoCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
+        InvulnerablemodeCommand.register(this.dispatcher);
         //InfoCommand.register(this.dispatcher);
 
         /**

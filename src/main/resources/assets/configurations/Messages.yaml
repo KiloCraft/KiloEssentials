@@ -52,8 +52,7 @@ general:
   prefix: '&e[&6COOL SERVER&e]'
 #Messages used by commands
 commands:
-  broadcast:
-    format: '&f[&c&lBroadCast&f]&r %MESSAGE%'
+  broadcast_format: '&f[&c&lBroadCast&f]&r %MESSAGE%'
 
   discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
 

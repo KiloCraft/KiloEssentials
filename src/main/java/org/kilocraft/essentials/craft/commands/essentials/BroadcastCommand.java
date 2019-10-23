@@ -14,17 +14,18 @@ import org.kilocraft.essentials.craft.config.KiloConifg;
 public class BroadcastCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("broadcast")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("broadcast"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("broadcast"), 3))
                 .then(
                         CommandManager.argument("message", StringArgumentType.greedyString())
-                                .executes(c -> execute(c.getSource(), StringArgumentType.getString(c, "message")))
+                                .executes(c -> execute(StringArgumentType.getString(c, "message")))
                 );
 
         dispatcher.register(argumentBuilder);
     }
 
-    private static int execute(ServerCommandSource source, String message) {
-        String format = KiloConifg.getProvider().getMessages().get(true, "command.broadcast.format");
+    private static int execute(String message) {
+        String format = KiloConifg.getProvider().getMessages().getValue("commands.broadcast_format");
+        System.out.println(format);
         KiloChat.broadCast(
                 new ChatMessage(
                         format.replace("%MESSAGE%", message),
