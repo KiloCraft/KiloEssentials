@@ -23,9 +23,9 @@ public class ChatMessage {
         return this.original;
     }
 
-    public void setMessage(String string) {
+    public void setMessage(String string, boolean format) {
         this.original = string;
-        this.formatted = formatText ?
+        this.formatted = format ?
                 TextFormat.translateAlternateColorCodes('&', string) :
                 TextFormat.removeAlternateColorCodes('&', string);
     }

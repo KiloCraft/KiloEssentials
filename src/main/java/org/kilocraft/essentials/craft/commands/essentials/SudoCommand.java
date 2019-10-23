@@ -16,10 +16,12 @@ import org.kilocraft.essentials.craft.chat.KiloChat;
 public class SudoCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("sudo")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("sudo"), 4))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("sudo.others"), 3))
+                .executes(c -> executeUsage(c.getSource()))
                 .then(
                         CommandManager.argument("player", EntityArgumentType.player())
                             .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
+                            .executes(c -> executeUsage(c.getSource()))
                             .then(
                                     CommandManager.argument("command", StringArgumentType.greedyString())
                                             .executes(c -> execute(dispatcher, c.getSource(), EntityArgumentType.getPlayer(c, "player"), StringArgumentType.getString(c, "command")))
@@ -30,13 +32,23 @@ public class SudoCommand {
     }
 
     private static int execute(CommandDispatcher<ServerCommandSource> dispatcher, ServerCommandSource source, ServerPlayerEntity player, String command) {
-        try {
-            KiloChat.sendLangMessageTo(source, "command.sudo.success", player.getName().asString());
-            dispatcher.execute(command, player.getCommandSource());
-        } catch (CommandSyntaxException e) {
-            KiloChat.sendLangMessageTo(source, "command.sudo.failed", command);
+        KiloChat.sendLangMessageTo(source, "command.sudo.success", player.getName().asString());
+
+        if (command.startsWith("c:")) {
+            KiloChat.sendChatMessage(player, command.replaceFirst("c:", ""));
+        } else {
+            try {
+                dispatcher.execute(command.replace("/", ""), player.getCommandSource());
+            } catch (CommandSyntaxException e) {
+                KiloChat.sendLangMessageTo(source, "command.sudo.failed", command);
+            }
         }
 
+        return 1;
+    }
+
+    private static int executeUsage(ServerCommandSource source) {
+        KiloChat.sendLangMessageTo(source, "command.sudo.usage");
         return 1;
     }
 }

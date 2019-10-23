@@ -21,6 +21,6 @@ public abstract class MixinServerPlayNetWorkHandler {
 
     private void modify(ChatMessageC2SPacket chatMessageC2SPacket_1, CallbackInfo ci) {
         ci.cancel();
-        KiloChat.sendChatMessage(player, chatMessageC2SPacket_1);
+        KiloChat.sendChatMessage(player, chatMessageC2SPacket_1.getChatMessage());
     }
 }

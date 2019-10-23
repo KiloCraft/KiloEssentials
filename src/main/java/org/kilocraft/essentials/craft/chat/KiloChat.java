@@ -6,7 +6,6 @@ import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -69,9 +68,9 @@ public class KiloChat {
         KiloServer.getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));
     }
 
-    public static void sendChatMessage(ServerPlayerEntity player, ChatMessageC2SPacket packet) {
+    public static void sendChatMessage(ServerPlayerEntity player, String messageToSend) {
         ChatMessage message = new ChatMessage(
-                packet.getChatMessage(),
+                messageToSend,
                 Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.format"), 2)
         );
 
@@ -82,11 +81,12 @@ public class KiloChat {
             for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
                 String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", playerName);
 
-                if (packet.getChatMessage().contains(thisPing.replace("%PLAYER_NAME%", playerName))) {
+                if (messageToSend.contains(thisPing.replace("%PLAYER_NAME%", playerName))) {
                     message.setMessage(
                             message.getFormattedMessage().replaceAll(
                                     thisPing,
-                                    pingFormat.replace("%PLAYER_NAME%", playerName) + "&r")
+                                    pingFormat.replace("%PLAYER_NAME%", playerName) + "&r"),
+                            true
                     );
 
                     if (Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.ping.other"), 2))
