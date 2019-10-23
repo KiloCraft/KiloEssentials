@@ -44,10 +44,10 @@ public class KiloEssentials {
 		 * Initializing the permissions
 		 */
 
-		Thimble.permissionWriters.add(pair -> {
+		Thimble.permissionWriters.add((map, server) -> {
 			initializedPerms.forEach(perm -> {
 				try {
-					pair.getLeft().getPermission("kiloessentials." + perm, CommandPermission.class);
+					map.getPermission("kiloessentials." + perm, CommandPermission.class);
 				} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
 					e.printStackTrace();
 				}
