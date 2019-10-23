@@ -21,6 +21,8 @@ public class TimeCommand {
 
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("ke_time")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time"),2));
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder1 = CommandManager.literal("ke_time")
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time"),2));
         RequiredArgumentBuilder<ServerCommandSource, String> argSet = CommandManager.argument("set", StringArgumentType.string())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time.set"),2));
         RequiredArgumentBuilder<ServerCommandSource, String> argGet = CommandManager.argument("get", StringArgumentType.string())
@@ -35,7 +37,8 @@ public class TimeCommand {
                 .executes(c -> executeSet(c))
         );
 
-        argumentBuilder.then(argSet).then(argGet);
+        argumentBuilder.then(argGet);
+        argumentBuilder1.then(argSet);
 
         dispatcher.register(argumentBuilder);
     }
