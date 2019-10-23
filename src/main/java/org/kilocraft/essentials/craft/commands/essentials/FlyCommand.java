@@ -39,13 +39,16 @@ public class FlyCommand {
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity playerEntity, boolean bool) {
-        playerEntity.abilities.allowFlying = bool;
-        playerEntity.sendAbilitiesUpdate();
+        if (!playerEntity.abilities.allowFlying == bool) {
+            playerEntity.abilities.allowFlying = bool;
+            playerEntity.abilities.flying = bool;
+            playerEntity.sendAbilitiesUpdate();
 
-        KiloChat.sendLangMessageTo(source, "commands.general.set", "Flight", bool, playerEntity.getName().asString());
+            KiloChat.sendLangMessageTo(source, "command.general.set", "Flight", bool, playerEntity.getName().asString());
 
-        if (!CommandHelper.areTheSame(source, playerEntity))
-            KiloChat.sendLangMessageTo(playerEntity, "commands.general.announce", source.getName(), "Flight", bool);
+            if (!CommandHelper.areTheSame(source, playerEntity))
+                KiloChat.sendLangMessageTo(playerEntity, "command.general.announce", source.getName(), "Flight", bool);
+        }
 
         return 1;
     }

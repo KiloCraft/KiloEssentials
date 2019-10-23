@@ -10,6 +10,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.KiloChat;
@@ -34,7 +35,7 @@ public class HealCommand {
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
 
-        if (source.getName().equals(player.getName().asString())){
+        if (CommandHelper.areTheSame(source, player)){
             if (player.getHealth() == player.getMaximumHealth())
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.exception.self"));
             else {
@@ -51,7 +52,6 @@ public class HealCommand {
 
         player.setHealth(player.getMaximumHealth());
         player.getHungerManager().setFoodLevel(20);
-        player.getHungerManager().setSaturationLevelClient(5.0F);
 
         return 1;
     }
