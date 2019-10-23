@@ -38,6 +38,8 @@ public class TimeCommand {
         );
 
         argumentBuilder.then(argGet);
+        argumentBuilder1.then(argGet);
+        argumentBuilder.then(argSet);
         argumentBuilder1.then(argSet);
 
         dispatcher.register(argumentBuilder);
