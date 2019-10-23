@@ -11,6 +11,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.provider.SimpleStringSaverProvider;
@@ -63,13 +64,11 @@ public class MessageCommand {
     }
 
     private static int executeSend(ServerCommandSource source, ServerPlayerEntity target, String message) throws CommandSyntaxException {
-//        if (!CommandHelper.areTheSame(source, target))
-//            KiloChat.sendPrivateMessageTo(source, target, message);
-//        else
-//            source.sendError(new LiteralText("You can't send a message to your self!"));
-
-        playerProvider.save(source.getName(), target.getName().asString());
-        KiloChat.sendPrivateMessageTo(source, target, message);
+        if (!CommandHelper.areTheSame(source, target)) {
+            playerProvider.save(source.getName(), target.getName().asString());
+            KiloChat.sendPrivateMessageTo(source, target, message);
+        } else
+            source.sendError(new LiteralText("You can't send a message to your self!"));
 
         return 1;
     }
