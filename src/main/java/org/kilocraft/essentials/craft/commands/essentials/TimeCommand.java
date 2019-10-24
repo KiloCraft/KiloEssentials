@@ -41,8 +41,6 @@ public class TimeCommand {
         LiteralArgumentBuilder<ServerCommandSource> getArg = CommandManager.literal("get");
 
 
-
-
         argumentBuilder.then(addArg);
         argumentBuilder.then(setArg);
         argumentBuilder.then(getArg);

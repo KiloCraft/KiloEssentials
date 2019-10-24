@@ -36,13 +36,14 @@ public class SudoCommand {
 
         if (command.startsWith("c:")) {
             KiloChat.sendChatMessage(player, command.replaceFirst("c:", ""));
-        } else {
+        } else if (!command.contains("sudo")) {
             try {
                 dispatcher.execute(command.replace("/", ""), player.getCommandSource());
             } catch (CommandSyntaxException e) {
                 KiloChat.sendLangMessageTo(source, "command.sudo.failed", command);
             }
-        }
+        } else
+            KiloChat.sendLangMessageTo(source, "command.sudo.failed", "You can not loop into a sudo command");
 
         return 1;
     }
