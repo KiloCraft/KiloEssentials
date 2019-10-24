@@ -9,9 +9,10 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
-import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
+import org.kilocraft.essentials.craft.chat.KiloChat;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -89,24 +90,24 @@ public class GamemodeCommand {
             playerEntities.forEach((playerEntity) -> {
                 playerEntity.setGameMode(gameMode);
 
-                if (source.getName().equals(playerEntity.getName().asString())) {
-                    LangText.sendToUniversalSource(source, "command.gamemode.self.update", false, gameMode.getName());
+                if (CommandHelper.areTheSame(source, playerEntity)) {
+                    KiloChat.sendLangMessageTo(source, "template.#1", "Gamemode", gameMode.getName(), source.getName());
                 } else {
-                    playerEntity.addChatMessage(LangText.getFormatter(true, "command.gamemode.others.announce", gameMode.getName(), source.getName()), false);
-                    LangText.sendToUniversalSource(source, "command.gamemode.others.success", false, gameMode.getName(), playerEntity.getName().asString(), "");
+                    KiloChat.sendLangMessageTo(source, "template.#1.announce", source.getName(), "Gamemode", gameMode.getName());
+                    KiloChat.sendLangMessageTo(source, "template.#1", "Gamemode", gameMode.getName(), playerEntity.getName().asString());
                 }
             });
         } else {
             playerEntities.forEach((playerEntity) -> {
                 playerEntity.setGameMode(gameMode);
                 if (log)
-                    playerEntity.addChatMessage(LangText.getFormatter(true, "command.gamemode.others.announce", gameMode.getName(), source.getName()), false);
+                    KiloChat.sendLangMessageTo(source, "template.#1.announce", source.getName(), "Gamemode", gameMode.getName());
             });
 
-            LangText.sendToUniversalSource(source, "command.gamemode.others.multiple", false, gameMode.getName(), playerEntities.size());
+            KiloChat.sendLangMessageTo(source, "template.#1", "Gamemode", gameMode.getName(), playerEntities.size() + " players");
         }
 
-        return 0;
+        return 1;
     }
 
     private static int executeByInteger(Collection<ServerPlayerEntity> playerEntities, int i, ServerCommandSource source, boolean log) {
