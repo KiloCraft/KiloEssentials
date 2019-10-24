@@ -23,8 +23,8 @@ public class SudoCommand {
                             .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                             .executes(c -> executeUsage(c.getSource()))
                             .then(
-                                    CommandManager.argument("command", StringArgumentType.greedyString())
-                                            .executes(c -> execute(dispatcher, c.getSource(), EntityArgumentType.getPlayer(c, "player"), StringArgumentType.getString(c, "command")))
+                                    CommandManager.argument("args", StringArgumentType.greedyString())
+                                            .executes(c -> execute(dispatcher, c.getSource(), EntityArgumentType.getPlayer(c, "player"), StringArgumentType.getString(c, "args")))
                             )
                 );
 

@@ -44,10 +44,10 @@ public class FlyCommand {
             playerEntity.abilities.flying = bool;
             playerEntity.sendAbilitiesUpdate();
 
-            KiloChat.sendLangMessageTo(source, "command.general.set", "Flight", bool, playerEntity.getName().asString());
+            KiloChat.sendLangMessageTo(source, "template.#1", "Flight", bool, playerEntity.getName().asString());
 
             if (!CommandHelper.areTheSame(source, playerEntity))
-                KiloChat.sendLangMessageTo(playerEntity, "command.general.announce", source.getName(), "Flight", bool);
+                KiloChat.sendLangMessageTo(playerEntity, "template.#1.announce", source.getName(), "Flight", bool);
         }
 
         return 1;
