@@ -91,9 +91,9 @@ public class GamemodeCommand {
                 playerEntity.setGameMode(gameMode);
 
                 if (CommandHelper.areTheSame(source, playerEntity)) {
-                    KiloChat.sendLangMessageTo(source, "template.#1", "Gamemode", gameMode.getName(), source.getName());
+                    KiloChat.sendLangMessageTo(source, "template.#1", "gamemode", gameMode.getName(), source.getName());
                 } else {
-                    KiloChat.sendLangMessageTo(source, "template.#1.announce", source.getName(), "Gamemode", gameMode.getName());
+                    KiloChat.sendLangMessageTo(playerEntity, "template.#1.announce", source.getName(), "gamemode", gameMode.getName());
                     KiloChat.sendLangMessageTo(source, "template.#1", "Gamemode", gameMode.getName(), playerEntity.getName().asString());
                 }
             });
@@ -101,10 +101,10 @@ public class GamemodeCommand {
             playerEntities.forEach((playerEntity) -> {
                 playerEntity.setGameMode(gameMode);
                 if (log)
-                    KiloChat.sendLangMessageTo(source, "template.#1.announce", source.getName(), "Gamemode", gameMode.getName());
+                    KiloChat.sendLangMessageTo(playerEntity, "template.#1.announce", source.getName(), "gamemode", gameMode.getName());
             });
 
-            KiloChat.sendLangMessageTo(source, "template.#1", "Gamemode", gameMode.getName(), playerEntities.size() + " players");
+            KiloChat.sendLangMessageTo(source, "template.#1", "gamemode", gameMode.getName(), playerEntities.size() + " players");
         }
 
         return 1;
