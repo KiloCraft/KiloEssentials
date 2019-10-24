@@ -32,7 +32,7 @@ public class HomeCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.self.tp"), 2));
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.tp"), 2));
         LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.set"), 2));
         LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome")
@@ -102,6 +102,10 @@ public class HomeCommand {
                         .executes(c -> executeRemove(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
+        for (int i = 0; i == 20; i++) {
+            KiloCommands.getCommandPermission("home.self.set." + i);
+        }
+
         delhomeLiteral.then(argRemove);
         homeLiteral.then(argTeleport);
         sethomeLiteral.then(argSet);
@@ -139,6 +143,7 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
+            int homes = HomeManager.getHomes(gameProfile.getId()).size();
 
             if (HomeManager.hasHome(gameProfile.getId(), arg)) {
                 HomeManager.removeHome(HomeManager.getHome(gameProfile.getId(), arg));

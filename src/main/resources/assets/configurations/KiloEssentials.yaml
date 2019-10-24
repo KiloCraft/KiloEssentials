@@ -59,13 +59,20 @@ server:
   # The message you'll see on when you hover your cursor
   # over the player count
   playercountmessage: "%SERVER_NAME% is waiting for you to join!\n*b Use /help for more info!"
-  #Customize the server world!
+  # Custom display brand name!
+  # [<greedyString> c/f]
+  # - You'll see this on the debug screen (F3 MENU) in the client
+  # Default: "DEFAULT", set it to 'DEFAULT' to display the default brand name
+  displayBrandName: "DEFAULT"
+  # Customize the server world!
   world:
+    #[<boolean>]
     #If set to false, no one can go to that dimension
     allow_nether: true
     allow_the_end: true
 
 features:
+  #[<boolean>]
   #A list of the features you want to enable!
   PlayerHomes: true
   ServerWideWarps: true
@@ -90,6 +97,7 @@ chat:
     pinged: '&a%PLAYER_NAME%'
     #The sound you hear when someone pings you!
     sound:
+      #[<boolean>]
       enable: true
       # [<Minecraft identifier>]
       #Sound identifier, you can search for them through the '/playsound' command in the game!

@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.provider.SimpleStringSaverProvider;
 
@@ -22,6 +23,7 @@ public class MessageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(
                 CommandManager.literal("ke_msg")
+                        .executes(context -> KiloCommands.executeUsageFor("command.message.usage", context.getSource()))
                         .then(
                                 CommandManager.argument("player", EntityArgumentType.player())
                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
@@ -36,7 +38,8 @@ public class MessageCommand {
 
         LiteralCommandNode<ServerCommandSource> replyNode = dispatcher.register(
                 CommandManager.literal("r")
-                    .then(
+                        .executes(context -> KiloCommands.executeUsageFor("command.message.reply.usage", context.getSource()))
+                        .then(
                             CommandManager.argument("message", StringArgumentType.greedyString())
                                 .executes(MessageCommand::executeReply)
                     )

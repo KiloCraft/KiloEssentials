@@ -12,10 +12,12 @@ import org.kilocraft.essentials.api.command.CommandRegistry;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
-import org.kilocraft.essentials.api.player.OfflinePlayer;
 import org.kilocraft.essentials.api.world.World;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface Server {
 
@@ -33,13 +35,6 @@ public interface Server {
      */
 
     PlayerManager getPlayerManager();
-
-    /**
-     * Gets the OfflinePlayers
-     *
-     * @return an Array of OfflinePlayers
-     */
-    ArrayList<OfflinePlayer> getOfflinePlayers();
 
     /**
      * Gets a player object by the given username.
@@ -65,6 +60,11 @@ public interface Server {
      * @return the name of the Server
      */
     String getName();
+
+    /**
+     * Sets the Server name
+     */
+    void setName(String name);
 
     /**
      * Gets the version of the Server

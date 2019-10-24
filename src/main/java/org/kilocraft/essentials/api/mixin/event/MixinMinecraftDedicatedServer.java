@@ -21,7 +21,6 @@ public abstract class MixinMinecraftDedicatedServer {
 
         @Inject(at = @At(value = "INVOKE", target = "net.minecraft.util.SystemUtil.getMeasuringTimeNano()J", ordinal = 1), method = "setupServer")
         private void oky$setupServer$ready(CallbackInfoReturnable<Boolean> cir) {
-            LOGGER.info("KiloAPI: Server is now ready!");
             KiloServer.getServer().triggerEvent(new ServerEvent$OnReadyImpl());
         }
 

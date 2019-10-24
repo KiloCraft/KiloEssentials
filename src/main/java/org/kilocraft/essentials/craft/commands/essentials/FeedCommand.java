@@ -37,7 +37,7 @@ public class FeedCommand {
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
 
         if (CommandHelper.areTheSame(source, player)){
-            if (player.getHealth() == player.getMaximumHealth())
+            if (player.getHungerManager().getFoodLevel() == 20)
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.feed.exception.self"));
             else {
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.feed.self"));

@@ -2,8 +2,6 @@ package org.kilocraft.essentials.craft;
 
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.indicode.fabric.permissions.Thimble;
 import io.github.indicode.fabric.permissions.command.CommandPermission;
 import net.minecraft.SharedConstants;
@@ -14,18 +12,20 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.SomeGlobals;
+import org.kilocraft.essentials.craft.chat.ChatMessage;
+import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
 import org.kilocraft.essentials.craft.commands.KiloInfoCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateCommand;
-import org.kilocraft.essentials.craft.commands.servermanagement.*;
-import org.kilocraft.essentials.craft.config.KiloConifg;
+import org.kilocraft.essentials.craft.commands.servermanagement.OperatorCommand;
+import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
+import org.kilocraft.essentials.craft.commands.servermanagement.StopCommand;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class KiloCommands {
     private CommandDispatcher<ServerCommandSource> dispatcher;
@@ -89,8 +89,6 @@ public class KiloCommands {
         /**
          * @ServerManagement
          */
-        ServerCommand.register(this.dispatcher);
-        ServerModNameCommand.register(this.dispatcher);
         StopCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
 
@@ -111,15 +109,13 @@ public class KiloCommands {
         });
     }
 
-    public String buildSmartUsage(LiteralCommandNode<ServerCommandSource> literalCommandNode, ServerCommandSource source) {
-        String string = KiloConifg.getFileConfigOfMain().get("command.context.usage");
-        Map<CommandNode<ServerCommandSource>, String> usage = this.dispatcher.getSmartUsage(literalCommandNode, source);
-        return string.replaceFirst("%s", usage.toString());
-    }
-
-    public String buildUsage(String usage, ServerCommandSource source) {
-        String string = KiloConifg.getFileConfigOfMain().get("command.context.usage");
-        return string.replaceFirst("%s", usage);
+    public static int executeUsageFor(String langKey, ServerCommandSource source) {
+        String fromLang = Mod.getLang().getProperty(langKey);
+        if (fromLang != null)
+            KiloChat.sendMessageToSource(source, new ChatMessage("&6Correct usage:\n" + fromLang, true));
+        else
+            KiloChat.sendLangMessageTo(source, "general.usage.help");
+        return 1;
     }
 
     public static LiteralText getPermissionError(String hoverText) {

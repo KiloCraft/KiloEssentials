@@ -5,50 +5,32 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Style;
-import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.config.KiloConifg;
+import org.kilocraft.essentials.craft.provider.KiloBrandName;
 
 public class ReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(CommandManager.literal("ke_reload")
             .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.server.manage.reload", 2))
-                .then(CommandManager.literal("world").executes(c -> reloadWorld(c.getSource())))
-                .then(CommandManager.literal("config").executes(c -> reloadConfig(c.getSource(), true)))
-            .executes(c -> {
-                reloadConfig(c.getSource(), false);
-                return reloadWorld(c.getSource());
-            })
+            .executes(context -> execute(context.getSource()))
         );
 
         dispatcher.register(CommandManager.literal("rl")
-            .requires(source -> source.hasPermissionLevel(3))
-            .executes(context -> {
-                reloadConfig(context.getSource(), false);
-                return reloadWorld(context.getSource());
-            }));
+                .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.server.manage.reload", 2))
+                .executes(context -> execute(context.getSource()))
+        );
     }
 
-    private static int reloadConfig(ServerCommandSource source, boolean bool) {
-        if (bool) LangText.sendToUniversalSource(source, "command.reload.config", false);
+    private static int execute(ServerCommandSource source) {
+        KiloChat.sendLangMessageTo(source, "command.reload.start");
 
         KiloConifg.load();
-
-        if (bool) LangText.sendToUniversalSource(source, "command.reload.all.end", false);
-
-        return 1;
-    }
-
-    private static int reloadWorld(ServerCommandSource source) {
-        source.sendFeedback(LangText.get(false, "command.reload.all.start")
-                .setStyle(new Style().setColor(Formatting.RED)),
-                false);
-
         source.getMinecraftServer().reload();
-        source.sendFeedback(LangText.get(false, "command.reload.all.end")
-                .setStyle(new Style().setColor(Formatting.GREEN)),
-                false);
+        KiloBrandName.provide();
+
+        KiloChat.sendLangMessageTo(source, "command.reload.end");
+
         return 1;
     }
 }

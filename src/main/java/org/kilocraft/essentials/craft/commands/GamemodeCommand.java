@@ -115,7 +115,7 @@ public class GamemodeCommand {
 
         if (playerEntities.size() == 1) {
             playerEntities.forEach((playerEntity) -> {
-                if (playerEntity.getName().equals(source.getName())) {
+                if (CommandHelper.areTheSame(source, playerEntity)) {
                     if (Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("gamemode.self." + gameMode.getName()), 2)) {
                         execute(playerEntities, gameMode, source, log);
                     } else
