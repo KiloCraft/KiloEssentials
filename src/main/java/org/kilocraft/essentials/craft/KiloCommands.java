@@ -47,7 +47,7 @@ public class KiloCommands {
     private void register(boolean devEnv) {
         if (devEnv) {
             Mod.getLogger().debug("Server is running in debug mode!");
-            SharedConstants.isDevelopment = true;
+            SharedConstants.isDevelopment = devEnv;
         }
 
         /**
@@ -84,6 +84,7 @@ public class KiloCommands {
         DiscordCommand.register(this.dispatcher);
         KiloInfoCommand.register(this.dispatcher);
         TimeCommand.register(this.dispatcher);
+        InstantbuildCommand.register(this.dispatcher);
         //InfoCommand.register(this.dispatcher);
 
         /**

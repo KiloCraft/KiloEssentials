@@ -91,6 +91,9 @@ public class SpeedCommand {
 
         target.sendAbilitiesUpdate();
 
+        target.sendAbilitiesUpdate();
+        target.setSneaking(true);
+
         KiloChat.sendLangMessageTo(source, "command.speed.set", walkSpeed ? "walk" : "flight", speed, target.getName().asString());
         return 1;
     }

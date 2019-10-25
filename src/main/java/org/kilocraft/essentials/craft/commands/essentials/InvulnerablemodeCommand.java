@@ -41,7 +41,7 @@ public class InvulnerablemodeCommand {
         KiloChat.sendLangMessageTo(source, "template.#1", "Invulnerable", set, player.getName().asString());
 
         if (!CommandHelper.areTheSame(source, player))
-            KiloChat.sendLangMessageTo(player, "template.#1.announce1", source.getName(), "Invulnerable", set);
+            KiloChat.sendLangMessageTo(player, "template.#1.announce", source.getName(), "Invulnerable", set);
 
         player.sendAbilitiesUpdate();
         return 1;
