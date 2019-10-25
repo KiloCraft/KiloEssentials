@@ -20,6 +20,6 @@ public class PlayerLeaveEvent implements EventHandler<PlayerEvent$OnDisconnect> 
                 true
         ));
 
-        MessageCommand.playerProvider.remove(event.getPlayer().getCommandSource().getName());
+        MessageCommand.stringSaverProvider.remove(event.getPlayer().getCommandSource().getName());
     }
 }

@@ -11,14 +11,18 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.provider.SimpleStringSaverProvider;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class MessageCommand {
     private static final SimpleCommandExceptionType NO_MESSAGES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You don't have any messages to reply to!"));
+    private static final SimpleCommandExceptionType DERP_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You can't message your self you Derp!"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(
@@ -51,27 +55,30 @@ public class MessageCommand {
 
     }
 
-    public static SimpleStringSaverProvider playerProvider = new SimpleStringSaverProvider();
+    public static SimpleStringSaverProvider stringSaverProvider = new SimpleStringSaverProvider();
 
     private static int executeReply(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        System.out.println(playerProvider.getValue(context.getSource().getName()));
-        ServerPlayerEntity target = context.getSource().getMinecraftServer().getPlayerManager().getPlayer(playerProvider.getValue(context.getSource().getName()));
+        AtomicReference<ServerPlayerEntity> target = new AtomicReference<>();
+        stringSaverProvider.getMap().forEach((key, value) -> {
+            if (value.equals(context.getSource().getName())) target.set(KiloServer.getServer().getPlayer(key));
+        });
+
         String message = StringArgumentType.getString(context, "message");
 
-        if (target == null)
+        if (target.get() == null)
             throw NO_MESSAGES_EXCEPTION.create();
         else
-            executeSend(context.getSource(), target, message);
+            executeSend(context.getSource(), target.get(), message);
 
         return 1;
     }
 
     private static int executeSend(ServerCommandSource source, ServerPlayerEntity target, String message) throws CommandSyntaxException {
         if (!CommandHelper.areTheSame(source, target)) {
-            playerProvider.save(source.getName(), target.getName().asString());
+            stringSaverProvider.save(target.getName().asString(), source.getName());
             KiloChat.sendPrivateMessageTo(source, target, message);
         } else
-            source.sendError(new LiteralText("You can't send a message to your self!"));
+            throw DERP_EXCEPTION.create();
 
         return 1;
     }

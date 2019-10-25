@@ -26,33 +26,48 @@ public class StopCommand {
                         .suggests((context, builder1) -> CommandSuggestions.suggestInput.getSuggestions(context, builder1))
                     .executes(c -> execute(c, StringArgumentType.getString(c, "args")))
                 )
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("server.stop"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("server.manage.stop"), 4))
                 .executes(c -> execute(c, ""));
 
         dispatcher.register(builder);
     }
 
     private static int execute(CommandContext<ServerCommandSource> context, String s) {
-        boolean isConfirmed = false;
-        if (s.startsWith("-confirmed")) isConfirmed = true;
+        boolean isConfirmed = s.startsWith("-confirmed");
+        boolean isForceCrash = s.startsWith("-crash");
 
-        if (!CommandHelper.isConsole(context.getSource())) {
-            if (isConfirmed) {
-                TextFormat.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
-                if (!CommandHelper.isConsole(context.getSource())) KiloEssentials.getLogger().warn("%s is trying to stop the server", context.getSource().getName());
+        if (!isForceCrash) {
+            if (!CommandHelper.isConsole(context.getSource())) {
+                if (isConfirmed) {
+                    TextFormat.sendToUniversalSource(context.getSource(), "&cStopping the server...", false);
+                    if (!CommandHelper.isConsole(context.getSource())) KiloEssentials.getLogger().warn("%s is trying to stop the server", context.getSource().getName());
+                    KiloServer.getServer().shutdown();
+                } else {
+                    LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
+                    literalText.styled((style) -> {
+                        style.setColor(Formatting.RED);
+                        style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW)));
+                        style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));
+                    });
+
+                    context.getSource().sendFeedback(literalText, false);
+                }
+            } else if (CommandHelper.isConsole(context.getSource())) {
                 KiloServer.getServer().shutdown();
+            }
+        } else {
+            if (isConfirmed) {
+                throw new RuntimeException("[!] \"" + context.getSource().getName() + "\" forced a crash");
             } else {
                 LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
                 literalText.styled((style) -> {
                     style.setColor(Formatting.RED);
                     style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW)));
-                    style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));
+                    style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -crash -confirmed"));
                 });
 
                 context.getSource().sendFeedback(literalText, false);
             }
-        } else if (CommandHelper.isConsole(context.getSource())) {
-            KiloServer.getServer().shutdown();
         }
 
         return 1;

@@ -4,24 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SimpleStringSaverProvider {
-    private Map<String, String> map = new HashMap<>();
+    private Map<String, String> map;
 
     public SimpleStringSaverProvider() {
+        this.map = new HashMap<>();
     }
 
     public void save(String key, String value) {
-        map.put(key, value);
+        this.map.put(key, value);
     }
 
     public void remove(String key) {
-        map.remove(key);
+        this.map.remove(key);
     }
 
     public String getValue(String key) {
-        return map.get(key);
+        return this.map.get(key);
     }
 
     public void clear() {
-        map.clear();
+        this.map.clear();
+    }
+
+    public Map<String, String> getMap() {
+        return this.map;
     }
 }
