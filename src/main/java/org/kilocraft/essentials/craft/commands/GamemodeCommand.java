@@ -94,7 +94,7 @@ public class GamemodeCommand {
                     KiloChat.sendLangMessageTo(source, "template.#1", "gamemode", gameMode.getName(), source.getName());
                 } else {
                     KiloChat.sendLangMessageTo(playerEntity, "template.#1.announce", source.getName(), "gamemode", gameMode.getName());
-                    KiloChat.sendLangMessageTo(source, "template.#1", "Gamemode", gameMode.getName(), playerEntity.getName().asString());
+                    KiloChat.sendLangMessageTo(source, "template.#1", "gamemode", gameMode.getName(), playerEntity.getName().asString());
                 }
             });
         } else {
