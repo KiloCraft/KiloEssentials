@@ -32,7 +32,7 @@ public class KiloEssentials {
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new HomeManager(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
-
+		
 		/**
 		 * Initializing the permissions
 		 */
