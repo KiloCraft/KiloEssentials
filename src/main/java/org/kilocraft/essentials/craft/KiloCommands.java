@@ -121,7 +121,7 @@ public class KiloCommands {
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
         String fromLang = Mod.getLang().getProperty(langKey);
         if (fromLang != null)
-            KiloChat.sendMessageToSource(source, new ChatMessage("&6Correct usage:\n" + fromLang, true));
+            KiloChat.sendMessageToSource(source, new ChatMessage("&6Command usage:\n" + fromLang, true));
         else
             KiloChat.sendLangMessageTo(source, "general.usage.help");
         return 1;

@@ -22,27 +22,37 @@ public class BanCommand {
                         CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
                             .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                         .then(
-                                CommandManager.literal("permanent").then(
-                                        CommandManager.argument("reason", StringArgumentType.greedyString())
-                                )
+                                CommandManager.literal("permanent")
+                                        .then(
+                                                CommandManager.literal("username")
+                                                        .then(
+                                                                CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                        )
+                                        )
+                                        .then(
+                                                CommandManager.literal("ip")
+                                                        .then(
+                                                                CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                        )
+                                        )
                         )
                         .then(
                                 CommandManager.literal("temporary").then(
                                         CommandManager.argument("time", IntegerArgumentType.integer(0)).then(
                                                 CommandManager.argument("date", StringArgumentType.string())
                                                         .suggests((context, builder) -> CommandSuggestions.getDateArguments.getSuggestions(context, builder))
-                                                .then(
-                                                        CommandManager.literal("username")
-                                                                .then(
-                                                                        CommandManager.argument("reason", StringArgumentType.greedyString())
-                                                                )
-                                                )
-                                                .then(
-                                                        CommandManager.literal("ip")
-                                                                .then(
-                                                                        CommandManager.argument("reason", StringArgumentType.greedyString())
-                                                                )
-                                                )
+                                                        .then(
+                                                                CommandManager.literal("username")
+                                                                        .then(
+                                                                                CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                                        )
+                                                        )
+                                                        .then(
+                                                                CommandManager.literal("ip")
+                                                                        .then(
+                                                                                CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                                        )
+                                                        )
                                         )
                                 )
                         )
@@ -52,9 +62,18 @@ public class BanCommand {
                 .then(
                         CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
                                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-                        .then(
-                                CommandManager.argument("reason", StringArgumentType.greedyString())
-                        )
+                                .then(
+                                        CommandManager.literal("username")
+                                                .then(
+                                                        CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                )
+                                )
+                                .then(
+                                        CommandManager.literal("ip")
+                                                .then(
+                                                        CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                )
+                                )
                 );
 
         LiteralArgumentBuilder<ServerCommandSource> listArg = CommandManager.literal("list");
