@@ -8,7 +8,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.api.command.CommandRegistry;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
@@ -21,17 +20,15 @@ import java.util.*;
 public class ServerImpl implements Server {
     private final MinecraftServer server;
     private final EventRegistry eventRegistry;
-    private final CommandRegistry commandRegistry;
     private final String serverBrand;
     private String serverDisplayBrand;
     private String serverName = "Minecraft server";
 
-    public ServerImpl(MinecraftServer server, EventRegistry eventManager, CommandRegistry commandRegistry , String serverBrand) {
-        this.server = server;
+    public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager , String serverBrand) {
+        this.server = minecraftServer;
         this.serverBrand = serverBrand;
         this.serverDisplayBrand = serverBrand;
         this.eventRegistry = eventManager;
-        this.commandRegistry = commandRegistry;
     }
 
     public void savePlayers() {
@@ -110,11 +107,6 @@ public class ServerImpl implements Server {
     @Override
     public EventRegistry getEventRegistry() {
         return eventRegistry;
-    }
-
-    @Override
-    public CommandRegistry getCommandRegistry() {
-        return this.commandRegistry;
     }
 
 

@@ -2,7 +2,7 @@ package org.kilocraft.essentials.craft.customcommands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.util.SomeGlobals;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ public class CCommand {
     }
 
 
-    private static CommandDispatcher<ServerCommandSource> dispatcher = KiloServer.getServer().getCommandRegistry().getDispatcher();
+    private static CommandDispatcher<ServerCommandSource> dispatcher = SomeGlobals.commandDispatcher;
 
 
     public String getName() {

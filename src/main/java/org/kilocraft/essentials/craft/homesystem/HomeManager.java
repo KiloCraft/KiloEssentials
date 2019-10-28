@@ -9,7 +9,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
@@ -29,7 +29,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
     @Override
     public boolean register() {
         WorldDataLib.addIOCallback(this);
-        HomeCommand.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
+        HomeCommand.register(KiloCommands.getDispatcher());
         return true;
     }
 

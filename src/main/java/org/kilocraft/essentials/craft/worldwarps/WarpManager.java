@@ -12,7 +12,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.commands.essentials.WarpCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
@@ -37,8 +37,8 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
                 e.printStackTrace();
             }
         });
-        WarpCommand.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
-        WarpCommands.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
+        WarpCommand.register(KiloCommands.getDispatcher());
+        WarpCommands.register(KiloCommands.getDispatcher());
         return true;
     }
 
@@ -77,7 +77,7 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
 
     public void reload() {
         WorldDataLib.triggerCallbackLoad(this);
-        WarpCommands.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
+        WarpCommands.register(KiloCommands.getDispatcher());
     }
 
     public void save() {

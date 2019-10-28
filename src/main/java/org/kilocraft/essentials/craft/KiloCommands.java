@@ -16,12 +16,14 @@ import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
 import org.kilocraft.essentials.craft.commands.KiloInfoCommand;
+import org.kilocraft.essentials.craft.commands.RainbowCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.OperatorCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.StopCommand;
+import org.kilocraft.essentials.craft.commands.staffcommands.BanCommand;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -48,6 +50,7 @@ public class KiloCommands {
         if (devEnv) {
             Mod.getLogger().debug("Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
+            RainbowCommand.register(this.dispatcher);
         }
 
         /**
@@ -93,6 +96,11 @@ public class KiloCommands {
         StopCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
 
+        /**
+         * @Staff
+         */
+        BanCommand.register(this.dispatcher);
+
         Thimble.permissionWriters.add((map, server) -> {
             try {
                 map.getPermission("kiloessentials", CommandPermission.class);
@@ -125,5 +133,9 @@ public class KiloCommands {
            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW)));
         });
         return literalText;
+    }
+
+    public static CommandDispatcher<ServerCommandSource> getDispatcher() {
+        return SomeGlobals.commandDispatcher;
     }
 }
