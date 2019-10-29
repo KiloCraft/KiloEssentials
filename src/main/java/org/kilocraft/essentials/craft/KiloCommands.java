@@ -148,6 +148,8 @@ public class KiloCommands {
             Iterator iterator = commandNodeStringMap.values().iterator();
 
             KiloChat.sendLangMessageTo(source, "command.usage.firstRow", command);
+            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, "");
+
             while (iterator.hasNext()) {
                 String usage = (String) iterator.next();
                 KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, usage);
