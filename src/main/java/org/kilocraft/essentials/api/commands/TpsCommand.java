@@ -5,8 +5,9 @@ import com.mojang.brigadier.context.CommandContext;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.SomeGlobals;
+import org.kilocraft.essentials.craft.chat.ChatMessage;
+import org.kilocraft.essentials.craft.chat.KiloChat;
 
 public class TpsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -18,8 +19,8 @@ public class TpsCommand {
     }
 
     public static int run(CommandContext<ServerCommandSource> context) {
-        TextFormat.sendToUniversalSource(
-                context.getSource(),
+
+        KiloChat.sendMessageToSource(context.getSource(), new ChatMessage(
                 String.format(
                         "&6TPS &8(&71m&8/&75m&8/&715m&8)&%s %s&8,&%s %s&8,&%s %s&r",
                         tpstoColorCode(SomeGlobals.tps1.getAverage()),
@@ -29,17 +30,18 @@ public class TpsCommand {
                         tpstoColorCode(SomeGlobals.tps15.getAverage()),
                         SomeGlobals.tps15.getShortAverage()
                 ),
-                false);
+                true
+        ));
 
         return 1;
     }
 
     public static char tpstoColorCode(double tps){
-        if(tps > 15){
+        if (tps > 15){
             return 'a';
-        }else if(tps > 10){
+        } else if (tps > 10){
             return 'e';
-        }else{
+        } else {
             return 'c';
         }
     }
