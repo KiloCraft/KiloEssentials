@@ -19,12 +19,13 @@ public class CommandSuggestions {
         return builder.buildFuture();
     });
 
-    public static SuggestionProvider<ServerCommandSource> nonOperators = ((context, builder) ->
-            CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((p) ->
-                    !playerManager.isOperator(p.getGameProfile()))
-                            .map((p) -> p.getGameProfile().getName()),
-                    builder)
-    );
+    public static SuggestionProvider<ServerCommandSource> nonOperators = ((context, builder) -> {
+        return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((p) -> {
+            return !playerManager.isOperator(p.getGameProfile());
+        }).map((p) -> {
+            return p.getGameProfile().getName();
+        }), builder);
+    });
 
     public static SuggestionProvider<ServerCommandSource> operators = ((context, builder) -> {
         return CommandSource.suggestMatching(playerManager.getOpNames(), builder);
@@ -34,6 +35,5 @@ public class CommandSuggestions {
     public static SuggestionProvider<ServerCommandSource> getDateArguments = ((context, builder) ->
             CommandSource.suggestMatching(new String[]{"year", "month", "day", "minute", "second"}, builder)
     );
-
 }
 
