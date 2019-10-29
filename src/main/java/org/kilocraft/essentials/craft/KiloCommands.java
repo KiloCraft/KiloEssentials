@@ -98,7 +98,6 @@ public class KiloCommands {
         DiscordCommand.register(this.dispatcher);
         KiloInfoCommand.register(this.dispatcher);
         TimeCommand.register(this.dispatcher);
-        InstantbuildCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
         //InfoCommand.register(this.dispatcher);
 
