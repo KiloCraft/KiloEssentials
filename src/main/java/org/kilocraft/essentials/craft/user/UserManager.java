@@ -23,13 +23,13 @@ public abstract class UserManager {
     }
 
     private void saveUser(User user) throws IOException {
+        saveDir.mkdirs();
         FileOutputStream stream = new FileOutputStream(saveDir.getAbsolutePath() + "/" + user.getUuid().toString());
         NbtIo.writeCompressed(user.serialize(), stream);
     }
 
     private void loadUser(UUID uuid) throws FileNotFoundException {
         FileInputStream stream = new FileInputStream(saveDir.getAbsolutePath() + "/" + uuid.toString());
-        
     }
 
 }
