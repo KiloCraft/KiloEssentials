@@ -57,7 +57,7 @@ public class TimeCommand {
         argumentBuilder.then(queryArg);
         dispatcher.register(argumentBuilder);
     }
-    private static String getFormattedTime(ServerWorld world){return String.format("%02d:%02d", (int)(world.getTimeOfDay() %24000 / 1000), (int)(world.getTimeOfDay() %1000 / 16.6));}
+    private static String getFormattedTime(ServerWorld world){return String.format("%02d:%02d", (int)(world.getTimeOfDay() %24000 / 1000)+6, (int)(world.getTimeOfDay() %1000 / 16.6));}
 
 //    private static int getMinute(ServerWorld world){return (int)(world.getTimeOfDay() %1000 / 16.6);}
 //    private static int getHour(ServerWorld world){return (int)world.getTimeOfDay() %24000 / 1000;}
