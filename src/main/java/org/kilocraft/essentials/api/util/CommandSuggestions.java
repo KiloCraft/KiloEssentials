@@ -35,5 +35,6 @@ public class CommandSuggestions {
     public static SuggestionProvider<ServerCommandSource> getDateArguments = ((context, builder) ->
             CommandSource.suggestMatching(new String[]{"year", "month", "day", "minute", "second"}, builder)
     );
+    
 }
 
