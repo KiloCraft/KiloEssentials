@@ -43,11 +43,13 @@ public class TimeCommand {
 
         LiteralArgumentBuilder<ServerCommandSource> queryArg = CommandManager.literal("query")
                 .then(
-                        CommandManager.literal("daytime").executes(context -> executeQuery(context, getDayTime(context.getSource().getWorld())))
+                        CommandManager.literal("daytime").executes(context -> executeQuery(context, getDayTime(context.getSource().getWorld()),"daytime"))
                 ).then(
-                        CommandManager.literal("gametime").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTime() % 2147483647L)))
+                        CommandManager.literal("gametime").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTime() % 2147483647L), "gametime"))
                 ).then(
-                        CommandManager.literal("day").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L)))
+                        CommandManager.literal("day").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L),"day"))
+                ).then(
+                        CommandManager.literal("timedate").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay()),"time"))
                 );
 
         argumentBuilder.then(addArg);
@@ -55,6 +57,13 @@ public class TimeCommand {
         argumentBuilder.then(queryArg);
         dispatcher.register(argumentBuilder);
     }
+    private static String getFormattedTime(ServerWorld world){return String.format("%02d:%02d", (int)(world.getTimeOfDay() %24000 / 1000), (int)(world.getTimeOfDay() %1000 / 16.6));}
+
+//    private static int getMinute(ServerWorld world){return (int)(world.getTimeOfDay() %1000 / 16.6);}
+//    private static int getHour(ServerWorld world){return (int)world.getTimeOfDay() %24000 / 1000;}
+    private static int getDay(ServerWorld world){return (int)world.getTimeOfDay() / 24000;}
+
+
 
     private static int getDayTime(ServerWorld serverWorld) {
         return (int)(serverWorld.getTimeOfDay() % 24000L);
@@ -62,8 +71,14 @@ public class TimeCommand {
 
 
 
-    private static int executeQuery(CommandContext<ServerCommandSource> context, int time) {
-        KiloChat.sendLangMessageTo(context.getSource(), "command.time.query", time);
+    private static int executeQuery(CommandContext<ServerCommandSource> context, int time, String query) {
+        ServerWorld w = context.getSource().getWorld();
+        switch (query){
+            case "daytime": KiloChat.sendLangMessageTo(context.getSource(), "command.time.query.daytime", time);break;
+            case "gametime": KiloChat.sendLangMessageTo(context.getSource(), "command.time.query.gametime", time);break;
+            case "day": KiloChat.sendLangMessageTo(context.getSource(), "command.time.query.day", time);break;
+            case "time": KiloChat.sendLangMessageTo(context.getSource(), "command.time.query.time", getDay(w), getFormattedTime(w));break;
+        }
         return time;
     }
 
@@ -72,7 +87,7 @@ public class TimeCommand {
 
         while (iterator.hasNext()) {
             ServerWorld world = (ServerWorld) iterator.next();
-            world.setTimeOfDay(time);
+                world.setTimeOfDay(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);
         }
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", timeName + " &8(&d" + time + "&8)&r");
