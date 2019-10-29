@@ -21,7 +21,7 @@ public class TpsCommand {
         TextFormat.sendToUniversalSource(
                 context.getSource(),
                 String.format(
-                        "&6tps &8(&71m&8/&75m&8/&715m&8)&d %s&8,&d %s&8,&d %s&r",
+                        "&6tps &8(&e1m&8/&a5m&8/&d15m&8)&d %s&e,&a %s&8,&d %s&r",
                         SomeGlobals.tps1.getShortAverage(),
                         SomeGlobals.tps5.getShortAverage(),
                         SomeGlobals.tps15.getShortAverage()

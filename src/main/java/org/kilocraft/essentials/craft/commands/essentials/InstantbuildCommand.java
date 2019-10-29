@@ -38,13 +38,13 @@ public class InstantbuildCommand {
 
     private static int executeSet(ServerCommandSource source, ServerPlayerEntity target, boolean set) {
         target.abilities.creativeMode = set;
-        target.sendAbilitiesUpdate();
 
         KiloChat.sendLangMessageTo(source, "template.#1", "Instant build", set, target.getName().asString());
 
         if (!CommandHelper.areTheSame(source, target))
             KiloChat.sendLangMessageTo(target, "template.#1.announce", source.getName(), "Instant build", set);
 
+        target.sendAbilitiesUpdate();
         return 1;
     }
 }
