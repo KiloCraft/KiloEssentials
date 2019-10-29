@@ -35,11 +35,11 @@ public class TpsCommand {
     }
 
     public static char tpstoColorCode(double tps){
-        if(tps > 15){
+        if (tps > 15){
             return 'a';
-        }else if(tps > 10){
+        } else if (tps > 10){
             return 'e';
-        }else{
+        } else {
             return 'c';
         }
     }
