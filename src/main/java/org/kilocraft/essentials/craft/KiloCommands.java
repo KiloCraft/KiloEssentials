@@ -1,7 +1,13 @@
 package org.kilocraft.essentials.craft;
 
 
+import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.ParseResults;
+import com.mojang.brigadier.context.ParsedCommandNode;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.tree.CommandNode;
 import io.github.indicode.fabric.permissions.Thimble;
 import io.github.indicode.fabric.permissions.command.CommandPermission;
 import net.minecraft.SharedConstants;
@@ -17,6 +23,7 @@ import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
 import org.kilocraft.essentials.craft.commands.KiloInfoCommand;
 import org.kilocraft.essentials.craft.commands.RainbowCommand;
+import org.kilocraft.essentials.craft.commands.UsageCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateCommand;
@@ -27,9 +34,13 @@ import org.kilocraft.essentials.craft.commands.staffcommands.BanCommand;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class KiloCommands {
+    private static final SimpleCommandExceptionType SMART_USAGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Unknown command or insufficient permissions"));
+
     private CommandDispatcher<ServerCommandSource> dispatcher;
     public KiloCommands() {
         this.dispatcher = SomeGlobals.commandDispatcher;
@@ -88,6 +99,7 @@ public class KiloCommands {
         KiloInfoCommand.register(this.dispatcher);
         TimeCommand.register(this.dispatcher);
         InstantbuildCommand.register(this.dispatcher);
+        UsageCommand.register(this.dispatcher);
         //InfoCommand.register(this.dispatcher);
 
         /**
@@ -125,6 +137,24 @@ public class KiloCommands {
         else
             KiloChat.sendLangMessageTo(source, "general.usage.help");
         return 1;
+    }
+
+    public static int executeSmartUsageFor(String command, ServerCommandSource source) throws CommandSyntaxException {
+        ParseResults<ServerCommandSource> parseResults = getDispatcher().parse(command, source);
+        if (parseResults.getContext().getNodes().isEmpty()) {
+            throw SMART_USAGE_FAILED_EXCEPTION.create();
+        } else {
+            Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = getDispatcher().getSmartUsage(((ParsedCommandNode)Iterables.getLast(parseResults.getContext().getNodes())).getNode(), source);
+            Iterator iterator = commandNodeStringMap.values().iterator();
+
+            KiloChat.sendLangMessageTo(source, "command.usage.firstRow", command);
+            while (iterator.hasNext()) {
+                String usage = (String) iterator.next();
+                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", usage);
+            }
+
+            return 1;
+        }
     }
 
     public static LiteralText getPermissionError(String hoverText) {
