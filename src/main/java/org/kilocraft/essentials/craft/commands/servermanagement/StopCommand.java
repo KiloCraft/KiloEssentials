@@ -11,6 +11,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 
@@ -29,9 +30,8 @@ public class StopCommand {
 
     private static int execute(ServerCommandSource source, String args) {
         boolean confirmed = args.contains("-confirmed");
-        boolean forceCrash = args.contains("-crash");
 
-        if (!forceCrash && !confirmed) {
+        if (!confirmed && !CommandHelper.isConsole(source)) {
             LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
             literalText.styled((style) -> {
                 style.setColor(Formatting.RED);
@@ -40,23 +40,9 @@ public class StopCommand {
             });
 
             KiloChat.sendMessageTo(source, literalText);
-        } else if (!forceCrash)
+        } else
             KiloServer.getServer().shutdown();
 
-        if (forceCrash && !confirmed) {
-            LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
-            literalText.styled((style) -> {
-                style.setColor(Formatting.RED);
-                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click to force crash the server").formatted(Formatting.YELLOW)));
-                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -crash -confirmed"));
-            });
-
-            KiloChat.sendMessageTo(source, literalText);
-        } else if (forceCrash) {
-            source.getMinecraftServer().execute(() -> {
-                throw new RuntimeException("[!] \"" + source.getName() + "\" forced a crash");
-            });
-        }
 
         return 1;
     }

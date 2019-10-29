@@ -150,7 +150,7 @@ public class KiloCommands {
             KiloChat.sendLangMessageTo(source, "command.usage.firstRow", command);
             while (iterator.hasNext()) {
                 String usage = (String) iterator.next();
-                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", usage);
+                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, usage);
             }
 
             return 1;
