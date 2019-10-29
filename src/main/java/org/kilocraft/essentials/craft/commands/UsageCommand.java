@@ -16,6 +16,7 @@ import org.kilocraft.essentials.craft.KiloCommands;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class UsageCommand {
@@ -43,7 +44,7 @@ public class UsageCommand {
 
     private static SuggestionProvider<ServerCommandSource> suggestionProvider = ((context, builder) -> {
         int amount = 0;
-        ArrayList<String> stringArrayList = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> commandNodeMap = Maps.newHashMap();
         RootCommandNode<CommandSource> rootCommandNode = new RootCommandNode();
         commandNodeMap.put(KiloCommands.getDispatcher().getRoot(), rootCommandNode);
@@ -54,16 +55,10 @@ public class UsageCommand {
             CommandNode<ServerCommandSource> node = (CommandNode<ServerCommandSource>) iterator.next();
 
             if (node.canUse(context.getSource())) {
-                amount++;
-                stringArrayList.add(node.getName());
+                list.add(node.getName());
             }
         }
 
-        String[] strings = {};
-        for (int i = 0; i < amount; i++) {
-            strings[i] = stringArrayList.get(i);
-        }
-
-        return CommandSource.suggestMatching(strings, builder);
+        return CommandSource.suggestMatching(list.toArray(new String[0]), builder);
     });
 }
