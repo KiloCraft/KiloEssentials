@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.craft;
 
+import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,15 +37,7 @@ public class KiloEssentials {
 		 * Initializing the permissions
 		 */
 
-		Thimble.permissionWriters.add((map, server) -> {
-			initializedPerms.forEach(perm -> {
-				try {
-					map.getPermission("kiloessentials." + perm, CommandPermission.class);
-				} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-					e.printStackTrace();
-				}
-			});
-		});
+		Thimble.permissionWriters.add((map, server) -> initializedPerms.forEach(perm -> map.registerPermission("kiloessentials." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
 
 	}
 
