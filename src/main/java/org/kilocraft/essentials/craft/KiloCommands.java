@@ -8,8 +8,8 @@ import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
+import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
-import io.github.indicode.fabric.permissions.command.CommandPermission;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.HoverEvent;
@@ -113,19 +113,7 @@ public class KiloCommands {
         BanCommand.register(this.dispatcher);
 
         Thimble.permissionWriters.add((map, server) -> {
-            try {
-                map.getPermission("kiloessentials", CommandPermission.class);
-                map.getPermission("kiloessentials.command", CommandPermission.class);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                e.printStackTrace();
-            }
-            initializedPerms.forEach(perm -> {
-                try {
-                    map.getPermission("kiloessentials.command." + perm, CommandPermission.class);
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                    e.printStackTrace();
-                }
-            });
+            initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
         });
     }
 
