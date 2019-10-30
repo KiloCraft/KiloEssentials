@@ -15,17 +15,17 @@ import org.kilocraft.essentials.craft.chat.KiloChat;
 public class SpeedCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("speed")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("speed"), 2));
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed"), 2));
 
         LiteralArgumentBuilder<ServerCommandSource> walkSpeed = CommandManager.literal("walk")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("speed.walk.self"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.walk.self"), 2))
                 .then(
                         CommandManager.literal("set").then(
                                 CommandManager.argument("walkSpeed", FloatArgumentType.floatArg(0.0F, 10.0F))
                                         .executes(c -> executeSet(true, c.getSource(), c.getSource().getPlayer(), FloatArgumentType.getFloat(c, "walkSpeed")))
                                         .then(
                                                 CommandManager.argument("player", EntityArgumentType.player())
-                                                        .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("speed.walk.others"), 2))
+                                                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.walk.others"), 2))
                                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                                         .executes(
                                                                 c -> executeSet(true, c.getSource(), EntityArgumentType.getPlayer(c, "player"), FloatArgumentType.getFloat(c, "walkSpeed"))
@@ -39,7 +39,7 @@ public class SpeedCommand {
                                 .executes(c -> executeReset(true, c.getSource(), c.getSource().getPlayer()))
                                 .then(
                                 CommandManager.argument("player", EntityArgumentType.player())
-                                        .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("speed.walk.others"), 2))
+                                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.walk.others"), 2))
                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                         .executes(
                                                 c -> executeReset(true, c.getSource(), EntityArgumentType.getPlayer(c, "player"))
@@ -48,14 +48,14 @@ public class SpeedCommand {
                 );
 
         LiteralArgumentBuilder<ServerCommandSource> flightSpeed = CommandManager.literal("flight")
-                .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("speed.flight.self"), 2))
+                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.flight.self"), 2))
                 .then(
                         CommandManager.literal("set").then(
                                 CommandManager.argument("flightSpeed", FloatArgumentType.floatArg(0.0F, 10.0F))
                                         .executes(c -> executeSet(false, c.getSource(), c.getSource().getPlayer(), FloatArgumentType.getFloat(c, "flightSpeed")))
                                         .then(
                                                 CommandManager.argument("player", EntityArgumentType.player())
-                                                        .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("speed.flight.others"), 2))
+                                                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.flight.others"), 2))
                                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                                         .executes(
                                                                 c -> executeSet(false, c.getSource(), EntityArgumentType.getPlayer(c, "player"), FloatArgumentType.getFloat(c, "flightSpeed"))
@@ -69,7 +69,7 @@ public class SpeedCommand {
                                 .executes(c -> executeReset(false, c.getSource(), c.getSource().getPlayer()))
                                 .then(
                                 CommandManager.argument("player", EntityArgumentType.player())
-                                        .requires(s -> Thimble.hasPermissionChildOrOp(s, KiloCommands.getCommandPermission("speed.flight.others"), 2))
+                                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.flight.others"), 2))
                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                         .executes(
                                                 c -> executeReset(false, c.getSource(), EntityArgumentType.getPlayer(c, "player"))
