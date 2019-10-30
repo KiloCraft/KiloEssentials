@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.craft;
 
 import io.github.indicode.fabric.permissions.Thimble;
-import io.github.indicode.fabric.permissions.command.CommandPermission;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
