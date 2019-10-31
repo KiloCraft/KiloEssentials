@@ -84,11 +84,12 @@ public class SpeedCommand {
     }
 
     private static int executeSet(boolean walkSpeed, ServerCommandSource source, ServerPlayerEntity target, float speed) {
-        if (walkSpeed)
+        if (walkSpeed) {
             target.setMovementSpeed(speed);
-        else
-            target.flyingSpeed = speed;
-
+        } else {
+            target.abilities.setFlySpeed(speed);
+        }
+            
         target.sendAbilitiesUpdate();
 
         target.sendAbilitiesUpdate();
@@ -99,18 +100,16 @@ public class SpeedCommand {
     }
 
     private static int executeReset(boolean walkSpeed, ServerCommandSource source, ServerPlayerEntity target) {
-        if (walkSpeed)
+        if (walkSpeed) {
             target.setMovementSpeed(1.0F);
-        else
-            target.flyingSpeed = 0.02F;
-
+        } else {
+        	target.abilities.setFlySpeed(0.02f);
+        }
+            
         target.sendAbilitiesUpdate();
 
         KiloChat.sendLangMessageTo(source, "command.speed.set", walkSpeed ? "walk" : "flight", "reset &8(&a1.0F&8)&r", target.getName().asString());
         return 1;
-    }
-
-    private static void setWalkSpeed(ServerPlayerEntity player, float speed) {
     }
 
 }
