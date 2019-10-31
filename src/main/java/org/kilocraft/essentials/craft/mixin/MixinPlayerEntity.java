@@ -12,10 +12,11 @@ public abstract class MixinPlayerEntity {
 
 	@Inject(at = @At("HEAD"), method = "getDisplayName")
 	private void getDisplayName(CallbackInfoReturnable<Text> cir) {
-//		PlayerEntity player = (PlayerEntity) (Object) this;
-//		KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
+		/*
+		PlayerEntity player = (PlayerEntity) (Object) this;
+		KiloPlayer kiloPlayer = KiloPlayerManager.getPlayerData(player.getUuid());
 
-		/*if (kiloPlayer.nick == "") {
+		if (kiloPlayer.nick == "") {
 			CallbackInfoReturnable<R>.getCallInfoClassName(returnType)
 			return new LiteralText(player.getName().asString());
 		} else {
