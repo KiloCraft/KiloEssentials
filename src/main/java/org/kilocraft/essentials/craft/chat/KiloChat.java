@@ -108,7 +108,7 @@ public class KiloChat {
                     );
 
                     if (Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.ping.other"), 2))
-                        if (config.getValue("chat.ping.sound.enable"))
+                        if ((boolean) config.getValue("chat.ping.sound.enable"))
                             pingPlayer(playerName);
                 }
 
