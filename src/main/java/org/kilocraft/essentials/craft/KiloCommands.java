@@ -89,7 +89,7 @@ public class KiloCommands {
         RandomTeleportCommand.register(this.dispatcher);
         NickCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
-        //BackCommand.register(this.dispatcher);
+        BackCommand.register(this.dispatcher);
         PlayerParticlesCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
         HealCommand.register(this.dispatcher);

@@ -33,20 +33,15 @@ public class BackCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("back")
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("back.self"), 2))
-				.executes(c -> execute(c.getSource(), c.getSource().getPlayer()))
+				.executes(c -> goBack(c.getSource().getPlayer()))
 				.then(
 						CommandManager.argument("player", EntityArgumentType.player())
 								.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("back.others"), 2))
 								.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-								.executes(c -> execute(c.getSource(), EntityArgumentType.getPlayer(c, "player")))
+								.executes(c -> goBack(EntityArgumentType.getPlayer(c, "player")))
 				);
 
 		dispatcher.register(argumentBuilder);
-	}
-
-	private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
-
-		return 1;
 	}
 
 	public static int goBack(ServerPlayerEntity player) {
