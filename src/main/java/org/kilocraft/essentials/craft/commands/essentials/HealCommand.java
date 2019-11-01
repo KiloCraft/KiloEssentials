@@ -35,13 +35,13 @@ public class HealCommand {
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
         if (CommandHelper.areTheSame(source, player)){
-            if (player.getHealth() == player.getHealthMaximum())
+            if (player.getHealth() == player.getMaximumHealth())
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.exception.self"));
             else {
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.self"));
             }
         } else {
-            if (player.getHealth() == player.getHealthMaximum()) {
+            if (player.getHealth() == player.getMaximumHealth()) {
                 KiloChat.sendMessageTo(source, LangText.getFormatter(true, "command.heal.exception.others", player.getName().asString()));
             } else {
                 KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.heal.announce", source.getName()));
@@ -49,7 +49,7 @@ public class HealCommand {
             }
         }
 
-        player.setHealth(player.getHealthMaximum());
+        player.setHealth(player.getMaximumHealth());
         player.getHungerManager().setFoodLevel(20);
 
         return 1;

@@ -14,8 +14,8 @@ public abstract class MixinCreeperEntity {
 	private void explode() {
 		CreeperEntity creeper = (CreeperEntity) (Object) this;
 		if (!creeper.world.isClient) {
-			float range = creeper.isCharged() ? 2.0F : 1.0F;
-			creeper.world.createExplosion(creeper, creeper.x, creeper.y, creeper.z,
+			float range = creeper.shouldRenderOverlay() ? 2.0F : 1.0F;
+			creeper.world.createExplosion(creeper, creeper.getX(), creeper.getY(), creeper.getZ(),
 					(float) explosionRadius * range, Explosion.DestructionType.NONE);
 			creeper.remove();
 			spawnEffectsCloud();

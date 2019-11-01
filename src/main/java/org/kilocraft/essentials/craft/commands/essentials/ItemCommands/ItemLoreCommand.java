@@ -6,13 +6,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.LangText;
@@ -39,7 +37,7 @@ public class ItemLoreCommand {
 			if (item == null || item.isEmpty() == true) {
 				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 			} else {
-				if (itemTag == null || !itemTag.containsKey("lore") || !itemTag.getCompound("display").containsKey("Lore")) {
+				if (itemTag == null || !itemTag.contains("lore") || !itemTag.getCompound("display").contains("Lore")) {
 					return 1;
 				} else {
 					itemTag.getCompound("display").remove("Lore");
@@ -78,7 +76,7 @@ public class ItemLoreCommand {
 				itemTag = new CompoundTag();
 			}
 
-			if (!itemTag.containsKey("display")) {
+			if (!itemTag.contains("display")) {
 				itemTag.put("display", new CompoundTag());
 			}
 
@@ -87,11 +85,11 @@ public class ItemLoreCommand {
 				lore = new ListTag();
 			}
 
-			if (line > lore.size() - 1) {
-				for (int i = lore.size(); i <= line; i++) {
-					lore.add(new StringTag("{\"text\":\"\"}"));
-				}
-			}
+//			if (line > lore.size() - 1) {
+//				for (int i = lore.size(); i <= line; i++) {
+//					lore.add(new StringTag("{\"text\":\"\"}"))
+//				}
+//			}
 
 			String text = StringArgumentType.getString(context, "name...");
 			if (Thimble.hasPermissionOrOp(context.getSource(), "kiloessentials.command.item.lore.colour", 2)) {
@@ -100,9 +98,9 @@ public class ItemLoreCommand {
 				text = TextFormat.removeAlternateColorCodes('&', text);
 			}
 
-			lore.set(line, new StringTag("{\"text\":\"" + text + "\"}"));
-			itemTag.getCompound("display").put("Lore", lore);
-			item.setTag(itemTag);
+//			lore.set(line, new StringTag("{\"text\":\"" + text + "\"}"));
+//			itemTag.getCompound("display").put("Lore", lore);
+//			item.setTag(itemTag);
 
 			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", line,
 					StringArgumentType.getString(context, "name...")));
