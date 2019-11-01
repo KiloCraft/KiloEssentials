@@ -19,8 +19,7 @@ import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.ConfigValueGetter;
 import org.kilocraft.essentials.craft.config.provided.localvariables.PlayerConfigVariables;
-import org.kilocraft.essentials.craft.user.UserHandler;
-import org.kilocraft.essentials.craft.user.UserManager;
+import org.kilocraft.essentials.craft.user.User;
 
 public class KiloChat {
     private static ConfigValueGetter config = KiloConifg.getProvider().getMain();
@@ -99,7 +98,7 @@ public class KiloChat {
             String pingFormat = config.get(false, "chat.ping.pinged");
 
             for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
-                playerName = UserManager.getUserDisplayName(playerName);
+                playerName = KiloServer.getServer().getUserManager().getUserDisplayName(playerName);
             	String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", playerName);
 
                 if (messageToSend.contains(thisPing.replace("%PLAYER_NAME%", playerName))) {
@@ -127,7 +126,7 @@ public class KiloChat {
                                 "chat.messageFormat",
                                 new PlayerConfigVariables(player)
                         ).replace("%MESSAGE%", message.getFormattedMessage())
-                                .replace("%PLAYER_DISPLAYNAME%", UserManager.getUserDisplayName(player.getName().asString())),
+                                .replace("%PLAYER_DISPLAYNAME%", KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())),
                         true
                 )
         );
@@ -143,5 +142,10 @@ public class KiloChat {
         target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
     }
 
+    public static void broadcastUserJoinMessage(User user) {
+    }
+
+    public static void broadcastUserLeaveMessage(User user) {
+    }
 
 }

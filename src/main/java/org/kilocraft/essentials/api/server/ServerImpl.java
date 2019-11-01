@@ -14,19 +14,22 @@ import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.util.MinecraftServerLoggable;
 import org.kilocraft.essentials.api.world.World;
 import org.kilocraft.essentials.api.world.worldimpl.WorldImpl;
+import org.kilocraft.essentials.craft.user.UserManager;
 
 import java.util.*;
 
 public class ServerImpl implements Server {
     private final MinecraftServer server;
     private final EventRegistry eventRegistry;
+    private final UserManager userManager;
     private final String serverBrand;
     private String serverDisplayBrand;
     private String serverName = "Minecraft server";
 
-    public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager , String serverBrand) {
+    public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, UserManager userManager, String serverBrand) {
         this.server = minecraftServer;
         this.serverBrand = serverBrand;
+        this.userManager = userManager;
         this.serverDisplayBrand = serverBrand;
         this.eventRegistry = eventManager;
     }
@@ -42,6 +45,11 @@ public class ServerImpl implements Server {
     @Override
     public PlayerManager getPlayerManager() {
         return this.server.getPlayerManager();
+    }
+
+    @Override
+    public UserManager getUserManager() {
+        return this.userManager;
     }
 
 

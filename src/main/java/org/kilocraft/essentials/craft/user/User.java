@@ -3,28 +3,31 @@ package org.kilocraft.essentials.craft.user;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
 public class User {
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private UUID uuid;
-    private BlockPos lastPos = new BlockPos(0,100 ,0);
+    private BlockPos lastPos = new BlockPos(0,-1 ,0);
     private int lastPosDim = 0;
     private String nickName = "";
     private boolean isFlyEnabled = false;
     private boolean isInvulnerable = false;
-    private UUID lastPrivateMessageGetterUUID = UUID.randomUUID();
+    private UUID lastPrivateMessageGetterUUID;
     private String lastPrivateMessageText = "";
     private boolean hasJoinedBefore = false;
     private Date firstJoin = new Date();
     private int randomTeleportsLeft = 3;
-    private String particle = "";
+    private int displayParticleId = 0;
 
     public User(UUID uuid) {
         this.uuid = uuid;
     }
 
-    public CompoundTag serialize() {
+    CompoundTag serialize() {
         CompoundTag mainTag = new CompoundTag();
         CompoundTag metaTag = new CompoundTag();
         CompoundTag cacheTag = new CompoundTag();
@@ -48,25 +51,26 @@ public class User {
                 cacheTag.putBoolean("isInvulnerable", true);
         }
         {
-            CompoundTag firstJoinTag = new CompoundTag();
 
-            metaTag.put("firstJoin", firstJoinTag);
-            metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);           
-            metaTag.putInt("randomTeleportsLeft", this.randomTeleportsLeft);         
+            if (this.displayParticleId != 0)
+                metaTag.putInt("displayParticleId", this.displayParticleId);
+
+            metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
+            metaTag.putString("firstJoin", dateFormat.format(firstJoin));
+            metaTag.putString("nick", this.nickName);
         }
 
-        mainTag.putString("nick", this.nickName);
-        mainTag.putString("particle", this.particle);
+        mainTag.putInt("randomTeleportsLeft", this.randomTeleportsLeft);
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
         return mainTag;
     }
 
-    public void deserialize(CompoundTag compoundTag, UUID uuid) {
+    void deserialize(CompoundTag compoundTag, UUID uuid) {
         User user = new User(uuid);
         {
-            user.setNickName(compoundTag.getString("meta.nick"));
             user.setHasJoinedBefore(compoundTag.getBoolean("meta.hasJoinedBefore"));
+            user.setFirstJoin(getUserFirstJoinDate(compoundTag));
         }
         {
             user.setLastPrivateMessageGetter(compoundTag.getUuid("lastMessage.destUUID"));
@@ -78,9 +82,23 @@ public class User {
             if (compoundTag.getBoolean("cache.isInvulnerable"))
                 user.setIsInvulnerable(true);
         }
+        {
+            user.setNickName(compoundTag.getString("meta.nick"));
+            user.setDisplayParticleId(compoundTag.getInt("meta.displayParticleId"));
+        }
         
         user.setRandomTeleportsLeft(compoundTag.getInt("randomTeleportsLeft"));
-        user.setParticle(compoundTag.getString("particle"));
+        user.setDisplayParticleId(compoundTag.getInt("particle"));
+    }
+
+    private Date getUserFirstJoinDate(CompoundTag compoundTag) {
+        Date date = new Date();
+        try {
+            date = dateFormat.parse(compoundTag.getString("meta.firstJoin"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 
 
@@ -128,10 +146,10 @@ public class User {
     	return this.randomTeleportsLeft;
     }
     
-    public String getParticle() {
-    	return this.particle;
+    public int getDisplayParticleId () {
+    	return this.displayParticleId;
     }
-    
+
 
     public void setNickName(String name) {
         this.nickName = name;
@@ -173,8 +191,8 @@ public class User {
     	this.randomTeleportsLeft = randomTeleportsLeft;
     }
     
-    public void setParticle (String particle) {
-    	this.particle = particle;
+    public void setDisplayParticleId (int id) {
+    	this.displayParticleId = id;
     }
 
 }

@@ -12,10 +12,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.craft.KiloCommands;
-import org.kilocraft.essentials.craft.user.UserManager;
 
 public class NickCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -67,14 +67,14 @@ public class NickCommand {
 
 	private static void changeNick(CommandContext<ServerCommandSource> context, PlayerEntity player) {
 		String nick = StringArgumentType.getString(context, "name");
-		UserManager.getUser(player.getUuid())
+		KiloServer.getServer().getUserManager().getUser(player.getUuid())
 				.setNickName(new LiteralText(TextFormat.translateAlternateColorCodes('&', nick)).asString());
 		context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.success",
 				player.getName().asString(), TextFormat.removeAlternateColorCodes('&', nick)), false);
 	}
 
 	private static void resetNick(CommandContext<ServerCommandSource> context, PlayerEntity player) {
-		UserManager.getUser(player.getUuid()).setNickName("");
+		KiloServer.getServer().getUserManager().getUser(player.getUuid()).setNickName("");
 		context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.reset", player.getName().asString()),
 				false);
 	}

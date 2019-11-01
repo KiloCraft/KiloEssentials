@@ -6,6 +6,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.event.eventImpl.EventRegistryImpl;
 import org.kilocraft.essentials.api.server.ServerImpl;
+import org.kilocraft.essentials.craft.user.UserManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,6 +23,7 @@ public abstract class MixinMinecraftServerCommandOutput {
                 new ServerImpl(
                     minecraftServer,
                     new EventRegistryImpl(),
+                    new UserManager(),
                     String.format(
                             Mod.getProperties().getProperty("server.brand"),
                                 Mod.getVersion(),

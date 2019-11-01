@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.craft.events;
 
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnDisconnect;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
@@ -7,13 +8,12 @@ import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.commands.essentials.MessageCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.localvariables.PlayerConfigVariables;
-import org.kilocraft.essentials.craft.user.UserManager;
 
 public class PlayerLeaveEvent implements EventHandler<PlayerEvent$OnDisconnect> {
     @Override
     public void handle(PlayerEvent$OnDisconnect event) {
 
-        UserManager.onPlayerLeave(event.getPlayer());
+        KiloServer.getServer().getUserManager().onPlayerLeave(event.getPlayer());
 
         KiloChat.broadCast(new ChatMessage(
                 KiloConifg.getProvider().getMessages().getLocal(
