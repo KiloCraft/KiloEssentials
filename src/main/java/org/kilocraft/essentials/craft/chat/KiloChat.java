@@ -104,8 +104,7 @@ public class KiloChat {
 			String pingFormat = config.get(false, "chat.ping.pinged");
 
 			for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
-				String displayName = ((Team) KiloServer.getServer().getPlayerManager().getPlayer("string")
-						.getScoreboardTeam()).getPrefix().asString()
+				String displayName = ((Team) player.getScoreboardTeam()).getPrefix().asString()
 						+ KiloServer.getServer().getUserManager().getUserDisplayName(playerName);
 				String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", displayName);
 
@@ -124,10 +123,15 @@ public class KiloChat {
 		}
 
 		broadCast(new ChatMessage(config.getLocal(true, "chat.messageFormat", new PlayerConfigVariables(player))
-				.replace("%MESSAGE%", message.getFormattedMessage()).replace("%PLAYER_DISPLAYNAME%",
-						((Team) KiloServer.getServer().getPlayerManager().getPlayer("string").getScoreboardTeam())
-								.getPrefix().asString()
-								+ KiloServer.getServer().getUserManager()
+				.replace("%MESSAGE%", message.getFormattedMessage())
+				.replace("%PLAYER_DISPLAYNAME%", ((Team) player.getScoreboardTeam()).getPrefix().asString()
+						+ KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())),
+				true));
+	}
+
+	public static void pingPlayer(String playerToPing) {
+		ServerPlayerEntity target = KiloServer.getServer().getPlayer(playerToPing);
+		Vec3d vec3d = target.getCommandSource().getPosition();
 		String soundId = "minecraft:" + config.getValue("chat.ping.sound.id");
 		float volume = Float.parseFloat(config.getValue("chat.ping.sound.volume"));
 		float pitch = Float.parseFloat(config.getValue("chat.ping.sound.pitch"));
