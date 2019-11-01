@@ -105,7 +105,7 @@ public class KiloChat {
 
 			for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
 				String displayName = ((Team) player.getScoreboardTeam()).getPrefix().asString()
-						+ KiloServer.getServer().getUserManager().getUserDisplayName(playerName);
+						+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(playerName);
 				String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", displayName);
 
 				if (messageToSend.contains(thisPing.replace("%PLAYER_NAME%", displayName))) {
@@ -125,7 +125,7 @@ public class KiloChat {
 		broadCast(new ChatMessage(config.getLocal(true, "chat.messageFormat", new PlayerConfigVariables(player))
 				.replace("%MESSAGE%", message.getFormattedMessage())
 				.replace("%PLAYER_DISPLAYNAME%", ((Team) player.getScoreboardTeam()).getPrefix().asString()
-						+ KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())),
+						+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())),
 				true));
 	}
 

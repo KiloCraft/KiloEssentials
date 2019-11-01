@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.PacketByteBuf;
 
@@ -55,7 +56,8 @@ public class MixinPlayerListPacket {
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getGameMode().getId());
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getLatency());
 	               packetByteBuf_1.writeBoolean(true);
-	               packetByteBuf_1.writeText(new LiteralText(KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())));
+	               packetByteBuf_1.writeText(new LiteralText(((Team) player.getScoreboardTeam()).getPrefix().asString()
+							+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())));
 	               break;
 	            case UPDATE_GAME_MODE:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
@@ -68,7 +70,8 @@ public class MixinPlayerListPacket {
 	            case UPDATE_DISPLAY_NAME:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
 	               packetByteBuf_1.writeBoolean(true);
-	               packetByteBuf_1.writeText(new LiteralText(KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())));
+	               packetByteBuf_1.writeText(new LiteralText(((Team) player.getScoreboardTeam()).getPrefix().asString()
+							+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())));
 	               break;
 	            case REMOVE_PLAYER:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
