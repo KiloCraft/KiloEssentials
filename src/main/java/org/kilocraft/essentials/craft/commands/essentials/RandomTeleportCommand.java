@@ -61,10 +61,9 @@ public class RandomTeleportCommand {
 
 	public static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {
 		User user = UserManager.getUser(player.getUuid());
-		if (user.getRandomTeleportsLeft() == 0
-				|| !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
+		if (user.getRandomTeleportsLeft() == 0 && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
-		} else if (player.dimension == DimensionType.OVERWORLD) {
+		} else if (player.dimension == DimensionType.OVERWORLD && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.otherdimensions"), 2)) {
 			Random random = new Random();
 			int randomX = random.nextInt(14000) + 1000; // 1000 - 15000
 			int randomZ = random.nextInt(14000) + 1000; // 1000 - 15000
