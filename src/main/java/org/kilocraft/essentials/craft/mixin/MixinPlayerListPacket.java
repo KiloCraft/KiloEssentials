@@ -8,17 +8,12 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.user.User;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
-import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.world.GameMode;
 
 @Mixin(PlayerListS2CPacket.class)
 public class MixinPlayerListPacket {
@@ -60,7 +55,7 @@ public class MixinPlayerListPacket {
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getGameMode().getId());
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getLatency());
 	               packetByteBuf_1.writeBoolean(true);
-	               packetByteBuf_1.writeText(new LiteralText(user.getNickName()));
+	               packetByteBuf_1.writeText(new LiteralText(KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())));
 	               break;
 	            case UPDATE_GAME_MODE:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
@@ -73,7 +68,7 @@ public class MixinPlayerListPacket {
 	            case UPDATE_DISPLAY_NAME:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
 	               packetByteBuf_1.writeBoolean(true);
-	               packetByteBuf_1.writeText(new LiteralText(user.getNickName()));
+	               packetByteBuf_1.writeText(new LiteralText(KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())));
 	               break;
 	            case REMOVE_PLAYER:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
