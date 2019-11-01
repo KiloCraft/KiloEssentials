@@ -16,7 +16,7 @@ public class UserHandler {
         } catch (IOException e) {
             //PASS, Creating the user
             /**
-              @Note  remove for the BETA build
+              @N  remove for the BETA build
              */
             e.printStackTrace();
         }
@@ -33,12 +33,15 @@ public class UserHandler {
         return exists;
     }
 
-    public void saveData(User user) throws IOException {
-        NbtIo.writeCompressed(
-                user.serialize(),
-                new FileOutputStream(getUserFile(user))
-        );
+    public boolean saveData(User user) throws IOException {
+        boolean made =  getUserFile(user).createNewFile();
+        if (getUserFile(user).exists())
+            NbtIo.writeCompressed(
+                    user.serialize(),
+                    new FileOutputStream(getUserFile(user))
+            );
 
+        return made;
     }
 
     private File getUserFile(User user) {

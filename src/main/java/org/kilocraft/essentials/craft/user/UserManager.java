@@ -1,35 +1,68 @@
 package org.kilocraft.essentials.craft.user;
 
-import net.minecraft.nbt.NbtIo;
+import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public abstract class UserManager {
     private static List<User> loadedUsers = new ArrayList<>();
     private File saveDir = new File(KiloConifg.getWorkingDirectory() + "/users/");
+    private static UserHandler handler = new UserHandler();
 
     public UserManager() {
-
+        PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
     }
 
-    private boolean createNewUserFile(User user) throws IOException {
-        saveDir.mkdirs();
-        File userFile = new File(saveDir.getAbsolutePath() + "/" + user.getUuid().toString());
-        return userFile.createNewFile();
+    public List<User> getUsers() {
+        return loadedUsers;
     }
 
-    private void saveUser(User user) throws IOException {
-        saveDir.mkdirs();
-        FileOutputStream stream = new FileOutputStream(saveDir.getAbsolutePath() + "/" + user.getUuid().toString());
-        NbtIo.writeCompressed(user.serialize(), stream);
+    public User getUser(UUID uuid) {
+        User requested = new User(uuid);
+        for (User user : loadedUsers) {
+            if (user.getUuid().equals(uuid))
+                requested = user;
+        }
+
+        return requested;
     }
 
-    private void loadUser(UUID uuid) throws FileNotFoundException {
-        FileInputStream stream = new FileInputStream(saveDir.getAbsolutePath() + "/" + uuid.toString());
+    public User getUser(String name) {
+        return getUser(Objects.requireNonNull(KiloServer.getServer().getPlayerManager().getPlayer(name)).getUuid());
     }
 
+    public User getUserByNickname(String nickName) {
+        User requested = null;
+        for (User user : loadedUsers) {
+            if (user.getNickName().equals(nickName))
+                requested = user;
+        }
+
+        return requested;
+    }
+
+    public static void onPlayerJoin(ServerPlayerEntity player) {
+        User thisUser = new User(player.getUuid());
+        handler.handleUser(thisUser);
+        loadedUsers.add(thisUser);
+    }
+
+    public static void onPlayerLeave(ServerPlayerEntity player) {
+        User thisUser = new User(player.getUuid());
+        loadedUsers.remove(thisUser);
+        try {
+            handler.saveData(thisUser);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
+
