@@ -91,7 +91,7 @@ public class HomeManager extends NBTWorldData implements ConfigurableFeature {
     public CompoundTag toNBT(CompoundTag tag) {
         homes.forEach((home) -> {
             CompoundTag playerTag;
-            if (tag.containsKey(home.getOwner().toString())) {
+            if (tag.contains(home.getOwner().toString())) {
                 playerTag = tag.getCompound(home.getOwner().toString());
             } else {
                 playerTag = new CompoundTag();
