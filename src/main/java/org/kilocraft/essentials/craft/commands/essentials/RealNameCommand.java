@@ -10,6 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.craft.KiloCommands;
+import org.kilocraft.essentials.craft.user.User;
+import org.kilocraft.essentials.craft.user.UserManager;
 
 public class RealNameCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -21,10 +23,13 @@ public class RealNameCommand {
 
 					for (int i = 0; i < context.getSource().getWorld().getPlayers().size(); i++) {
 						PlayerEntity player = context.getSource().getWorld().getPlayers().get(i);
+						User user = UserManager.getUser(player.getUuid());
 
-						// TODO: check nick
-						context.getSource().getPlayer().sendMessage(LangText.getFormatter(true,
-								"command.realname.success", input, player.getName().asString()));
+						if (input == user.getNickName() && input != "") {
+							context.getSource().getPlayer().sendMessage(LangText.getFormatter(true,
+									"command.realname.success", input, player.getName().asString()));
+							return 0;
+						}
 					}
 
 					context.getSource().getPlayer()
