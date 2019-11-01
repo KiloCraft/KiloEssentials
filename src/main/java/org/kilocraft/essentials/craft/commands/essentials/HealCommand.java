@@ -34,6 +34,7 @@ public class HealCommand {
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
+
         if (CommandHelper.areTheSame(source, player)){
             if (player.getHealth() == player.getMaximumHealth())
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.exception.self"));

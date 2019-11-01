@@ -85,11 +85,11 @@ public class ItemLoreCommand {
 				lore = new ListTag();
 			}
 
-//			if (line > lore.size() - 1) {
-//				for (int i = lore.size(); i <= line; i++) {
-//					lore.add(new StringTag("{\"text\":\"\"}"))
-//				}
-//			}
+			if (line > lore.size() - 1) {
+				for (int i = lore.size(); i <= line; i++) {
+					lore.add(StringTag.of("{\"text\":\"\"}"));
+				}
+			}
 
 			String text = StringArgumentType.getString(context, "name...");
 			if (Thimble.hasPermissionOrOp(context.getSource(), "kiloessentials.command.item.lore.colour", 2)) {
@@ -98,9 +98,9 @@ public class ItemLoreCommand {
 				text = TextFormat.removeAlternateColorCodes('&', text);
 			}
 
-//			lore.set(line, new StringTag("{\"text\":\"" + text + "\"}"));
-//			itemTag.getCompound("display").put("Lore", lore);
-//			item.setTag(itemTag);
+			lore.set(line, StringTag.of("{\"text\":\"" + text + "\"}"));
+			itemTag.getCompound("display").put("Lore", lore);
+			item.setTag(itemTag);
 
 			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", line,
 					StringArgumentType.getString(context, "name...")));
