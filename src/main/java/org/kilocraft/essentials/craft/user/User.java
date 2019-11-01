@@ -82,6 +82,10 @@ public class User {
         return this.uuid;
     }
 
+    public String getUuidAsString() {
+        return this.uuid.toString();
+    }
+
     public String getNickName() {
         return this.nickName;
     }
