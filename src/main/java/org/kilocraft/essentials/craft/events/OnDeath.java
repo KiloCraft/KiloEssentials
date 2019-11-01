@@ -10,7 +10,6 @@ public class OnDeath implements EventHandler<PlayerEvent$OnDeath> {
 
 	@Override
 	public void handle(PlayerEvent$OnDeath event) {
-		System.out.println(event.getPlayer().getName().asString());
 		BackCommand.setLocation(event.getPlayer(),
 				new Vector3f((float) event.getPlayer().getPos().x, (float) event.getPlayer().getPos().y, (float) event.getPlayer().getPos().z), event.getPlayer().dimension);
 	}
