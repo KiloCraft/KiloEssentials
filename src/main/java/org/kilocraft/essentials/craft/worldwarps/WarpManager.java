@@ -13,7 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.craft.KiloCommands;
-import org.kilocraft.essentials.craft.commands.essentials.WarpCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.WarpCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 

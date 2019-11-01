@@ -18,6 +18,7 @@ public class User {
     private boolean hasJoinedBefore = false;
     private Date firstJoin = new Date();
     private int randomTeleportsLeft = 3;
+    private String particle = "";
 
     public User(UUID uuid) {
         this.uuid = uuid;
@@ -50,11 +51,12 @@ public class User {
             CompoundTag firstJoinTag = new CompoundTag();
 
             metaTag.put("firstJoin", firstJoinTag);
-            metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
-            metaTag.putString("nick", this.nickName);
-            metaTag.putInt("randomTeleportsLeft", this.randomTeleportsLeft);
+            metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);           
+            metaTag.putInt("randomTeleportsLeft", this.randomTeleportsLeft);         
         }
 
+        mainTag.putString("nick", this.nickName);
+        mainTag.putString("particle", this.particle);
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
         return mainTag;
@@ -78,11 +80,16 @@ public class User {
         }
         
         user.setRandomTeleportsLeft(compoundTag.getInt("randomTeleportsLeft"));
+        user.setParticle(compoundTag.getString("particle"));
     }
 
 
     public UUID getUuid() {
         return this.uuid;
+    }
+
+    public String getUuidAsString() {
+        return this.uuid.toString();
     }
 
     public String getNickName() {
@@ -120,6 +127,11 @@ public class User {
     public int getRandomTeleportsLeft() {
     	return this.randomTeleportsLeft;
     }
+    
+    public String getParticle() {
+    	return this.particle;
+    }
+    
 
     public void setNickName(String name) {
         this.nickName = name;
@@ -159,6 +171,10 @@ public class User {
     
     public void setRandomTeleportsLeft(int randomTeleportsLeft) {
     	this.randomTeleportsLeft = randomTeleportsLeft;
+    }
+    
+    public void setParticle (String particle) {
+    	this.particle = particle;
     }
 
 }

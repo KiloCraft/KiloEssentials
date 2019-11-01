@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
-import org.kilocraft.essentials.craft.commands.essentials.BackCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.BackCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 import java.text.DecimalFormat;
@@ -233,8 +233,8 @@ public class HomeCommand {
             GameProfile gameProfile = gameProfiles.iterator().next();
 
             if (HomeManager.hasHome(gameProfile.getId(), arg)) {
-                HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId(), arg));
-                BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
+            	BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
+                HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId(), arg));        
 
                 if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                     KiloChat.sendMessageTo(source, new ChatMessage(

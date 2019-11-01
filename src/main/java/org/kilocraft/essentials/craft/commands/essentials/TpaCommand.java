@@ -18,7 +18,7 @@ import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
-import org.kilocraft.essentials.craft.commands.essentials.BackCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.BackCommand;
 
 import java.util.Date;
 import java.util.HashMap;

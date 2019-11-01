@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.craft.config.provided;
 
-import org.kilocraft.essentials.craft.config.provided.localVariables.LocalConfigVariable;
+import org.kilocraft.essentials.craft.config.provided.localvariables.LocalConfigVariable;
 
 public class LocalVariableReplaced {
 

@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.craft;
 
-
 import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
@@ -22,18 +21,30 @@ import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
-import org.kilocraft.essentials.craft.commands.KiloInfoCommand;
+import org.kilocraft.essentials.craft.commands.KiloInfoCommands;
 import org.kilocraft.essentials.craft.commands.RainbowCommand;
 import org.kilocraft.essentials.craft.commands.UsageCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
-import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
-import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateCommand;
+import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.AnvilCommand;
+import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.ColorsCommand;
+import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.CraftingbenchCommand;
+import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.EnderchestCommand;
+import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.NickCommand;
+import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.PlayerParticlesCommand;
+import org.kilocraft.essentials.craft.commands.essentials.itemcommand.ItemCommand;
+import org.kilocraft.essentials.craft.commands.essentials.locatecommands.LocateCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.BackCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.BanCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.FeedCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.FlyCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.HealCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.InfoCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.InvulnerablemodeCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.SpeedCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.TimeCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.OperatorCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.craft.commands.servermanagement.StopCommand;
-import org.kilocraft.essentials.craft.commands.staffcommands.BanCommand;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -68,11 +79,11 @@ public class KiloCommands {
         /**
          * @Misc
          */
-        KiloInfoCommand.register(this.dispatcher);
+        KiloInfoCommands.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
 
         /**
-         * @Essentials
+         * @Players
          */
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
@@ -80,40 +91,48 @@ public class KiloCommands {
         InventoryCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
-        ItemCommand.register(this.dispatcher);
-        AnvilCommand.register(this.dispatcher);
-        CraftingbenchCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
-        RealNameCommand.register(this.dispatcher);
-        FlyCommand.register(this.dispatcher);
-        SpeedCommand.register(this.dispatcher);
+        RealNameCommand.register(this.dispatcher);      
         RandomTeleportCommand.register(this.dispatcher);
-        NickCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
-        //BackCommand.register(this.dispatcher);
-        //PlayerParticlesCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
-        HealCommand.register(this.dispatcher);
-        FeedCommand.register(this.dispatcher);
         SudoCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
-        InvulnerablemodeCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
-        KiloInfoCommand.register(this.dispatcher);
-        TimeCommand.register(this.dispatcher);
+        KiloInfoCommands.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
-        //InfoCommand.register(this.dispatcher);
+
+        /**
+         * @Donators
+         */
+        PlayerParticlesCommand.register(this.dispatcher);
+        NickCommand.register(this.dispatcher);
+        AnvilCommand.register(this.dispatcher);
+        CraftingbenchCommand.register(this.dispatcher);
+        ItemCommand.register(this.dispatcher);
+        ColorsCommand.register(this.dispatcher);
+        EnderchestCommand.register(this.dispatcher);
 
         /**
          * @ServerManagement
          */
         StopCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
+        InvulnerablemodeCommand.register(this.dispatcher);
 
         /**
          * @Staff
          */
+        LocateCommand.register(this.dispatcher);
         BanCommand.register(this.dispatcher);
+        BackCommand.register(this.dispatcher);
+        HealCommand.register(this.dispatcher);
+        FeedCommand.register(this.dispatcher);
+        TimeCommand.register(this.dispatcher);
+        FlyCommand.register(this.dispatcher);
+        SpeedCommand.register(this.dispatcher);
+        InfoCommand.register(this.dispatcher);
+        GamemodeCommand.register(this.dispatcher);
 
         Thimble.permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
