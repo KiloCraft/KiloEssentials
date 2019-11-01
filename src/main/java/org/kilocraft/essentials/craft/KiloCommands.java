@@ -21,7 +21,7 @@ import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.commands.GamemodeCommand;
-import org.kilocraft.essentials.craft.commands.KiloInfoCommand;
+import org.kilocraft.essentials.craft.commands.KiloInfoCommands;
 import org.kilocraft.essentials.craft.commands.RainbowCommand;
 import org.kilocraft.essentials.craft.commands.UsageCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
@@ -79,7 +79,7 @@ public class KiloCommands {
         /**
          * @Misc
          */
-        KiloInfoCommand.register(this.dispatcher);
+        KiloInfoCommands.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
 
         /**
@@ -109,7 +109,7 @@ public class KiloCommands {
         BroadcastCommand.register(this.dispatcher);
         InvulnerablemodeCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
-        KiloInfoCommand.register(this.dispatcher);
+        KiloInfoCommands.register(this.dispatcher);
         TimeCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
         //InfoCommand.register(this.dispatcher);

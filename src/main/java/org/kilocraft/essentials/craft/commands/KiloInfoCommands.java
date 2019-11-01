@@ -7,10 +7,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.chat.LangText;
 
-public class KiloInfoCommand {
+public class KiloInfoCommands {
 	
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-
         LiteralArgumentBuilder<ServerCommandSource> info = CommandManager.literal("essentials")
                 .executes(context -> {
                     LangText.sendToUniversalSource(context.getSource(),
