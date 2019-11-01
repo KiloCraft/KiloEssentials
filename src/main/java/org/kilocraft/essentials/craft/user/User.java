@@ -11,9 +11,9 @@ public class User {
     private BlockPos lastPos = new BlockPos(0,100 ,0);
     private int lastPosDim = 0;
     private String nickName = "User";
-    private boolean isFlyEnabled;
-    private boolean isVulnerable;
-    private String lastPrivateMessageGetterUUID = "";
+    private boolean isFlyEnabled = false;
+    private boolean isInvulnerable = false;
+    private UUID lastPrivateMessageGetterUUID = UUID.randomUUID();
     private String lastPrivateMessageText = "";
     private boolean hasJoinedBefore = false;
     private Date firstJoin = new Date();
@@ -36,11 +36,14 @@ public class User {
         }
         {
             CompoundTag lastMessageTag = new CompoundTag();
-            lastMessageTag.putString("destUUID", this.lastPrivateMessageGetterUUID);
+            lastMessageTag.putUuid("destUUID", this.lastPrivateMessageGetterUUID);
             lastMessageTag.putString("text", this.lastPrivateMessageText);
             cacheTag.put("lastMessage", lastMessageTag);
-            cacheTag.putBoolean("isFlyEnabled", this.isFlyEnabled);
-            cacheTag.putBoolean("isVulnerable", this.isVulnerable);
+
+            if (this.isFlyEnabled)
+                cacheTag.putBoolean("isFlyEnabled", true);
+            if (this.isInvulnerable)
+                cacheTag.putBoolean("isInvulnerable", true);
         }
         {
             CompoundTag firstJoinTag = new CompoundTag();
@@ -62,8 +65,16 @@ public class User {
             user.setHasJoinedBefore(compoundTag.getBoolean("meta.hasJoinedBefore"));
         }
         {
-
+            user.setLastPrivateMessageGetter(compoundTag.getUuid("lastMessage.destUUID"));
+            user.setLastPrivateMessageText(compoundTag.getString("lastMessage.text"));
         }
+        {
+            if (compoundTag.getBoolean("cache.isFlyEnabled"))
+                user.setFlyEnabled(true);
+            if (compoundTag.getBoolean("cache.isInvulnerable"))
+                user.setIsInvulnerable(true);
+        }
+
     }
 
 
@@ -88,7 +99,7 @@ public class User {
         return this.lastPosDim;
     }
 
-    public String getLastPrivateMessageGetterUUID() {
+    public UUID getLastPrivateMessageGetter() {
         return this.lastPrivateMessageGetterUUID;
     }
 
@@ -112,8 +123,8 @@ public class User {
         isFlyEnabled = set;
     }
 
-    public void setIsVulnerable(boolean set) {
-        this.isVulnerable = set;
+    public void setIsInvulnerable(boolean set) {
+        this.isInvulnerable= set;
     }
 
     public void setLastPos(BlockPos pos) {
@@ -124,8 +135,8 @@ public class User {
         this.lastPosDim = lastPosDim;
     }
 
-    public void setLastPrivateMessageGetterUUID(String lastPrivateMessageGetterUUID) {
-        this.lastPrivateMessageGetterUUID = lastPrivateMessageGetterUUID;
+    public void setLastPrivateMessageGetter(UUID uuid) {
+        this.lastPrivateMessageGetterUUID = uuid;
     }
 
     public void setLastPrivateMessageText(String lastPrivateMessageText) {

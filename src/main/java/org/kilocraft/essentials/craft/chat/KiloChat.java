@@ -92,7 +92,7 @@ public class KiloChat {
                 Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.format"), 2)
         );
 
-        if (config.getValue("chat.ping.enable")) {
+        if ((boolean) config.getValue("chat.ping.enable")) {
             String pingSenderFormat = config.get(false, "chat.ping.format");
             String pingFormat = config.get(false, "chat.ping.pinged");
 
