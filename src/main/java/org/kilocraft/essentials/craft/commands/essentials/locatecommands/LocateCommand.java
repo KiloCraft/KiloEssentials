@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.essentials.locateCommands;
+package org.kilocraft.essentials.craft.commands.essentials.locatecommands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.essentials.locateCommands;
+package org.kilocraft.essentials.craft.commands.essentials.locatecommands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;

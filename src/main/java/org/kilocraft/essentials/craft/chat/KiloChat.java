@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.ConfigValueGetter;
-import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfigVariables;
+import org.kilocraft.essentials.craft.config.provided.localvariables.PlayerConfigVariables;
 import org.kilocraft.essentials.craft.user.UserHandler;
 import org.kilocraft.essentials.craft.user.UserManager;
 

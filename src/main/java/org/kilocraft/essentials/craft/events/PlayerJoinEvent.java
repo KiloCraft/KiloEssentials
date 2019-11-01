@@ -5,7 +5,7 @@ import org.kilocraft.essentials.api.event.playerEvents.PlayerEvent$OnConnect;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.config.KiloConifg;
-import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfigVariables;
+import org.kilocraft.essentials.craft.config.provided.localvariables.PlayerConfigVariables;
 import org.kilocraft.essentials.craft.user.UserManager;
 
 public class PlayerJoinEvent implements EventHandler<PlayerEvent$OnConnect> {

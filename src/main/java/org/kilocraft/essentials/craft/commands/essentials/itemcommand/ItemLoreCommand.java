@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.essentials.ItemCommands;
+package org.kilocraft.essentials.craft.commands.essentials.itemcommand;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;

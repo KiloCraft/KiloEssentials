@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.config.provided.localVariables;
+package org.kilocraft.essentials.craft.config.provided.localvariables;
 
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
