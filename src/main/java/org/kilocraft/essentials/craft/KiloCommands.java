@@ -11,6 +11,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.SharedConstants;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
@@ -76,6 +77,7 @@ public class KiloCommands {
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         LocateCommand.register(this.dispatcher);
+        InventoryCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
         ItemCommand.register(this.dispatcher);
