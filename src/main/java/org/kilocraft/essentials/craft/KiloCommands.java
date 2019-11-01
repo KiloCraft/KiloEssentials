@@ -112,7 +112,7 @@ public class KiloCommands {
         KiloInfoCommands.register(this.dispatcher);
         TimeCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
-        //InfoCommand.register(this.dispatcher);
+        InfoCommand.register(this.dispatcher);
 
         /**
          * @ServerManagement
