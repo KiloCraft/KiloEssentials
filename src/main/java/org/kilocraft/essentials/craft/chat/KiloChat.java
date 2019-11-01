@@ -19,6 +19,8 @@ import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.ConfigValueGetter;
 import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfigVariables;
+import org.kilocraft.essentials.craft.user.UserHandler;
+import org.kilocraft.essentials.craft.user.UserManager;
 
 public class KiloChat {
     private static ConfigValueGetter config = KiloConifg.getProvider().getMain();
@@ -97,7 +99,8 @@ public class KiloChat {
             String pingFormat = config.get(false, "chat.ping.pinged");
 
             for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
-                String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", playerName);
+                playerName = UserManager.getUserDisplayName(playerName);
+            	String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", playerName);
 
                 if (messageToSend.contains(thisPing.replace("%PLAYER_NAME%", playerName))) {
                     message.setMessage(
@@ -124,7 +127,7 @@ public class KiloChat {
                                 "chat.messageFormat",
                                 new PlayerConfigVariables(player)
                         ).replace("%MESSAGE%", message.getFormattedMessage())
-                                .replace("%PLAYER_DISPLAYNAME%", player.getDisplayName().asFormattedString()),
+                                .replace("%PLAYER_DISPLAYNAME%", UserManager.getUserDisplayName(player.getName().asString())),
                         true
                 )
         );

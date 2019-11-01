@@ -16,7 +16,7 @@ public abstract class UserManager {
     private static List<User> loadedUsers = new ArrayList<>();
     private File saveDir = new File(KiloConifg.getWorkingDirectory() + "/users/");
     private static UserHandler handler = new UserHandler();
-
+    
     public UserManager() {
         PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
     }
@@ -25,7 +25,7 @@ public abstract class UserManager {
         return loadedUsers;
     }
 
-    public User getUser(UUID uuid) {
+    public static User getUser(UUID uuid) {
         User requested = new User(uuid);
         for (User user : loadedUsers) {
             if (user.getUuid().equals(uuid))
@@ -35,11 +35,11 @@ public abstract class UserManager {
         return requested;
     }
 
-    public User getUser(String name) {
+    public static User getUser(String name) {
         return getUser(Objects.requireNonNull(KiloServer.getServer().getPlayerManager().getPlayer(name)).getUuid());
     }
     
-    public String getUserDisplayName (String name) {
+    public static String getUserDisplayName (String name) {
     	User user = getUser(name);
     	
     	if (user.getNickName() == "") {
