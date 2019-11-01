@@ -38,6 +38,16 @@ public abstract class UserManager {
     public User getUser(String name) {
         return getUser(Objects.requireNonNull(KiloServer.getServer().getPlayerManager().getPlayer(name)).getUuid());
     }
+    
+    public String getUserDisplayName (String name) {
+    	User user = getUser(name);
+    	
+    	if (user.getNickName() == "") {
+    		return KiloServer.getServer().getPlayerManager().getPlayer(name).getName().asString();
+    	} else {
+    		return user.getNickName();
+    	}
+    }
 
     public User getUserByNickname(String nickName) {
         User requested = null;
