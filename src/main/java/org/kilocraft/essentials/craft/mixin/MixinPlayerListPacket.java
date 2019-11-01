@@ -57,7 +57,7 @@ public class MixinPlayerListPacket {
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getLatency());
 	               packetByteBuf_1.writeBoolean(true);
 	               packetByteBuf_1.writeText(new LiteralText(((Team) player.getScoreboardTeam()).getPrefix().asString()
-							+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())));
+							+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(user)));
 	               break;
 	            case UPDATE_GAME_MODE:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
@@ -71,7 +71,7 @@ public class MixinPlayerListPacket {
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
 	               packetByteBuf_1.writeBoolean(true);
 	               packetByteBuf_1.writeText(new LiteralText(((Team) player.getScoreboardTeam()).getPrefix().asString()
-							+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString())));
+							+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(user)));
 	               break;
 	            case REMOVE_PLAYER:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
