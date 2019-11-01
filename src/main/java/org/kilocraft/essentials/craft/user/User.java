@@ -10,7 +10,7 @@ public class User {
     private UUID uuid;
     private BlockPos lastPos = new BlockPos(0,100 ,0);
     private int lastPosDim = 0;
-    private String nickName = "User";
+    private String nickName = "";
     private boolean isFlyEnabled = false;
     private boolean isInvulnerable = false;
     private UUID lastPrivateMessageGetterUUID = UUID.randomUUID();
@@ -85,7 +85,6 @@ public class User {
     public String getNickName() {
         return this.nickName;
     }
-
 
     public BlockPos getLastPos() {
         return this.lastPos;
