@@ -24,6 +24,7 @@ import org.kilocraft.essentials.craft.commands.GamemodeCommand;
 import org.kilocraft.essentials.craft.commands.KiloInfoCommand;
 import org.kilocraft.essentials.craft.commands.RainbowCommand;
 import org.kilocraft.essentials.craft.commands.UsageCommand;
+import org.kilocraft.essentials.craft.commands.donatorcommands.PlayerParticlesCommand;
 import org.kilocraft.essentials.craft.commands.essentials.*;
 import org.kilocraft.essentials.craft.commands.essentials.ItemCommands.ItemCommand;
 import org.kilocraft.essentials.craft.commands.essentials.locateCommands.LocateCommand;
@@ -89,7 +90,7 @@ public class KiloCommands {
         NickCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
         //BackCommand.register(this.dispatcher);
-        //PlayerParticlesCommand.register(this.dispatcher);
+        PlayerParticlesCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
         HealCommand.register(this.dispatcher);
         FeedCommand.register(this.dispatcher);
