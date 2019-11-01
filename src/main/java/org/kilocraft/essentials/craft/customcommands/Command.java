@@ -2,17 +2,17 @@ package org.kilocraft.essentials.craft.customcommands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.util.SomeGlobals;
+import org.kilocraft.essentials.craft.KiloCommands;
 
 import java.util.ArrayList;
 
-public class CCommand {
+public class Command {
     protected String name;
     protected String permission_node;
     protected int op_level;
     protected ArrayList<String> executes, aliases;
 
-    public CCommand(String name, String permission_node, int op_level, ArrayList<String> executes, ArrayList<String> aliases) {
+    public Command(String name, String permission_node, int op_level, ArrayList<String> executes, ArrayList<String> aliases) {
         this.name = name;
         this.permission_node = permission_node;
         this.op_level = op_level;
@@ -21,8 +21,7 @@ public class CCommand {
     }
 
 
-    private static CommandDispatcher<ServerCommandSource> dispatcher = SomeGlobals.commandDispatcher;
-
+    private static CommandDispatcher<ServerCommandSource> dispatcher = KiloCommands.getDispatcher();
 
     public String getName() {
         return this.name;
@@ -32,7 +31,7 @@ public class CCommand {
         return this.permission_node;
     }
 
-    public int getOp_level() {
+    public int getOpLevel() {
         return this.op_level;
     }
 
