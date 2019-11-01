@@ -15,12 +15,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.dimension.DimensionType;
 
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.ThreadManager;
 import org.kilocraft.essentials.craft.threaded.ThreadedRandomTeleporter;
 import org.kilocraft.essentials.craft.user.User;
-import org.kilocraft.essentials.craft.user.UserManager;
 
 import java.util.Random;
 
@@ -60,7 +60,7 @@ public class RandomTeleportCommand {
 	}
 
 	public static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {
-		User user = UserManager.getUser(player.getUuid());
+		User user = KiloServer.getServer().getUserManager().getUser(player.getUuid());
 		if (user.getRandomTeleportsLeft() == 0 && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
 		} else if (player.dimension == DimensionType.OVERWORLD && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.otherdimensions"), 2)) {
