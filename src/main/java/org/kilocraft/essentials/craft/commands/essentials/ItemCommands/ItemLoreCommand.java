@@ -39,7 +39,7 @@ public class ItemLoreCommand {
 			if (item == null || item.isEmpty() == true) {
 				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 			} else {
-				if (itemTag == null || !itemTag.containsKey("lore") || !itemTag.getCompound("display").containsKey("Lore")) {
+				if (itemTag == null || !itemTag.contains("lore") || !itemTag.getCompound("display").contains("Lore")) {
 					return 1;
 				} else {
 					itemTag.getCompound("display").remove("Lore");
@@ -78,7 +78,7 @@ public class ItemLoreCommand {
 				itemTag = new CompoundTag();
 			}
 
-			if (!itemTag.containsKey("display")) {
+			if (!itemTag.contains("display")) {
 				itemTag.put("display", new CompoundTag());
 			}
 
@@ -89,7 +89,7 @@ public class ItemLoreCommand {
 
 			if (line > lore.size() - 1) {
 				for (int i = lore.size(); i <= line; i++) {
-					lore.add(new StringTag("{\"text\":\"\"}"));
+					lore.add(StringTag.of("{\"text\":\"\"}"));
 				}
 			}
 
@@ -100,7 +100,7 @@ public class ItemLoreCommand {
 				text = TextFormat.removeAlternateColorCodes('&', text);
 			}
 
-			lore.set(line, new StringTag("{\"text\":\"" + text + "\"}"));
+			lore.set(line, StringTag.of("{\"text\":\"" + text + "\"}"));
 			itemTag.getCompound("display").put("Lore", lore);
 			item.setTag(itemTag);
 
