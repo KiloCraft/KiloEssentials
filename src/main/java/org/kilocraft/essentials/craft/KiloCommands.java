@@ -87,6 +87,7 @@ public class KiloCommands {
         SpeedCommand.register(this.dispatcher);
         RandomTeleportCommand.register(this.dispatcher);
         NickCommand.register(this.dispatcher);
+        RealNameCommand.register(this.dispatcher);
         //BackCommand.register(this.dispatcher);
         //PlayerParticlesCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
