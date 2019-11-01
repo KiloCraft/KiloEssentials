@@ -13,6 +13,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome.Category;
+import net.minecraft.world.dimension.DimensionType;
+
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.ThreadManager;
@@ -38,12 +40,16 @@ public class RandomTeleportCommand {
 		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = CommandManager
 				.argument("player", EntityArgumentType.player())
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.others"), 2))
-				.executes(context -> execute(EntityArgumentType.getPlayer(context, "player"), context.getSource())).build();
+				.executes(context -> execute(EntityArgumentType.getPlayer(context, "player"), context.getSource()))
+				.build();
 
 		randomTeleport.addChild(target);
 		dispatcher.getRoot().addChild(randomTeleport);
-		dispatcher.getRoot().addChild(CommandManager.literal("rtp").requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.self"), 2))
-				.executes(context -> execute(context.getSource().getPlayer(), context.getSource())).redirect(randomTeleport).build());
+		dispatcher.getRoot()
+				.addChild(CommandManager.literal("rtp")
+						.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.self"), 2))
+						.executes(context -> execute(context.getSource().getPlayer(), context.getSource()))
+						.redirect(randomTeleport).build());
 	}
 
 	private static int execute(ServerPlayerEntity player, ServerCommandSource source) {
@@ -55,9 +61,10 @@ public class RandomTeleportCommand {
 
 	public static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {
 		User user = UserManager.getUser(player.getUuid());
-		if (user.getRandomTeleportsLeft() == 0 || !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
+		if (user.getRandomTeleportsLeft() == 0
+				|| !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
-		} else {
+		} else if (player.dimension == DimensionType.OVERWORLD) {
 			Random random = new Random();
 			int randomX = random.nextInt(14000) + 1000; // 1000 - 15000
 			int randomZ = random.nextInt(14000) + 1000; // 1000 - 15000
@@ -74,14 +81,18 @@ public class RandomTeleportCommand {
 			if (player.world.getBiome(new BlockPos(randomX, 65, randomZ)).getCategory() == Category.OCEAN) {
 				teleportRandomly(player, source);
 			} else {
-				player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 500, 255, false, false, false));
-				player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 500, 255, false, false, false));
+				player.addStatusEffect(
+						new StatusEffectInstance(StatusEffects.JUMP_BOOST, 30, 255, false, false, false));
+				player.addStatusEffect(
+						new StatusEffectInstance(StatusEffects.RESISTANCE, 30, 255, false, false, false));
 				player.teleport(randomX, 255, randomZ);
 				user.setRandomTeleportsLeft(user.getRandomTeleportsLeft() - 1);
 
 				player.sendMessage(LangText.getFormatter(true, "command.randomteleport.success",
 						"X: " + randomX + ", Z: " + randomZ, user.getRandomTeleportsLeft()));
 			}
+		} else {
+			player.sendMessage(LangText.get(true, "command.randomteleport.wrongdimension"));
 		}
 	}
 }
