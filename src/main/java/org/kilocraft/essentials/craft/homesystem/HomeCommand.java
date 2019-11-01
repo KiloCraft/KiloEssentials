@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
-import org.kilocraft.essentials.craft.commands.essentials.BackCommand;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.BackCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
 import java.text.DecimalFormat;

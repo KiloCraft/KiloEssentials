@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.essentials;
+package org.kilocraft.essentials.craft.commands.essentials.staffcommands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
