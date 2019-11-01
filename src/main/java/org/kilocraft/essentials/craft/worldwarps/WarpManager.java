@@ -2,8 +2,8 @@ package org.kilocraft.essentials.craft.worldwarps;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
-import io.github.indicode.fabric.permissions.command.CommandPermission;
 import io.github.indicode.fabric.worlddata.NBTWorldData;
 import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
@@ -30,13 +30,7 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     @Override
     public boolean register() {
         WorldDataLib.addIOCallback(this);
-        warps.forEach(warp -> {
-            try {
-                Thimble.PERMISSIONS.getPermission(warp.getPermissionNode(), CommandPermission.class);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                e.printStackTrace();
-            }
-        });
+        warps.forEach(warp -> Thimble.PERMISSIONS.registerPermission(warp.getPermissionNode(), PermChangeBehavior.UPDATE_COMMAND_TREE));
         WarpCommand.register(KiloCommands.getDispatcher());
         WarpCommands.register(KiloCommands.getDispatcher());
         return true;
