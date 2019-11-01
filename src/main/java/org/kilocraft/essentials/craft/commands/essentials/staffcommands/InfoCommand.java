@@ -36,7 +36,7 @@ public class InfoCommand {
         User user = UserManager.getUser(player.getUuid());
 
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.nick", user.getNickName()));
-        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().toString()));
+        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().asString()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.uuid", player.getUuid()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.rtpleft", user.getRandomTeleportsLeft()));      
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.pos", player.getPos()));
