@@ -51,12 +51,12 @@ public class User {
             CompoundTag firstJoinTag = new CompoundTag();
 
             metaTag.put("firstJoin", firstJoinTag);
-            metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
-            metaTag.putString("nick", this.nickName);
-            metaTag.putInt("randomTeleportsLeft", this.randomTeleportsLeft);
-            metaTag.putString("particle", this.particle);
+            metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);           
+            metaTag.putInt("randomTeleportsLeft", this.randomTeleportsLeft);         
         }
 
+        mainTag.putString("nick", this.nickName);
+        mainTag.putString("particle", this.particle);
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
         return mainTag;
