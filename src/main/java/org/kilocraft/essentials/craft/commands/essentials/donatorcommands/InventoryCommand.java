@@ -6,35 +6,27 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.container.Container;
-import net.minecraft.container.Generic3x3Container;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.DefaultedList;
-import net.minecraft.world.IWorld;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
+import org.kilocraft.essentials.craft.gui.GUI;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-public class InventoryCommand {
+public abstract class InventoryCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("inventory");
         KiloCommands.getCommandPermission("inventory.others");
@@ -78,38 +70,71 @@ public class InventoryCommand {
         return 1;
     }
 
-    public static int openInventory(ServerPlayerEntity sender, ServerPlayerEntity targetInventory) {
-        PlayerInventory inventory = new PlayerInventory(new PlayerEntity(targetInventory.getServerWorld(), targetInventory.getGameProfile()) {
+    public static int openInventory(ServerPlayerEntity sender, ServerPlayerEntity target) {
+//        Inventory gui = new Inventory() {
+//            @Override
+//            public int getInvSize() {
+//                return 54;
+//            }
+//
+//            @Override
+//            public boolean isInvEmpty() {
+//                return false;
+//            }
+//
+//            @Override
+//            public ItemStack getInvStack(int i) {
+//                ItemStack itemStack = null;
+//                for(int j = 0; j < 54; j++){
+//                    itemStack = target.inventory.getInvStack(i);
+//                }
+//                return itemStack;
+//            }
+//
+//            @Override
+//            public ItemStack takeInvStack(int i, int i1) {
+//                return null;
+//            }
+//
+//            @Override
+//            public ItemStack removeInvStack(int i) {
+//                return null;
+//            }
+//
+//            @Override
+//            public void setInvStack(int i, ItemStack itemStack) {
+//
+//            }
+//
+//            @Override
+//            public void markDirty() {
+//
+//            }
+//
+//            @Override
+//            public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+//                return true;
+//            }
+//
+//            @Override
+//            public void clear() {
+//
+//            }
+//        };
+        GUI gui = new GUI(54);
+        target.inventory.onInvOpen(sender);
+        sender.openContainer(new NameableContainerProvider() {
             @Override
-            public boolean isSpectator() {
-                return false;
+            public LiteralText getDisplayName() {
+                return (LiteralText) target.getName();
             }
 
             @Override
-            public boolean isCreative() {
-                return false;
+            public Container createMenu(int id, PlayerInventory inventory, PlayerEntity var3) {
+//                return GenericContainer.createGeneric9x6(id, inventory, new DoubleInventory(target.inventory, target.getEnderChestInventory()));
+                return GenericContainer.createGeneric9x6(id, inventory, gui);
             }
         });
-
-        for(int i = 0; i < 26; i++){
-            sender.sendMessage(new LiteralText(targetInventory.inventory.main.get(i).toString()));
-            inventory.main.set(i, targetInventory.inventory.main.get(i));
-        }
-
-//        NameableContainerProvider nameableContainerProvider_1 = ChestBlock.createContainerProvider(blockState_1, world_1, blockPos_1);
-
-        sender.openContainer(new ClientDummyContainerProvider((i, pInv, pEntity) -> {
-            return GenericContainer.createGeneric9x4(i, inventory);
-        }, new TranslatableText("container.inventory")));
-
-//        sender.openContainer(new ClientDummyContainerProvider((i, pInv, pEntity) -> {
-//            return GenericContainer.createGeneric9x3(i, inventory);
-//        }, new TranslatableText("container.inventory")));
-
-//        sender.openContainer(new ClientDummyContainerProvider((i, pInv, pEntity) -> {
-//            return GenericContainer.createGeneric9x6(i, playerInventory);
-//        }, new TranslatableText("container.inventory")));
-
         return 1;
     }
 
