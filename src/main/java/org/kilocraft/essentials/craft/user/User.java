@@ -17,6 +17,7 @@ public class User {
     private String lastPrivateMessageText = "";
     private boolean hasJoinedBefore = false;
     private Date firstJoin = new Date();
+    private int randomTeleportsLeft = 3;
 
     public User(UUID uuid) {
         this.uuid = uuid;
@@ -51,6 +52,7 @@ public class User {
             metaTag.put("firstJoin", firstJoinTag);
             metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
             metaTag.putString("nick", this.nickName);
+            metaTag.putInt("randomTeleportsLeft", this.randomTeleportsLeft);
         }
 
         mainTag.put("meta", metaTag);
@@ -74,7 +76,8 @@ public class User {
             if (compoundTag.getBoolean("cache.isInvulnerable"))
                 user.setIsInvulnerable(true);
         }
-
+        
+        user.setRandomTeleportsLeft(compoundTag.getInt("randomTeleportsLeft"));
     }
 
 
@@ -113,6 +116,10 @@ public class User {
     public Date getFirstJoin() {
         return this.firstJoin;
     }
+    
+    public int getRandomTeleportsLeft() {
+    	return this.randomTeleportsLeft;
+    }
 
     public void setNickName(String name) {
         this.nickName = name;
@@ -148,6 +155,10 @@ public class User {
 
     public void setFirstJoin(Date firstJoin) {
         this.firstJoin = firstJoin;
+    }
+    
+    public void setRandomTeleportsLeft(int randomTeleportsLeft) {
+    	this.randomTeleportsLeft = randomTeleportsLeft;
     }
 
 }
