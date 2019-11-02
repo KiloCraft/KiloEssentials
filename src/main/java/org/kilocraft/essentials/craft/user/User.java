@@ -1,28 +1,56 @@
 package org.kilocraft.essentials.craft.user;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.craft.homesystem.Home;
+import org.kilocraft.essentials.craft.homesystem.HomeManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class User {
+    private static UserManager manager = KiloServer.getServer().getUserManager();
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private UUID uuid;
+    UUID uuid;
+    String name = "";
     private BlockPos lastPos = new BlockPos(0,-1 ,0);
+    private BlockPos pos = new BlockPos(0, -1, 0);
     private int lastPosDim = 0;
-    private String nickName = "";
+    private int posDim = 0;
+    private String nickname = "";
     private boolean isFlyEnabled = false;
     private boolean isInvulnerable = false;
-    private UUID lastPrivateMessageGetterUUID;
+    private String lastPrivateMessageGetterUUID = "";
     private String lastPrivateMessageText = "";
-    private boolean hasJoinedBefore = false;
+    private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
     private int randomTeleportsLeft = 3;
     private int displayParticleId = 0;
+    private List<Home> homes = new ArrayList<>();
 
+    public static User of(UUID uuid) {
+        return new User(uuid);
+    }
+
+    public static User of(String name) {
+        return manager.getUser(name);
+    }
+
+    public static User of(ServerPlayerEntity player) {
+        return of(player.getUuid());
+    }
+
+    public static User getByNickname(String name) {
+        return manager.getUserByNickname(name);
+    }
+    
     public User(UUID uuid) {
         this.uuid = uuid;
     }
@@ -40,8 +68,16 @@ public class User {
             cacheTag.put("lastPos", lastPosTag);
         }
         {
+            CompoundTag posTag = new CompoundTag();
+            posTag.putDouble("x", this.pos.getX());
+            posTag.putDouble("y", this.pos.getY());
+            posTag.putDouble("z", this.pos.getZ());
+            posTag.putInt("dim", this.posDim);
+            mainTag.put("pos", posTag);
+        }
+        {
             CompoundTag lastMessageTag = new CompoundTag();
-            lastMessageTag.putUuid("destUUID", this.lastPrivateMessageGetterUUID);
+            lastMessageTag.putString("destUUID", this.lastPrivateMessageGetterUUID);
             lastMessageTag.putString("text", this.lastPrivateMessageText);
             cacheTag.put("lastMessage", lastMessageTag);
 
@@ -56,13 +92,17 @@ public class User {
                 metaTag.putInt("displayParticleId", this.displayParticleId);
 
             metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
-            metaTag.putString("firstJoin", dateFormat.format(firstJoin));
-            metaTag.putString("nick", this.nickName);
+            if (!hasJoinedBefore)
+                metaTag.putString("firstJoin", dateFormat.format(new Date()));
+            else
+                metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
+            metaTag.putString("nick", this.nickname);
         }
 
         mainTag.putInt("randomTeleportsLeft", this.randomTeleportsLeft);
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
+        mainTag.putString("name", this.name);
         return mainTag;
     }
 
@@ -73,8 +113,15 @@ public class User {
             user.setFirstJoin(getUserFirstJoinDate(compoundTag));
         }
         {
-            user.setLastPrivateMessageGetter(compoundTag.getUuid("lastMessage.destUUID"));
+            user.setLastPrivateMessageGetter(compoundTag.getString("lastMessage.destUUID"));
             user.setLastPrivateMessageText(compoundTag.getString("lastMessage.text"));
+        }
+        {
+            user.lastPos = new BlockPos(
+                    compoundTag.getDouble("cache.lastPos.x"),
+                    compoundTag.getDouble("cache.lastPos.y"),
+                    compoundTag.getDouble("cache.lastPos.z")
+            );
         }
         {
             if (compoundTag.getBoolean("cache.isFlyEnabled"))
@@ -83,12 +130,17 @@ public class User {
                 user.setIsInvulnerable(true);
         }
         {
-            user.setNickName(compoundTag.getString("meta.nick"));
+            user.setNickname(compoundTag.getString("meta.nick"));
             user.setDisplayParticleId(compoundTag.getInt("meta.displayParticleId"));
         }
         
         user.setRandomTeleportsLeft(compoundTag.getInt("randomTeleportsLeft"));
         user.setDisplayParticleId(compoundTag.getInt("particle"));
+        user.name = compoundTag.getString("name");
+    }
+
+    public void updatePos() {
+        this.pos = KiloServer.getServer().getPlayer(this.uuid).getBlockPos();
     }
 
     private Date getUserFirstJoinDate(CompoundTag compoundTag) {
@@ -96,26 +148,39 @@ public class User {
         try {
             date = dateFormat.parse(compoundTag.getString("meta.firstJoin"));
         } catch (ParseException e) {
-            e.printStackTrace();
+            /*
+             * Pass, this is the first time that user is joined.
+             */
         }
         return date;
     }
 
+    public ServerPlayerEntity getPlayer() {
+        return KiloServer.getServer().getPlayer(this.uuid);
+    }
 
     public UUID getUuid() {
         return this.uuid;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public String getUuidAsString() {
         return this.uuid.toString();
     }
 
-    public String getNickName() {
-        return this.nickName;
+    public String getNickname() {
+        return this.nickname.equals("") ? this.name : this.nickname;
     }
 
     public BlockPos getLastPos() {
         return this.lastPos;
+    }
+
+    public BlockPos getPos() {
+        return this.pos;
     }
 
     public boolean isFlyEnabled() {
@@ -126,7 +191,7 @@ public class User {
         return this.lastPosDim;
     }
 
-    public UUID getLastPrivateMessageGetter() {
+    public String getLastPrivateMessageGetter() {
         return this.lastPrivateMessageGetterUUID;
     }
 
@@ -150,9 +215,25 @@ public class User {
     	return this.displayParticleId;
     }
 
+    public String getDisplayNameAsString() {
+        return getDisplayName().asString();
+    }
 
-    public void setNickName(String name) {
-        this.nickName = name;
+    public Text getDisplayName() {
+        return manager.getUserDisplayName(this);
+    }
+
+    public List<Home> getHomes() {
+        return this.homes;
+    }
+
+    public Home getHome(String name) {
+        return HomeManager.getHome(this.getUuid(), name);
+    }
+
+
+    public void setNickname(String name) {
+        this.nickname = name;
     }
 
     public void setFlyEnabled(boolean set) {
@@ -167,11 +248,23 @@ public class User {
         this.lastPos = pos;
     }
 
+    public void setLastPos(int x, int y, int z) {
+        this.lastPos = new BlockPos(x, y, z);
+    }
+
+    public void setPos(BlockPos pos) {
+        this.pos = pos;
+    }
+
+    public void setPos(int x, int y, int z) {
+        this.pos = new BlockPos(x, y, z);
+    }
+
     public void setLastPosDim(int lastPosDim) {
         this.lastPosDim = lastPosDim;
     }
 
-    public void setLastPrivateMessageGetter(UUID uuid) {
+    public void setLastPrivateMessageGetter(String uuid) {
         this.lastPrivateMessageGetterUUID = uuid;
     }
 

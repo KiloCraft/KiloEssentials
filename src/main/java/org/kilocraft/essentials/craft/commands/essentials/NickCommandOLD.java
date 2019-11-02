@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands.essentials.donatorcommands;
+package org.kilocraft.essentials.craft.commands.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -9,7 +9,6 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,7 +18,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.craft.KiloCommands;
 
-public class NickCommand {
+public class NickCommandOLD {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		KiloCommands.getCommandPermission("nick");
 		KiloCommands.getCommandPermission("nick.self");
@@ -70,14 +69,15 @@ public class NickCommand {
 	private static void changeNick(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
 		String nick = StringArgumentType.getString(context, "name");
 		KiloServer.getServer().getUserManager().getUser(player.getUuid())
-				.setNickName(new LiteralText(TextFormat.translateAlternateColorCodes('&', nick)).asString());
+				.setNickname(new LiteralText(TextFormat.translateAlternateColorCodes('&', nick)).asString());
+
 		context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.success",
 				player.getName().asString(), TextFormat.removeAlternateColorCodes('&', nick)), false);
 		KiloServer.getServer().getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
 	}
 
 	private static void resetNick(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
-		KiloServer.getServer().getUserManager().getUser(player.getUuid()).setNickName("");
+		KiloServer.getServer().getUserManager().getUser(player.getUuid()).setNickname("");
 		context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.reset", player.getName().asString()),
 				false);
 		KiloServer.getServer().getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));

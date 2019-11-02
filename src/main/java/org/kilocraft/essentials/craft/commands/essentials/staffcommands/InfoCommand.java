@@ -35,7 +35,7 @@ public class InfoCommand {
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
         User user = KiloServer.getServer().getUserManager().getUser(player.getUuid());
 
-        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.nick", user.getNickName()));
+        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.nick", user.getNickname()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().asString()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.uuid", player.getUuid()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.rtpleft", user.getRandomTeleportsLeft()));      

@@ -17,7 +17,7 @@ public class UserHandler {
         } catch (IOException e) {
             //PASS, Creating the user
             /**
-              @N  remove for the BETA build
+              @Note remove for the BETA build
              */
             e.printStackTrace();
         }

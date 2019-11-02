@@ -7,13 +7,17 @@ import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.event.eventImpl.EventRegistryImpl;
 import org.kilocraft.essentials.api.server.ServerImpl;
 import org.kilocraft.essentials.craft.user.UserManager;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerCommandOutput.class)
 public abstract class MixinMinecraftServerCommandOutput {
+    @Shadow @Final private MinecraftServer server;
+
     @Inject(at = @At("RETURN"), method = "<init>")
     private void kilo$init(MinecraftServer minecraftServer, CallbackInfo ci) {
 

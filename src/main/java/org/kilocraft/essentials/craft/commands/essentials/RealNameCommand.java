@@ -21,7 +21,7 @@ public class RealNameCommand {
 					for (int i = 0; i < context.getSource().getWorld().getPlayers().size(); i++) {
 						PlayerEntity player = context.getSource().getWorld().getPlayers().get(i);
 						User user = KiloServer.getServer().getUserManager().getUser(player.getUuid());
-						if (input.equals(user.getNickName()) && input != "") {
+						if (input.equals(user.getNickname()) && input != "") {
 							context.getSource().getPlayer().sendMessage(LangText.getFormatter(true,
 									"command.realname.success", input, player.getName().asString()));
 							return 0;

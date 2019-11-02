@@ -1,6 +1,8 @@
 package org.kilocraft.essentials.craft.user;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloServer;
 
 import java.io.IOException;
@@ -21,49 +23,61 @@ public class UserManager {
     }
 
     public User getUser(UUID uuid) {
-        User requested = new User(uuid);
-        for (User user : loadedUsers) {
+        User user = User.of(uuid);
+        for (User loadedUser : loadedUsers) {
             if (user.getUuid().equals(uuid))
-                requested = user;
+                user = loadedUser;
         }
 
-        return requested;
+        return user;
     }
 
-    public User getUser(String name) {
-        return getUser(Objects.requireNonNull(KiloServer.getServer().getPlayerManager().getPlayer(name)).getUuid());
+    User getUser(String name) {
+        User user = null;
+        for (User loadedUser : loadedUsers) {
+            if (loadedUser.getName().equals(name))
+                user = loadedUser;
+        }
+
+        return user;
     }
     
-    public String getUserDisplayName (String name) {
-    	return getUserDisplayName(getUser(name));
-    }
-    
-    public String getUserDisplayName (User user) {
-    	if (user.getNickName() == "") {
-    		return KiloServer.getServer().getPlayerManager().getPlayer(user.getUuid()).getName().asString();
+    Text getUserDisplayName(User user) {
+    	if (user.getNickname().equals("")) {
+    		return Objects.requireNonNull(KiloServer.getServer().getPlayerManager().getPlayer(user.getUuid())).getName();
     	} else {
-    		return user.getNickName();
+    		return new LiteralText(user.getNickname());
     	}
     }
 
-    public User getUserByNickname(String nickName) {
+    User getUserByNickname(String nickName) {
         User requested = null;
         for (User user : loadedUsers) {
-            if (user.getNickName().equals(nickName))
+            if (user.getNickname().equals(nickName))
                 requested = user;
         }
 
         return requested;
     }
 
+    public void triggerSave() throws IOException {
+        for (User loadedUser : loadedUsers) {
+            loadedUser.name = loadedUser.getPlayer().getGameProfile().getName();
+            loadedUser.updatePos();
+            this.handler.saveData(loadedUser);
+        }
+    }
+
     public void onPlayerJoin(ServerPlayerEntity player) {
-        User thisUser = new User(player.getUuid());
+        User thisUser = User.of(player);
+        thisUser.name = player.getGameProfile().getName();
         handler.handleUser(thisUser);
         loadedUsers.add(thisUser);
     }
 
     public void onPlayerLeave(ServerPlayerEntity player) {
-        User thisUser = new User(player.getUuid());
+        User thisUser = User.of(player);
+        thisUser.name = player.getGameProfile().getName();
         loadedUsers.remove(thisUser);
         try {
             handler.saveData(thisUser);;

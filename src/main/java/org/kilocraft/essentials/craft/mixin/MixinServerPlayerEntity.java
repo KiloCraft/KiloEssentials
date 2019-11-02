@@ -1,21 +1,16 @@
 package org.kilocraft.essentials.craft.mixin;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.dimension.DimensionType;
-
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity {
-
-    @Shadow public ServerPlayNetworkHandler networkHandler;
 
     @Inject(
             method = "changeDimension", cancellable = true,
@@ -31,4 +26,5 @@ public abstract class MixinServerPlayerEntity {
         else if (dimensionType_1.equals(DimensionType.THE_END) && !allowTheEnd)
             cir.cancel();
     }
+
 }

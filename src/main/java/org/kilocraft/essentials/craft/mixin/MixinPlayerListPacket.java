@@ -1,21 +1,21 @@
 package org.kilocraft.essentials.craft.mixin;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import com.mojang.authlib.properties.Property;
+import net.minecraft.client.network.packet.PlayerListS2CPacket;
+import net.minecraft.scoreboard.Team;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.PacketByteBuf;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.craft.user.User;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import com.google.common.collect.Lists;
-import com.mojang.authlib.properties.Property;
-import net.minecraft.client.network.packet.PlayerListS2CPacket;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.scoreboard.Team;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.PacketByteBuf;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 @Mixin(PlayerListS2CPacket.class)
 public class MixinPlayerListPacket {
@@ -32,7 +32,7 @@ public class MixinPlayerListPacket {
 	      while(true) {
 	         while(var2.hasNext()) {
 	            PlayerListS2CPacket.Entry playerListS2CPacket$Entry_1 = (PlayerListS2CPacket.Entry)var2.next();
-	            PlayerEntity player = KiloServer.getServer().getPlayerManager().getPlayer(playerListS2CPacket$Entry_1.getProfile().getId());
+	            ServerPlayerEntity player = KiloServer.getServer().getPlayerManager().getPlayer(playerListS2CPacket$Entry_1.getProfile().getId());
 	            User user = KiloServer.getServer().getUserManager().getUser(playerListS2CPacket$Entry_1.getProfile().getId());
 	            
 	            switch(this.action) {
@@ -58,7 +58,7 @@ public class MixinPlayerListPacket {
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getLatency());
 	               packetByteBuf_1.writeBoolean(true);
 	               LiteralText displayText = new LiteralText(TextFormat.translateAlternateColorCodes('&',((Team) player.getScoreboardTeam()).getPrefix().asString()
-							+ "&r " + KiloServer.getServer().getUserManager().getUserDisplayName(user)));
+							+ "&r " + User.of(player).getDisplayNameAsString()));
 	               packetByteBuf_1.writeText(displayText);
 	               break;
 	            case UPDATE_GAME_MODE:
@@ -73,7 +73,7 @@ public class MixinPlayerListPacket {
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
 	               packetByteBuf_1.writeBoolean(true);
 	               displayText = new LiteralText(TextFormat.translateAlternateColorCodes('&',((Team) player.getScoreboardTeam()).getPrefix().asString()
-							+ "&r " + KiloServer.getServer().getUserManager().getUserDisplayName(user)));
+							+ "&r " + User.of(player).getDisplayNameAsString()));
 	               packetByteBuf_1.writeText(displayText);
 	               break;
 	            case REMOVE_PLAYER:

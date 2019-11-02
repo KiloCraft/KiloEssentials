@@ -21,6 +21,7 @@ import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.ConfigValueGetter;
 import org.kilocraft.essentials.craft.config.provided.localvariables.PlayerConfigVariables;
 import org.kilocraft.essentials.craft.user.User;
+import org.kilocraft.essentials.craft.user.UserEvent;
 
 public class KiloChat {
 	private static ConfigValueGetter config = KiloConifg.getProvider().getMain();
@@ -105,7 +106,7 @@ public class KiloChat {
 
 			for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
 				String displayName = ((Team) player.getScoreboardTeam()).getPrefix().asString()
-						+ "&r " + KiloServer.getServer().getUserManager().getUserDisplayName(playerName);
+						+ "&r " + User.of(playerName).getDisplayNameAsString();
 				String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", displayName);
 
 				if (messageToSend.contains(thisPing.replace("%PLAYER_NAME%", displayName))) {
@@ -123,7 +124,7 @@ public class KiloChat {
 		}
 
 		String displayName = ((Team) player.getScoreboardTeam()).getPrefix().asString()
-				+ "&r " + KiloServer.getServer().getUserManager().getUserDisplayName(player.getName().asString());
+				+ "&r " + User.of(player).getDisplayNameAsString();
 		broadCast(new ChatMessage(config.getLocal(true, "chat.messageFormat", new PlayerConfigVariables(player))
 				.replace("%MESSAGE%", message.getFormattedMessage())
 				.replace("%PLAYER_DISPLAYNAME%", displayName), true));
@@ -136,14 +137,10 @@ public class KiloChat {
 		float volume = Float.parseFloat(config.getValue("chat.ping.sound.volume"));
 		float pitch = Float.parseFloat(config.getValue("chat.ping.sound.pitch"));
 
-		target.networkHandler.sendPacket(
-				new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
+		target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
 	}
 
-	public static void broadcastUserJoinMessage(User user) {
-	}
-
-	public static void broadcastUserLeaveMessage(User user) {
+	public static void broadcastUserEventMessage(User user, UserEvent event) {
 	}
 
 }
