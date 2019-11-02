@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.craft.commands.essentials;
 
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -9,7 +10,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.user.User;
-import org.kilocraft.essentials.craft.user.UserManager;
 
 public class RealNameCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -20,7 +20,7 @@ public class RealNameCommand {
 					String input = StringArgumentType.getString(context, "target");
 					for (int i = 0; i < context.getSource().getWorld().getPlayers().size(); i++) {
 						PlayerEntity player = context.getSource().getWorld().getPlayers().get(i);
-						User user = UserManager.getUser(player.getUuid());
+						User user = KiloServer.getServer().getUserManager().getUser(player.getUuid());
 						if (input.equals(user.getNickName()) && input != "") {
 							context.getSource().getPlayer().sendMessage(LangText.getFormatter(true,
 									"command.realname.success", input, player.getName().asString()));

@@ -35,10 +35,12 @@ public class UserManager {
     }
     
     public String getUserDisplayName (String name) {
-    	User user = getUser(name);
-    	
+    	return getUserDisplayName(getUser(name));
+    }
+    
+    public String getUserDisplayName (User user) {
     	if (user.getNickName() == "") {
-    		return KiloServer.getServer().getPlayerManager().getPlayer(name).getName().asString();
+    		return KiloServer.getServer().getPlayerManager().getPlayer(user.getUuid()).getName().asString();
     	} else {
     		return user.getNickName();
     	}

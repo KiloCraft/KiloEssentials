@@ -29,6 +29,7 @@ import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.AnvilC
 import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.ColorsCommand;
 import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.CraftingbenchCommand;
 import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.EnderchestCommand;
+import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.InventoryCommand;
 import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.NickCommand;
 import org.kilocraft.essentials.craft.commands.essentials.donatorcommands.PlayerParticlesCommand;
 import org.kilocraft.essentials.craft.commands.essentials.itemcommand.ItemCommand;

@@ -1,8 +1,8 @@
 package org.kilocraft.essentials.craft.commands.essentials.staffcommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.user.User;
-import org.kilocraft.essentials.craft.user.UserManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -33,14 +33,14 @@ public class InfoCommand {
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
-        User user = UserManager.getUser(player.getUuid());
+        User user = KiloServer.getServer().getUserManager().getUser(player.getUuid());
 
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.nick", user.getNickName()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().asString()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.uuid", player.getUuid()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.rtpleft", user.getRandomTeleportsLeft()));      
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.pos", player.getPos()));
-        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.particle", user.getParticle()));
+        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.particle", user.getDisplayParticleId()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.firstjoined", user.getFirstJoin()));
         
         return 1;
