@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.craft.user.User;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -56,8 +57,9 @@ public class MixinPlayerListPacket {
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getGameMode().getId());
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getLatency());
 	               packetByteBuf_1.writeBoolean(true);
-	               packetByteBuf_1.writeText(new LiteralText(((Team) player.getScoreboardTeam()).getPrefix().asString()
-							+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(user)));
+	               LiteralText displayText = new LiteralText(TextFormat.translateAlternateColorCodes('&',((Team) player.getScoreboardTeam()).getPrefix().asString()
+							+ "&r " + KiloServer.getServer().getUserManager().getUserDisplayName(user)));
+	               packetByteBuf_1.writeText(displayText);
 	               break;
 	            case UPDATE_GAME_MODE:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
@@ -70,8 +72,9 @@ public class MixinPlayerListPacket {
 	            case UPDATE_DISPLAY_NAME:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
 	               packetByteBuf_1.writeBoolean(true);
-	               packetByteBuf_1.writeText(new LiteralText(((Team) player.getScoreboardTeam()).getPrefix().asString()
-							+ " " + KiloServer.getServer().getUserManager().getUserDisplayName(user)));
+	               displayText = new LiteralText(TextFormat.translateAlternateColorCodes('&',((Team) player.getScoreboardTeam()).getPrefix().asString()
+							+ "&r " + KiloServer.getServer().getUserManager().getUserDisplayName(user)));
+	               packetByteBuf_1.writeText(displayText);
 	               break;
 	            case REMOVE_PLAYER:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
