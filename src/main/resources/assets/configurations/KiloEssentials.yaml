@@ -83,7 +83,7 @@ warps.permission_prefix: 'warp'
 chat:
   # [<greedyString> c/f/GV]
   #You can set how the messages would look like on  the server
-  messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
+  messageFormat: '&r%USER_NICKNAME% &8>&7>&r %MESSAGE%'
   privateMessageFormat: '&r&7%SOURCE% &7-> &7%TARGET% &8>&7> %MESSAGE%'
   ping:
     #Pong! by enabling this players can ping each other inside the game!
@@ -94,7 +94,7 @@ chat:
     format: '%PLAYER_NAME%'
     # [<COLOR/FORMATTING CODE> e.g: 'altColorChar' + Color code, &a]
     #The color of the pinged player's name!
-    pinged: '&a%PLAYER_NAME%'
+    pinged: '&a%USER_NICKNAME%'
     #The sound you hear when someone pings you!
     sound:
       #[<boolean>]

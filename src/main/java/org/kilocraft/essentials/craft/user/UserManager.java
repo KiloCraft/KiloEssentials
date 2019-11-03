@@ -4,6 +4,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.craft.chat.KiloChat;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class UserManager {
         for (User loadedUser : loadedUsers) {
             loadedUser.name = loadedUser.getPlayer().getGameProfile().getName();
             loadedUser.updatePos();
-            this.handler.saveData(loadedUser);
+            this.handler.saveData(loadedUser, false);
         }
     }
 
@@ -73,6 +74,8 @@ public class UserManager {
         thisUser.name = player.getGameProfile().getName();
         handler.handleUser(thisUser);
         loadedUsers.add(thisUser);
+
+        KiloChat.broadcastUserJoinEventMessage(thisUser);
     }
 
     public void onPlayerLeave(ServerPlayerEntity player) {
@@ -80,10 +83,12 @@ public class UserManager {
         thisUser.name = player.getGameProfile().getName();
         loadedUsers.remove(thisUser);
         try {
-            handler.saveData(thisUser);;
+            handler.saveData(thisUser, false);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        KiloChat.broadcastUserLeaveEventMessage(thisUser);
     }
 }
 

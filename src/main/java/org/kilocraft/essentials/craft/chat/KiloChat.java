@@ -20,8 +20,8 @@ import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.ConfigValueGetter;
 import org.kilocraft.essentials.craft.config.provided.localvariables.PlayerConfigVariables;
+import org.kilocraft.essentials.craft.config.provided.localvariables.UserConfigVariables;
 import org.kilocraft.essentials.craft.user.User;
-import org.kilocraft.essentials.craft.user.UserEvent;
 
 public class KiloChat {
 	private static ConfigValueGetter config = KiloConifg.getProvider().getMain();
@@ -107,6 +107,7 @@ public class KiloChat {
 			for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
 				String displayName = ((Team) player.getScoreboardTeam()).getPrefix().asString()
 						+ "&r " + User.of(playerName).getDisplayNameAsString();
+
 				String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", displayName);
 
 				if (messageToSend.contains(thisPing.replace("%PLAYER_NAME%", displayName))) {
@@ -140,7 +141,25 @@ public class KiloChat {
 		target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
 	}
 
-	public static void broadcastUserEventMessage(User user, UserEvent event) {
+	public static void broadcastUserJoinEventMessage(User user) {
+		broadCast(new ChatMessage(
+				KiloConifg.getProvider().getMessages().getLocal(
+						true,
+						"general.joinMessage",
+						new UserConfigVariables(user)
+				),
+				true
+		));
 	}
 
+	public static void broadcastUserLeaveEventMessage(User user) {
+		broadCast(new ChatMessage(
+				KiloConifg.getProvider().getMessages().getLocal(
+						true,
+						"general.leaveMessage",
+						new UserConfigVariables(user)
+				),
+				true
+		));
+	}
 }

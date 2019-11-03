@@ -55,7 +55,8 @@ public class User {
         this.uuid = uuid;
     }
 
-    CompoundTag serialize() {
+
+    CompoundTag serialize(boolean isNew) {
         CompoundTag mainTag = new CompoundTag();
         CompoundTag metaTag = new CompoundTag();
         CompoundTag cacheTag = new CompoundTag();
@@ -92,14 +93,16 @@ public class User {
                 metaTag.putInt("displayParticleId", this.displayParticleId);
 
             metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
-            if (!hasJoinedBefore)
+
+            if (isNew)
                 metaTag.putString("firstJoin", dateFormat.format(new Date()));
             else
                 metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
+
             metaTag.putString("nick", this.nickname);
         }
 
-        mainTag.putInt("randomTeleportsLeft", this.randomTeleportsLeft);
+        mainTag.putInt("rtpLeft", this.randomTeleportsLeft);
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
         mainTag.putString("name", this.name);
@@ -108,35 +111,45 @@ public class User {
 
     void deserialize(CompoundTag compoundTag, UUID uuid) {
         User user = new User(uuid);
+        CompoundTag metaTag = compoundTag.getCompound("meta");
+        CompoundTag cacheTag = compoundTag.getCompound("cache");
+
         {
-            user.setHasJoinedBefore(compoundTag.getBoolean("meta.hasJoinedBefore"));
-            user.setFirstJoin(getUserFirstJoinDate(compoundTag));
-        }
-        {
-            user.setLastPrivateMessageGetter(compoundTag.getString("lastMessage.destUUID"));
-            user.setLastPrivateMessageText(compoundTag.getString("lastMessage.text"));
-        }
-        {
+            CompoundTag lastPosTag = cacheTag.getCompound("lastPos");
             user.lastPos = new BlockPos(
-                    compoundTag.getDouble("cache.lastPos.x"),
-                    compoundTag.getDouble("cache.lastPos.y"),
-                    compoundTag.getDouble("cache.lastPos.z")
+                    lastPosTag.getDouble("x"),
+                    lastPosTag.getDouble("y"),
+                    lastPosTag.getDouble("z")
             );
         }
         {
-            if (compoundTag.getBoolean("cache.isFlyEnabled"))
-                user.setFlyEnabled(true);
-            if (compoundTag.getBoolean("cache.isInvulnerable"))
-                user.setIsInvulnerable(true);
+            CompoundTag posTag = cacheTag.getCompound("pos");
+            user.pos = new BlockPos(
+                    posTag.getDouble("x"),
+                    posTag.getDouble("y"),
+                    posTag.getDouble("z")
+            );
         }
         {
-            user.setNickname(compoundTag.getString("meta.nick"));
-            user.setDisplayParticleId(compoundTag.getInt("meta.displayParticleId"));
+            CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
+            user.lastPrivateMessageGetterUUID = lastMessageTag.getString("destUUID");
+            user.lastPrivateMessageText = lastMessageTag.getString("text");
         }
-        
-        user.setRandomTeleportsLeft(compoundTag.getInt("randomTeleportsLeft"));
-        user.setDisplayParticleId(compoundTag.getInt("particle"));
-        user.name = compoundTag.getString("name");
+        {
+            if (cacheTag.getBoolean("isFlyEnabled"))
+                this.isFlyEnabled = true;
+            if (cacheTag.getBoolean("isInvulnerable"))
+                this.isInvulnerable = true;
+        }
+        {
+            if (compoundTag.getInt("displayParticleId") != 0)
+                this.displayParticleId = compoundTag.getInt("displayParticleId");
+
+            this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
+            this.nickname = metaTag.getString("nick");
+        }
+
+        this.randomTeleportsLeft = compoundTag.getInt("rtpLeft");
     }
 
     public void updatePos() {

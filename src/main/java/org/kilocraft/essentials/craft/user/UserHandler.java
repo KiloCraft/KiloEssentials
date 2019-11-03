@@ -9,17 +9,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class UserHandler {
-    private static File saveDir = new File(KiloConifg.getWorkingDirectory() + "/KiloEssentials/users/");
+    private static File saveDir = new File(System.getProperty("user.dir") + "/KiloEssentials/users/");
 
     public void handleUser(User user) {
         try {
-            if (!loadData(user)) saveData(user);
-        } catch (IOException e) {
-            //PASS, Creating the user
-            /**
-              @Note remove for the BETA build
-             */
-            e.printStackTrace();
+            if (!loadData(user)) saveData(user, true);
+        } catch (IOException ignored) {
+            //PASS
         }
     }
 
@@ -34,12 +30,12 @@ public class UserHandler {
         return exists;
     }
 
-    public boolean saveData(User user) throws IOException {
+    public boolean saveData(User user, boolean isNew) throws IOException {
         if (!saveDir.exists()) saveDir.mkdirs();
         boolean made = getUserFile(user).createNewFile();
         if (getUserFile(user).exists())
             NbtIo.writeCompressed(
-                    user.serialize(),
+                    user.serialize(isNew),
                     new FileOutputStream(getUserFile(user))
             );
 

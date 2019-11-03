@@ -47,9 +47,9 @@ schema: 1.0
 altcolorchar: '&'
 #General
 general:
-  joinMessage: '&8[&a+&8]&7 %PLAYER_NAME%'
-  leaveMessage: '&8[&c-&8]&7 %PLAYER_NAME%'
-  prefix: '&e[&6COOL SERVER&e]'
+  joinMessage: '&8[&a+&8]&7 %USER_NICKNAME%'
+  leaveMessage: '&8[&c-&8]&7 %USER_NICKNAME%'
+  prefix: '&e[&6SERVER&e]'
 #Messages used by commands
 commands:
   broadcast_format: '&f[&c&lBroadCast&f]&r %MESSAGE%'
