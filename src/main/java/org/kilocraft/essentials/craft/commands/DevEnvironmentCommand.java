@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.craft.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.command.arguments.EntityArgumentType;
@@ -24,15 +25,23 @@ public class DevEnvironmentCommand {
                                                 .executes(context -> testUser(context.getSource(), EntityArgumentType.getPlayer(context, "player")))
                                 ).then(
                                             CommandManager.literal("set").then(
-                                                    CommandManager.literal("nickname").then(CommandManager.argument("name", StringArgumentType.greedyString())
-                                                                .executes(context -> {
-                                                                    User.of(context.getSource().getPlayer()).setNickname(StringArgumentType.getString(context, "name"));
-                                                                    return 1;
-                                                                }))
+                                                    CommandManager.literal("nickname").then(
+                                                                    CommandManager.argument("name", StringArgumentType.greedyString())
+                                                                        .executes(context -> {
+                                                                            User.of(context.getSource().getPlayer()).setNickname(StringArgumentType.getString(context, "name"));
+                                                                            return 1;
+                                                                        }))
+                                                    ).then(
+                                                            CommandManager.literal("rtpLeft").then(
+                                                                        CommandManager.argument("value", IntegerArgumentType.integer(0))
+                                                                                .executes(context -> {
+                                                                                    User.of(context.getSource().getPlayer()).setRTPsLeft(IntegerArgumentType.getInteger(context, "value"));
+                                                                                    return 1;
+                                                                                }))
+                                                    )
                                             )
                                 )
-                        )
-                );
+                        );
 
 
         dispatcher.register(argumentBuilder);
@@ -40,7 +49,7 @@ public class DevEnvironmentCommand {
 
     private static int testUser(ServerCommandSource source, ServerPlayerEntity target) {
         User user = User.of(target);
-        String string = "&7Name: &e%s&7 DisplayName:&r %s&r &7Nickname: &6%s\n&7LastPrivateMessageGetterUUID:&6 %s\n&7LastPrivateMessageText: &6%s";
+        String string = "&7Name: &e%s&7 DisplayName:&r %s&r &7Nickname: &6%s\n&7RandomTeleportsLeft: &6 %s\n&7LastPrivateMessageGetterUUID:&6 %s\n&7LastPrivateMessageText: &6%s";
 
         KiloChat.sendMessageToSource(
                 source,
@@ -50,6 +59,7 @@ public class DevEnvironmentCommand {
                                 user.getName(),
                                 user.getDisplayNameAsString(),
                                 user.getNickname(),
+                                user.getRTPsLeft(),
                                 user.getLastPrivateMessageGetter(),
                                 user.getLastPrivateMessageText()
                         ), true)

@@ -65,7 +65,7 @@ public class UserManager {
         for (User loadedUser : loadedUsers) {
             loadedUser.name = loadedUser.getPlayer().getGameProfile().getName();
             loadedUser.updatePos();
-            this.handler.saveData(loadedUser, false);
+            this.handler.saveData(loadedUser);
         }
     }
 
@@ -83,7 +83,7 @@ public class UserManager {
         thisUser.name = player.getGameProfile().getName();
         loadedUsers.remove(thisUser);
         try {
-            handler.saveData(thisUser, false);
+            this.handler.saveData(thisUser);
         } catch (IOException e) {
             e.printStackTrace();
         }

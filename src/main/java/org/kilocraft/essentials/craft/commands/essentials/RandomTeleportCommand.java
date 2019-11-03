@@ -61,7 +61,7 @@ public class RandomTeleportCommand {
 
 	public static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {
 		User user = KiloServer.getServer().getUserManager().getUser(player.getUuid());
-		if (user.getRandomTeleportsLeft() == 0 && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
+		if (user.getRTPsLeft() == 0 && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
 		} else if (player.dimension == DimensionType.OVERWORLD && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.otherdimensions"), 2)) {
 			Random random = new Random();
@@ -85,10 +85,10 @@ public class RandomTeleportCommand {
 				player.addStatusEffect(
 						new StatusEffectInstance(StatusEffects.RESISTANCE, 30, 255, false, false, false));
 				player.teleport(randomX, 255, randomZ);
-				user.setRandomTeleportsLeft(user.getRandomTeleportsLeft() - 1);
+				user.setRTPsLeft(user.getRTPsLeft() - 1);
 
 				player.sendMessage(LangText.getFormatter(true, "command.randomteleport.success",
-						"X: " + randomX + ", Z: " + randomZ, user.getRandomTeleportsLeft()));
+						"X: " + randomX + ", Z: " + randomZ, user.getRTPsLeft()));
 			}
 		} else {
 			player.sendMessage(LangText.get(true, "command.randomteleport.wrongdimension"));

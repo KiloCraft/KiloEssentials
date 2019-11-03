@@ -56,7 +56,7 @@ public class User {
     }
 
 
-    CompoundTag serialize(boolean isNew) {
+    CompoundTag serialize() {
         CompoundTag mainTag = new CompoundTag();
         CompoundTag metaTag = new CompoundTag();
         CompoundTag cacheTag = new CompoundTag();
@@ -88,17 +88,12 @@ public class User {
                 cacheTag.putBoolean("isInvulnerable", true);
         }
         {
-
             if (this.displayParticleId != 0)
                 metaTag.putInt("displayParticleId", this.displayParticleId);
 
             metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
 
-            if (isNew)
-                metaTag.putString("firstJoin", dateFormat.format(new Date()));
-            else
-                metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
-
+            metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
             metaTag.putString("nick", this.nickname);
         }
 
@@ -109,14 +104,13 @@ public class User {
         return mainTag;
     }
 
-    void deserialize(CompoundTag compoundTag, UUID uuid) {
-        User user = new User(uuid);
+    void deserialize(CompoundTag compoundTag) {
         CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
         {
             CompoundTag lastPosTag = cacheTag.getCompound("lastPos");
-            user.lastPos = new BlockPos(
+            this.lastPos = new BlockPos(
                     lastPosTag.getDouble("x"),
                     lastPosTag.getDouble("y"),
                     lastPosTag.getDouble("z")
@@ -124,7 +118,7 @@ public class User {
         }
         {
             CompoundTag posTag = cacheTag.getCompound("pos");
-            user.pos = new BlockPos(
+            this.pos = new BlockPos(
                     posTag.getDouble("x"),
                     posTag.getDouble("y"),
                     posTag.getDouble("z")
@@ -132,8 +126,8 @@ public class User {
         }
         {
             CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
-            user.lastPrivateMessageGetterUUID = lastMessageTag.getString("destUUID");
-            user.lastPrivateMessageText = lastMessageTag.getString("text");
+            this.lastPrivateMessageGetterUUID = lastMessageTag.getString("destUUID");
+            this.lastPrivateMessageText = lastMessageTag.getString("text");
         }
         {
             if (cacheTag.getBoolean("isFlyEnabled"))
@@ -146,6 +140,7 @@ public class User {
                 this.displayParticleId = compoundTag.getInt("displayParticleId");
 
             this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
+            this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
             this.nickname = metaTag.getString("nick");
         }
 
@@ -156,14 +151,12 @@ public class User {
         this.pos = KiloServer.getServer().getPlayer(this.uuid).getBlockPos();
     }
 
-    private Date getUserFirstJoinDate(CompoundTag compoundTag) {
+    private Date getUserFirstJoinDate(String stringToParse) {
         Date date = new Date();
         try {
-            date = dateFormat.parse(compoundTag.getString("meta.firstJoin"));
+            date = dateFormat.parse(stringToParse);
         } catch (ParseException e) {
-            /*
-             * Pass, this is the first time that user is joined.
-             */
+            //Pass, this is the first time that user is joined.
         }
         return date;
     }
@@ -219,8 +212,12 @@ public class User {
     public Date getFirstJoin() {
         return this.firstJoin;
     }
+
+    public String getFirstJoinAsString() {
+        return dateFormat.format(this.firstJoin);
+    }
     
-    public int getRandomTeleportsLeft() {
+    public int getRTPsLeft() {
     	return this.randomTeleportsLeft;
     }
     
@@ -293,7 +290,7 @@ public class User {
         this.firstJoin = firstJoin;
     }
     
-    public void setRandomTeleportsLeft(int randomTeleportsLeft) {
+    public void setRTPsLeft(int randomTeleportsLeft) {
     	this.randomTeleportsLeft = randomTeleportsLeft;
     }
     

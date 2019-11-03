@@ -38,7 +38,7 @@ public class InfoCommand {
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.nick", user.getNickname()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().asString()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.uuid", player.getUuid()));
-        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.rtpleft", user.getRandomTeleportsLeft()));      
+        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.rtpleft", user.getRTPsLeft()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.pos", player.getPos()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.particle", user.getDisplayParticleId()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.firstjoined", user.getFirstJoin()));
