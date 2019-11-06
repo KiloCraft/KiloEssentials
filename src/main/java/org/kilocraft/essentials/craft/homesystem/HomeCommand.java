@@ -109,7 +109,7 @@ public class HomeCommand {
                         .executes(c -> executeRemove(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
-        for (int i = 0; i == 20; i++) {
+        for (int i = 0; i == KiloConifg.getProvider().getMain().getIntegerSafely("homes.limit"); i++) {
             KiloCommands.getCommandPermission("home.self.limit." + i);
         }
 
@@ -158,7 +158,9 @@ public class HomeCommand {
             GameProfile gameProfile = gameProfiles.iterator().next();
             User user = User.of(gameProfile);
             int homes = user.getHomesHandler().getHomes().size();
-            boolean canSet = Thimble.hasPermissionOrOp(context.getSource(), KiloCommands.getCommandPermission("home.set.limit." + homes + 1), 2);
+            boolean canSet =
+                    Thimble.hasPermissionOrOp(context.getSource(), KiloCommands.getCommandPermission("home.set.limit." + homes + 1), 3) ||
+                    Thimble.hasPermissionOrOp(context.getSource(), KiloCommands.getCommandPermission("home.set.limit.bypass"), 3);
 
             if (!canSet)
                 throw REACHED_THE_LIMIT.create();

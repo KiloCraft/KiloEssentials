@@ -2,7 +2,7 @@ package org.kilocraft.essentials.craft.user;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -179,7 +179,7 @@ public class User {
         return KiloServer.getServer().getPlayer(this.uuid);
     }
 
-    public CommandSource getCommandSource() {
+    public ServerCommandSource getCommandSource() {
         return this.getPlayer().getCommandSource();
     }
 

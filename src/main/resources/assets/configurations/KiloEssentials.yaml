@@ -79,6 +79,10 @@ features:
 
 #If a warp requires a permission, its gonna be like this: 'permission_prefix.warp_name'
 warps.permission_prefix: 'warp'
+#The Maximum limit of homes a player can set
+#Permission node: 'kiloessentials.command.home.set.limit.<Limit integer>'
+#You can bypass this by 'kiloessentials.command.home.set.limit.bypass'
+homes.limit: 10
 
 chat:
   # [<greedyString> c/f/GV]
@@ -109,3 +113,4 @@ chat:
       # [Float]
       # Default: 1.0
       pitch: '1.0'
+

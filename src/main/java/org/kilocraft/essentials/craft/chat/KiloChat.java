@@ -19,7 +19,6 @@ import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.config.provided.ConfigValueGetter;
-import org.kilocraft.essentials.craft.config.provided.localvariables.PlayerConfigVariables;
 import org.kilocraft.essentials.craft.config.provided.localvariables.UserConfigVariables;
 import org.kilocraft.essentials.craft.user.User;
 
@@ -96,8 +95,8 @@ public class KiloChat {
 				.sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));
 	}
 
-	public static void sendChatMessage(ServerPlayerEntity player, String messageToSend) {
-		ChatMessage message = new ChatMessage(messageToSend, Thimble.hasPermissionOrOp(player.getCommandSource(),
+	public static void sendChatMessage(User user, String messageToSend) {
+		ChatMessage message = new ChatMessage(messageToSend, Thimble.hasPermissionOrOp(user.getCommandSource(),
 				KiloEssentials.getPermissionFor("chat.format"), 2));
 
 		if ((boolean) config.getValue("chat.ping.enable")) {
@@ -105,7 +104,7 @@ public class KiloChat {
 			String pingFormat = config.get(false, "chat.ping.pinged");
 
 			for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
-				String displayName = ((Team) player.getScoreboardTeam()).getPrefix().asString()
+				String displayName = ((Team) user.getPlayer().getScoreboardTeam()).getPrefix().asString()
 						+ "&r " + User.of(playerName).getDisplayNameAsString();
 
 				String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", displayName);
@@ -114,7 +113,7 @@ public class KiloChat {
 					message.setMessage(message.getFormattedMessage().replaceAll(thisPing,
 							pingFormat.replace("%PLAYER_NAME%", displayName) + "&r"), true);
 
-					if (Thimble.hasPermissionOrOp(player.getCommandSource(),
+					if (Thimble.hasPermissionOrOp(user.getCommandSource(),
 							KiloEssentials.getPermissionFor("chat.ping.other"), 2))
 						if ((boolean) config.getValue("chat.ping.sound.enable"))
 							pingPlayer(playerName);
@@ -124,9 +123,9 @@ public class KiloChat {
 
 		}
 
-		String displayName = ((Team) player.getScoreboardTeam()).getPrefix().asString()
-				+ "&r " + User.of(player).getDisplayNameAsString();
-		broadCast(new ChatMessage(config.getLocal(true, "chat.messageFormat", new PlayerConfigVariables(player))
+		String displayName = ((Team) user.getPlayer().getScoreboardTeam()).getPrefix().asString()
+				+ "&r " + user.getDisplayNameAsString();
+		broadCast(new ChatMessage(config.getLocal(true, "chat.messageFormat", new UserConfigVariables(user))
 				.replace("%MESSAGE%", message.getFormattedMessage())
 				.replace("%PLAYER_DISPLAYNAME%", displayName), true));
 	}
@@ -135,8 +134,8 @@ public class KiloChat {
 		ServerPlayerEntity target = KiloServer.getServer().getPlayer(playerToPing);
 		Vec3d vec3d = target.getCommandSource().getPosition();
 		String soundId = "minecraft:" + config.getValue("chat.ping.sound.id");
-		float volume = Float.parseFloat(config.getValue("chat.ping.sound.volume"));
-		float pitch = Float.parseFloat(config.getValue("chat.ping.sound.pitch"));
+		float volume = config.getFloatSafely("chat.ping.sound.volume");
+		float pitch = config.getFloatSafely("chat.ping.sound.pitch");
 
 		target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
 	}
