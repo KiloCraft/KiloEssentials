@@ -10,6 +10,8 @@ import java.io.IOException;
 public class OnAutoSave implements EventHandler<ServerEvent$OnAutoSave> {
     @Override
     public void handle(ServerEvent$OnAutoSave event) {
+        KiloEssentials.getLogger().info("Saving user data...");
+
         try {
             KiloServer.getServer().getUserManager().triggerSave();
         } catch (IOException e) {

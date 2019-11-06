@@ -22,7 +22,7 @@ public class Home {
         this.dX = pitch;
     }
 
-    Home(CompoundTag compoundTag) {
+    public Home(CompoundTag compoundTag) {
         fromTag(compoundTag);
     }
 

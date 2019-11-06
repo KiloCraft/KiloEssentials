@@ -20,6 +20,8 @@ import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.commands.essentials.staffcommands.BackCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
+import org.kilocraft.essentials.craft.user.User;
+import org.kilocraft.essentials.craft.user.UserHomeHandler;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -83,8 +85,8 @@ public class HomeCommand {
         );
 
 
-        argTeleport.suggests((context, builder) -> HomeManager.suggestHomes.getSuggestions(context, builder));
-        argRemove.suggests((context, builder) -> HomeManager.suggestHomes.getSuggestions(context, builder));
+        argTeleport.suggests((context, builder) -> UserHomeHandler.suggestUserHomes.getSuggestions(context, builder));
+        argRemove.suggests((context, builder) -> UserHomeHandler.suggestUserHomes.getSuggestions(context, builder));
 
         argTeleport.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
@@ -124,14 +126,15 @@ public class HomeCommand {
     private static int executeList(ServerCommandSource source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
+            User user = User.of(gameProfile);
             StringBuilder homes = new StringBuilder();
-            int homesSize = HomeManager.getHomes(gameProfile.getId()).size();
+            int homesSize = user.getHomesHandler().getHomes().size();
 
             if (homesSize > 0) {
                 if (source.getPlayer().getUuid().equals(gameProfile.getId())) homes.append("&6Homes&8 (&b").append(homesSize).append("&8)&7:");
                 else homes.append("&6" + gameProfile.getName() + "'s homes&8 (&b").append(homesSize).append("&8)&7:");
 
-                for (Home home  : HomeManager.getHomes(gameProfile.getId())) {
+                for (Home home  : user.getHomesHandler().getHomes()) {
                     homes.append("&7, &f").append(home.getName());
                 }
 
@@ -153,13 +156,14 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            int homes = HomeManager.getHomes(gameProfile.getId()).size();
+            User user = User.of(gameProfile);
+            int homes = user.getHomesHandler().getHomes().size();
 
-            if (HomeManager.hasHome(gameProfile.getId(), arg)) {
-                HomeManager.removeHome(HomeManager.getHome(gameProfile.getId(), arg));
+            if (user.getHomesHandler().hasHome(arg)) {
+                user.getHomesHandler().removeHome(arg);
             }
 
-            HomeManager.addHome(
+            user.getHomesHandler().addHome(
                     new Home(
                             gameProfile.getId(),
                             arg,
@@ -199,9 +203,10 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
+            User user = User.of(gameProfile);
 
-            if (HomeManager.hasHome(gameProfile.getId(), arg)) {
-                HomeManager.removeHome(HomeManager.getHome(gameProfile.getId(), arg));
+            if (user.getHomesHandler().hasHome(arg)) {
+                user.getHomesHandler().removeHome(arg);
 
                 if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                     KiloChat.sendMessageTo(source, new ChatMessage(
@@ -231,10 +236,11 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
+            User user = User.of(gameProfile);
 
-            if (HomeManager.hasHome(gameProfile.getId(), arg)) {
+            if (user.getHomesHandler().hasHome(arg)) {
             	BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
-                HomeManager.teleport(source, HomeManager.getHome(gameProfile.getId(), arg));        
+                user.getHomesHandler().teleportToHome(arg);
 
                 if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                     KiloChat.sendMessageTo(source, new ChatMessage(

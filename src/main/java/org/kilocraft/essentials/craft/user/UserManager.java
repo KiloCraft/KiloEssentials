@@ -12,6 +12,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * @author CODY_AI
+ * An easy way to handle the User (Instance of player)
+ *
+ * @see User
+ * @see UserHomeHandler
+ */
+
+
 public class UserManager {
     private List<User> loadedUsers = new ArrayList<>();
     private UserHandler handler = new UserHandler();
@@ -62,33 +71,33 @@ public class UserManager {
     }
 
     public void triggerSave() throws IOException {
-        for (User loadedUser : loadedUsers) {
-            loadedUser.name = loadedUser.getPlayer().getGameProfile().getName();
-            loadedUser.updatePos();
-            this.handler.saveData(loadedUser);
+        for (User user : loadedUsers) {
+            this.handler.saveData(user);
         }
     }
 
     public void onPlayerJoin(ServerPlayerEntity player) {
-        User thisUser = User.of(player);
-        thisUser.name = player.getGameProfile().getName();
-        handler.handleUser(thisUser);
-        loadedUsers.add(thisUser);
+        User user = User.of(player);
+        user.name = player.getGameProfile().getName();
+        loadedUsers.add(user);
 
-        KiloChat.broadcastUserJoinEventMessage(thisUser);
+        try {
+            this.handler.handleUser(user);
+        } catch (IOException ignored) { }
+
+        KiloChat.broadcastUserJoinEventMessage(user);
     }
 
     public void onPlayerLeave(ServerPlayerEntity player) {
-        User thisUser = User.of(player);
-        thisUser.name = player.getGameProfile().getName();
-        loadedUsers.remove(thisUser);
-        try {
-            this.handler.saveData(thisUser);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        User user = User.of(player);
+        user.name = player.getGameProfile().getName();
+        loadedUsers.remove(user);
 
-        KiloChat.broadcastUserLeaveEventMessage(thisUser);
+        try {
+            this.handler.saveData(user);
+        } catch (IOException ignored) { }
+
+        KiloChat.broadcastUserLeaveEventMessage(user);
     }
 }
 

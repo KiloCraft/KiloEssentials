@@ -1,25 +1,32 @@
 package org.kilocraft.essentials.craft.user;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.craft.homesystem.Home;
-import org.kilocraft.essentials.craft.homesystem.HomeManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
+
+/**
+ * @author CODY_AI
+ * An easy way to handle the User (Instance of player)
+ *
+ * @see UserManager
+ * @see UserHomeHandler
+ */
 
 public class User {
     private static UserManager manager = KiloServer.getServer().getUserManager();
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     UUID uuid;
     String name = "";
+    private UserHomeHandler homeHandler;
     private BlockPos lastPos = new BlockPos(0,-1 ,0);
     private BlockPos pos = new BlockPos(0, -1, 0);
     private int lastPosDim = 0;
@@ -33,7 +40,6 @@ public class User {
     private Date firstJoin = new Date();
     private int randomTeleportsLeft = 3;
     private int displayParticleId = 0;
-    private List<Home> homes = new ArrayList<>();
 
     public static User of(UUID uuid) {
         return new User(uuid);
@@ -41,6 +47,10 @@ public class User {
 
     public static User of(String name) {
         return manager.getUser(name);
+    }
+
+    public static User of(GameProfile profile) {
+        return of(profile.getId());
     }
 
     public static User of(ServerPlayerEntity player) {
@@ -53,6 +63,7 @@ public class User {
     
     public User(UUID uuid) {
         this.uuid = uuid;
+        this.homeHandler = new UserHomeHandler(this);
     }
 
 
@@ -97,6 +108,7 @@ public class User {
             metaTag.putString("nick", this.nickname);
         }
 
+        mainTag.put("homes", this.homeHandler.serialize());
         mainTag.putInt("rtpLeft", this.randomTeleportsLeft);
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
@@ -144,6 +156,7 @@ public class User {
             this.nickname = metaTag.getString("nick");
         }
 
+        this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         this.randomTeleportsLeft = compoundTag.getInt("rtpLeft");
     }
 
@@ -163,6 +176,22 @@ public class User {
 
     public ServerPlayerEntity getPlayer() {
         return KiloServer.getServer().getPlayer(this.uuid);
+    }
+
+    public CommandSource getCommandSource() {
+        return this.getPlayer().getCommandSource();
+    }
+
+    public UserHomeHandler getHomesHandler() {
+        return this.homeHandler;
+    }
+
+    public boolean isOnline() {
+        ServerPlayerEntity player = KiloServer.getServer().getPlayerManager().getPlayer(this.uuid);
+        if  (player != null)
+            return true;
+
+        return false;
     }
 
     public UUID getUuid() {
@@ -231,14 +260,6 @@ public class User {
 
     public Text getDisplayName() {
         return manager.getUserDisplayName(this);
-    }
-
-    public List<Home> getHomes() {
-        return this.homes;
-    }
-
-    public Home getHome(String name) {
-        return HomeManager.getHome(this.getUuid(), name);
     }
 
 
