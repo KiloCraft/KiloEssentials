@@ -22,13 +22,13 @@ import java.util.UUID;
 
 
 public class UserManager {
-    private List<User> loadedUsers = new ArrayList<>();
+    private static List<User> loadedUsers = new ArrayList<>();
     private UserHandler handler = new UserHandler();
     
     public UserManager() {
     }
 
-    public List<User> getUsers() {
+    public static List<User> getUsers() {
         return loadedUsers;
     }
 
@@ -99,5 +99,5 @@ public class UserManager {
 
         KiloChat.broadcastUserLeaveEventMessage(user);
     }
-}
 
+}

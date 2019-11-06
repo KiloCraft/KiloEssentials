@@ -63,7 +63,8 @@ public class User {
     
     public User(UUID uuid) {
         this.uuid = uuid;
-        this.homeHandler = new UserHomeHandler(this);
+        if (UserHomeHandler.isEnabled())
+            this.homeHandler = new UserHomeHandler(this);
     }
 
 

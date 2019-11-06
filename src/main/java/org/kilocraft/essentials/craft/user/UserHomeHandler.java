@@ -6,7 +6,10 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
+import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.homesystem.Home;
+import org.kilocraft.essentials.craft.homesystem.HomeCommand;
+import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +24,31 @@ import java.util.UUID;
  */
 
 
-public class UserHomeHandler {
+public class UserHomeHandler implements ConfigurableFeature {
+    private static boolean isEnabled = false;
     private static List<Home> loadedHomes = new ArrayList<>();
     private List<Home> userHomes;
     private User user;
 
+    @Override
+    public boolean register() {
+        isEnabled = true;
+        HomeCommand.register(KiloCommands.getDispatcher());
+        return true;
+    }
+
+    public static boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public UserHomeHandler() {
+    }
+
     public UserHomeHandler(User user) {
-        this.user = user;
-        this.userHomes = new ArrayList<>();
+        if (isEnabled()) {
+            this.user = user;
+            this.userHomes = new ArrayList<>();
+        }
     }
 
     public void addHome(Home home) {

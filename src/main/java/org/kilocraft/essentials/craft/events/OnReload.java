@@ -8,6 +8,5 @@ public class OnReload implements EventHandler<ServerEvent$OnReload> {
     @Override
     public void handle(ServerEvent$OnReload event) {
         WarpManager.INSTANCE.reload();
-        HomeManager.INSTANCE.reload();
     }
 }
