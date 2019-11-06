@@ -71,7 +71,7 @@ public class UserHomeHandler implements ConfigurableFeature {
                 return home;
         }
 
-        return null;
+        return new Home();
     }
 
     public List<Home> getHomes() {
@@ -79,12 +79,23 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public boolean hasHome(String name) {
+        boolean bool = false;
         for (Home userHome : this.userHomes) {
-            if  (userHome.getName().equals(name))
-                return true;
+            if (userHome.getName().equals(name))
+                bool = true;
         }
 
-        return false;
+        return bool;
+    }
+
+    public static boolean hasHome(UUID uuid, String name) {
+        boolean bool = false;
+        for (Home loadedHome : loadedHomes) {
+            if (loadedHome.getName().equals(name) && loadedHome.getOwner().equals(uuid))
+                bool = true;
+        }
+
+        return bool;
     }
 
     public void teleportToHome(String name) {
@@ -101,24 +112,25 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     public CompoundTag serialize() {
         CompoundTag compoundTag = new CompoundTag();
-        for (Home home : userHomes) {
+        this.userHomes.forEach((home) -> {
             CompoundTag homeTag = new CompoundTag();
             homeTag.put(home.getName(), home.toTag());
 
             loadedHomes.remove(home);
             userHomes.remove(home);
-        }
+        });
 
         return compoundTag;
     }
 
     public void deserialize(CompoundTag compoundTag) {
-        for (String key : compoundTag.getKeys()) {
+        compoundTag.getKeys().forEach((key) -> {
             Home home = new Home(compoundTag.getCompound(key));
             home.setName(key);
-            this.loadedHomes.add(home);
+            loadedHomes.add(home);
             this.userHomes.add(home);
-        }
+        });
+
     }
 
     public static List<Home> getHomesOf(UUID uuid) {

@@ -22,6 +22,9 @@ public class Home {
         this.dX = pitch;
     }
 
+    public Home() {
+    }
+
     public Home(CompoundTag compoundTag) {
         fromTag(compoundTag);
     }
