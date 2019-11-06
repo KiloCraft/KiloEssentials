@@ -23,6 +23,7 @@ import java.util.UUID;
 
 public class UserManager {
     private static List<User> loadedUsers = new ArrayList<>();
+    private List<User> offlineUsers = new ArrayList<>();
     private UserHandler handler = new UserHandler();
     
     public UserManager() {
@@ -33,10 +34,9 @@ public class UserManager {
     }
 
     public User getUser(UUID uuid) {
-        User user = User.of(uuid);
+        User user = null;
         for (User loadedUser : loadedUsers) {
-            if (user.getUuid().equals(uuid))
-                user = loadedUser;
+            if (loadedUser.uuid.equals(uuid)) user = loadedUser;
         }
 
         return user;
@@ -51,10 +51,17 @@ public class UserManager {
 
         return user;
     }
+
+    private User getOfflineUser(UUID uuid) {
+        User user = null;
+        this.handler.
+
+        return user;
+    }
     
     Text getUserDisplayName(User user) {
     	if (user.getNickname().equals("")) {
-    		return Objects.requireNonNull(KiloServer.getServer().getPlayerManager().getPlayer(user.getUuid())).getName();
+    		return Objects.requireNonNull(KiloServer.getServer().getPlayerManager().getPlayer(user.getUuid())).getDisplayName();
     	} else {
     		return new LiteralText(user.getNickname());
     	}

@@ -6,6 +6,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloServer;
 
 import java.text.ParseException;
@@ -42,7 +43,7 @@ public class User {
     private int displayParticleId = 0;
 
     public static User of(UUID uuid) {
-        return new User(uuid);
+        return manager.getUser(uuid);
     }
 
     public static User of(String name) {
@@ -108,8 +109,13 @@ public class User {
             metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
             metaTag.putString("nick", this.nickname);
         }
+        {
+            CompoundTag homeTag = new CompoundTag();
+            this.homeHandler.serialize(homeTag);
+            mainTag.put("homes", homeTag);
+        }
 
-        mainTag.put("homes", this.homeHandler.serialize());
+        //mainTag.put("homes", this.homeHandler.serialize());
         mainTag.putInt("rtpLeft", this.randomTeleportsLeft);
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
@@ -117,7 +123,7 @@ public class User {
         return mainTag;
     }
 
-    void deserialize(CompoundTag compoundTag) {
+    void deserialize(@NotNull CompoundTag compoundTag) {
         CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
@@ -188,11 +194,7 @@ public class User {
     }
 
     public boolean isOnline() {
-        ServerPlayerEntity player = KiloServer.getServer().getPlayerManager().getPlayer(this.uuid);
-        if  (player != null)
-            return true;
-
-        return false;
+        return KiloServer.getServer().getPlayerManager().getPlayer(this.uuid) != null;
     }
 
     public UUID getUuid() {
@@ -312,8 +314,8 @@ public class User {
         this.firstJoin = firstJoin;
     }
     
-    public void setRTPsLeft(int randomTeleportsLeft) {
-    	this.randomTeleportsLeft = randomTeleportsLeft;
+    public void setRTPsLeft(int amount) {
+    	this.randomTeleportsLeft = amount;
     }
     
     public void setDisplayParticleId (int id) {

@@ -49,6 +49,7 @@ public class UserHomeHandler implements ConfigurableFeature {
             this.user = user;
             this.userHomes = new ArrayList<>();
         }
+
     }
 
     public void addHome(Home home) {
@@ -104,32 +105,38 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     public void teleportToHome(Home home) {
         if (this.user.isOnline()) {
-            ServerWorld world = ((ServerCommandSource) this.user.getCommandSource()).getMinecraftServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
+            ServerWorld world = this.user.getCommandSource().getMinecraftServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
             this.user.getPlayer().teleport(world, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
         }
 
     }
 
-    public CompoundTag serialize() {
+    public CompoundTag serialize1() {
         CompoundTag compoundTag = new CompoundTag();
-        this.userHomes.forEach((home) -> {
-            CompoundTag homeTag = new CompoundTag();
-            homeTag.put(home.getName(), home.toTag());
-
-            loadedHomes.remove(home);
-            userHomes.remove(home);
-        });
+        for (Home userHome : this.userHomes) {
+            compoundTag.put(userHome.getName(), userHome.toTag());
+        }
 
         return compoundTag;
     }
 
+    public CompoundTag serialize(CompoundTag tag) {
+        for (Home userHome : this.userHomes) {
+            tag.put(userHome.getName(), userHome.toTag());
+            System.out.println(userHome.getName());
+        }
+
+        return tag;
+    }
+
     public void deserialize(CompoundTag compoundTag) {
-        compoundTag.getKeys().forEach((key) -> {
-            Home home = new Home(compoundTag.getCompound(key));
+        for (String key : compoundTag.getKeys()) {
+            Home home = new Home(compoundTag);
             home.setName(key);
-            loadedHomes.add(home);
+            home.setOwner(this.user.uuid);
             this.userHomes.add(home);
-        });
+            loadedHomes.add(home);
+        }
 
     }
 

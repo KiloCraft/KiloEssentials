@@ -3,7 +3,10 @@ package org.kilocraft.essentials.craft.user;
 import net.minecraft.nbt.NbtIo;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class UserHandler {
     private static File saveDir = new File(System.getProperty("user.dir") + "/KiloEssentials/users/");
@@ -14,8 +17,15 @@ public class UserHandler {
         else {
             saveDir.mkdirs();
             getUserFile(user).createNewFile();
+            saveData(user);
             handleUser(user);
         }
+
+    }
+
+    public void loadUser(User user) throws IOException {
+        if (getUserFile(user).exists())
+            user.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(user))));
 
     }
 
@@ -28,6 +38,7 @@ public class UserHandler {
         else {
             saveDir.mkdirs();
             getUserFile(user).createNewFile();
+            saveData(user);
         }
     }
 
