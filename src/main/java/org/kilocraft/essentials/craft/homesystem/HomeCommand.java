@@ -32,7 +32,7 @@ public class HomeCommand {
     private static final SimpleCommandExceptionType HOME_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the home specified!"));
     private static final SimpleCommandExceptionType TOO_MANY_PROFILES = new SimpleCommandExceptionType(new LiteralText("Only one player is allowed but the provided selector includes more!"));
     private static final SimpleCommandExceptionType NO_HOMES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find any homes!"));
-
+    private static final SimpleCommandExceptionType REACHED_THE_LIMIT = new SimpleCommandExceptionType(new LiteralText("You can't set any more Homes! you have reached the limit"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home")
@@ -110,7 +110,7 @@ public class HomeCommand {
         );
 
         for (int i = 0; i == 20; i++) {
-            KiloCommands.getCommandPermission("home.self.set." + i);
+            KiloCommands.getCommandPermission("home.self.limit." + i);
         }
 
         delhomeLiteral.then(argRemove);
@@ -158,37 +158,41 @@ public class HomeCommand {
             GameProfile gameProfile = gameProfiles.iterator().next();
             User user = User.of(gameProfile);
             int homes = user.getHomesHandler().getHomes().size();
+            boolean canSet = Thimble.hasPermissionOrOp(context.getSource(), KiloCommands.getCommandPermission("home.set.limit." + homes + 1), 2);
 
-            if (user.getHomesHandler().hasHome(arg)) {
-                user.getHomesHandler().removeHome(arg);
+            if (!canSet)
+                throw REACHED_THE_LIMIT.create();
+            else {
+                if (user.getHomesHandler().hasHome(arg)) {
+                    user.getHomesHandler().removeHome(arg);
+                }
+
+                user.getHomesHandler().addHome(
+                        new Home(
+                                gameProfile.getId(),
+                                arg,
+                                Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
+                                Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getY())),
+                                Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
+                                source.getWorld().getDimension().getType().getRawId(),
+                                Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
+                                Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))
+                        )
+                );
+
+                if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
+                    KiloChat.sendMessageTo(source, new ChatMessage(
+                            KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.set").replace("%HOMENAME%", arg),
+                            true
+                    ));
+                } else {
+                    KiloChat.sendMessageTo(source, new ChatMessage(
+                            KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.admin.set")
+                                    .replace("%HOMENAME%", arg).replace("%OWNER%", gameProfile.getName()),
+                            true
+                    ));
+                }
             }
-
-            user.getHomesHandler().addHome(
-                    new Home(
-                            gameProfile.getId(),
-                            arg,
-                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
-                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getY())),
-                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
-                            source.getWorld().getDimension().getType().getRawId(),
-                            Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
-                            Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))
-                    )
-            );
-
-            if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
-                KiloChat.sendMessageTo(source, new ChatMessage(
-                        KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.set").replace("%HOMENAME%", arg),
-                        true
-                ));
-            } else {
-                KiloChat.sendMessageTo(source, new ChatMessage(
-                        KiloConifg.getProvider().getMessages().get(true, "commands.playerHomes.admin.set")
-                                .replace("%HOMENAME%", arg).replace("%OWNER%", gameProfile.getName()),
-                        true
-                ));
-            }
-
 
         } else
             throw TOO_MANY_PROFILES.create();
