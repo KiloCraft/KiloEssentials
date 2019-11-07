@@ -10,7 +10,8 @@
     "MixinServerPlayNetWorkHandler",
     "MixinCreeperEntity",
     "MixinServerPlayerEntity",   
-    "MixinPlayerListPacket"
+    "MixinPlayerListPacket",
+    "MinecraftServerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

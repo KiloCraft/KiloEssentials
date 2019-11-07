@@ -7,6 +7,7 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
@@ -93,7 +94,7 @@ public interface Server {
      *
      * @return online players in the Server
      */
-    Collection<PlayerEntity> getPlayerList();
+    Collection<ServerPlayerEntity> getPlayerList();
 
     /**
      * Gets all worlds in this Server
@@ -192,7 +193,7 @@ public interface Server {
      * Stops the server
      * @param reason is used for kicking the players
      */
-    void shutdown(LiteralText reason);
+    void shutdown(Text reason);
 
     /**
      * Kicks all the players on the server
@@ -204,7 +205,7 @@ public interface Server {
      * Kicks all the players on the server
      * @param reason to kick the player
      */
-    void kickAll(LiteralText reason);
+    void kickAll(Text reason);
 
     /**
      * Sends a message to console

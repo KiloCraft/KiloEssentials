@@ -7,6 +7,7 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.event.Event;
@@ -15,6 +16,7 @@ import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.util.MinecraftServerLoggable;
 import org.kilocraft.essentials.api.world.World;
 import org.kilocraft.essentials.api.world.worldimpl.WorldImpl;
+import org.kilocraft.essentials.craft.mixin.MinecraftServerAccessor;
 import org.kilocraft.essentials.craft.user.UserManager;
 
 import java.util.*;
@@ -85,14 +87,8 @@ public class ServerImpl implements Server { // TODO I don't think the impl shoul
     }
 
     @Override
-    public Collection<PlayerEntity> getPlayerList() {
-        Set<PlayerEntity> players = new HashSet<>();
-
-        server.getPlayerManager().getPlayerList().forEach(e ->
-                players.add(e)
-        );
-
-        return players;
+    public Collection<ServerPlayerEntity> getPlayerList() {
+        return server.getPlayerManager().getPlayerList();
     }
 
     @Override
@@ -105,7 +101,7 @@ public class ServerImpl implements Server { // TODO I don't think the impl shoul
 
     @Override
     public boolean isMainThread() {
-        return Thread.currentThread().getName().equals("Server thread"); // TODO Absolutely horrible impl, get the actual Executor from MinecraftServer, anyone can name a thread "Server Thread"
+        return Thread.currentThread().equals(((MinecraftServerAccessor) (server)).getServerThread());
     }
 
     @Override
@@ -167,7 +163,7 @@ public class ServerImpl implements Server { // TODO I don't think the impl shoul
     }
 
     @Override
-    public void shutdown(LiteralText reason) {
+    public void shutdown(Text reason) {
         kickAll(reason);
         shutdown();
     }
@@ -178,10 +174,10 @@ public class ServerImpl implements Server { // TODO I don't think the impl shoul
     }
 
     @Override
-    public void kickAll(LiteralText reason) {
-        this.server.getPlayerManager().getPlayerList().forEach((playerEntity) -> {
+    public void kickAll(Text reason) {
+        for(ServerPlayerEntity playerEntity : this.server.getPlayerManager().getPlayerList()) {
             playerEntity.networkHandler.disconnect(reason);
-        });
+        }
     }
 
     @Override
