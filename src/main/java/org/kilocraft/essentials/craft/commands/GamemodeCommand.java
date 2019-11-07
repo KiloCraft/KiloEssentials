@@ -17,11 +17,18 @@ import org.kilocraft.essentials.craft.chat.KiloChat;
 import java.util.Collection;
 import java.util.Collections;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
+import static net.minecraft.command.arguments.EntityArgumentType.players;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class GamemodeCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> fullLiteral = CommandManager.literal("ke_gamemode");
-        LiteralArgumentBuilder<ServerCommandSource> shortLiteral = CommandManager.literal("gm");
+        LiteralArgumentBuilder<ServerCommandSource> fullLiteral = literal("ke_gamemode");
+        LiteralArgumentBuilder<ServerCommandSource> shortLiteral = literal("gm");
         KiloCommands.getCommandPermission("gamemode");
         KiloCommands.getCommandPermission("gamemode.self");
         KiloCommands.getCommandPermission("gamemode.others");
@@ -45,19 +52,18 @@ public class GamemodeCommand {
         for (int i = 0; i < var; ++i) {
             GameMode mode = gameModes[i];
             if (!mode.equals(GameMode.NOT_SET)) {
-                builder.then(CommandManager.literal(mode.getName())
-                        .then(
-                                CommandManager.argument("targets", EntityArgumentType.players())
+                builder.then(literal(mode.getName())
+                        .then(argument("targets", players())
                                         .suggests((context, builder1) -> {
                                             return CommandSuggestions.allPlayers.getSuggestions(context, builder1);
                                         })
                                         .then(
-                                                CommandManager.literal("-silent").executes(context -> {
-                                                    return execute(EntityArgumentType.getPlayers(context, "targets"), mode, context.getSource(), false);
+                                                literal("-silent").executes(context -> {
+                                                    return execute(getPlayers(context, "targets"), mode, context.getSource(), false);
                                                 })
                                         )
                                         .requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("gamemode.others." + mode.getName()), 2))
-                                        .executes(context -> execute(EntityArgumentType.getPlayers(context, "targets"), mode, context.getSource(), true))
+                                        .executes(context -> execute(getPlayers(context, "targets"), mode, context.getSource(), true))
                         )
                         .requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("gamemode.self." + mode.getName()), 2))
                         .executes(context -> execute(Collections.singletonList(context.getSource().getPlayer()), mode, context.getSource(), true))
@@ -66,21 +72,21 @@ public class GamemodeCommand {
             }
         }
 
-        builder.then(CommandManager.argument("gameType", IntegerArgumentType.integer(0, 3))
-                .then(CommandManager.argument("targets", EntityArgumentType.players())
+        builder.then(argument("gameType", integer(0, 3))
+                .then(argument("targets", players())
                         .suggests((context, builder1) -> {
                             return CommandSuggestions.allPlayers.getSuggestions(context, builder1);
                         })
                         .then(
-                                CommandManager.literal("-silent").executes(context -> {
-                                    return executeByInteger(EntityArgumentType.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "gameType"), context.getSource(), false);
+                                literal("-silent").executes(context -> {
+                                    return executeByInteger(getPlayers(context, "targets"), getInteger(context, "gameType"), context.getSource(), false);
                                 })
                         )
                         .requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("gamemode.others"), 2))
-                        .executes(context -> executeByInteger(Collections.singletonList(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "gameType"), context.getSource(), true))
+                        .executes(context -> executeByInteger(Collections.singletonList(context.getSource().getPlayer()), getInteger(context, "gameType"), context.getSource(), true))
                 )
                 .requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("gamemode.self"), 2))
-                .executes(context -> executeByInteger(Collections.singletonList(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "gameType"), context.getSource(), true))
+                .executes(context -> executeByInteger(Collections.singletonList(context.getSource().getPlayer()), getInteger(context, "gameType"), context.getSource(), true))
         );
 
     }

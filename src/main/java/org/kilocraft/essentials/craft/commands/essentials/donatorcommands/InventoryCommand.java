@@ -26,21 +26,26 @@ import org.kilocraft.essentials.craft.gui.GUI;
 import java.util.Collection;
 import java.util.Iterator;
 
+import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
+import static net.minecraft.command.arguments.GameProfileArgumentType.getProfileArgument;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public abstract class InventoryCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("inventory");
         KiloCommands.getCommandPermission("inventory.others");
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("inventory").requires(InventoryCommand::permission)
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("inventory").requires(InventoryCommand::permission)
                 .executes(c -> openInventory(c.getSource().getPlayer(), c.getSource().getPlayer()));
-        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("inv").requires(InventoryCommand::permission)
+        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = literal("inv").requires(InventoryCommand::permission)
                 .executes(c -> openInventory(c.getSource().getPlayer(), c.getSource().getPlayer()));;
 
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = argument("gameProfile", gameProfile())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("inventory.others"), 2))
                 .suggests((context, builder) -> {
                     return CommandSuggestions.allPlayers.getSuggestions(context, builder);
                 })
-                .executes(context -> execute(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "gameProfile")));
+                .executes(context -> execute(context.getSource(), getProfileArgument(context, "gameProfile")));
 
         argumentBuilder.then(selectorArg);
         aliasBuilder.then(selectorArg);
@@ -56,12 +61,12 @@ public abstract class InventoryCommand {
     private static int execute(ServerCommandSource source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         Iterator v = gameProfiles.iterator();
 
-        if (gameProfiles.size() > 1) source.sendError(new LiteralText("You can only select one player but the provided selector includes more!"));
+        if (gameProfiles.size() > 1) source.sendError(new LiteralText("You can only select one player but the provided selector includes more!"));  // TODO Magic value
         else if (!CommandHelper.isConsole(source)) {
             GameProfile gameProfile = (GameProfile) v.next();
             ServerPlayerEntity ecSource = KiloServer.getServer().getPlayerManager().getPlayer(gameProfile.getId());
 
-            TextFormat.sendToSource(source, false, "&eNow looking at &6%s's&e inventory", gameProfile.getName());
+            TextFormat.sendToSource(source, false, "&eNow looking at &6%s's&e inventory", gameProfile.getName());  // TODO Magic value
 
             openInventory(source.getPlayer(), ecSource);
         }

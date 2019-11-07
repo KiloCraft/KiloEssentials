@@ -11,46 +11,53 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class BanCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("ke_ban")
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("ke_ban")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("staff.ban"), 2))
                 .executes(context -> KiloCommands.executeUsageFor("command.ban.usage", context.getSource()));
 
-        LiteralArgumentBuilder<ServerCommandSource> addArg = CommandManager.literal("add")
+        LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add")
                 .then(
-                        CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                        argument("gameProfile", gameProfile())
                             .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                         .then(
-                                CommandManager.literal("permanent")
+                                literal("permanent")
                                         .then(
-                                                CommandManager.literal("username")
+                                                literal("username")
                                                         .then(
-                                                                CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                                argument("reason", greedyString())
                                                         )
                                         )
                                         .then(
-                                                CommandManager.literal("ip")
+                                                literal("ip")
                                                         .then(
-                                                                CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                                argument("reason", greedyString())
                                                         )
                                         )
                         )
                         .then(
-                                CommandManager.literal("temporary").then(
-                                        CommandManager.argument("time", IntegerArgumentType.integer(0)).then(
-                                                CommandManager.argument("date", StringArgumentType.string())
+                                literal("temporary").then(
+                                        argument("time", integer(0)).then(
+                                                argument("date", string())
                                                         .suggests((context, builder) -> CommandSuggestions.getDateArguments.getSuggestions(context, builder))
                                                         .then(
-                                                                CommandManager.literal("username")
+                                                                literal("username")
                                                                         .then(
-                                                                                CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                                                argument("reason", greedyString())
                                                                         )
                                                         )
                                                         .then(
-                                                                CommandManager.literal("ip")
+                                                                literal("ip")
                                                                         .then(
-                                                                                CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                                                argument("reason", greedyString())
                                                                         )
                                                         )
                                         )
@@ -58,29 +65,29 @@ public class BanCommand {
                         )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> removeArg = CommandManager.literal("remove")
+        LiteralArgumentBuilder<ServerCommandSource> removeArg = literal("remove")
                 .then(
-                        CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                        argument("gameProfile", gameProfile())
                                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                 .then(
-                                        CommandManager.literal("username")
+                                        literal("username")
                                                 .then(
-                                                        CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                        argument("reason", greedyString())
                                                 )
                                 )
                                 .then(
-                                        CommandManager.literal("ip")
+                                        literal("ip")
                                                 .then(
-                                                        CommandManager.argument("reason", StringArgumentType.greedyString())
+                                                        argument("reason", greedyString())
                                                 )
                                 )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> listArg = CommandManager.literal("list");
+        LiteralArgumentBuilder<ServerCommandSource> listArg = literal("list");
 
-        LiteralArgumentBuilder<ServerCommandSource> checkArg = CommandManager.literal("check")
+        LiteralArgumentBuilder<ServerCommandSource> checkArg = literal("check")
                 .then(
-                        CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                        argument("gameProfile", gameProfile())
                                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                 );
 

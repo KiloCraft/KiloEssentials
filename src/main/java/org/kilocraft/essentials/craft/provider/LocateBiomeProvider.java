@@ -18,12 +18,12 @@ public class LocateBiomeProvider {
         return Objects.requireNonNull(Registry.BIOME.getId(biome)).toString().replace("minecraft:", "");
     }
 
-    public static String getBiomeName(Biome biome) {
+    public static String getBiomeName(Biome biome) { // i509VCB: Please see my biome locator example on Fabric Wiki, where I also got an actual biome provider there: https://fabricmc.net/wiki/tutorial:commands#some_actual_examples
         String s = getBiomeId(biome).replaceAll("_", " ");
         return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
     }
 
-    public static int execute(ServerCommandSource source, Biome biome) {
+    public static int execute(ServerCommandSource source, Biome biome) { // TODO Why is the executor not with command?
         source.sendFeedback(LangText.getFormatter(true, "command.locate.scanning", getBiomeName(biome)), false);
         BlockPos executorPos = new BlockPos(source.getPosition());
         BlockPos biomePos = null;

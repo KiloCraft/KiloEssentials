@@ -15,12 +15,16 @@ import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("server.stop");
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("stop")
-                .then(CommandManager.argument("args", StringArgumentType.greedyString())
-                    .executes(c -> execute(c.getSource(), StringArgumentType.getString(c, "args")))
+        LiteralArgumentBuilder<ServerCommandSource> builder = literal("stop")
+                .then(CommandManager.argument("args", greedyString())
+                    .executes(c -> execute(c.getSource(), getString(c, "args")))
                 )
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("server.manage.stop"), 4))
                 .executes(c -> execute(c.getSource(), ""));
@@ -32,11 +36,11 @@ public class StopCommand {
         boolean confirmed = args.contains("-confirmed");
 
         if (!confirmed && !CommandHelper.isConsole(source)) {
-            LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
+            LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");  // TODO Magic value
             literalText.styled((style) -> {
                 style.setColor(Formatting.RED);
-                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW)));
-                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));
+                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW)));  // TODO Magic value
+                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));  // TODO Magic value
             });
 
             KiloChat.sendMessageTo(source, literalText);

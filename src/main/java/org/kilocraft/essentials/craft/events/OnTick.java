@@ -22,8 +22,8 @@ public class OnTick implements EventHandler<ServerEvent$OnTick> {
 	private void processParticles(ServerEvent$OnTick event) {
 		ServerWorld world = event.getServer().getWorld(DimensionType.OVERWORLD);
 		List<ServerPlayerEntity> players = world.getPlayers();
-
-		for (int i = 0; i < players.size(); i++) {
+		// TODO in future could we organize this.
+		for (int i = 0; i < players.size(); i++) { // Couldn't we just iterate through all ServerPlayerEntity(s) online.
 			int particle = KiloServer.getServer().getUserManager().getUser(players.get(i).getUuid()).getDisplayParticleId();
 			if (particle != 0) {
 				for (int j = 0; j < players.size(); j++) {

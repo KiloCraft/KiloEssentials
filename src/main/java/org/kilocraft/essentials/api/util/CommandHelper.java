@@ -9,14 +9,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CommandHelper {
     public static boolean isConsole(ServerCommandSource source) {
-        boolean bool = false;
         try {
-            source.getPlayer();
+            source.getEntityOrThrow();
+            return true;
         } catch (CommandSyntaxException e) {
-            bool = true;
+            return false;
         }
-
-        return bool;
     }
 
     public static boolean isOnline(ServerPlayerEntity playerEntity) {
@@ -32,8 +30,8 @@ public class CommandHelper {
         return bool.get();
     }
 
-    public static boolean areTheSame(ServerPlayerEntity playerEntity_1, ServerPlayerEntity playerEntity_2) {
-        return playerEntity_1.getUuid() == playerEntity_2.getUuid();
+    public static boolean areTheSame(ServerPlayerEntity playerEntity, ServerPlayerEntity anotherPlayerEntity) {
+        return playerEntity.getUuid() == anotherPlayerEntity.getUuid();
     }
 
     public static boolean areTheSame(ServerCommandSource source, ServerPlayerEntity playerEntity) {

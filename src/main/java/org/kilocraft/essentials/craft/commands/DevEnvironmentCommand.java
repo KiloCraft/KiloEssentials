@@ -13,29 +13,38 @@ import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.user.User;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class DevEnvironmentCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("!")
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("!")
                 .requires(source -> source.hasPermissionLevel(4))
                 .then(
-                        CommandManager.literal("test").then(
-                                CommandManager.literal("User").then(
-                                            CommandManager.argument("player", EntityArgumentType.player())
+                        literal("test").then(
+                                literal("User").then(
+                                            argument("player", player())
                                                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-                                                .executes(context -> testUser(context.getSource(), EntityArgumentType.getPlayer(context, "player")))
+                                                .executes(context -> testUser(context.getSource(), getPlayer(context, "player")))
                                 ).then(
-                                            CommandManager.literal("set").then(
-                                                    CommandManager.literal("nickname").then(
-                                                                    CommandManager.argument("name", StringArgumentType.greedyString())
+                                            literal("set").then(
+                                                    literal("nickname").then(
+                                                                    argument("name", greedyString())
                                                                         .executes(context -> {
-                                                                            User.of(context.getSource().getPlayer()).setNickname(StringArgumentType.getString(context, "name"));
+                                                                            User.of(context.getSource().getPlayer()).setNickname(getString(context, "name"));
                                                                             return 1;
                                                                         }))
                                                     ).then(
-                                                            CommandManager.literal("rtpLeft").then(
-                                                                        CommandManager.argument("value", IntegerArgumentType.integer(0))
+                                                            literal("rtpLeft").then(
+                                                                        argument("value", integer(0))
                                                                                 .executes(context -> {
-                                                                                    User.of(context.getSource().getPlayer()).setRTPsLeft(IntegerArgumentType.getInteger(context, "value"));
+                                                                                    User.of(context.getSource().getPlayer()).setRTPsLeft(getInteger(context, "value"));
                                                                                     return 1;
                                                                                 }))
                                                     )
@@ -49,7 +58,7 @@ public class DevEnvironmentCommand {
 
     private static int testUser(ServerCommandSource source, ServerPlayerEntity target) {
         User user = User.of(target);
-        String string = "&7Name: &e%s&7 DisplayName:&r %s&r &7Nickname: &6%s\n&7RandomTeleportsLeft: &6 %s\n&7LastPrivateMessageGetterUUID:&6 %s\n&7LastPrivateMessageText: &6%s";
+        String string = "&7Name: &e%s&7 DisplayName:&r %s&r &7Nickname: &6%s\n&7RandomTeleportsLeft: &6 %s\n&7LastPrivateMessageGetterUUID:&6 %s\n&7LastPrivateMessageText: &6%s";  // TODO Magic value
 
         KiloChat.sendMessageToSource(
                 source,

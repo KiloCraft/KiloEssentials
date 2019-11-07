@@ -27,7 +27,7 @@ public class ThreadedRandomTeleporter implements Runnable, KiloThread {
         logger = LogManager.getFormatterLogger(getName());
         logger.info("RandomTeleporter thread started by " + this.commandSource.getName());
 
-        RandomTeleportCommand.teleportRandomly(this.playerEntity, this.commandSource);
+        RandomTeleportCommand.teleportRandomly(this.playerEntity, this.commandSource); // TODO WHY ARE WE RUNNING GAME LOGIC OFF MAIN
     }
 
     @Override

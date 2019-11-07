@@ -12,67 +12,74 @@ import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 
+import static com.mojang.brigadier.arguments.FloatArgumentType.floatArg;
+import static com.mojang.brigadier.arguments.FloatArgumentType.getFloat;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class SpeedCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("speed")
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("speed")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed"), 2));
 
-        LiteralArgumentBuilder<ServerCommandSource> walkSpeed = CommandManager.literal("walk")
+        LiteralArgumentBuilder<ServerCommandSource> walkSpeed = literal("walk")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.walk.self"), 2))
                 .then(
-                        CommandManager.literal("set").then(
-                                CommandManager.argument("walkSpeed", FloatArgumentType.floatArg(0.0F, 10.0F))
-                                        .executes(c -> executeSet(true, c.getSource(), c.getSource().getPlayer(), FloatArgumentType.getFloat(c, "walkSpeed")))
+                        literal("set").then(
+                                argument("walkSpeed", floatArg(0.0F, 10.0F))
+                                        .executes(c -> executeSet(true, c.getSource(), c.getSource().getPlayer(), getFloat(c, "walkSpeed")))
                                         .then(
-                                                CommandManager.argument("player", EntityArgumentType.player())
+                                                argument("player", player())
                                                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.walk.others"), 2))
                                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                                         .executes(
-                                                                c -> executeSet(true, c.getSource(), EntityArgumentType.getPlayer(c, "player"), FloatArgumentType.getFloat(c, "walkSpeed"))
+                                                                c -> executeSet(true, c.getSource(), getPlayer(c, "player"), getFloat(c, "walkSpeed"))
                                                         )
 
                                         )
                         )
                 )
                 .then(
-                        CommandManager.literal("reset")
+                        literal("reset")
                                 .executes(c -> executeReset(true, c.getSource(), c.getSource().getPlayer()))
                                 .then(
-                                CommandManager.argument("player", EntityArgumentType.player())
+                                argument("player", player())
                                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.walk.others"), 2))
                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                         .executes(
-                                                c -> executeReset(true, c.getSource(), EntityArgumentType.getPlayer(c, "player"))
+                                                c -> executeReset(true, c.getSource(), getPlayer(c, "player"))
                                         )
                         )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> flightSpeed = CommandManager.literal("flight")
+        LiteralArgumentBuilder<ServerCommandSource> flightSpeed = literal("flight")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.flight.self"), 2))
                 .then(
-                        CommandManager.literal("set").then(
-                                CommandManager.argument("flightSpeed", FloatArgumentType.floatArg(0.0F, 10.0F))
-                                        .executes(c -> executeSet(false, c.getSource(), c.getSource().getPlayer(), FloatArgumentType.getFloat(c, "flightSpeed")))
+                        literal("set").then(
+                                argument("flightSpeed", floatArg(0.0F, 10.0F))
+                                        .executes(c -> executeSet(false, c.getSource(), c.getSource().getPlayer(), getFloat(c, "flightSpeed")))
                                         .then(
-                                                CommandManager.argument("player", EntityArgumentType.player())
+                                                argument("player", player())
                                                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.flight.others"), 2))
                                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                                         .executes(
-                                                                c -> executeSet(false, c.getSource(), EntityArgumentType.getPlayer(c, "player"), FloatArgumentType.getFloat(c, "flightSpeed"))
+                                                                c -> executeSet(false, c.getSource(), getPlayer(c, "player"), getFloat(c, "flightSpeed"))
                                                         )
 
                                         )
                         )
                 )
                 .then(
-                        CommandManager.literal("reset")
+                        literal("reset")
                                 .executes(c -> executeReset(false, c.getSource(), c.getSource().getPlayer()))
                                 .then(
-                                CommandManager.argument("player", EntityArgumentType.player())
+                                argument("player", player())
                                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.flight.others"), 2))
                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                         .executes(
-                                                c -> executeReset(false, c.getSource(), EntityArgumentType.getPlayer(c, "player"))
+                                                c -> executeReset(false, c.getSource(), getPlayer(c, "player"))
                                         )
                         )
                 );

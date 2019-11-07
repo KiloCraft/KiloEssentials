@@ -8,8 +8,10 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.craft.KiloCommands;
 
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class ItemCommand {
-    private static LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("item");
+    private static LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("item");
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("item");

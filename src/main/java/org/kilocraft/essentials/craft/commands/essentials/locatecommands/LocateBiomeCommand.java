@@ -10,13 +10,15 @@ import org.kilocraft.essentials.craft.ThreadManager;
 import org.kilocraft.essentials.craft.provider.LocateBiomeProvider;
 import org.kilocraft.essentials.craft.threaded.ThreadedBiomeLocator;
 
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class LocateBiomeCommand {
     public static void registerAsChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
-        LiteralArgumentBuilder<ServerCommandSource> literalBiome = CommandManager.literal("biome")
+        LiteralArgumentBuilder<ServerCommandSource> literalBiome = literal("biome")
                 .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.locate.biome", 2));
 
         Registry.BIOME.stream().forEach((biome) -> {
-            literalBiome.then(CommandManager.literal(LocateBiomeProvider.getBiomeId(biome))
+            literalBiome.then(literal(LocateBiomeProvider.getBiomeId(biome))
                 .executes(c -> execute(c.getSource(), biome)));
         });
 

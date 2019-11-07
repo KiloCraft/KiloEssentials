@@ -22,17 +22,22 @@ import net.minecraft.util.math.BlockPos;
 
 import org.kilocraft.essentials.craft.KiloCommands;
 
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class CraftingbenchCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("craftingbench");
-        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("craftingbench")
+        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = literal("craftingbench")
                 .requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("craftingbench"), 2))
-                    .then(CommandManager.argument("player", EntityArgumentType.player())
-                            .executes(context -> execute(context, EntityArgumentType.getPlayer(context, "player").getCommandSource(), true)))
+                    .then(argument("player", player())
+                            .executes(context -> execute(context, getPlayer(context, "player").getCommandSource(), true)))
                 .executes(context -> execute(context, context.getSource(), false));
 
         dispatcher.register(literalArgumentBuilder);
-        dispatcher.register(CommandManager.literal("craft").requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("craftingbench"), 2))
+        dispatcher.register(literal("craft").requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("craftingbench"), 2))
                 .executes(context -> execute(context, context.getSource(), false)));
     }
 
@@ -40,7 +45,7 @@ public class CraftingbenchCommand {
         LiteralText literalText = new LiteralText("");
         ServerPlayerEntity target = source.getPlayer();
         ServerPlayerEntity sender = context.getSource().getPlayer();
-        literalText.append("You have opened the Crafting Bench for ").setStyle(new Style().setColor(Formatting.YELLOW));
+        literalText.append("You have opened the Crafting Bench for ").setStyle(new Style().setColor(Formatting.YELLOW));  // TODO Magic value
         literalText.append(new LiteralText(target.getName().getString()).setStyle(new Style().setColor(Formatting.GOLD)
                 .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new LiteralText(target.getName().getString())))));
 

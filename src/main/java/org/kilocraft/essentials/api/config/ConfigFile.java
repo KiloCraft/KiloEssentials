@@ -59,7 +59,7 @@ public class ConfigFile {
         } catch (IOException | NullPointerException e) {
             Mod.getLogger().error(Mod.getLang().getProperty("cfghandler.generate.copy.failed"));
             Mod.getLogger().error("An unexpected error occured during getting the config file \"%s\"\n Caused by: \"%s\"\n" +
-                    "Restarting the server might help you to resolve this issue.", cfg.getName(), e.getCause());
+                    "Restarting the server might help you to resolve this issue.", cfg.getName(), e.getCause()); // TODO Magic values
         }
     }
 

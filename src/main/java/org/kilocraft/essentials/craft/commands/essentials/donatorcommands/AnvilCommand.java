@@ -19,17 +19,22 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.craft.KiloCommands;
 
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class AnvilCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("anvil");
-        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("anvil")
+        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = literal("anvil")
                 .requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("anvil"), 2))
-                    .then(CommandManager.argument("target", EntityArgumentType.player())
-                            .executes(context -> execute(context, EntityArgumentType.getPlayer(context, "target").getCommandSource(), true)))
+                    .then(argument("target", player())
+                            .executes(context -> execute(context, getPlayer(context, "target").getCommandSource(), true)))
                 .executes(context -> execute(context, context.getSource(), false));
 
         dispatcher.register(literalArgumentBuilder);
-        dispatcher.register(CommandManager.literal("anvil").requires(source -> source.hasPermissionLevel(2))
+        dispatcher.register(literal("anvil").requires(source -> source.hasPermissionLevel(2))
                 .executes(context -> execute(context, context.getSource(), false)));
     }
 
@@ -37,7 +42,7 @@ public class AnvilCommand {
         LiteralText literalText = new LiteralText("");
         ServerPlayerEntity target = source.getPlayer();
         ServerPlayerEntity sender = context.getSource().getPlayer();
-        literalText.append("You have opened the Anvil for ").setStyle(new Style().setColor(Formatting.YELLOW));
+        literalText.append("You have opened the Anvil for ").setStyle(new Style().setColor(Formatting.YELLOW));  // TODO Magic value
         literalText.append(new LiteralText(target.getName().getString()).setStyle(new Style().setColor(Formatting.GOLD)
                 .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new LiteralText(target.getName().getString())))));
 

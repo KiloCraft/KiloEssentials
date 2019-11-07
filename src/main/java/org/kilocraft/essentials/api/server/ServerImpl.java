@@ -19,7 +19,7 @@ import org.kilocraft.essentials.craft.user.UserManager;
 
 import java.util.*;
 
-public class ServerImpl implements Server {
+public class ServerImpl implements Server { // TODO I don't think the impl should be in API packages
     private final MinecraftServer server;
     private final EventRegistry eventRegistry;
     private final UserManager userManager;
@@ -105,7 +105,7 @@ public class ServerImpl implements Server {
 
     @Override
     public boolean isMainThread() {
-        return Thread.currentThread().getName().equals("Server thread");
+        return Thread.currentThread().getName().equals("Server thread"); // TODO Absolutely horrible impl, get the actual Executor from MinecraftServer, anyone can name a thread "Server Thread"
     }
 
     @Override

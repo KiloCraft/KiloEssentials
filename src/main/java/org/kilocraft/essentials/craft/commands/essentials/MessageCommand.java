@@ -20,38 +20,45 @@ import org.kilocraft.essentials.craft.provider.SimpleStringSaverProvider;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class MessageCommand {
-    private static final SimpleCommandExceptionType NO_MESSAGES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You don't have any messages to reply to!"));
-    private static final SimpleCommandExceptionType DERP_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You can't message your self you Derp!"));
+    private static final SimpleCommandExceptionType NO_MESSAGES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You don't have any messages to reply to!"));  // TODO Magic value
+    private static final SimpleCommandExceptionType DERP_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You can't message your self you Derp!"));  // TODO Magic value
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(
-                CommandManager.literal("ke_msg")
+                literal("ke_msg")
                         .executes(context -> KiloCommands.executeUsageFor("command.message.usage", context.getSource()))
                         .then(
-                                CommandManager.argument("player", EntityArgumentType.player())
+                                argument("player", player())
                                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
                                         .then(
-                                                CommandManager.argument("message", StringArgumentType.greedyString())
+                                                argument("message", greedyString())
                                                         .executes(c ->
-                                                                executeSend(c.getSource(), EntityArgumentType.getPlayer(c, "player"), StringArgumentType.getString(c, "message"))
+                                                                executeSend(c.getSource(), getPlayer(c, "player"), getString(c, "message"))
                                                         )
                                         )
                         )
         );
 
         LiteralCommandNode<ServerCommandSource> replyNode = dispatcher.register(
-                CommandManager.literal("r")
+                literal("r")
                         .executes(context -> KiloCommands.executeUsageFor("command.message.reply.usage", context.getSource()))
                         .then(
-                            CommandManager.argument("message", StringArgumentType.greedyString())
+                            argument("message", greedyString())
                                 .executes(MessageCommand::executeReply)
                     )
         );
 
-        dispatcher.register(CommandManager.literal("ke_tell").redirect(node));
-        dispatcher.register(CommandManager.literal("ke_whisper").redirect(node));
-        dispatcher.register(CommandManager.literal("reply").redirect(replyNode));
+        dispatcher.register(literal("ke_tell").redirect(node));
+        dispatcher.register(literal("ke_whisper").redirect(node));
+        dispatcher.register(literal("reply").redirect(replyNode));
 
     }
 
@@ -63,7 +70,7 @@ public class MessageCommand {
             if (value.equals(context.getSource().getName())) target.set(KiloServer.getServer().getPlayer(key));
         });
 
-        String message = StringArgumentType.getString(context, "message");
+        String message = getString(context, "message");
 
         if (target.get() == null)
             throw NO_MESSAGES_EXCEPTION.create();

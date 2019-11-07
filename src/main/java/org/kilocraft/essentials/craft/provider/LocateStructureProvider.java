@@ -16,9 +16,9 @@ public class LocateStructureProvider {
         return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
     }
 
-    public static int execute(ServerCommandSource source, String structure) throws CommandSyntaxException {
+    public static int execute(ServerCommandSource source, String structure) throws CommandSyntaxException { // TODO Again I don't know why this is not inside of commands package.
         BlockPos blockPos_1 = new BlockPos(source.getPosition());
-        BlockPos blockPos_2 = source.getWorld().locateStructure(structure, blockPos_1, 100, false);
+        BlockPos blockPos_2 = source.getWorld().locateStructure(structure, blockPos_1, 100, false); // i509VCB: I hope you know running this async will cause ThreadLocal randoms if you try.
         if (blockPos_2 == null) {
             throw FAILED_EXCEPTION.create();
         } else {

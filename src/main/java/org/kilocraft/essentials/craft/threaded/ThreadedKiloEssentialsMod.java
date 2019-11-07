@@ -6,7 +6,7 @@ import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.KiloEssentials;
 import org.kilocraft.essentials.craft.KiloEvents;
 
-public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
+public class ThreadedKiloEssentialsMod implements Runnable, KiloThread { // KiloThreadExecutor?
     private Logger logger;
 
     public ThreadedKiloEssentialsMod() {

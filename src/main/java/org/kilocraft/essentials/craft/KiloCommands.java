@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 public class KiloCommands {
-    private static final SimpleCommandExceptionType SMART_USAGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Unknown command or insufficient permissions"));
+    private static final SimpleCommandExceptionType SMART_USAGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Unknown command or insufficient permissions")); // TODO Magic values. i509VCB: Should we put all the error messages in a special CommandErrors class?
 
     private CommandDispatcher<ServerCommandSource> dispatcher;
     public KiloCommands() {
@@ -130,7 +130,7 @@ public class KiloCommands {
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
         String fromLang = Mod.getLang().getProperty(langKey);
         if (fromLang != null)
-            KiloChat.sendMessageToSource(source, new ChatMessage("&6Command usage:\n" + fromLang, true));
+            KiloChat.sendMessageToSource(source, new ChatMessage("&6Command usage:\n" + fromLang, true)); // TODO Magic values
         else
             KiloChat.sendLangMessageTo(source, "general.usage.help");
         return 1;

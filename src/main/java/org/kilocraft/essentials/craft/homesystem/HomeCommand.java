@@ -27,32 +27,39 @@ import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
 
-public class HomeCommand {
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
+import static net.minecraft.command.arguments.GameProfileArgumentType.getProfileArgument;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
+public class HomeCommand { // TODO We should move this to commands package.
+    // TODO Oh lord the Magic Values
     private static final SimpleCommandExceptionType HOME_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the home specified!"));
     private static final SimpleCommandExceptionType TOO_MANY_PROFILES = new SimpleCommandExceptionType(new LiteralText("Only one player is allowed but the provided selector includes more!"));
     private static final SimpleCommandExceptionType NO_HOMES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find any homes!"));
     private static final SimpleCommandExceptionType REACHED_THE_LIMIT = new SimpleCommandExceptionType(new LiteralText("You can't set any more Homes! you have reached the limit"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home")
+        LiteralArgumentBuilder<ServerCommandSource> homeLiteral = literal("home")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.tp"), 2))
                 .executes(context -> KiloCommands.executeUsageFor("command.home.usage", context.getSource()));
-        LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome")
+        LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = literal("sethome")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.set"), 2))
                 .executes(context -> KiloCommands.executeUsageFor("command.home.usage", context.getSource()));
-        LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome")
+        LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = literal("delhome")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.remove"), 2))
                 .executes(context -> KiloCommands.executeUsageFor("command.home.usage", context.getSource()));
-        LiteralArgumentBuilder<ServerCommandSource> homesLiteral = CommandManager.literal("homes")
+        LiteralArgumentBuilder<ServerCommandSource> homesLiteral = literal("homes")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.self"), 2));
         RequiredArgumentBuilder<ServerCommandSource, String> argRemove, argSet, argTeleport;
 
-        argRemove = CommandManager.argument("home", StringArgumentType.string())
+        argRemove = argument("home", string())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.remove"), 2));
-        argSet = CommandManager.argument("name", StringArgumentType.string())
+        argSet = argument("name", string())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.set"), 2));
-        argTeleport = CommandManager.argument("home", StringArgumentType.string())
+        argTeleport = argument("home", string())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.self.tp"), 2));
 
         argSet.executes(
@@ -78,10 +85,10 @@ public class HomeCommand {
         );
 
         homesLiteral.then(
-                CommandManager.argument("player", GameProfileArgumentType.gameProfile())
+                argument("player", gameProfile())
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.others"), 2))
                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-                        .executes(c -> executeList(c.getSource(), GameProfileArgumentType.getProfileArgument(c, "player")))
+                        .executes(c -> executeList(c.getSource(), getProfileArgument(c, "player")))
         );
 
 
@@ -89,24 +96,24 @@ public class HomeCommand {
         argRemove.suggests((context, builder) -> UserHomeHandler.suggestUserHomes.getSuggestions(context, builder));
 
         argTeleport.then(
-                CommandManager.argument("player", GameProfileArgumentType.gameProfile())
+                argument("player", gameProfile())
                     .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.tp"), 2))
                     .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-                    .executes(c -> executeTeleport(c, GameProfileArgumentType.getProfileArgument(c, "player")))
+                    .executes(c -> executeTeleport(c, getProfileArgument(c, "player")))
         );
 
         argSet.then(
-                CommandManager.argument("player", GameProfileArgumentType.gameProfile())
+                argument("player", gameProfile())
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.set"), 2))
                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-                        .executes(c -> executeSet(c, GameProfileArgumentType.getProfileArgument(c, "player")))
+                        .executes(c -> executeSet(c, getProfileArgument(c, "player")))
         );
 
         argRemove.then(
-                CommandManager.argument("player", GameProfileArgumentType.gameProfile())
+                argument("player", gameProfile())
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.remove"), 2))
                         .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-                        .executes(c -> executeRemove(c, GameProfileArgumentType.getProfileArgument(c, "player")))
+                        .executes(c -> executeRemove(c, getProfileArgument(c, "player")))
         );
 
         for (int i = 0; i == KiloConifg.getProvider().getMain().getIntegerSafely("homes.limit"); i++) {
@@ -131,15 +138,15 @@ public class HomeCommand {
             int homesSize = user.getHomesHandler().getHomes().size();
 
             if (homesSize > 0) {
-                if (source.getPlayer().getUuid().equals(gameProfile.getId())) homes.append("&6Homes&8 (&b").append(homesSize).append("&8)&7:");
-                else homes.append("&6" + gameProfile.getName() + "'s homes&8 (&b").append(homesSize).append("&8)&7:");
+                if (source.getPlayer().getUuid().equals(gameProfile.getId())) homes.append("&6Homes&8 (&b").append(homesSize).append("&8)&7:"); // TODO Magic values
+                else homes.append("&6" + gameProfile.getName() + "'s homes&8 (&b").append(homesSize).append("&8)&7:"); // TODO Magic values
 
                 for (Home home  : user.getHomesHandler().getHomes()) {
-                    homes.append("&7, &f").append(home.getName());
+                    homes.append("&7, &f").append(home.getName()); // TODO Magic values
                 }
 
                 KiloChat.sendMessageTo(source, new ChatMessage(
-                        homes.toString().replaceFirst("&7,", ""), true
+                        homes.toString().replaceFirst("&7,", ""), true // TODO Magic values
                 ));
             } else
                 throw NO_HOMES_EXCEPTION.create();
@@ -151,7 +158,7 @@ public class HomeCommand {
 
     private static int executeSet(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        String arg = StringArgumentType.getString(context, "name");
+        String arg = getString(context, "name");
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
         if (gameProfiles.size() == 1) {
@@ -197,14 +204,14 @@ public class HomeCommand {
             }
 
         } else
-            throw TOO_MANY_PROFILES.create();
+            throw TOO_MANY_PROFILES.create(); // This should be the first check
 
         return 1;
     }
 
     private static int executeRemove(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        String arg = StringArgumentType.getString(context, "home");
+        String arg = getString(context, "home");
 
 
         if (gameProfiles.size() == 1) {
@@ -231,14 +238,14 @@ public class HomeCommand {
                 throw HOME_NOT_FOUND_EXCEPTION.create();
 
         } else
-            throw TOO_MANY_PROFILES.create();
+            throw TOO_MANY_PROFILES.create(); // Should be first check
 
         return 1;
     }
 
     private static int executeTeleport(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        String arg = StringArgumentType.getString(context, "home");
+        String arg = getString(context, "home");
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
@@ -265,7 +272,7 @@ public class HomeCommand {
                 throw HOME_NOT_FOUND_EXCEPTION.create();
 
         } else
-            throw TOO_MANY_PROFILES.create();
+            throw TOO_MANY_PROFILES.create(); // Again should be first check
         return 1;
     }
 

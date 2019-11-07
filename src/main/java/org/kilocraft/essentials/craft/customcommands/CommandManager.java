@@ -27,7 +27,7 @@ public class CommandManager implements ConfigIOProvider, ConfigurableFeature {
     }
 
     @Override
-    public void toConifg(ConfigProvider config) {
+    public void toConifg(ConfigProvider config) { // TODO spelling error
 
     }
 

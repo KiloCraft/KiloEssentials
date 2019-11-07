@@ -16,40 +16,41 @@ import org.kilocraft.essentials.craft.chat.KiloChat;
 
 import java.util.Iterator;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static net.minecraft.command.arguments.TimeArgumentType.time;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class TimeCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher){
 
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("ke_time")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time"),2));
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("ke_time").requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time"),2));
 
-        LiteralArgumentBuilder<ServerCommandSource> addArg = CommandManager.literal("add")
+        LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add").then(argument("time", time()).executes(context -> executeAdd(context, getInteger(context, "time"))));
+
+        LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set")
                 .then(
-                        CommandManager.argument("time", TimeArgumentType.time()).executes(context -> executeAdd(context, IntegerArgumentType.getInteger(context, "time")))
+                        argument("time", time()).executes(context -> executeAdd(context, getInteger(context, "time")))
+                ).then(
+                        literal("day").executes(context -> executeSet(context, 1000, "Day"))
+                ).then(
+                        literal("noon").executes(context -> executeSet(context, 6000, "noon"))
+                ).then(
+                        literal("night").executes(context -> executeSet(context, 13000, "Night"))
+                ).then(
+                        literal("midnight").executes(context -> executeSet(context, 18000, "Midnight"))
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> setArg = CommandManager.literal("set")
+        LiteralArgumentBuilder<ServerCommandSource> queryArg = literal("query")
                 .then(
-                        CommandManager.argument("time", TimeArgumentType.time()).executes(context -> executeAdd(context, IntegerArgumentType.getInteger(context, "time")))
+                        literal("daytime").executes(context -> executeQuery(context, getDayTime(context.getSource().getWorld()),"daytime"))
                 ).then(
-                        CommandManager.literal("day").executes(context -> executeSet(context, 1000, "Day"))
+                        literal("gametime").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTime() % 2147483647L), "gametime"))
                 ).then(
-                        CommandManager.literal("noon").executes(context -> executeSet(context, 6000, "noon"))
+                        literal("day").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L),"day"))
                 ).then(
-                        CommandManager.literal("night").executes(context -> executeSet(context, 13000, "Night"))
-                ).then(
-                        CommandManager.literal("midnight").executes(context -> executeSet(context, 18000, "Midnight"))
-                );
-
-        LiteralArgumentBuilder<ServerCommandSource> queryArg = CommandManager.literal("query")
-                .then(
-                        CommandManager.literal("daytime").executes(context -> executeQuery(context, getDayTime(context.getSource().getWorld()),"daytime"))
-                ).then(
-                        CommandManager.literal("gametime").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTime() % 2147483647L), "gametime"))
-                ).then(
-                        CommandManager.literal("day").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L),"day"))
-                ).then(
-                        CommandManager.literal("timedate").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay()),"time"))
+                        literal("timedate").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay()),"time"))
                 );
 
         argumentBuilder.then(addArg);

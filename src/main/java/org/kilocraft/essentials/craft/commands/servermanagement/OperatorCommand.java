@@ -27,23 +27,32 @@ import org.kilocraft.essentials.craft.KiloCommands;
 
 import java.util.*;
 
+import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
+import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
+import static net.minecraft.command.arguments.GameProfileArgumentType.getProfileArgument;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class OperatorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("server.manage");
         String pNode = KiloCommands.getCommandPermission("server.manage.operators");
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("operator")
+        LiteralArgumentBuilder<ServerCommandSource> builder = literal("operator")
                 .requires(s -> Thimble.hasPermissionOrOp(s, pNode, 2));
-        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("ke_op")
+        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = literal("ke_op")
                 .requires(s -> Thimble.hasPermissionOrOp(s, pNode, 2));
 
-        LiteralArgumentBuilder<ServerCommandSource> addLiteral = CommandManager.literal("add");
-        LiteralArgumentBuilder<ServerCommandSource> removeLiteral = CommandManager.literal("remove");
-        LiteralArgumentBuilder<ServerCommandSource> listLiteral = CommandManager.literal("list");
-        LiteralArgumentBuilder<ServerCommandSource> getLiteral = CommandManager.literal("get");
+        LiteralArgumentBuilder<ServerCommandSource> addLiteral = literal("add");
+        LiteralArgumentBuilder<ServerCommandSource> removeLiteral = literal("remove");
+        LiteralArgumentBuilder<ServerCommandSource> listLiteral = literal("list");
+        LiteralArgumentBuilder<ServerCommandSource> getLiteral = literal("get");
 
-        RequiredArgumentBuilder<ServerCommandSource, Boolean> boolArg = CommandManager.argument("set", BoolArgumentType.bool());
-        RequiredArgumentBuilder<ServerCommandSource, Integer> levelArg = CommandManager.argument("level", IntegerArgumentType.integer(1, 4));
-        RequiredArgumentBuilder<ServerCommandSource, Boolean> byPassArg = CommandManager.argument("canBypassPlayerLimit", BoolArgumentType.bool());
+        RequiredArgumentBuilder<ServerCommandSource, Boolean> boolArg = argument("set", bool());
+        RequiredArgumentBuilder<ServerCommandSource, Integer> levelArg = argument("level", integer(1, 4));
+        RequiredArgumentBuilder<ServerCommandSource, Boolean> byPassArg = argument("canBypassPlayerLimit", bool());
 
         listLiteral.executes(
                 c -> executeList(
@@ -59,14 +68,14 @@ public class OperatorCommand {
         );
 
         getLiteral.then(
-                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                argument("gameProfile", gameProfile())
                         .suggests((context, builder1) -> {
                             return CommandSuggestions.operators.getSuggestions(context, builder1);
                         })
                         .executes(
                             c -> executeGet(
                                     c.getSource(),
-                                    GameProfileArgumentType.getProfileArgument(c, "gameProfile")
+                                    getProfileArgument(c, "gameProfile")
                             )
                         )
         );
@@ -74,29 +83,29 @@ public class OperatorCommand {
         byPassArg.executes(
                 c -> execute(
                         c.getSource(),
-                        GameProfileArgumentType.getProfileArgument(c, "gameProfile"),
+                        getProfileArgument(c, "gameProfile"),
                         true,
-                        IntegerArgumentType.getInteger(c, "level"),
-                        BoolArgumentType.getBool(c, "canBypassPlayerLimit")
+                        getInteger(c, "level"),
+                        getBool(c, "canBypassPlayerLimit")
                 )
         );
 
         addLiteral.then(
-                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                argument("gameProfile", gameProfile())
                         .suggests((context, builder1) -> {
                             return CommandSuggestions.nonOperators.getSuggestions(context, builder1);
                         })
                         .then(
-                                CommandManager.argument("level", IntegerArgumentType.integer(0, 4))
+                                argument("level", integer(0, 4))
                                         .then(
-                                                CommandManager.argument("canByPassPlayerLimit", BoolArgumentType.bool())
+                                                argument("canByPassPlayerLimit", bool())
                                                         .executes(
                                                                 c -> execute(
                                                                         c.getSource(),
-                                                                        GameProfileArgumentType.getProfileArgument(c, "gameProfile"),
+                                                                        getProfileArgument(c, "gameProfile"),
                                                                         true,
-                                                                        IntegerArgumentType.getInteger(c, "level"),
-                                                                        BoolArgumentType.getBool(c, "canByPassPlayerLimit")
+                                                                        getInteger(c, "level"),
+                                                                        getBool(c, "canByPassPlayerLimit")
                                                                 )
                                                         )
                                         )
@@ -104,14 +113,14 @@ public class OperatorCommand {
         );
 
         removeLiteral.then(
-                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+                argument("gameProfile", gameProfile())
                         .suggests(((context, builder1) -> {
                             return CommandSuggestions.operators.getSuggestions(context, builder1);
                         }))
                         .executes(
                             c -> execute(
                                     c.getSource(),
-                                    GameProfileArgumentType.getProfileArgument(c, "gameProfile"),
+                                    getProfileArgument(c, "gameProfile"),
                                     false,
                                     0,
                                     false
@@ -141,7 +150,7 @@ public class OperatorCommand {
     private static int executeList(ServerCommandSource source) {
         String s = Arrays.toString(source.getMinecraftServer().getPlayerManager().getOpList().getNames());
         LiteralText literalText = (LiteralText) new LiteralText(
-                "&eOperators&8:&r " + s.replace("[", "").replace("]", "").replaceAll(",", "&7,&r")
+                "&eOperators&8:&r " + s.replace("[", "").replace("]", "").replaceAll(",", "&7,&r") // TODO Magic value
         ).setStyle(new Style().setColor(Formatting.GRAY));
 
         TextFormat.sendToUniversalSource(source, literalText, false);
@@ -150,7 +159,7 @@ public class OperatorCommand {
 
     private static int executeGet(ServerCommandSource source, Collection<GameProfile> gameProfiles) {
         PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
-        String text = "&eOperator &b%s&e:\n &7-&e Permission level&8: &a%s&e\n &7-&e Can bypass the player limit&8: &6%s&r";
+        String text = "&eOperator &b%s&e:\n &7-&e Permission level&8: &a%s&e\n &7-&e Can bypass the player limit&8: &6%s&r"; // TODO Magic value
 
         gameProfiles.forEach((gameProfile) -> {
             OperatorList operatorList = playerManager.getOpList();
@@ -199,7 +208,7 @@ public class OperatorCommand {
                         LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
                     }
                     else if (playerManager.isOperator(gameProfile)) {
-                        source.sendError(new LiteralText(gameProfile.getName() + " is already a operator!"));
+                        source.sendError(new LiteralText(gameProfile.getName() + " is already a operator!")); // TODO Magic value
                     }
 
                 }
@@ -213,7 +222,7 @@ public class OperatorCommand {
                 LangText.sendToUniversalSource(source, "command.operator.removed", false, gameProfile.getName());
             }
             else if (!set && !playerManager.isOperator(gameProfile) && !source.getName().equals(gameProfile.getName())) {
-                source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!"));
+                source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!")); // TODO Magic value
             }
             else if (source.getName().equals(gameProfile.getName()))
                 source.sendError(LangText.get(false, "command.operator.exception"));

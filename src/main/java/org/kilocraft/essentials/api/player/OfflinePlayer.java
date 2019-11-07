@@ -12,7 +12,7 @@ import org.kilocraft.essentials.api.server.Server;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class OfflinePlayer implements IntOfflinePlayer {
+public class OfflinePlayer implements IntOfflinePlayer { // TODO move to impl package
 
     private transient Server server;
     private HashMap<String, Object> properties = new HashMap<>();

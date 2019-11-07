@@ -21,15 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ModsCommand {
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
+public class ModsCommand { // TODO Why is this in api package?
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloAPICommands.getCommandPermission("mods");
-        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("mods")
+        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = literal("mods")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloAPICommands.getCommandPermission("tps"), 2))
                 .executes(ModsCommand::executeMultiple);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = CommandManager.argument("id", StringArgumentType.greedyString())
-                .executes(c -> executeSingle(c, StringArgumentType.getString(c, "id")));
+        RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = argument("id", word()) // modids cannot contain spaces so a word arg is fine
+                .executes(c -> executeSingle(c, getString(c, "id")));
 
         modIdArgument.suggests(suggestModIDs);
         literalArgumentBuilder.then(modIdArgument);
@@ -41,7 +46,7 @@ public class ModsCommand {
         int i = FabricLoader.getInstance().getAllMods().size();
         FabricLoader.getInstance().getAllMods().forEach(modContainer -> mods.add(modContainer.getMetadata().getName()));
 
-        LiteralText text = new LiteralText("&6Mods (" + i + " loaded):&f " + mods.toString().replace("[","").replace("]", ""));
+        LiteralText text = new LiteralText("&6Mods (" + i + " loaded):&f " + mods.toString().replace("[","").replace("]", "")); // TODO Magic values
         TextFormat.sendToUniversalSource(context.getSource(), text, false);
         return 1;
     }
@@ -52,7 +57,7 @@ public class ModsCommand {
         if (!modContainer.isPresent()) {
             modContainer = FabricLoader.getInstance().getAllMods().stream().filter(c -> c.getMetadata().getName().equals(modId)).findFirst();
             if (!modContainer.isPresent()) {
-                context.getSource().sendError(new LiteralText("Can't find the mod with a name of \"" + modId + "\"").formatted(Formatting.RED));
+                context.getSource().sendError(new LiteralText("Can't find the mod with a name of \"" + modId + "\"").formatted(Formatting.RED)); // TODO Magic values
             }
         }
 
@@ -65,6 +70,7 @@ public class ModsCommand {
             );
 
             LiteralText text;
+            // TODO Magic values -- START
             if (!modContainer.get().getMetadata().getId().equals("minecraft")) {
                text = new LiteralText(String.format(
                         "&6Mod meta:\n&b -info:&a %s &7(%s@%s)\n &b-Description:&f %s\n &b-Authors:&e %s",
@@ -81,6 +87,7 @@ public class ModsCommand {
                         "fabric"
                 ));
             }
+            // TODO Magic values -- END
 
             TextFormat.sendToUniversalSource(context.getSource(), text, false);
         }

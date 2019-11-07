@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.Properties;
 
-public class Mod {
+public class Mod { // TODO This seems more like a Constants Class and should be renamed to represent such.
     private static Logger logger = LogManager.getFormatterLogger();
     private static Properties properties = new Properties();
     private static Properties lang = new Properties();

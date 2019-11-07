@@ -12,7 +12,7 @@ public class Warp {
 
     private float dX, dY;
 
-    public Warp(String name, double x, double y, double z, float yaw, float pitch, int dimension, boolean requirePermission) {
+    public Warp(String name, double x, double y, double z, float yaw, float pitch, int dimension, boolean requirePermission) { // Would a Warp.Builder make sense in future?
         this.name = name;
         this.x = x;
         this.y = y;

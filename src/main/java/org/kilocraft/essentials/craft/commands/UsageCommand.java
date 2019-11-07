@@ -9,12 +9,16 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.KiloCommands;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class UsageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("usage")
-                .then(
-                        CommandManager.argument("command", StringArgumentType.greedyString())
-                            .executes(context -> execute(context.getSource(), StringArgumentType.getString(context, "command")))
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("usage")
+                .then(argument("command", greedyString())
+                            .executes(context -> execute(context.getSource(), getString(context, "command")))
                 );
 
         dispatcher.register(argumentBuilder);

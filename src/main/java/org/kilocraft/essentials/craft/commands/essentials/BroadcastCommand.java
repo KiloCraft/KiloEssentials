@@ -11,13 +11,17 @@ import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class BroadcastCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("broadcast")
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("broadcast")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("broadcast"), 3))
                 .then(
-                        CommandManager.argument("message", StringArgumentType.greedyString())
-                                .executes(c -> execute(StringArgumentType.getString(c, "message")))
+                        CommandManager.argument("message", greedyString())
+                                .executes(c -> execute(getString(c, "message")))
                 );
 
         dispatcher.register(argumentBuilder);

@@ -16,11 +16,16 @@ import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class FeedCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> feed = CommandManager.literal("feed")
+        LiteralArgumentBuilder<ServerCommandSource> feed = literal("feed")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.self"), 2));
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = CommandManager.argument("target", EntityArgumentType.player())
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.others"), 2))
                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
 
@@ -28,7 +33,7 @@ public class FeedCommand {
         target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.other"), 2));
 
         feed.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
-        target.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayer(context, "target")));
+        target.executes(context -> execute(context.getSource(), getPlayer(context, "target")));
 
         feed.then(target);
         dispatcher.register(feed);

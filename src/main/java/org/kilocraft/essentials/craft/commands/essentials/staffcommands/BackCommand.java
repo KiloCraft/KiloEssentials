@@ -16,6 +16,11 @@ import org.kilocraft.essentials.craft.KiloCommands;
 
 import java.util.HashMap;
 
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class BackCommand {
 
 	public static HashMap<ServerPlayerEntity, Vector3f> backLocations = new HashMap<ServerPlayerEntity, Vector3f>();
@@ -32,14 +37,14 @@ public class BackCommand {
 	}
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("back")
+		LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("back")
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("back.self"), 2))
 				.executes(c -> goBack(c.getSource().getPlayer()))
-				.then(CommandManager.argument("player", EntityArgumentType.player())
+				.then(argument("player", player())
 						.requires(
 								s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("back.others"), 2))
 						.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-						.executes(c -> goBack(EntityArgumentType.getPlayer(c, "player"))));
+						.executes(c -> goBack(getPlayer(c, "player"))));
 
 		dispatcher.register(argumentBuilder);
 	}

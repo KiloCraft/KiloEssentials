@@ -14,7 +14,7 @@ import java.util.List;
  * @version 1.2
  */
 
-public class KiloConifg {
+public class KiloConifg { // TODO Typo
 
     private static List<ConfigIOProvider> callbacks = new ArrayList<>();
     private static String workingDir = System.getProperty("user.dir");

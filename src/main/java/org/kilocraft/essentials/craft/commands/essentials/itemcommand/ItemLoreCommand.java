@@ -17,16 +17,20 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class ItemLoreCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("lore");
-		LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
-		LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
-		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = CommandManager.argument("line",
-				IntegerArgumentType.integer(0, 10));
-		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = CommandManager
-				.argument("name...", StringArgumentType.greedyString()).executes(context -> {
-					return changeLore(context, IntegerArgumentType.getInteger(context, "line"));
+		LiteralArgumentBuilder<ServerCommandSource> builder = literal("lore");
+		LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset");
+		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
+		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(0, 10));
+		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString()).executes(context -> {
+					return changeLore(context, getInteger(context, "line"));
 				});
 
 		builder.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.item.lore", 2));

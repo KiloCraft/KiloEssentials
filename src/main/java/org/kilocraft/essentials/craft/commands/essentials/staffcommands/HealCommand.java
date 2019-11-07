@@ -15,11 +15,16 @@ import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.craft.KiloCommands;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class HealCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> heal = CommandManager.literal("heal")
+        LiteralArgumentBuilder<ServerCommandSource> heal = literal("heal")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = CommandManager.argument("target", EntityArgumentType.player())
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.others"), 2))
                 .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
 
@@ -27,7 +32,7 @@ public class HealCommand {
         target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.other"), 2));
 
         heal.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
-        target.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayer(context, "target")));
+        target.executes(context -> execute(context.getSource(), getPlayer(context, "target")));
 
         heal.then(target);
         dispatcher.register(heal);

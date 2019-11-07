@@ -10,14 +10,16 @@ import org.kilocraft.essentials.craft.ThreadManager;
 import org.kilocraft.essentials.craft.provider.LocateStructureProvider;
 import org.kilocraft.essentials.craft.threaded.ThreadedStructureLocator;
 
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class LocateStructureCommand {
     public static void registerAsChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
 
-        LiteralArgumentBuilder<ServerCommandSource> literalStructure = CommandManager.literal("structure")
+        LiteralArgumentBuilder<ServerCommandSource> literalStructure = literal("structure")
                 .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.locate.structure", 2));
 
         Structures.list.forEach((structure) -> {
-            literalStructure.then(CommandManager.literal(structure.toLowerCase())
+            literalStructure.then(literal(structure.toLowerCase())
                     .executes(c -> execute(c.getSource(), structure))
             );
         });

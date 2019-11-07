@@ -14,13 +14,17 @@ import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.chat.LangText;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class ItemNameCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("name");
-		LiteralArgumentBuilder<ServerCommandSource> resetArgument = CommandManager.literal("reset");
-		LiteralArgumentBuilder<ServerCommandSource> setArgument = CommandManager.literal("set");
-		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = CommandManager.argument("name...",
-				StringArgumentType.greedyString());
+		LiteralArgumentBuilder<ServerCommandSource> builder = literal("name");
+		LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset");
+		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
+		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString());
 
 		nameArgument.executes(context -> {
 			PlayerEntity player = context.getSource().getPlayer();
@@ -40,14 +44,14 @@ public class ItemNameCommand {
 
 				if (Thimble.hasPermissionOrOp(context.getSource(), "kiloessentials.command.item.name.colour", 2)) {
 					item.setCustomName(new LiteralText(TextFormat.translateAlternateColorCodes('&',
-							StringArgumentType.getString(context, "name..."))));
+							getString(context, "name..."))));
 				} else {
 					item.setCustomName(new LiteralText(TextFormat.removeAlternateColorCodes('&',
-							StringArgumentType.getString(context, "name..."))));
+							getString(context, "name..."))));
 				}
 
 				player.sendMessage(LangText.getFormatter(true, "command.item.name.success",
-						StringArgumentType.getString(context, "name...")));
+						getString(context, "name...")));
 			}
 
 			return 0;

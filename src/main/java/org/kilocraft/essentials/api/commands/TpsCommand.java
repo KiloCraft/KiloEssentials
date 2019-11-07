@@ -9,10 +9,12 @@ import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 
-public class TpsCommand {
+import static net.minecraft.server.command.CommandManager.literal;
+
+public class TpsCommand { // TODO why is this in api package
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloAPICommands.getCommandPermission("tps");
-        dispatcher.register(CommandManager.literal("tps")
+        dispatcher.register(literal("tps")
                 .requires(source -> Thimble.hasPermissionOrOp(source, KiloAPICommands.getCommandPermission("tps"), 2))
                 .executes(TpsCommand::run)
         );
@@ -22,7 +24,7 @@ public class TpsCommand {
 
         KiloChat.sendMessageToSource(context.getSource(), new ChatMessage(
                 String.format(
-                        "&6TPS &8(&71m&8/&75m&8/&715m&8)&%s %s&8,&%s %s&8,&%s %s&r",
+                        "&6TPS &8(&71m&8/&75m&8/&715m&8)&%s %s&8,&%s %s&8,&%s %s&r", // TODO Magic values
                         tpstoColorCode(SomeGlobals.tps1.getAverage()),
                         SomeGlobals.tps1.getShortAverage(),
                         tpstoColorCode(SomeGlobals.tps5.getAverage()),

@@ -24,21 +24,26 @@ import org.kilocraft.essentials.craft.KiloCommands;
 import java.util.Collection;
 import java.util.Iterator;
 
+import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
+import static net.minecraft.command.arguments.GameProfileArgumentType.getProfileArgument;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class EnderchestCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("enderchest");
         KiloCommands.getCommandPermission("enderchest.others");
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("enderchest").requires(EnderchestCommand::permission)
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("enderchest").requires(EnderchestCommand::permission)
                 .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));
-        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("ec").requires(EnderchestCommand::permission)
+        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = literal("ec").requires(EnderchestCommand::permission)
                 .executes(c -> openEnderchest(c.getSource().getPlayer(), c.getSource().getPlayer()));;
 
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = argument("gameProfile", gameProfile())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("enderchest.others"), 2))
                 .suggests((context, builder) -> {
                     return CommandSuggestions.allPlayers.getSuggestions(context, builder);
                 })
-                .executes(context -> execute(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "gameProfile")));
+                .executes(context -> execute(context.getSource(), getProfileArgument(context, "gameProfile")));
 
         argumentBuilder.then(selectorArg);
         aliasBuilder.then(selectorArg);
@@ -54,16 +59,16 @@ public class EnderchestCommand {
     private static int execute(ServerCommandSource source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         Iterator v = gameProfiles.iterator();
 
-        if (gameProfiles.size() > 1) source.sendError(new LiteralText("You can only select one player but the provided selector includes more!"));
+        if (gameProfiles.size() > 1) source.sendError(new LiteralText("You can only select one player but the provided selector includes more!"));  // TODO Magic value
         else if (!CommandHelper.isConsole(source)) {
             GameProfile gameProfile = (GameProfile) v.next();
             ServerPlayerEntity ecSource = KiloServer.getServer().getPlayerManager().getPlayer(gameProfile.getId());
 
-            TextFormat.sendToSource(source, false, "&eNow looking at &6%s's&e enderchest", gameProfile.getName());
+            TextFormat.sendToSource(source, false, "&eNow looking at &6%s's&e enderchest", gameProfile.getName());  // TODO Magic value
 
             openEnderchest(source.getPlayer(), ecSource);
         }
-        else source.sendError(new LiteralText("Only players can use this command!"));
+        else source.sendError(new LiteralText("Only players can use this command!"));  // TODO Magic value
 
         return 1;
     }

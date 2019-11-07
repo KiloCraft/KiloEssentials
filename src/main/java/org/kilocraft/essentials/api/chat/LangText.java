@@ -5,7 +5,7 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.api.util.CommandHelper;
 
-public class LangText {
+public class LangText { // TODO Add an interface for access here and move this to impl package
 
     public static LiteralText getFormatter (boolean allowColorCodes, String key, Object... objects) {
         String lang = Mod.getLang().getProperty(key);

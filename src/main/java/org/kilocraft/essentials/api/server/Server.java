@@ -166,14 +166,14 @@ public interface Server {
     /**
      * Gets the brand name of the server
      *
-     * @return ""
+     * @return The server's brand name
      */
     String getBrandName();
 
     /**
      * Gets the custom brand name of the server
      *
-     * @return ""
+     * @return The server's brand name
      */
     String getDisplayBrandName();
 
@@ -188,6 +188,10 @@ public interface Server {
      */
     void shutdown(String reason);
 
+    /**
+     * Stops the server
+     * @param reason is used for kicking the players
+     */
     void shutdown(LiteralText reason);
 
     /**
@@ -196,6 +200,10 @@ public interface Server {
      */
     void kickAll(String reason);
 
+    /**
+     * Kicks all the players on the server
+     * @param reason to kick the player
+     */
     void kickAll(LiteralText reason);
 
     /**

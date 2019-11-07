@@ -26,7 +26,7 @@ public class ThreadedStructureLocator implements KiloThread, Runnable {
         getLogger().info("Started thread StructureLocator by %s for structure \"%s\"", source.getName(), name);
 
         try {
-            LocateStructureProvider.execute(source, name);
+            LocateStructureProvider.execute(source, name); // TODO WHY ARE WE RUNNING BIOME SOURCE LOGIC OFF MAIN
         } catch (CommandSyntaxException e) {
             e.printStackTrace();
         }

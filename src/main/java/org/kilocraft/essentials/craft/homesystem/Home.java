@@ -11,10 +11,10 @@ public class Home {
     private double x, y, z;
     private float dX, dY;
 
-    public Home(UUID uuid, String name, double x, double y, double z, int dimension, float yaw, float pitch) {
+    public Home(UUID uuid, String name, double x, double y, double z, int dimension, float yaw, float pitch) { // Maybe move to a Home.Builder system
         this.owner_uuid = uuid;
         this.name = name;
-        this.dimension = dimension;
+        this.dimension = dimension; // TODO raw int dimension ids are dangerous magic values. Best to use serialized DimensionType and store identifier in serializer
         this.x = x;
         this.y = y;
         this.z = z;

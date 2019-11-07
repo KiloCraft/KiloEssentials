@@ -15,10 +15,15 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class InfoCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> info = CommandManager.literal("info");
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = CommandManager.argument("player", EntityArgumentType.player());
+        LiteralArgumentBuilder<ServerCommandSource> info = literal("info");
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("player", player());
 
         info.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.self", 2));
         target.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.others", 2));
@@ -26,7 +31,7 @@ public class InfoCommand {
         target.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
         
         info.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
-        target.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayer(context, "player")));
+        target.executes(context -> execute(context.getSource(), getPlayer(context, "player")));
 
         info.then(target);
         dispatcher.register(info);
