@@ -82,7 +82,7 @@ public class LocateBiomeProvider {
                 i = 0;
             }
             i++;
-            if (world.getBiome(pos).equals(biomeToFind)) {
+            if (world.getBiomeAccess().getBiome(pos).equals(biomeToFind)) {
                 SuccessfullLocate = true;
                 pos.close();
                 //Feedback: Success
