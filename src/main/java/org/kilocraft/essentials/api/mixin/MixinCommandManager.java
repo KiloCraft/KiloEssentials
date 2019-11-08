@@ -20,8 +20,9 @@ public abstract class MixinCommandManager {
     @Shadow @Final private static Logger LOGGER;
 
     @Inject(method = "<init>", at = {@At("RETURN")})
-    public void CommandManager(boolean boolean_1, CallbackInfo ci) {
-        SomeGlobals.commandDispatcher = dispatcher;
+    private void CommandManager(boolean boolean_1, CallbackInfo ci) {
+        SomeGlobals.commandDispatcher = this.dispatcher;
+        LOGGER.debug("Set the CommandDispatcher (of ServerCommandSource) to: " + this.dispatcher);
     }
 
 }

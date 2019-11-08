@@ -8,15 +8,14 @@ import org.kilocraft.essentials.api.ModData;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.config.KiloConifg;
 
-public class KiloBrandName {
+public  class BrandedServer {
     public static void provide() {
-        String configBrand = KiloConifg.getProvider().getMain().get(false, "server.displayBrandName");
+        String configBrand = KiloConifg.getProvider().getMain().get(true, "server.displayBrandName");
         boolean useDefault = false;
         if (configBrand.equals("DEFAULT")) useDefault = true;
 
         KiloServer.getServer().setDisplayBrandName(
-                useDefault ?
-                        KiloServer.getServer().getBrandName() :
+                useDefault ? KiloServer.getServer().getBrandName() :
                         TextFormat.translateAlternateColorCodes(
                                 '&',
                                 String.format(
@@ -31,6 +30,9 @@ public class KiloBrandName {
                 CustomPayloadS2CPacket.BRAND,
                 (new PacketByteBuf(Unpooled.buffer())).writeString(KiloServer.getServer().getDisplayBrandName())
         );
+
         KiloServer.getServer().getPlayerManager().sendToAll(customPayloadS2CPacket);
+
     }
+
 }

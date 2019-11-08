@@ -9,8 +9,8 @@
     "MixinCommandManager",
     "MixinMinecraftServer",
     "MixinEntityAccessor",
-    "MixinMinecraftServerAccessor",
-    "MixinMinecraftServerCommandOutput"
+    "MixinServerAccessor",
+    "MixinServerCommandOutput"
   ],
   "injectors": {
     "defaultRequire": 1

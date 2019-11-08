@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerCommandOutput.class)
-public abstract class MixinMinecraftServerCommandOutput {
+public abstract class MixinServerCommandOutput {
     @Shadow @Final private MinecraftServer server;
 
     @Inject(at = @At("RETURN"), method = "<init>")
