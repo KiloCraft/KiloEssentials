@@ -1,15 +1,16 @@
 {
   "schemaVersion": 1,
-  "id": "kilo_essentials",
+  "id": "essentials",
   "version": "${version}",
 
-  "name": "Kilo Essentials",
-  "description": "Server essentials made for fabric",
+  "name": "Essentials for Fabric",
+  "description": "Server management made easy with this mod",
   "authors": [
     "CODY_AI",
     "MCrafterzz",
     "Indicode",
-    "DrexHD"
+    "DrexHD",
+    "i509VCB"
   ],
 
   "license": "MIT",
