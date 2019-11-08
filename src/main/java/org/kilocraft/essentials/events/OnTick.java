@@ -1,23 +1,22 @@
 package org.kilocraft.essentials.events;
 
-import java.util.List;
-
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.event.EventHandler;
-import org.kilocraft.essentials.api.event.serverEvents.ServerEvent$OnTick;
 import net.minecraft.block.Blocks;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.event.serverEvents.ServerEvent$OnTick;
 
-public class OnTick implements EventHandler<ServerEvent$OnTick> {
+import java.util.List;
 
-	@Override
-	public void handle(ServerEvent$OnTick event) {
-		processParticles(event);
-	}
+public class OnTick /*implements EventHandler<ServerEvent$OnTick>*/ {
+
+//	@Override
+//	public void handle(ServerEvent$OnTick event) {
+//		processParticles(event);
+//	}
 
 	private void processParticles(ServerEvent$OnTick event) {
 		ServerWorld world = event.getServer().getWorld(DimensionType.OVERWORLD);
