@@ -6,7 +6,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.commands.Commands;
-import org.kilocraft.essentials.commands.suggestions.KiloCommandSuggestions;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -47,7 +47,7 @@ public abstract class MixinCommandManager {
     )
 
     private <S> boolean modifySuggestions(CommandNode<S> commandNode, S source) {
-        return KiloCommandSuggestions.buildForSource(commandNode, source);
+        return CommandSuggestions.buildForSource(commandNode, source);
     }
 
 }

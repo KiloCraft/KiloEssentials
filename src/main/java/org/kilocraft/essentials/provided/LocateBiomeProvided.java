@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.provider;
+package org.kilocraft.essentials.provided;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
@@ -13,7 +13,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 
 import java.util.Objects;
 
-public class LocateBiomeProvider {
+public class LocateBiomeProvided {
     public static String getBiomeId(Biome biome) {
         return Objects.requireNonNull(Registry.BIOME.getId(biome)).toString().replace("minecraft:", "");
     }

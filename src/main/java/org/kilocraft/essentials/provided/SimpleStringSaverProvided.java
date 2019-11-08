@@ -1,12 +1,12 @@
-package org.kilocraft.essentials.provider;
+package org.kilocraft.essentials.provided;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SimpleStringSaverProvider {
+public class SimpleStringSaverProvided {
     private Map<String, String> map;
 
-    public SimpleStringSaverProvider() {
+    public SimpleStringSaverProvided() {
         this.map = new HashMap<>();
     }
 

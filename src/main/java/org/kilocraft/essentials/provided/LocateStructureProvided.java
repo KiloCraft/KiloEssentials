@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.provider;
+package org.kilocraft.essentials.provided;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -8,7 +8,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-public class LocateStructureProvider {
+public class LocateStructureProvided {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.locate.failed", new Object[0]));
 
     public static String getStructureName(String structure) {

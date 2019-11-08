@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.ModData;
 import org.kilocraft.essentials.config.KiloConifg;
-import org.kilocraft.essentials.registry.ConfigurableFeatures;
+import org.kilocraft.essentials.api.config.configurable.ConfigurableFeatures;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.worldwarps.WarpManager;
 

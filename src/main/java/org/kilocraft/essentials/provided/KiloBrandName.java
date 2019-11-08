@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.provider;
+package org.kilocraft.essentials.provided;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;

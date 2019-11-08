@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.provider;
+package org.kilocraft.essentials.provided;
 
 import java.io.File;
 import java.io.IOException;

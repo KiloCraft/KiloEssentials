@@ -1,9 +1,8 @@
-package org.kilocraft.essentials.commands.suggestions;
+package org.kilocraft.essentials.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
-import org.kilocraft.essentials.commands.Commands;
 
-public class KiloCommandSuggestions {
+public class CommandSuggestions {
     public static <S> boolean buildForSource(CommandNode<S> commandNode, S source) {
         if (commandNode.canUse(source)) {
             if (Commands.isVanillaCommand(commandNode.getName().replace(Commands.vanillaCommandsPrefix, ""))
