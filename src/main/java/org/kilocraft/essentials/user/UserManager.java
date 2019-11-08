@@ -54,7 +54,6 @@ public class UserManager {
 
     private User getOfflineUser(UUID uuid) {
         User user = null;
-        this.handler.
 
         return user;
     }
