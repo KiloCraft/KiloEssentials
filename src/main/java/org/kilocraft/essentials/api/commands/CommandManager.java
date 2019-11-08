@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.api.commands;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
-import org.kilocraft.essentials.config.ConfigIOProvider;
+import org.kilocraft.essentials.api.config.ConfigIOProvider;
 import org.kilocraft.essentials.config.KiloConifg;
 import org.kilocraft.essentials.config.provided.ConfigProvider;
 import org.kilocraft.essentials.registry.ConfigurableFeature;
@@ -15,7 +15,6 @@ public class CommandManager implements ConfigIOProvider, ConfigurableFeature {
 
     private CommandManager() {
         ArrayList<String> list = new ArrayList<>();
-
 
     }
 

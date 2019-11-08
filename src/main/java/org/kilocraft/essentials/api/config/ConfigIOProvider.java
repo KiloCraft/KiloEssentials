@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.config;
+package org.kilocraft.essentials.api.config;
 
 import org.kilocraft.essentials.config.provided.ConfigProvider;
 

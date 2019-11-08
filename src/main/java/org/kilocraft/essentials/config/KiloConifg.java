@@ -2,6 +2,7 @@ package org.kilocraft.essentials.config;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.KiloEssentials;
+import org.kilocraft.essentials.api.config.ConfigIOProvider;
 import org.kilocraft.essentials.config.provided.ConfigProvider;
 import org.kilocraft.essentials.provider.KiloFile;
 

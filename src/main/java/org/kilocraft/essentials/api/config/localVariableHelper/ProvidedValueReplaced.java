@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.config.provided;
+package org.kilocraft.essentials.api.config.localVariableHelper;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 

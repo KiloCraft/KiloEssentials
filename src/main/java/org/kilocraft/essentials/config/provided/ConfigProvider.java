@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.config.provided;
 
+import org.kilocraft.essentials.api.config.ConfigValueGetter;
 import org.kilocraft.essentials.config.KiloConifg;
 
 public class ConfigProvider {
