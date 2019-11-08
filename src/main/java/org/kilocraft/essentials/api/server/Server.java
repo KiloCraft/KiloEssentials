@@ -6,16 +6,15 @@ import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
-import org.kilocraft.essentials.api.world.World;
-import org.kilocraft.essentials.craft.user.UserManager;
+import org.kilocraft.essentials.user.UserManager;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -100,7 +99,7 @@ public interface Server {
      *
      * @return all worlds in this Server
      */
-    List<World> getWorlds();
+    Iterable<ServerWorld> getWorlds();
 
     /**
      * Checks if we are running inside the Server's main thread

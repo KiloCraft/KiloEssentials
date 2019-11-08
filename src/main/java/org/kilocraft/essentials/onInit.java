@@ -1,8 +1,7 @@
 package org.kilocraft.essentials;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
-import org.kilocraft.essentials.craft.ThreadManager;
-import org.kilocraft.essentials.craft.threaded.ThreadedKiloEssentialsMod;
+import org.kilocraft.essentials.threaded.ThreadedKiloEssentialsMod;
 
 public class onInit implements DedicatedServerModInitializer {
     @Override

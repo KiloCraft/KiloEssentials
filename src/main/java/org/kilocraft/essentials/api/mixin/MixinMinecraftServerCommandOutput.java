@@ -3,10 +3,10 @@ package org.kilocraft.essentials.api.mixin;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.ServerCommandOutput;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.Mod;
+import org.kilocraft.essentials.api.ModData;
 import org.kilocraft.essentials.api.event.eventImpl.EventRegistryImpl;
 import org.kilocraft.essentials.api.server.ServerImpl;
-import org.kilocraft.essentials.craft.user.UserManager;
+import org.kilocraft.essentials.user.UserManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,7 +21,7 @@ public abstract class MixinMinecraftServerCommandOutput {
     @Inject(at = @At("RETURN"), method = "<init>")
     private void kilo$init(MinecraftServer minecraftServer, CallbackInfo ci) {
 
-        new Mod();
+        new ModData();
 
         KiloServer.setServer(
                 new ServerImpl(
@@ -29,13 +29,13 @@ public abstract class MixinMinecraftServerCommandOutput {
                     new EventRegistryImpl(),
                     new UserManager(),
                     String.format(
-                            Mod.getProperties().getProperty("server.brand"),
-                                Mod.getVersion(),
-                                Mod.getLoaderVersion(),
-                                Mod.getMappingsVersion())
+                            ModData.getProperties().getProperty("server.brand"),
+                                ModData.getVersion(),
+                                ModData.getLoaderVersion(),
+                                ModData.getMappingsVersion())
             )
         );
 
-        Mod.getLogger().info("Server set: " + KiloServer.getServer().getBrandName());
+        ModData.getLogger().info("Server set: " + KiloServer.getServer().getBrandName());
     }
 }

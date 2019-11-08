@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api.event.eventImpl;
 
-import org.kilocraft.essentials.api.Mod;
+import org.kilocraft.essentials.api.ModData;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class EventRegistryImpl implements EventRegistry {
 
     private Map<String, List<EventHandler>> handlers = new HashMap<>();
-    private Logger logger = Mod.getLogger();
+    private Logger logger = ModData.getLogger();
 
     public void register(EventHandler eventClass) {
         for (Type type : eventClass.getClass().getGenericInterfaces()) {

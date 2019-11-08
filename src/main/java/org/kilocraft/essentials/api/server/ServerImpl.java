@@ -6,16 +6,15 @@ import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.api.Mod;
+import org.kilocraft.essentials.api.ModData;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.util.MinecraftServerLoggable;
-import org.kilocraft.essentials.api.world.World;
-import org.kilocraft.essentials.api.world.worldimpl.WorldImpl;
-import org.kilocraft.essentials.craft.user.UserManager;
+import org.kilocraft.essentials.user.UserManager;
 
 import java.util.*;
 
@@ -76,7 +75,7 @@ public class ServerImpl implements Server {
 
     @Override
     public String getVersion() {
-        return Mod.getVersion();
+        return ModData.getVersion();
     }
 
     @Override
@@ -96,11 +95,8 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public List<World> getWorlds() {
-        List<World> worlds = new ArrayList<>();
-        server.getWorlds().forEach(world -> worlds.add(new WorldImpl(world)));
-
-        return worlds;
+    public Iterable<ServerWorld> getWorlds() {
+        return server.getWorlds();
     }
 
     @Override

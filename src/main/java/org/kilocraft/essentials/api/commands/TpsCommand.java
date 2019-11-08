@@ -6,8 +6,8 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.util.SomeGlobals;
-import org.kilocraft.essentials.craft.chat.ChatMessage;
-import org.kilocraft.essentials.craft.chat.KiloChat;
+import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.KiloChat;
 
 public class TpsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
