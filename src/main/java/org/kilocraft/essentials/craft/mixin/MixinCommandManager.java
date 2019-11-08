@@ -5,7 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.craft.commands.Commands;
+
+import org.kilocraft.essentials.craft.commands.essentials.Commands;
 import org.kilocraft.essentials.craft.commands.suggestions.KiloCommandSuggestions;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,7 +1,8 @@
 package org.kilocraft.essentials.craft.commands.suggestions;
 
+import org.kilocraft.essentials.craft.commands.essentials.Commands;
+
 import com.mojang.brigadier.tree.CommandNode;
-import org.kilocraft.essentials.craft.commands.Commands;
 
 public class KiloCommandSuggestions {
     public static <S> boolean buildForSource(CommandNode<S> commandNode, S source) {

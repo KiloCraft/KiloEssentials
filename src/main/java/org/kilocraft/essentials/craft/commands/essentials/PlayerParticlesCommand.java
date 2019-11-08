@@ -1,3 +1,4 @@
+package org.kilocraft.essentials.craft.commands.essentials;
 //package org.kilocraft.essentials.craft.commands.donatorcommands;
 //
 //import com.mojang.brigadier.CommandDispatcher;

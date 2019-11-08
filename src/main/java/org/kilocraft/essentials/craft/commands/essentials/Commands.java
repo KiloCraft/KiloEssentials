@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.craft.commands;
+package org.kilocraft.essentials.craft.commands.essentials;
 
 import java.util.ArrayList;
 import java.util.List;
