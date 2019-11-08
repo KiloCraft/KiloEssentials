@@ -11,7 +11,6 @@ import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.command.TestCommand;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
@@ -34,15 +33,13 @@ import java.util.Map;
 
 public class KiloCommands {
     private static final SimpleCommandExceptionType SMART_USAGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Unknown command or insufficient permissions"));
-
+    private static List<String> initializedPerms = new ArrayList<>();
     private CommandDispatcher<ServerCommandSource> dispatcher;
+
     public KiloCommands() {
         this.dispatcher = SomeGlobals.commandDispatcher;
         register(true);
     }
-
-    public static KiloCommands INSTANCE;
-    private static List<String> initializedPerms = new ArrayList<>();
 
     public static String getCommandPermission(String command) {
         if (!initializedPerms.contains(command)) {
@@ -53,9 +50,9 @@ public class KiloCommands {
 
     private void register(boolean devEnv) {
         if (devEnv) {
-            ModData.getLogger().debug("Server is running in debug mode!");
+            KiloEssentials.getLogger().debug("Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
-            TestCommand.register(this.dispatcher);
+            //TestCommand.register(this.dispatcher);
         }
 
 
@@ -65,7 +62,7 @@ public class KiloCommands {
         EnderchestCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
-        RealNameCommand.register(this.dispatcher);      
+        RealNameCommand.register(this.dispatcher);
         RandomTeleportCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
@@ -73,7 +70,6 @@ public class KiloCommands {
         BroadcastCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
-        //NicknameCommand.register(this.dispatcher);
         NickCommandOLD.register(this.dispatcher);
         PlayerParticlesCommand.register(this.dispatcher);
         AnvilCommand.register(this.dispatcher);

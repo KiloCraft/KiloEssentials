@@ -9,8 +9,7 @@
     "MixinCommandManager",
     "MixinServerPlayNetWorkHandler",
     "MixinCreeperEntity",
-    "MixinServerPlayerEntity",   
-    "MixinPlayerListPacket"
+    "MixinServerPlayerEntity"
   ],
   "injectors": {
     "defaultRequire": 1
