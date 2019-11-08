@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.Mod;
+import org.kilocraft.essentials.api.ModData;
 import org.kilocraft.essentials.api.chat.LangText;
 
 public class KiloInfoCommand {
@@ -16,7 +16,7 @@ public class KiloInfoCommand {
                     LangText.sendToUniversalSource(context.getSource(),
                             "command.info",
                             false,
-                            Mod.getMinecraftVersion()
+                            ModData.getMinecraftVersion()
                     );
                     return 0;
                 });
@@ -26,10 +26,10 @@ public class KiloInfoCommand {
                     LangText.sendToUniversalSource(context.getSource(),
                             "command.info.version",
                             false,
-                            Mod.getVersion(),
-                            Mod.getLoaderVersion(),
-                            Mod.getMappingsVersion(),
-                            Mod.getMinecraftVersion()
+                            ModData.getVersion(),
+                            ModData.getLoaderVersion(),
+                            ModData.getMappingsVersion(),
+                            ModData.getMinecraftVersion()
                     );
                     return 0;
                 });

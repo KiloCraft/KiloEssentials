@@ -6,6 +6,8 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.commands.essentials.locatecommands.LocateStructureCommand;
+import org.kilocraft.essentials.commands.essentials.locatecommands.LocateBiomeCommand;
 
 public class WorldLocateCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

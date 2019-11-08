@@ -20,7 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
-import org.kilocraft.essentials.craft.KiloCommands;
+import org.kilocraft.essentials.KiloCommands;
 
 import java.util.Date;
 

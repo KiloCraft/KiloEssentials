@@ -1,10 +1,8 @@
 package org.kilocraft.essentials.api.mixin;
 
 import net.minecraft.server.MinecraftServer;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.util.RollingAverage;
 import org.kilocraft.essentials.api.util.SomeGlobals;
-import org.kilocraft.essentials.api.wrapper.ServerBrand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
-public abstract class MixinMinecraftServer implements ServerBrand {
+public abstract class MixinMinecraftServer {
     private int currentTick = 0;
 
     private long curTime;
@@ -45,10 +43,5 @@ public abstract class MixinMinecraftServer implements ServerBrand {
         }
     }
 
-
-    @Override
-    public String getServerModName() {
-        return KiloServer.getServer().getDisplayBrandName();
-    }
 
 }
