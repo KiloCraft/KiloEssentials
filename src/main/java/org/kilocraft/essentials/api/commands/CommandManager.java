@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.customcommands;
+package org.kilocraft.essentials.api.commands;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.config.ConfigIOProvider;
