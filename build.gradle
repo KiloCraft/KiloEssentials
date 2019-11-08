@@ -25,10 +25,9 @@ details.isCleanTag
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
-def buildType = "dirty"
-if (details.isCleanTag) buildType = "stable"
+def buildType = details.isCleanTag ? "stable" : "dirty"
 
-def gitVersion = "${version}-${buildType}.${details.branchName}+git.${details.gitHash}"
+def gitVersion = "${version}-${buildType}+git.${details.branchName}-${details.gitHash}"
 group = project.maven_group
 
 minecraft {
