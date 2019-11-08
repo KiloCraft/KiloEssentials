@@ -11,8 +11,6 @@ public class Mod {
     private static Properties properties = new Properties();
     private static Properties lang = new Properties();
 
-    private static String version;
-
     public Mod() {
         try {
             properties.load(Mod.class.getClassLoader().getResourceAsStream("mod.properties"));
@@ -21,7 +19,6 @@ public class Mod {
             e.printStackTrace();
         }
 
-        //Thimble.disabledCommandPerms.add("item");
     }
 
     public static Logger getLogger() {
@@ -52,9 +49,20 @@ public class Mod {
         return getProperties().getProperty("minecraft_version");
     }
 
-    public static boolean isDebugEnabled() {
-        return Boolean.parseBoolean(getProperties().getProperty("enabledebug"));
+    public static String getGitHash() {
+        return properties.getProperty("git_hash");
     }
 
+    public static String getGitHashFull() {
+        return properties.getProperty("git_hash_full");
+    }
+
+    public static String getGitBranch() {
+        return properties.getProperty("git_branch");
+    }
+
+    public static String getBuildType() {
+        return properties.getProperty("build_type");
+    }
 
 }

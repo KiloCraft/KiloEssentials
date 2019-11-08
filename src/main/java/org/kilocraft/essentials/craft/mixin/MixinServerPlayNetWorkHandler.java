@@ -4,6 +4,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import org.kilocraft.essentials.craft.chat.KiloChat;
+import org.kilocraft.essentials.craft.user.User;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,6 +22,6 @@ public abstract class MixinServerPlayNetWorkHandler {
 
     private void modify(ChatMessageC2SPacket chatMessageC2SPacket_1, CallbackInfo ci) {
         ci.cancel();
-        KiloChat.sendChatMessage(player, chatMessageC2SPacket_1.getChatMessage());
+        KiloChat.sendChatMessage(User.of(player), chatMessageC2SPacket_1.getChatMessage());
     }
 }

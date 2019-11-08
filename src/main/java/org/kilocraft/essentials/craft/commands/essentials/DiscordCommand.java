@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.craft.chat.ChatMessage;
 import org.kilocraft.essentials.craft.chat.KiloChat;
 import org.kilocraft.essentials.craft.config.KiloConifg;
-import org.kilocraft.essentials.craft.config.provided.localVariables.PlayerConfigVariables;
+import org.kilocraft.essentials.craft.config.provided.localvariables.PlayerConfigVariables;
 
 public class DiscordCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

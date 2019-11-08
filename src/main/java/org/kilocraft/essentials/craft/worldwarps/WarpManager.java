@@ -2,8 +2,8 @@ package org.kilocraft.essentials.craft.worldwarps;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
-import io.github.indicode.fabric.permissions.command.CommandPermission;
 import io.github.indicode.fabric.worlddata.NBTWorldData;
 import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
@@ -12,8 +12,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.craft.commands.essentials.WarpCommand;
+import org.kilocraft.essentials.craft.KiloCommands;
+import org.kilocraft.essentials.craft.commands.essentials.staffcommands.WarpCommand;
 import org.kilocraft.essentials.craft.config.KiloConifg;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeature;
 
@@ -30,15 +30,9 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     @Override
     public boolean register() {
         WorldDataLib.addIOCallback(this);
-        warps.forEach(warp -> {
-            try {
-                Thimble.PERMISSIONS.getPermission(warp.getPermissionNode(), CommandPermission.class);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                e.printStackTrace();
-            }
-        });
-        WarpCommand.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
-        WarpCommands.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
+        warps.forEach(warp -> Thimble.PERMISSIONS.registerPermission(warp.getPermissionNode(), PermChangeBehavior.UPDATE_COMMAND_TREE));
+        WarpCommand.register(KiloCommands.getDispatcher());
+        WarpCommands.register(KiloCommands.getDispatcher());
         return true;
     }
 
@@ -77,7 +71,7 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
 
     public void reload() {
         WorldDataLib.triggerCallbackLoad(this);
-        WarpCommands.register(KiloServer.getServer().getCommandRegistry().getDispatcher());
+        WarpCommands.register(KiloCommands.getDispatcher());
     }
 
     public void save() {

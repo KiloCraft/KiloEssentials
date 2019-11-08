@@ -27,7 +27,10 @@ public class KiloBrandName {
                         )
         );
 
-        CustomPayloadS2CPacket customPayloadS2CPacket = new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, (new PacketByteBuf(Unpooled.buffer())).writeString(KiloServer.getServer().getDisplayBrandName()));
+        CustomPayloadS2CPacket customPayloadS2CPacket = new CustomPayloadS2CPacket(
+                CustomPayloadS2CPacket.BRAND,
+                (new PacketByteBuf(Unpooled.buffer())).writeString(KiloServer.getServer().getDisplayBrandName())
+        );
         KiloServer.getServer().getPlayerManager().sendToAll(customPayloadS2CPacket);
     }
 }

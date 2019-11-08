@@ -1,16 +1,15 @@
 package org.kilocraft.essentials.craft;
 
+import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
-import io.github.indicode.fabric.permissions.command.CommandPermission;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.Mod;
 import org.kilocraft.essentials.craft.config.KiloConifg;
-import org.kilocraft.essentials.craft.homesystem.HomeManager;
 import org.kilocraft.essentials.craft.registry.ConfigurableFeatures;
+import org.kilocraft.essentials.craft.user.UserHomeHandler;
 import org.kilocraft.essentials.craft.worldwarps.WarpManager;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,22 +29,14 @@ public class KiloEssentials {
 		this.commands = commands;
 
 		ConfigurableFeatures features = new ConfigurableFeatures();
-		features.tryToRegister(new HomeManager(), "PlayerHomes");
+		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
-
+		
 		/**
 		 * Initializing the permissions
 		 */
 
-		Thimble.permissionWriters.add((map, server) -> {
-			initializedPerms.forEach(perm -> {
-				try {
-					map.getPermission("kiloessentials." + perm, CommandPermission.class);
-				} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-					e.printStackTrace();
-				}
-			});
-		});
+		Thimble.permissionWriters.add((map, server) -> initializedPerms.forEach(perm -> map.registerPermission("kiloessentials." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
 
 	}
 

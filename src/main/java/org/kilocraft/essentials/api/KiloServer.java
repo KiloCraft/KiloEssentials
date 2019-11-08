@@ -6,7 +6,6 @@ import org.kilocraft.essentials.api.util.SomeGlobals;
 
 public class KiloServer {
     private static Server server;
-    private String dataDir = System.getProperty("user.dir") + "/KiloEssentials/data/";
 
     /**
      * Get the global server instance

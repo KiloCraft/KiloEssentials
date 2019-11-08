@@ -1,7 +1,8 @@
 package org.kilocraft.essentials.craft.config.provided;
 
+import org.kilocraft.essentials.craft.config.provided.localvariables.LocalConfigVariable;
+
 import com.electronwill.nightconfig.core.file.FileConfig;
-import org.kilocraft.essentials.craft.config.provided.localVariables.LocalConfigVariable;
 
 public class ConfigValueGetter {
     private FileConfig config;
@@ -33,6 +34,22 @@ public class ConfigValueGetter {
 
     public <T> T getValue(String key) {
         return this.config.get(key);
+    }
+
+    public Boolean getBooleanSafely(String key) {
+        return (boolean) this.config.getOrElse(key, false);
+    }
+
+    public Integer getIntegerSafely(String key) {
+        return (int) this.config.getOrElse(key, 0);
+    }
+
+    public Float getFloatSafely(String key) {
+        return Float.parseFloat(this.config.getOrElse(key, "1.0"));
+    }
+
+    public String getStringSafely(String key) {
+        return this.config.getOrElse(key, "NULL[ConfigValueGetter$getStringSafely()]");
     }
 
     public ProvidedValueReplaced getValueReplacer() {

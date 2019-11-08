@@ -1,8 +1,8 @@
 package org.kilocraft.essentials.api.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
-import io.github.indicode.fabric.permissions.command.CommandPermission;
 import net.minecraft.server.command.ServerCommandSource;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,19 +24,7 @@ public class KiloAPICommands {
 
 //        TriggerEventApiCmd.register(dispatcher);
         Thimble.permissionWriters.add((map, server) -> {
-            try {
-                map.getPermission("kiloapi", CommandPermission.class);
-                map.getPermission("kiloapi.command", CommandPermission.class);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                e.printStackTrace();
-            }
-            initializedPerms.forEach(perm -> {
-                try {
-                    map.getPermission("kiloapi.command." + perm, CommandPermission.class);
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                    e.printStackTrace();
-                }
-            });
+            initializedPerms.forEach(perm -> map.registerPermission("kiloapi.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
         });
     }
 }
