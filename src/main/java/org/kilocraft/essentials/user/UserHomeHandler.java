@@ -9,7 +9,7 @@ import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.homesystem.Home;
 import org.kilocraft.essentials.homesystem.HomeCommand;
-import org.kilocraft.essentials.registry.ConfigurableFeature;
+import org.kilocraft.essentials.api.config.configurable.ConfigurableFeature;
 
 import java.util.ArrayList;
 import java.util.List;

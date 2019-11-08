@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.commands.essentials.staffcommands.WarpCommand;
 import org.kilocraft.essentials.config.KiloConifg;
-import org.kilocraft.essentials.registry.ConfigurableFeature;
+import org.kilocraft.essentials.api.config.configurable.ConfigurableFeature;
 
 import java.io.File;
 import java.util.ArrayList;

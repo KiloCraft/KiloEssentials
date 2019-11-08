@@ -4,7 +4,7 @@ import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.api.config.ConfigIOProvider;
 import org.kilocraft.essentials.config.KiloConifg;
 import org.kilocraft.essentials.config.provided.ConfigProvider;
-import org.kilocraft.essentials.registry.ConfigurableFeature;
+import org.kilocraft.essentials.api.config.configurable.ConfigurableFeature;
 
 import java.util.ArrayList;
 import java.util.HashMap;

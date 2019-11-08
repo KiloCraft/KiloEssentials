@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.registry;
+package org.kilocraft.essentials.api.config.configurable;
 
 import org.kilocraft.essentials.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConifg;
