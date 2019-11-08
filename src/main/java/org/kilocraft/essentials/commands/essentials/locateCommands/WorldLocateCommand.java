@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands.essentials.locatecommands;
+package org.kilocraft.essentials.commands.essentials.locateCommands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -7,7 +7,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 
-public class LocateCommand {
+public class WorldLocateCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("locate");
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("ke_locate")

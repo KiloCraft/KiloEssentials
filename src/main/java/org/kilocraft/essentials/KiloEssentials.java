@@ -8,7 +8,7 @@ import org.kilocraft.essentials.api.ModData;
 import org.kilocraft.essentials.config.KiloConifg;
 import org.kilocraft.essentials.api.config.configurable.ConfigurableFeatures;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.worldwarps.WarpManager;
+import org.kilocraft.essentials.misc.serverwarp.WarpManager;
 
 import java.util.ArrayList;
 import java.util.List;

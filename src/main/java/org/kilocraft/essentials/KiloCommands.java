@@ -21,10 +21,8 @@ import org.kilocraft.essentials.api.util.SomeGlobals;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.essentials.*;
-import org.kilocraft.essentials.commands.essentials.donatorcommands.*;
 import org.kilocraft.essentials.commands.essentials.itemcommand.ItemCommand;
-import org.kilocraft.essentials.commands.essentials.locatecommands.LocateCommand;
-import org.kilocraft.essentials.commands.essentials.staffcommands.*;
+import org.kilocraft.essentials.commands.essentials.locateCommands.WorldLocateCommand;
 import org.kilocraft.essentials.commands.servermanagement.OperatorCommand;
 import org.kilocraft.essentials.commands.servermanagement.ReloadCommand;
 import org.kilocraft.essentials.commands.servermanagement.StopCommand;
@@ -57,24 +55,13 @@ public class KiloCommands {
         if (devEnv) {
             ModData.getLogger().debug("Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
-            RainbowCommand.register(this.dispatcher);
-            DevEnvironmentCommand.register(this.dispatcher);
             TestCommand.register(this.dispatcher);
         }
 
-        /**
-         * @Misc
-         */
-        KiloInfoCommands.register(this.dispatcher);
-        ReloadCommand.register(this.dispatcher);
 
-        /**
-         * @Players
-         */
+        ReloadCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
-        LocateCommand.register(this.dispatcher);
-        InventoryCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
@@ -85,33 +72,16 @@ public class KiloCommands {
         SudoCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
-        KiloInfoCommands.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
         //NicknameCommand.register(this.dispatcher);
         NickCommandOLD.register(this.dispatcher);
-
-        /**
-         * @Donators
-         */
         PlayerParticlesCommand.register(this.dispatcher);
         AnvilCommand.register(this.dispatcher);
-        CraftingbenchCommand.register(this.dispatcher);
         ItemCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
-
-        /**
-         * @ServerManagement
-         */
-        StopCommand.register(this.dispatcher);
-        OperatorCommand.register(this.dispatcher);
-        InvulnerablemodeCommand.register(this.dispatcher);
-
-        /**
-         * @Staff
-         */
-        LocateCommand.register(this.dispatcher);
-        BanCommand.register(this.dispatcher);
+        WorldLocateCommand.register(this.dispatcher);
+        UserBanCommand.register(this.dispatcher);
         BackCommand.register(this.dispatcher);
         HealCommand.register(this.dispatcher);
         FeedCommand.register(this.dispatcher);
@@ -120,6 +90,9 @@ public class KiloCommands {
         SpeedCommand.register(this.dispatcher);
         InfoCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
+        StopCommand.register(this.dispatcher);
+        OperatorCommand.register(this.dispatcher);
+        InvulnerablemodeCommand.register(this.dispatcher);
 
         Thimble.permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.serverwarp;
+package org.kilocraft.essentials.misc.serverwarp;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -13,7 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.commands.essentials.staffcommands.WarpCommand;
+import org.kilocraft.essentials.commands.essentials.WarpCommand;
 import org.kilocraft.essentials.config.KiloConifg;
 import org.kilocraft.essentials.api.config.configurable.ConfigurableFeature;
 

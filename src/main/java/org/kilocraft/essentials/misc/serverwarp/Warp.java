@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.serverwarp;
+package org.kilocraft.essentials.misc.serverwarp;
 
 import net.minecraft.nbt.CompoundTag;
 import org.kilocraft.essentials.config.KiloConifg;

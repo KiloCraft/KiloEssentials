@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands.essentials.donatorcommands;
+package org.kilocraft.essentials.commands.essentials;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;

@@ -7,8 +7,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.userhome.Home;
-import org.kilocraft.essentials.userhome.HomeCommand;
+import org.kilocraft.essentials.misc.userhome.Home;
+import org.kilocraft.essentials.misc.userhome.HomeCommand;
 import org.kilocraft.essentials.api.config.configurable.ConfigurableFeature;
 
 import java.util.ArrayList;

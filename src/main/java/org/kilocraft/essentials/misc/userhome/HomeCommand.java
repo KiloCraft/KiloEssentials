@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.userhome;
+package org.kilocraft.essentials.misc.userhome;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.essentials.staffcommands.BackCommand;
+import org.kilocraft.essentials.commands.essentials.BackCommand;
 import org.kilocraft.essentials.config.KiloConifg;
 import org.kilocraft.essentials.user.User;
 import org.kilocraft.essentials.user.UserHomeHandler;

@@ -2,7 +2,7 @@ package org.kilocraft.essentials.events;
 
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.serverEvents.ServerEvent$OnReload;
-import org.kilocraft.essentials.worldwarps.WarpManager;
+import org.kilocraft.essentials.misc.serverwarp.WarpManager;
 
 public class OnReload implements EventHandler<ServerEvent$OnReload> {
     @Override

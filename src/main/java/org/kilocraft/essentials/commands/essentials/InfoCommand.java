@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands.essentials.staffcommands;
+package org.kilocraft.essentials.commands.essentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.CommandSuggestions;

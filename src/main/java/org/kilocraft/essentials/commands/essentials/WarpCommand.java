@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands.essentials.staffcommands;
+package org.kilocraft.essentials.commands.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -18,8 +18,8 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConifg;
-import org.kilocraft.essentials.worldwarps.Warp;
-import org.kilocraft.essentials.worldwarps.WarpManager;
+import org.kilocraft.essentials.misc.serverwarp.Warp;
+import org.kilocraft.essentials.misc.serverwarp.WarpManager;
 
 import java.text.DecimalFormat;
 
