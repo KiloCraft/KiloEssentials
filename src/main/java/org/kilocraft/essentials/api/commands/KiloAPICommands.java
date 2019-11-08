@@ -5,7 +5,6 @@ import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,11 +17,9 @@ public class KiloAPICommands {
         return "kiloapi.command." + command;
     }
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-
         TpsCommand.register(dispatcher);
         ModsCommand.register(dispatcher);
 
-//        TriggerEventApiCmd.register(dispatcher);
         Thimble.permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloapi.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
         });
