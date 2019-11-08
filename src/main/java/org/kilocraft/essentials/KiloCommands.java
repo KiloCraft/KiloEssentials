@@ -50,7 +50,7 @@ public class KiloCommands {
 
     private void register(boolean devEnv) {
         if (devEnv) {
-            KiloEssentials.getLogger().debug("Server is running in debug mode!");
+            KiloEssentials.getLogger().info("Alert [!]: Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
             //TestCommand.register(this.dispatcher);
         }
@@ -70,7 +70,6 @@ public class KiloCommands {
         BroadcastCommand.register(this.dispatcher);
         DiscordCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
-        NickCommandOLD.register(this.dispatcher);
         PlayerParticlesCommand.register(this.dispatcher);
         AnvilCommand.register(this.dispatcher);
         ItemCommand.register(this.dispatcher);
@@ -89,6 +88,7 @@ public class KiloCommands {
         StopCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         InvulnerablemodeCommand.register(this.dispatcher);
+        NickCommandOLD.register(this.dispatcher);
 
         Thimble.permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));

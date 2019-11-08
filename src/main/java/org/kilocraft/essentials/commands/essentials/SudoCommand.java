@@ -9,13 +9,15 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.*;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.user.User;
 
 public class SudoCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -39,7 +41,7 @@ public class SudoCommand {
         KiloChat.sendLangMessageTo(source, "command.sudo.success", player.getName().asString());
 
         if (command.startsWith("c:")) {
-            KiloChat.sendChatMessage(User.of(player), command.replaceFirst("c:", ""));
+            KiloChat.sendChatMessage(player, command.replaceFirst("c:", ""));
         } else if (!command.contains("sudo")) {
             try {
                 dispatcher.execute(command.replace("/", ""), player.getCommandSource());

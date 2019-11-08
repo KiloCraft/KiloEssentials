@@ -33,8 +33,7 @@ public class MixinPlayerListPacket {
 	         while(var2.hasNext()) {
 	            PlayerListS2CPacket.Entry playerListS2CPacket$Entry_1 = (PlayerListS2CPacket.Entry)var2.next();
 	            ServerPlayerEntity player = KiloServer.getServer().getPlayerManager().getPlayer(playerListS2CPacket$Entry_1.getProfile().getId());
-	            User user = KiloServer.getServer().getUserManager().getUser(playerListS2CPacket$Entry_1.getProfile().getId());
-	            
+
 	            switch(this.action) {
 	            case ADD_PLAYER:
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());

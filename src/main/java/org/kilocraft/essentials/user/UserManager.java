@@ -4,7 +4,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.KiloChat;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -91,7 +90,7 @@ public class UserManager {
             this.handler.handleUser(user);
         } catch (IOException ignored) { }
 
-        KiloChat.broadcastUserJoinEventMessage(user);
+        //KiloChat.broadcastUserJoinEventMessage(user);
     }
 
     public void onPlayerLeave(ServerPlayerEntity player) {
@@ -103,7 +102,7 @@ public class UserManager {
             this.handler.saveData(user);
         } catch (IOException ignored) { }
 
-        KiloChat.broadcastUserLeaveEventMessage(user);
+        //KiloChat.broadcastUserLeaveEventMessage(user);
     }
 
 }

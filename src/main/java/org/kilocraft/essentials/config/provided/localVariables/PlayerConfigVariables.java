@@ -21,6 +21,7 @@ public class PlayerConfigVariables implements LocalConfigVariable {
     public HashMap<String, String> variables() {
         return new HashMap<String, String>(){{
             put("NAME", player.getName().asString());
+            put("DISPLAYNAME", player.getDisplayName().asString());
         }};
     }
 }

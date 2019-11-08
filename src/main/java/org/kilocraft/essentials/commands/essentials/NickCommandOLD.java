@@ -68,8 +68,7 @@ public class NickCommandOLD {
 
 	private static void changeNick(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
 		String nick = StringArgumentType.getString(context, "name");
-		KiloServer.getServer().getUserManager().getUser(player.getUuid())
-				.setNickname(new LiteralText(TextFormat.translateAlternateColorCodes('&', nick)).asString());
+		player.setCustomName(new LiteralText(TextFormat.translateAlternateColorCodes('&', nick)));
 
 		context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.success",
 				player.getName().asString(), TextFormat.removeAlternateColorCodes('&', nick)), false);
@@ -77,7 +76,7 @@ public class NickCommandOLD {
 	}
 
 	private static void resetNick(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
-		KiloServer.getServer().getUserManager().getUser(player.getUuid()).setNickname("");
+		player.setCustomName(player.getDisplayName());
 		context.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.reset", player.getName().asString()),
 				false);
 		KiloServer.getServer().getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
