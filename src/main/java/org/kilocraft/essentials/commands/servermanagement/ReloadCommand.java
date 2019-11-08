@@ -7,7 +7,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConifg;
-import org.kilocraft.essentials.provider.KiloBrandName;
+import org.kilocraft.essentials.provided.KiloBrandName;
 
 public class ReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

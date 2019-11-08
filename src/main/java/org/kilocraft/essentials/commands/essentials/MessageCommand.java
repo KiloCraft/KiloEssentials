@@ -16,7 +16,7 @@ import org.kilocraft.essentials.api.util.CommandHelper;
 import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.provider.SimpleStringSaverProvider;
+import org.kilocraft.essentials.provided.SimpleStringSaverProvided;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -55,7 +55,7 @@ public class MessageCommand {
 
     }
 
-    public static SimpleStringSaverProvider stringSaverProvider = new SimpleStringSaverProvider();
+    public static SimpleStringSaverProvided stringSaverProvider = new SimpleStringSaverProvided();
 
     private static int executeReply(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         AtomicReference<ServerPlayerEntity> target = new AtomicReference<>();

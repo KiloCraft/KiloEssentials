@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.worldwarps;
+package org.kilocraft.essentials.serverwarp;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;

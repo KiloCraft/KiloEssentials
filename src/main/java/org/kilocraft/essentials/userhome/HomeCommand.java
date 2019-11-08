@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.homesystem;
+package org.kilocraft.essentials.userhome;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;

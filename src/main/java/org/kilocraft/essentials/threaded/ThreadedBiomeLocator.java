@@ -4,7 +4,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.provider.LocateBiomeProvider;
+import org.kilocraft.essentials.provided.LocateBiomeProvided;
 
 public class ThreadedBiomeLocator implements KiloThread, Runnable {
     private Logger logger;
@@ -24,9 +24,9 @@ public class ThreadedBiomeLocator implements KiloThread, Runnable {
     @Override
     public void run() {
         logger = LogManager.getFormatterLogger(getName());
-        getLogger().info("Started thread BiomeLocator by %s for biome \"%s\"", source.getName(), LocateBiomeProvider.getBiomeName(biome));
+        getLogger().info("Started thread BiomeLocator by %s for biome \"%s\"", source.getName(), LocateBiomeProvided.getBiomeName(biome));
 
-        LocateBiomeProvider.execute(source, biome);
+        LocateBiomeProvided.execute(source, biome);
     }
 
     @Override

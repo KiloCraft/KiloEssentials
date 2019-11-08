@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.homesystem;
+package org.kilocraft.essentials.userhome;
 
 import net.minecraft.nbt.CompoundTag;
 

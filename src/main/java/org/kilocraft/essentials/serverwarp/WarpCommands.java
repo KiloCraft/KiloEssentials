@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.worldwarps;
+package org.kilocraft.essentials.serverwarp;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
