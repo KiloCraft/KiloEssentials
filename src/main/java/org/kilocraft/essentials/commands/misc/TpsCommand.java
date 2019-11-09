@@ -2,13 +2,11 @@ package org.kilocraft.essentials.commands.misc;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.commands.KiloAPICommands;
-import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.TPSTracker;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -16,7 +14,6 @@ public class TpsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloAPICommands.getCommandPermission("tps");
         dispatcher.register(literal("tps")
-                .requires(source -> Thimble.hasPermissionOrOp(source, KiloAPICommands.getCommandPermission("tps"), 2))
                 .executes(TpsCommand::run)
         );
     }

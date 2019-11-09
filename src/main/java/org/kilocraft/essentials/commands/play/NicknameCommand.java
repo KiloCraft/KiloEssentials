@@ -1,11 +1,9 @@
-package org.kilocraft.essentials.commands.player;
+package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.KiloServer;

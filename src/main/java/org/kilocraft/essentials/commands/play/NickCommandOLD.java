@@ -1,15 +1,12 @@
-package org.kilocraft.essentials.commands.player;
+package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;

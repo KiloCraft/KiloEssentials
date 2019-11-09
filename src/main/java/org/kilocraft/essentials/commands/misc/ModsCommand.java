@@ -1,16 +1,13 @@
 package org.kilocraft.essentials.commands.misc;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
@@ -31,7 +28,6 @@ public class ModsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloAPICommands.getCommandPermission("mods");
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = literal("mods")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloAPICommands.getCommandPermission("tps"), 2))
                 .executes(ModsCommand::executeMultiple);
 
         RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = argument("id", greedyString())
