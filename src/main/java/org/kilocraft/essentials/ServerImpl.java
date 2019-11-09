@@ -189,7 +189,7 @@ public class ServerImpl implements Server {
         String[] lines = message.split("\n");
 
         for (String line : lines) {
-            getLogger().trace(TextFormat.removeAlternateColorCodes('&', line));
+            getLogger().info(TextFormat.removeAlternateColorCodes('&', line));
         }
 
     }

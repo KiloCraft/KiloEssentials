@@ -26,15 +26,11 @@ public class KiloChat {
 	private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
 
 	private static String getFormattedLang(String key, Object... objects) {
-		String value = ModConstants.getLang().getProperty(key);
-		return getFormattedString(value, objects);
+		return getFormattedString(ModConstants.getLang().getProperty(key), objects);
 	}
 
 	private static String getFormattedString(String string, Object... objects) {
-		if (objects[0] != null)
-			string = String.format(string, objects);
-
-		return string;
+		return objects[0] != null ? String.format(string, objects) : string;
 	}
 
 	public static void sendMessageTo(ServerPlayerEntity player, ChatMessage chatMessage) {
