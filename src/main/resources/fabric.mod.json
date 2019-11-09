@@ -18,12 +18,11 @@
   "environment": "server",
   "entrypoints": {
     "server": [
-      "org.kilocraft.essentials.onInit"
+      "org.kilocraft.essentials.KiloEssentialsMod"
     ]
   },
   "mixins": [
-    "kiloapi.mixins.json",
-    "kiloapi.events.mixins.json",
+    "kiloessentials.events.mixins.json",
     "kiloessentials.mixins.json"
   ],
 

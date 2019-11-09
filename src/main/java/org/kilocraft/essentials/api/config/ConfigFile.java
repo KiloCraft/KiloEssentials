@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api.config;
 
-import org.kilocraft.essentials.api.ModData;
+import org.kilocraft.essentials.api.ModConstants;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -27,13 +27,13 @@ public class ConfigFile {
     private static void load(File configFile, File configDirectory, String fileToCopyFrom, boolean dontGenerate, boolean log) {
 
         try (InputStream inputStream = new FileInputStream(configFile)){
-            if (configFile.exists() && log) ModData.getLogger().info(ModData.getLang().getProperty("cfghandler.load.successfull"), configFile.getName());
+            if (configFile.exists() && log) ModConstants.getLogger().info(ModConstants.getLang().getProperty("cfghandler.load.successfull"), configFile.getName());
 
         } catch (FileNotFoundException e) {
-            ModData.getLogger().warn(ModData.getLang().getProperty("cfghandler.generate.start"), configFile.getName());
+            ModConstants.getLogger().warn(ModConstants.getLang().getProperty("cfghandler.generate.start"), configFile.getName());
             if (!dontGenerate) generate(configFile, configDirectory, fileToCopyFrom);
         } catch (IOException e) {
-            ModData.getLogger().error(ModData.getLang().getProperty("cfghandler.generate.error"), configFile.getName(), e.getCause());
+            ModConstants.getLogger().error(ModConstants.getLang().getProperty("cfghandler.generate.error"), configFile.getName(), e.getCause());
             e.printStackTrace();
         }
     }
@@ -43,10 +43,10 @@ public class ConfigFile {
         try {
             cfg.createNewFile();
         } catch (IOException e) {
-            ModData.getLogger().error(ModData.getLang().getProperty("cfghandler.generate.error"), cfg.getName(), e.getCause());
+            ModConstants.getLogger().error(ModConstants.getLang().getProperty("cfghandler.generate.error"), cfg.getName(), e.getCause());
         } finally {
             if (cfg.exists()) {
-                ModData.getLogger().info(ModData.getLang().getProperty("cfghandler.generate.successfull"), cfg.getName());
+                ModConstants.getLogger().info(ModConstants.getLang().getProperty("cfghandler.generate.successfull"), cfg.getName());
                 if (fileToCopyFrom != null) copyConfigData(cfg, fileToCopyFrom);
             }
         }
@@ -57,8 +57,8 @@ public class ConfigFile {
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileToCopyFrom);
             Files.copy(inputStream, Paths.get(cfg.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException | NullPointerException e) {
-            ModData.getLogger().error(ModData.getLang().getProperty("cfghandler.generate.copy.failed"));
-            ModData.getLogger().error("An unexpected error occured during getting the config file \"%s\"\n Caused by: \"%s\"\n" +
+            ModConstants.getLogger().error(ModConstants.getLang().getProperty("cfghandler.generate.copy.failed"));
+            ModConstants.getLogger().error("An unexpected error occured during getting the config file \"%s\"\n Caused by: \"%s\"\n" +
                     "Restarting the server might help you to resolve this issue.", cfg.getName(), e.getCause());
         }
     }

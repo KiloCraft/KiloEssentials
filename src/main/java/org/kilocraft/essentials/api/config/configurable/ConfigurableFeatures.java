@@ -1,17 +1,17 @@
 package org.kilocraft.essentials.api.config.configurable;
 
-import org.kilocraft.essentials.KiloEssentials;
-import org.kilocraft.essentials.config.KiloConifg;
+import org.kilocraft.essentials.KiloEssentialsImpl;
+import org.kilocraft.essentials.config.KiloConfig;
 
 public class ConfigurableFeatures {
     public ConfigurableFeatures() {
-        KiloEssentials.getLogger().info("Registering the Configurable features...");
+        KiloEssentialsImpl.getLogger().info("Registering the Configurable features...");
     }
 
     public <F extends ConfigurableFeature> F tryToRegister(F feature, String configID) {
         try {
-            if (KiloConifg.getFileConfigOfMain().getOrElse("features." + configID, false)) {
-                KiloEssentials.getLogger().info("Initialing \"" + configID + "\"");
+            if (KiloConfig.getFileConfigOfMain().getOrElse("features." + configID, false)) {
+                KiloEssentialsImpl.getLogger().info("Initialing \"" + configID + "\"");
                 feature.register();
             }
         } catch (NullPointerException e) {

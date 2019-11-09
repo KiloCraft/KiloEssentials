@@ -7,8 +7,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.misc.userhome.Home;
-import org.kilocraft.essentials.misc.userhome.HomeCommand;
+import org.kilocraft.essentials.extensions.homes.Home;
+import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
 import org.kilocraft.essentials.api.config.configurable.ConfigurableFeature;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.UUID;
  * @author CODY_AI
  * A better way of handeling the User (Instance of player) Homes
  *
- * @see User
+ * @see ServerUser
  * @see UserManager
  */
 
@@ -28,7 +28,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     private static boolean isEnabled = false;
     private static List<Home> loadedHomes = new ArrayList<>();
     private List<Home> userHomes;
-    private User user;
+    private ServerUser serverUser;
 
     @Override
     public boolean register() {
@@ -44,9 +44,9 @@ public class UserHomeHandler implements ConfigurableFeature {
     public UserHomeHandler() {
     }
 
-    public UserHomeHandler(User user) {
+    public UserHomeHandler(ServerUser serverUser) {
         if (isEnabled()) {
-            this.user = user;
+            this.serverUser = serverUser;
             this.userHomes = new ArrayList<>();
         }
 
@@ -104,9 +104,9 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public void teleportToHome(Home home) {
-        if (this.user.isOnline()) {
-            ServerWorld world = this.user.getCommandSource().getMinecraftServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
-            this.user.getPlayer().teleport(world, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+        if (this.serverUser.isOnline()) {
+            ServerWorld world = this.serverUser.getCommandSource().getMinecraftServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
+            this.serverUser.getPlayer().teleport(world, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
         }
 
     }
@@ -133,7 +133,7 @@ public class UserHomeHandler implements ConfigurableFeature {
         for (String key : compoundTag.getKeys()) {
             Home home = new Home(compoundTag);
             home.setName(key);
-            home.setOwner(this.user.uuid);
+            home.setOwner(this.serverUser.uuid);
             this.userHomes.add(home);
             loadedHomes.add(home);
         }

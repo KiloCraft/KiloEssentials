@@ -15,91 +15,91 @@ import java.util.UUID;
  * @author CODY_AI
  * An easy way to handle the User (Instance of player)
  *
- * @see User
+ * @see ServerUser
  * @see UserHomeHandler
  */
 
 
 public class UserManager {
-    private static List<User> loadedUsers = new ArrayList<>();
-    private List<User> offlineUsers = new ArrayList<>();
+    private static List<ServerUser> loadedServerUsers = new ArrayList<>();
+    private List<ServerUser> offlineServerUsers = new ArrayList<>();
     private UserHandler handler = new UserHandler();
     
     public UserManager() {
     }
 
-    public static List<User> getUsers() {
-        return loadedUsers;
+    public static List<ServerUser> getUsers() {
+        return loadedServerUsers;
     }
 
-    public User getUser(UUID uuid) {
-        User user = null;
-        for (User loadedUser : loadedUsers) {
-            if (loadedUser.uuid.equals(uuid)) user = loadedUser;
+    public ServerUser getUser(UUID uuid) {
+        ServerUser serverUser = null;
+        for (ServerUser loadedServerUser : loadedServerUsers) {
+            if (loadedServerUser.uuid.equals(uuid)) serverUser = loadedServerUser;
         }
 
-        return user;
+        return serverUser;
     }
 
-    User getUser(String name) {
-        User user = null;
-        for (User loadedUser : loadedUsers) {
-            if (loadedUser.getName().equals(name))
-                user = loadedUser;
+    ServerUser getUser(String name) {
+        ServerUser serverUser = null;
+        for (ServerUser loadedServerUser : loadedServerUsers) {
+            if (loadedServerUser.getUsername().equals(name))
+                serverUser = loadedServerUser;
         }
 
-        return user;
+        return serverUser;
     }
 
-    private User getOfflineUser(UUID uuid) {
-        User user = null;
+    private ServerUser getOfflineUser(UUID uuid) {
+        ServerUser serverUser = null;
 
-        return user;
+        return serverUser;
     }
     
-    Text getUserDisplayName(User user) {
-    	if (user.getNickname().equals("")) {
-    		return Objects.requireNonNull(KiloServer.getServer().getPlayerManager().getPlayer(user.getUuid())).getDisplayName();
+    Text getUserDisplayName(ServerUser serverUser) {
+    	if (serverUser.getNickname().equals("")) {
+    		return Objects.requireNonNull(KiloServer.getServer().getPlayerManager().getPlayer(serverUser.getUuid())).getDisplayName();
     	} else {
-    		return new LiteralText(user.getNickname());
+    		return new LiteralText(serverUser.getNickname());
     	}
     }
 
-    User getUserByNickname(String nickName) {
-        User requested = null;
-        for (User user : loadedUsers) {
-            if (user.getNickname().equals(nickName))
-                requested = user;
+    ServerUser getUserByNickname(String nickName) {
+        ServerUser requested = null;
+        for (ServerUser serverUser : loadedServerUsers) {
+            if (serverUser.getNickname().equals(nickName))
+                requested = serverUser;
         }
 
         return requested;
     }
 
     public void triggerSave() throws IOException {
-        for (User user : loadedUsers) {
-            this.handler.saveData(user);
+        for (ServerUser serverUser : loadedServerUsers) {
+            this.handler.saveData(serverUser);
         }
     }
 
     public void onPlayerJoin(ServerPlayerEntity player) {
-       User user = User.of(player);
-        user.name = player.getGameProfile().getName();
-        loadedUsers.add(user);
+       ServerUser serverUser = ServerUser.of(player);
+        serverUser.name = player.getGameProfile().getName();
+        loadedServerUsers.add(serverUser);
 
         try {
-            this.handler.handleUser(user);
+            this.handler.handleUser(serverUser);
         } catch (IOException ignored) { }
 
         //KiloChat.broadcastUserJoinEventMessage(user);
     }
 
     public void onPlayerLeave(ServerPlayerEntity player) {
-       User user = User.of(player);
-        user.name = player.getGameProfile().getName();
-        loadedUsers.remove(user);
+       ServerUser serverUser = ServerUser.of(player);
+        serverUser.name = player.getGameProfile().getName();
+        loadedServerUsers.remove(serverUser);
 
         try {
-            this.handler.saveData(user);
+            this.handler.saveData(serverUser);
         } catch (IOException ignored) { }
 
         //KiloChat.broadcastUserLeaveEventMessage(user);

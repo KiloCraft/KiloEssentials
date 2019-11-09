@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.config.provided;
 
 import org.kilocraft.essentials.api.config.ConfigValueGetter;
-import org.kilocraft.essentials.config.KiloConifg;
+import org.kilocraft.essentials.config.KiloConfig;
 
 public class ConfigProvider {
     private ConfigValueGetter main;
@@ -9,9 +9,9 @@ public class ConfigProvider {
     private ConfigValueGetter commands;
 
     public ConfigProvider() {
-        main = new ConfigValueGetter(KiloConifg.getFileConfigOfMain());
-        messages = new ConfigValueGetter(KiloConifg.getFileConfigOfMessages());
-        commands = new ConfigValueGetter(KiloConifg.getFileConfigOfCommands());
+        main = new ConfigValueGetter(KiloConfig.getFileConfigOfMain());
+        messages = new ConfigValueGetter(KiloConfig.getFileConfigOfMessages());
+        commands = new ConfigValueGetter(KiloConfig.getFileConfigOfCommands());
     }
 
     public ConfigValueGetter getMain() {

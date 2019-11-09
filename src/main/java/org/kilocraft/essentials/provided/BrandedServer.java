@@ -4,13 +4,13 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.util.PacketByteBuf;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.ModData;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.config.KiloConifg;
+import org.kilocraft.essentials.config.KiloConfig;
 
 public  class BrandedServer {
     public static void provide() {
-        String configBrand = KiloConifg.getProvider().getMain().get(true, "server.displayBrandName");
+        String configBrand = KiloConfig.getProvider().getMain().get(true, "server.displayBrandName");
         boolean useDefault = false;
         if (configBrand.equals("DEFAULT")) useDefault = true;
 
@@ -19,9 +19,9 @@ public  class BrandedServer {
                         TextFormat.translateAlternateColorCodes(
                                 '&',
                                 String.format(
-                                        ModData.getProperties().getProperty("server.brand.custom"),
+                                        ModConstants.getProperties().getProperty("server.brand.custom"),
                                         "&r" + configBrand + "&r",
-                                        ModData.getVersion()
+                                        ModConstants.getVersion()
                                 )
                         )
         );

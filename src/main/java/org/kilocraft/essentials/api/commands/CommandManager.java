@@ -2,7 +2,7 @@ package org.kilocraft.essentials.api.commands;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.api.config.ConfigIOProvider;
-import org.kilocraft.essentials.config.KiloConifg;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.ConfigProvider;
 import org.kilocraft.essentials.api.config.configurable.ConfigurableFeature;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CommandManager implements ConfigIOProvider, ConfigurableFeature {
-    private static FileConfig fileConfig = FileConfig.of(KiloConifg.getConfigPath() + "/Commands.yaml");
+    private static FileConfig fileConfig = FileConfig.of(KiloConfig.getConfigPath() + "/Commands.yaml");
     private static HashMap<String, Command> commandsMap = new HashMap<>();
 
     private CommandManager() {
@@ -21,7 +21,7 @@ public class CommandManager implements ConfigIOProvider, ConfigurableFeature {
     @Override
     public boolean register() {
         new CommandManager();
-        KiloConifg.registerIOCallBaack(this);
+        KiloConfig.registerIOCallBaack(this);
         return true;
     }
 

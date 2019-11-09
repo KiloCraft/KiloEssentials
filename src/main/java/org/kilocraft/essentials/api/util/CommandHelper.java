@@ -9,14 +9,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CommandHelper {
     public static boolean isConsole(ServerCommandSource source) {
-        boolean bool = false;
         try {
-            source.getPlayer();
+            source.getEntityOrThrow();
+            return false;
         } catch (CommandSyntaxException e) {
-            bool = true;
+            return true;
         }
+    }
 
-        return bool;
+    public static void failIfConsole(ServerCommandSource source) throws CommandSyntaxException {
+        source.getEntityOrThrow();
     }
 
     public static boolean isOnline(ServerPlayerEntity playerEntity) {

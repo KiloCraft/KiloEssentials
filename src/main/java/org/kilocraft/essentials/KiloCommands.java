@@ -14,17 +14,39 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.api.ModData;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.util.SomeGlobals;
+import org.kilocraft.essentials.commands.inventory.AnvilCommand;
+import org.kilocraft.essentials.commands.teleport.BackCommand;
+import org.kilocraft.essentials.commands.server.BroadcastCommand;
+import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
+import org.kilocraft.essentials.commands.player.FeedCommand;
+import org.kilocraft.essentials.commands.player.FlyCommand;
+import org.kilocraft.essentials.commands.player.GamemodeCommand;
+import org.kilocraft.essentials.commands.player.HealCommand;
+import org.kilocraft.essentials.commands.player.InfoCommand;
+import org.kilocraft.essentials.commands.player.InvulnerablemodeCommand;
+import org.kilocraft.essentials.commands.KillCommand;
+import org.kilocraft.essentials.commands.messaging.MessageCommand;
+import org.kilocraft.essentials.commands.player.NickCommandOLD;
+import org.kilocraft.essentials.commands.player.PlayerParticlesCommand;
+import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
+import org.kilocraft.essentials.commands.player.RealNameCommand;
+import org.kilocraft.essentials.commands.player.SpeedCommand;
+import org.kilocraft.essentials.commands.server.SudoCommand;
+import org.kilocraft.essentials.commands.world.TimeCommand;
+import org.kilocraft.essentials.commands.help.UsageCommand;
+import org.kilocraft.essentials.commands.server.UserBanCommand;
+import org.kilocraft.essentials.commands.misc.ColorsCommand;
+import org.kilocraft.essentials.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.essentials.*;
-import org.kilocraft.essentials.commands.essentials.itemcommand.ItemCommand;
-import org.kilocraft.essentials.commands.essentials.locateCommands.WorldLocateCommand;
-import org.kilocraft.essentials.commands.servermanagement.OperatorCommand;
-import org.kilocraft.essentials.commands.servermanagement.ReloadCommand;
-import org.kilocraft.essentials.commands.servermanagement.StopCommand;
+import org.kilocraft.essentials.commands.item.ItemCommand;
+import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
+import org.kilocraft.essentials.commands.server.OperatorCommand;
+import org.kilocraft.essentials.commands.server.ReloadCommand;
+import org.kilocraft.essentials.commands.server.StopCommand;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,7 +59,7 @@ public class KiloCommands {
     private CommandDispatcher<ServerCommandSource> dispatcher;
 
     public KiloCommands() {
-        this.dispatcher = SomeGlobals.commandDispatcher;
+        this.dispatcher = KiloEssentialsImpl.commandDispatcher;
         register(true);
     }
 
@@ -50,7 +72,7 @@ public class KiloCommands {
 
     private void register(boolean devEnv) {
         if (devEnv) {
-            KiloEssentials.getLogger().info("Alert [!]: Server is running in debug mode!");
+            KiloEssentialsImpl.getLogger().info("Alert [!]: Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
             //TestCommand.register(this.dispatcher);
         }
@@ -96,7 +118,7 @@ public class KiloCommands {
     }
 
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
-        String fromLang = ModData.getLang().getProperty(langKey);
+        String fromLang = ModConstants.getLang().getProperty(langKey);
         if (fromLang != null)
             KiloChat.sendMessageToSource(source, new ChatMessage("&6Command usage:\n" + fromLang, true));
         else
@@ -133,6 +155,6 @@ public class KiloCommands {
     }
 
     public static CommandDispatcher<ServerCommandSource> getDispatcher() {
-        return SomeGlobals.commandDispatcher;
+        return KiloEssentialsImpl.commandDispatcher;
     }
 }

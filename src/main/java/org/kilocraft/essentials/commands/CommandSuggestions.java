@@ -1,7 +1,5 @@
 package org.kilocraft.essentials.commands;
 
-import org.kilocraft.essentials.commands.essentials.Commands;
-
 import com.mojang.brigadier.tree.CommandNode;
 
 public class CommandSuggestions {

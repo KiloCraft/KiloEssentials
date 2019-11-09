@@ -4,7 +4,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.commands.essentials.RandomTeleportCommand;
+import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
 
 public class ThreadedRandomTeleporter implements Runnable, KiloThread {
     private Logger logger;

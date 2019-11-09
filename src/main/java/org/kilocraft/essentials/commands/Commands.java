@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.commands;
 
+import org.kilocraft.essentials.mixin.CommandManagerMixin;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +10,7 @@ public class Commands {
     public static String customCommandsPrefix = "ke_";
 
     /**
-     * @see org.kilocraft.essentials.mixin.MixinCommandManager
+     * @see CommandManagerMixin
      *
      * This only works for Command literals and their sub commands
      */

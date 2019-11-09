@@ -8,6 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
@@ -187,7 +188,7 @@ public interface Server {
      */
     void shutdown(String reason);
 
-    void shutdown(LiteralText reason);
+    void shutdown(Text reason);
 
     /**
      * Kicks all the players on the server
@@ -195,7 +196,7 @@ public interface Server {
      */
     void kickAll(String reason);
 
-    void kickAll(LiteralText reason);
+    void kickAll(Text reason);
 
     /**
      * Sends a message to console

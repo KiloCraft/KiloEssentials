@@ -1,7 +1,7 @@
 package org.kilocraft.essentials;
 
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.events.*;
+import org.kilocraft.essentials.listeners.*;
 
 public class KiloEvents {
     public KiloEvents() {

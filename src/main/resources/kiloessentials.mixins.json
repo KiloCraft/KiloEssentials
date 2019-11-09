@@ -6,10 +6,14 @@
   "mixins": [
   ],
   "server": [
-    "MixinCommandManager",
-    "MixinServerPlayNetWorkHandler",
-    "MixinCreeperEntity",
-    "MixinServerPlayerEntity"
+    "CommandManagerMixin",
+    "CreeperEntityMixin",
+    "EntityRaytraceMixin",
+    "MinecraftServerMixin",
+    "ServerCommandOutputMixin",
+    "ServerPlayerEntityMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "accessor.MinecraftServerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
