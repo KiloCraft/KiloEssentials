@@ -2,7 +2,6 @@ package org.kilocraft.essentials.config;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.api.config.ConfigIOProvider;
 import org.kilocraft.essentials.config.provided.ConfigProvider;
 import org.kilocraft.essentials.provided.KiloFile;
 
@@ -68,7 +67,7 @@ public class KiloConfig {
 
     public static void saveCallbacks() {
         for (ConfigIOProvider callback : callbacks) {
-            callback.toConifg(provider);
+            callback.toConfig(provider);
         }
     }
 

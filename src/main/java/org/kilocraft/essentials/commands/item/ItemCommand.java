@@ -2,9 +2,7 @@ package org.kilocraft.essentials.commands.item;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 

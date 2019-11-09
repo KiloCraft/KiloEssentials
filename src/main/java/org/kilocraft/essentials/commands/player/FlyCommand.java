@@ -1,32 +1,36 @@
 package org.kilocraft.essentials.commands.player;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.util.CommandHelper;
-import org.kilocraft.essentials.api.util.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
+
+import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
+import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class FlyCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("fly");
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("fly")
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("fly")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("fly"), 2))
                 .executes(c -> toggle(c.getSource(), c.getSource().getPlayer()))
                 .then(
-                        CommandManager.argument("player", EntityArgumentType.player())
+                        CommandManager.argument("player", player())
                                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("fly.others"), 2))
-                                .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-                                .executes(c -> toggle(c.getSource(), EntityArgumentType.getPlayer(c, "player")))
+                                .suggests(CommandSuggestions::allPlayers)
+                                .executes(c -> toggle(c.getSource(), getPlayer(c, "player")))
                                 .then(
-                                        CommandManager.argument("set", BoolArgumentType.bool())
-                                                .executes(c -> execute(c.getSource(), EntityArgumentType.getPlayer(c, "player"), BoolArgumentType.getBool(c, "set")))
+                                        CommandManager.argument("set", bool())
+                                                .executes(c -> execute(c.getSource(), getPlayer(c, "player"), getBool(c, "set")))
                                 )
                 );
 

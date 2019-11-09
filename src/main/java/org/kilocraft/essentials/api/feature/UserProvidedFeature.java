@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.api.feature;
 
-import org.kilocraft.essentials.api.config.configurable.ConfigurableFeature;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.function.Function;

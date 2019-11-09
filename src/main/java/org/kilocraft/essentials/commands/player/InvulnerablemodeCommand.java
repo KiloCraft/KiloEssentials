@@ -1,30 +1,33 @@
 package org.kilocraft.essentials.commands.player;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.util.CommandHelper;
-import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.KiloChat;
 
+import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
+import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class InvulnerablemodeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("invulnerable")
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("invulnerable")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("invulnerable"), 2))
                 .executes(c -> executeToggle(c.getSource(), c.getSource().getPlayer()))
                 .then(
-                        CommandManager.argument("player", EntityArgumentType.player())
-                            .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
-                            .executes(c -> executeToggle(c.getSource(), EntityArgumentType.getPlayer(c, "player")))
-                            .then(
-                                    CommandManager.argument("set", BoolArgumentType.bool())
-                                        .executes(c -> executeSet(c.getSource(), EntityArgumentType.getPlayer(c, "player"), BoolArgumentType.getBool(c, "set")))
+                        argument("player", player())
+                            .suggests(CommandSuggestions::allPlayers)
+                            .executes(c -> executeToggle(c.getSource(), getPlayer(c, "player")))
+                            .then(argument("set", bool())
+                                    .executes(c -> executeSet(c.getSource(), getPlayer(c, "player"), getBool(c, "set")))
                             )
                 );
 

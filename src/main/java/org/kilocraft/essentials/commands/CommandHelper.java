@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.util;
+package org.kilocraft.essentials.commands;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;

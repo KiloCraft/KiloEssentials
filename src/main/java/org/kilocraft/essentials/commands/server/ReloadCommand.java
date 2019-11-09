@@ -9,14 +9,16 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.BrandedServer;
 
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class ReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(CommandManager.literal("ke_reload")
+        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(literal("ke_reload")
             .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.server.manage.reload", 2))
             .executes(context -> execute(context.getSource()))
         );
 
-        dispatcher.register(CommandManager.literal("rl")
+        dispatcher.register(literal("rl")
                 .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.server.manage.reload", 2))
                 .executes(context -> execute(context.getSource()))
         );

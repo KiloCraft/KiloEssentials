@@ -1,7 +1,5 @@
 package org.kilocraft.essentials.commands.item;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -12,11 +10,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class ItemLoreCommand {
@@ -24,11 +26,9 @@ public class ItemLoreCommand {
 		LiteralArgumentBuilder<ServerCommandSource> builder = literal("lore");
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
-		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = CommandManager.argument("line",
-				IntegerArgumentType.integer(0, 10));
-		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = CommandManager
-				.argument("name...", StringArgumentType.greedyString()).executes(context -> {
-					return changeLore(context, IntegerArgumentType.getInteger(context, "line"));
+		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(0, 10));
+		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString()).executes(context -> {
+					return changeLore(context, getInteger(context, "line"));
 				});
 
 		builder.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.item.lore", 2));
@@ -94,7 +94,7 @@ public class ItemLoreCommand {
 				}
 			}
 
-			String text = StringArgumentType.getString(context, "name...");
+			String text = getString(context, "name...");
 			if (Thimble.hasPermissionOrOp(context.getSource(), "kiloessentials.command.item.lore.colour", 2)) {
 				text = TextFormat.translateAlternateColorCodes('&', text);
 			} else {
@@ -106,7 +106,7 @@ public class ItemLoreCommand {
 			item.setTag(itemTag);
 
 			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", line,
-					StringArgumentType.getString(context, "name...")));
+					getString(context, "name...")));
 		}
 
 		return 1;

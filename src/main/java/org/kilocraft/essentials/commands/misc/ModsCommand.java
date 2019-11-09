@@ -22,15 +22,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class ModsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloAPICommands.getCommandPermission("mods");
-        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("mods")
+        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = literal("mods")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloAPICommands.getCommandPermission("tps"), 2))
                 .executes(ModsCommand::executeMultiple);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = CommandManager.argument("id", StringArgumentType.greedyString())
-                .executes(c -> executeSingle(c, StringArgumentType.getString(c, "id")));
+        RequiredArgumentBuilder<ServerCommandSource, String> modIdArgument = argument("id", greedyString())
+                .executes(c -> executeSingle(c, getString(c, "id")));
 
         modIdArgument.suggests(suggestModIDs);
         literalArgumentBuilder.then(modIdArgument);

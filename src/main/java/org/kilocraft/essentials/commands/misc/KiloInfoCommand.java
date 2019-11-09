@@ -7,11 +7,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class KiloInfoCommand {
 	
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 
-        LiteralArgumentBuilder<ServerCommandSource> info = CommandManager.literal("essentials")
+        LiteralArgumentBuilder<ServerCommandSource> info = literal("essentials")
                 .executes(context -> {
                     LangText.sendToUniversalSource(context.getSource(),
                             "command.info",
@@ -21,7 +23,7 @@ public class KiloInfoCommand {
                     return 0;
                 });
 
-        LiteralArgumentBuilder<ServerCommandSource> version = CommandManager.literal("version")
+        LiteralArgumentBuilder<ServerCommandSource> version = literal("version")
                 .executes(context -> {
                     LangText.sendToUniversalSource(context.getSource(),
                             "command.info.version",

@@ -3,7 +3,7 @@ package org.kilocraft.essentials.api.world;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Structures {
+public class Structures { // We can do better than this, to allow custom structures to appear we should read the registry and or the Structures map inside of nms Features
     public static List<String> list = new ArrayList<String>(){{
         add("Pillager_Outpost");
         add("Mineshaft");

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.config;
+package org.kilocraft.essentials.config;
 
 import org.kilocraft.essentials.config.provided.ConfigProvider;
 
@@ -9,7 +9,7 @@ public interface ConfigIOProvider {
      *
      * @param config - an instance of the ConfigProvider
      */
-    void toConifg(ConfigProvider config);
+    void toConfig(ConfigProvider config);
 
     /**
      * Get the values you want from a config file

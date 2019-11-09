@@ -11,13 +11,19 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.user.ServerUser;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class RealNameCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		KiloCommands.getCommandPermission("realname");
-		dispatcher.register(CommandManager.literal("realname")
+		dispatcher.register(literal("realname")
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("realname"), 2))
-				.then(CommandManager.argument("target", StringArgumentType.string()).executes(context -> {
-					String input = StringArgumentType.getString(context, "target");
+				.then(argument("target", string()).executes(context -> {
+
+					String input = getString(context, "target");
 					for (int i = 0; i < context.getSource().getWorld().getPlayers().size(); i++) {
 						PlayerEntity player = context.getSource().getWorld().getPlayers().get(i);
 						ServerUser serverUser = KiloServer.getServer().getUserManager().getUser(player.getUuid());

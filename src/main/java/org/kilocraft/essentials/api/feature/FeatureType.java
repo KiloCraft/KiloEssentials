@@ -1,7 +1,5 @@
 package org.kilocraft.essentials.api.feature;
 
-import org.kilocraft.essentials.api.config.configurable.ConfigurableFeature;
-
 public class FeatureType<F extends ConfigurableFeature> {
     private FeatureType(Class<F> type) {
         this.type = type;

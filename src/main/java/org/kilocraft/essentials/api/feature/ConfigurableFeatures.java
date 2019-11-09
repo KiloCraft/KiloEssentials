@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.config.configurable;
+package org.kilocraft.essentials.api.feature;
 
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.config.KiloConfig;

@@ -1,12 +1,9 @@
 package org.kilocraft.essentials.commands.server;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -16,21 +13,28 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
+
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class SudoCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = CommandManager.literal("sudo")
+        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("sudo")
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("sudo.others"), 3))
                 .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                 .then(
-                        CommandManager.argument("player", EntityArgumentType.player())
-                            .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
+                        argument("player", player())
+                            .suggests(CommandSuggestions::allPlayers)
                             .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                             .then(
-                                    CommandManager.argument("args", StringArgumentType.greedyString())
-                                            .executes(c -> execute(dispatcher, c.getSource(), EntityArgumentType.getPlayer(c, "player"), StringArgumentType.getString(c, "args")))
+                                    argument("args", greedyString())
+                                            .executes(c -> execute(dispatcher, c.getSource(), getPlayer(c, "player"), getString(c, "args")))
                             )
                 );
 

@@ -1,24 +1,28 @@
 package org.kilocraft.essentials.commands.messaging;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.util.CommandHelper;
-import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.provided.SimpleStringSaverProvided;
 
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class MessageCommand {
     private static final SimpleCommandExceptionType NO_MESSAGES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You don't have any messages to reply to!"));
@@ -26,32 +30,32 @@ public class MessageCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(
-                CommandManager.literal("ke_msg")
+                literal("ke_msg")
                         .executes(context -> KiloCommands.executeUsageFor("command.message.usage", context.getSource()))
                         .then(
-                                CommandManager.argument("player", EntityArgumentType.player())
-                                        .suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder))
+                                argument("player", player())
+                                        .suggests(CommandSuggestions::allPlayers)
                                         .then(
-                                                CommandManager.argument("message", StringArgumentType.greedyString())
+                                                argument("message", greedyString())
                                                         .executes(c ->
-                                                                executeSend(c.getSource(), EntityArgumentType.getPlayer(c, "player"), StringArgumentType.getString(c, "message"))
+                                                                executeSend(c.getSource(), getPlayer(c, "player"), getString(c, "message"))
                                                         )
                                         )
                         )
         );
 
         LiteralCommandNode<ServerCommandSource> replyNode = dispatcher.register(
-                CommandManager.literal("r")
+                literal("r")
                         .executes(context -> KiloCommands.executeUsageFor("command.message.reply.usage", context.getSource()))
                         .then(
-                            CommandManager.argument("message", StringArgumentType.greedyString())
+                            argument("message", greedyString())
                                 .executes(MessageCommand::executeReply)
                     )
         );
 
-        dispatcher.register(CommandManager.literal("ke_tell").redirect(node));
-        dispatcher.register(CommandManager.literal("ke_whisper").redirect(node));
-        dispatcher.register(CommandManager.literal("reply").redirect(replyNode));
+        dispatcher.register(literal("ke_tell").redirect(node));
+        dispatcher.register(literal("ke_whisper").redirect(node));
+        dispatcher.register(literal("reply").redirect(replyNode));
 
     }
 
@@ -63,7 +67,7 @@ public class MessageCommand {
             if (value.equals(context.getSource().getName())) target.set(KiloServer.getServer().getPlayer(key));
         });
 
-        String message = StringArgumentType.getString(context, "message");
+        String message = getString(context, "message");
 
         if (target.get() == null)
             throw NO_MESSAGES_EXCEPTION.create();

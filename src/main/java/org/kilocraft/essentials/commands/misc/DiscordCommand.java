@@ -10,9 +10,11 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVariables;
 
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class DiscordCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("discord").executes(DiscordCommand::execute));
+        dispatcher.register(literal("discord").executes(DiscordCommand::execute));
     }
 
     public static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

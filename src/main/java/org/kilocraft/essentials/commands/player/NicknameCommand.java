@@ -15,25 +15,25 @@ import org.kilocraft.essentials.user.ServerUser;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class NicknameCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> commandNode = dispatcher.register(
-                CommandManager.literal("nickname")
+                literal("nickname")
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("nickname"), 2))
-                        .then(
-                                CommandManager.argument("arg", StringArgumentType.greedyString())
-                                        .suggests((context, builder) -> suggestionProvider.getSuggestions(context, builder))
-                                        .executes(context ->
-                                                execute(ServerUser.of(context.getSource().getPlayer()), ServerUser.of(context.getSource().getPlayer()), StringArgumentType.getString(context, "arg"))
-                                        )
-                        )
-        );
+                        .then(argument("arg", greedyString())
+                                .suggests((context, builder) -> suggestionProvider.getSuggestions(context, builder))
+                                .executes(context -> execute(ServerUser.of(context.getSource().getPlayer()), ServerUser.of(context.getSource().getPlayer()), getString(context, "arg")))));
 
-        dispatcher.register(CommandManager.literal("nick").redirect(commandNode));
+        dispatcher.register(literal("nick").redirect(commandNode));
     }
 
     private static int execute(ServerUser source, ServerUser target, String arg) {
-
+        // Empty?
 
         return 1;
     }

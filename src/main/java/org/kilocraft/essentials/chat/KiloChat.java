@@ -15,8 +15,8 @@ import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.api.config.ConfigValueGetter;
-import org.kilocraft.essentials.api.util.CommandHelper;
+import org.kilocraft.essentials.config.ConfigValueGetter;
+import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVariables;
 

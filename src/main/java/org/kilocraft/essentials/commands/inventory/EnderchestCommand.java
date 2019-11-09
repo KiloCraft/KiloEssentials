@@ -8,22 +8,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.command.arguments.GameProfileArgumentType;
-import net.minecraft.container.AnvilContainer;
-import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.api.util.CommandHelper;
-import org.kilocraft.essentials.api.util.CommandSuggestions;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,9 +39,7 @@ public class EnderchestCommand {
 
         RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = argument("gameProfile", gameProfile())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("enderchest.others"), 2))
-                .suggests((context, builder) -> {
-                    return CommandSuggestions.allPlayers.getSuggestions(context, builder);
-                })
+                .suggests(CommandSuggestions::allPlayers)
                 .executes(context -> execute(context.getSource(), getProfileArgument(context, "gameProfile")));
 
         argumentBuilder.then(selectorArg);

@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.config.provided.localVariables;
 
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.config.localVariableHelper.LocalConfigVariable;
+import org.kilocraft.essentials.config.localVariableHelper.LocalConfigVariable;
 
 import java.util.HashMap;
 

@@ -10,10 +10,12 @@ import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class TpsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloAPICommands.getCommandPermission("tps");
-        dispatcher.register(CommandManager.literal("tps")
+        dispatcher.register(literal("tps")
                 .requires(source -> Thimble.hasPermissionOrOp(source, KiloAPICommands.getCommandPermission("tps"), 2))
                 .executes(TpsCommand::run)
         );

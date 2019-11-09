@@ -2,17 +2,13 @@ package org.kilocraft.essentials.commands.server;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.OperatorEntry;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -21,29 +17,38 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.api.util.CommandHelper;
-import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
 
 import java.util.*;
+
+import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
+import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
+import static net.minecraft.command.arguments.GameProfileArgumentType.getProfileArgument;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class OperatorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("server.manage");
         String pNode = KiloCommands.getCommandPermission("server.manage.operators");
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("operator")
+        LiteralArgumentBuilder<ServerCommandSource> builder = literal("operator")
                 .requires(s -> Thimble.hasPermissionOrOp(s, pNode, 2));
-        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = CommandManager.literal("ke_op")
+        LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = literal("ke_op")
                 .requires(s -> Thimble.hasPermissionOrOp(s, pNode, 2));
 
-        LiteralArgumentBuilder<ServerCommandSource> addLiteral = CommandManager.literal("add");
-        LiteralArgumentBuilder<ServerCommandSource> removeLiteral = CommandManager.literal("remove");
-        LiteralArgumentBuilder<ServerCommandSource> listLiteral = CommandManager.literal("list");
-        LiteralArgumentBuilder<ServerCommandSource> getLiteral = CommandManager.literal("get");
+        LiteralArgumentBuilder<ServerCommandSource> addLiteral = literal("add");
+        LiteralArgumentBuilder<ServerCommandSource> removeLiteral = literal("remove");
+        LiteralArgumentBuilder<ServerCommandSource> listLiteral = literal("list");
+        LiteralArgumentBuilder<ServerCommandSource> getLiteral = literal("get");
 
-        RequiredArgumentBuilder<ServerCommandSource, Boolean> boolArg = CommandManager.argument("set", BoolArgumentType.bool());
-        RequiredArgumentBuilder<ServerCommandSource, Integer> levelArg = CommandManager.argument("level", IntegerArgumentType.integer(1, 4));
-        RequiredArgumentBuilder<ServerCommandSource, Boolean> byPassArg = CommandManager.argument("canBypassPlayerLimit", BoolArgumentType.bool());
+        RequiredArgumentBuilder<ServerCommandSource, Boolean> boolArg = argument("set", bool());
+        RequiredArgumentBuilder<ServerCommandSource, Integer> levelArg = argument("level", integer(1, 4));
+        RequiredArgumentBuilder<ServerCommandSource, Boolean> byPassArg = argument("canBypassPlayerLimit", bool());
 
         listLiteral.executes(
                 c -> executeList(
@@ -59,14 +64,12 @@ public class OperatorCommand {
         );
 
         getLiteral.then(
-                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
-                        .suggests((context, builder1) -> {
-                            return CommandSuggestions.operators.getSuggestions(context, builder1);
-                        })
+                argument("gameProfile", gameProfile())
+                        .suggests(CommandSuggestions::allOperators)
                         .executes(
                             c -> executeGet(
                                     c.getSource(),
-                                    GameProfileArgumentType.getProfileArgument(c, "gameProfile")
+                                    getProfileArgument(c, "gameProfile")
                             )
                         )
         );
@@ -74,29 +77,27 @@ public class OperatorCommand {
         byPassArg.executes(
                 c -> execute(
                         c.getSource(),
-                        GameProfileArgumentType.getProfileArgument(c, "gameProfile"),
+                        getProfileArgument(c, "gameProfile"),
                         true,
-                        IntegerArgumentType.getInteger(c, "level"),
-                        BoolArgumentType.getBool(c, "canBypassPlayerLimit")
+                        getInteger(c, "level"),
+                        getBool(c, "canBypassPlayerLimit")
                 )
         );
 
         addLiteral.then(
-                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
-                        .suggests((context, builder1) -> {
-                            return CommandSuggestions.nonOperators.getSuggestions(context, builder1);
-                        })
+                argument("gameProfile", gameProfile())
+                        .suggests(CommandSuggestions::allNonOperators)
                         .then(
-                                CommandManager.argument("level", IntegerArgumentType.integer(0, 4))
+                                argument("level", integer(0, 4))
                                         .then(
-                                                CommandManager.argument("canByPassPlayerLimit", BoolArgumentType.bool())
+                                                argument("canByPassPlayerLimit", bool())
                                                         .executes(
                                                                 c -> execute(
                                                                         c.getSource(),
-                                                                        GameProfileArgumentType.getProfileArgument(c, "gameProfile"),
+                                                                        getProfileArgument(c, "gameProfile"),
                                                                         true,
-                                                                        IntegerArgumentType.getInteger(c, "level"),
-                                                                        BoolArgumentType.getBool(c, "canByPassPlayerLimit")
+                                                                        getInteger(c, "level"),
+                                                                        getBool(c, "canByPassPlayerLimit")
                                                                 )
                                                         )
                                         )
@@ -104,14 +105,12 @@ public class OperatorCommand {
         );
 
         removeLiteral.then(
-                CommandManager.argument("gameProfile", GameProfileArgumentType.gameProfile())
-                        .suggests(((context, builder1) -> {
-                            return CommandSuggestions.operators.getSuggestions(context, builder1);
-                        }))
+                argument("gameProfile", gameProfile())
+                        .suggests(CommandSuggestions::allOperators)
                         .executes(
                             c -> execute(
                                     c.getSource(),
-                                    GameProfileArgumentType.getProfileArgument(c, "gameProfile"),
+                                    getProfileArgument(c, "gameProfile"),
                                     false,
                                     0,
                                     false

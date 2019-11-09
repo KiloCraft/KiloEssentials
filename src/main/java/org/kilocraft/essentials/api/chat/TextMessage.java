@@ -2,7 +2,7 @@ package org.kilocraft.essentials.api.chat;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.api.util.CommandHelper;
+import org.kilocraft.essentials.commands.CommandHelper;
 
 public class TextMessage {
     public TextMessage() {

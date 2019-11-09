@@ -8,8 +8,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -17,11 +15,16 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
-import org.kilocraft.essentials.api.util.CommandSuggestions;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 /**
  * @author Indigo Amann
@@ -30,7 +33,7 @@ public class TpaCommand {
     private static Map<ServerPlayerEntity, Pair<Pair<ServerPlayerEntity, Boolean>, Long>> tpMap = new HashMap<>();
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         {
-            LiteralArgumentBuilder<ServerCommandSource> tpa = CommandManager.literal("tpa");
+            LiteralArgumentBuilder<ServerCommandSource> tpa = literal("tpa");
             tpa.requires(source -> source.hasPermissionLevel(2));
             tpa.requires(source -> {
                 try {
@@ -39,7 +42,7 @@ public class TpaCommand {
                     return false;
                 }
             });
-            LiteralArgumentBuilder<ServerCommandSource> tpahere = CommandManager.literal("tpahere");
+            LiteralArgumentBuilder<ServerCommandSource> tpahere = literal("tpahere");
             tpahere.requires(source -> source.hasPermissionLevel(2));
             tpahere.requires(source -> {
                 try {
@@ -48,11 +51,11 @@ public class TpaCommand {
                     return false;
                 }
             });
-            RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerA = CommandManager.argument("player", EntityArgumentType.player());
-            RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerB = CommandManager.argument("player", EntityArgumentType.player());
+            RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerA = argument("player", player());
+            RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerB = argument("player", player());
 
-            playerA.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
-            playerA.suggests((context, builder) -> CommandSuggestions.allPlayers.getSuggestions(context, builder));
+            playerA.suggests(CommandSuggestions::allPlayers);
+            playerA.suggests(CommandSuggestions::allPlayers);
 
             playerA.executes(context -> executeRequest(context, false));
             playerB.executes(context -> executeRequest(context, true));
@@ -62,28 +65,28 @@ public class TpaCommand {
             dispatcher.register(tpahere);
         }
         {
-            LiteralArgumentBuilder accept = CommandManager.literal("tpaccept");
-            ArgumentBuilder player = CommandManager.argument("player", EntityArgumentType.player());
+            LiteralArgumentBuilder accept = literal("tpaccept");
+            ArgumentBuilder player = argument("player", player());
             player.executes(context -> executeResponse(context, true));
             accept.then(player);
             dispatcher.register(accept);
         }
         {
-            LiteralArgumentBuilder deny = CommandManager.literal("tpdeny");
-            ArgumentBuilder player = CommandManager.argument("player", EntityArgumentType.player());
+            LiteralArgumentBuilder deny = literal("tpdeny");
+            ArgumentBuilder player = argument("player", player());
             player.executes(context -> executeResponse(context, false));
             deny.then(player);
             dispatcher.register(deny);
         }
         {
-            LiteralArgumentBuilder<ServerCommandSource> cancel = CommandManager.literal("tpcancel");
+            LiteralArgumentBuilder<ServerCommandSource> cancel = literal("tpcancel");
             cancel.requires(source -> source.hasPermissionLevel(1));
             cancel.executes(TpaCommand::cancelRequest);
             dispatcher.register(cancel);
         }
     }
     private static int executeRequest(CommandContext<ServerCommandSource> context, boolean here) throws CommandSyntaxException {
-        ServerPlayerEntity victim = EntityArgumentType.getPlayer(context, "player");
+        ServerPlayerEntity victim = getPlayer(context, "player");
         ServerPlayerEntity sender = context.getSource().getPlayer();
         tpMap.put(sender, new Pair<>(new Pair<>(victim, here), new Date().getTime()));
         victim.sendMessage(new LiteralText("").append(sender.getDisplayName()).append(new LiteralText(" has requested " + (here ? "that you teleport to them" : "to teleport to you") + ". ").formatted(Formatting.GOLD)).append(
@@ -97,7 +100,7 @@ public class TpaCommand {
         return 0;
     }
     private static int executeResponse(CommandContext<ServerCommandSource> context, boolean accepted) throws CommandSyntaxException {
-        ServerPlayerEntity sender = EntityArgumentType.getPlayer(context, "player");
+        ServerPlayerEntity sender = getPlayer(context, "player");
         ServerPlayerEntity victim = context.getSource().getPlayer();
         if (hasTPRequest(sender, victim)) {
             if (accepted) {

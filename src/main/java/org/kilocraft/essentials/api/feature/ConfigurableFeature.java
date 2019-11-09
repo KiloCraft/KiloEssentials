@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.config.configurable;
+package org.kilocraft.essentials.api.feature;
 
 public interface ConfigurableFeature {
     /**

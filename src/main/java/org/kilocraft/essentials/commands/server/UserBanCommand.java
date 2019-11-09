@@ -24,52 +24,61 @@ import org.kilocraft.essentials.KiloCommands;
 
 import java.util.Date;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
+import static net.minecraft.command.arguments.GameProfileArgumentType.getProfileArgument;
+import static net.minecraft.command.arguments.MessageArgumentType.getMessage;
+import static net.minecraft.command.arguments.MessageArgumentType.message;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class UserBanCommand {
 	private static final SimpleCommandExceptionType ALREADY_BANNED_EXCEPTION = new SimpleCommandExceptionType(
 			new TranslatableText("commands.ban.failed", new Object[0]));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> ban = CommandManager.literal("ban")
+		LiteralArgumentBuilder<ServerCommandSource> ban = literal("ban")
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("ban"), 2));
-		RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> player = CommandManager.argument("target",
-				GameProfileArgumentType.gameProfile());
-		RequiredArgumentBuilder<ServerCommandSource, MessageFormat> reason = CommandManager.argument("reason",
-				MessageArgumentType.message());
-		RequiredArgumentBuilder<ServerCommandSource, Integer> time = CommandManager.argument("time",
-				IntegerArgumentType.integer(0, 365));
+		RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> player = argument("target",
+				gameProfile());
+		RequiredArgumentBuilder<ServerCommandSource, MessageFormat> reason = argument("reason",
+				message());
+		RequiredArgumentBuilder<ServerCommandSource, Integer> time = argument("time",
+				integer(0, 365));
 
-		LiteralArgumentBuilder<ServerCommandSource> minutes = CommandManager.literal("minutes");
-		LiteralArgumentBuilder<ServerCommandSource> hours = CommandManager.literal("hours");
-		LiteralArgumentBuilder<ServerCommandSource> days = CommandManager.literal("days");
+		LiteralArgumentBuilder<ServerCommandSource> minutes = literal("minutes");
+		LiteralArgumentBuilder<ServerCommandSource> hours = literal("hours");
+		LiteralArgumentBuilder<ServerCommandSource> days = literal("days");
 
 		reason.executes(context -> {
-			GameProfile target = (GameProfile) GameProfileArgumentType.getProfileArgument(context, "target")
+			GameProfile target = (GameProfile) getProfileArgument(context, "target")
 					.toArray()[0];
-			return ban(context.getSource(), target, MessageArgumentType.getMessage(context, "reason"), null);
+			return ban(context.getSource(), target, getMessage(context, "reason"), null);
 		});
 
 		minutes.executes(context -> {
-			GameProfile target = (GameProfile) GameProfileArgumentType.getProfileArgument(context, "target")
+			GameProfile target = (GameProfile) getProfileArgument(context, "target")
 					.toArray()[0];
 			Date date = new Date();
-			date = Date.from(date.toInstant().plusSeconds(IntegerArgumentType.getInteger(context, "time") * 60));
-			return ban(context.getSource(), target, MessageArgumentType.getMessage(context, "reason"), date);
+			date = Date.from(date.toInstant().plusSeconds(getInteger(context, "time") * 60));
+			return ban(context.getSource(), target, getMessage(context, "reason"), date);
 		});
 
 		hours.executes(context -> {
-			GameProfile target = (GameProfile) GameProfileArgumentType.getProfileArgument(context, "target")
+			GameProfile target = (GameProfile) getProfileArgument(context, "target")
 					.toArray()[0];
 			Date date = new Date();
-			date = Date.from(date.toInstant().plusSeconds(IntegerArgumentType.getInteger(context, "time") * 720));
-			return ban(context.getSource(), target, MessageArgumentType.getMessage(context, "reason"), date);
+			date = Date.from(date.toInstant().plusSeconds(getInteger(context, "time") * 720));
+			return ban(context.getSource(), target, getMessage(context, "reason"), date);
 		});
 
 		days.executes(context -> {
-			GameProfile target = (GameProfile) GameProfileArgumentType.getProfileArgument(context, "target")
+			GameProfile target = (GameProfile) getProfileArgument(context, "target")
 					.toArray()[0];
 			Date date = new Date();
-			date = Date.from(date.toInstant().plusSeconds(IntegerArgumentType.getInteger(context, "time") * 17280));
-			return ban(context.getSource(), target, MessageArgumentType.getMessage(context, "reason"), date);
+			date = Date.from(date.toInstant().plusSeconds(getInteger(context, "time") * 17280));
+			return ban(context.getSource(), target, getMessage(context, "reason"), date);
 		});
 
 		time.then(minutes);

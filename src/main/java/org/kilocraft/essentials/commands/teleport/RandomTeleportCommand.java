@@ -24,29 +24,33 @@ import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.Random;
 
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 public class RandomTeleportCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		KiloCommands.getCommandPermission("rtp");
 		KiloCommands.getCommandPermission("rtp.self");
 		KiloCommands.getCommandPermission("rtp.others");
 		KiloCommands.getCommandPermission("rtp.ignorelimit");
-		LiteralCommandNode<ServerCommandSource> randomTeleport = CommandManager.literal("randomteleport")
+		LiteralCommandNode<ServerCommandSource> randomTeleport = literal("randomteleport")
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.self"), 2))
 				.executes(context -> {
 					teleportRandomly(context.getSource().getPlayer(), context.getSource());
 					return 0;
 				}).build();
 
-		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = CommandManager
-				.argument("player", EntityArgumentType.player())
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("player", player())
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.others"), 2))
-				.executes(context -> execute(EntityArgumentType.getPlayer(context, "player"), context.getSource()))
+				.executes(context -> execute(getPlayer(context, "player"), context.getSource()))
 				.build();
 
 		randomTeleport.addChild(target);
 		dispatcher.getRoot().addChild(randomTeleport);
 		dispatcher.getRoot()
-				.addChild(CommandManager.literal("rtp")
+				.addChild(literal("rtp")
 						.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("rtp.self"), 2))
 						.executes(context -> execute(context.getSource().getPlayer(), context.getSource()))
 						.redirect(randomTeleport).build());
