@@ -47,13 +47,11 @@ public class Commands {
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
-        if  (Commands.vanillaCommandsToRename.contains(nodeName)) return true;
-        else return false;
+        return Commands.vanillaCommandsToRename.contains(nodeName);
     }
 
     public static boolean isCustomCommand(String nodeName) {
-        if  (keCommandsToKeep.contains(nodeName)) return true;
-        else return false;
+        return keCommandsToKeep.contains(nodeName);
     }
 
 }
