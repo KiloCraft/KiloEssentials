@@ -28,6 +28,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private static Logger logger = LogManager.getFormatterLogger("KiloEssentials");
 	private static List<String> initializedPerms = new ArrayList<>();
 	private static KiloEssentialsImpl instance;
+	private KiloCommands commands;
 
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
@@ -37,6 +38,8 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		new KiloConfig();
+		this.commands = commands;
+
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
 		FeatureTypes.init(); // Register the built in feature types
@@ -97,6 +100,11 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public Server getServer() {
 	    return KiloServer.getServer();
     }
+
+	@Override
+	public KiloCommands getCommandHandler() {
+		return this.commands;
+	}
 
 	public <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType) {
 		configurableFeatureRegistry.add(featureType);

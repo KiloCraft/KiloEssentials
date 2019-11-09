@@ -11,6 +11,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -54,16 +55,17 @@ public class CommandSuggestions {
     );
 
     public static <S> boolean buildForSource(CommandNode<S> commandNode, S source) {
-        if (commandNode.canUse(source)) {
-            if (Commands.isVanillaCommand(commandNode.getName().replace(Commands.vanillaCommandsPrefix, ""))
-                    && !Commands.isCustomCommand(Commands.customCommandsPrefix + commandNode.getName()))
+        if (KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission")) {
+            if (commandNode.canUse(source)) {
+                if (Commands.isCustomCommand(commandNode.getName()))
+                    return true;
+                else
+                    return true;
+            } else
                 return false;
-            if (Commands.isCustomCommand(commandNode.getName()))
-                return true;
-            else
-                return true;
-        } else
-            return false;
+        }
+        return !Commands.isVanillaCommand(commandNode.getName().replace(Commands.vanillaCommandsPrefix, ""))
+                || Commands.isCustomCommand(Commands.customCommandsPrefix + commandNode.getName());
     }
 }
 

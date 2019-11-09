@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
-public class MixinMinecraftServer$OnTick {
+public abstract class MixinMinecraftServer$OnTick {
 
 	@Inject(method = "tick", at = @At("HEAD"))
 	private void tick(BooleanSupplier booleanSupplier_1, CallbackInfo ci) {

@@ -2,17 +2,17 @@ package org.kilocraft.essentials.events.commands;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.event.commands.ExecuteCommandEvent;
+import org.kilocraft.essentials.api.event.commands.OnCommandExecutedEvent;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-public class ExecuteCommandEventImpl implements ExecuteCommandEvent {
+public class OnCommandExecutedEventImpl implements OnCommandExecutedEvent {
 
     private ServerCommandSource source;
     private String command;
     private boolean isCanceled;
     private CallbackInfoReturnable<Integer> cir;
 
-    public ExecuteCommandEventImpl(ServerCommandSource source, String command, CallbackInfoReturnable<Integer> cir) {
+    public OnCommandExecutedEventImpl(ServerCommandSource source, String command, CallbackInfoReturnable<Integer> cir) {
         this.command = command;
         this.source = source;
         this.cir = cir;
@@ -24,7 +24,7 @@ public class ExecuteCommandEventImpl implements ExecuteCommandEvent {
     }
 
     @Override
-    public ServerCommandSource getSource() {
+    public ServerCommandSource getExecutor() {
         return source;
     }
 
@@ -35,7 +35,7 @@ public class ExecuteCommandEventImpl implements ExecuteCommandEvent {
 
     @Override
     public boolean isCancelled() {
-        return false;
+        return this.isCanceled;
     }
 
     @Override

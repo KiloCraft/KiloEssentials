@@ -2,11 +2,11 @@ package org.kilocraft.essentials.listeners;
 
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.event.EventHandler;
-import org.kilocraft.essentials.api.event.commands.ExecuteCommandEvent;
+import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 
-public class OnCommand implements EventHandler<ExecuteCommandEvent> {
+public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
     @Override
-    public void handle(ExecuteCommandEvent event) {
-        ModConstants.getLogger().info("[%s]: %s", event.getSource().getName(), event.getCommand().replace("/", ""));
+    public void handle(OnCommandExecutionEvent event) {
+        ModConstants.getLogger().info("[%s]: %s", event.getExecutor().getName(), event.getCommand().replace("/", ""));
     }
 }

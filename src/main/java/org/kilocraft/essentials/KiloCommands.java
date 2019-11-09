@@ -3,6 +3,7 @@ package org.kilocraft.essentials;
 import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -10,12 +11,14 @@ import com.mojang.brigadier.tree.CommandNode;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.SharedConstants;
+import net.minecraft.command.CommandException;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.KillCommand;
@@ -33,11 +36,15 @@ import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static org.kilocraft.essentials.api.KiloEssentials.getInstance;
+import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 
 public class KiloCommands {
     private static final SimpleCommandExceptionType SMART_USAGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Unknown command or insufficient permissions"));
@@ -144,6 +151,62 @@ public class KiloCommands {
         return KiloEssentialsImpl.commandDispatcher;
     }
 
+    public int execute(ServerCommandSource executor, String commandToExecute) {
+        StringReader stringReader = new StringReader(commandToExecute);
+        if (stringReader.canRead() && stringReader.peek() == '/') {
+            stringReader.skip();
+        }
+
+        getInstance().getServer().getVanillaServer().getProfiler().push(commandToExecute);
+
+        byte var = 0;
+        try {
+            try {
+                return this.dispatcher.execute(stringReader, executor);
+            } catch (CommandException e) {
+                executor.sendError(e.getTextMessage());
+                var = 0;
+                return var;
+            } catch (CommandSyntaxException e) {
+                String string = KiloConfig.getProvider().getMessages().get(true, "commands.context.execution_exception");
+                Text text = new LiteralText(TextFormat.translateAlternateColorCodes('&', string))
+                        .styled((style) -> {
+                            style.setColor(Formatting.RED);
+                            style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandToExecute));
+                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.toText(e.getRawMessage())));
+                        });
+
+                KiloChat.sendMessageToSource(executor, text);
+            }
+        } catch (Exception e) {
+            Text text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
+            if (getLogger().isDebugEnabled()) {
+                getLogger().error("Command exception: {}", commandToExecute, e);
+                StackTraceElement[] stackTraceElements = e.getStackTrace();
+
+                for(int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
+                    text.append("\n\n").append(stackTraceElements[i].getMethodName()).append("\n ").append(stackTraceElements[i].getFileName()).append(":").append(String.valueOf(stackTraceElements[i].getLineNumber()));
+                }
+            }
+
+            executor.sendError((new TranslatableText("command.failed")).styled((style) -> {
+                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text));
+            }));
+
+            if (SharedConstants.isDevelopment) {
+                executor.sendError(new LiteralText(Util.getInnermostMessage(e)));
+                getLogger().error("'" + commandToExecute + "' threw an exception", e);
+            }
+
+            return (byte) 0;
+
+        } finally {
+            getInstance().getServer().getVanillaServer().getProfiler().pop();
+        }
+
+        return var;
+    }
+
     public static int SUCCESS() {
         return 1;
     }
@@ -152,7 +215,4 @@ public class KiloCommands {
         return -1;
     }
 
-    public static int RETURN(int value) {
-        return value;
-    }
 }

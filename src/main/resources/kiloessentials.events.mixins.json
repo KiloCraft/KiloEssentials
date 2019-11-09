@@ -14,7 +14,7 @@
     "MixinServerPlayerEntity$PlayerEvent$OnDeath",
     "MixinServerPlayerNetworkHandler$PlayerEvent$OnDisconnect",
     "MixinServerPlayerNetworkHandler$PlayerEvent$OnBreakingBlock",
-    "MixinCommandManager$ServerEvent$OnCommandExecution"
+    "MixinCommandManager$ServerEvent$OnCommandExecuted"
   ],
   "injectors": {
     "defaultRequire": 1

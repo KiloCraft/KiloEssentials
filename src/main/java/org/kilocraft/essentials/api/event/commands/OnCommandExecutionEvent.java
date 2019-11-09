@@ -5,8 +5,8 @@ import org.kilocraft.essentials.api.event.Cancellable;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.context.ServerContext;
 
-public interface ExecuteCommandEvent extends Event, ServerContext, Cancellable {
+public interface OnCommandExecutionEvent extends Event, ServerContext, Cancellable {
     String getCommand();
 
-    ServerCommandSource getSource();
+    ServerCommandSource getExecutor();
 }

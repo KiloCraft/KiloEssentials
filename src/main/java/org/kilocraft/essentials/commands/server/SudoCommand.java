@@ -34,6 +34,7 @@ public class SudoCommand {
                             .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                             .then(
                                     argument("args", greedyString())
+                                            .suggests(CommandSuggestions::usableCommands)
                                             .executes(c -> execute(dispatcher, c.getSource(), getPlayer(c, "player"), getString(c, "args")))
                             )
                 );

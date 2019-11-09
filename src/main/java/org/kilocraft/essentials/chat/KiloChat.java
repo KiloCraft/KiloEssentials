@@ -57,6 +57,13 @@ public class KiloChat {
 			source.sendFeedback(new LiteralText(message.getFormattedMessage()), false);
 	}
 
+	public static void sendMessageToSource(ServerCommandSource source, Text text) {
+		if (CommandHelper.isConsole(source))
+			KiloEssentials.getInstance().getServer().sendMessage(text.asString());
+		else
+			source.sendFeedback(text, false);
+	}
+
 	public static void sendLangMessageTo(ServerCommandSource source, String key) {
 		if (CommandHelper.isConsole(source))
 			KiloEssentials.getInstance().getServer().sendMessage(getFormattedLang(key));

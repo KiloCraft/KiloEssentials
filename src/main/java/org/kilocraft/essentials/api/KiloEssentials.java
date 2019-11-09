@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.api;
 
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.feature.FeatureNotPresentException;
@@ -21,6 +22,8 @@ public interface KiloEssentials {
     }
 
     Server getServer();
+
+    KiloCommands getCommandHandler();
 
     <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType);
 

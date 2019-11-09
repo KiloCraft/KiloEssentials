@@ -14,6 +14,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.GameMode;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.commands.CommandSuggestions;
@@ -51,6 +52,7 @@ public class GamemodeCommand {
 
         build(gamemodeCommand);
         build(gmCommand);
+        buildAliases(dispatcher);
         dispatcher.register(gamemodeCommand);
         dispatcher.register(gmCommand);
     }
@@ -58,13 +60,13 @@ public class GamemodeCommand {
     private static void build(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
         RequiredArgumentBuilder<ServerCommandSource, String> gameTypeArgument = argument("gameType", string())
                 .suggests(GamemodeCommand::suggestGameModes)
-                .executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), false));
+                .executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), null,false));
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("target", players())
                 .suggests(CommandSuggestions::allPlayers)
-                .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), false))
+                .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null,false))
                 .then(literal("-silent")
-                        .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), true))
+                        .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null, true))
                 );
 
 
@@ -72,9 +74,28 @@ public class GamemodeCommand {
         argumentBuilder.then(gameTypeArgument);
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players, boolean silent) throws CommandSyntaxException {
+    private static void buildAliases(CommandDispatcher<ServerCommandSource> dispatcher) {
+        for (String string : new String[]{"sp", "s", "c", "a"}) {
+            GameMode thisMode = getMode(string);
+
+            dispatcher.register(literal("gm" + string)
+                    .requires(src -> hasPermissionOrOp(src, getCommandPermission("gamemode"), 2))
+                    .executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), thisMode, false))
+                    .then(argument("target", players())
+                            .suggests(CommandSuggestions::allPlayers)
+                            .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), thisMode, false))
+                    .then(literal("-silent")
+                        .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), thisMode, true)))
+                    )
+            );
+
+        }
+
+    }
+
+    private static int execute(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players, @Nullable GameMode cValue, boolean silent) throws CommandSyntaxException {
         ServerCommandSource src = ctx.getSource();
-        String arg = getString(ctx, "gameType");
+        String arg = cValue == null ? getString(ctx, "gameType") : cValue.getName();
         GameMode selectedMode = getMode(arg);
 
         if (selectedMode == null)
@@ -101,13 +122,13 @@ public class GamemodeCommand {
     }
 
     private static GameMode getMode(String arg) {
-        if  (arg.startsWith("sp") || arg.equals("3"))
+        if  (arg.startsWith("sp") || arg.startsWith("3"))
             return GameMode.SPECTATOR;
-        if  (arg.startsWith("s") || arg.equals("0"))
+        if  (arg.startsWith("s") || arg.startsWith("0"))
             return GameMode.SURVIVAL;
-        if  (arg.startsWith("c") || arg.equals("1"))
+        if  (arg.startsWith("c") || arg.startsWith("1"))
             return GameMode.CREATIVE;
-        if  (arg.startsWith("a") || arg.equals("2"))
+        if  (arg.startsWith("a") || arg.startsWith("2"))
             return GameMode.ADVENTURE;
         else
             return null;
