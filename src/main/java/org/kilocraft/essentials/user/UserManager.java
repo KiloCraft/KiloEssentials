@@ -42,13 +42,11 @@ public class UserManager {
     }
 
     ServerUser getUser(String name) {
-        ServerUser serverUser = null;
         for (ServerUser loadedServerUser : loadedServerUsers) {
-            if (loadedServerUser.getUsername().equals(name))
-                serverUser = loadedServerUser;
+            if (loadedServerUser.getUsername().equals(name)) return loadedServerUser;
         }
 
-        return serverUser;
+        return null;
     }
 
     private ServerUser getOfflineUser(UUID uuid) {
