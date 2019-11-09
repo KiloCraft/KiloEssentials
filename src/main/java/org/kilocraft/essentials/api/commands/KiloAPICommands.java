@@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.commands.misc.ModsCommand;
+import org.kilocraft.essentials.commands.misc.TpsCommand;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,7 +3,7 @@ package org.kilocraft.essentials.threaded;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.KiloEssentials;
+import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.KiloEvents;
 
 public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
@@ -20,7 +20,7 @@ public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
 
     @Override
     public void run() {
-        new KiloEssentials(
+        new KiloEssentialsImpl(
                 new KiloEvents(),
                 new KiloCommands()
         );

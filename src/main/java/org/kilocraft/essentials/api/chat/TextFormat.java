@@ -8,7 +8,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.util.CommandHelper;
+import org.kilocraft.essentials.commands.CommandHelper;
 
 import java.util.Map;
 import java.util.regex.Pattern;

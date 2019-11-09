@@ -2,13 +2,13 @@ package org.kilocraft.essentials.api.chat;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.api.ModData;
-import org.kilocraft.essentials.api.util.CommandHelper;
+import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.commands.CommandHelper;
 
 public class LangText {
 
-    public static LiteralText getFormatter (boolean allowColorCodes, String key, Object... objects) {
-        String lang = ModData.getLang().getProperty(key);
+    public static LiteralText getFormatter(boolean allowColorCodes, String key, Object... objects) {
+        String lang = ModConstants.getLang().getProperty(key);
         LiteralText literalText = new LiteralText ("");
         String result = "";
 
@@ -28,7 +28,7 @@ public class LangText {
     }
 
     public static LiteralText get(boolean allowColorCodes, String key) {
-        String lang = ModData.getLang().getProperty(key);
+        String lang = ModConstants.getLang().getProperty(key);
         LiteralText literalText = new LiteralText ("");
         String result = lang;
 
@@ -43,7 +43,7 @@ public class LangText {
     }
 
     public static void sendToUniversalSource(ServerCommandSource source, String key, boolean log) {
-        String text = ModData.getLang().getProperty(key);
+        String text = ModConstants.getLang().getProperty(key);
         LiteralText literalText;
         if (CommandHelper.isConsole(source)) {
             literalText = TextFormat.removeAlternateToLiteralText('&', text);
@@ -57,7 +57,7 @@ public class LangText {
 
     public static void sendToUniversalSource(ServerCommandSource source, String key, boolean log, Object... objects) {
         String result = "";
-        String lang = ModData.getLang().getProperty(key);
+        String lang = ModConstants.getLang().getProperty(key);
         if (objects[0] != null) {
             result = String.format(lang, objects);
         }

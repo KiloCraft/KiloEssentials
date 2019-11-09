@@ -11,17 +11,17 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import org.kilocraft.essentials.KiloEssentials;
+import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.api.config.ConfigValueGetter;
-import org.kilocraft.essentials.api.util.CommandHelper;
-import org.kilocraft.essentials.config.KiloConifg;
+import org.kilocraft.essentials.config.ConfigValueGetter;
+import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVariables;
 
 public class KiloChat {
-	private static ConfigValueGetter config = KiloConifg.getProvider().getMain();
+	private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
 
 	public static void sendMessageTo(ServerPlayerEntity player, ChatMessage chatMessage) {
 		sendMessageTo(player, new LiteralText(chatMessage.getFormattedMessage()));
@@ -95,7 +95,7 @@ public class KiloChat {
 
 	public static void sendChatMessage(ServerPlayerEntity player, String messageToSend) {
 		ChatMessage message = new ChatMessage(messageToSend, Thimble.hasPermissionOrOp(player.getCommandSource(),
-				KiloEssentials.getPermissionFor("chat.format"), 2));
+				KiloEssentialsImpl.getPermissionFor("chat.format"), 2));
 
 		if ((boolean) config.getValue("chat.ping.enable")) {
 			String pingSenderFormat = config.get(false, "chat.ping.format");
@@ -143,7 +143,7 @@ public class KiloChat {
 
 	public static void broadcastUserJoinEventMessage(ServerPlayerEntity player) {
 		broadCast(new ChatMessage(
-						KiloConifg.getProvider().getMessages().get(false, "general.joinMessage")
+						KiloConfig.getProvider().getMessages().get(false, "general.joinMessage")
 								.replace("%PLAYER_NAME%", player.getName().asString()),
 						true
 				)
@@ -153,7 +153,7 @@ public class KiloChat {
 
 	public static void broadcastUserLeaveEventMessage(ServerPlayerEntity player) {
 		broadCast(new ChatMessage(
-					KiloConifg.getProvider().getMessages().get(false, "general.leaveMessage")
+					KiloConfig.getProvider().getMessages().get(false, "general.leaveMessage")
 						.replace("%PLAYER_NAME%", player.getName().asString()),
 					true
 				)

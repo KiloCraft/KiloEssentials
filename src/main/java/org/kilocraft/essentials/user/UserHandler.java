@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.nbt.NbtIo;
-import org.kilocraft.essentials.config.KiloConifg;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,39 +11,39 @@ import java.io.IOException;
 public class UserHandler {
     private static File saveDir = new File(System.getProperty("user.dir") + "/KiloEssentials/users/");
 
-    public void handleUser(User user) throws IOException {
-        if (getUserFile(user).exists())
-            user.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(user))));
+    public void handleUser(ServerUser serverUser) throws IOException {
+        if (getUserFile(serverUser).exists())
+            serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(serverUser))));
         else {
             saveDir.mkdirs();
-            getUserFile(user).createNewFile();
-            saveData(user);
-            handleUser(user);
+            getUserFile(serverUser).createNewFile();
+            saveData(serverUser);
+            handleUser(serverUser);
         }
 
     }
 
-    public void loadUser(User user) throws IOException {
-        if (getUserFile(user).exists())
-            user.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(user))));
+    public void loadUser(ServerUser serverUser) throws IOException {
+        if (getUserFile(serverUser).exists())
+            serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(serverUser))));
 
     }
 
-    void saveData(User user) throws IOException {
-        if (getUserFile(user).exists())
+    void saveData(ServerUser serverUser) throws IOException {
+        if (getUserFile(serverUser).exists())
             NbtIo.writeCompressed(
-                    user.serialize(),
-                    new FileOutputStream(getUserFile(user))
+                    serverUser.serialize(),
+                    new FileOutputStream(getUserFile(serverUser))
             );
         else {
             saveDir.mkdirs();
-            getUserFile(user).createNewFile();
-            saveData(user);
+            getUserFile(serverUser).createNewFile();
+            saveData(serverUser);
         }
     }
 
-    private File getUserFile(User user) {
-        return new File( KiloConifg.getWorkingDirectory() + "/KiloEssentials/users/" + user.getUuidAsString() + ".dat");
+    private File getUserFile(ServerUser serverUser) {
+        return new File( KiloConfig.getWorkingDirectory() + "/KiloEssentials/users/" + serverUser.getUuid().toString() + ".dat");
     }
 
 }
