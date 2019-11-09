@@ -16,11 +16,8 @@ public class LangText {
             result = String.format(lang, objects);
         }
 
-        if (allowColorCodes) {
-            result = TextFormat.translateAlternateColorCodes('&', result);
-        } else {
-            result = TextFormat.removeAlternateColorCodes('&', result);
-        }
+        if (allowColorCodes) result = TextFormat.translateAlternateColorCodes('&', result);
+        else result = TextFormat.removeAlternateColorCodes('&', result);
 
 
         literalText.append(result);
@@ -32,28 +29,12 @@ public class LangText {
         LiteralText literalText = new LiteralText ("");
         String result = lang;
 
-        if (allowColorCodes) {
-            result = TextFormat.translateAlternateColorCodes('&', result);
-        } else {
-            result = TextFormat.removeAlternateColorCodes('&', result);
-        }
+        if (allowColorCodes) result = TextFormat.translateAlternateColorCodes('&', result);
+        else result = TextFormat.removeAlternateColorCodes('&', result);
 
         literalText.append(result);
         return literalText;
     }
-
-    public static void sendToUniversalSource(ServerCommandSource source, String key, boolean log) {
-        String text = ModConstants.getLang().getProperty(key);
-        LiteralText literalText;
-        if (CommandHelper.isConsole(source)) {
-            literalText = TextFormat.removeAlternateToLiteralText('&', text);
-        } else {
-            literalText = TextFormat.translateToLiteralText('&', text);
-        }
-
-        source.sendFeedback(literalText, log);
-    }
-
 
     public static void sendToUniversalSource(ServerCommandSource source, String key, boolean log, Object... objects) {
         String result = "";

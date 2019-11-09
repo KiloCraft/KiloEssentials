@@ -12,7 +12,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.KiloEssentialsImpl;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.config.ConfigValueGetter;
@@ -22,6 +24,18 @@ import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVaria
 
 public class KiloChat {
 	private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
+
+	private static String getFormattedLang(String key, Object... objects) {
+		String value = ModConstants.getLang().getProperty(key);
+		return getFormattedString(value, objects);
+	}
+
+	private static String getFormattedString(String string, Object... objects) {
+		if (objects[0] != null)
+			string = String.format(string, objects);
+
+		return string;
+	}
 
 	public static void sendMessageTo(ServerPlayerEntity player, ChatMessage chatMessage) {
 		sendMessageTo(player, new LiteralText(chatMessage.getFormattedMessage()));
@@ -42,15 +56,14 @@ public class KiloChat {
 
 	public static void sendMessageToSource(ServerCommandSource source, ChatMessage message) {
 		if (CommandHelper.isConsole(source))
-			source.sendFeedback(
-					new LiteralText(TextFormat.removeAlternateColorCodes('&', message.getFormattedMessage())), false);
+			KiloEssentials.getInstance().getServer().sendMessage(message.getOriginal());
 		else
 			source.sendFeedback(new LiteralText(message.getFormattedMessage()), false);
 	}
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key) {
 		if (CommandHelper.isConsole(source))
-			source.sendFeedback(LangText.get(false, key), false);
+			KiloEssentials.getInstance().getServer().sendMessage(getFormattedLang(key));
 		else
 			source.sendFeedback(LangText.get(true, key), false);
 	}
@@ -65,7 +78,7 @@ public class KiloChat {
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key, Object... objects) {
 		if (CommandHelper.isConsole(source))
-			source.sendFeedback(LangText.getFormatter(false, key, objects), false);
+			KiloEssentials.getInstance().getServer().sendMessage(getFormattedLang(key, objects));
 		else
 			source.sendFeedback(LangText.getFormatter(true, key, objects), false);
 	}

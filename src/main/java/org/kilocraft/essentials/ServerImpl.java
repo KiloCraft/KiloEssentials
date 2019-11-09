@@ -11,6 +11,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
@@ -180,11 +181,17 @@ public class ServerImpl implements Server {
         for(ServerPlayerEntity player : getPlayerManager().getPlayerList()) {
             player.networkHandler.disconnect(reason);
         }
+
     }
 
     @Override
     public void sendMessage(String message) {
-        getLogger().info(message);
+        String[] lines = message.split("\n");
+
+        for (String line : lines) {
+            getLogger().trace(TextFormat.removeAlternateColorCodes('&', line));
+        }
+
     }
 
     @Override
