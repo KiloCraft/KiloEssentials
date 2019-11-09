@@ -53,7 +53,7 @@ general:
 #Messages used by commands
 commands:
   context:
-    execution_exception: '&8[&e!&8] &cUnknown command or insufficient permissions'
+    execution_exception: '&8[&c ! &8] &eUnknown command or insufficient permissions'
 
   broadcast_format: '&f[&c&lBroadCast&f]&r %MESSAGE%'
 
