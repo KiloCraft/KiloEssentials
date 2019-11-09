@@ -17,8 +17,8 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
+import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
-import org.kilocraft.essentials.commands.server.BroadcastCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.player.FeedCommand;
 import org.kilocraft.essentials.commands.player.FlyCommand;
@@ -33,10 +33,8 @@ import org.kilocraft.essentials.commands.player.PlayerParticlesCommand;
 import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
 import org.kilocraft.essentials.commands.player.RealNameCommand;
 import org.kilocraft.essentials.commands.player.SpeedCommand;
-import org.kilocraft.essentials.commands.server.SudoCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
-import org.kilocraft.essentials.commands.server.UserBanCommand;
 import org.kilocraft.essentials.commands.misc.ColorsCommand;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
@@ -44,9 +42,6 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
-import org.kilocraft.essentials.commands.server.OperatorCommand;
-import org.kilocraft.essentials.commands.server.ReloadCommand;
-import org.kilocraft.essentials.commands.server.StopCommand;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -78,6 +73,7 @@ public class KiloCommands {
         }
 
 
+        VersionCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
@@ -156,5 +152,17 @@ public class KiloCommands {
 
     public static CommandDispatcher<ServerCommandSource> getDispatcher() {
         return KiloEssentialsImpl.commandDispatcher;
+    }
+
+    public static int SUCCESS() {
+        return 1;
+    }
+
+    public static int FAILED() {
+        return -1;
+    }
+
+    public static int RETURN(int value) {
+        return value;
     }
 }

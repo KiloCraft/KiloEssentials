@@ -37,6 +37,10 @@ public class ModConstants {
         return properties.getProperty("version");
     }
 
+    public static String getVersionInt() {
+        return properties.getProperty("version_int");
+    }
+
     public static String getMappingsVersion() {
         return properties.getProperty("fabric_yarn_mappings");
     }
