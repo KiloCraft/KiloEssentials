@@ -14,12 +14,14 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.*;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.UsageCommand;
@@ -177,6 +179,7 @@ public class KiloCommands {
     }
 
     public int execute(ServerCommandSource executor, String commandToExecute) {
+        String ecp = KiloConfig.getProvider().getMessages().get(true, "commands.context.execution_exception");
         StringReader stringReader = new StringReader(commandToExecute);
         if (stringReader.canRead() && stringReader.peek() == '/') {
             stringReader.skip();
@@ -189,19 +192,14 @@ public class KiloCommands {
             try {
                 return this.dispatcher.execute(stringReader, executor);
             } catch (CommandException e) {
+
+
                 executor.sendError(e.getTextMessage());
                 var = 0;
                 return var;
             } catch (CommandSyntaxException e) {
-                String string = KiloConfig.getProvider().getMessages().get(true, "commands.context.execution_exception");
-                Text text = new LiteralText(TextFormat.translateAlternateColorCodes('&', string))
-                        .styled((style) -> {
-                            style.setColor(Formatting.RED);
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandToExecute));
-                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.toText(e.getRawMessage())));
-                        });
 
-                KiloChat.sendMessageToSource(executor, text);
+
             }
         } catch (Exception e) {
             Text text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
@@ -231,6 +229,7 @@ public class KiloCommands {
 
         return var;
     }
+
 
     public static int SUCCESS() {
         return 1;

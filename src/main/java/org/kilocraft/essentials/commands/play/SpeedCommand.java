@@ -5,9 +5,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 
 import static com.mojang.brigadier.arguments.FloatArgumentType.floatArg;
 import static com.mojang.brigadier.arguments.FloatArgumentType.getFloat;
@@ -64,25 +64,32 @@ public class SpeedCommand {
     }
 
     private static int executeSet(boolean walkSpeed, ServerCommandSource source, ServerPlayerEntity target, float speed) {
-        if (walkSpeed)
+        if (walkSpeed) {
+            target.forwardSpeed = speed;
+            target.sidewaysSpeed = speed;
             target.setMovementSpeed(speed);
-        else
+        }
+        else {
             target.flyingSpeed = speed;
+            target.horizontalSpeed = speed;
+        }
 
         target.sendAbilitiesUpdate();
-
-        target.sendAbilitiesUpdate();
-        target.setSneaking(true);
 
         KiloChat.sendLangMessageTo(source, "command.speed.set", walkSpeed ? "walk" : "flight", speed, target.getName().asString());
         return 1;
     }
 
     private static int executeReset(boolean walkSpeed, ServerCommandSource source, ServerPlayerEntity target) {
-        if (walkSpeed)
+        if (walkSpeed) {
+            target.forwardSpeed = 1.0F;
+            target.sidewaysSpeed = 1.0F;
             target.setMovementSpeed(1.0F);
-        else
+        }
+        else {
             target.flyingSpeed = 0.02F;
+            target.horizontalSpeed = 0.02F;
+        }
 
         target.sendAbilitiesUpdate();
 
@@ -91,6 +98,7 @@ public class SpeedCommand {
     }
 
     private static void setWalkSpeed(ServerPlayerEntity player, float speed) {
+
     }
 
 }

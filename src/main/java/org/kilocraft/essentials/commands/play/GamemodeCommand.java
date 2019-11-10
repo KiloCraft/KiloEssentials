@@ -52,7 +52,6 @@ public class GamemodeCommand {
 
         build(gamemodeCommand);
         build(gmCommand);
-        buildAliases(dispatcher);
         dispatcher.register(gamemodeCommand);
         dispatcher.register(gmCommand);
     }
@@ -72,25 +71,6 @@ public class GamemodeCommand {
 
         gameTypeArgument.then(targetArgument);
         argumentBuilder.then(gameTypeArgument);
-    }
-
-    private static void buildAliases(CommandDispatcher<ServerCommandSource> dispatcher) {
-        for (String string : new String[]{"sp", "s", "c", "a"}) {
-            GameMode thisMode = getMode(string);
-
-            dispatcher.register(literal("gm" + string)
-                    .requires(src -> hasPermissionOrOp(src, getCommandPermission("gamemode"), 2))
-                    .executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), thisMode, false))
-                    .then(argument("target", players())
-                            .suggests(CommandSuggestions::allPlayers)
-                            .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), thisMode, false))
-                    .then(literal("-silent")
-                        .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), thisMode, true)))
-                    )
-            );
-
-        }
-
     }
 
     private static int execute(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players, @Nullable GameMode cValue, boolean silent) throws CommandSyntaxException {
