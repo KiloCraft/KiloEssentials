@@ -44,19 +44,14 @@ public class TeleportCommands {
 
         LiteralCommandNode<ServerCommandSource> tpinCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportin"), 2))
-                .then(argument("dimension", string()).suggests(CommandSuggestions::dimensions)
+                .then(argument("dimension", string()).suggests(CommandSuggestions::dimensions).then(argument("pos", vec3())
                         .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
-                    .then(argument("pos", vec3()).then(argument("target", player())
-                            .suggests(CommandSuggestions::allPlayersExceptSource)
-                            .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
+                            .then(argument("target", player()).suggests(CommandSuggestions::allPlayersExceptSource)
+                                    .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
                     )
                 )
         );
 
-        dispatcher.getRoot().addChild(tptoCommand);
-        dispatcher.getRoot().addChild(tpposCommand);
-        dispatcher.getRoot().addChild(tphereCommand);
-        dispatcher.getRoot().addChild(tpinCommand);
         dispatcher.register(literal("tpto").requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportto"), 2)).redirect(tptoCommand));
         dispatcher.register(literal("tppos").requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportpos"), 2)).redirect(tpposCommand));
         dispatcher.register(literal("tphere").requires(src -> hasPermissionOrOp(src, getCommandPermission("teleporthere"), 2)).redirect(tphereCommand));

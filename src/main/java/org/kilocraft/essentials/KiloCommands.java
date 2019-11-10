@@ -104,9 +104,9 @@ public class KiloCommands {
         StopCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         InvulnerablemodeCommand.register(this.dispatcher);
-        NickCommandOLD.register(this.dispatcher);
         PreviewCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
+        NicknameCommand.register(this.dispatcher);
 
         Thimble.permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
