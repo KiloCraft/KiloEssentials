@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands; // TODO i509VCB: Ideas for a package name to throw this in?
+package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -6,6 +6,7 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
 
 import java.util.Collection;

@@ -21,7 +21,6 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.KillCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
