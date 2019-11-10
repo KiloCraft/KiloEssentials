@@ -127,7 +127,7 @@ public class TeleportCommands {
     }
 
     private static String getFormattedMessage(ServerPlayerEntity target) {
-        return String.format("%s, %s, %s &8(&e%s&8)",
+        return String.format("%s, %s, %s &8(&d%s&8)",
                 Math.round(target.getPos().getX()),
                 Math.round(target.getPos().getY()),
                 Math.round(target.getPos().getZ()),
