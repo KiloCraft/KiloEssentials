@@ -23,6 +23,21 @@ public class CommandSuggestions {
         return CommandSource.suggestMatching(playerManager.getPlayerNames(), builder);
     }
 
+    public static CompletableFuture<Suggestions> allPlayersExceptSource(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((p) -> {
+            try {
+                return !p.equals(context.getSource().getPlayer());
+            } catch (CommandSyntaxException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }).map((p) -> p.getName().asString()), builder);
+    }
+
+    public static CompletableFuture<Suggestions> dimensions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(new String[]{"overworld", "the_nether", "the_end"}, builder);
+    }
+
     public static SuggestionProvider<ServerCommandSource> suggestInput = ((context, builder) -> {
         builder.suggest(context.getNodes().get(0).getNode().getName());
         return builder.buildFuture();

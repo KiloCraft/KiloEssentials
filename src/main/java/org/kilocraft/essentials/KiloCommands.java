@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -29,6 +30,8 @@ import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.MessageCommand;
 import org.kilocraft.essentials.commands.misc.ColorsCommand;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.commands.misc.PreviewCommand;
+import org.kilocraft.essentials.commands.misc.TeleportCommands;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -103,6 +106,8 @@ public class KiloCommands {
         OperatorCommand.register(this.dispatcher);
         InvulnerablemodeCommand.register(this.dispatcher);
         NickCommandOLD.register(this.dispatcher);
+        PreviewCommand.register(this.dispatcher);
+        TeleportCommands.register(this.dispatcher);
 
         Thimble.permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
@@ -116,6 +121,10 @@ public class KiloCommands {
         else
             KiloChat.sendLangMessageTo(source, "general.usage.help");
         return 1;
+    }
+
+    public static int executeSmartUsage(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        return executeSmartUsageFor(ctx.getInput().replace("/", ""), ctx.getSource());
     }
 
     public static int executeSmartUsageFor(String command, ServerCommandSource source) throws CommandSyntaxException {
