@@ -44,9 +44,11 @@ public class TeleportCommands {
 
         LiteralCommandNode<ServerCommandSource> tpinCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportin"), 2))
-                .then(argument("dimension", string()).suggests(CommandSuggestions::dimensions).executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
-                    .then(argument("pos", vec3()).executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
-                        .then(argument("target", player()).suggests(CommandSuggestions::allPlayersExceptSource).executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
+                .then(argument("dimension", string()).suggests(CommandSuggestions::dimensions)
+                        .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
+                    .then(argument("pos", vec3()).then(argument("target", player())
+                            .suggests(CommandSuggestions::allPlayersExceptSource)
+                            .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
                     )
                 )
         );

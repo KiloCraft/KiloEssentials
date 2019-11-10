@@ -11,8 +11,12 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.config.KiloConfig;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class CommandSuggestions {
@@ -51,6 +55,15 @@ public class CommandSuggestions {
                 builder
         );
     }
+
+    public static CompletableFuture<Suggestions> textformatChars(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        int cursor = context.getInput().length();
+        SuggestionsBuilder sug = new SuggestionsBuilder(context.getInput(), cursor);
+        List<String> str = new ArrayList<>(Arrays.asList(TextFormat.getList()));
+
+        return CommandSource.suggestMatching(str.stream().filter((it) -> context.getInput().charAt((cursor - 1)) == '&'), sug);
+    }
+
 
     public static CompletableFuture<Suggestions> allNonOperators(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((p) -> !playerManager.isOperator(p.getGameProfile())).map((p) -> p.getGameProfile().getName()), builder);

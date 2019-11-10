@@ -14,10 +14,7 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.kilocraft.essentials.api.ModConstants;
@@ -179,7 +176,9 @@ public class KiloCommands {
     }
 
     public int execute(ServerCommandSource executor, String commandToExecute) {
-        String ecp = KiloConfig.getProvider().getMessages().get(true, "commands.context.execution_exception");
+        ChatMessage cmdExMessage = new ChatMessage(
+                KiloConfig.getProvider().getMessages().get(true, "commands.context.execution_exception"), true);
+
         StringReader stringReader = new StringReader(commandToExecute);
         if (stringReader.canRead() && stringReader.peek() == '/') {
             stringReader.skip();
@@ -192,13 +191,33 @@ public class KiloCommands {
             try {
                 return this.dispatcher.execute(stringReader, executor);
             } catch (CommandException e) {
-
-
                 executor.sendError(e.getTextMessage());
                 var = 0;
                 return var;
             } catch (CommandSyntaxException e) {
+                if (e.getRawMessage().getString().equals("Unknown command"))
+                    KiloChat.sendMessageToSource(executor, cmdExMessage);
+                else {
+                    executor.sendError(Texts.toText(e.getRawMessage()));
+                    if (e.getInput() != null && e.getCursor() >= 0) {
+                        int cursor = Math.min(e.getInput().length(), e.getCursor());
+                        Text text = (new LiteralText("")).formatted(Formatting.GRAY).styled((style) -> {
+                            style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandToExecute));
+                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(commandToExecute).formatted(Formatting.YELLOW)));
+                        });
 
+                        if (cursor > 10) text.append("...");
+
+                        text.append(e.getInput().substring(Math.max(0, cursor - 10), cursor));
+                        if (cursor < e.getInput().length()) {
+                            Text text_2 = (new LiteralText(e.getInput().substring(cursor))).formatted(Formatting.RED, Formatting.UNDERLINE);
+                            text.append(text_2);
+                        }
+
+                        text.append(new LiteralText("<--[HERE]").formatted(Formatting.RED, Formatting.ITALIC));
+                        executor.sendError(text);
+                    }
+                }
 
             }
         } catch (Exception e) {

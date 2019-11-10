@@ -143,7 +143,7 @@ public enum TextFormat {
         return code;
     }
 
-    public String[] getList() {
+    public static String[] getList() {
         return list();
     }
 
