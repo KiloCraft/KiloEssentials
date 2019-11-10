@@ -151,8 +151,8 @@ public class KiloChat {
 	public static void pingPlayer(ServerPlayerEntity target) {
 		Vec3d vec3d = target.getCommandSource().getPosition();
 		String soundId = "minecraft:" + config.getValue("chat.ping.sound.id");
-		float volume = config.getFloatSafely("chat.ping.sound.volume");
-		float pitch = config.getFloatSafely("chat.ping.sound.pitch");
+		float volume = config.getFloatSafely("chat.ping.sound.volume", "1.0");
+		float pitch = config.getFloatSafely("chat.ping.sound.pitch", "1.0");
 
 		target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
 	}

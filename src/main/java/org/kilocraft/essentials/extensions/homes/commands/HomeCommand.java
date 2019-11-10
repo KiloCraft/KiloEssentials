@@ -110,7 +110,7 @@ public class HomeCommand {
                         .executes(c -> executeRemove(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
-        for (int i = 0; i == KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit"); i++) {
+        for (int i = 0; i == KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
             KiloCommands.getCommandPermission("home.self.limit." + i);
         }
 

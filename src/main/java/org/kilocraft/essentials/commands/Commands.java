@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.commands;
 
+import com.mojang.brigadier.tree.CommandNode;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.CommandManagerMixin;
 
 import java.util.ArrayList;
@@ -53,5 +55,31 @@ public class Commands {
     public static boolean isCustomCommand(String nodeName) {
         return keCommandsToKeep.contains(nodeName);
     }
+
+    public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
+        if (KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
+            if (commandNode.canUse(source))
+                return isCustomCommand(commandNode.getName());
+            return false;
+
+        }
+
+        return !isVanillaCommand(commandNode.getName().replace(vanillaCommandsPrefix, ""))
+                || isCustomCommand(customCommandsPrefix + commandNode.getName());
+    }
+
+//    public static <S> boolean canSourceUseOLD(CommandNode<S> commandNode, S source) {
+//        if (KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
+//            if (commandNode.canUse(source)) {
+//                if (isCustomCommand(commandNode.getName()))
+//                    return true;
+//                else
+//                    return true;
+//            } else
+//                return false;
+//        }
+//        return !isVanillaCommand(commandNode.getName().replace(vanillaCommandsPrefix, ""))
+//                || isCustomCommand(customCommandsPrefix + commandNode.getName());
+//    }
 
 }

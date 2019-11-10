@@ -12,12 +12,10 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.config.KiloConfig;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 public class CommandSuggestions {
 
@@ -44,7 +42,7 @@ public class CommandSuggestions {
 
     public static CompletableFuture<Suggestions> usableCommands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> canSourceUse(child, context.getSource())).map(CommandNode::getName),
+                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> Commands.canSourceUse(child, context.getSource())).map(CommandNode::getName),
                 builder
         );
     }
@@ -57,19 +55,15 @@ public class CommandSuggestions {
     }
 
     public static CompletableFuture<Suggestions> textformatChars(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        int cursor = context.getInput().length();
-        SuggestionsBuilder sug = new SuggestionsBuilder(context.getInput(), cursor);
-        List<String> str = new ArrayList<>(Arrays.asList(TextFormat.getList()));
-
-        return CommandSource.suggestMatching(str.stream().filter((it) -> context.getInput().charAt((cursor - 1)) == '&'), sug);
+        return suggestAtCursor(Arrays.stream(TextFormat.getList()).filter((it) -> context.getInput().charAt(getPendingCursor(context)) == '&'), context);
     }
 
 
-    public static CompletableFuture<Suggestions> allNonOperators(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+    public static CompletableFuture<Suggestions> allNonOperators(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((p) -> !playerManager.isOperator(p.getGameProfile())).map((p) -> p.getGameProfile().getName()), builder);
     }
 
-    public static CompletableFuture<Suggestions> allOperators(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+    public static CompletableFuture<Suggestions> allOperators(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(playerManager.getOpNames(), builder);
     }
 
@@ -77,18 +71,37 @@ public class CommandSuggestions {
             CommandSource.suggestMatching(new String[]{"year", "month", "day", "minute", "second"}, builder)
     );
 
-    public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
-        if (KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission")) {
-            if (commandNode.canUse(source)) {
-                if (Commands.isCustomCommand(commandNode.getName()))
-                    return true;
-                else
-                    return true;
-            } else
-                return false;
-        }
-        return !Commands.isVanillaCommand(commandNode.getName().replace(Commands.vanillaCommandsPrefix, ""))
-                || Commands.isCustomCommand(Commands.customCommandsPrefix + commandNode.getName());
+    public static CompletableFuture<Suggestions> suggestAtCursor(Stream<String> stream, CommandContext<ServerCommandSource> context) {
+        return suggestAt(context.getInput().length(), stream, context);
     }
+
+    public static CompletableFuture<Suggestions> suggestAtCursor(String[] strings, CommandContext<ServerCommandSource> context) {
+        return suggestAt(context.getInput().length(), strings, context);
+    }
+
+    public static CompletableFuture<Suggestions> suggestAtCursor(Iterable<String> iterable, CommandContext<ServerCommandSource> context) {
+        return suggestAt(context.getInput().length(), iterable, context);
+    }
+
+    public static CompletableFuture<Suggestions> suggestAt(int position, Stream<String> stream, CommandContext<ServerCommandSource> context) {
+        return CommandSource.suggestMatching(stream, new SuggestionsBuilder(context.getInput(), position));
+    }
+
+    public static CompletableFuture<Suggestions> suggestAt(int position, String[] strings, CommandContext<ServerCommandSource> context) {
+        return CommandSource.suggestMatching(strings, new SuggestionsBuilder(context.getInput(), position));
+    }
+
+    public static CompletableFuture<Suggestions> suggestAt(int position, Iterable<String> iterable, CommandContext<ServerCommandSource> context) {
+        return CommandSource.suggestMatching(iterable, new SuggestionsBuilder(context.getInput(), position));
+    }
+
+    private static int getPendingCursor(CommandContext<ServerCommandSource> context) {
+        return (context.getInput().length() - 1);
+    }
+
+    private static int getCursor(CommandContext<ServerCommandSource> context) {
+        return context.getInput().length();
+    }
+
 }
 

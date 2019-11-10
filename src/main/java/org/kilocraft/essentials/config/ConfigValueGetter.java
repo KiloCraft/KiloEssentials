@@ -37,20 +37,20 @@ public class ConfigValueGetter {
         return this.config.get(key);
     }
 
-    public Boolean getBooleanSafely(String key) {
-        return (boolean) this.config.getOrElse(key, false);
+    public Boolean getBooleanSafely(String key, boolean defaultValue) {
+        return (boolean) this.config.getOrElse(key, defaultValue);
     }
 
-    public Integer getIntegerSafely(String key) {
-        return (int) this.config.getOrElse(key, 0);
+    public Integer getIntegerSafely(String key, int defaultValue) {
+        return (int) this.config.getOrElse(key, defaultValue);
     }
 
-    public Float getFloatSafely(String key) {
-        return Float.parseFloat(this.config.getOrElse(key, "1.0"));
+    public Float getFloatSafely(String key, String defaultValue) {
+        return Float.parseFloat(this.config.getOrElse(key, defaultValue));
     }
 
-    public String getStringSafely(String key) {
-        return this.config.getOrElse(key, "NULL[ConfigValueGetter$getStringSafely()]");
+    public String getStringSafely(String key, String defaultValue) {
+        return this.config.getOrElse(key, defaultValue);
     }
 
     public ProvidedValueReplaced getValueReplacer() {

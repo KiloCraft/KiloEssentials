@@ -10,7 +10,6 @@ import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
-import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.commands.Commands;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.spongepowered.asm.mixin.Final;
@@ -59,7 +58,7 @@ public abstract class CommandManagerMixin {
 
     @Redirect(method = "makeTreeForSource", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/tree/CommandNode;canUse(Ljava/lang/Object;)Z"))
     private <S> boolean modifySuggestions(CommandNode<S> commandNode, S source) {
-        return CommandSuggestions.canSourceUse(commandNode, source);
+        return Commands.canSourceUse(commandNode, source);
     }
 
     @Inject(method = "execute", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))
