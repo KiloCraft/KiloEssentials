@@ -124,7 +124,24 @@ public class KiloCommands {
     }
 
     public static int executeSmartUsage(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return executeSmartUsageFor(ctx.getInput().replace("/", ""), ctx.getSource());
+        String command = ctx.getInput().replace("/", "");
+        ParseResults<ServerCommandSource> parseResults = getDispatcher().parse(command, ctx.getSource());
+        if (parseResults.getContext().getNodes().isEmpty()) {
+            throw SMART_USAGE_FAILED_EXCEPTION.create();
+        } else {
+            Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = getDispatcher().getSmartUsage(((ParsedCommandNode)Iterables.getLast(parseResults.getContext().getNodes())).getNode(), ctx.getSource());
+            Iterator<String> iterator = commandNodeStringMap.values().iterator();
+
+            KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.firstRow", command);
+            KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.commandRow", command, "");
+
+            while (iterator.hasNext()) {
+                if (iterator.next().equals("/" + command)) continue;
+                KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.commandRow", command, iterator.next());
+            }
+
+            return 1;
+        }
     }
 
     public static int executeSmartUsageFor(String command, ServerCommandSource source) throws CommandSyntaxException {
@@ -133,13 +150,13 @@ public class KiloCommands {
             throw SMART_USAGE_FAILED_EXCEPTION.create();
         } else {
             Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = getDispatcher().getSmartUsage(((ParsedCommandNode)Iterables.getLast(parseResults.getContext().getNodes())).getNode(), source);
-            Iterator iterator = commandNodeStringMap.values().iterator();
+            Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
             KiloChat.sendLangMessageTo(source, "command.usage.firstRow", command);
             KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, "");
 
             while (iterator.hasNext()) {
-                String usage = (String) iterator.next();
+                String usage = iterator.next();
                 KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, usage);
             }
 

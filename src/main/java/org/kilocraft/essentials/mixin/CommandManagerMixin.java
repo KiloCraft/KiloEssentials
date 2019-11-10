@@ -59,7 +59,7 @@ public abstract class CommandManagerMixin {
 
     @Redirect(method = "makeTreeForSource", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/tree/CommandNode;canUse(Ljava/lang/Object;)Z"))
     private <S> boolean modifySuggestions(CommandNode<S> commandNode, S source) {
-        return CommandSuggestions.buildForSource(commandNode, source);
+        return CommandSuggestions.canSourceUse(commandNode, source);
     }
 
     @Inject(method = "execute", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))

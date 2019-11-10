@@ -38,21 +38,16 @@ public class CommandSuggestions {
         return CommandSource.suggestMatching(new String[]{"overworld", "the_nether", "the_end"}, builder);
     }
 
-    public static SuggestionProvider<ServerCommandSource> suggestInput = ((context, builder) -> {
-        builder.suggest(context.getNodes().get(0).getNode().getName());
-        return builder.buildFuture();
-    });
-
     public static CompletableFuture<Suggestions> usableCommands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> child.canUse(context.getSource())).map(CommandNode::getName),
+                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> canSourceUse(child, context.getSource())).map(CommandNode::getName),
                 builder
         );
     }
 
     public static CompletableFuture<Suggestions> commands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().map(CommandNode::getName),
+                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> !child.getName().startsWith(Commands.vanillaCommandsPrefix)).map(CommandNode::getName),
                 builder
         );
     }
@@ -69,7 +64,7 @@ public class CommandSuggestions {
             CommandSource.suggestMatching(new String[]{"year", "month", "day", "minute", "second"}, builder)
     );
 
-    public static <S> boolean buildForSource(CommandNode<S> commandNode, S source) {
+    public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
         if (KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission")) {
             if (commandNode.canUse(source)) {
                 if (Commands.isCustomCommand(commandNode.getName()))
