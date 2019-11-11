@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.api;
 
 import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.api.commands.KiloAPICommands;
 import org.kilocraft.essentials.api.server.Server;
 
 public class KiloServer {

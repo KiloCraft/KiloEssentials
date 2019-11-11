@@ -7,7 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.api.command.SuggestArgument;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import static net.minecraft.server.command.CommandManager.argument;

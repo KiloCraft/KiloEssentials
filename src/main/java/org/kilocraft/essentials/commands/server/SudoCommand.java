@@ -13,7 +13,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.api.command.SuggestArgument;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;

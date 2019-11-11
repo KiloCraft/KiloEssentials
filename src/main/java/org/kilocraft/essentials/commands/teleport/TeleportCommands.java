@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.api.command.SuggestArgument;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;

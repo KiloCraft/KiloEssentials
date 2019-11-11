@@ -17,7 +17,7 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.api.command.SuggestArgument;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -18,7 +18,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.api.command.SuggestArgument;
 
 import java.util.Collection;
 import java.util.Iterator;

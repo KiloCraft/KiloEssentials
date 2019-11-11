@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.api.command.SuggestArgument;
 import org.kilocraft.essentials.KiloCommands;
 
 import java.util.HashMap;

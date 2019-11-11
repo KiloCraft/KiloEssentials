@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.api.command.SuggestArgument;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;

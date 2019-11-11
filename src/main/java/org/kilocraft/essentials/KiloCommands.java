@@ -154,14 +154,19 @@ public class KiloCommands {
             Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
             KiloChat.sendLangMessageTo(source, "command.usage.firstRow", command);
-            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, "");
+            if (parseResults.getContext().getNodes().get(0).getNode().getCommand() != null)
+                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
 
+            int usages = 0;
             while (iterator.hasNext()) {
+                usages++;
                 String usage = iterator.next();
-                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, usage);
+                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), usage);
             }
 
-            return 1;
+            if (usages == 0) KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, "");
+
+            return commandNodeStringMap.size();
         }
     }
 

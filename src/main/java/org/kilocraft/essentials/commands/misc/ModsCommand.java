@@ -13,7 +13,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.api.commands.KiloAPICommands;
+import org.kilocraft.essentials.api.KiloAPICommands;
 
 import java.util.ArrayList;
 import java.util.List;

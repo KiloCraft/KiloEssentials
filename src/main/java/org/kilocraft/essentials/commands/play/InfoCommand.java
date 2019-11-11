@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.commands.play;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.api.command.SuggestArgument;
 import org.kilocraft.essentials.user.ServerUser;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
