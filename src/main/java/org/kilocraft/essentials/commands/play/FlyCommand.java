@@ -26,7 +26,7 @@ public class FlyCommand {
                 .then(
                         CommandManager.argument("player", player())
                                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("fly.others"), 2))
-                                .suggests(SuggestArgument::allPlayers)
+                                .suggests(CommandSuggestions::allPlayers)
                                 .executes(c -> toggle(c.getSource(), getPlayer(c, "player")))
                                 .then(
                                         CommandManager.argument("set", bool())

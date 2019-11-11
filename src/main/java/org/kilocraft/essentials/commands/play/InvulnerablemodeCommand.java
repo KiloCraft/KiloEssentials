@@ -24,7 +24,7 @@ public class InvulnerablemodeCommand {
                 .executes(c -> executeToggle(c.getSource(), c.getSource().getPlayer()))
                 .then(
                         argument("player", player())
-                            .suggests(SuggestArgument::allPlayers)
+                            .suggests(CommandSuggestions::allPlayers)
                             .executes(c -> executeToggle(c.getSource(), getPlayer(c, "player")))
                             .then(argument("set", bool())
                                     .executes(c -> executeSet(c.getSource(), getPlayer(c, "player"), getBool(c, "set")))

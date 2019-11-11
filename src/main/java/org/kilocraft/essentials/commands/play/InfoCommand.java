@@ -25,9 +25,9 @@ public class InfoCommand {
 
         info.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.self", 2));
         target.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.others", 2));
-        
-        target.suggests(SuggestArgument::allPlayers);
-        
+
+        target.suggests(CommandSuggestions::allPlayers);
+
         info.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
         target.executes(context -> execute(context.getSource(), getPlayer(context, "player")));
 
@@ -45,7 +45,7 @@ public class InfoCommand {
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.pos", player.getPos()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.particle", serverUser.getDisplayParticleId()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.firstjoined", serverUser.getFirstJoin()));
-        
+
         return 1;
     }
 }

@@ -28,7 +28,7 @@ public class KillCommand {
 
         argumentBuilder.then(
                 argument("targets", entities())
-                    .suggests(SuggestArgument::allPlayers)
+                    .suggests(CommandSuggestions::allPlayers)
                     .executes(c -> execute(c.getSource(), getEntities(c, "targets")))
         );
 

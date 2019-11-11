@@ -18,7 +18,7 @@ public class UsageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> usageCommand = dispatcher.register(literal("usage").then(
                         argument("command", greedyString())
-                                .suggests(SuggestArgument::usableCommands)
+                                .suggests(CommandSuggestions::usableCommands)
                                 .executes(context -> execute(context.getSource(), getString(context, "command")))
                 )
         );

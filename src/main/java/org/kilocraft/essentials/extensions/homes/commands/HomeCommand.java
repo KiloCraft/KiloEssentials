@@ -81,7 +81,7 @@ public class HomeCommand {
         homesLiteral.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.others"), 2))
-                        .suggests(SuggestArgument::allPlayers)
+                        .suggests(CommandSuggestions::allPlayers)
                         .executes(c -> executeList(c.getSource(), GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
@@ -92,21 +92,21 @@ public class HomeCommand {
         argTeleport.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                     .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.tp"), 2))
-                    .suggests(SuggestArgument::allPlayers)
+                    .suggests(CommandSuggestions::allPlayers)
                     .executes(c -> executeTeleport(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
         argSet.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.set"), 2))
-                        .suggests(SuggestArgument::allPlayers)
+                        .suggests(CommandSuggestions::allPlayers)
                         .executes(c -> executeSet(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
         argRemove.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.remove"), 2))
-                        .suggests(SuggestArgument::allPlayers)
+                        .suggests(CommandSuggestions::allPlayers)
                         .executes(c -> executeRemove(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 

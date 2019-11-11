@@ -41,7 +41,7 @@ public class BackCommand {
 				.then(argument("player", player())
 						.requires(
 								s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("back.others"), 2))
-						.suggests(SuggestArgument::allPlayers)
+						.suggests(CommandSuggestions::allPlayers)
 						.executes(c -> goBack(getPlayer(c, "player"))));
 
 		dispatcher.register(argumentBuilder);

@@ -54,8 +54,8 @@ public class TpaCommand {
             RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerA = argument("player", player());
             RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerB = argument("player", player());
 
-            playerA.suggests(SuggestArgument::allPlayers);
-            playerA.suggests(SuggestArgument::allPlayers);
+            playerA.suggests(CommandSuggestions::allPlayers);
+            playerA.suggests(CommandSuggestions::allPlayers);
 
             playerA.executes(context -> executeRequest(context, false));
             playerB.executes(context -> executeRequest(context, true));

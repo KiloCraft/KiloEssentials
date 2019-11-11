@@ -30,11 +30,11 @@ public class SudoCommand {
                 .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                 .then(
                         argument("player", player())
-                            .suggests(SuggestArgument::allPlayers)
+                            .suggests(CommandSuggestions::allPlayers)
                             .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                             .then(
                                     argument("args", greedyString())
-                                            .suggests(SuggestArgument::usableCommands)
+                                            .suggests(CommandSuggestions::usableCommands)
                                             .executes(c -> execute(dispatcher, c.getSource(), getPlayer(c, "player"), getString(c, "args")))
                             )
                 );
@@ -59,7 +59,7 @@ public class SudoCommand {
 
         return 1;
     }
-    
+
     private static void sendExceptionMessage(ServerCommandSource source, String command, CommandSyntaxException e) {
         if (e.getInput() != null && e.getCursor() >= 0) {
             int int_1 = Math.min(e.getInput().length(), e.getCursor());

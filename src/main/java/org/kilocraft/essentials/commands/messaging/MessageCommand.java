@@ -34,7 +34,7 @@ public class MessageCommand {
                         .executes(context -> KiloCommands.executeUsageFor("command.message.usage", context.getSource()))
                         .then(
                                 argument("player", player())
-                                        .suggests(SuggestArgument::allPlayers)
+                                        .suggests(CommandSuggestions::allPlayers)
                                         .then(
                                                 argument("message", greedyString())
                                                         .executes(c ->

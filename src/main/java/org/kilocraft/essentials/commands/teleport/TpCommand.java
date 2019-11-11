@@ -1,117 +1,141 @@
 package org.kilocraft.essentials.commands.teleport;
 
+import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
+import static org.kilocraft.essentials.KiloCommands.getCommandPermission;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.Set;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.command.arguments.*;
+import net.minecraft.command.arguments.DefaultPosArgument;
+import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.command.arguments.EntityAnchorArgumentType.EntityAnchor;
+import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.arguments.PosArgument;
+import net.minecraft.command.arguments.RotationArgumentType;
+import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 
-import java.util.*;
-
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
-import static org.kilocraft.essentials.KiloCommands.getCommandPermission;
-
-public class NMSTeleportCommand {
+public class TpCommand {
 
 	// Vanilla tp command but with permissions
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> teleport = literal("ke_teleport")
-				.requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport"), 2));
+		LiteralCommandNode<ServerCommandSource> teleport = CommandManager.literal("ke_teleport")
+				.requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport"), 2)).build();
 
-		LiteralArgumentBuilder<ServerCommandSource> tp = literal("ke_tp")
-				.requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport"), 2));
+		LiteralCommandNode<ServerCommandSource> tp = CommandManager.literal("ke_tp")
+				.requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport"), 2)).redirect(teleport).build();
 
-		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targets = argument("targets",
-				EntityArgumentType.entities());
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> targets = CommandManager.argument("targets",
+				EntityArgumentType.entities()).build();
 
-		RequiredArgumentBuilder<ServerCommandSource, PosArgument> location = argument("location", Vec3ArgumentType.vec3()).executes((commandContext_1) -> {
+		ArgumentCommandNode<ServerCommandSource, PosArgument> location = CommandManager
+				.argument("location", Vec3ArgumentType.vec3()).executes((commandContext_1) -> {
 					return execute((ServerCommandSource) commandContext_1.getSource(),
 							EntityArgumentType.getEntities(commandContext_1, "targets"),
 							((ServerCommandSource) commandContext_1.getSource()).getWorld(),
 							Vec3ArgumentType.getPosArgument(commandContext_1, "location"), (PosArgument) null,
-							(NMSTeleportCommand.LookTarget) null);
-				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2));
+							(TpCommand.LookTarget) null);
+				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2)).build();
 
-		RequiredArgumentBuilder<ServerCommandSource, PosArgument> rotation = argument("rotation", RotationArgumentType.rotation()).executes((commandContext_1) -> {
+		ArgumentCommandNode<ServerCommandSource, PosArgument> rotation = CommandManager
+				.argument("rotation", RotationArgumentType.rotation()).executes((commandContext_1) -> {
 					return execute((ServerCommandSource) commandContext_1.getSource(),
 							EntityArgumentType.getEntities(commandContext_1, "targets"),
 							((ServerCommandSource) commandContext_1.getSource()).getWorld(),
 							Vec3ArgumentType.getPosArgument(commandContext_1, "location"),
 							RotationArgumentType.getRotation(commandContext_1, "rotation"),
-							(NMSTeleportCommand.LookTarget) null);
-				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2));
+							(TpCommand.LookTarget) null);
+				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2)).build();
 
-		LiteralArgumentBuilder<ServerCommandSource> facing = literal("facing");
+		LiteralCommandNode<ServerCommandSource> facing = CommandManager.literal("facing").build();
+		LiteralCommandNode<ServerCommandSource> entity = CommandManager.literal("entity").build();
 
-		LiteralArgumentBuilder<ServerCommandSource> entity = literal("entity");
-
-		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> facingEntity = argument("facingEntity", EntityArgumentType.entity()).executes((commandContext_1) -> {
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> facingEntity = CommandManager
+				.argument("facingEntity", EntityArgumentType.entity()).executes((commandContext_1) -> {
 					return execute((ServerCommandSource) commandContext_1.getSource(),
 							EntityArgumentType.getEntities(commandContext_1, "targets"),
 							((ServerCommandSource) commandContext_1.getSource()).getWorld(),
 							Vec3ArgumentType.getPosArgument(commandContext_1, "location"), (PosArgument) null,
-							new NMSTeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext_1, "facingEntity"),
+							new TpCommand.LookTarget(EntityArgumentType.getEntity(commandContext_1, "facingEntity"),
 									EntityAnchorArgumentType.EntityAnchor.FEET));
-				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2));
+				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2)).build();
 
-		RequiredArgumentBuilder<ServerCommandSource, EntityAnchor> facingAnchor = argument("facingAnchor", EntityAnchorArgumentType.entityAnchor()).executes((commandContext_1) -> {
+		ArgumentCommandNode<ServerCommandSource, EntityAnchor> facingAnchor = CommandManager
+				.argument("facingAnchor", EntityAnchorArgumentType.entityAnchor()).executes((commandContext_1) -> {
 					return execute((ServerCommandSource) commandContext_1.getSource(),
 							EntityArgumentType.getEntities(commandContext_1, "targets"),
 							((ServerCommandSource) commandContext_1.getSource()).getWorld(),
 							Vec3ArgumentType.getPosArgument(commandContext_1, "location"), (PosArgument) null,
-							new NMSTeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext_1, "facingEntity"),
+							new TpCommand.LookTarget(EntityArgumentType.getEntity(commandContext_1, "facingEntity"),
 									EntityAnchorArgumentType.getEntityAnchor(commandContext_1, "facingAnchor")));
-				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2));
+				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2)).build();
 
-		RequiredArgumentBuilder<ServerCommandSource, PosArgument> facingLocation = argument("facingLocation", Vec3ArgumentType.vec3()).executes((commandContext_1) -> {
+		ArgumentCommandNode<ServerCommandSource, PosArgument> facingLocation = CommandManager
+				.argument("facingLocation", Vec3ArgumentType.vec3()).executes((commandContext_1) -> {
 					return execute((ServerCommandSource) commandContext_1.getSource(),
 							EntityArgumentType.getEntities(commandContext_1, "targets"),
 							((ServerCommandSource) commandContext_1.getSource()).getWorld(),
 							Vec3ArgumentType.getPosArgument(commandContext_1, "location"), (PosArgument) null,
-							new NMSTeleportCommand.LookTarget(Vec3ArgumentType.getVec3(commandContext_1, "facingLocation")));
-				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2));
+							new TpCommand.LookTarget(Vec3ArgumentType.getVec3(commandContext_1, "facingLocation")));
+				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2)).build();
 
-		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> destination = argument("destination", EntityArgumentType.entity()).executes((commandContext_1) -> {
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> destination = CommandManager
+				.argument("destination", EntityArgumentType.entity()).executes((commandContext_1) -> {
 					return execute((ServerCommandSource) commandContext_1.getSource(),
 							EntityArgumentType.getEntities(commandContext_1, "targets"),
 							EntityArgumentType.getEntity(commandContext_1, "destination"));
-				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2));
+				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.others"), 2)).build();
 
-		RequiredArgumentBuilder<ServerCommandSource, PosArgument> location2 = argument("location", Vec3ArgumentType.vec3()).executes((commandContext_1) -> {
+		ArgumentCommandNode<ServerCommandSource, PosArgument> location2 = CommandManager
+				.argument("location", Vec3ArgumentType.vec3()).executes((commandContext_1) -> {
 					return execute((ServerCommandSource) commandContext_1.getSource(),
 							Collections
 									.singleton(((ServerCommandSource) commandContext_1.getSource()).getEntityOrThrow()),
 							((ServerCommandSource) commandContext_1.getSource()).getWorld(),
 							Vec3ArgumentType.getPosArgument(commandContext_1, "location"), DefaultPosArgument.zero(),
-							(NMSTeleportCommand.LookTarget) null);
-				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.tolocation"), 2));
+							(TpCommand.LookTarget) null);
+				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.tolocation"), 2)).build();
 
-		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> destination2 = argument("destination", EntityArgumentType.entity()).executes((commandContext_1) -> {
+		ArgumentCommandNode<ServerCommandSource, EntitySelector> destination2 = CommandManager
+				.argument("destination", EntityArgumentType.entity()).executes((commandContext_1) -> {
 					return execute((ServerCommandSource) commandContext_1.getSource(),
 							Collections
 									.singleton(((ServerCommandSource) commandContext_1.getSource()).getEntityOrThrow()),
 							EntityArgumentType.getEntity(commandContext_1, "destination"));
-				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.toentity"), 2));
+				}).requires(src -> hasPermissionOrOp(src, getCommandPermission("teleport.toentity"), 2)).build();
 
-		commandDispatcher.register(teleport
-				.then(targets.then(location.then(facing.then(facingLocation)).then(rotation))
-						.then(facing.then(entity.then(facingEntity.then(facingAnchor)))).then(destination))
-				.then(destination2).then(location2));
-
-		commandDispatcher.register(tp.redirect(teleport.build()));
+		facingEntity.addChild(facingAnchor);
+		entity.addChild(facingEntity);
+		facing.addChild(facingLocation);
+		facing.addChild(entity);	
+		location.addChild(facing);
+		location.addChild(rotation);
+		targets.addChild(location);
+		targets.addChild(destination);	
+		teleport.addChild(location2);
+		teleport.addChild(destination2);
+		commandDispatcher.getRoot().addChild(teleport);
+		commandDispatcher.getRoot().addChild(tp);
 	}
 
 	private static int execute(ServerCommandSource serverCommandSource_1, Collection<? extends Entity> collection_1,
@@ -122,7 +146,7 @@ public class NMSTeleportCommand {
 			Entity entity_2 = (Entity) var3.next();
 			teleport(serverCommandSource_1, entity_2, (ServerWorld) entity_1.world, entity_1.getX(), entity_1.getY(),
 					entity_1.getZ(), EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class), entity_1.yaw,
-					entity_1.pitch, (NMSTeleportCommand.LookTarget) null);
+					entity_1.pitch, (TpCommand.LookTarget) null);
 		}
 
 		if (collection_1.size() == 1) {
@@ -140,7 +164,7 @@ public class NMSTeleportCommand {
 
 	private static int execute(ServerCommandSource serverCommandSource_1, Collection<? extends Entity> collection_1,
 			ServerWorld serverWorld_1, PosArgument posArgument_1, PosArgument posArgument_2,
-			NMSTeleportCommand.LookTarget teleportCommand$LookTarget_1) throws CommandSyntaxException {
+			TpCommand.LookTarget teleportCommand$LookTarget_1) throws CommandSyntaxException {
 		Vec3d vec3d_1 = posArgument_1.toAbsolutePos(serverCommandSource_1);
 		Vec2f vec2f_1 = posArgument_2 == null ? null : posArgument_2.toAbsoluteRotation(serverCommandSource_1);
 		Set<PlayerPositionLookS2CPacket.Flag> set_1 = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
@@ -197,7 +221,7 @@ public class NMSTeleportCommand {
 
 	private static void teleport(ServerCommandSource serverCommandSource_1, Entity entity_1, ServerWorld serverWorld_1,
 			double double_1, double double_2, double double_3, Set<PlayerPositionLookS2CPacket.Flag> set_1,
-			float float_1, float float_2, NMSTeleportCommand.LookTarget teleportCommand$LookTarget_1) {
+			float float_1, float float_2, TpCommand.LookTarget teleportCommand$LookTarget_1) {
 		if (entity_1 instanceof ServerPlayerEntity) {
 			ChunkPos chunkPos_1 = new ChunkPos(new BlockPos(double_1, double_2, double_3));
 			serverWorld_1.method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos_1, 1,

@@ -17,7 +17,7 @@ public class PreviewCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> previewCommand = dispatcher.register(literal("preview")
             .executes(ctx -> KiloCommands.executeSmartUsageFor("preview", ctx.getSource()))
-            .then(argument("string", greedyString()).suggests(SuggestArgument::textformatChars).executes(PreviewCommand::execute))
+            .then(argument("string", greedyString()).suggests(CommandSuggestions::textformatChars).executes(PreviewCommand::execute))
         );
 
         dispatcher.getRoot().addChild(previewCommand);

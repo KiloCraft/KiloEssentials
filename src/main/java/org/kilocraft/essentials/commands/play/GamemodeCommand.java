@@ -62,7 +62,7 @@ public class GamemodeCommand {
                 .executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), null,false));
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("target", players())
-                .suggests(SuggestArgument::allPlayers)
+                .suggests(CommandSuggestions::allPlayers)
                 .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null,false))
                 .then(literal("-silent")
                         .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null, true))

@@ -42,7 +42,7 @@ public class NicknameCommand {
     }
 
     private static CompletableFuture<Suggestions> argsSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return SuggestArgument.suggestAtCursor(new String[]{"?"}, context);
+        return CommandSuggestions.suggestAtCursor(new String[]{"?"}, context);
     }
 
     private static SuggestionProvider<ServerCommandSource> suggestionProvider = ((context, builder) -> {

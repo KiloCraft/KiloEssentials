@@ -39,7 +39,7 @@ public class EnderchestCommand {
 
         RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = argument("gameProfile", gameProfile())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("enderchest.others"), 2))
-                .suggests(SuggestArgument::allPlayers)
+                .suggests(CommandSuggestions::allPlayers)
                 .executes(context -> execute(context.getSource(), getProfileArgument(context, "gameProfile")));
 
         argumentBuilder.then(selectorArg);
