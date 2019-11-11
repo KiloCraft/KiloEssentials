@@ -132,6 +132,7 @@ public class TpCommand {
 		location.addChild(rotation);
 		targets.addChild(location);
 		targets.addChild(destination);	
+		teleport.addChild(targets);
 		teleport.addChild(location2);
 		teleport.addChild(destination2);
 		commandDispatcher.getRoot().addChild(teleport);
