@@ -27,10 +27,7 @@ import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.MessageCommand;
-import org.kilocraft.essentials.commands.misc.ColorsCommand;
-import org.kilocraft.essentials.commands.misc.DiscordCommand;
-import org.kilocraft.essentials.commands.misc.PreviewCommand;
-import org.kilocraft.essentials.commands.misc.TeleportCommands;
+import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -109,6 +106,7 @@ public class KiloCommands {
         TeleportCommands.register(this.dispatcher);
         NicknameCommand.register(this.dispatcher);
         TpCommand.register(this.dispatcher);
+        PingCommand.register(this.dispatcher);
 
         Thimble.permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
