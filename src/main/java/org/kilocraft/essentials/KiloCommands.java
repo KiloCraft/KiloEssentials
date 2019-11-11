@@ -35,6 +35,7 @@ import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
+import org.kilocraft.essentials.commands.teleport.TpCommand;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -107,6 +108,7 @@ public class KiloCommands {
         PreviewCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
         NicknameCommand.register(this.dispatcher);
+        TpCommand.register(this.dispatcher);
 
         Thimble.permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
