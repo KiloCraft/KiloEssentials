@@ -14,13 +14,20 @@ import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.feature.FeatureType;
+import org.kilocraft.essentials.api.user.NeverJoinedUser;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.Home;
+import org.kilocraft.essentials.extensions.homes.UnsafeHomeException;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
@@ -34,6 +41,7 @@ public class HomeCommand {
     private static final SimpleCommandExceptionType TOO_MANY_PROFILES = new SimpleCommandExceptionType(new LiteralText("Only one player is allowed but the provided selector includes more!"));
     private static final SimpleCommandExceptionType NO_HOMES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find any homes!"));
     private static final SimpleCommandExceptionType REACHED_THE_LIMIT = new SimpleCommandExceptionType(new LiteralText("You can't set any more Homes! you have reached the limit"));
+    private static final SimpleCommandExceptionType MISSING_DIMENSION = new SimpleCommandExceptionType(new LiteralText("The Dimension this home exists in no longer exists"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home")
@@ -127,7 +135,12 @@ public class HomeCommand {
     private static int executeList(ServerCommandSource source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            ServerUser serverUser = ServerUser.of(gameProfile);
+            User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+
+            if(serverUser instanceof NeverJoinedUser) {
+                throw NO_HOMES_EXCEPTION.create();
+            }
+
             StringBuilder homes = new StringBuilder();
             int homesSize = serverUser.getHomesHandler().getHomes().size();
 
@@ -157,7 +170,12 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            ServerUser serverUser = ServerUser.of(gameProfile);
+            User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+
+            if(serverUser instanceof NeverJoinedUser) {
+                throw NO_HOMES_EXCEPTION.create();
+            }
+
             int homes = serverUser.getHomesHandler().getHomes().size();
             boolean canSet =
                     Thimble.hasPermissionOrOp(context.getSource(), KiloCommands.getCommandPermission("home.set.limit." + homes + 1), 3) ||
@@ -177,7 +195,7 @@ public class HomeCommand {
                                 Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
                                 Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getY())),
                                 Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
-                                source.getWorld().getDimension().getType().getRawId(),
+                                Registry.DIMENSION.getId(source.getWorld().getDimension().getType()),
                                 Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
                                 Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))
                         )
@@ -210,7 +228,11 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            ServerUser serverUser = ServerUser.of(gameProfile);
+            User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+
+            if(serverUser instanceof NeverJoinedUser) {
+                throw NO_HOMES_EXCEPTION.create();
+            }
 
             if (serverUser.getHomesHandler().hasHome(arg)) {
                 serverUser.getHomesHandler().removeHome(arg);
@@ -243,11 +265,21 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            ServerUser serverUser = ServerUser.of(gameProfile);
+            User user = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
 
-            if (serverUser.getHomesHandler().hasHome(arg)) {
+            if(user instanceof NeverJoinedUser) {
+                throw NO_HOMES_EXCEPTION.create();
+            }
+
+            if (user.getHomesHandler().hasHome(arg)) {
             	BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
-                serverUser.getHomesHandler().teleportToHome(arg);
+                try {
+                    user.getHomesHandler().teleportToHome(KiloServer.getServer().getUserManager().getOnline(source), arg);
+                } catch (UnsafeHomeException e) {
+                    if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION) {
+                        throw MISSING_DIMENSION.create();
+                    }
+                }
 
                 if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                     KiloChat.sendMessageTo(source, new ChatMessage(

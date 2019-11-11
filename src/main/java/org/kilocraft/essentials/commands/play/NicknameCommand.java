@@ -44,17 +44,4 @@ public class NicknameCommand {
     private static CompletableFuture<Suggestions> argsSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSuggestions.suggestAtCursor(new String[]{"?"}, context);
     }
-
-    private static SuggestionProvider<ServerCommandSource> suggestionProvider = ((context, builder) -> {
-        List<String> suggestions = new ArrayList<String>(){{
-            add("reset");
-            add(ServerUser.of(context.getSource().getPlayer()).getNickname());
-        }};
-
-        if (hasPermissionOrOp(context.getSource(), getCommandPermission("nick.others"), 2)) {
-            KiloServer.getServer().getPlayerManager().getPlayerList().forEach((player) -> suggestions.add(player.getGameProfile().getName()));
-        }
-
-        return CommandSource.suggestMatching(suggestions, builder);
-    });
 }

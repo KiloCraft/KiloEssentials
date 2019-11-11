@@ -16,23 +16,35 @@ import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
-import org.kilocraft.essentials.user.UserManager;
+import org.kilocraft.essentials.user.ServerUserManager;
+import org.kilocraft.essentials.user.ServerUserManager_Old;
 
 import java.util.*;
 
 public class ServerImpl implements Server {
     private final MinecraftServer server;
     private final EventRegistry eventRegistry;
-    private final UserManager userManager;
     private final String serverBrand;
     private String serverDisplayBrand;
     private String serverName = "Minecraft server";
+    private ServerUserManager_Old oldManager;
+    private UserManager userManager;
 
-    public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, UserManager userManager, String serverBrand) {
+    @Deprecated
+    public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, ServerUserManager_Old serverUserManager, String serverBrand) {
         this.server = minecraftServer;
         this.serverBrand = serverBrand;
-        this.userManager = userManager;
+        this.oldManager = serverUserManager;
+        this.serverDisplayBrand = serverBrand;
+        this.eventRegistry = eventManager;
+    }
+
+    public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, ServerUserManager serverUserManager, String serverBrand) {
+        this.server = minecraftServer;
+        this.serverBrand = serverBrand;
+        this.userManager = serverUserManager;
         this.serverDisplayBrand = serverBrand;
         this.eventRegistry = eventManager;
     }
@@ -53,6 +65,11 @@ public class ServerImpl implements Server {
     @Override
     public UserManager getUserManager() {
         return this.userManager;
+    }
+
+    @Override
+    public ServerUserManager_Old getUserManagerOLD() {
+        return this.oldManager;
     }
 
 

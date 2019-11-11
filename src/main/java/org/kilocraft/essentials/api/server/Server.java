@@ -7,13 +7,13 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
-import org.kilocraft.essentials.user.UserManager;
+import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.user.ServerUserManager_Old;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -36,13 +36,15 @@ public interface Server {
 
     PlayerManager getPlayerManager();
 
+    UserManager getUserManager();
+
     /**
      * Gets the KiloServer's UserManager
      *
      * @return instance of UserManager
      */
-
-    UserManager getUserManager();
+    @Deprecated
+    ServerUserManager_Old getUserManagerOLD();
 
     /**
      * Gets a player object by the given username.

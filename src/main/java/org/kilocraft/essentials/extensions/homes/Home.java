@@ -1,20 +1,21 @@
 package org.kilocraft.essentials.extensions.homes;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 
 public class Home {
     private UUID owner_uuid;
     private String name;
-    private int dimension;
+    private Identifier dimensionId;
     private double x, y, z;
     private float dX, dY;
 
-    public Home(UUID uuid, String name, double x, double y, double z, int dimension, float yaw, float pitch) {
+    public Home(UUID uuid, String name, double x, double y, double z, Identifier dimensionId, float yaw, float pitch) {
         this.owner_uuid = uuid;
         this.name = name;
-        this.dimension = dimension;
+        this.dimensionId = dimensionId;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -46,7 +47,7 @@ public class Home {
             compoundTag.put("dir", dir);
         }
 
-        compoundTag.putInt("dim", this.dimension);
+        compoundTag.putString("dim", this.dimensionId.toString());
         return compoundTag;
     }
 
@@ -63,7 +64,7 @@ public class Home {
             this.dY = dir.getFloat("dY");
         }
 
-        this.dimension = compoundTag.getInt("dim");
+        this.dimensionId = new Identifier(compoundTag.getString("dim"));
     }
 
     public UUID getOwner() {
@@ -106,12 +107,12 @@ public class Home {
         this.z = z;
     }
 
-    public int getDimension() {
-        return dimension;
+    public Identifier getDimId() {
+        return dimensionId;
     }
 
-    public void setDimension(int dimension) {
-        this.dimension = dimension;
+    public void setDimension(Identifier dimensionId) {
+        this.dimensionId = dimensionId;
     }
 
     public float getPitch() {
@@ -129,5 +130,4 @@ public class Home {
     public void setYaw(float dY) {
         this.dY = dY;
     }
-
 }

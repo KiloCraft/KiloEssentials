@@ -7,7 +7,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.extensions.homes.Home;
+import org.kilocraft.essentials.extensions.homes.UnsafeHomeException;
 import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 
@@ -20,7 +22,7 @@ import java.util.UUID;
  * A better way of handeling the User (Instance of player) Homes
  *
  * @see ServerUser
- * @see UserManager
+ * @see ServerUserManager_Old
  */
 
 
@@ -99,14 +101,17 @@ public class UserHomeHandler implements ConfigurableFeature {
         return bool;
     }
 
-    public void teleportToHome(String name) {
-        teleportToHome(getHome(name));
+    public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException {
+        teleportToHome(user, getHome(name));
     }
 
-    public void teleportToHome(Home home) {
+    public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
         if (this.serverUser.isOnline()) {
-            ServerWorld world = this.serverUser.getCommandSource().getMinecraftServer().getWorld(Registry.DIMENSION.get(home.getDimension() + 1));
-            this.serverUser.getPlayer().teleport(world, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+            ServerWorld world = user.getPlayer().getServer().getWorld(Registry.DIMENSION.get(home.getDimId()));
+            if(world == null) {
+                throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
+            }
+            user.getPlayer().teleport(world, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
         }
 
     }
@@ -157,4 +162,7 @@ public class UserHomeHandler implements ConfigurableFeature {
             CommandSource.suggestMatching(getHomesOf(context.getSource().getPlayer().getUuid()).stream().map(Home::getName), builder)
     );
 
+    public enum Reason {
+        MISSING_DIMENSION;
+    }
 }

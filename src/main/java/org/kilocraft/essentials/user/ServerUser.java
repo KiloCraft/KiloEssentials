@@ -12,6 +12,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.user.UserManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,12 +23,13 @@ import java.util.UUID;
  * @author CODY_AI
  * An easy way to handle the User (Instance of player)
  *
- * @see UserManager
+ * @see ServerUserManager_Old
  * @see UserHomeHandler
  */
 
 public class ServerUser implements User {
-    private static UserManager manager = KiloServer.getServer().getUserManager();
+    protected static ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
+    private static ServerUserManager_Old managerOLD = KiloServer.getServer().getUserManagerOLD();
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     UUID uuid;
     String name = "";
@@ -45,30 +47,10 @@ public class ServerUser implements User {
     private Date firstJoin = new Date();
     private int randomTeleportsLeft = 3;
     private int displayParticleId = 0;
-
-    public static ServerUser of(UUID uuid) {
-        return manager.getUser(uuid);
-    }
-
-    public static ServerUser of(String name) {
-        return manager.getUser(name);
-    }
-
-    public static ServerUser of(GameProfile profile) {
-        return of(profile.getId());
-    }
-
-    public static ServerUser of(ServerPlayerEntity player) {
-        return of(player.getUuid());
-    }
-
-    public static ServerUser getByNickname(String name) {
-        return manager.getUserByNickname(name);
-    }
     
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
-        if (UserHomeHandler.isEnabled())
+        if (UserHomeHandler.isEnabled()) // TODO Use new feature provider in future
             this.homeHandler = new UserHomeHandler(this);
     }
 
@@ -185,34 +167,31 @@ public class ServerUser implements User {
         return date;
     }
 
-    public ServerPlayerEntity getPlayer() { // TODO Move to online user
-        return KiloServer.getServer().getPlayer(this.uuid);
-    }
-
-    public ServerCommandSource getCommandSource() { // TODO Move to online user
-        return this.getPlayer().getCommandSource();
-    }
-
     public UserHomeHandler getHomesHandler() {
         return this.homeHandler;
     }
 
+    @Override
     public boolean isOnline() {
         return KiloServer.getServer().getPlayerManager().getPlayer(this.uuid) != null;
     }
 
+    @Override
     public UUID getUuid() {
         return this.uuid;
     }
 
+    @Override
     public String getUsername() {
         return this.name;
     }
 
+    @Override
     public String getNickname() {
         return this.nickname.equals("") ? this.name : this.nickname;
     }
 
+    @Override
     public void setNickname(String name) {
         this.nickname = name;
     }
@@ -222,10 +201,12 @@ public class ServerUser implements User {
         this.nickname = "";
     }
 
+    @Override
     public Vec3d getBackPos() {
         return this.backPos;
     }
 
+    @Override
     public Vec3d getPos() {
         return this.pos;
     }
@@ -235,34 +216,42 @@ public class ServerUser implements User {
         return this.posDim;
     }
 
+    @Override
     public Identifier getBackDimId() {
         return this.lastPosDim;
     }
 
+    @Override
     public void setBackPos(Vec3d pos) {
         this.backPos = pos;
     }
 
+    @Override
     public void setBackDim(Identifier dimId) {
         this.lastPosDim = dimId;
     }
 
+    @Override
     public boolean canFly() {
         return this.canFly;
     }
 
+    @Override
     public UUID getLastPrivateMessageSender() {
         return this.lastPrivateMessageGetterUUID;
     }
 
+    @Override
     public String getLastPrivateMessage() {
         return this.lastPrivateMessageText;
     }
 
+    @Override
     public boolean hasJoinedBefore() {
         return this.hasJoinedBefore;
     }
 
+    @Override
     public Date getFirstJoin() {
         return this.firstJoin;
     }
@@ -284,14 +273,6 @@ public class ServerUser implements User {
     	return this.displayParticleId;
     }
 
-    public String getDisplayNameAsString() {
-        return getDisplayName().asString();
-    }
-
-    public Text getDisplayName() {
-        return manager.getUserDisplayName(this);
-    }
-
     public void setFlight(boolean set) {
         canFly = set;
     }
@@ -306,7 +287,7 @@ public class ServerUser implements User {
 
     @Override
     public <F extends UserProvidedFeature> F feature(FeatureType<F> type) {
-        return null;
+        return null; // TODO Impl
     }
 
     public void setDisplayParticleId (int id) {

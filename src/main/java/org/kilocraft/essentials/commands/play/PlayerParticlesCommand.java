@@ -7,6 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.user.ServerUser;
 
 import static net.minecraft.server.command.CommandManager.literal;
@@ -43,7 +44,7 @@ public class PlayerParticlesCommand {
 		}).build();
 
 		LiteralCommandNode<ServerCommandSource> disableNode = literal("disable").executes((context) -> {
-			ServerUser serverUser = KiloServer.getServer().getUserManager().getUser(context.getSource().getPlayer().getUuid());
+			User serverUser = KiloServer.getServer().getUserManager().getOnline(context.getSource().getPlayer().getUuid());
 			serverUser.setDisplayParticleId(0);
 			context.getSource().sendFeedback(LangText.get(true, "command.playerparticles.disable"), false);
 			return 0;
@@ -60,8 +61,8 @@ public class PlayerParticlesCommand {
 	}
 
 	private static void setParticle(CommandContext<ServerCommandSource> context, String name, int id) throws CommandSyntaxException {
-		ServerUser serverUser = KiloServer.getServer().getUserManager().getUser(context.getSource().getPlayer().getUuid());
-		serverUser.setDisplayParticleId(id);
+		User user = KiloServer.getServer().getUserManager().getOnline(context.getSource().getPlayer().getUuid());
+		user.setDisplayParticleId(id);
 		context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.particleset", name), false);
 	}
 

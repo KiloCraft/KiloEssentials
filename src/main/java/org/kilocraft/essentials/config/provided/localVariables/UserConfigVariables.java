@@ -21,7 +21,7 @@ public class UserConfigVariables implements LocalConfigVariable {
     public HashMap<String, String> variables() {
         return new HashMap<String, String>(){{
             put("NAME", serverUser.getUsername());
-            put("DISPLAYNAME", serverUser.getDisplayNameAsString());
+            // put("DISPLAYNAME", serverUser.get); // Usually you don't have people editing displaynames
             put("NICKNAME", serverUser.getNickname());
         }};
     }

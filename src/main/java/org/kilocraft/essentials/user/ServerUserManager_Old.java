@@ -20,12 +20,13 @@ import java.util.UUID;
  */
 
 
-public class UserManager {
+public class ServerUserManager_Old {
+    /*
     private static List<ServerUser> loadedServerUsers = new ArrayList<>();
     private List<ServerUser> offlineServerUsers = new ArrayList<>();
     private UserHandler handler = new UserHandler();
     
-    public UserManager() {
+    public ServerUserManager_Old() {
     }
 
     public static List<ServerUser> getUsers() {
@@ -80,7 +81,7 @@ public class UserManager {
     }
 
     public void onPlayerJoin(ServerPlayerEntity player) {
-       ServerUser serverUser = ServerUser.of(player);
+        ServerUser serverUser = ServerUser.of(player);
         serverUser.name = player.getGameProfile().getName();
         loadedServerUsers.add(serverUser);
 
@@ -92,7 +93,7 @@ public class UserManager {
     }
 
     public void onPlayerLeave(ServerPlayerEntity player) {
-       ServerUser serverUser = ServerUser.of(player);
+        ServerUser serverUser = ServerUser.of(player);
         serverUser.name = player.getGameProfile().getName();
         loadedServerUsers.remove(serverUser);
 
@@ -102,5 +103,5 @@ public class UserManager {
 
         //KiloChat.broadcastUserLeaveEventMessage(user);
     }
-
+    */
 }
