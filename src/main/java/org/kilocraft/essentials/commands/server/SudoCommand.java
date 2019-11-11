@@ -13,7 +13,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.commands.CommandSuggestions;
+import org.kilocraft.essentials.commands.SuggestArgument;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -30,11 +30,11 @@ public class SudoCommand {
                 .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                 .then(
                         argument("player", player())
-                            .suggests(CommandSuggestions::allPlayers)
+                            .suggests(SuggestArgument::allPlayers)
                             .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                             .then(
                                     argument("args", greedyString())
-                                            .suggests(CommandSuggestions::usableCommands)
+                                            .suggests(SuggestArgument::usableCommands)
                                             .executes(c -> execute(dispatcher, c.getSource(), getPlayer(c, "player"), getString(c, "args")))
                             )
                 );

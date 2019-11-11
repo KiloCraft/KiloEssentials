@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.commands.play;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.commands.CommandSuggestions;
+import org.kilocraft.essentials.commands.SuggestArgument;
 import org.kilocraft.essentials.user.ServerUser;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -26,7 +26,7 @@ public class InfoCommand {
         info.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.self", 2));
         target.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.others", 2));
         
-        target.suggests(CommandSuggestions::allPlayers);
+        target.suggests(SuggestArgument::allPlayers);
         
         info.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
         target.executes(context -> execute(context.getSource(), getPlayer(context, "player")));

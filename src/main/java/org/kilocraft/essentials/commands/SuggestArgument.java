@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-public class CommandSuggestions {
+public class SuggestArgument {
 
     private static PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 
@@ -42,14 +42,14 @@ public class CommandSuggestions {
 
     public static CompletableFuture<Suggestions> usableCommands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> Commands.canSourceUse(child, context.getSource())).map(CommandNode::getName),
+                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> LiteralCommandModified.canSourceUse(child, context.getSource())).map(CommandNode::getName),
                 builder
         );
     }
 
     public static CompletableFuture<Suggestions> commands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> !child.getName().startsWith(Commands.vanillaCommandsPrefix)).map(CommandNode::getName),
+                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> !child.getName().startsWith(LiteralCommandModified.getNMSCommandsPrefix())).map(CommandNode::getName),
                 builder
         );
     }
