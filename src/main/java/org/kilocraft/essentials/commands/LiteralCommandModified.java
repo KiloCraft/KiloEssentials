@@ -7,9 +7,9 @@ import org.kilocraft.essentials.mixin.CommandManagerMixin;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Commands {
-    public static String vanillaCommandsPrefix = "minecraft:";
-    public static String customCommandsPrefix = "ke_";
+public class LiteralCommandModified {
+    private static String NMSCommandNamePrefix = "minecraft:";
+    private static String keCommandPrefix = "ke_";
 
     /**
      * @see CommandManagerMixin
@@ -53,11 +53,23 @@ public class Commands {
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
-        return Commands.vanillaCommandsToRename.contains(nodeName);
+        return LiteralCommandModified.vanillaCommandsToRename.contains(nodeName);
     }
 
     public static boolean isCustomCommand(String nodeName) {
         return keCommandsToKeep.contains(nodeName);
+    }
+
+    public static String getNMSCommandName(String vanillaName) {
+        return NMSCommandNamePrefix + vanillaName;
+    }
+
+    public static String getKECommandName(String defaultName) {
+        return defaultName.replace(keCommandPrefix, "");
+    }
+
+    public static String getNMSCommandPrefix() {
+        return NMSCommandNamePrefix;
     }
 
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
@@ -68,7 +80,8 @@ public class Commands {
 
         }
 
-        return !isVanillaCommand(commandNode.getName().replace(vanillaCommandsPrefix, ""))
+        String customCommandsPrefix = "ke_";
+        return !isVanillaCommand(commandNode.getName().replace(NMSCommandNamePrefix, ""))
                 || isCustomCommand(customCommandsPrefix + commandNode.getName());
     }
 

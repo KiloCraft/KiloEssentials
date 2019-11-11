@@ -50,7 +50,7 @@ public class SuggestArgument {
 
     public static CompletableFuture<Suggestions> commands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> !child.getName().startsWith(LiteralCommandModified.getNMSCommandsPrefix())).map(CommandNode::getName),
+                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> !child.getName().startsWith(LiteralCommandModified.getNMSCommandPrefix())).map(CommandNode::getName),
                 builder
         );
     }
