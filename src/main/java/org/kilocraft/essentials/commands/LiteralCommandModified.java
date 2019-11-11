@@ -7,9 +7,9 @@ import org.kilocraft.essentials.mixin.CommandManagerMixin;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Commands {
-    public static String vanillaCommandsPrefix = "minecraft:";
-    public static String customCommandsPrefix = "ke_";
+public class LiteralCommandModified {
+    private static String NMSCommandsPrefix = "minecraft:";
+    private static String customCommandsPrefix = "ke_";
 
     /**
      * @see CommandManagerMixin
@@ -53,11 +53,19 @@ public class Commands {
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
-        return Commands.vanillaCommandsToRename.contains(nodeName);
+        return LiteralCommandModified.vanillaCommandsToRename.contains(nodeName);
     }
 
     public static boolean isCustomCommand(String nodeName) {
         return keCommandsToKeep.contains(nodeName);
+    }
+
+    public static String getNMSCommandLiteral(String def) {
+        return NMSCommandsPrefix + def;
+    }
+
+    public static String getNMSCommandsPrefix() {
+        return NMSCommandsPrefix;
     }
 
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
@@ -68,7 +76,7 @@ public class Commands {
 
         }
 
-        return !isVanillaCommand(commandNode.getName().replace(vanillaCommandsPrefix, ""))
+        return !isVanillaCommand(commandNode.getName().replace(NMSCommandsPrefix, ""))
                 || isCustomCommand(customCommandsPrefix + commandNode.getName());
     }
 
