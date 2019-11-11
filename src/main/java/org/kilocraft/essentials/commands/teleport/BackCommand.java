@@ -8,9 +8,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
-import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.command.SuggestArgument;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 
 import java.util.HashMap;
 
@@ -41,7 +41,7 @@ public class BackCommand {
 				.then(argument("player", player())
 						.requires(
 								s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("back.others"), 2))
-						.suggests(CommandSuggestions::allPlayers)
+						.suggests(ArgumentSuggestions::allPlayers)
 						.executes(c -> goBack(getPlayer(c, "player"))));
 
 		dispatcher.register(argumentBuilder);

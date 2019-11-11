@@ -5,9 +5,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.command.SuggestArgument;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class KillCommand {
 
         argumentBuilder.then(
                 argument("targets", entities())
-                    .suggests(CommandSuggestions::allPlayers)
+                    .suggests(ArgumentSuggestions::allPlayers)
                     .executes(c -> execute(c.getSource(), getEntities(c, "targets")))
         );
 

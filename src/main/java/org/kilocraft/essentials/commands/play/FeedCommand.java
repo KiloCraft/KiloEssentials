@@ -10,9 +10,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.api.command.SuggestArgument;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.CommandHelper;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -25,7 +25,7 @@ public class FeedCommand {
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.self"), 2));
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.others"), 2))
-                .suggests(CommandSuggestions::allPlayers);
+                .suggests(ArgumentSuggestions::allPlayers);
 
         feed.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.self"), 2));
         target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.other"), 2));

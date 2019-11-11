@@ -8,11 +8,11 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.api.command.SuggestArgument;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.provided.SimpleStringSaverProvided;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,7 +34,7 @@ public class MessageCommand {
                         .executes(context -> KiloCommands.executeUsageFor("command.message.usage", context.getSource()))
                         .then(
                                 argument("player", player())
-                                        .suggests(CommandSuggestions::allPlayers)
+                                        .suggests(ArgumentSuggestions::allPlayers)
                                         .then(
                                                 argument("message", greedyString())
                                                         .executes(c ->

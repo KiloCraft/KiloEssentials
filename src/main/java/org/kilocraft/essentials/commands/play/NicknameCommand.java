@@ -10,7 +10,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.SuggestArgument;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class NicknameCommand {
     }
 
     private static CompletableFuture<Suggestions> argsSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSuggestions.suggestAtCursor(new String[]{"?"}, context);
+        return ArgumentSuggestions.suggestAtCursor(new String[]{"?"}, context);
     }
 
     private static SuggestionProvider<ServerCommandSource> suggestionProvider = ((context, builder) -> {

@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-public class SuggestArgument {
+public class ArgumentSuggestions {
 
     private static PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 
@@ -116,4 +116,3 @@ public class SuggestArgument {
     }
 
 }
-

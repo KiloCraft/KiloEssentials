@@ -5,10 +5,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.api.command.SuggestArgument;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.CommandHelper;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
@@ -24,7 +24,7 @@ public class InvulnerablemodeCommand {
                 .executes(c -> executeToggle(c.getSource(), c.getSource().getPlayer()))
                 .then(
                         argument("player", player())
-                            .suggests(CommandSuggestions::allPlayers)
+                            .suggests(ArgumentSuggestions::allPlayers)
                             .executes(c -> executeToggle(c.getSource(), getPlayer(c, "player")))
                             .then(argument("set", bool())
                                     .executes(c -> executeSet(c.getSource(), getPlayer(c, "player"), getBool(c, "set")))

@@ -1,18 +1,15 @@
 package org.kilocraft.essentials.commands.item;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
-import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.chat.TextFormat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
