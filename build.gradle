@@ -59,7 +59,7 @@ dependencies {
 	//include "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
 	//include "com.github.indi-code:WorldDataLib:${project.worlddatalib_version}"
 
-	compileOnly group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
+	compile group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
 	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
 }
 

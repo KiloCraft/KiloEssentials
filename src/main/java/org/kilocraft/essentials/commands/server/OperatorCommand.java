@@ -14,12 +14,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.CommandSuggestions;
-import org.kilocraft.essentials.KiloCommands;
 
 import java.util.*;
 
@@ -65,7 +65,7 @@ public class OperatorCommand {
 
         getLiteral.then(
                 argument("gameProfile", gameProfile())
-                        .suggests(CommandSuggestions::allOperators)
+                        .suggests(ArgumentSuggestions::allOperators)
                         .executes(
                             c -> executeGet(
                                     c.getSource(),
@@ -86,7 +86,7 @@ public class OperatorCommand {
 
         addLiteral.then(
                 argument("gameProfile", gameProfile())
-                        .suggests(CommandSuggestions::allNonOperators)
+                        .suggests(ArgumentSuggestions::allNonOperators)
                         .then(
                                 argument("level", integer(0, 4))
                                         .then(
@@ -106,7 +106,7 @@ public class OperatorCommand {
 
         removeLiteral.then(
                 argument("gameProfile", gameProfile())
-                        .suggests(CommandSuggestions::allOperators)
+                        .suggests(ArgumentSuggestions::allOperators)
                         .executes(
                             c -> execute(
                                     c.getSource(),
@@ -230,6 +230,6 @@ public class OperatorCommand {
     private static void removeOperator(GameProfile gameProfile) {
         KiloServer.getServer().getOperatorList().remove(gameProfile);
     }
-    
+
 
 }

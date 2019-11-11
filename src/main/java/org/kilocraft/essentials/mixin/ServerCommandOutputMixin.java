@@ -2,11 +2,11 @@ package org.kilocraft.essentials.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.ServerCommandOutput;
+import org.kilocraft.essentials.ServerImpl;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.events.EventRegistryImpl;
-import org.kilocraft.essentials.ServerImpl;
-import org.kilocraft.essentials.user.ServerUserManager_Old;
+import org.kilocraft.essentials.user.ServerUserManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,7 +27,7 @@ public abstract class ServerCommandOutputMixin {
                 new ServerImpl(
                     minecraftServer,
                     new EventRegistryImpl(),
-                    new ServerUserManager_Old(),
+                    new ServerUserManager(),
                     String.format(
                             ModConstants.getProperties().getProperty("server.brand"),
                                 ModConstants.getVersion(),

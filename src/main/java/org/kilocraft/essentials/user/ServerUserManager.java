@@ -95,6 +95,7 @@ public class ServerUserManager implements UserManager {
 
     public void onJoin(ServerPlayerEntity playerEntity) {
         OnlineServerUser serverUser = new OnlineServerUser(playerEntity);
+
         this.onlineUsers.put(playerEntity.getUuid(), serverUser);
         this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUuid());
 

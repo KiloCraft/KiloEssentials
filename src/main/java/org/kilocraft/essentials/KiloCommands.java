@@ -27,14 +27,12 @@ import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.MessageCommand;
-import org.kilocraft.essentials.commands.misc.ColorsCommand;
-import org.kilocraft.essentials.commands.misc.DiscordCommand;
-import org.kilocraft.essentials.commands.misc.PreviewCommand;
-import org.kilocraft.essentials.commands.misc.TeleportCommands;
+import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
+import org.kilocraft.essentials.commands.teleport.TpCommand;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -107,6 +105,8 @@ public class KiloCommands {
         PreviewCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
         NicknameCommand.register(this.dispatcher);
+        TpCommand.register(this.dispatcher);
+        PingCommand.register(this.dispatcher);
 
         Thimble.permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
@@ -152,14 +152,19 @@ public class KiloCommands {
             Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
             KiloChat.sendLangMessageTo(source, "command.usage.firstRow", command);
-            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, "");
+            if (parseResults.getContext().getNodes().get(0).getNode().getCommand() != null)
+                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
 
+            int usages = 0;
             while (iterator.hasNext()) {
+                usages++;
                 String usage = iterator.next();
-                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, usage);
+                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), usage);
             }
 
-            return 1;
+            if (usages == 0) KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, "");
+
+            return commandNodeStringMap.size();
         }
     }
 

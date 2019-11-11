@@ -7,12 +7,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.util.NBTTypes;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,7 +31,6 @@ import java.util.UUID;
 
 public class ServerUser implements User {
     protected static ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
-    private static ServerUserManager_Old managerOLD = KiloServer.getServer().getUserManagerOLD();
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     UUID uuid;
     String name = "";
@@ -54,33 +55,43 @@ public class ServerUser implements User {
             this.homeHandler = new UserHomeHandler(this);
     }
 
-
     CompoundTag serialize() {
         CompoundTag mainTag = new CompoundTag();
         CompoundTag metaTag = new CompoundTag();
         CompoundTag cacheTag = new CompoundTag();
         {
-            CompoundTag lastPosTag = new CompoundTag();
-            lastPosTag.putDouble("x", this.backPos.getX());
-            lastPosTag.putDouble("y", this.backPos.getY());
-            lastPosTag.putDouble("z", this.backPos.getZ());
-            lastPosTag.putString("dim", this.lastPosDim.toString());
-            cacheTag.put("lastPos", lastPosTag);
+            if(this.getBackPos() != null && this.getBackDimId() != null) { // Well this crashes without a safety check.
+                CompoundTag lastPosTag = new CompoundTag();
+                lastPosTag.putDouble("x", this.backPos.getX());
+                lastPosTag.putDouble("y", this.backPos.getY());
+                lastPosTag.putDouble("z", this.backPos.getZ());
+                lastPosTag.putString("dim", this.lastPosDim.toString());
+                cacheTag.put("lastPos", lastPosTag);
+            }
         }
         {
             CompoundTag posTag = new CompoundTag();
             posTag.putDouble("x", this.pos.getX());
             posTag.putDouble("y", this.pos.getY());
             posTag.putDouble("z", this.pos.getZ());
+
+            if(this.posDim == null) { // This should be impossible
+                // TODO Notify admins and throw a giant error log into Console to reflect error. Set it to a temp value
+                this.posDim = new Identifier("minecraft", "overworld");
+            }
+
             posTag.putString("dim", this.posDim.toString());
             mainTag.put("pos", posTag);
         }
         {
-            CompoundTag lastMessageTag = new CompoundTag();
-            lastMessageTag.putString("destUUID", this.lastPrivateMessageGetterUUID.toString());
-            lastMessageTag.putString("text", this.lastPrivateMessageText);
-            cacheTag.put("lastMessage", lastMessageTag);
-
+            if(this.getLastPrivateMessageSender() != null) {
+                CompoundTag lastMessageTag = new CompoundTag();
+                lastMessageTag.putString("destUUID", this.getLastPrivateMessageSender().toString());
+                if(this.getLastPrivateMessage() != null) {
+                    lastMessageTag.putString("text", this.getLastPrivateMessage());
+                }
+                cacheTag.put("lastMessage", lastMessageTag);
+            }
             if (this.canFly)
                 cacheTag.putBoolean("isFlyEnabled", true);
             if (this.invulnerable)
@@ -93,7 +104,9 @@ public class ServerUser implements User {
             metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
 
             metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
-            metaTag.putString("nick", this.nickname);
+            if(this.hasNickname()) {
+                metaTag.putString("nick", this.nickname);
+            }
         }
         {
             CompoundTag homeTag = new CompoundTag();
@@ -130,9 +143,14 @@ public class ServerUser implements User {
             );
         }
         {
-            CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
-            this.lastPrivateMessageGetterUUID = UUID.fromString(lastMessageTag.getString("destUUID"));
-            this.lastPrivateMessageText = lastMessageTag.getString("text");
+            if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
+                CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
+                if(lastMessageTag.contains("destUUID", NBTTypes.STRING))
+                this.lastPrivateMessageGetterUUID = UUID.fromString(lastMessageTag.getString("destUUID"));
+
+                if(lastMessageTag.contains("text", NBTTypes.STRING))
+                this.lastPrivateMessageText = lastMessageTag.getString("text");
+            }
         }
         {
             if (cacheTag.getBoolean("isFlyEnabled"))
@@ -155,6 +173,7 @@ public class ServerUser implements User {
 
     public void updatePos() {
         this.pos = KiloServer.getServer().getPlayer(this.uuid).getPos();
+        this.posDim = Registry.DIMENSION.getId(KiloServer.getServer().getPlayer(this.uuid).getServerWorld().getDimension().getType());
     }
 
     private Date getUserFirstJoinDate(String stringToParse) {
@@ -174,6 +193,11 @@ public class ServerUser implements User {
     @Override
     public boolean isOnline() {
         return KiloServer.getServer().getPlayerManager().getPlayer(this.uuid) != null;
+    }
+
+    @Override
+    public boolean hasNickname() {
+        return this.nickname != null && this.nickname != "";
     }
 
     @Override

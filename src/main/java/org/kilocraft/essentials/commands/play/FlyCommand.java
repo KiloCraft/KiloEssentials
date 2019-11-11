@@ -7,9 +7,9 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.CommandSuggestions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.CommandHelper;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
@@ -26,7 +26,7 @@ public class FlyCommand {
                 .then(
                         CommandManager.argument("player", player())
                                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("fly.others"), 2))
-                                .suggests(CommandSuggestions::allPlayers)
+                                .suggests(ArgumentSuggestions::allPlayers)
                                 .executes(c -> toggle(c.getSource(), getPlayer(c, "player")))
                                 .then(
                                         CommandManager.argument("set", bool())

@@ -13,7 +13,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.commands.CommandSuggestions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -30,11 +30,11 @@ public class SudoCommand {
                 .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                 .then(
                         argument("player", player())
-                            .suggests(CommandSuggestions::allPlayers)
+                            .suggests(ArgumentSuggestions::allPlayers)
                             .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                             .then(
                                     argument("args", greedyString())
-                                            .suggests(CommandSuggestions::usableCommands)
+                                            .suggests(ArgumentSuggestions::usableCommands)
                                             .executes(c -> execute(dispatcher, c.getSource(), getPlayer(c, "player"), getString(c, "args")))
                             )
                 );
@@ -59,7 +59,7 @@ public class SudoCommand {
 
         return 1;
     }
-    
+
     private static void sendExceptionMessage(ServerCommandSource source, String command, CommandSyntaxException e) {
         if (e.getInput() != null && e.getCursor() >= 0) {
             int int_1 = Math.min(e.getInput().length(), e.getCursor());

@@ -10,8 +10,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CommandSuggestions;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
@@ -29,7 +29,7 @@ public class TeleportCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> tptoCommand = dispatcher.register(literal("teleportto")
             .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportto"), 2))
-            .then(argument("target", player()).suggests(CommandSuggestions::allPlayersExceptSource).executes(TeleportCommands::teleportTo))
+            .then(argument("target", player()).suggests(ArgumentSuggestions::allPlayersExceptSource).executes(TeleportCommands::teleportTo))
         );
 
         LiteralCommandNode<ServerCommandSource> tpposCommand = dispatcher.register(literal("teleportpos")
@@ -39,14 +39,14 @@ public class TeleportCommands {
 
         LiteralCommandNode<ServerCommandSource> tphereCommand = dispatcher.register(literal("teleporthere")
                 .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleporthere"), 2))
-                .then(argument("target", player()).suggests(CommandSuggestions::allPlayersExceptSource).executes(TeleportCommands::teleportHere))
+                .then(argument("target", player()).suggests(ArgumentSuggestions::allPlayersExceptSource).executes(TeleportCommands::teleportHere))
         );
 
         LiteralCommandNode<ServerCommandSource> tpinCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportin"), 2))
-                .then(argument("dimension", string()).suggests(CommandSuggestions::dimensions).then(argument("pos", vec3())
+                .then(argument("dimension", string()).suggests(ArgumentSuggestions::dimensions).then(argument("pos", vec3())
                         .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
-                            .then(argument("target", player()).suggests(CommandSuggestions::allPlayersExceptSource)
+                            .then(argument("target", player()).suggests(ArgumentSuggestions::allPlayersExceptSource)
                                     .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
                     )
                 )

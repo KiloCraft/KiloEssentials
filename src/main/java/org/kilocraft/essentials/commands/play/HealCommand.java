@@ -1,4 +1,5 @@
 package org.kilocraft.essentials.commands.play;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -6,12 +7,12 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.CommandSuggestions;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.CommandHelper;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -24,7 +25,7 @@ public class HealCommand {
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.others"), 2))
-                .suggests(CommandSuggestions::allPlayers);
+                .suggests(ArgumentSuggestions::allPlayers);
 
         heal.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
         target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.other"), 2));

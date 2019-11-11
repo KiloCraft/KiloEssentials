@@ -3,7 +3,7 @@ package org.kilocraft.essentials.commands.misc;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.commands.KiloAPICommands;
+import org.kilocraft.essentials.api.KiloAPICommands;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.TPSTracker;

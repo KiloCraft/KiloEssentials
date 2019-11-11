@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands;
+package org.kilocraft.essentials.api.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -12,12 +12,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.commands.LiteralCommandModified;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-public class CommandSuggestions {
+public class ArgumentSuggestions {
 
     private static PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 
@@ -42,14 +43,14 @@ public class CommandSuggestions {
 
     public static CompletableFuture<Suggestions> usableCommands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> Commands.canSourceUse(child, context.getSource())).map(CommandNode::getName),
+                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> LiteralCommandModified.canSourceUse(child, context.getSource())).map(CommandNode::getName),
                 builder
         );
     }
 
     public static CompletableFuture<Suggestions> commands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> !child.getName().startsWith(Commands.vanillaCommandsPrefix)).map(CommandNode::getName),
+                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> !child.getName().startsWith(LiteralCommandModified.getNMSCommandPrefix())).map(CommandNode::getName),
                 builder
         );
     }
@@ -70,6 +71,10 @@ public class CommandSuggestions {
     public static SuggestionProvider<ServerCommandSource> getDateArguments = ((context, builder) ->
             CommandSource.suggestMatching(new String[]{"year", "month", "day", "minute", "second"}, builder)
     );
+
+    public static CompletableFuture<Suggestions> suggestAtArg(int arg, String[] strings, CommandContext<ServerCommandSource> context) {
+        return suggestAt(getCursorAtArg(arg, context), strings, context);
+    }
 
     public static CompletableFuture<Suggestions> suggestAtCursor(Stream<String> stream, CommandContext<ServerCommandSource> context) {
         return suggestAt(context.getInput().length(), stream, context);
@@ -95,6 +100,7 @@ public class CommandSuggestions {
         return CommandSource.suggestMatching(iterable, new SuggestionsBuilder(context.getInput(), position));
     }
 
+
     private static int getPendingCursor(CommandContext<ServerCommandSource> context) {
         return (context.getInput().length() - 1);
     }
@@ -103,5 +109,10 @@ public class CommandSuggestions {
         return context.getInput().length();
     }
 
-}
+    private static int getCursorAtArg(int arg, CommandContext<ServerCommandSource> context) {
+        String input = context.getInput().replace("/" + context.getNodes().get(0) + " ", "");
 
+        return 1;
+    }
+
+}

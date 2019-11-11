@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.commands;
+package org.kilocraft.essentials.api;
 
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;

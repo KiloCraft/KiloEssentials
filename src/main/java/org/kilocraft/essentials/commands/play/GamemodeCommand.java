@@ -15,9 +15,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.CommandSuggestions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -62,7 +62,7 @@ public class GamemodeCommand {
                 .executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), null,false));
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("target", players())
-                .suggests(CommandSuggestions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null,false))
                 .then(literal("-silent")
                         .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null, true))

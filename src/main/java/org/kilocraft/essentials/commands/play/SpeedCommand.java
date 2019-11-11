@@ -6,8 +6,8 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CommandSuggestions;
 
 import static com.mojang.brigadier.arguments.FloatArgumentType.floatArg;
 import static com.mojang.brigadier.arguments.FloatArgumentType.getFloat;
@@ -28,13 +28,13 @@ public class SpeedCommand {
                                 .executes(c -> executeSet(true, c.getSource(), c.getSource().getPlayer(), getFloat(c, "walkSpeed")))
                                 .then(argument("player", player())
                                                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.walk.others"), 2))
-                                                .suggests(CommandSuggestions::allPlayers)
+                                                .suggests(ArgumentSuggestions::allPlayers)
                                                 .executes(c -> executeSet(true, c.getSource(), getPlayer(c, "player"), getFloat(c, "walkSpeed"))))))
                 .then(literal("reset")
                         .executes(c -> executeReset(true, c.getSource(), c.getSource().getPlayer()))
                         .then(argument("player", player())
                                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.walk.others"), 2))
-                                .suggests(CommandSuggestions::allPlayers)
+                                .suggests(ArgumentSuggestions::allPlayers)
                                 .executes(c -> executeReset(true, c.getSource(), getPlayer(c, "player")))
                         )
                 );
@@ -46,14 +46,14 @@ public class SpeedCommand {
                                 .executes(c -> executeSet(false, c.getSource(), c.getSource().getPlayer(), getFloat(c, "flightSpeed")))
                                 .then(argument("player", player())
                                                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.flight.others"), 2))
-                                                .suggests(CommandSuggestions::allPlayers)
+                                                .suggests(ArgumentSuggestions::allPlayers)
                                                 .executes(c -> executeSet(false, c.getSource(), getPlayer(c, "player"), getFloat(c, "flightSpeed")))))
                 )
                 .then(literal("reset")
                         .executes(c -> executeReset(false, c.getSource(), c.getSource().getPlayer()))
                         .then(argument("player", player())
                                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("speed.flight.others"), 2))
-                                .suggests(CommandSuggestions::allPlayers)
+                                .suggests(ArgumentSuggestions::allPlayers)
                                 .executes(c -> executeReset(false, c.getSource(), getPlayer(c, "player"))))
                 );
 

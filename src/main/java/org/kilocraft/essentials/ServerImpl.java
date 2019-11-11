@@ -29,17 +29,7 @@ public class ServerImpl implements Server {
     private final String serverBrand;
     private String serverDisplayBrand;
     private String serverName = "Minecraft server";
-    private ServerUserManager_Old oldManager;
     private UserManager userManager;
-
-    @Deprecated
-    public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, ServerUserManager_Old serverUserManager, String serverBrand) {
-        this.server = minecraftServer;
-        this.serverBrand = serverBrand;
-        this.oldManager = serverUserManager;
-        this.serverDisplayBrand = serverBrand;
-        this.eventRegistry = eventManager;
-    }
 
     public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, ServerUserManager serverUserManager, String serverBrand) {
         this.server = minecraftServer;
@@ -66,12 +56,6 @@ public class ServerImpl implements Server {
     public UserManager getUserManager() {
         return this.userManager;
     }
-
-    @Override
-    public ServerUserManager_Old getUserManagerOLD() {
-        return this.oldManager;
-    }
-
 
     @Override
     public ServerPlayerEntity getPlayer(String name) {

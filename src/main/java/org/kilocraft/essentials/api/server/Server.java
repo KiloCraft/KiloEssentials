@@ -36,15 +36,12 @@ public interface Server {
 
     PlayerManager getPlayerManager();
 
-    UserManager getUserManager();
-
     /**
      * Gets the KiloServer's UserManager
      *
      * @return instance of UserManager
      */
-    @Deprecated
-    ServerUserManager_Old getUserManagerOLD();
+    UserManager getUserManager();
 
     /**
      * Gets a player object by the given username.

@@ -17,18 +17,15 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.commands.CommandSuggestions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.Home;
 import org.kilocraft.essentials.extensions.homes.UnsafeHomeException;
-import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
 import java.text.DecimalFormat;
@@ -89,7 +86,7 @@ public class HomeCommand {
         homesLiteral.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.others"), 2))
-                        .suggests(CommandSuggestions::allPlayers)
+                        .suggests(ArgumentSuggestions::allPlayers)
                         .executes(c -> executeList(c.getSource(), GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
@@ -100,21 +97,21 @@ public class HomeCommand {
         argTeleport.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                     .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.tp"), 2))
-                    .suggests(CommandSuggestions::allPlayers)
+                    .suggests(ArgumentSuggestions::allPlayers)
                     .executes(c -> executeTeleport(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
         argSet.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.set"), 2))
-                        .suggests(CommandSuggestions::allPlayers)
+                        .suggests(ArgumentSuggestions::allPlayers)
                         .executes(c -> executeSet(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 
         argRemove.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                         .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("home.others.remove"), 2))
-                        .suggests(CommandSuggestions::allPlayers)
+                        .suggests(ArgumentSuggestions::allPlayers)
                         .executes(c -> executeRemove(c, GameProfileArgumentType.getProfileArgument(c, "player")))
         );
 

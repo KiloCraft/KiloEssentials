@@ -19,6 +19,8 @@ public interface User {
 
     boolean isOnline();
 
+    boolean hasNickname();
+
     @Nullable
     String getNickname();
 
