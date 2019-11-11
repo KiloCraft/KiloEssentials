@@ -18,7 +18,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,7 +39,7 @@ public class EnderchestCommand {
 
         RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> selectorArg = argument("gameProfile", gameProfile())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("enderchest.others"), 2))
-                .suggests(SuggestArgument::allPlayers)
+                .suggests(CommandSuggestions::allPlayers)
                 .executes(context -> execute(context.getSource(), getProfileArgument(context, "gameProfile")));
 
         argumentBuilder.then(selectorArg);

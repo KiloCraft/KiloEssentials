@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.provided.SimpleStringSaverProvided;
@@ -34,7 +34,7 @@ public class MessageCommand {
                         .executes(context -> KiloCommands.executeUsageFor("command.message.usage", context.getSource()))
                         .then(
                                 argument("player", player())
-                                        .suggests(SuggestArgument::allPlayers)
+                                        .suggests(CommandSuggestions::allPlayers)
                                         .then(
                                                 argument("message", greedyString())
                                                         .executes(c ->

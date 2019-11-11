@@ -6,7 +6,7 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.KiloChat;
 
@@ -24,7 +24,7 @@ public class InvulnerablemodeCommand {
                 .executes(c -> executeToggle(c.getSource(), c.getSource().getPlayer()))
                 .then(
                         argument("player", player())
-                            .suggests(SuggestArgument::allPlayers)
+                            .suggests(CommandSuggestions::allPlayers)
                             .executes(c -> executeToggle(c.getSource(), getPlayer(c, "player")))
                             .then(argument("set", bool())
                                     .executes(c -> executeSet(c.getSource(), getPlayer(c, "player"), getBool(c, "set")))

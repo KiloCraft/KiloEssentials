@@ -7,7 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.SuggestArgument;
+import org.kilocraft.essentials.commands.CommandSuggestions;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -17,7 +17,7 @@ public class PreviewCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> previewCommand = dispatcher.register(literal("preview")
             .executes(ctx -> KiloCommands.executeSmartUsageFor("preview", ctx.getSource()))
-            .then(argument("string", greedyString()).suggests(SuggestArgument::textformatChars).executes(PreviewCommand::execute))
+            .then(argument("string", greedyString()).suggests(CommandSuggestions::textformatChars).executes(PreviewCommand::execute))
         );
 
         dispatcher.getRoot().addChild(previewCommand);
