@@ -44,33 +44,33 @@ public class Home {
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putString("dimension", this.dimensionId.toString());
-            CompoundTag pos = new CompoundTag();
-            pos.putDouble("x", this.x);
-            pos.putDouble("y", this.y);
-            pos.putDouble("z", this.z);
-            compoundTag.put("pos", pos);
 
-            CompoundTag dir = new CompoundTag();
-            dir.putDouble("dX", dX);
-            dir.putDouble("dY", dY);
-            compoundTag.put("dir", dir);
+        CompoundTag pos = new CompoundTag();
+        pos.putDouble("x", this.x);
+        pos.putDouble("y", this.y);
+        pos.putDouble("z", this.z);
 
-        System.out.println(compoundTag.toString());
+        compoundTag.put("pos", pos);
+
+        CompoundTag dir = new CompoundTag();
+        dir.putDouble("dX", dX);
+        dir.putDouble("dY", dY);
+
+        compoundTag.put("dir", dir);
         return compoundTag;
     }
 
     public void fromTag(CompoundTag compoundTag) {
-        System.out.println(compoundTag);
         this.dimensionId = new Identifier(compoundTag.getString("dimension"));
-            CompoundTag pos = compoundTag.getCompound("pos");
-            this.x = pos.getDouble("x");
-            this.y = pos.getDouble("y");
-            this.z = pos.getDouble("z");
 
+        CompoundTag pos = compoundTag.getCompound("pos");
+        this.x = pos.getDouble("x");
+        this.y = pos.getDouble("y");
+        this.z = pos.getDouble("z");
 
-            CompoundTag dir = compoundTag.getCompound("dir");
-            this.dX = dir.getFloat("dX");
-            this.dY = dir.getFloat("dY");
+        CompoundTag dir = compoundTag.getCompound("dir");
+        this.dX = dir.getFloat("dX");
+        this.dY = dir.getFloat("dY");
     }
 
     public UUID getOwner() {

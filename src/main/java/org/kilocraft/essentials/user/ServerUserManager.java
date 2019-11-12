@@ -9,6 +9,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +29,14 @@ public class ServerUserManager implements UserManager {
             return CompletableFuture.completedFuture(online);
         }
 
-        // TODO Read the User files, otherwise create a dummy user instance.
-        return null;
+        File target = this.getHandler().getUserFile(uuid);
+        if(!target.exists()) {
+            return CompletableFuture.completedFuture(new NeverJoinedUser());
+        }
+
+        ServerUser user = new ServerUser(uuid);
+
+        return CompletableFuture.completedFuture(user);
     }
 
     @Override

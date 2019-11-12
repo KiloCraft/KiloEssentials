@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
@@ -16,6 +17,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.util.NBTTypes;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,6 +55,11 @@ public class ServerUser implements User {
         this.uuid = uuid;
         if (UserHomeHandler.isEnabled()) // TODO Use new feature provider in future
             this.homeHandler = new UserHomeHandler(this);
+        try {
+            manager.getHandler().handleUser(this);
+        } catch (IOException e) {
+            KiloEssentials.getLogger().error("Failed to Load User for [" + uuid.toString() + "]");
+        }
     }
 
     CompoundTag serialize() {

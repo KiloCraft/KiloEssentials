@@ -39,11 +39,5 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     public OnlineServerUser(ServerPlayerEntity player) {
         super(player.getUuid());
         this.name = player.getEntityName();
-
-        try {
-            manager.getHandler().handleUser(this);
-        } catch (IOException e) {
-            KiloEssentials.getLogger().error("Failed to Load OnlineUser for [" + player.getUuidAsString() + ", " + player.getEntityName() + "]");
-        }
     }
 }
