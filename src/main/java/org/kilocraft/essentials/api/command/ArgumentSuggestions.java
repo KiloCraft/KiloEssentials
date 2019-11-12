@@ -80,6 +80,10 @@ public class ArgumentSuggestions {
         return suggestAt(context.getInput().length(), stream, context);
     }
 
+    public static CompletableFuture<Suggestions> suggestAtCursor(String string, CommandContext<ServerCommandSource> context) {
+        return suggestAt(context.getInput().length(), new String[]{string}, context);
+    }
+
     public static CompletableFuture<Suggestions> suggestAtCursor(String[] strings, CommandContext<ServerCommandSource> context) {
         return suggestAt(context.getInput().length(), strings, context);
     }
