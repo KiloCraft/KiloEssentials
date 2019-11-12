@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands.misc;
+package org.kilocraft.essentials.commands.teleport;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;

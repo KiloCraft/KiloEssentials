@@ -13,11 +13,12 @@ import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
+import static org.kilocraft.essentials.KiloCommands.*;
 
 public class PreviewCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> previewCommand = dispatcher.register(literal("preview")
-            .executes(ctx -> KiloCommands.executeSmartUsageFor("preview", ctx.getSource()))
+        LiteralCommandNode<ServerCommandSource> previewCommand = dispatcher.register(literal("colorpreview")
+            .executes(ctx -> executeSmartUsageFor("preview", ctx.getSource()))
             .then(argument("string", greedyString()).suggests(ArgumentSuggestions::textformatChars).executes(PreviewCommand::execute))
         );
 
@@ -29,6 +30,6 @@ public class PreviewCommand {
         String arg = getString(ctx, "string");
         KiloChat.sendMessageToSource(ctx.getSource(), new ChatMessage("&eString preview:\n" + arg, true));
 
-        return KiloCommands.SUCCESS();
+        return SUCCESS();
     }
 }

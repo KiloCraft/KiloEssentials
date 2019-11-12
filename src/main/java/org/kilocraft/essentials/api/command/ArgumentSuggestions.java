@@ -61,7 +61,7 @@ public class ArgumentSuggestions {
 
 
     public static CompletableFuture<Suggestions> allNonOperators(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((p) -> !playerManager.isOperator(p.getGameProfile())).map((p) -> p.getGameProfile().getName()), builder);
+        return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((p) -> !playerManager.isOperator(p.getGameProfile())).map((p) -> p.getName().asString()), builder);
     }
 
     public static CompletableFuture<Suggestions> allOperators(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
@@ -100,6 +100,9 @@ public class ArgumentSuggestions {
         return CommandSource.suggestMatching(iterable, new SuggestionsBuilder(context.getInput(), position));
     }
 
+    private static String getInput(CommandContext<ServerCommandSource> context) {
+        return context.getInput().replace("/" + context.getNodes().get(0) + " ", "");
+    }
 
     private static int getPendingCursor(CommandContext<ServerCommandSource> context) {
         return (context.getInput().length() - 1);
@@ -109,10 +112,9 @@ public class ArgumentSuggestions {
         return context.getInput().length();
     }
 
-    private static int getCursorAtArg(int arg, CommandContext<ServerCommandSource> context) {
-        String input = context.getInput().replace("/" + context.getNodes().get(0) + " ", "");
+    private static int getCursorAtArg(int pos, CommandContext<ServerCommandSource> context) {
 
-        return 1;
+        return getInput(context).split(" ").length;
     }
 
 }
