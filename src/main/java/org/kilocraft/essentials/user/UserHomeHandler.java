@@ -1,21 +1,28 @@
 package org.kilocraft.essentials.user;
 
-import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.extensions.homes.Home;
-import org.kilocraft.essentials.extensions.homes.UnsafeHomeException;
+import org.kilocraft.essentials.commands.teleport.BackCommand;
+import org.kilocraft.essentials.extensions.homes.api.Home;
+import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author CODY_AI
@@ -106,12 +113,13 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
-        if (this.serverUser.isOnline()) {
-            ServerWorld world = user.getPlayer().getServer().getWorld(Registry.DIMENSION.get(home.getDimId()));
+        if (user.isOnline()) {
+            ServerWorld world = user.getPlayer().getServer().getWorld(DimensionType.byId(home.getDimId()));
             if(world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
             }
-            user.getPlayer().teleport(world, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+            BackCommand.setLocation(user.getPlayer(), new Vector3f(user.getPlayer().getPos()), user.getPlayer().getServerWorld().getDimension().getType());
+            Home.teleportTo(user, home);
         }
 
     }
@@ -136,7 +144,7 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     public void deserialize(CompoundTag compoundTag) {
         for (String key : compoundTag.getKeys()) {
-            Home home = new Home(compoundTag);
+            Home home = new Home(compoundTag.getCompound(key));
             home.setName(key);
             home.setOwner(this.serverUser.uuid);
             this.userHomes.add(home);
@@ -158,11 +166,11 @@ public class UserHomeHandler implements ConfigurableFeature {
         return loadedHomes;
     }
 
-    public static SuggestionProvider<ServerCommandSource> suggestUserHomes = ((context, builder) ->
-            CommandSource.suggestMatching(getHomesOf(context.getSource().getPlayer().getUuid()).stream().map(Home::getName), builder)
-    );
+    public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+        return CommandSource.suggestMatching(getHomesOf(context.getSource().getPlayer().getUuid()).stream().map(Home::getName), builder);
+    }
 
     public enum Reason {
-        MISSING_DIMENSION;
+        UNSAFE_DESTINATION, MISSING_DIMENSION;
     }
 }

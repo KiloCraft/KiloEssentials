@@ -126,23 +126,20 @@ public class ServerUser implements User {
         CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
-        {
             CompoundTag lastPosTag = cacheTag.getCompound("lastPos");
             this.backPos = new Vec3d(
                     lastPosTag.getDouble("x"),
                     lastPosTag.getDouble("y"),
                     lastPosTag.getDouble("z")
             );
-        }
-        {
+
             CompoundTag posTag = cacheTag.getCompound("pos");
             this.pos = new Vec3d(
                     posTag.getDouble("x"),
                     posTag.getDouble("y"),
                     posTag.getDouble("z")
             );
-        }
-        {
+
             if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
                 CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
                 if(lastMessageTag.contains("destUUID", NBTTypes.STRING))
@@ -151,21 +148,19 @@ public class ServerUser implements User {
                 if(lastMessageTag.contains("text", NBTTypes.STRING))
                 this.lastPrivateMessageText = lastMessageTag.getString("text");
             }
-        }
-        {
+
             if (cacheTag.getBoolean("isFlyEnabled"))
                 this.canFly = true;
             if (cacheTag.getBoolean("isInvulnerable"))
                 this.invulnerable = true;
-        }
-        {
+
+
             if (compoundTag.getInt("displayParticleId") != 0)
                 this.displayParticleId = compoundTag.getInt("displayParticleId");
 
             this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
             this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
             this.nickname = metaTag.getString("nick");
-        }
 
         this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         this.randomTeleportsLeft = compoundTag.getInt("rtpLeft");

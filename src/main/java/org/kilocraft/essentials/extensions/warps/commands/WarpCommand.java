@@ -69,7 +69,7 @@ public class WarpCommand {
     private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
         if (WarpManager.getWarpsByName().contains(name)) {
             Warp warp = WarpManager.getWarp(name);
-            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimension() + 1));
+            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimId()));
 
             KiloChat.sendMessageTo(source, new ChatMessage(
                     KiloConfig.getProvider().getMessages().get(true, "commands.serverWideWarps.teleportTo")
@@ -109,7 +109,7 @@ public class WarpCommand {
                         Double.parseDouble(df.format(source.getPlayer().getPos().z)),
                         Float.parseFloat(df.format(source.getPlayer().yaw)),
                         Float.parseFloat(df.format(source.getPlayer().pitch)),
-                        source.getWorld().getDimension().getType().getRawId(),
+                        Registry.DIMENSION.getId(source.getWorld().getDimension().getType()),
                         requiresPermission
                 )
         );

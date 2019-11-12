@@ -9,12 +9,13 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
@@ -22,15 +23,15 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.homes.Home;
-import org.kilocraft.essentials.extensions.homes.UnsafeHomeException;
+import org.kilocraft.essentials.extensions.homes.api.Home;
+import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 public class HomeCommand {
 
@@ -91,8 +92,8 @@ public class HomeCommand {
         );
 
 
-        argTeleport.suggests((context, builder) -> UserHomeHandler.suggestUserHomes.getSuggestions(context, builder)); // TODO make a home argument provider stub
-        argRemove.suggests((context, builder) -> UserHomeHandler.suggestUserHomes.getSuggestions(context, builder));
+        argTeleport.suggests(UserHomeHandler::suggestHomes);
+        argRemove.suggests(UserHomeHandler::suggestHomes);
 
         argTeleport.then(
                 CommandManager.argument("player", GameProfileArgumentType.gameProfile())
@@ -192,7 +193,7 @@ public class HomeCommand {
                                 Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
                                 Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getY())),
                                 Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
-                                Registry.DIMENSION.getId(source.getWorld().getDimension().getType()),
+                                DimensionType.getId(source.getWorld().getDimension().getType()),
                                 Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
                                 Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))
                         )
@@ -225,14 +226,14 @@ public class HomeCommand {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+            User user = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
 
-            if(serverUser instanceof NeverJoinedUser) {
+            if(user instanceof NeverJoinedUser) {
                 throw NO_HOMES_EXCEPTION.create();
             }
 
-            if (serverUser.getHomesHandler().hasHome(arg)) {
-                serverUser.getHomesHandler().removeHome(arg);
+            if (user.getHomesHandler().hasHome(arg)) {
+                user.getHomesHandler().removeHome(arg);
 
                 if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                     KiloChat.sendMessageTo(source, new ChatMessage(
@@ -269,7 +270,6 @@ public class HomeCommand {
             }
 
             if (user.getHomesHandler().hasHome(arg)) {
-            	BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
                 try {
                     user.getHomesHandler().teleportToHome(KiloServer.getServer().getUserManager().getOnline(source), arg);
                 } catch (UnsafeHomeException e) {

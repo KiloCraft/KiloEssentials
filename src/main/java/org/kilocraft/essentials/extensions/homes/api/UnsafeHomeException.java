@@ -1,5 +1,6 @@
-package org.kilocraft.essentials.extensions.homes;
+package org.kilocraft.essentials.extensions.homes.api;
 
+import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
 public class UnsafeHomeException extends Exception {

@@ -114,7 +114,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public <F extends ConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException {
 		F ft = (F) proxyFeatureList.get(type);
 
-		if(ft==null) {
+		if(ft == null) {
 			throw new FeatureNotPresentException();
 		}
 
