@@ -78,31 +78,18 @@ public class LiteralCommandModified {
         return NMSCommandNamePrefix;
     }
 
-    public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
-        if (KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
-            if (commandNode.canUse(source))
-                return isCustomCommand(commandNode.getName());
-            return false;
 
+    public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
+        if (!KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
+            if (commandNode.canUse(source)) {
+                if (isCustomCommand(commandNode.getName()))
+                    return true;
+            } else
+                return false;
         }
 
-        String customCommandsPrefix = "ke_";
         return !isVanillaCommand(commandNode.getName().replace(NMSCommandNamePrefix, ""))
-                || isCustomCommand(customCommandsPrefix + commandNode.getName());
+                || isCustomCommand(keCommandPrefix + commandNode.getName());
     }
-
-//    public static <S> boolean canSourceUseOLD(CommandNode<S> commandNode, S source) {
-//        if (KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
-//            if (commandNode.canUse(source)) {
-//                if (isCustomCommand(commandNode.getName()))
-//                    return true;
-//                else
-//                    return true;
-//            } else
-//                return false;
-//        }
-//        return !isVanillaCommand(commandNode.getName().replace(vanillaCommandsPrefix, ""))
-//                || isCustomCommand(customCommandsPrefix + commandNode.getName());
-//    }
 
 }

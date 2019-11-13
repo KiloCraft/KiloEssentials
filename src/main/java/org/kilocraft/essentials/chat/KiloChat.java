@@ -3,6 +3,7 @@ package org.kilocraft.essentials.chat;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,11 +26,11 @@ import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVaria
 public class KiloChat {
 	private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
 
-	private static String getFormattedLang(String key, Object... objects) {
+	public static String getFormattedLang(String key, Object... objects) {
 		return getFormattedString(ModConstants.getLang().getProperty(key), objects);
 	}
 
-	private static String getFormattedString(String string, Object... objects) {
+	public static String getFormattedString(String string, Object... objects) {
 		return objects[0] != null ? String.format(string, objects) : string;
 	}
 
@@ -71,9 +72,6 @@ public class KiloChat {
 			source.sendFeedback(LangText.get(true, key), false);
 	}
 
-	public static void sendLangMessageTo(ServerPlayerEntity player, String key) {
-		sendMessageTo(player, LangText.get(true, key));
-	}
 
 	public static void sendLangMessageTo(ServerPlayerEntity player, String key, Object... objects) {
 		sendMessageTo(player, LangText.getFormatter(true, key, objects));
@@ -100,13 +98,44 @@ public class KiloChat {
 		sendMessageTo(player, new ChatMessage(toTarget, true));
 	}
 
+	public static void broadCastExceptConsole(ChatMessage chatMessage) {
+		for (PlayerEntity entity : KiloServer.getServer().getPlayerList()) {
+			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
+		}
+	}
+
+	public static void broadCastLangExceptConsole(String key, Object... objects) {
+		broadCastExceptConsole(new ChatMessage(getFormattedLang(key, objects), false));
+	}
+
+	public static void broadCastLangToConsole(String key, Object... objects) {
+		broadCastToConsole(new ChatMessage(getFormattedLang(key, objects), false));
+	}
+
+	public static void broadCastToConsole(ChatMessage chatMessage) {
+		chatMessage.setMessage(chatMessage.getOriginal(), false);
+		KiloServer.getServer().sendMessage(chatMessage.getFormattedMessage());
+	}
+
 	public static void broadCast(ChatMessage chatMessage) {
-		KiloServer.getServer().getPlayerManager().getPlayerList().forEach((playerEntity) -> {
-			playerEntity.sendChatMessage(new LiteralText(chatMessage.getFormattedMessage()), MessageType.CHAT);
-		});
+		for (PlayerEntity entity : KiloServer.getServer().getPlayerList()) {
+			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
+		}
 
 		KiloServer.getServer()
 				.sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));
+	}
+
+	public static void broadCast(Text text) {
+		KiloServer.getServer().getPlayerManager().broadcastChatMessage(text, false);
+	}
+
+	public static void broadCastLang(String key) {
+		broadCastLang(key, (Object) null);
+	}
+
+	public static void broadCastLang(String key, Object... objects) {
+		broadCast(new ChatMessage(getFormattedLang(key, objects), true));
 	}
 
 	public static void sendChatMessage(ServerPlayerEntity player, String messageToSend) {

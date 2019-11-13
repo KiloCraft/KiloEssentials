@@ -42,5 +42,9 @@ public class CommandHelper {
         return source.getName().equals(playerEntity.getName().asString());
     }
 
+    public static String getDisplayName(ServerCommandSource source) throws CommandSyntaxException {
+        return isConsole(source) ? source.getName() : source.getPlayer().getDisplayName().asString();
+    }
+
 
 }
