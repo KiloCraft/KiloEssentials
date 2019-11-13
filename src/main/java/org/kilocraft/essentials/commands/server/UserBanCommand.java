@@ -2,19 +2,15 @@ package org.kilocraft.essentials.commands.server;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.command.arguments.GameProfileArgumentType.GameProfileArgument;
-import net.minecraft.command.arguments.MessageArgumentType;
 import net.minecraft.command.arguments.MessageArgumentType.MessageFormat;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.BannedPlayerList;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -38,7 +34,7 @@ public class UserBanCommand {
 			new TranslatableText("commands.ban.failed", new Object[0]));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> ban = literal("ban")
+		LiteralArgumentBuilder<ServerCommandSource> ban = literal("ke_ban")
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("ban"), 2));
 		RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> player = argument("target",
 				gameProfile());

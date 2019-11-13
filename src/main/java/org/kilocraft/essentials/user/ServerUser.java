@@ -1,6 +1,8 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -60,6 +62,10 @@ public class ServerUser implements User {
 
     public static ServerUser of(ServerPlayerEntity player) {
         return of(player.getUuid());
+    }
+
+    public static ServerUser of(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        return of(context.getSource().getPlayer());
     }
 
     public static ServerUser getByNickname(String name) {
