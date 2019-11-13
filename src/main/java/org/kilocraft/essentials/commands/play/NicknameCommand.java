@@ -70,7 +70,7 @@ public class NicknameCommand {
         }};
 
         if (hasPermissionOrOp(context.getSource(), getCommandPermission("nick.others"), 2)) {
-            KiloServer.getServer().getPlayerManager().getPlayerList().forEach((player) -> suggestions.add(player.getName().asString()));
+            KiloServer.getServer().getPlayerManager().getPlayerList().forEach((player) -> suggestions.add(player.getEntityName()));
         }
 
         return CommandSource.suggestMatching(suggestions, builder);
