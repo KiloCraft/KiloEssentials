@@ -31,7 +31,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class UserBanCommand {
 	private static final SimpleCommandExceptionType ALREADY_BANNED_EXCEPTION = new SimpleCommandExceptionType(
-			new TranslatableText("commands.ban.failed", new Object[0]));
+			new TranslatableText("commands.ban.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralArgumentBuilder<ServerCommandSource> ban = literal("ke_ban")

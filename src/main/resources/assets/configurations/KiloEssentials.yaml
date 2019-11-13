@@ -86,7 +86,7 @@ homes.limit: 10
 
 #Set if the command suggestions need the player to have the permission to use them
 #[<boolean>] Default: false
-commands.suggestions.require_permission: false
+commands.suggestions.require_permission: true
 
 chat:
   # [<greedyString> c/f/GV]
