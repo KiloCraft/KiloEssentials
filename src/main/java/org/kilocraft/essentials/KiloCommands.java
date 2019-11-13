@@ -83,7 +83,6 @@ public class KiloCommands {
         ReloadCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
-        EnderchestCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
@@ -98,7 +97,6 @@ public class KiloCommands {
         AnvilCommand.register(this.dispatcher);
         ItemCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
-        EnderchestCommand.register(this.dispatcher);
         WorldLocateCommand.register(this.dispatcher);
         UserBanCommand.register(this.dispatcher);
         BackCommand.register(this.dispatcher);
@@ -117,6 +115,7 @@ public class KiloCommands {
         TpCommand.register(this.dispatcher);
         PingCommand.register(this.dispatcher);
         ClearchatCommand.register(this.dispatcher);
+        EnderchestCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
