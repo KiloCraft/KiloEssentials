@@ -31,6 +31,7 @@ import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.PingCommand;
 import org.kilocraft.essentials.commands.misc.PreviewCommand;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
+import org.kilocraft.essentials.commands.moderation.UserBanCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.*;
