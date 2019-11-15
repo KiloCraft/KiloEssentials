@@ -40,5 +40,7 @@
     <orderEntry type="library" name="Gradle: net.fabricmc.mapped:net.fabricmc.yarn.19w45b.1.com.github.indi-code.Thimble-Permissions:f90710d8e6" level="project" />
     <orderEntry type="library" name="Gradle: net.minecraft:minecraft:19w45b-mapped-net.fabricmc.yarn-1" level="project" />
     <orderEntry type="library" name="Gradle: com.mojang:authlib:1.5.25" level="project" />
+    <orderEntry type="library" name="Gradle: net.minecraft:minecraft:19w46a-mapped-net.fabricmc.yarn-1" level="project" />
+    <orderEntry type="library" name="Gradle: net.fabricmc.mapped:net.fabricmc.yarn.19w46a.1.com.github.indi-code.Thimble-Permissions:f90710d8e6" level="project" />
   </component>
 </module>
