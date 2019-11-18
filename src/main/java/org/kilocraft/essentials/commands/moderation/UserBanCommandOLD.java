@@ -29,7 +29,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class UserBanCommand {
+public class UserBanCommandOLD {
 	private static final SimpleCommandExceptionType ALREADY_BANNED_EXCEPTION = new SimpleCommandExceptionType(
 			new TranslatableText("commands.ban.failed"));
 

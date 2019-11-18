@@ -1,10 +1,12 @@
 package org.kilocraft.essentials.user;
 
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,9 +26,13 @@ import java.util.UUID;
 public class UserManager {
     private static List<ServerUser> loadedServerUsers = new ArrayList<>();
     private List<ServerUser> offlineServerUsers = new ArrayList<>();
+    private PlayerManager playerManager;
     private UserHandler handler = new UserHandler();
-    
-    public UserManager() {
+    private PunishmentManager banManager;
+
+    public UserManager(PlayerManager manager) {
+        this.playerManager = manager;
+        this.banManager = new PunishmentManager(manager);
     }
 
     public static List<ServerUser> getUsers() {
@@ -102,6 +108,10 @@ public class UserManager {
         } catch (IOException ignored) { }
 
         KiloChat.broadcastUserLeaveEventMessage(player);
+    }
+
+    public PunishmentManager getPunishmentManager() {
+        return this.banManager;
     }
 
 }

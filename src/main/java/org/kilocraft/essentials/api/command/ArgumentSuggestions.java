@@ -16,6 +16,7 @@ import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -72,6 +73,18 @@ public class ArgumentSuggestions {
     public static SuggestionProvider<ServerCommandSource> getDateArguments = ((context, builder) ->
             CommandSource.suggestMatching(new String[]{"year", "month", "day", "minute", "second"}, builder)
     );
+
+    public static CompletableFuture<Suggestions> timeSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        String[] values = {"s", "m", "h", "d"};
+        String string = builder.getRemaining().toLowerCase(Locale.ROOT);
+        Integer in = Integer.parseInt(builder.getInput());
+
+        if (builder.getInput().equals(String.valueOf(in))) {
+            return CommandSource.suggestMatching(values, builder);
+        }
+
+        return null;
+    }
 
     public static CompletableFuture<Suggestions> suggestAtArg(int arg, String[] strings, CommandContext<ServerCommandSource> context) {
         return suggestAt(getCursorAtArg(arg, context), strings, context);
