@@ -9,7 +9,7 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -17,7 +17,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class UsageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> usageCommand = dispatcher.register(literal("usage").then(
-                        argument("command", greedyString())
+                        argument("command", word())
                                 .suggests(ArgumentSuggestions::usableCommands)
                                 .executes(context -> execute(context.getSource(), getString(context, "command")))
                 )
