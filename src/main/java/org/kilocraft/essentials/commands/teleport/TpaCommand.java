@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.commands.teleport;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -65,15 +64,15 @@ public class TpaCommand {
             dispatcher.register(tpahere);
         }
         {
-            LiteralArgumentBuilder accept = literal("tpaccept");
-            ArgumentBuilder player = argument("player", player());
+            LiteralArgumentBuilder<ServerCommandSource> accept = literal("tpaccept");
+            RequiredArgumentBuilder<ServerCommandSource, EntitySelector> player = argument("player", player());
             player.executes(context -> executeResponse(context, true));
             accept.then(player);
             dispatcher.register(accept);
         }
         {
-            LiteralArgumentBuilder deny = literal("tpdeny");
-            ArgumentBuilder player = argument("player", player());
+            LiteralArgumentBuilder<ServerCommandSource> deny = literal("tpdeny");
+            RequiredArgumentBuilder<ServerCommandSource, EntitySelector> player = argument("player", player());
             player.executes(context -> executeResponse(context, false));
             deny.then(player);
             dispatcher.register(deny);

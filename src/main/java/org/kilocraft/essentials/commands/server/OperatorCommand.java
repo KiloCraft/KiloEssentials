@@ -173,7 +173,7 @@ public class OperatorCommand {
 
     private static int execute(ServerCommandSource source, Collection<GameProfile> gameProfiles, boolean set, int level, boolean byPass) throws CommandSyntaxException {
         PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
-        Iterator v = gameProfiles.iterator();
+        Iterator<GameProfile> v = gameProfiles.iterator();
         OperatorList operatorList = playerManager.getOpList();
 
         while(v.hasNext()) {
