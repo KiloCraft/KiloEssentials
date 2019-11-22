@@ -14,7 +14,10 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.feature.ServerProvidedFeature;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.commands.WarpCommand;
 import org.kilocraft.essentials.extensions.warps.commands.WarpCommands;
@@ -25,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class WarpManager extends NBTWorldData implements UserProvidedFeature {
+public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     public static WarpManager INSTANCE = new WarpManager();
     private static ArrayList<String> byName = new ArrayList<>();
     private static List<Warp> warps = new ArrayList<>();
@@ -39,7 +42,7 @@ public class WarpManager extends NBTWorldData implements UserProvidedFeature {
         return true;
     }
 
-    public static List<Warp> getWarps() {
+    public static List<Warp> getWarps() { // TODO Move all access to Feature Types in future.
         return warps;
     }
 
@@ -114,15 +117,5 @@ public class WarpManager extends NBTWorldData implements UserProvidedFeature {
             warps.add(new Warp(key, compoundTag.getCompound(key)));
             byName.add(key);
         });
-    }
-
-    @Override
-    public boolean isProxy() {
-        return false; // TODO i509VCB: impl feature system
-    }
-
-    @Override
-    public Function<ServerUser, WarpManager> provider() {
-        return null; // TODO i509VCB: impl feature system
     }
 }

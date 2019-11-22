@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
@@ -23,11 +24,39 @@ public class ServerUserManager implements UserManager {
     private Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
 
     @Override
+    public CompletableFuture<User> getOffline(String username) {
+        UUID ret = usernameToUUID.get(username);
+        if(ret != null) {
+            return getOffline(ret);
+        }
+
+        return this.getUserAsync(username);
+    }
+
+    private CompletableFuture<User> getUserAsync(String username) {
+        CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() -> {
+            GameProfile profile = KiloServer.getServer().getVanillaServer().getUserCache().findByName(username);
+
+            if(profile == null) {
+                return null;
+            }
+
+            return profile;
+        }); // This is hacky and probably doesn't work.
+
+        return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
+    }
+
+    @Override
     public CompletableFuture<User> getOffline(UUID uuid) {
         OnlineUser online = getOnline(uuid);
         if(online != null) {
             return CompletableFuture.completedFuture(online);
         }
+
+        // TODO. Check the username history page, if the username is not present than dump the NeverJoined out.
+
+        // TODO if the username is present, then pull an async call to read and form the user, then return the user within the future.
 
         File target = this.getHandler().getUserFile(uuid);
         if(!target.exists()) {
@@ -48,10 +77,7 @@ public class ServerUserManager implements UserManager {
     @Override
     @Nullable
     public OnlineUser getOnline(GameProfile profile) {
-        if(!profile.isComplete()) {
-
-        }
-
+        profileSanityCheck(profile);
         return getOnline(profile.getId());
     }
 

@@ -37,7 +37,6 @@ public class NicknameCommand {
     private static int execute(ServerUser source, ServerUser target, String arg) {
         // Empty?
         // r: YES Empty for now :p
-
         return 1;
     }
 
