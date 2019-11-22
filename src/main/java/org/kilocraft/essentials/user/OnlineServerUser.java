@@ -1,13 +1,14 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.KiloEssentials;
+import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public class OnlineServerUser extends ServerUser implements OnlineUser {
@@ -39,5 +40,15 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     public OnlineServerUser(ServerPlayerEntity player) {
         super(player.getUuid());
         this.name = player.getEntityName();
+    }
+
+    @Override
+    protected void deserialize(CompoundTag tag) {
+        // All the other serialization logic is handled.
+        super.deserialize(tag);
+        // We do this for online players when they are created.
+        if(this.getNickname().isPresent()) {
+            this.getPlayer().setCustomName(new LiteralText(TextFormat.translateAlternateColorCodes('&', getNickname().get())));
+        }
     }
 }

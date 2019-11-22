@@ -16,7 +16,7 @@ public class LiteralCommandModified {
      *
      * This only works for Command literals and their sub commands
      */
-    public static List<String> keCommandsToKeep = new ArrayList<String>(){{
+    private static List<String> keCommandsToKeep = new ArrayList<String>(){{
         add("ke_gamemode");
         add("ke_reload");
         add("ke_locate");
@@ -30,9 +30,11 @@ public class LiteralCommandModified {
         add("ke_ban");
         add("ke_teleport");
         add("ke_tp");
+        add("ke_ban");
+        add("ke_kick");
     }};
 
-    public static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
+    private static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
         add("gamemode");
         add("kill");
         add("help");
@@ -48,6 +50,10 @@ public class LiteralCommandModified {
         add("tm");
         add("time");
         add("ban");
+        add("kick");
+        add("ban-ip");
+        add("pardon");
+        add("pardon-ip");
         add("teleport");
         add("tp");
     }};
@@ -72,31 +78,18 @@ public class LiteralCommandModified {
         return NMSCommandNamePrefix;
     }
 
-    public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
-        if (KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
-            if (commandNode.canUse(source))
-                return isCustomCommand(commandNode.getName());
-            return false;
 
+    public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
+        if (!KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
+            if (commandNode.canUse(source)) {
+                if (isCustomCommand(commandNode.getName()))
+                    return true;
+            } else
+                return false;
         }
 
-        String customCommandsPrefix = "ke_";
         return !isVanillaCommand(commandNode.getName().replace(NMSCommandNamePrefix, ""))
-                || isCustomCommand(customCommandsPrefix + commandNode.getName());
+                || isCustomCommand(keCommandPrefix + commandNode.getName());
     }
-
-//    public static <S> boolean canSourceUseOLD(CommandNode<S> commandNode, S source) {
-//        if (KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
-//            if (commandNode.canUse(source)) {
-//                if (isCustomCommand(commandNode.getName()))
-//                    return true;
-//                else
-//                    return true;
-//            } else
-//                return false;
-//        }
-//        return !isVanillaCommand(commandNode.getName().replace(vanillaCommandsPrefix, ""))
-//                || isCustomCommand(customCommandsPrefix + commandNode.getName());
-//    }
 
 }

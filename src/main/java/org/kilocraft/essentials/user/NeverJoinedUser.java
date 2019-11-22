@@ -7,6 +7,7 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJoinedUser {
@@ -31,9 +32,8 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    @Nullable
-    public String getNickname() {
-        return "";
+    public Optional<String> getNickname() {
+        return Optional.empty();
     }
 
     @Override

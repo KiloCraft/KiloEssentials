@@ -9,12 +9,10 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.api.feature.FeatureNotPresentException;
-import org.kilocraft.essentials.api.feature.FeatureType;
+import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
+import org.kilocraft.essentials.config.datafixer.ConfigDataFixer;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 
@@ -33,11 +31,15 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 
+	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
+	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
+
 	public KiloEssentialsImpl(KiloEvents events, KiloCommands commands) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		new KiloConfig();
+		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = commands;
 
 		/*
@@ -107,17 +109,22 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType) {
+		if(featureType.getType().isAssignableFrom(SingleInstanceConfigurableFeature.class)) {
+			singleInstanceConfigurationRegistry.add((FeatureType<SingleInstanceConfigurableFeature>) featureType);
+			return featureType;
+		}
+
 		configurableFeatureRegistry.add(featureType);
 		return featureType;
 	}
 
-	public <F extends ConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException {
-		F ft = (F) proxyFeatureList.get(type);
+	public <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException {
+		F ft = (F) proxySingleInstanceFeatures.get(type);
 
 		if(ft == null) {
 			throw new FeatureNotPresentException();
 		}
 
-		return (F) proxyFeatureList.get(type);
+		return ft;
 	}
 }

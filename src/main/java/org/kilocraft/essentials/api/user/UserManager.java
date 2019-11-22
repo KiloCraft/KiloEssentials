@@ -11,13 +11,15 @@ import java.util.concurrent.CompletableFuture;
 
 public interface UserManager {
     /**
+     * @deprecated Not implemented yet
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
-     * @param uuid The UUID of the user.
+     * @param username The UUID of the user.
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
      */
     CompletableFuture<User> getOffline(String username);
 
     /**
+     * @deprecated Not implemented yet
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
      * @param uuid The UUID of the user.
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
@@ -25,6 +27,7 @@ public interface UserManager {
     CompletableFuture<User> getOffline(UUID uuid);
 
     /**
+     * @deprecated Not implemented yet
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
      * @param profile The user's GameProfile
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
@@ -80,4 +83,6 @@ public interface UserManager {
     OnlineUser getOnline(ServerCommandSource source) throws CommandSyntaxException;
 
     void saveAll();
+
+    void onChangeNickname(User user, String oldNick);
 }

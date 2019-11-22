@@ -10,7 +10,6 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +33,7 @@ public class ServerUserManager implements UserManager {
     }
 
     private CompletableFuture<User> getUserAsync(String username) {
+
         CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() -> {
             GameProfile profile = KiloServer.getServer().getVanillaServer().getUserCache().findByName(username);
 
@@ -47,25 +47,15 @@ public class ServerUserManager implements UserManager {
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
     }
 
+
     @Override
     public CompletableFuture<User> getOffline(UUID uuid) {
         OnlineUser online = getOnline(uuid);
         if(online != null) {
             return CompletableFuture.completedFuture(online);
         }
-
-        // TODO. Check the username history page, if the username is not present than dump the NeverJoined out.
-
-        // TODO if the username is present, then pull an async call to read and form the user, then return the user within the future.
-
-        File target = this.getHandler().getUserFile(uuid);
-        if(!target.exists()) {
-            return CompletableFuture.completedFuture(new NeverJoinedUser());
-        }
-
-        ServerUser user = new ServerUser(uuid);
-
-        return CompletableFuture.completedFuture(user);
+        // TODO Impl Async checks later
+        return CompletableFuture.completedFuture(new NeverJoinedUser());
     }
 
     @Override
@@ -120,6 +110,14 @@ public class ServerUserManager implements UserManager {
         }
     }
 
+    @Override
+    public void onChangeNickname(User user, String oldNick) {
+        this.nicknameToUUID.remove(oldNick);
+        if(user.hasNickname()) {
+            this.nicknameToUUID.put(user.getNickname().get(), user.getUuid());
+        }
+    }
+
     private void profileSanityCheck(GameProfile profile) {
         if(!profile.isComplete() && profile.getId() == null) {
             throw new IllegalArgumentException("Cannot use GameProfile with missing username to get an OfflineUser");
@@ -132,8 +130,8 @@ public class ServerUserManager implements UserManager {
         this.onlineUsers.put(playerEntity.getUuid(), serverUser);
         this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUuid());
 
-        if(serverUser.getNickname() != null && serverUser.getNickname() != "") {
-           this.nicknameToUUID.put(serverUser.getNickname(), playerEntity.getUuid());
+        if(serverUser.hasNickname()) {
+           this.nicknameToUUID.put(serverUser.getNickname().get(), playerEntity.getUuid());
         }
 
 

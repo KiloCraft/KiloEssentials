@@ -9,10 +9,15 @@ public class LangText {
 
     public static LiteralText getFormatter(boolean allowColorCodes, String key, Object... objects) {
         String lang = ModConstants.getLang().getProperty(key);
+
+        if(lang == null) {
+            return new LiteralText(key); // Return the key if the translation is missing in lang file.
+        }
+
         LiteralText literalText = new LiteralText ("");
         String result = "";
 
-        if (objects[0] != null) {
+        if (objects != null) {
             result = String.format(lang, objects);
         }
 

@@ -1,6 +1,8 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -9,6 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.FeatureType;
@@ -21,6 +24,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -41,7 +45,7 @@ public class ServerUser implements User {
     private Vec3d pos = Vec3d.ZERO;
     private Identifier lastPosDim;
     private Identifier posDim;
-    private String nickname = "";
+    private String nickname;
     private boolean canFly = false;
     private boolean invulnerable = false;
     private UUID lastPrivateMessageGetterUUID;
@@ -62,66 +66,68 @@ public class ServerUser implements User {
         }
     }
 
-    CompoundTag serialize() {
+    protected CompoundTag serialize() {
         CompoundTag mainTag = new CompoundTag();
         CompoundTag metaTag = new CompoundTag();
         CompoundTag cacheTag = new CompoundTag();
-        {
-            if(this.getBackPos() != null && this.getBackDimId() != null) { // Well this crashes without a safety check.
-                CompoundTag lastPosTag = new CompoundTag();
-                lastPosTag.putDouble("x", this.backPos.getX());
-                lastPosTag.putDouble("y", this.backPos.getY());
-                lastPosTag.putDouble("z", this.backPos.getZ());
-                lastPosTag.putString("dim", this.lastPosDim.toString());
-                cacheTag.put("lastPos", lastPosTag);
+
+        // Here we store the players previous position that is refered to with /back.
+        if(this.getBackPos() != null && this.getBackDimId() != null) { // Well this crashes without a safety check.
+            CompoundTag lastPosTag = new CompoundTag();
+            lastPosTag.putDouble("x", this.backPos.getX());
+            lastPosTag.putDouble("y", this.backPos.getY());
+            lastPosTag.putDouble("z", this.backPos.getZ());
+            lastPosTag.putString("dim", this.lastPosDim.toString());
+            cacheTag.put("lastPos", lastPosTag);
+        }
+
+        // Now the User's real position.
+        CompoundTag posTag = new CompoundTag();
+        posTag.putDouble("x", this.pos.getX());
+        posTag.putDouble("y", this.pos.getY());
+        posTag.putDouble("z", this.pos.getZ());
+
+        if(this.posDim == null) { // This should be impossible
+            // TODO Notify admins and throw a giant error log into Console to reflect error. Set it to a temp value
+            this.posDim = new Identifier("minecraft", "overworld");
+        }
+
+        posTag.putString("dim", this.posDim.toString());
+        mainTag.put("pos", posTag);
+
+        // Private messaging stuff
+        if(this.getLastPrivateMessageSender() != null) {
+            CompoundTag lastMessageTag = new CompoundTag();
+            lastMessageTag.putString("destUUID", this.getLastPrivateMessageSender().toString());
+            if(this.getLastPrivateMessage() != null) {
+                lastMessageTag.putString("text", this.getLastPrivateMessage());
             }
-        }
-        {
-            CompoundTag posTag = new CompoundTag();
-            posTag.putDouble("x", this.pos.getX());
-            posTag.putDouble("y", this.pos.getY());
-            posTag.putDouble("z", this.pos.getZ());
-
-            if(this.posDim == null) { // This should be impossible
-                // TODO Notify admins and throw a giant error log into Console to reflect error. Set it to a temp value
-                this.posDim = new Identifier("minecraft", "overworld");
-            }
-
-            posTag.putString("dim", this.posDim.toString());
-            mainTag.put("pos", posTag);
-        }
-        {
-            if(this.getLastPrivateMessageSender() != null) {
-                CompoundTag lastMessageTag = new CompoundTag();
-                lastMessageTag.putString("destUUID", this.getLastPrivateMessageSender().toString());
-                if(this.getLastPrivateMessage() != null) {
-                    lastMessageTag.putString("text", this.getLastPrivateMessage());
-                }
-                cacheTag.put("lastMessage", lastMessageTag);
-            }
-            if (this.canFly)
-                cacheTag.putBoolean("isFlyEnabled", true);
-            if (this.invulnerable)
-                cacheTag.putBoolean("isInvulnerable", true);
-        }
-        {
-            if (this.displayParticleId != 0)
-                metaTag.putInt("displayParticleId", this.displayParticleId);
-
-            metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
-
-            metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
-            if(this.hasNickname()) {
-                metaTag.putString("nick", this.nickname);
-            }
-        }
-        {
-            CompoundTag homeTag = new CompoundTag();
-            this.homeHandler.serialize(homeTag);
-            mainTag.put("homes", homeTag);
+            cacheTag.put("lastMessage", lastMessageTag);
         }
 
-        //mainTag.put("homes", this.homeHandler.serialize());
+        if (this.canFly)
+            cacheTag.putBoolean("isFlyEnabled", true);
+
+        if (this.invulnerable)
+            cacheTag.putBoolean("isInvulnerable", true);
+
+        // TODO When possible, move particle logic to a feature.
+        if (this.displayParticleId != 0)
+            metaTag.putInt("displayParticleId", this.displayParticleId);
+
+        metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
+
+        metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
+
+        if(this.hasNickname()) { // Nicknames are Optional now.
+            metaTag.putString("nick", this.nickname); }
+
+        // Home logic, TODO Abstract this with features in future.
+        CompoundTag homeTag = new CompoundTag();
+        this.homeHandler.serialize(homeTag);
+        mainTag.put("homes", homeTag);
+
+        // Misc stuff now.
         mainTag.putInt("rtpLeft", this.randomTeleportsLeft);
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
@@ -129,44 +135,47 @@ public class ServerUser implements User {
         return mainTag;
     }
 
-    void deserialize(@NotNull CompoundTag compoundTag) {
+    protected void deserialize(@NotNull CompoundTag compoundTag) {
         CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
-            CompoundTag lastPosTag = cacheTag.getCompound("lastPos");
-            this.backPos = new Vec3d(
-                    lastPosTag.getDouble("x"),
-                    lastPosTag.getDouble("y"),
-                    lastPosTag.getDouble("z")
-            );
+        CompoundTag lastPosTag = cacheTag.getCompound("lastPos");
+        this.backPos = new Vec3d(
+                lastPosTag.getDouble("x"),
+                lastPosTag.getDouble("y"),
+                lastPosTag.getDouble("z")
+        );
 
-            CompoundTag posTag = cacheTag.getCompound("pos");
-            this.pos = new Vec3d(
-                    posTag.getDouble("x"),
-                    posTag.getDouble("y"),
-                    posTag.getDouble("z")
-            );
+        CompoundTag posTag = cacheTag.getCompound("pos");
+        this.pos = new Vec3d(
+                posTag.getDouble("x"),
+                posTag.getDouble("y"),
+                posTag.getDouble("z")
+        );
 
-            if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
-                CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
-                if(lastMessageTag.contains("destUUID", NBTTypes.STRING))
+        if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
+            CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
+            if(lastMessageTag.contains("destUUID", NBTTypes.STRING))
                 this.lastPrivateMessageGetterUUID = UUID.fromString(lastMessageTag.getString("destUUID"));
 
-                if(lastMessageTag.contains("text", NBTTypes.STRING))
+            if(lastMessageTag.contains("text", NBTTypes.STRING))
                 this.lastPrivateMessageText = lastMessageTag.getString("text");
-            }
 
-            if (cacheTag.getBoolean("isFlyEnabled"))
-                this.canFly = true;
-            if (cacheTag.getBoolean("isInvulnerable"))
-                this.invulnerable = true;
+        }
+
+        if (cacheTag.getBoolean("isFlyEnabled"))
+            this.canFly = true;
+        if (cacheTag.getBoolean("isInvulnerable"))
+            this.invulnerable = true;
 
 
-            if (compoundTag.getInt("displayParticleId") != 0)
-                this.displayParticleId = compoundTag.getInt("displayParticleId");
+        if (compoundTag.getInt("displayParticleId") != 0)
+            this.displayParticleId = compoundTag.getInt("displayParticleId");
 
-            this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
-            this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
+        this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
+        this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
+
+        if(compoundTag.contains("nick", NBTTypes.STRING)) // Nicknames are an Optional, so we compensate for that.
             this.nickname = metaTag.getString("nick");
 
         this.homeHandler.deserialize(compoundTag.getCompound("homes"));
@@ -199,7 +208,7 @@ public class ServerUser implements User {
 
     @Override
     public boolean hasNickname() {
-        return this.nickname != null && this.nickname != "";
+        return this.getNickname().isPresent();
     }
 
     @Override
@@ -213,18 +222,21 @@ public class ServerUser implements User {
     }
 
     @Override
-    public String getNickname() {
-        return this.nickname.equals("") ? this.name : this.nickname;
+    public Optional<String> getNickname() {
+        return Optional.ofNullable(this.nickname);
+        //return this.nickname.equals("") ? this.name : this.nickname;
     }
 
     @Override
     public void setNickname(String name) {
+        String oldNick = this.nickname;
         this.nickname = name;
+        KiloServer.getServer().getUserManager().onChangeNickname(this, oldNick); // This is to update the entires in UserManager.
     }
 
     @Override
     public void clearNickname() {
-        this.nickname = "";
+        this.nickname = null;
     }
 
     @Override

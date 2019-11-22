@@ -5,6 +5,7 @@ import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.HashMap;
 
+// TODO This isn't used anymore.
 public class UserConfigVariables implements LocalConfigVariable {
     private ServerUser serverUser;
 
@@ -22,7 +23,7 @@ public class UserConfigVariables implements LocalConfigVariable {
         return new HashMap<String, String>(){{
             put("NAME", serverUser.getUsername());
             // put("DISPLAYNAME", serverUser.get); // Usually you don't have people editing displaynames
-            put("NICKNAME", serverUser.getNickname());
+            //put("NICKNAME", serverUser.getNickname());
         }};
     }
 }

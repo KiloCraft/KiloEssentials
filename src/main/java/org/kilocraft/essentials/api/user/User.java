@@ -10,6 +10,7 @@ import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface User {
@@ -21,8 +22,7 @@ public interface User {
 
     boolean hasNickname();
 
-    @Nullable
-    String getNickname();
+    Optional<String> getNickname();
 
     void setNickname(String name);
 

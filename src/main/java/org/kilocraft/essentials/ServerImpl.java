@@ -19,7 +19,6 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.user.ServerUserManager_Old;
 
 import java.util.*;
 

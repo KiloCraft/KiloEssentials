@@ -10,7 +10,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.ServerCommandSource;
@@ -27,13 +26,14 @@ import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.MessageCommand;
-import org.kilocraft.essentials.commands.misc.*;
+import org.kilocraft.essentials.commands.misc.ColorsCommand;
+import org.kilocraft.essentials.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.commands.misc.PingCommand;
+import org.kilocraft.essentials.commands.misc.PreviewCommand;
+import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
-import org.kilocraft.essentials.commands.teleport.BackCommand;
-import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
-import org.kilocraft.essentials.commands.teleport.TpCommand;
-import org.kilocraft.essentials.commands.teleport.TpaCommand;
+import org.kilocraft.essentials.commands.teleport.*;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 
@@ -42,6 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
+import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 import static org.kilocraft.essentials.api.KiloEssentials.getInstance;
 import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 
@@ -62,13 +64,20 @@ public class KiloCommands {
         return "kiloessentials.command." + command;
     }
 
+    public static boolean hasPermission(ServerCommandSource source, String shortNode) {
+        return hasPermission(source, shortNode, 2);
+    }
+
+    public static boolean hasPermission(ServerCommandSource source, String shortNode, int op) {
+        return hasPermissionOrOp(source, getCommandPermission(shortNode), op);
+    }
+
     private void register(boolean devEnv) {
         if (devEnv) {
             KiloEssentialsImpl.getLogger().info("Alert [!]: Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
             //TestCommand.register(this.dispatcher);
         }
-
 
         VersionCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
@@ -105,10 +114,12 @@ public class KiloCommands {
         PreviewCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
         NicknameCommand.register(this.dispatcher);
+        ResetNicknameCommand.register(this.dispatcher);
         TpCommand.register(this.dispatcher);
         PingCommand.register(this.dispatcher);
+        ClearchatCommand.register(this.dispatcher);
 
-        Thimble.permissionWriters.add((map, server) -> {
+        permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
         });
     }
