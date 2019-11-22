@@ -97,8 +97,4 @@ public class SpeedCommand {
         return 1;
     }
 
-    private static void setWalkSpeed(ServerPlayerEntity player, float speed) {
-
-    }
-
 }
