@@ -21,13 +21,13 @@ public abstract class ServerCommandOutputMixin {
     @Inject(at = @At("RETURN"), method = "<init>")
     private void kilo$init(MinecraftServer minecraftServer, CallbackInfo ci) {
 
-        new ModConstants();
+        new ModConstants().loadConstants();
 
         KiloServer.setServer(
                 new ServerImpl(
                     minecraftServer,
                     new EventRegistryImpl(),
-                    new UserManager(),
+                    new UserManager(minecraftServer.getPlayerManager()),
                     String.format(
                             ModConstants.getProperties().getProperty("server.brand"),
                                 ModConstants.getVersion(),
