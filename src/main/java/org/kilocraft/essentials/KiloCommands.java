@@ -18,6 +18,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.UsageCommand;
@@ -31,11 +32,13 @@ import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.PingCommand;
 import org.kilocraft.essentials.commands.misc.PreviewCommand;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
+import org.kilocraft.essentials.commands.moderation.ProfileBanCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.*;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,7 +51,6 @@ import static org.kilocraft.essentials.api.KiloEssentials.getInstance;
 import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 
 public class KiloCommands {
-    private static final SimpleCommandExceptionType SMART_USAGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Unknown command or insufficient permissions"));
     private static List<String> initializedPerms = new ArrayList<>();
     private CommandDispatcher<ServerCommandSource> dispatcher;
 
@@ -83,8 +85,8 @@ public class KiloCommands {
         ReloadCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
-        EnderchestCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
+        ProfileBanCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
         RandomTeleportCommand.register(this.dispatcher);
@@ -98,9 +100,7 @@ public class KiloCommands {
         AnvilCommand.register(this.dispatcher);
         ItemCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
-        EnderchestCommand.register(this.dispatcher);
         WorldLocateCommand.register(this.dispatcher);
-        UserBanCommand.register(this.dispatcher);
         BackCommand.register(this.dispatcher);
         HealCommand.register(this.dispatcher);
         FeedCommand.register(this.dispatcher);
@@ -117,6 +117,7 @@ public class KiloCommands {
         TpCommand.register(this.dispatcher);
         PingCommand.register(this.dispatcher);
         ClearchatCommand.register(this.dispatcher);
+        EnderchestCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
@@ -136,7 +137,7 @@ public class KiloCommands {
         String command = ctx.getInput().replace("/", "");
         ParseResults<ServerCommandSource> parseResults = getDispatcher().parse(command, ctx.getSource());
         if (parseResults.getContext().getNodes().isEmpty()) {
-            throw SMART_USAGE_FAILED_EXCEPTION.create();
+            throw getException(ExceptionMessageNode.UNKNOWN_COMMAND_EXCEPTION).create();
         } else {
             Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = getDispatcher().getSmartUsage(((ParsedCommandNode)Iterables.getLast(parseResults.getContext().getNodes())).getNode(), ctx.getSource());
             Iterator<String> iterator = commandNodeStringMap.values().iterator();
@@ -156,12 +157,12 @@ public class KiloCommands {
     public static int executeSmartUsageFor(String command, ServerCommandSource source) throws CommandSyntaxException {
         ParseResults<ServerCommandSource> parseResults = getDispatcher().parse(command, source);
         if (parseResults.getContext().getNodes().isEmpty()) {
-            throw SMART_USAGE_FAILED_EXCEPTION.create();
+            throw getException(ExceptionMessageNode.UNKNOWN_COMMAND_EXCEPTION).create();
         } else {
             Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = getDispatcher().getSmartUsage(((ParsedCommandNode)Iterables.getLast(parseResults.getContext().getNodes())).getNode(), source);
             Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
-            KiloChat.sendLangMessageTo(source, "command.usage.firstRow", command);
+            KiloChat.sendLangMessageTo(source, "command.usage.firstRow", parseResults.getReader().getString());
             if (parseResults.getContext().getNodes().get(0).getNode().getCommand() != null)
                 KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
 
@@ -172,7 +173,7 @@ public class KiloCommands {
                 KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), usage);
             }
 
-            if (usages == 0) KiloChat.sendLangMessageTo(source, "command.usage.commandRow", command, "");
+            if (usages == 0) KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
 
             return commandNodeStringMap.size();
         }
@@ -262,6 +263,16 @@ public class KiloCommands {
         }
 
         return var;
+    }
+
+    public static SimpleCommandExceptionType getException(ExceptionMessageNode node, Object... objects) {
+        String exMsg = ModConstants.getMessageUtil().fromExceptionNode(node);
+        return createException((objects == null) ? exMsg : String.format(exMsg, objects));
+    }
+
+    public static SimpleCommandExceptionType createException(String message) {
+        return new SimpleCommandExceptionType(
+                new LiteralText(TextFormat.translateAlternateColorCodes('&', message)));
     }
 
 
