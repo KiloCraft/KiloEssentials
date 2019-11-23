@@ -49,7 +49,7 @@ public class ProfileBanCommand {
         LiteralArgumentBuilder<ServerCommandSource> banPermanentArgument = literal("permanent")
                 .then(argument("reason", greedyString()));
 
-        LiteralArgumentBuilder<ServerCommandSource> banTemporaryArgument = literal("permanent")
+        LiteralArgumentBuilder<ServerCommandSource> banTemporaryArgument = literal("temporarly")
                 .then(argument("time", string())
                     .suggests(ArgumentSuggestions::timeSuggestions)
                     .then(argument("reason", greedyString()))
