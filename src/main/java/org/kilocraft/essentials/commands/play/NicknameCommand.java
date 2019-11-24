@@ -7,12 +7,19 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.greedycommand.GreedyParser;
 import org.kilocraft.essentials.api.user.User;
@@ -23,51 +30,117 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.*;
 
 public class NicknameCommand {
+    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> hasPermissionOrOp(s, KiloCommands.getCommandPermission("nick"), 2);
+    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER = (s) -> hasPermissionOrOp(s, KiloCommands.getCommandPermission("nick.other"), 3);
+    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_EITHER = (s) -> PERMISSION_CHECK_OTHER.test(s) || PERMISSION_CHECK_SELF.test(s);
+
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> commandNode = dispatcher.register(literal("nickname")
-                .requires(src -> hasPermissionOrOp(src, getCommandPermission("nickname"), 2))
-                .executes(ctx -> executeUsageFor("command.nick.usage", ctx.getSource()))
-                .then(argument("args", StringArgumentType.greedyString())
-                        .suggests(NicknameCommand::suggestions)
-                        .executes(NicknameCommand::execute)
-                )
-        );
+        RootCommandNode<ServerCommandSource> rootCommandNode = dispatcher.getRoot();
 
-        dispatcher.register(literal("nick").requires(src -> hasPermissionOrOp(src, getCommandPermission("nickname"), 2)).redirect(commandNode));
+        LiteralCommandNode<ServerCommandSource> nickRootCommand = dispatcher.register(literal("nick").requires(PERMISSION_CHECK_EITHER));
+
+        LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
+        LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
+        ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("target", player()).requires(PERMISSION_CHECK_OTHER).build();
+
+        ArgumentCommandNode<ServerCommandSource, String> nicknameSelf = argument("nickname", string()).executes(NicknameCommand::setSelf).build();
+        ArgumentCommandNode<ServerCommandSource, String> nicknameOther = argument("nickname", string()).executes(NicknameCommand::setOther).build();
+
+        LiteralCommandNode<ServerCommandSource> resetSelf = literal("reset").requires(PERMISSION_CHECK_SELF).executes(NicknameCommand::resetSelf).build();
+        LiteralCommandNode<ServerCommandSource> clearSelf = literal("clear").requires(PERMISSION_CHECK_SELF).executes(NicknameCommand::resetSelf).build();
+        LiteralCommandNode<ServerCommandSource> resetOther = literal("reset").requires(PERMISSION_CHECK_OTHER).executes(NicknameCommand::resetOther).build();
+        LiteralCommandNode<ServerCommandSource> clearOther = literal("clear").requires(PERMISSION_CHECK_OTHER).executes(NicknameCommand::resetOther).build();
+
+        LiteralCommandNode<ServerCommandSource> other = literal("other").requires(PERMISSION_CHECK_OTHER).build();
+
+        setOther.addChild(nicknameOther);
+
+        target.addChild(setOther);
+        target.addChild(resetOther);
+        target.addChild(clearOther);
+
+        other.addChild(target);
+
+        nickRootCommand.addChild(other);
+
+        setSelf.addChild(nicknameSelf);
+
+        nickRootCommand.addChild(setSelf);
+        nickRootCommand.addChild(resetSelf);
+        nickRootCommand.addChild(clearSelf);
+
+        rootCommandNode.addChild(nickRootCommand);
+
+        LiteralCommandNode<ServerCommandSource> redirect_Nickname = literal("nickname").requires(PERMISSION_CHECK_EITHER).redirect(nickRootCommand).build();
+        rootCommandNode.addChild(redirect_Nickname);
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        GreedyParser gc = new GreedyParser(ctx, "args", false).parse();
+    private static int setSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        ServerCommandSource source = ctx.getSource();
+        ServerPlayerEntity self = source.getPlayer();
+
+        String nickname = getString(ctx, "nickname");
+
+        String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
+
+        User user = KiloServer.getServer().getUserManager().getOnline(self);
+        user.setNickname(nickname);
+        self.setCustomName(new LiteralText(formattedNickname));
+
+        source.sendFeedback(LangText.getFormatter(true, "command.nick.set.self", formattedNickname), false);
+        return 1;
+    }
+
+    private static int setOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        ServerCommandSource source = ctx.getSource();
+        ServerPlayerEntity player = getPlayer(ctx, "target");
+        String nickname = getString(ctx, "nickname");
+
+        String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
+
+        User user = KiloServer.getServer().getUserManager().getOnline(player);
+        user.setNickname(nickname);
+        player.setCustomName(new LiteralText(formattedNickname));
+
+        source.sendFeedback(LangText.getFormatter(true, "command.nick.set.other", formattedNickname), false);
+        player.sendMessage(LangText.getFormatter(true, "command.nick.set.byother", formattedNickname));
+        return 1;
+    }
+
+    private static int resetSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
+        User user = KiloServer.getServer().getUserManager().getOnline(player);
+        user.clearNickname();
+        // This is an Optional.ofNullable, so the DataTracker will just reset the name without any other magic since TrackedData is always and automatically synchronized with the client.
+        player.setCustomName(null);
+        ctx.getSource().sendFeedback(LangText.getFormatter(true, "command.nick.reset"),
+                false);
+        return 1;
+    }
 
-        String nick = TextFormat.translateAlternateColorCodes('&', gc.getString(0));
+    private static int resetOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        ServerCommandSource source = ctx.getSource();
+        ServerPlayerEntity player = getPlayer(ctx, "target");
+        User user = KiloServer.getServer().getUserManager().getOnline(player);
+        user.clearNickname();
+        // This is an Optional.ofNullable, so the DataTracker will just reset the name without any other magic since TrackedData is always and automatically synchronized with the client.
+        player.setCustomName(null);
 
-        if (gc.getRawArgument(1).isEmpty()) {
-            KiloServer.getServer().getUserManager().getOnline(player).setNickname(nick);
-            KiloChat.sendLangMessageTo(player, "command.nick.success", nick);
-        }
-        else
-            if (hasPermission(ctx.getSource(), "nick.others")) {
-                KiloServer.getServer().getUserManager().getOnline(gc.getPlayer(1));
-                User target = KiloServer.getServer().getUserManager().getOnline(gc.getString(1));
-                if(target == null) {
-                    throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
-                }
-
-                target.setNickname(nick);
-                KiloChat.sendLangMessageTo(player, "command.nick.success.others", nick, target.getUsername());
-            } else
-                throw new SimpleCommandExceptionType(getPermissionError("nick.others")).create();
-
-        return SUCCESS();
+        source.sendFeedback(LangText.getFormatter(true, "command.nick.reset"),
+                false);
+        return 1;
     }
 
 

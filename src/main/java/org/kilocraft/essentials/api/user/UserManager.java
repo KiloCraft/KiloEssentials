@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -81,6 +82,8 @@ public interface UserManager {
      * @throws CommandSyntaxException If the CommandSource is not a player.
      */
     OnlineUser getOnline(ServerCommandSource source) throws CommandSyntaxException;
+
+    PunishmentManager getPunishmentManager();
 
     void saveAll();
 

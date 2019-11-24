@@ -3,7 +3,6 @@ package org.kilocraft.essentials.commands.server;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -13,7 +12,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class ReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(literal("ke_reload")
+        LiteralCommandNode<ServerCommandSource> reload = dispatcher.register(literal("ke_reload")
             .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.server.manage.reload", 2))
             .executes(context -> execute(context.getSource()))
         );
@@ -22,6 +21,7 @@ public class ReloadCommand {
                 .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.server.manage.reload", 2))
                 .executes(context -> execute(context.getSource()))
         );
+        dispatcher.getRoot().addChild(reload);
     }
 
     private static int execute(ServerCommandSource source) {

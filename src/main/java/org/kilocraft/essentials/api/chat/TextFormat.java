@@ -229,7 +229,6 @@ public enum TextFormat {
      * @return Text containing the ChatColor.COLOR_CODE color code character.
      */
 
-
     @NotNull
     public static String translateAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
@@ -244,6 +243,10 @@ public enum TextFormat {
         return new String(b);
     }
 
+    @NotNull
+    public static String translate(String string) {
+        return translateAlternateColorCodes('&', string);
+    }
 
     public static LiteralText translateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");

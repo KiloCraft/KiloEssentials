@@ -83,7 +83,7 @@ public class TimeCommand {
     }
 
     public static int executeSet(CommandContext<ServerCommandSource> context, int time, String timeName){
-        Iterator iterator = context.getSource().getMinecraftServer().getWorlds().iterator();
+        Iterator<ServerWorld> iterator = context.getSource().getMinecraftServer().getWorlds().iterator();
 
         while (iterator.hasNext()) {
             ServerWorld world = (ServerWorld) iterator.next();
@@ -96,7 +96,7 @@ public class TimeCommand {
     }
 
     public static int executeAdd(CommandContext<ServerCommandSource> context, int timeToAdd) {
-        Iterator iterator = context.getSource().getMinecraftServer().getWorlds().iterator();
+        Iterator<ServerWorld> iterator = context.getSource().getMinecraftServer().getWorlds().iterator();
 
         while (iterator.hasNext()) {
             ServerWorld world = (ServerWorld) iterator.next();

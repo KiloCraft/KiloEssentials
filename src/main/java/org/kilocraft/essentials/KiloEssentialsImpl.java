@@ -27,6 +27,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private static List<String> initializedPerms = new ArrayList<>();
 	private static KiloEssentialsImpl instance;
 	private KiloCommands commands;
+	private static ModConstants constants = new ModConstants();
 
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
@@ -102,6 +103,11 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public Server getServer() {
 	    return KiloServer.getServer();
     }
+
+	@Override
+	public ModConstants getConstants() {
+		return constants;
+	}
 
 	@Override
 	public KiloCommands getCommandHandler() {

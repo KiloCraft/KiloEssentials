@@ -2,6 +2,7 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +10,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,6 +23,12 @@ public class ServerUserManager implements UserManager {
     private Map<String, UUID> nicknameToUUID = new HashMap<>();
     private Map<String, UUID> usernameToUUID = new HashMap<>();
     private Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
+
+    private PunishmentManager banManager;
+
+    public ServerUserManager(PlayerManager manager) {
+        this.banManager = new PunishmentManager(manager);
+    }
 
     @Override
     public CompletableFuture<User> getOffline(String username) {
@@ -155,5 +163,9 @@ public class ServerUserManager implements UserManager {
 
     public UserHandler getHandler() {
         return this.userHandler;
+    }
+
+    public PunishmentManager getPunishmentManager() {
+        return this.banManager;
     }
 }

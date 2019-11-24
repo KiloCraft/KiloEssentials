@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands.server;
+package org.kilocraft.essentials.commands.moderation;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
@@ -29,7 +29,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class UserBanCommand {
+public class UserBanCommandOLD {
 	private static final SimpleCommandExceptionType ALREADY_BANNED_EXCEPTION = new SimpleCommandExceptionType(
 			new TranslatableText("commands.ban.failed"));
 
@@ -99,10 +99,10 @@ public class UserBanCommand {
 
 			if (date == null) {
 				serverCommandSource_1.sendFeedback(new TranslatableText("commands.ban.success",
-						new Object[] { Texts.toText(target), bannedPlayerEntry_1.getReason() }), true);
+						Texts.toText(target), bannedPlayerEntry_1.getReason()), true);
 			} else {
 				serverCommandSource_1.sendFeedback(new TranslatableText("commands.ban.success.temp",
-						new Object[] { Texts.toText(target), bannedPlayerEntry_1.getReason() }), true);
+						Texts.toText(target), bannedPlayerEntry_1.getReason()), true);
 			}
 
 			ServerPlayerEntity serverPlayerEntity_1 = serverCommandSource_1.getMinecraftServer().getPlayerManager()
@@ -110,10 +110,10 @@ public class UserBanCommand {
 			if (serverPlayerEntity_1 != null) {
 				if (date == null) {
 					serverPlayerEntity_1.networkHandler
-							.disconnect(new TranslatableText("multiplayer.disconnect.banned", new Object[0]));
+							.disconnect(new TranslatableText("multiplayer.disconnect.banned"));
 				} else {
 					serverPlayerEntity_1.networkHandler
-							.disconnect(new TranslatableText("multiplayer.disconnect.banned.temp", new Object[0]));
+							.disconnect(new TranslatableText("multiplayer.disconnect.banned.temp"));
 				}
 			}
 		} else {

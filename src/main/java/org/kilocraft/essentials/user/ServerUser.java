@@ -31,7 +31,7 @@ import java.util.UUID;
  * @author CODY_AI
  * An easy way to handle the User (Instance of player)
  *
- * @see ServerUserManager_Old
+ * @see ServerUserManager
  * @see UserHomeHandler
  */
 

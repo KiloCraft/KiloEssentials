@@ -5,6 +5,7 @@ import net.minecraft.server.dedicated.ServerCommandOutput;
 import org.kilocraft.essentials.ServerImpl;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.events.EventRegistryImpl;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.spongepowered.asm.mixin.Final;
@@ -21,13 +22,13 @@ public abstract class ServerCommandOutputMixin {
     @Inject(at = @At("RETURN"), method = "<init>")
     private void kilo$init(MinecraftServer minecraftServer, CallbackInfo ci) {
 
-        new ModConstants();
+        new ModConstants().loadConstants();
 
         KiloServer.setServer(
                 new ServerImpl(
                     minecraftServer,
                     new EventRegistryImpl(),
-                    new ServerUserManager(),
+                    new ServerUserManager(minecraftServer.getPlayerManager()),
                     String.format(
                             ModConstants.getProperties().getProperty("server.brand"),
                                 ModConstants.getVersion(),

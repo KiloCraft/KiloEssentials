@@ -13,7 +13,6 @@ import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.user.UserManager;
-import org.kilocraft.essentials.user.ServerUserManager_Old;
 
 import java.util.Collection;
 import java.util.Optional;

@@ -25,6 +25,8 @@ public interface KiloEssentials {
 
     Server getServer();
 
+    ModConstants getConstants();
+
     KiloCommands getCommandHandler();
 
     <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType);

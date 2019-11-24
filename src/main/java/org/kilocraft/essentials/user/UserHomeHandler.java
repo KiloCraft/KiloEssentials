@@ -29,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
  * A better way of handeling the User (Instance of player) Homes
  *
  * @see ServerUser
- * @see ServerUserManager_Old
+ * @see ServerUserManager
  */
 
 
