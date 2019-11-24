@@ -1,9 +1,14 @@
 package org.kilocraft.essentials.api;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.user.NeverJoinedUser;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.misc.ModsCommand;
 import org.kilocraft.essentials.commands.misc.TpsCommand;
 
@@ -18,6 +23,13 @@ public class KiloAPICommands {
         }
         return "kiloapi.command." + command;
     }
+
+    public static void failIfNeverJoined(User user) throws CommandSyntaxException {
+        if(user instanceof NeverJoinedUser) {
+            throw new SimpleCommandExceptionType(new LiteralText("This user has never joined")).create();
+        }
+    }
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         TpsCommand.register(dispatcher);
         ModsCommand.register(dispatcher);

@@ -8,10 +8,11 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.api.user.User;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -20,6 +21,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class InfoCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        KiloCommands.getCommandPermission("info.self");
+        KiloCommands.getCommandPermission("info.others");
         LiteralArgumentBuilder<ServerCommandSource> info = literal("info");
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("player", player());
 
@@ -36,16 +39,15 @@ public class InfoCommand {
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
-        ServerUser serverUser = KiloServer.getServer().getUserManager().getUser(player.getUuid());
+        User user = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
 
-        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.nick", serverUser.getNickname()));
+        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.nick", user.getNickname()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.name", player.getName().asString()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.uuid", player.getUuid()));
-        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.rtpleft", serverUser.getRTPsLeft()));
+        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.rtpleft", user.getRTPsLeft()));
         source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.pos", player.getPos()));
-        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.particle", serverUser.getDisplayParticleId()));
-        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.firstjoined", serverUser.getFirstJoin()));
-
+        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.particle", user.getDisplayParticleId()));
+        source.getPlayer().sendMessage(LangText.getFormatter(true, "command.info.firstjoined", user.getFirstJoin()));
         return 1;
     }
 }

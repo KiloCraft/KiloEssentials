@@ -23,7 +23,7 @@ public class OnTick /*implements EventHandler<ServerEvent$OnTick>*/ {
 		List<ServerPlayerEntity> players = world.getPlayers();
 
 		for (int i = 0; i < players.size(); i++) {
-			int particle = KiloServer.getServer().getUserManager().getUser(players.get(i).getUuid()).getDisplayParticleId();
+			int particle = KiloServer.getServer().getUserManager().getOnline(players.get(i).getUuid()).getDisplayParticleId();
 			if (particle != 0) {
 				for (int j = 0; j < players.size(); j++) {
 					if (particle == 1) {
