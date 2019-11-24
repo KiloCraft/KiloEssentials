@@ -22,6 +22,7 @@ import static net.minecraft.command.arguments.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+@Deprecated
 public class NickCommandOLD {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		KiloCommands.getCommandPermission("nick");

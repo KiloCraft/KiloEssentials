@@ -12,11 +12,6 @@ public class OnAutoSave implements EventHandler<ServerAutosaveEvent> {
     public void handle(ServerAutosaveEvent event) {
         KiloEssentialsImpl.getLogger().info("Saving user data...");
 
-        try {
-            KiloServer.getServer().getUserManager().triggerSave();
-        } catch (IOException e) {
-            KiloEssentialsImpl.getLogger().error("Can not save the User data!");
-            e.printStackTrace();
-        }
+        KiloServer.getServer().getUserManager().saveAll();
     }
 }

@@ -65,7 +65,7 @@ public class PlayerListPacketMixin {
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getLatency());
 	               packetByteBuf_1.writeBoolean(true);
 	               LiteralText displayText = new LiteralText(TextFormat.translateAlternateColorCodes('&',((Team) player.getScoreboardTeam()).getPrefix().asString()
-							+ "&r " + ServerUser.of(player).getDisplayNameAsString()));
+							+ "&r " + KiloServer.getServer().getUserManager().getOnline(player).getPlayer().getDisplayName().asFormattedString()));
 	               packetByteBuf_1.writeText(displayText);
 	               break;
 	            case UPDATE_GAME_MODE:
@@ -80,7 +80,7 @@ public class PlayerListPacketMixin {
 	               packetByteBuf_1.writeUuid(playerListS2CPacket$Entry_1.getProfile().getId());
 	               packetByteBuf_1.writeBoolean(true);
 	               displayText = new LiteralText(TextFormat.translateAlternateColorCodes('&',((Team) player.getScoreboardTeam()).getPrefix().asString()
-							+ "&r " + ServerUser.of(player).getDisplayNameAsString()));
+							+ "&r " + KiloServer.getServer().getUserManager().getOnline(player).getPlayer().getDisplayName().asFormattedString()));
 	               packetByteBuf_1.writeText(displayText);
 	               break;
 	            case REMOVE_PLAYER:

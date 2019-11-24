@@ -7,6 +7,7 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.ServerUser;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -24,7 +25,7 @@ public class RealNameCommand {
 					String input = getString(context, "target");
 					for (int i = 0; i < context.getSource().getWorld().getPlayers().size(); i++) {
 						PlayerEntity player = context.getSource().getWorld().getPlayers().get(i);
-						ServerUser serverUser = KiloServer.getServer().getUserManager().getUser(player.getUuid());
+						OnlineUser serverUser = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
 						if (input.equals(serverUser.getNickname()) && input != "") {
 							context.getSource().getPlayer().sendMessage(LangText.getFormatter(true,
 									"command.realname.success", input, player.getName().asString()));
