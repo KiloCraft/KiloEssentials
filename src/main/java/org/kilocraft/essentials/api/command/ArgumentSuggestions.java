@@ -10,6 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -40,7 +42,8 @@ public class ArgumentSuggestions {
     }
 
     public static CompletableFuture<Suggestions> dimensions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(new String[]{"overworld", "the_nether", "the_end"}, builder);
+        Registry.DIMENSION.forEach(dimType -> builder.suggest(DimensionType.getId(dimType).toString()));
+        return builder.buildFuture();
     }
 
     public static CompletableFuture<Suggestions> usableCommands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

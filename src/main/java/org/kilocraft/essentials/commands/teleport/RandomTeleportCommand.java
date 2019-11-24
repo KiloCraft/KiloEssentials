@@ -17,6 +17,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.ThreadManager;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.threaded.ThreadedRandomTeleporter;
 import org.kilocraft.essentials.user.ServerUser;
 
@@ -62,7 +63,7 @@ public class RandomTeleportCommand {
 	}
 
 	public static void teleportRandomly(ServerPlayerEntity player, ServerCommandSource source) {
-		ServerUser serverUser = KiloServer.getServer().getUserManager().getUser(player.getUuid());
+		OnlineUser serverUser = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
 		if (serverUser.getRTPsLeft() == 0 && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.ignorelimit"), 2)) {
 			player.sendMessage(LangText.get(true, "command.randomteleport.runout"));
 		} else if (player.dimension == DimensionType.OVERWORLD && !Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("rtp.otherdimensions"), 2)) {

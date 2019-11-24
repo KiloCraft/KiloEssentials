@@ -1,23 +1,24 @@
 package org.kilocraft.essentials.extensions.warps;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.config.KiloConfig;
 
 public class Warp {
     private String permissionBaseName = KiloConfig.getProvider().getMain().getValue("warps.permission_prefix");
     private String name;
     private double x, y, z;
-    private int dimension;
+    private Identifier dimensionId;
     private boolean requirePermission;
 
     private float dX, dY;
 
-    public Warp(String name, double x, double y, double z, float yaw, float pitch, int dimension, boolean requirePermission) {
+    public Warp(String name, double x, double y, double z, float yaw, float pitch, Identifier dimensionId, boolean requirePermission) {
         this.name = name;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.dimension = dimension;
+        this.dimensionId = dimensionId;
         this.requirePermission = requirePermission;
         this.dX = pitch;
         this.dY = yaw;
@@ -61,8 +62,8 @@ public class Warp {
         return this.z;
     }
 
-    public int getDimension() {
-        return this.dimension;
+    public Identifier getDimId() {
+        return this.dimensionId;
     }
 
 
@@ -89,7 +90,7 @@ public class Warp {
             compoundTag.put("direction", direction);
         }
 
-        compoundTag.putInt("dimension", this.dimension);
+        compoundTag.putString("dimension", this.dimensionId.toString());
         compoundTag.putBoolean("requires_permission", this.requirePermission);
 
         return compoundTag;
@@ -104,7 +105,7 @@ public class Warp {
         }
         {
             CompoundTag dir = tag.getCompound("direction");
-            this.dimension = tag.getInt("dimension");
+            this.dimensionId = new Identifier(tag.getString("dimension"));
             this.dX = dir.getFloat("dX");
             this.dY = dir.getFloat("dY");
         }

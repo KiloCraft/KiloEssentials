@@ -7,8 +7,10 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.user.UserHomeHandler;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface User {
@@ -18,8 +20,9 @@ public interface User {
 
     boolean isOnline();
 
-    @Nullable
-    String getNickname();
+    boolean hasNickname();
+
+    Optional<String> getNickname();
 
     void setNickname(String name);
 
@@ -74,4 +77,21 @@ public interface User {
     void setLastMessageSender(UUID uuid);
 
     <F extends UserProvidedFeature> F feature(FeatureType<F> type);
+
+    @Deprecated
+    UserHomeHandler getHomesHandler();
+
+    /**
+     * This should be moved to it's own FeatureType
+     * @return
+     */
+    @Deprecated
+    int getDisplayParticleId();
+
+    /**
+     * This should be moved to it's own FeatureType
+     * @return
+     */
+    @Deprecated
+    void setDisplayParticleId(int i);
 }
