@@ -25,14 +25,15 @@ public class MessageUtil {
     }
 
     public String fromGeneralNode(GeneralMessageNode node) {
-        return GENERAL_MESSAGES.getProperty(node.getKey());
+        return (!node.getKey().equals("")) ? GENERAL_MESSAGES.getProperty(node.getKey()) : "";
     }
 
     public String fromCommandNode(CommandMessageNode node) {
-        return GENERAL_MESSAGES.getProperty(node.getKey());
+        return (!node.getKey().equals("")) ? COMMAND_MESSAGES.getProperty(node.getKey()) : "";
     }
 
     public String fromExceptionNode(ExceptionMessageNode node) {
-        return GENERAL_MESSAGES.getProperty(node.getKey());
+        return (!node.getKey().equals("")) ? GENERAL_MESSAGES.getProperty(node.getKey()) : "";
     }
+
 }

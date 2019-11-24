@@ -17,6 +17,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.util.messages.MessageUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,10 +87,14 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		return "kiloessentials." + node;
 	}
 
-    public static KiloEssentialsImpl getInstance() {
-		if(instance==null) {
-			throw new RuntimeException("Accessed KiloEssentials too early");
-		}
+	@Override
+	public MessageUtil getMessageUtil() {
+		return ModConstants.getMessageUtil();
+	}
+
+	public static KiloEssentialsImpl getInstance() {
+		if(instance==null)
+			throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
 
 		return instance;
     }

@@ -230,7 +230,7 @@ public class KiloCommands {
                             text.append(text_2);
                         }
 
-                        text.append(new LiteralText("<--[HERE]").formatted(Formatting.RED, Formatting.ITALIC));
+                        text.append(new LiteralText("<--[Error At]").formatted(Formatting.RED, Formatting.ITALIC));
                         executor.sendError(text);
                     }
                 }

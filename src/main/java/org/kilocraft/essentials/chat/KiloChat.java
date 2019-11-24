@@ -14,24 +14,29 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.config.ConfigValueGetter;
 import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.config.ConfigValueGetter;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVariables;
 
+import static org.kilocraft.essentials.api.KiloServer.getServer;
+
 public class KiloChat {
 	private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
+
+	public static String getFormattedLang(String key) {
+		return getFormattedString(ModConstants.getLang().getProperty(key), (Object) null);
+	}
 
 	public static String getFormattedLang(String key, Object... objects) {
 		return getFormattedString(ModConstants.getLang().getProperty(key), objects);
 	}
 
 	public static String getFormattedString(String string, Object... objects) {
-		return objects[0] != null ? String.format(string, objects) : string;
+		return (objects[0] != null) ? String.format(string, objects) : string;
 	}
 
 	public static void sendMessageTo(ServerPlayerEntity player, ChatMessage chatMessage) {
@@ -60,14 +65,14 @@ public class KiloChat {
 
 	public static void sendMessageToSource(ServerCommandSource source, Text text) {
 		if (CommandHelper.isConsole(source))
-			KiloEssentials.getInstance().getServer().sendMessage(text.asString());
+			getServer().sendMessage(text.asString());
 		else
 			source.sendFeedback(text, false);
 	}
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key) {
 		if (CommandHelper.isConsole(source))
-			KiloEssentials.getInstance().getServer().sendMessage(getFormattedLang(key));
+			getServer().sendMessage(getFormattedLang(key));
 		else
 			source.sendFeedback(LangText.get(true, key), false);
 	}
@@ -102,7 +107,7 @@ public class KiloChat {
 	}
 
 	public static void broadCastExceptConsole(ChatMessage chatMessage) {
-		for (PlayerEntity entity : KiloServer.getServer().getPlayerList()) {
+		for (PlayerEntity entity : getServer().getPlayerList()) {
 			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
 		}
 	}
@@ -117,20 +122,20 @@ public class KiloChat {
 
 	public static void broadCastToConsole(ChatMessage chatMessage) {
 		chatMessage.setMessage(chatMessage.getOriginal(), false);
-		KiloServer.getServer().sendMessage(chatMessage.getFormattedMessage());
+		getServer().sendMessage(chatMessage.getFormattedMessage());
 	}
 
 	public static void broadCast(ChatMessage chatMessage) {
-		for (PlayerEntity entity : KiloServer.getServer().getPlayerList()) {
+		for (PlayerEntity entity : getServer().getPlayerList()) {
 			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
 		}
 
-		KiloServer.getServer()
+		getServer()
 				.sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));
 	}
 
 	public static void broadCast(Text text) {
-		KiloServer.getServer().getPlayerManager().broadcastChatMessage(text, false);
+		getServer().getPlayerManager().broadcastChatMessage(text, false);
 	}
 
 	public static void broadCastLang(String key) {
@@ -149,8 +154,8 @@ public class KiloChat {
 			String pingSenderFormat = config.get(false, "chat.ping.format");
 			String pingFormat = config.get(false, "chat.ping.pinged");
 
-			for (String playerName : KiloServer.getServer().getPlayerManager().getPlayerNames()) {
-				String displayName = KiloServer.getServer().getPlayer(playerName).getDisplayName().asString();
+			for (String playerName : getServer().getPlayerManager().getPlayerNames()) {
+				String displayName = getServer().getPlayer(playerName).getDisplayName().asString();
 				String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", displayName);
 
 				if (messageToSend.contains(thisPing.replace("%PLAYER_NAME%", playerName))) {
@@ -161,7 +166,7 @@ public class KiloChat {
 
 					if ((boolean) config.getValue("chat.ping.sound.enable"))
 						//if (Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.ping.other"), 2))
-							pingPlayer(KiloServer.getServer().getPlayer(playerName));
+							pingPlayer(getServer().getPlayer(playerName));
 
 				}
 
