@@ -88,6 +88,10 @@ homes.limit: 10
 #[<boolean>] Default: false
 commands.suggestions.require_permission: true
 
+# Maximum length of a nickname. This cannot be negative.
+# Includes color formatting
+nickname-max-length: 16
+
 chat:
   # [<greedyString> c/f/GV]
   #You can set how the messages would look like on  the server

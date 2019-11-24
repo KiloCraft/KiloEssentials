@@ -22,8 +22,11 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.greedycommand.GreedyParser;
+import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.ArrayList;
@@ -44,6 +47,7 @@ public class NicknameCommand {
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> hasPermissionOrOp(s, KiloCommands.getCommandPermission("nick"), 2);
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER = (s) -> hasPermissionOrOp(s, KiloCommands.getCommandPermission("nick.other"), 3);
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_EITHER = (s) -> PERMISSION_CHECK_OTHER.test(s) || PERMISSION_CHECK_SELF.test(s);
+    private static final SimpleCommandExceptionType NICKNAME_TOO_LONG = new SimpleCommandExceptionType(new LiteralText("Nickname is too long"));
 
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -91,7 +95,18 @@ public class NicknameCommand {
         ServerCommandSource source = ctx.getSource();
         ServerPlayerEntity self = source.getPlayer();
 
+        Object unchecked = KiloConfig.getProvider().getMain().getValue("nickname-max-length");
+
+        if (unchecked == null) {
+            throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();
+        }
+
+        int maxLength = (int) unchecked;
         String nickname = getString(ctx, "nickname");
+
+        if(nickname.length() > maxLength) {
+            throw NICKNAME_TOO_LONG.create();
+        }
 
         String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
 
