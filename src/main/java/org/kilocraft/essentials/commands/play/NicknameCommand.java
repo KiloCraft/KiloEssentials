@@ -108,7 +108,12 @@ public class NicknameCommand {
             throw NICKNAME_TOO_LONG.create();
         }
 
-        String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
+        String formattedNickname = "";
+        if (hasPermissionOrOp(ctx.getSource(), KiloCommands.getCommandPermission("nick.formatting"), 2)) {
+        	formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
+        } else {
+        	formattedNickname = TextFormat.removeAlternateColorCodes('&', nickname);
+        }
 
         User user = KiloServer.getServer().getUserManager().getOnline(self);
         user.setNickname(nickname);

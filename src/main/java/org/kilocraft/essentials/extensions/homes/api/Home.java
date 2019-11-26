@@ -149,7 +149,7 @@ public class Home {
         float yaw = home.getYaw();
         float pitch = home.getPitch();
 
-        destinationWorld.method_14178().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getEntityId()); // Lag reduction magic
+        destinationWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getEntityId()); // Lag reduction magic
         player.teleport(destinationWorld, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
     }
 }
