@@ -82,4 +82,8 @@ public class ModConstants {
     public static String getBuildType() {
         return properties.getProperty("build_type");
     }
+
+    public static int dataFixerSchema() {
+        return Integer.parseInt(properties.getProperty("datafixer_schema"));
+    }
 }

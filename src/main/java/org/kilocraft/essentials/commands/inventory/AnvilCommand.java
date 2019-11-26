@@ -26,7 +26,7 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class AnvilCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) { // This is a dummy inventory which does nothing.
         KiloCommands.getCommandPermission("anvil");
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = literal("anvil")
                 .requires(source -> Thimble.hasPermissionOrOp(source, KiloCommands.getCommandPermission("anvil"), 2))

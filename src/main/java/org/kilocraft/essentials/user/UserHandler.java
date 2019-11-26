@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 public class UserHandler {
     private static File saveDir = new File(System.getProperty("user.dir") + "/KiloEssentials/users/");
@@ -42,8 +43,12 @@ public class UserHandler {
         }
     }
 
-    private File getUserFile(ServerUser serverUser) {
+    public File getUserFile(ServerUser serverUser) {
         return new File( KiloConfig.getWorkingDirectory() + "/KiloEssentials/users/" + serverUser.getUuid().toString() + ".dat");
+    }
+
+    public File getUserFile(UUID uuid) {
+        return new File( KiloConfig.getWorkingDirectory() + "/KiloEssentials/users/" + uuid.toString() + ".dat");
     }
 
 }
