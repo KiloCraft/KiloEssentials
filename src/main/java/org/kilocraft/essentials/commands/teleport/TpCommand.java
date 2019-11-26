@@ -225,7 +225,7 @@ public class TpCommand {
 			float float_1, float float_2, TpCommand.LookTarget teleportCommand$LookTarget_1) {
 		if (entity_1 instanceof ServerPlayerEntity) {
 			ChunkPos chunkPos_1 = new ChunkPos(new BlockPos(double_1, double_2, double_3));
-			serverWorld_1.method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos_1, 1,
+			serverWorld_1.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos_1, 1,
 					entity_1.getEntityId());
 			entity_1.stopRiding();
 			if (((ServerPlayerEntity) entity_1).isSleeping()) {
