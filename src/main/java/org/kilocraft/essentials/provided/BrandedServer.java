@@ -11,17 +11,15 @@ import org.kilocraft.essentials.config.KiloConfig;
 public  class BrandedServer {
     public static void provide() {
         String configBrand = KiloConfig.getProvider().getMain().get(true, "server.displayBrandName");
-        boolean useDefault = false;
-        if (configBrand.equals("DEFAULT")) useDefault = true;
 
         KiloServer.getServer().setDisplayBrandName(
-                useDefault ? KiloServer.getServer().getBrandName() :
+                configBrand.equalsIgnoreCase("DEFAULT") ? KiloServer.getServer().getBrandName() :
                         TextFormat.translateAlternateColorCodes(
                                 '&',
                                 String.format(
                                         ModConstants.getProperties().getProperty("server.brand.custom"),
                                         "&r" + configBrand + "&r",
-                                        ModConstants.getVersion()
+                                        ModConstants.getVersionInt()
                                 )
                         )
         );

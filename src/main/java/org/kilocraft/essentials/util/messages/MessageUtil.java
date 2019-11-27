@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.util.messages;
 
+import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.GeneralMessageNode;
@@ -13,11 +14,14 @@ public class MessageUtil {
     private Properties GENERAL_MESSAGES = new Properties();
     private Properties COMMAND_MESSAGES = new Properties();
     private Properties EXCEPTION_MESSAGES = new Properties();
+    private Properties ARGUMENT_EXCEPTION_MESSAGES = new Properties();
+
 
     public MessageUtil() throws IOException {
         GENERAL_MESSAGES.load(getResourceAsStream(getPath("general")));
         COMMAND_MESSAGES.load(getResourceAsStream(getPath("commands")));
         EXCEPTION_MESSAGES.load(getResourceAsStream(getPath("exceptions")));
+        ARGUMENT_EXCEPTION_MESSAGES.load(getResourceAsStream(getPath("arg_exceptions")));
     }
 
     private String getPath(String fileName) {
@@ -34,6 +38,10 @@ public class MessageUtil {
 
     public String fromExceptionNode(ExceptionMessageNode node) {
         return (!node.getKey().equals("")) ? GENERAL_MESSAGES.getProperty(node.getKey()) : "";
+    }
+
+    public String fromArgumentExceptionNode(ArgExceptionMessageNode node) {
+        return (!node.getKey().equals("")) ? ARGUMENT_EXCEPTION_MESSAGES.getProperty(node.getKey()) : "";
     }
 
 }

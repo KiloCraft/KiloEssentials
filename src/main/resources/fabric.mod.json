@@ -27,6 +27,6 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.6.1+build.165"
+    "fabricloader": ">=0.7.1+build.174"
   }
 }

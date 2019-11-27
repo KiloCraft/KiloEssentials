@@ -13,8 +13,9 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.DateArgument;
+import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.user.punishment.BanEntryType;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -53,8 +54,18 @@ public class ProfileBanCommand {
 
         LiteralArgumentBuilder<ServerCommandSource> banTemporaryArgument = literal("temporarly")
                 .then(argument("time", string())
-                    .suggests(ArgumentSuggestions::timeSuggestions)
+                    .suggests(DateArgument::getFullSuggestions)
                     .then(argument("reason", greedyString()))
+                    .executes(ctx -> {
+                        DateArgument dtArg = DateArgument.full(StringArgumentType.getString(ctx, "time")).parse();
+                        KiloChat.sendMessageToSource(
+                                ctx.getSource(),
+                                new ChatMessage("Selected time is: &6" + dtArg.getDate() + "\nInput amount: &d" + dtArg.getTimeAmount() + " &r" +
+                                        "Input type: &b" + dtArg.getTypeName(), true)
+                        );
+
+                        return 1;
+                    })
                 );
 
 
@@ -104,12 +115,12 @@ public class ProfileBanCommand {
             if (entryTime.equals("permanent"))
                 punishmentManager.ban(target, type, reason);
             else if (entryTime.equals("temporary")) {
-                DateArgument dArg = new DateArgument(entryTime).parse();
+                DateArgument dArg = DateArgument.simple(entryTime).parse();
 
                 punishmentManager.ban(target, type, reason, dArg.getDate());
             }
             else
-                throw getException(ExceptionMessageNode.ILLEGLA_STRING_ARGUMENT, "time argument").create();
+                throw getException(ExceptionMessageNode.ILLEGAL_STRING_ARGUMENT, "time argument").create();
         }
 
         return SUCCESS();

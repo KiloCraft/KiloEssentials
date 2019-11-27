@@ -12,9 +12,8 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.datafixer.ConfigDataFixer;
-import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
 import java.util.ArrayList;

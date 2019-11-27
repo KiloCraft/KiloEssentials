@@ -1,26 +1,13 @@
 package org.kilocraft.essentials.commands.teleport;
 
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
-import static org.kilocraft.essentials.KiloCommands.getCommandPermission;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.Set;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.command.arguments.DefaultPosArgument;
-import net.minecraft.command.arguments.EntityAnchorArgumentType;
+import net.minecraft.command.arguments.*;
 import net.minecraft.command.arguments.EntityAnchorArgumentType.EntityAnchor;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.PosArgument;
-import net.minecraft.command.arguments.RotationArgumentType;
-import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.command.CommandManager;
@@ -29,11 +16,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
+
+import java.util.*;
+
+import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
+import static org.kilocraft.essentials.KiloCommands.getCommandPermission;
 
 public class TpCommand {
 
@@ -225,7 +213,7 @@ public class TpCommand {
 			float float_1, float float_2, TpCommand.LookTarget teleportCommand$LookTarget_1) {
 		if (entity_1 instanceof ServerPlayerEntity) {
 			ChunkPos chunkPos_1 = new ChunkPos(new BlockPos(double_1, double_2, double_3));
-			serverWorld_1.method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos_1, 1,
+			serverWorld_1.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos_1, 1,
 					entity_1.getEntityId());
 			entity_1.stopRiding();
 			if (((ServerPlayerEntity) entity_1).isSleeping()) {

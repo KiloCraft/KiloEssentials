@@ -89,14 +89,13 @@ public class GamemodeCommand {
 
         for (ServerPlayerEntity player : players) {
             if (!silent && !CommandHelper.areTheSame(src, player))
-                KiloChat.sendLangMessageTo(player, "template.#1.announce", src.getName(), "gamemode",selectedMode.getName());
+                KiloChat.sendLangMessageTo(player, "template.#1.announce", src.getName(), "gamemode", selectedMode.getName());
             player.setGameMode(selectedMode);
 
         }
 
-        KiloChat.sendLangMessageTo(src, "template.#1", "gamemode", selectedMode.getName(),
-                (players.size() > 1) ? players.size() + " players" : src.getName()
-        );
+        KiloChat.sendLangMessageTo(src, "template.#1", "gamemode",
+                selectedMode.getName(), (players.size() == 1) ? src.getName() : players.size() + " players");
 
         return SUCCESS();
     }

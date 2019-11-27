@@ -195,22 +195,22 @@ public class KiloChat {
 	}
 
 	public static void broadcastUserJoinEventMessage(ServerPlayerEntity player) {
-		broadCast(new ChatMessage(
-						KiloConfig.getProvider().getMessages().get(false, "general.joinMessage")
-								.replace("%PLAYER_NAME%", player.getName().asString()),
-						true
-				)
-		);
+//		broadCast(new ChatMessage(
+//						KiloConfig.getProvider().getMessages().get(false, "general.joinMessage")
+//								.replace("%PLAYER_NAME%", player.getName().asString()),
+//						true
+//				)
+//		);
 
 	}
 
 	public static void broadcastUserLeaveEventMessage(ServerPlayerEntity player) {
-		broadCast(new ChatMessage(
-					KiloConfig.getProvider().getMessages().get(false, "general.leaveMessage")
-						.replace("%PLAYER_NAME%", player.getName().asString()),
-					true
-				)
-		);
+//		broadCast(new ChatMessage(
+//					KiloConfig.getProvider().getMessages().get(false, "general.leaveMessage")
+//						.replace("%PLAYER_NAME%", player.getName().asString()),
+//					true
+//				)
+//		);
 
 	}
 }
