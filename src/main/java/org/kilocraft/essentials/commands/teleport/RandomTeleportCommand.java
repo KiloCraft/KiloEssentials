@@ -19,7 +19,6 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.ThreadManager;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.threaded.ThreadedRandomTeleporter;
-import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.Random;
 

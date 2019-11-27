@@ -8,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.user.ServerUser;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
