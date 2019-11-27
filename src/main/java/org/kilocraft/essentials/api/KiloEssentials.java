@@ -9,6 +9,7 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.SingleInstanceConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.util.messages.MessageUtil;
 
 public interface KiloEssentials {
     static KiloEssentials getInstance() {
@@ -22,6 +23,8 @@ public interface KiloEssentials {
     static String getPermissionFor(String node) {
         return KiloEssentialsImpl.getPermissionFor(node);
     }
+
+    MessageUtil getMessageUtil();
 
     Server getServer();
 

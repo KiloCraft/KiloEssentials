@@ -16,7 +16,7 @@ public class ProvidedValueReplaced {
         for (String s : strings) {
             if (s.startsWith("%") && s.endsWith("%")) {
                 String path = s.replaceAll("_", ".").replaceAll("%", "").toLowerCase();
-                builder.append((String) this.config.get(path)).append(" ");
+                builder.append(this.config.getOrElse(path, "%NULL%")).append(" ");
             } else builder.append(s).append(" ");
         }
 

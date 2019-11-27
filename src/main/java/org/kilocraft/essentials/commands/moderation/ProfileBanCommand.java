@@ -13,7 +13,9 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.DateArgument;
+import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.user.punishment.BanEntryType;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -27,7 +29,8 @@ import static net.minecraft.command.arguments.GameProfileArgumentType.getProfile
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.*;
-import static org.kilocraft.essentials.user.punishment.BanEntryType.*;
+import static org.kilocraft.essentials.user.punishment.BanEntryType.IP;
+import static org.kilocraft.essentials.user.punishment.BanEntryType.PROFILE;
 
 public class ProfileBanCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -51,8 +54,18 @@ public class ProfileBanCommand {
 
         LiteralArgumentBuilder<ServerCommandSource> banTemporaryArgument = literal("temporarly")
                 .then(argument("time", string())
-                    .suggests(ArgumentSuggestions::timeSuggestions)
+                    .suggests(DateArgument::getFullSuggestions)
                     .then(argument("reason", greedyString()))
+                    .executes(ctx -> {
+                        DateArgument dtArg = DateArgument.full(StringArgumentType.getString(ctx, "time")).parse();
+                        KiloChat.sendMessageToSource(
+                                ctx.getSource(),
+                                new ChatMessage("Selected time is: &6" + dtArg.getDate() + "\nInput amount: &d" + dtArg.getTimeAmount() + " &r" +
+                                        "Input type: &b" + dtArg.getTypeName(), true)
+                        );
+
+                        return 1;
+                    })
                 );
 
 
@@ -65,9 +78,10 @@ public class ProfileBanCommand {
                 .then(argument("gameProfile", gameProfile())
                         .then(argument("type", StringArgumentType.string())
                         .executes(ctx -> executeClear(ctx, ""))
-                        .suggests(ProfileBanCommand::CompletableBanType))
-                        .then(argument("reason", greedyString())
+                        .suggests(ProfileBanCommand::CompletableBanType)
+                            .then(argument("reason", greedyString())
                                 .executes(ctx -> executeClear(ctx, getString(ctx, "reason")))
+                            )
                         )
                 );
 
@@ -81,8 +95,7 @@ public class ProfileBanCommand {
 
         mainArgument.then(setArgument);
         mainArgument.then(removeArgument);
-        //TODO: uncomment this code
-        //"mainArgument.then(listArgument);
+        mainArgument.then(listArgument);
         mainArgument.then(checkArgument);
     }
 
@@ -102,10 +115,12 @@ public class ProfileBanCommand {
             if (entryTime.equals("permanent"))
                 punishmentManager.ban(target, type, reason);
             else if (entryTime.equals("temporary")) {
-                punishmentManager.ban(target, type, reason);
+                DateArgument dArg = DateArgument.simple(entryTime).parse();
+
+                punishmentManager.ban(target, type, reason, dArg.getDate());
             }
             else
-                throw getException(ExceptionMessageNode.ILLEGLA_STRING_ARGUMENT, "time argument").create();
+                throw getException(ExceptionMessageNode.ILLEGAL_STRING_ARGUMENT, "time argument").create();
         }
 
         return SUCCESS();

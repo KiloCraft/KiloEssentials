@@ -38,15 +38,12 @@ public class PunishmentManager {
         }
     }
 
-    public void ban(GameProfile profile, BanEntryType type, Date expireDate, String reason) {
-
-    }
 
     public void ban(GameProfile profile, BanEntryType type, String reason) {
 
     }
 
-    public void ban(GameProfile profile, BanEntryType type, Date expireDate) {
+    public void ban(GameProfile profile, BanEntryType type, String reason, Date expireDate) {
 
     }
 

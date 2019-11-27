@@ -125,7 +125,7 @@ public class ArgumentSuggestions {
         return context.getInput().replace("/" + context.getNodes().get(0) + " ", "");
     }
 
-    private static int getPendingCursor(CommandContext<ServerCommandSource> context) {
+    public static int getPendingCursor(CommandContext<ServerCommandSource> context) {
         return (context.getInput().length() - 1);
     }
 

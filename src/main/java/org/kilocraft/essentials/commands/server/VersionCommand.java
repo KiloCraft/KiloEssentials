@@ -30,6 +30,7 @@ public class VersionCommand {
         KiloChat.sendLangMessageTo(source, "command.info.version",
                 ModConstants.getBuildType(),
                 ModConstants.getVersionInt(),
+                ModConstants.getBuildTime(),
                 ModConstants.getGitHash(),
                 ModConstants.getGitBranch(),
                 ModConstants.getLoaderVersion(),

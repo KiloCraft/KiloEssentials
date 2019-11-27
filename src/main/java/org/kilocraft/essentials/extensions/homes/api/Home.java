@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.extensions.homes.api;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
@@ -9,10 +8,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.util.NBTTypes;
 
 import java.util.UUID;
 

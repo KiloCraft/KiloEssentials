@@ -1,15 +1,17 @@
 package org.kilocraft.essentials.util.messages.nodes;
 
-public enum CommandMessageNode {
-    EXECUTION_EXCEPTION_HELP("execution_exception_help");
+public enum ArgExceptionMessageNode {
+    TIME_ARGUMENT_INVALID("time.invalid")
+    ;
 
     private String key;
 
-    CommandMessageNode(String key) {
+    ArgExceptionMessageNode(String key) {
         this.key = key;
     }
 
     public String getKey() {
         return this.key;
     }
+
 }
