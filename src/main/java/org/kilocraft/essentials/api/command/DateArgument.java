@@ -6,6 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public class DateArgument {
             throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_INVALID, this.input).create();
 
         this.type = this.input.replace("\\d+", "");
-        this.amount = Integer.parseInt(this.input.replaceAll("[a-zA-Z]+", ""));
+        this.amount = Integer.parseInt(this.input.replaceAll(RegexLib.ALL_EXCEPT_DIGITS.get(), ""));
         this.result = thisDate();
 
         return this;
@@ -106,23 +107,17 @@ public class DateArgument {
     }
 
     public static CompletableFuture<Suggestions> getSimpleSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        String[] simple = {"s", "m", "h", "d"};
-        String digitRegex = "^\\d+";
-
         return ArgumentSuggestions.suggestAtCursor(
-                Arrays.stream(simple).filter((it) ->
-                        String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context))).matches(digitRegex)),
+                Arrays.stream(new String[]{"s", "m", "h", "d"}).filter((it) ->
+                        String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context))).matches("^\\d+")),
                 context
         );
     }
 
     public static CompletableFuture<Suggestions> getFullSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        String[] full = {"s", "m", "h", "d", "mo", "y"};
-        String digitRegex = "^\\d+";
-
         return ArgumentSuggestions.suggestAtCursor(
-                Arrays.stream(full).filter((it) ->
-                        String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context))).matches(digitRegex)),
+                Arrays.stream(new String[]{"s", "m", "h", "d", "mo", "y"}).filter((it) ->
+                        String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context))).matches(RegexLib.DIGITS_ONLY.get())),
                 context
         );
     }
