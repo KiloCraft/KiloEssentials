@@ -54,14 +54,13 @@ public class ProfileBanCommand {
 
         LiteralArgumentBuilder<ServerCommandSource> banTemporaryArgument = literal("temporarly")
                 .then(argument("time", string())
-                    .suggests(DateArgument::getFullSuggestions)
+                    .suggests(DateArgument::suggestions)
                     .then(argument("reason", greedyString()))
                     .executes(ctx -> {
-                        DateArgument dtArg = DateArgument.full(StringArgumentType.getString(ctx, "time")).parse();
+                        DateArgument dtArg = DateArgument.complex(StringArgumentType.getString(ctx, "time")).parse();
                         KiloChat.sendMessageToSource(
                                 ctx.getSource(),
-                                new ChatMessage("Selected time is: &6" + dtArg.getDate() + "\nInput amount: &d" + dtArg.getTimeAmount() + " &r" +
-                                        "Input type: &b" + dtArg.getTypeName(), true)
+                                new ChatMessage("Selected time is: &6" + dtArg.getDate(), true)
                         );
 
                         return 1;
