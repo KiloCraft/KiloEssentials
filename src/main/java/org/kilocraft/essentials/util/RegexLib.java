@@ -1,7 +1,8 @@
 package org.kilocraft.essentials.util;
 
 public enum RegexLib {
-    DIGITS_ONLY("^\\d+"),
+    DIGITS("\\d+"),
+    START_WITH_DIGITS("^\\d+"),
     ALL_EXCEPT_DIGITS("[a-zA-Z]+")
     ;
 
