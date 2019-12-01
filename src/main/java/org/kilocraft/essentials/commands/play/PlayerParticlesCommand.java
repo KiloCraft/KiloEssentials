@@ -5,10 +5,11 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
+
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.user.ServerUser;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -16,16 +17,9 @@ public class PlayerParticlesCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> particlesNode = literal("playerparticles")
-				.executes((context) -> {
-					context.getSource().sendFeedback(LangText.get(true, "command.playerparticles.onlyoneargument"),
-							false);
-					return 0;
-				}).build();
+				.executes(KiloCommands::executeSmartUsage).build();
 
-		LiteralCommandNode<ServerCommandSource> setNode = literal("set").executes((context) -> {
-			context.getSource().sendFeedback(LangText.get(true, "command.playerparticles.noparticleschosen"), false);
-			return 0;
-		}).build();
+		LiteralCommandNode<ServerCommandSource> setNode = literal("set").build();
 
 		// Particles
 		LiteralCommandNode<ServerCommandSource> flamesNode = literal("flames").executes((context) -> {
