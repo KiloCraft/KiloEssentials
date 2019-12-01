@@ -7,16 +7,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.ServerTickEvent;
 
 import java.util.List;
 
-public class OnTick /*implements EventHandler<ServerEvent$OnTick>*/ {
+public class OnTick implements EventHandler<ServerTickEvent> {
 
-//	@Override
-//	public void handle(ServerEvent$OnTick event) {
-//		processParticles(event);
-//	}
+	@Override
+	public void handle(ServerTickEvent event) {
+		processParticles(event);
+	}
 
 	private void processParticles(ServerTickEvent event) {
 		ServerWorld world = event.getServer().getWorld(DimensionType.OVERWORLD);
