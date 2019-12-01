@@ -12,9 +12,9 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.datafixer.ConfigDataFixer;
-import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.messages.MessageUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,10 +88,20 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		return "kiloessentials." + node;
 	}
 
-    public static KiloEssentialsImpl getInstance() {
-		if(instance==null) {
-			throw new RuntimeException("Accessed KiloEssentials too early");
-		}
+	public static boolean hasPermissionNode(ServerCommandSource source, String fullNode) {
+		if (!initializedPerms.contains(fullNode))
+			initializedPerms.add("kiloessentials." + fullNode);
+		return Thimble.hasPermissionOrOp(source, fullNode, 4);
+	}
+
+	@Override
+	public MessageUtil getMessageUtil() {
+		return ModConstants.getMessageUtil();
+	}
+
+	public static KiloEssentialsImpl getInstance() {
+		if(instance==null)
+			throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
 
 		return instance;
     }

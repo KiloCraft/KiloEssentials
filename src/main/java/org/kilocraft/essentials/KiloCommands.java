@@ -38,12 +38,12 @@ import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.*;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.util.messages.MessageUtil;
+import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
+import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
@@ -53,6 +53,7 @@ import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
     private CommandDispatcher<ServerCommandSource> dispatcher;
+    private static MessageUtil messageUtil = ModConstants.getMessageUtil();
 
     public KiloCommands() {
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
@@ -118,6 +119,7 @@ public class KiloCommands {
         PingCommand.register(this.dispatcher);
         ClearchatCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
+        SaveCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
@@ -192,13 +194,9 @@ public class KiloCommands {
     }
 
     public int execute(ServerCommandSource executor, String commandToExecute) {
-        ChatMessage cmdExMessage = new ChatMessage(
-                KiloConfig.getProvider().getMessages().get(true, "commands.context.execution_exception"), true);
-
         StringReader stringReader = new StringReader(commandToExecute);
-        if (stringReader.canRead() && stringReader.peek() == '/') {
+        if (stringReader.canRead() && stringReader.peek() == '/')
             stringReader.skip();
-        }
 
         getInstance().getServer().getVanillaServer().getProfiler().push(commandToExecute);
 
@@ -212,9 +210,16 @@ public class KiloCommands {
                 return var;
             } catch (CommandSyntaxException e) {
                 if (e.getRawMessage().getString().equals("Unknown command"))
-                    KiloChat.sendMessageToSource(executor, cmdExMessage);
+                    KiloChat.sendMessageToSource(executor,
+                            new ChatMessage(KiloConfig.getProvider().getMessages().get(
+                                    true, "commands.context.execution_exception"), true));
+
                 else {
                     executor.sendError(Texts.toText(e.getRawMessage()));
+
+                    KiloChat.sendMessageToSource(executor,
+                            new ChatMessage(messageUtil.fromCommandNode(CommandMessageNode.EXECUTION_EXCEPTION_HELP), true));
+
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         int cursor = Math.min(e.getInput().length(), e.getCursor());
                         Text text = (new LiteralText("")).formatted(Formatting.GRAY).styled((style) -> {
@@ -238,7 +243,7 @@ public class KiloCommands {
             }
         } catch (Exception e) {
             Text text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
-            if (getLogger().isDebugEnabled()) {
+            if (SharedConstants.isDevelopment) {
                 getLogger().error("Command exception: {}", commandToExecute, e);
                 StackTraceElement[] stackTraceElements = e.getStackTrace();
 
@@ -266,15 +271,25 @@ public class KiloCommands {
     }
 
     public static SimpleCommandExceptionType getException(ExceptionMessageNode node, Object... objects) {
-        String exMsg = ModConstants.getMessageUtil().fromExceptionNode(node);
-        return createException((objects == null) ? exMsg : String.format(exMsg, objects));
+        String message = ModConstants.getMessageUtil().fromExceptionNode(node);
+        return commandException(
+                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
     }
 
-    public static SimpleCommandExceptionType createException(String message) {
+    public static SimpleCommandExceptionType commandException(String message) {
         return new SimpleCommandExceptionType(
                 new LiteralText(TextFormat.translateAlternateColorCodes('&', message)));
     }
 
+    public static SimpleCommandExceptionType commandException(Text text) {
+        return new SimpleCommandExceptionType(text);
+    }
+
+    public static SimpleCommandExceptionType getArgException(ArgExceptionMessageNode node, Object... objects) {
+        String message = ModConstants.getMessageUtil().fromArgumentExceptionNode(node);
+        return commandException(
+                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
+    }
 
     public static int SUCCESS() {
         return 1;

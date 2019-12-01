@@ -15,6 +15,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.ServerChat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -46,7 +47,7 @@ public class SudoCommand {
         KiloChat.sendLangMessageTo(source, "command.sudo.success", player.getName().asString());
 
         if (command.startsWith("c:")) {
-            KiloChat.sendChatMessage(player, command.replaceFirst("c:", ""));
+            ServerChat.sendChatMessage(player, command.replaceFirst("c:", ""));
         } else if (!command.contains("sudo")) {
             try {
                 dispatcher.execute(command.replace("/", ""), player.getCommandSource());

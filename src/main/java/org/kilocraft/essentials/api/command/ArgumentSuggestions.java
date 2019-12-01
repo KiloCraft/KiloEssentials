@@ -17,7 +17,9 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -42,8 +44,9 @@ public class ArgumentSuggestions {
     }
 
     public static CompletableFuture<Suggestions> dimensions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        Registry.DIMENSION.forEach(dimType -> builder.suggest(DimensionType.getId(dimType).toString()));
-        return builder.buildFuture();
+        List<String> dims = new ArrayList<>();
+        Registry.DIMENSION.forEach(dimType -> dims.add(DimensionType.getId(dimType).toString()));
+        return CommandSource.suggestMatching(dims.stream(), builder);
     }
 
     public static CompletableFuture<Suggestions> usableCommands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
@@ -125,7 +128,7 @@ public class ArgumentSuggestions {
         return context.getInput().replace("/" + context.getNodes().get(0) + " ", "");
     }
 
-    private static int getPendingCursor(CommandContext<ServerCommandSource> context) {
+    public static int getPendingCursor(CommandContext<ServerCommandSource> context) {
         return (context.getInput().length() - 1);
     }
 

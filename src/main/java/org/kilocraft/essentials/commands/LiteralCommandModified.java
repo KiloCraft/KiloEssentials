@@ -56,6 +56,7 @@ public class LiteralCommandModified {
         add("pardon-ip");
         add("teleport");
         add("tp");
+        add("save-all");
     }};
 
     public static boolean isVanillaCommand(String nodeName) {

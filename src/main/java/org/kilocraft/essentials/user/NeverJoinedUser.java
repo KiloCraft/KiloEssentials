@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user;
 
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +30,16 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     @Override
     public boolean hasNickname() {
         return false;
+    }
+
+    @Override
+    public String getDisplayname() {
+        return null;
+    }
+
+    @Override
+    public Text getRankedDisplayname() {
+        return null;
     }
 
     @Override
