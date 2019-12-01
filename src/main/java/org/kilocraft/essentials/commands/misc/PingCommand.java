@@ -7,22 +7,21 @@ import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.SUCCESS;
-import static org.kilocraft.essentials.KiloCommands.getCommandPermission;
+import static org.kilocraft.essentials.KiloCommands.hasPermission;
 
 public class PingCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("ping")
-                        .requires(src -> hasPermissionOrOp(src, getCommandPermission("ping.others"), 2))
+                        .requires(src -> hasPermission(src, "ping", 2))
                         .executes(ctx -> execute(ctx.getSource(), ctx.getSource().getPlayer()))
                         .then(argument("player", player())
                                 .suggests(ArgumentSuggestions::allPlayers)
-                                .requires(src -> hasPermissionOrOp(src, getCommandPermission("ping.others"), 2))
+                                .requires(src -> hasPermission(src, "ping.others", 2))
                                 .executes(ctx -> execute(ctx.getSource(), getPlayer(ctx, "player")))
                         )
         );

@@ -5,8 +5,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,6 +38,12 @@ public interface UserManager {
      * @throws IllegalArgumentException If the gameprofile is incomplete and no UUID is present.
      */
     CompletableFuture<User> getOffline(GameProfile profile);
+
+    /**
+     * Gets a map of the online server users
+     * @return An Map of online users, with their UUID
+     */
+    Map<UUID, OnlineServerUser> getOnlineUsers();
 
     /**
      * Gets a user who is online based on their GameProfile.
@@ -85,7 +94,9 @@ public interface UserManager {
 
     PunishmentManager getPunishmentManager();
 
-    void saveAll();
+    void saveUser(OnlineServerUser user) throws IOException;
+
+    void saveAllUsers();
 
     void onChangeNickname(User user, String oldNick);
 }

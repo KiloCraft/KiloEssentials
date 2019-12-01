@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
-public class DateArgument {
+public class DateArgument implements CommandedArgument {
     private String input;
     private boolean simple;
     private Date result;
@@ -35,10 +35,12 @@ public class DateArgument {
         this.values = new HashMap<>();
     }
 
+    @Override
     public String[] getExamples() {
         return new String[]{"1h30m", "10d", "1m", "0.5y"};
     }
 
+    @Override
     public DateArgument parse() throws CommandSyntaxException {
         String simpleRegex = "^\\d+[smhdY]$";
         String completeRegex = "\\d+[smhdy]";
@@ -49,12 +51,12 @@ public class DateArgument {
         String[] strings = this.input.split("\\w");
         System.out.println(Arrays.toString(strings));
 
-        for (String string : strings) {
-            System.out.println(string);
+        for (String value : strings) {
+            System.out.println(value);
 
             this.values.put(
-                    Integer.parseInt(string.replaceAll(RegexLib.ALL_EXCEPT_DIGITS.get(), "")),
-                    string.replaceAll(RegexLib.DIGITS.get(), "")
+                    Integer.parseInt(value.replaceAll(RegexLib.ALL_EXCEPT_DIGITS.get(), "")),
+                    value.replaceAll(RegexLib.DIGITS.get(), "")
             );
         }
 

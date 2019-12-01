@@ -1,23 +1,18 @@
 package org.kilocraft.essentials.user;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.scoreboard.Team;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -54,6 +49,7 @@ public class ServerUser implements User {
     private Date firstJoin = new Date();
     private int randomTeleportsLeft = 3;
     private int displayParticleId = 0;
+    public int messageCooldown;
     
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -119,8 +115,8 @@ public class ServerUser implements User {
 
         metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
 
-        if(this.hasNickname()) { // Nicknames are Optional now.
-            metaTag.putString("nick", this.nickname); }
+        if(this.nickname != null) // Nicknames are Optional now.
+            metaTag.putString("nick", this.nickname);
 
         // Home logic, TODO Abstract this with features in future.
         CompoundTag homeTag = new CompoundTag();
@@ -175,7 +171,7 @@ public class ServerUser implements User {
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
 
-        if(compoundTag.contains("nick", NBTTypes.STRING)) // Nicknames are an Optional, so we compensate for that.
+        if (compoundTag.contains("nick")) // Nicknames are an Optional, so we compensate for that.
             this.nickname = metaTag.getString("nick");
 
         this.homeHandler.deserialize(compoundTag.getCompound("homes"));
@@ -209,6 +205,17 @@ public class ServerUser implements User {
     @Override
     public boolean hasNickname() {
         return this.getNickname().isPresent();
+    }
+
+    @Override
+    public String getDisplayname() {
+        return (hasNickname()) ? this.nickname : this.name;
+    }
+
+    @Override
+    public Text getRankedDisplayname() {
+        return Team.modifyText(KiloServer.getServer().getPlayer(this.uuid).getScoreboardTeam(),
+                new LiteralText(getDisplayname()));
     }
 
     @Override

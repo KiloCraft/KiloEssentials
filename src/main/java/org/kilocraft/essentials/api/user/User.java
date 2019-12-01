@@ -1,8 +1,8 @@
 package org.kilocraft.essentials.api.user;
 
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
@@ -21,6 +21,10 @@ public interface User {
     boolean isOnline();
 
     boolean hasNickname();
+
+    String getDisplayname();
+
+    Text getRankedDisplayname();
 
     Optional<String> getNickname();
 

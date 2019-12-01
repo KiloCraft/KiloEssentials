@@ -119,6 +119,7 @@ public class KiloCommands {
         PingCommand.register(this.dispatcher);
         ClearchatCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
+        SaveCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));

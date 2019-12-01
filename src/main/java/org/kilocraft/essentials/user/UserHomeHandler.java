@@ -9,15 +9,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,19 +123,9 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     }
 
-    public CompoundTag serialize1() {
-        CompoundTag compoundTag = new CompoundTag();
-        for (Home userHome : this.userHomes) {
-            compoundTag.put(userHome.getName(), userHome.toTag());
-        }
-
-        return compoundTag;
-    }
-
     public CompoundTag serialize(CompoundTag tag) {
         for (Home userHome : this.userHomes) {
             tag.put(userHome.getName(), userHome.toTag());
-            System.out.println(userHome.getName());
         }
 
         return tag;

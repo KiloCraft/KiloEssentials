@@ -88,6 +88,12 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		return "kiloessentials." + node;
 	}
 
+	public static boolean hasPermissionNode(ServerCommandSource source, String fullNode) {
+		if (!initializedPerms.contains(fullNode))
+			initializedPerms.add("kiloessentials." + fullNode);
+		return Thimble.hasPermissionOrOp(source, fullNode, 4);
+	}
+
 	@Override
 	public MessageUtil getMessageUtil() {
 		return ModConstants.getMessageUtil();

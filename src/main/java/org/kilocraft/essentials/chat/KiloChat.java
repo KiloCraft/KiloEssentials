@@ -1,18 +1,12 @@
 package org.kilocraft.essentials.chat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
@@ -20,12 +14,14 @@ import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.ConfigValueGetter;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVariables;
+import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
+import org.kilocraft.essentials.user.ServerUser;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class KiloChat {
 	private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
+	private static ConfigValueGetter messages = KiloConfig.getProvider().getMessages();
 
 	public static String getFormattedLang(String key) {
 		return getFormattedString(ModConstants.getLang().getProperty(key), (Object) null);
@@ -130,12 +126,15 @@ public class KiloChat {
 			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
 		}
 
-		getServer()
-				.sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));
+		getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));
 	}
 
 	public static void broadCast(Text text) {
-		getServer().getPlayerManager().broadcastChatMessage(text, false);
+		for (PlayerEntity entity : getServer().getPlayerList()) {
+			entity.sendMessage(text);
+		}
+
+		getServer().sendMessage(text.asString());
 	}
 
 	public static void broadCastLang(String key) {
@@ -146,71 +145,23 @@ public class KiloChat {
 		broadCast(new ChatMessage(getFormattedLang(key, objects), true));
 	}
 
-	public static void sendChatMessage(ServerPlayerEntity player, String messageToSend) {
-		ChatMessage message = new ChatMessage(messageToSend, Thimble.hasPermissionOrOp(player.getCommandSource(),
-				KiloEssentialsImpl.getPermissionFor("chat.format"), 2));
-
-		if ((boolean) config.getValue("chat.ping.enable")) {
-			String pingSenderFormat = config.get(false, "chat.ping.format");
-			String pingFormat = config.get(false, "chat.ping.pinged");
-
-			for (String playerName : getServer().getPlayerManager().getPlayerNames()) {
-				String displayName = getServer().getPlayer(playerName).getDisplayName().asString();
-				String thisPing = pingSenderFormat.replace("%PLAYER_NAME%", displayName);
-
-				if (messageToSend.contains(thisPing.replace("%PLAYER_NAME%", playerName))) {
-					message.setMessage(
-							message.getFormattedMessage().replaceAll(thisPing,
-							pingFormat.replace("%PLAYER_NAME%", displayName) + "&r"), true
-					);
-
-					if ((boolean) config.getValue("chat.ping.sound.enable"))
-						//if (Thimble.hasPermissionOrOp(player.getCommandSource(), KiloEssentials.getPermissionFor("chat.ping.other"), 2))
-							pingPlayer(getServer().getPlayer(playerName));
-
-				}
-
-			}
-
-		}
-
-		broadCast(
-				new ChatMessage(
-						config.getLocal(true, "chat.messageFormat",
-						new PlayerConfigVariables(player)
-				)
-				.replace("%MESSAGE%", message.getFormattedMessage())
-				.replace("%PLAYER_DISPLAYNAME%", player.getDisplayName().asString()), true)
-		);
+	public static void broadcastUserJoinEventMessage(ServerUser user) {
+		broadCast(new ChatMessage(
+				messages.getLocal(true, "events.userJoin", new UserConfigVariables(user))
+					.replace("%USER_DISPLAYNAME%", user.getDisplayname()),
+				true
+		));
 
 	}
 
-	public static void pingPlayer(ServerPlayerEntity target) {
-		Vec3d vec3d = target.getCommandSource().getPosition();
-		String soundId = "minecraft:" + config.getValue("chat.ping.sound.id");
-		float volume = config.getFloatSafely("chat.ping.sound.volume", "1.0");
-		float pitch = config.getFloatSafely("chat.ping.sound.pitch", "1.0");
-
-		target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
-	}
-
-	public static void broadcastUserJoinEventMessage(ServerPlayerEntity player) {
-//		broadCast(new ChatMessage(
-//						KiloConfig.getProvider().getMessages().get(false, "general.joinMessage")
-//								.replace("%PLAYER_NAME%", player.getName().asString()),
-//						true
-//				)
-//		);
+	public static void broadcastUserLeaveEventMessage(ServerUser user) {
+		broadCast(new ChatMessage(
+				messages.getLocal(true, "events.userLeave", new UserConfigVariables(user))
+						.replace("%USER_DISPLAYNAME%", user.getDisplayname()),
+				true
+		));
 
 	}
 
-	public static void broadcastUserLeaveEventMessage(ServerPlayerEntity player) {
-//		broadCast(new ChatMessage(
-//					KiloConfig.getProvider().getMessages().get(false, "general.leaveMessage")
-//						.replace("%PLAYER_NAME%", player.getName().asString()),
-//					true
-//				)
-//		);
 
-	}
 }
