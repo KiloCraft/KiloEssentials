@@ -16,7 +16,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.KiloEssentialsMod;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.DateArgument;
 import org.kilocraft.essentials.user.punishment.BanEntryType;
@@ -50,42 +50,48 @@ public class ProfileBanCommand {
                 .requires(src -> hasPermission(src, "ban.set", 3));
 
         RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> targetArgument = argument("gameProfile", gameProfile());
+        LiteralArgumentBuilder<ServerCommandSource> banPermanentArgument = literal("permanent");
+        LiteralArgumentBuilder<ServerCommandSource> banTemporarlyArgument = literal("temporarly");
+        LiteralArgumentBuilder<ServerCommandSource> banPermanentIpArgument = literal("permanent");
+        LiteralArgumentBuilder<ServerCommandSource> banTemporarlyIpArgument = literal("temporarly");
         
-        RequiredArgumentBuilder<ServerCommandSource, String> banTypeArgument = argument("type", string())
-                .suggests(ProfileBanCommand::CompletableBanType);
+        RequiredArgumentBuilder<ServerCommandSource, String> dateArgument = argument("time", string());
+        RequiredArgumentBuilder<ServerCommandSource, String> ipStringArgument = argument("ip", string());
+        
+        RequiredArgumentBuilder<ServerCommandSource, String> reasonProfileArgument = argument("reason", greedyString()).executes(ctx -> {
+            executeSet(ctx, PROFILE);
+            return 1;
+        });
+        
+        RequiredArgumentBuilder<ServerCommandSource, String> reasonIpArgument = argument("reason", greedyString()).executes(ctx -> {
+            executeSet(ctx, IP);
+            return 1;
+        });
+        
+        LiteralArgumentBuilder<ServerCommandSource> ipArgument = literal("ip");
+        LiteralArgumentBuilder<ServerCommandSource> profileArgument = literal("profile");
 
-        LiteralArgumentBuilder<ServerCommandSource> banPermanentArgument = literal("permanent")
-                .then(argument("reason", greedyString()).executes(ctx -> {
-                    executeSet(ctx, BanEntryType.PROFILE);
-                    return 1;
-            }));
-
-        LiteralArgumentBuilder<ServerCommandSource> banTemporaryArgument = literal("temporarly")
-                .then(argument("time", string())
-                    .suggests(DateArgument::suggestions)
-                    .then(argument("reason", greedyString())
-                    .executes(ctx -> {
-                    	executeSet(ctx, BanEntryType.PROFILE);
-                        return 1;
-                    }))
-                );
-
-
+        banPermanentArgument.then(reasonProfileArgument);
+        dateArgument.then(reasonProfileArgument);
+        banTemporarlyArgument.then(dateArgument);
+        banPermanentIpArgument.then(reasonIpArgument);
+        banTemporarlyIpArgument.then(reasonIpArgument);
         targetArgument.then(banPermanentArgument);
-        targetArgument.then(banTemporaryArgument);
-        banTypeArgument.then(targetArgument);
-        setArgument.then(banTypeArgument);
+        targetArgument.then(banTemporarlyArgument);
+        ipStringArgument.then(banTemporarlyIpArgument);
+        ipStringArgument.then(banPermanentIpArgument);
+        profileArgument.then(targetArgument);
+        ipArgument.then(ipStringArgument);
+        setArgument.then(profileArgument);
+        setArgument.then(ipArgument);
         
         LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("clear")
                 .requires(src -> hasPermission(src, "ban.clear", 3))
-                .then(argument("gameProfile", gameProfile())
-                        .then(argument("type", StringArgumentType.string())
-                        .executes(ctx -> executeClear(ctx, ""))
-                        .suggests(ProfileBanCommand::CompletableBanType)
-                            .then(argument("reason", greedyString())
-                                .executes(ctx -> executeClear(ctx, getString(ctx, "reason")))
-                            )
-                        )
+                .then(argument("gameProfile", gameProfile())                   
+                        .executes(ctx -> {
+                        		executeClear(ctx, PROFILE);
+                        		return 0;
+                        })
                 );
 
         LiteralArgumentBuilder<ServerCommandSource> listArgument = literal("list")
@@ -102,54 +108,63 @@ public class ProfileBanCommand {
         mainArgument.then(checkArgument);
     }
 
-    private static PunishmentManager punishmentManager = KiloServer.getServer().getUserManager().getPunishmentManager();
-
     private static int executeSet(CommandContext<ServerCommandSource> ctx, BanEntryType type) throws CommandSyntaxException {
-        String reason = getString(ctx, "reason");
+    	PunishmentManager punishmentManager = KiloEssentialsMod.punishmentsManager;
+    	String reason = getString(ctx, "reason");
         ServerCommandSource src = ctx.getSource();
         Collection<GameProfile> gameProfiles = getProfileArgument(ctx, "gameProfile");
         if (gameProfiles.size() > 1)
             throw getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
 
-        while (gameProfiles.iterator().hasNext()) {
-            GameProfile target = gameProfiles.iterator().next();
+        GameProfile target = (GameProfile) gameProfiles.toArray()[0];
 
+        if (type == PROFILE) {
             if (ctx.getInput().contains("permanent")) {
             	src.getPlayer().sendMessage(
-    					LangText.getFormatter(true, "command.ban.success", target.getName()));
-            	punishmentManager.ban(target, type, reason);         	
-        	}
+            			LangText.getFormatter(true, "command.ban.success", target.getName()));
+            	punishmentManager.ban(target, reason);         	
+            }
             else if (ctx.getInput().contains("temporarly")) {
-                DateArgument dArg = DateArgument.complex(getString(ctx, "time"));
-                src.getPlayer().sendMessage(
-    					LangText.getFormatter(true, "command.ban.success.temporarly", target.getName(), dArg.getDate()));
+            	DateArgument dArg = DateArgument.complex(getString(ctx, "time"));
+            	src.getPlayer().sendMessage(
+            			LangText.getFormatter(true, "command.ban.success.temporarly", target.getName(), dArg.getDate()));
             
-                punishmentManager.ban(target, type, reason, dArg.getDate());
+            	punishmentManager.ban(target, reason, dArg.getDate());
             }
             else {
-                throw getException(ExceptionMessageNode.ILLEGAL_STRING_ARGUMENT, "time argument").create();
+            	throw getException(ExceptionMessageNode.ILLEGAL_STRING_ARGUMENT, "time argument").create();
+            }
+        } else {
+            String ip = getString(ctx, "ip");
+            if (ctx.getInput().contains("permanent")) {
+            	src.getPlayer().sendMessage(
+            			LangText.getFormatter(true, "command.ban.success", ip));
+            	punishmentManager.ipBan(ip, reason);         	
+            }
+            else if (ctx.getInput().contains("temporarly")) {
+            	DateArgument dArg = DateArgument.complex(getString(ctx, "time"));
+            	src.getPlayer().sendMessage(
+            			LangText.getFormatter(true, "command.ban.success.temporarly", ip, dArg.getDate()));
+           
+            	punishmentManager.ipBan(ip, reason, dArg.getDate());
+            }
+            else {
+            	throw getException(ExceptionMessageNode.ILLEGAL_STRING_ARGUMENT, "time argument").create();
             }
         }
 
         return SUCCESS();
     }
 
-    public static int executeClear(CommandContext<ServerCommandSource> ctx, String reason) throws CommandSyntaxException {
+    public static int executeClear(CommandContext<ServerCommandSource> ctx, BanEntryType type) throws CommandSyntaxException {
         ServerCommandSource src = ctx.getSource();
         Collection<GameProfile> gameProfiles = getProfileArgument(ctx, "gameProfile");
-        String type = getString(ctx, "type");
 
         if (gameProfiles.size() > 1)
             throw getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
 
-        while (gameProfiles.iterator().hasNext()) {
-            GameProfile target = gameProfiles.iterator().next();
-
-            if (type.equals(PROFILE.name().toLowerCase()))
-                punishmentManager.pardon(target, PROFILE);
-            else
-                punishmentManager.pardon(target, IP);
-        }
+        GameProfile target = (GameProfile) gameProfiles.toArray()[0];
+        KiloEssentialsMod.punishmentsManager.pardon(target, type);
 
         return SUCCESS();
     }
