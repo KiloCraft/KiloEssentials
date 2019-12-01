@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.block.Block;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -12,18 +11,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome.Category;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.dimension.DimensionType;
-
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.ThreadManager;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.threaded.ThreadedRandomTeleporter;
-
 import java.util.Random;
-
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -78,11 +73,12 @@ public class RandomTeleportCommand {
 					teleportRandomly(player, source);
 				} else {
 					player.addStatusEffect(
-							new StatusEffectInstance(StatusEffects.JUMP_BOOST, 30, 255, false, false, false));
+							new StatusEffectInstance(StatusEffects.JUMP_BOOST, 600, 255, false, false, false));
 					player.addStatusEffect(
-							new StatusEffectInstance(StatusEffects.RESISTANCE, 30, 255, false, false, false));
+							new StatusEffectInstance(StatusEffects.RESISTANCE, 600, 255, false, false, false));
 					serverUser.setRTPsLeft(serverUser.getRTPsLeft() - 1);
 
+					player.teleport(player.getServerWorld(), randomX, 255, randomZ, 0, 0);
 					player.sendMessage(LangText.getFormatter(true, "command.randomteleport.success",
 							"X: " + randomX + ", Z: " + randomZ, serverUser.getRTPsLeft()));
 				}

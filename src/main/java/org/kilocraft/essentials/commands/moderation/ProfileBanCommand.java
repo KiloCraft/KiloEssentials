@@ -9,13 +9,15 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+
+import net.minecraft.command.arguments.GameProfileArgumentType.GameProfileArgument;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
+
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.DateArgument;
-import org.kilocraft.essentials.chat.ChatMessage;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.user.punishment.BanEntryType;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -46,32 +48,33 @@ public class ProfileBanCommand {
         LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set")
                 .requires(src -> hasPermission(src, "ban.set", 3));
 
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> targetArgument = argument("gameProfile", gameProfile());
+        
         RequiredArgumentBuilder<ServerCommandSource, String> banTypeArgument = argument("type", string())
                 .suggests(ProfileBanCommand::CompletableBanType);
 
         LiteralArgumentBuilder<ServerCommandSource> banPermanentArgument = literal("permanent")
-                .then(argument("reason", greedyString()));
+                .then(argument("reason", greedyString())).executes(ctx -> {
+                    executeSet(ctx, BanEntryType.PROFILE);
+                    return 1;
+            });
 
         LiteralArgumentBuilder<ServerCommandSource> banTemporaryArgument = literal("temporarly")
                 .then(argument("time", string())
                     .suggests(DateArgument::suggestions)
                     .then(argument("reason", greedyString()))
                     .executes(ctx -> {
-                        DateArgument dtArg = DateArgument.complex(StringArgumentType.getString(ctx, "time")).parse();
-                        KiloChat.sendMessageToSource(
-                                ctx.getSource(),
-                                new ChatMessage("Selected time is: &6" + dtArg.getDate(), true)
-                        );
-
+                    	executeSet(ctx, BanEntryType.PROFILE);
                         return 1;
                     })
                 );
 
 
-        banTypeArgument.then(banPermanentArgument);
-        banTypeArgument.then(banTemporaryArgument);
+        targetArgument.then(banPermanentArgument);
+        targetArgument.then(banTemporaryArgument);
+        banTypeArgument.then(targetArgument);
         setArgument.then(banTypeArgument);
-
+        
         LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("clear")
                 .requires(src -> hasPermission(src, "ban.clear", 3))
                 .then(argument("gameProfile", gameProfile())
@@ -85,11 +88,11 @@ public class ProfileBanCommand {
                 );
 
         LiteralArgumentBuilder<ServerCommandSource> listArgument = literal("list")
-                .requires(src -> hasPermission(src, "ban.list", 3));
+                .requires(src -> hasPermission(src, "ban.list", 3)).executes(ctx -> executeList(ctx));
 
         LiteralArgumentBuilder<ServerCommandSource> checkArgument = literal("check")
                 .requires(src -> hasPermission(src, "ban.check", 3))
-                .then(argument("gameProfile", gameProfile()));
+                .then(argument("gameProfile", gameProfile())).executes(ctx -> executeCheck(ctx));
 
 
         mainArgument.then(setArgument);
@@ -147,11 +150,13 @@ public class ProfileBanCommand {
 
     private static int executeList(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         //TODO: Make a list with multiple pages
+    	ctx.getSource().sendFeedback(new TranslatableText("commands.banlist.list", new Object[]{ctx.getSource().getMinecraftServer().getPlayerManager().getUserBanList().values()}), false);
         return SUCCESS();
     }
 
     private static int executeCheck(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerCommandSource src = ctx.getSource();
+        //TODO: Accually check
+    	ServerCommandSource src = ctx.getSource();
         Collection<GameProfile> gameProfiles = getProfileArgument(ctx, "gameProfile");
 
         if (gameProfiles.size() > 1)
