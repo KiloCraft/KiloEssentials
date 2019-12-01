@@ -2,6 +2,7 @@ package org.kilocraft.essentials.user.punishment;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.BannedIpList;
+import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -40,15 +41,13 @@ public class PunishmentManager {
 
 
     public void ban(GameProfile profile, BanEntryType type, String reason) {
-
+    	ban (profile, type, reason, null);
     }
 
     public void ban(GameProfile profile, BanEntryType type, String reason, Date expireDate) {
-
-    }
-
-    public void pardon(GameProfile profile, BanEntryType type, String reason) {
-
+    	BannedPlayerList bannedPlayerList = playerManager.getUserBanList();
+    	BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(profile, new Date(), null, expireDate, reason);
+        bannedPlayerList.add(bannedPlayerEntry);
     }
 
     public void pardon(GameProfile profile, BanEntryType type) {
