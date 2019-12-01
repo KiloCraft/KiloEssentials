@@ -17,6 +17,7 @@ import net.minecraft.text.TranslatableText;
 
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.DateArgument;
 import org.kilocraft.essentials.user.punishment.BanEntryType;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
@@ -54,19 +55,19 @@ public class ProfileBanCommand {
                 .suggests(ProfileBanCommand::CompletableBanType);
 
         LiteralArgumentBuilder<ServerCommandSource> banPermanentArgument = literal("permanent")
-                .then(argument("reason", greedyString())).executes(ctx -> {
+                .then(argument("reason", greedyString()).executes(ctx -> {
                     executeSet(ctx, BanEntryType.PROFILE);
                     return 1;
-            });
+            }));
 
         LiteralArgumentBuilder<ServerCommandSource> banTemporaryArgument = literal("temporarly")
                 .then(argument("time", string())
                     .suggests(DateArgument::suggestions)
-                    .then(argument("reason", greedyString()))
+                    .then(argument("reason", greedyString())
                     .executes(ctx -> {
                     	executeSet(ctx, BanEntryType.PROFILE);
                         return 1;
-                    })
+                    }))
                 );
 
 
@@ -104,7 +105,6 @@ public class ProfileBanCommand {
     private static PunishmentManager punishmentManager = KiloServer.getServer().getUserManager().getPunishmentManager();
 
     private static int executeSet(CommandContext<ServerCommandSource> ctx, BanEntryType type) throws CommandSyntaxException {
-        String entryTime = getString(ctx, "time");
         String reason = getString(ctx, "reason");
         ServerCommandSource src = ctx.getSource();
         Collection<GameProfile> gameProfiles = getProfileArgument(ctx, "gameProfile");
@@ -114,15 +114,21 @@ public class ProfileBanCommand {
         while (gameProfiles.iterator().hasNext()) {
             GameProfile target = gameProfiles.iterator().next();
 
-            if (entryTime.equals("permanent"))
-                punishmentManager.ban(target, type, reason);
-            else if (entryTime.equals("temporary")) {
-                DateArgument dArg = DateArgument.simple(entryTime).parse();
-
+            if (ctx.getInput().contains("permanent")) {
+            	src.getPlayer().sendMessage(
+    					LangText.getFormatter(true, "command.ban.success", target.getName()));
+            	punishmentManager.ban(target, type, reason);         	
+        	}
+            else if (ctx.getInput().contains("temporarly")) {
+                DateArgument dArg = DateArgument.complex(getString(ctx, "time"));
+                src.getPlayer().sendMessage(
+    					LangText.getFormatter(true, "command.ban.success.temporarly", target.getName(), dArg.getDate()));
+            
                 punishmentManager.ban(target, type, reason, dArg.getDate());
             }
-            else
+            else {
                 throw getException(ExceptionMessageNode.ILLEGAL_STRING_ARGUMENT, "time argument").create();
+            }
         }
 
         return SUCCESS();
@@ -140,9 +146,9 @@ public class ProfileBanCommand {
             GameProfile target = gameProfiles.iterator().next();
 
             if (type.equals(PROFILE.name().toLowerCase()))
-                punishmentManager.pardon(target, PROFILE, reason);
+                punishmentManager.pardon(target, PROFILE);
             else
-                punishmentManager.pardon(target, IP, reason);
+                punishmentManager.pardon(target, IP);
         }
 
         return SUCCESS();
