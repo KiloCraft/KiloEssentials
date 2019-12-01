@@ -17,6 +17,8 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 	@Override
 	public void handle(ServerTickEvent event) {
 		processParticles(event);
+		
+		
 	}
 
 	private void processParticles(ServerTickEvent event) {
