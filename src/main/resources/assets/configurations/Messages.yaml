@@ -47,9 +47,12 @@ schema: 1.0
 altcolorchar: '&'
 #General
 general:
-  joinMessage: '&8[&a+&8]&7 %PLAYER_NAME%'
-  leaveMessage: '&8[&c-&8]&7 %PLAYER_NAME%'
   prefix: '&bKiloEssentials &8>&7>'
+
+events:
+  userJoin: '&8[&a+&8]&7 %USER_DISPLAYNAME%'
+  userLeave: '&8[&c-&8]&7 %USER_DISPLAYNAME%'
+
 #Messages used by commands
 commands:
   context:
