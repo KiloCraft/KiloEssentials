@@ -9,7 +9,7 @@ import org.kilocraft.essentials.KiloCommands;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class ItemCommand {
-    private static LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("item");
+    private static LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("item").executes(KiloCommands::executeSmartUsage);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         KiloCommands.getCommandPermission("item");
