@@ -3,15 +3,12 @@ package org.kilocraft.essentials.user;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.network.packet.ChatMessageS2CPacket;
-import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.ThreadManager;
@@ -178,29 +175,25 @@ public class ServerUserManager implements UserManager {
     public void onChatMessage(ServerPlayerEntity player, ChatMessageC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
 
-        if (player.getClientChatVisibility().equals(ChatVisibility.HIDDEN))
-            player.networkHandler.sendPacket(new ChatMessageS2CPacket((new TranslatableText("chat.cannotSend")).formatted(Formatting.RED)));
-        else {
-            player.updateLastActionTime();
-            String string = StringUtils.normalizeSpace(packet.getChatMessage());
+        player.updateLastActionTime();
+        String string = StringUtils.normalizeSpace(packet.getChatMessage());
 
-            for(int i = 0; i < string.length(); ++i) {
-                if (!SharedConstants.isValidChar(string.charAt(i))) {
-                    player.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
-                    return;
-                }
+        for(int i = 0; i < string.length(); ++i) {
+            if (!SharedConstants.isValidChar(string.charAt(i))) {
+                player.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+                return;
             }
+        }
 
-            if (string.startsWith("/"))
-                KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
-            else
-                ServerChat.sendChatMessage(player, string);
+        if (string.startsWith("/"))
+            KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
+        else
+            ServerChat.sendChatMessage(player, string);
 
-            ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
+        ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
 
-            if (user.messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), "chat.spam")) {
-                player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
-            }
+        if (user.messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), "chat.spam")) {
+            player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
         }
 
     }
