@@ -216,8 +216,9 @@ public class KiloCommands {
                 else {
                     executor.sendError(Texts.toText(e.getRawMessage()));
 
-                    KiloChat.sendMessageToSource(executor,
-                            new ChatMessage(messageUtil.fromCommandNode(CommandMessageNode.EXECUTION_EXCEPTION_HELP), true));
+                    if (e.getRawMessage().getString().equals("Incorrect argument for command"))
+                        KiloChat.sendMessageToSource(executor,
+                                new ChatMessage(messageUtil.fromCommandNode(CommandMessageNode.EXECUTION_EXCEPTION_HELP), true));
 
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         int cursor = Math.min(e.getInput().length(), e.getCursor());
