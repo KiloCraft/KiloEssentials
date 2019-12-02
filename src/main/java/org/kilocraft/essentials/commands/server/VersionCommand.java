@@ -37,7 +37,7 @@ public class VersionCommand {
                 ModConstants.getMinecraftVersion(),
                 gameVersion.isStable(),
                 gameVersion.getReleaseTarget(),
-                gameVersion.getWorldVersion(),
+                gameVersion.getWorldVersion()
         );
 
         return KiloCommands.SUCCESS();
