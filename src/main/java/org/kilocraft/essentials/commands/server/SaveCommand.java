@@ -40,10 +40,8 @@ public class SaveCommand {
     }
 
     private static int executeAll(ServerCommandSource source, boolean flush) throws CommandSyntaxException {
-        executeUsers(source);
         return executeMinecraft(source, flush);
     }
-
 
     private static int executeUsers(ServerCommandSource source) {
         source.sendFeedback(new LiteralText("Saving users data..."), false);

@@ -338,4 +338,11 @@ public class ServerUser implements User {
     public void setDisplayParticleId (int id) {
     	this.displayParticleId = id;
     }
+
+    public void resetMessageCooldown() {
+        if (this.messageCooldown > 0) {
+            --this.messageCooldown;
+        }
+    }
+
 }

@@ -95,18 +95,22 @@ nickname-max-length: 16
 chat:
   # [<greedyString> c/f/GV]
   #You can set how the messages would look like on  the server
-  messageFormat: '&r%USER_DISPLAYNAME% &8»&r %MESSAGE%'
+  messageFormat: '&r%USER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
   privateMessageFormat: '&r&7%SOURCE% &7-> &7%TARGET% &8>&7> %MESSAGE%'
   ping:
     #Pong! by enabling this players can ping each other inside the game!
     #ps: they need to have the permission node "kiloessentials.chat.ping"
     enable: true
+    #Ping everyone!
+    #This is how you have to type the format in the chat to ping everyone!
+    format_everyone: '@everyone'
+    pinged_everyone: '&b&o@everyone'
     # [<String>]
     #This is how you have to type someone's name in order to ping them
     format: '%PLAYER_NAME%'
     # [<COLOR/FORMATTING CODE> e.g: 'altColorChar' + Color code, &a]
     #The color of the pinged player's name!
-    pinged: '&d@%PLAYER_DISPLAYNAME%'
+    pinged: '&a&o%PLAYER_DISPLAYNAME%'
     #The sound you hear when someone pings you!
     sound:
       #[<boolean>]

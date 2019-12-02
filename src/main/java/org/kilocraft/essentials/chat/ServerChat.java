@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import org.kilocraft.essentials.EssentialPermissions;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -27,16 +28,30 @@ public class ServerChat {
 
     public static void sendChatMessage(ServerPlayerEntity player, String messageToSend) {
         String template = config.getStringSafely("chat.messageFormat", "<%USER_DISPLAYNAME%> %MESSAGE%");
+        String everyone_template = config.getStringSafely("chat.ping.format_everyone", "@everyone");
         String senderFormat = config.get(false, "chat.ping.format");
         String displayFormat = config.get(false, "chat.ping.pinged");
+        String everyone_displayFormat = config.getStringSafely("chat.ping.pinged_everyone", "&b&o@everyone");
         ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
 
         ChatMessage message = new ChatMessage(messageToSend,
-                KiloEssentials.hasPermissionNode(player.getCommandSource(), "chat.color")
+                KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_COLOR.getNode())
         );
 
         if (config.getBooleanSafely("chat.ping.enable", true)
-                && KiloEssentials.hasPermissionNode(player.getCommandSource(), "chat.ping"))
+                && KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_PING_OTHER.getNode(), 3))
+
+            //Ping Everyone
+            if (KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_PING_EVERYONE.getNode(), 3)
+                    && messageToSend.contains(everyone_template)) {
+                message.setMessage(messageToSend.replace(everyone_template, everyone_displayFormat + "&r"), true);
+
+                for (ServerPlayerEntity playerEntity : getServer().getPlayerManager().getPlayerList()) {
+                    pingPlayer(playerEntity);
+                }
+            }
+
+            //Ping singleton target
             for (String targetName : getServer().getPlayerManager().getPlayerNames()) {
                 if (messageToSend.contains(senderFormat.replace("%PLAYER_NAME%", targetName))) {
                     OnlineUser target = KiloServer.getServer().getUserManager().getOnline(targetName);
@@ -45,8 +60,11 @@ public class ServerChat {
 
                     message.setMessage(messageToSend.replace(senderPing, displayPing), true);
 
-                    if ((boolean) config.getValue("chat.ping.sound.enable") &&
-                            KiloEssentials.hasPermissionNode(player.getCommandSource(), "chat.ping.other"))
+                    if (config.getBooleanSafely("chat.ping.sound.enable", true) &&
+                            KiloEssentials.hasPermissionNode(
+                                    KiloServer.getServer().getPlayer(target.getUuid()).getCommandSource(),
+                                    EssentialPermissions.CHAT_GET_PINGED.getNode(), 4)
+                    )
                         pingPlayer(getServer().getPlayer(targetName));
                 }
             }
@@ -68,7 +86,7 @@ public class ServerChat {
     private static Text getHoverMessage(ServerPlayerEntity player) {
         Text text = new LiteralText("");
         text.append(new LiteralText("Sent at: ").formatted(Formatting.YELLOW));
-        text.append(new LiteralText(new Date().toString()).formatted(Formatting.GOLD));
+        text.append(new LiteralText(new Date().toGMTString()).formatted(Formatting.GOLD));
 
         return text;
     }

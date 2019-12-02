@@ -115,7 +115,6 @@ public class KiloCommands {
         PreviewCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
         NicknameCommand.register(this.dispatcher);
-        TpCommand.register(this.dispatcher);
         PingCommand.register(this.dispatcher);
         ClearchatCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);

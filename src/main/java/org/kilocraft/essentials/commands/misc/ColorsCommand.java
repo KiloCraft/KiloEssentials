@@ -10,7 +10,6 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class ColorsCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(literal("colors").executes(ColorsCommand::execute));
-		dispatcher.register(literal("colours").executes(ColorsCommand::execute));
 	}
 
 	public static int execute(CommandContext<ServerCommandSource> context) {

@@ -38,8 +38,8 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class NicknameCommand {
-    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> hasPermissionOrOp(s, KiloCommands.getCommandPermission("nick"), 2);
-    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER = (s) -> hasPermissionOrOp(s, KiloCommands.getCommandPermission("nick.other"), 3);
+    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> KiloCommands.hasPermission(s, "nick.self", 2);
+    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER = (s) -> KiloCommands.hasPermission(s, "nick.other", 2);
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_EITHER = (s) -> PERMISSION_CHECK_OTHER.test(s) || PERMISSION_CHECK_SELF.test(s);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

@@ -45,12 +45,24 @@ public interface KiloEssentials {
         return KiloEssentialsImpl.getLogger();
     }
 
+    static void registerPermissions() {
+        KiloEssentialsImpl.registerPermissions();
+    }
+
+    static void registerPermission(String node) {
+        KiloEssentialsImpl.registerPermission(node);
+    }
+
     static String getPermissionFor(String node) {
         return KiloEssentialsImpl.getPermissionFor(node);
     }
 
     static boolean hasPermissionNode(ServerCommandSource source, String fullNode) {
         return KiloEssentialsImpl.hasPermissionNode(source, fullNode);
+    }
+
+    static boolean hasPermissionNode(ServerCommandSource source, String fullNode, int opLevel) {
+        return KiloEssentialsImpl.hasPermissionNode(source, fullNode, opLevel);
     }
 
     MessageUtil getMessageUtil();

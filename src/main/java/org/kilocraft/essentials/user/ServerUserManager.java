@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.client.options.ChatVisibility;
+import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -175,6 +176,8 @@ public class ServerUserManager implements UserManager {
     }
 
     public void onChatMessage(ServerPlayerEntity player, ChatMessageC2SPacket packet) {
+        NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
+
         if (player.getClientChatVisibility().equals(ChatVisibility.HIDDEN))
             player.networkHandler.sendPacket(new ChatMessageS2CPacket((new TranslatableText("chat.cannotSend")).formatted(Formatting.RED)));
         else {
@@ -194,12 +197,19 @@ public class ServerUserManager implements UserManager {
                 ServerChat.sendChatMessage(player, string);
 
             ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
-            user.messageCooldown += 20;
+
             if (user.messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), "chat.spam")) {
                 player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
             }
         }
 
+    }
+
+    public void onTick() {
+        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
+            ((ServerUser) getOnline(playerEntity)).resetMessageCooldown();
+
+        }
     }
 
     public UserHandler getHandler() {
