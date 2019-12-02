@@ -2,6 +2,7 @@ package org.kilocraft.essentials;
 
 public enum EssentialPermissions {
     CHAT_COLOR("chat.color"),
+    CHAT_BYPASS("chat.bypass"),
     CHAT_GET_PINGED("chat.ping.get_pinged"),
     CHAT_PING_OTHER("chat.ping.other"),
     CHAT_PING_EVERYONE("chat.ping.everyone"),

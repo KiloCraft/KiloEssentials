@@ -11,7 +11,7 @@ import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.ThreadManager;
+import org.kilocraft.essentials.EssentialPermissions;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -19,7 +19,6 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.threaded.ThreadedUserDateSaver;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
 import java.io.IOException;
@@ -125,8 +124,19 @@ public class ServerUserManager implements UserManager {
 
     @Override
     public void saveAllUsers() {
-        ThreadManager saverThread = new ThreadManager(new ThreadedUserDateSaver(this));
-        saverThread.start();
+        KiloEssentials.getLogger().info("Saving users data, this may take a while...");
+
+        for (OnlineServerUser serverUser : onlineUsers.values()) {
+            try {
+                KiloEssentials.getLogger().debug("Saving user \"" + serverUser.getUsername() + "\"");
+                this.userHandler.saveData(serverUser);
+            } catch (IOException e) {
+                KiloEssentials.getLogger().error("An unexpected exception occurred when saving a user's data!");
+                e.printStackTrace();
+            }
+        }
+
+        KiloEssentials.getLogger().info("Saved the users data!");
     }
 
     @Override
@@ -163,9 +173,9 @@ public class ServerUserManager implements UserManager {
         this.usernameToUUID.remove(player.getEntityName());
 
         try {
-            getHandler().saveData(user);
+            this.userHandler.saveData(user);
         } catch (IOException e) {
-            e.printStackTrace(); // TODO how did this fail?
+            e.printStackTrace();
         }
 
         this.onlineUsers.remove(player.getUuid());
@@ -192,7 +202,7 @@ public class ServerUserManager implements UserManager {
 
         ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
 
-        if (user.messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), "chat.spam")) {
+        if (user.messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_BYPASS.getNode())) {
             player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
         }
 
