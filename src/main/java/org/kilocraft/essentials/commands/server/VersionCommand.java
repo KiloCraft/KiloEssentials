@@ -30,7 +30,6 @@ public class VersionCommand {
         KiloChat.sendLangMessageTo(source, "command.info.version",
                 ModConstants.getBuildType(),
                 ModConstants.getVersionInt(),
-                ModConstants.getBuildTime(),
                 ModConstants.getGitHash(),
                 ModConstants.getGitBranch(),
                 ModConstants.getLoaderVersion(),
@@ -39,7 +38,6 @@ public class VersionCommand {
                 gameVersion.isStable(),
                 gameVersion.getReleaseTarget(),
                 gameVersion.getWorldVersion(),
-                gameVersion.getBuildTime()
         );
 
         return KiloCommands.SUCCESS();
