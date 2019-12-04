@@ -16,7 +16,6 @@ public class MessageUtil {
     private Properties EXCEPTION_MESSAGES = new Properties();
     private Properties ARGUMENT_EXCEPTION_MESSAGES = new Properties();
 
-
     public MessageUtil() throws IOException {
         GENERAL_MESSAGES.load(getResourceAsStream(getPath("general")));
         COMMAND_MESSAGES.load(getResourceAsStream(getPath("commands")));
@@ -37,7 +36,7 @@ public class MessageUtil {
     }
 
     public String fromExceptionNode(ExceptionMessageNode node) {
-        return (!node.getKey().equals("")) ? GENERAL_MESSAGES.getProperty(node.getKey()) : "";
+        return (!node.getKey().equals("")) ? EXCEPTION_MESSAGES.getProperty(node.getKey()) : "";
     }
 
     public String fromArgumentExceptionNode(ArgExceptionMessageNode node) {

@@ -14,6 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.EssentialPermissions;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.ConfigValueGetter;
@@ -33,6 +34,9 @@ public class ServerChat {
     private static String senderFormat = config.get(false, "chat.ping.format");
     private static String displayFormat = config.get(false, "chat.ping.pinged");
     private static String everyone_displayFormat = config.getStringSafely("chat.ping.pinged_everyone", "&b&o@everyone");
+
+    public static void send(OnlineUser source, String messageToSend, ChatChannel channel) {
+    }
 
     public static void sendChatMessage(ServerPlayerEntity player, String messageToSend) {
         ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);

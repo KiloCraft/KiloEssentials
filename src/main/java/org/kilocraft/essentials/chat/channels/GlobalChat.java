@@ -7,33 +7,33 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.ServerUser;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class GlobalChat implements ChatChannel {
-    private Map<UUID, String> members;
+    private List<UUID> subscribers;
 
     public GlobalChat() {
-        this.members = new HashMap<>();
+        this.subscribers = new ArrayList<>();
     }
 
     @Override
     public String getId() {
-        return "global";
+        return getChannelId();
     }
 
     @Override
     public void onChatMessage(ServerPlayerEntity player, String message) {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
 
-        if (isSubscribed(user))
-            sendChatMessage(user, message);
+        sendChatMessage(user, message);
     }
 
     @Override
     public void sendChatMessage(OnlineUser user, String messageToSend) {
-        ServerChat.sendChatMessage(user.getPlayer(), messageToSend);
+        //ServerChat.sendChatMessage(user.getPlayer(), messageToSend);
+        ServerChat.send(user, messageToSend, this);
     }
 
     @Override
@@ -43,22 +43,26 @@ public class GlobalChat implements ChatChannel {
 
     @Override
     public boolean isSubscribed(OnlineUser user) {
-        return this.members.containsKey(user.getUuid());
+        return this.subscribers.contains(user.getUuid());
     }
 
     @Override
-    public Map<UUID, String> getSubscribers() {
-        return null;
+    public List<UUID> getSubscribers() {
+        return this.subscribers;
     }
 
     @Override
     public void join(ServerUser user) {
-        this.members.put(user.getUuid(), user.getUsername());
+        this.subscribers.add(user.getUuid());
     }
 
     @Override
     public void leave(ServerUser user) {
-        this.members.remove(user.getUuid());
+        this.subscribers.remove(user.getUuid());
+    }
+
+    public static String getChannelId() {
+        return "global";
     }
 
 }

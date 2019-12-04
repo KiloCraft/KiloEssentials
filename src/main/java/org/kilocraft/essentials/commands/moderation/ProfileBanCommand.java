@@ -2,21 +2,18 @@ package org.kilocraft.essentials.commands.moderation;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-
 import net.minecraft.command.arguments.GameProfileArgumentType.GameProfileArgument;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
-
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.KiloEssentialsMod;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.DateArgument;
 import org.kilocraft.essentials.user.punishment.BanEntryType;
@@ -108,8 +105,9 @@ public class ProfileBanCommand {
         mainArgument.then(checkArgument);
     }
 
+    private static PunishmentManager punishmentManager = KiloServer.getServer().getUserManager().getPunishmentManager();
+
     private static int executeSet(CommandContext<ServerCommandSource> ctx, BanEntryType type) throws CommandSyntaxException {
-    	PunishmentManager punishmentManager = KiloEssentialsMod.punishmentsManager;
     	String reason = getString(ctx, "reason");
         ServerCommandSource src = ctx.getSource();
         Collection<GameProfile> gameProfiles = getProfileArgument(ctx, "gameProfile");
@@ -164,7 +162,7 @@ public class ProfileBanCommand {
             throw getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
 
         GameProfile target = (GameProfile) gameProfiles.toArray()[0];
-        KiloEssentialsMod.punishmentsManager.pardon(target, type);
+        punishmentManager.pardon(target, type);
 
         return SUCCESS();
     }

@@ -17,6 +17,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.MessageUtil;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,6 +140,11 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		return instance;
     }
+
+    public static RuntimeException getRuntimeException(ExceptionMessageNode node, Object... objects) {
+		String string = ModConstants.getMessageUtil().fromExceptionNode(node);
+		return new RuntimeException((objects != null) ? String.format(string, objects) : string);
+	}
 
 	private static String featureEntry(String name) {
 		return "kiloess:" + name;

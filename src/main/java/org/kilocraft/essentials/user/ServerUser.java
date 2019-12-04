@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -14,6 +13,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -107,7 +107,10 @@ public class ServerUser implements User {
         // Chat channels stuff
         CompoundTag channelsCache = new CompoundTag();
         CompoundTag subscriptionsTag = new CompoundTag();
-        ListTag subsTag = new ListTag();
+
+        if (this.upstreamChannelId != null)
+            channelsCache.putString("upstreamChannelId", this.upstreamChannelId);
+        cacheTag.put("channels", channelsCache);
 
         // Abilities
         if (this.canFly)
@@ -166,6 +169,15 @@ public class ServerUser implements User {
             if(lastMessageTag.contains("text", NBTTypes.STRING))
                 this.lastPrivateMessageText = lastMessageTag.getString("text");
 
+        }
+
+        if (cacheTag.contains("channels", NBTTypes.COMPOUND)) {
+            CompoundTag channelsTag = cacheTag.getCompound("channels");
+
+            if (channelsTag.contains("upstreamChannelId", NBTTypes.STRING))
+                this.upstreamChannelId = channelsTag.getString("upstreamChannelId");
+            else
+                this.upstreamChannelId = GlobalChat.getChannelId();
         }
 
         if (cacheTag.getBoolean("isFlyEnabled"))
@@ -234,7 +246,7 @@ public class ServerUser implements User {
 
     @Override
     public String getUpstreamChannelId() {
-        return this.upstreamChannelId;
+        return (this.upstreamChannelId != null) ? this.upstreamChannelId : "globa";
     }
 
     @Override

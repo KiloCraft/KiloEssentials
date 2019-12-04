@@ -39,7 +39,7 @@
 #
 #Config Schema
 #Used by the mod to define the config schema/version
-schema: 1.1
+schema: 1.2
 #Alternate color character
 #Instead of using the special character you can use your own color char
 #for defining the color/formatting codes!
@@ -93,10 +93,15 @@ commands.suggestions.require_permission: true
 nickname-max-length: 16
 
 chat:
-  # [<greedyString> c/f/GV]
-  #You can set how the messages would look like on  the server
-  messageFormat: '&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+  channels:
+    # [<greedyString> c/f/GV]
+    #You can set how the messages would look like on  the server
+    formats:
+      global: '&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+      staff: '&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+
   privateMessageFormat: '&r&7%SOURCE% &7-> &7%TARGET% &8>> %MESSAGE%'
+  privateMessage_me_format: '&cme'
   ping:
     #Pong! by enabling this players can ping each other inside the game!
     #ps: they need to have the permission node "kiloessentials.chat.ping"

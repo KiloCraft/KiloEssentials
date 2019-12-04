@@ -5,15 +5,15 @@ import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.ServerUser;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class StaffChat implements ChatChannel {
-    private Map<UUID, String> members;
+    private List<UUID> subscribers;
 
     public StaffChat() {
-        this.members = new HashMap<>();
+        this.subscribers = new ArrayList<>();
     }
 
     @Override
@@ -33,27 +33,27 @@ public class StaffChat implements ChatChannel {
 
     @Override
     public boolean isPublic() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isSubscribed(OnlineUser user) {
-        return this.members.containsKey(user.getUuid());
+        return this.subscribers.contains(user.getUuid());
     }
 
     @Override
-    public Map<UUID, String> getSubscribers() {
-        return this.members;
+    public List<UUID> getSubscribers() {
+        return this.subscribers;
     }
 
     @Override
     public void join(ServerUser user) {
-        this.members.put(user.getUuid(), user.getUsername());
+        this.subscribers.add(user.getUuid());
     }
 
     @Override
     public void leave(ServerUser user) {
-        this.members.remove(user.getUuid());
+        this.subscribers.remove(user.getUuid());
     }
 
 }
