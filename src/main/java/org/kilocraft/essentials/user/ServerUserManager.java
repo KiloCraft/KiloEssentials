@@ -18,7 +18,6 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
 import java.io.IOException;
@@ -124,11 +123,13 @@ public class ServerUserManager implements UserManager {
 
     @Override
     public void saveAllUsers() {
-        KiloEssentials.getLogger().info("Saving users data, this may take a while...");
+        if (SharedConstants.isDevelopment)
+            KiloEssentials.getLogger().info("Saving users data, this may take a while...");
 
         for (OnlineServerUser serverUser : onlineUsers.values()) {
             try {
-                KiloEssentials.getLogger().debug("Saving user \"" + serverUser.getUsername() + "\"");
+                if (SharedConstants.isDevelopment)
+                    KiloEssentials.getLogger().debug("Saving user \"" + serverUser.getUsername() + "\"");
                 this.userHandler.saveData(serverUser);
             } catch (IOException e) {
                 KiloEssentials.getLogger().error("An unexpected exception occurred when saving a user's data!");
@@ -136,7 +137,8 @@ public class ServerUserManager implements UserManager {
             }
         }
 
-        KiloEssentials.getLogger().info("Saved the users data!");
+        if (SharedConstants.isDevelopment)
+            KiloEssentials.getLogger().info("Saved the users data!");
     }
 
     @Override
@@ -163,12 +165,13 @@ public class ServerUserManager implements UserManager {
            this.nicknameToUUID.put(serverUser.getNickname().get(), playerEntity.getUuid());
         }
 
-
-        KiloChat.broadcastUserJoinEventMessage(serverUser);
+        KiloServer.getServer().getChatManager().getChannel("global").join(serverUser);
+        KiloChat.onUserJoin(serverUser);
     }
 
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
+        KiloServer.getServer().getChatManager().getChannel("global").leave(user);
         this.nicknameToUUID.remove(user.getNickname());
         this.usernameToUUID.remove(player.getEntityName());
 
@@ -179,7 +182,7 @@ public class ServerUserManager implements UserManager {
         }
 
         this.onlineUsers.remove(player.getUuid());
-        KiloChat.broadcastUserLeaveEventMessage(user);
+        KiloChat.onUserLeave(user);
     }
 
     public void onChatMessage(ServerPlayerEntity player, ChatMessageC2SPacket packet) {
@@ -198,11 +201,11 @@ public class ServerUserManager implements UserManager {
         if (string.startsWith("/"))
             KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
         else
-            ServerChat.sendChatMessage(player, string);
+            KiloServer.getServer().getChatManager().onChatMessage(player, packet);
 
         ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
 
-        if (user.messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_BYPASS.getNode())) {
+        if (user.messageCooldown > 1000 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_BYPASS.getNode())) {
             player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
         }
 

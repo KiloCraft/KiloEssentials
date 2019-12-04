@@ -11,6 +11,8 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -45,6 +47,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		new KiloConfig();
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = commands;
+		Thimble.disableVanillaCommandPerms();
 
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
@@ -73,6 +76,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			}
 		}
 		*/
+
+		KiloServer.getServer().getChatManager().register(new GlobalChat());
+		KiloServer.getServer().getChatManager().register(new StaffChat());
 
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");

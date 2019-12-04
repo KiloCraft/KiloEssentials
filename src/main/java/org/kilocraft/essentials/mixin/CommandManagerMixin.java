@@ -66,7 +66,7 @@ public abstract class CommandManagerMixin {
     private void modifyExecute(ServerCommandSource serverCommandSource_1, String string_1, CallbackInfoReturnable<Integer> cir) {
         cir.cancel();
         OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(serverCommandSource_1, string_1);
-        KiloServer.getServer().triggerEvent(event);
+        KiloServer.getServer().triggerEvent(new OnCommandExecutionEventImpl(serverCommandSource_1, string_1));
 
         if (!event.isCancelled())
             KiloEssentials.getInstance().getCommandHandler().execute(serverCommandSource_1, string_1);

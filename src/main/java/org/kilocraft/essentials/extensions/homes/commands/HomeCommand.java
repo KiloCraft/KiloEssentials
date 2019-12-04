@@ -8,7 +8,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
@@ -56,7 +55,7 @@ public class HomeCommand {
                 .executes(context -> KiloCommands.executeUsageFor("command.home.usage", context.getSource()));
 
         LiteralArgumentBuilder<ServerCommandSource> homesLiteral = CommandManager.literal("homes")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.self"), 2));
+                .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOMES_SELF.getNode(), 2));
 
         RequiredArgumentBuilder<ServerCommandSource, String> argRemove, argSet, argTeleport;
 
@@ -67,30 +66,21 @@ public class HomeCommand {
         argTeleport = argument("home", StringArgumentType.string())
                 .requires(s -> KiloCommands.hasPermission(s, "home.self.tp", 2));
 
-        argSet.executes(
-                c -> executeSet(
-                        c, Collections.singleton(c.getSource().getPlayer().getGameProfile())
-                )
-        );
+        argSet.executes(c -> executeSet(
+                c, Collections.singleton(c.getSource().getPlayer().getGameProfile())));
 
-        argRemove.executes(
-                c -> executeRemove(
-                    c, Collections.singleton(c.getSource().getPlayer().getGameProfile())
-                )
-        );
+        argRemove.executes(c -> executeRemove(
+                c, Collections.singleton(c.getSource().getPlayer().getGameProfile())));
 
-        argTeleport.executes(
-                c -> executeTeleport(
-                        c, Collections.singleton(c.getSource().getPlayer().getGameProfile())));
+        argTeleport.executes(c -> executeTeleport(
+                c, Collections.singleton(c.getSource().getPlayer().getGameProfile())));
 
-        homesLiteral.executes(
-                c -> executeList(c.getSource(), Collections.singleton(c.getSource().getPlayer().getGameProfile())));
+        homesLiteral.executes(c -> executeList(c.getSource(), Collections.singleton(c.getSource().getPlayer().getGameProfile())));
 
-        homesLiteral.then(
-                argument("player", gameProfile())
-                        .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("homes.others"), 2))
-                        .suggests(ArgumentSuggestions::allPlayers)
-                        .executes(c -> executeList(c.getSource(), getProfileArgument(c, "player"))));
+        homesLiteral.then(argument("player", gameProfile())
+                .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOMES_OTHERS.getNode(), 2))
+                .suggests(ArgumentSuggestions::allPlayers)
+                .executes(c -> executeList(c.getSource(), getProfileArgument(c, "player"))));
 
 
         argTeleport.suggests(UserHomeHandler::suggestHomes);

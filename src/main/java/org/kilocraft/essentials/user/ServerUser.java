@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -18,9 +19,7 @@ import org.kilocraft.essentials.util.NBTTypes;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author CODY_AI
@@ -50,6 +49,8 @@ public class ServerUser implements User {
     private int randomTeleportsLeft = 3;
     private int displayParticleId = 0;
     public int messageCooldown;
+    private List<String> subscriptions;
+    private String upstreamChannelId;
     
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -60,6 +61,8 @@ public class ServerUser implements User {
         } catch (IOException e) {
             KiloEssentials.getLogger().error("Failed to Load User for [" + uuid.toString() + "]");
         }
+
+        this.subscriptions = new ArrayList<>();
     }
 
     protected CompoundTag serialize() {
@@ -101,6 +104,12 @@ public class ServerUser implements User {
             cacheTag.put("lastMessage", lastMessageTag);
         }
 
+        // Chat channels stuff
+        CompoundTag channelsCache = new CompoundTag();
+        CompoundTag subscriptionsTag = new CompoundTag();
+        ListTag subsTag = new ListTag();
+
+        // Abilities
         if (this.canFly)
             cacheTag.putBoolean("isFlyEnabled", true);
 
@@ -219,6 +228,16 @@ public class ServerUser implements User {
     }
 
     @Override
+    public List<String> getSubscriptionChannels() {
+        return this.subscriptions;
+    }
+
+    @Override
+    public String getUpstreamChannelId() {
+        return this.upstreamChannelId;
+    }
+
+    @Override
     public UUID getUuid() {
         return this.uuid;
     }
@@ -302,6 +321,21 @@ public class ServerUser implements User {
     }
 
     @Override
+    public void addSubscriptionChannel(String id) {
+        this.subscriptions.add(id);
+    }
+
+    @Override
+    public void removeSubscriptionChannel(String id) {
+        this.subscriptions.remove(id);
+    }
+
+    @Override
+    public void setUpstreamChannelId(String id) {
+        this.upstreamChannelId = id;
+    }
+
+    @Override
     public boolean isInvulnerable() {
         return this.invulnerable;
     }
@@ -328,6 +362,11 @@ public class ServerUser implements User {
 
     public void setLastMessageSender(UUID uuid) {
         this.lastPrivateMessageGetterUUID = uuid;
+    }
+
+    @Override
+    public void setLastPrivateMessage(String message) {
+        this.lastPrivateMessageText = message;
     }
 
     @Override

@@ -231,8 +231,8 @@ public class KiloCommands {
 
                         text.append(e.getInput().substring(Math.max(0, cursor - 10), cursor));
                         if (cursor < e.getInput().length()) {
-                            Text text_2 = (new LiteralText(e.getInput().substring(cursor))).formatted(Formatting.RED, Formatting.UNDERLINE);
-                            text.append(text_2);
+                            Text errorAtPointMesssage = (new LiteralText(e.getInput().substring(cursor))).formatted(Formatting.RED, Formatting.UNDERLINE);
+                            text.append(errorAtPointMesssage);
                         }
 
                         text.append(new LiteralText("<--[HERE]").formatted(Formatting.RED, Formatting.ITALIC));

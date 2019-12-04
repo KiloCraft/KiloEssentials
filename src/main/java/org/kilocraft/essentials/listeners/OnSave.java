@@ -8,5 +8,6 @@ public class OnSave implements EventHandler<ServerSaveEvent> {
     @Override
     public void handle(ServerSaveEvent event) {
         KiloServer.getServer().getUserManager().saveAllUsers();
+
     }
 }
