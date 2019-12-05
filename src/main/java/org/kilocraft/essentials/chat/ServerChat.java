@@ -89,7 +89,9 @@ public class ServerChat {
             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getHoverMessage(player)));
         });
 
-        KiloChat.broadCast(text);
+        for (UUID subscriber : channel.getSubscribers()) {
+            KiloChat.sendMessageTo(KiloServer.getServer().getPlayer(subscriber), text);
+        }
     }
 
     private static Text getHoverMessage(ServerPlayerEntity player) {
