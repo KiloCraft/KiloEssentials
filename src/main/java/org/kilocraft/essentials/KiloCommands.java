@@ -26,7 +26,9 @@ import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
+import org.kilocraft.essentials.commands.messaging.BuildermsgCommand;
 import org.kilocraft.essentials.commands.messaging.MessageCommand;
+import org.kilocraft.essentials.commands.messaging.StaffmsgCommand;
 import org.kilocraft.essentials.commands.misc.ColorsCommand;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.PingCommand;
@@ -35,7 +37,10 @@ import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.moderation.ProfileBanCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
-import org.kilocraft.essentials.commands.teleport.*;
+import org.kilocraft.essentials.commands.teleport.BackCommand;
+import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
+import org.kilocraft.essentials.commands.teleport.TeleportCommands;
+import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.messages.MessageUtil;
@@ -43,7 +48,10 @@ import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
@@ -119,6 +127,8 @@ public class KiloCommands {
         ClearchatCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
         SaveCommand.register(this.dispatcher);
+        StaffmsgCommand.register(this.dispatcher);
+        BuildermsgCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));

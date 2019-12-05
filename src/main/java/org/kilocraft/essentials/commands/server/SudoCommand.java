@@ -12,10 +12,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.chat.channels.GlobalChat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -47,7 +48,8 @@ public class SudoCommand {
         KiloChat.sendLangMessageTo(source, "command.sudo.success", player.getName().asString());
 
         if (command.startsWith("c:")) {
-            ServerChat.sendChatMessage(player, command.replaceFirst("c:", ""));
+            KiloServer.getServer().getChatManager().getChannel(GlobalChat.getChannelId()).sendChatMessage(
+                    KiloServer.getServer().getOnlineUser(player), command.replaceFirst("c:", ""));
         } else if (!command.contains("sudo")) {
             try {
                 dispatcher.execute(command.replace("/", ""), player.getCommandSource());

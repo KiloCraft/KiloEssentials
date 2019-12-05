@@ -43,4 +43,7 @@ public class MessageUtil {
         return (!node.getKey().equals("")) ? ARGUMENT_EXCEPTION_MESSAGES.getProperty(node.getKey()) : "";
     }
 
+    public String getGeneral(GeneralMessageNode node, Object... objects) {
+        return (objects != null) ? String.format(fromGeneralNode(node), objects) : fromGeneralNode(node);
+     }
 }

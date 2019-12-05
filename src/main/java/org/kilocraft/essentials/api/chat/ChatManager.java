@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChatManager<C extends ChatChannel> {
-    private Map<String, ChatChannel> channels;
+    public Map<String, ChatChannel> channels;
 
     public ChatManager() {
         this.channels = new HashMap<>();
@@ -29,13 +29,13 @@ public class ChatManager<C extends ChatChannel> {
         if (channels.containsKey(user.getUpstreamChannelId()))
             channels.get(user.getUpstreamChannelId()).onChatMessage(player, packet.getChatMessage());
         else {
+            user.setUpstreamChannelId(GlobalChat.getChannelId());
             String errorMessage = String.format(
                     KiloEssentials.getInstance().getMessageUtil().fromExceptionNode(ExceptionMessageNode.INVALID_CHAT_UPSTREAM_ID),
                     user.getUuid().toString(), user.getUpstreamChannelId());
 
-            user.setUpstreamChannelId(GlobalChat.getChannelId());
             user.getCommandSource().sendError(new LiteralText(errorMessage));
-            throw new RuntimeException(errorMessage);
+            KiloEssentials.getLogger().error(errorMessage);
         }
     }
 

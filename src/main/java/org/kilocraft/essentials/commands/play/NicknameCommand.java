@@ -94,8 +94,7 @@ public class NicknameCommand {
         int maxLength = (int) unchecked;
         String nickname = getString(ctx, "nickname");
 
-        if (!nickname.matches("^([A-Za-z0-9-&]){3," + maxLength + "}$"))
-            //TODO: Fix this so it doesn't throw another exception
+        if (nickname.length() > maxLength)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = "";
@@ -126,7 +125,7 @@ public class NicknameCommand {
 
         int maxLength = (int) unchecked;
 
-        if (!nickname.matches("^([A-Za-z0-9-&]){3," + maxLength + "}$"))
+        if (nickname.length() > maxLength)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);

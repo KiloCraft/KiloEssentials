@@ -11,6 +11,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -78,8 +79,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		}
 		*/
 
-		KiloServer.getServer().getChatManager().register(new GlobalChat());
-		KiloServer.getServer().getChatManager().register(new StaffChat());
+		getServer().getChatManager().register(new GlobalChat());
+		getServer().getChatManager().register(new StaffChat());
+		getServer().getChatManager().register(new BuilderChat());
 
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");

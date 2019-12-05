@@ -19,15 +19,11 @@ public  class BrandedServer {
                                 String.format(
                                         ModConstants.getProperties().getProperty("server.brand.custom"),
                                         "&r" + configBrand + "&r",
-                                        ModConstants.getVersionInt()
-                                )
-                        )
-        );
+                                        ModConstants.getVersionInt())));
 
         CustomPayloadS2CPacket customPayloadS2CPacket = new CustomPayloadS2CPacket(
                 CustomPayloadS2CPacket.BRAND,
-                (new PacketByteBuf(Unpooled.buffer())).writeString(KiloServer.getServer().getDisplayBrandName())
-        );
+                (new PacketByteBuf(Unpooled.buffer())).writeString(KiloServer.getServer().getDisplayBrandName()));
 
         KiloServer.getServer().getPlayerManager().sendToAll(customPayloadS2CPacket);
 

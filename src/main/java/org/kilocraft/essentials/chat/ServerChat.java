@@ -23,26 +23,24 @@ import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariabl
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.Date;
+import java.util.UUID;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class ServerChat {
     private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
     private static ConfigValueGetter messages = KiloConfig.getProvider().getMessages();
-    private static String template = config.getStringSafely("chat.messageFormat", "<%USER_DISPLAYNAME%> %MESSAGE%");
     private static String everyone_template = config.getStringSafely("chat.ping.format_everyone", "@everyone");
     private static String senderFormat = config.get(false, "chat.ping.format");
     private static String displayFormat = config.get(false, "chat.ping.pinged");
     private static String everyone_displayFormat = config.getStringSafely("chat.ping.pinged_everyone", "&b&o@everyone");
 
-    public static void send(OnlineUser source, String messageToSend, ChatChannel channel) {
-    }
-
-    public static void sendChatMessage(ServerPlayerEntity player, String messageToSend) {
-        ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
+    public static void send(OnlineUser sender, String rawMessage, ChatChannel channel) {
+        String template = config.getStringSafely("chat.channels.formats." + channel.getId(), "&r[&r%USER_DISPLAYNAME%&r]:&r %MESSAGE%");
+        ServerPlayerEntity player = sender.getPlayer();
         boolean isPingingAllowed = config.getBooleanSafely("chat.ping.sound.enable", true);
 
-        ChatMessage message = new ChatMessage(messageToSend,
+        ChatMessage message = new ChatMessage(rawMessage,
                 KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_COLOR.getNode()));
 
         if (config.getBooleanSafely("chat.ping.enable", true)
@@ -50,35 +48,39 @@ public class ServerChat {
 
             //Ping Everyone
             if (KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_PING_EVERYONE.getNode(), 3)
-                    && messageToSend.contains(everyone_template)) {
-                message.setMessage(messageToSend.replace(everyone_template, everyone_displayFormat + "&r"), true);
+                    && rawMessage.contains(everyone_template)) {
+                message.setMessage(rawMessage.replace(everyone_template, everyone_displayFormat + "&r"), true);
 
-                for (ServerPlayerEntity playerEntity : getServer().getPlayerManager().getPlayerList()) {
-                    pingPlayer(playerEntity);
+                for (UUID subscriber : channel.getSubscribers()) {
+                    pingPlayer(KiloServer.getServer().getPlayer(subscriber));
                 }
             }
 
-            //Ping singleton target
-            for (String targetName : getServer().getPlayerManager().getPlayerNames()) {
-                if (messageToSend.contains(senderFormat.replace("%PLAYER_NAME%", targetName))) {
-                    OnlineUser target = KiloServer.getServer().getUserManager().getOnline(targetName);
-                    String senderPing = senderFormat.replace("%PLAYER_NAME%", targetName);
-                    String displayPing = "&r" + displayFormat.replace("%PLAYER_DISPLAYNAME%", target.getDisplayname()) + "&r";
+        //Ping singleton target
+        for (String targetName : getServer().getPlayerManager().getPlayerNames()) {
+            if (rawMessage.contains(senderFormat.replace("%PLAYER_NAME%", targetName))) {
+                OnlineUser target = KiloServer.getServer().getUserManager().getOnline(targetName);
 
-                    boolean canPing = KiloEssentials.hasPermissionNode(
-                            target.getCommandSource(), EssentialPermissions.CHAT_GET_PINGED.getNode(), 4);
+                if (!channel.isSubscribed(target))
+                    return;
 
-                    if (isPingingAllowed && canPing) {
-                        message.setMessage(messageToSend.replace(senderPing, displayPing), true);
-                        pingPlayer(getServer().getPlayer(targetName));
-                    }
+                String senderPing = senderFormat.replace("%PLAYER_NAME%", targetName);
+                String displayPing = "&r" + displayFormat.replace("%PLAYER_DISPLAYNAME%", target.getDisplayname()) + "&r";
 
+                boolean canPing = KiloEssentials.hasPermissionNode(
+                        target.getCommandSource(), EssentialPermissions.CHAT_GET_PINGED.getNode(), 4);
+
+                if (isPingingAllowed && canPing) {
+                    message.setMessage(rawMessage.replace(senderPing, displayPing), true);
+                    pingPlayer(getServer().getPlayer(targetName));
                 }
+
             }
+        }
 
         message.setMessage(config.getLocalReplacer()
-                .replace(template, new UserConfigVariables(user), KiloConfig.getFileConfigOfMain())
-                .replace("%USER_DISPLAYNAME%", user.getRankedDisplayname().asFormattedString())
+                .replace(template, new UserConfigVariables((ServerUser) sender), KiloConfig.getFileConfigOfMain())
+                .replace("%USER_DISPLAYNAME%", sender.getRankedDisplayname().asFormattedString())
                 .replace("%MESSAGE%", message.getOriginal()), true);
 
         Text text = new LiteralText(message.getFormattedMessage()
@@ -98,7 +100,7 @@ public class ServerChat {
         return text;
     }
 
-    public static void pingPlayer(ServerPlayerEntity target) {
+    private static void pingPlayer(ServerPlayerEntity target) {
         Vec3d vec3d = target.getCommandSource().getPosition();
         String soundId = "minecraft:" + config.getValue("chat.ping.sound.id");
         float volume = config.getFloatSafely("chat.ping.sound.volume", "1.0");
@@ -108,15 +110,17 @@ public class ServerChat {
     }
 
     public static void sendPrivateMessage(ServerCommandSource source, OnlineUser target, String message) throws CommandSyntaxException {
-        String format = config.getValue("chat.privateMessageFormat");
+        String format = config.getStringSafely("chat.privateMessages.format", "&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%") + "&r";
+        String me_format = config.getStringSafely("chat.privateMessages.me_format", "&cme") + "&r";
         String sourceName = CommandHelper.isConsole(source) ? source.getName() :
                 KiloServer.getServer().getOnlineUser(source.getPlayer()).getRankedDisplayname().asFormattedString();
 
-        String toSource = format.replace("%SOURCE%", "&r&cme&r")
-                .replace("%TARGET%", "&r" + target.getRankedDisplayname().asFormattedString() + "&r").replace("%MESSAGE%", message);
-        String toTarget = format.replace("%SOURCE%", sourceName).replace("%TARGET%", "&r&cme")
-                .replace("%MESSAGE%", message);
-        ;
+        String toSource = format.replace("%SOURCE%", me_format)
+                .replace("%TARGET%", "&r" + target.getRankedDisplayname().asFormattedString() + "&r")
+                .replace("%MESSAGE%", "&r" + message);
+        String toTarget = format.replace("%SOURCE%", sourceName)
+                .replace("%TARGET%", me_format)
+                .replace("%MESSAGE%", "&r" + message);
 
         KiloChat.sendMessageToSource(source, new LiteralText(
                 new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.GRAY));

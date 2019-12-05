@@ -15,16 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class StaffChat implements ChatChannel {
+public class BuilderChat implements ChatChannel {
     private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
     private List<UUID> subscribers;
 
-    public StaffChat() {
+    public BuilderChat() {
         this.subscribers = new ArrayList<>();
     }
 
     public static String getChannelId() {
-        return "staff";
+        return "builder";
     }
 
     @Override
@@ -65,7 +65,7 @@ public class StaffChat implements ChatChannel {
 
         this.subscribers.add(user.getUuid());
         sendToSubscribers(new ChatMessage(
-                config.getFormatter(true, "chat.channels.meta.staff_prefix") +
+                config.getFormatter(true, "chat.channels.meta.builder_prefix") +
                         config.getFormatter(true, "chat.channels.messages.join",
                                 user.getUsername() + "&r", getChannelId()),
                 true));
@@ -77,7 +77,7 @@ public class StaffChat implements ChatChannel {
             return;
 
         sendToSubscribers(new ChatMessage(
-                config.getFormatter(true, "chat.channels.meta.staff_prefix") +
+                config.getFormatter(true, "chat.channels.meta.builder_prefix") +
                         config.getFormatter(true, "chat.channels.messages.leave",
                                 user.getUsername() + "&r", getChannelId()),
                 true));
@@ -89,5 +89,4 @@ public class StaffChat implements ChatChannel {
             KiloChat.sendMessageTo(KiloServer.getServer().getPlayer(subscriber), chatMessage);
         }
     }
-
 }

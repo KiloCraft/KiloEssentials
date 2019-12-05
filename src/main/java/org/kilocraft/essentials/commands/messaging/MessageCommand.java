@@ -31,19 +31,14 @@ public class MessageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(literal("ke_msg").executes(ctx ->
                 KiloCommands.executeUsageFor("command.message.usage", ctx.getSource()))
-                        .then(argument("player", player())
-                                .suggests(ArgumentSuggestions::allPlayers)
+                        .then(argument("player", player()).suggests(ArgumentSuggestions::allPlayers)
                                 .then(argument("message", greedyString()).executes(ctx ->
-                                                executeSend(ctx.getSource(), getPlayer(ctx, "player"), getString(ctx, "message"))
-                                )))
-        );
+                                                executeSend(ctx.getSource(), getPlayer(ctx, "player"), getString(ctx, "message"))))));
 
         LiteralCommandNode<ServerCommandSource> replyNode = dispatcher.register(literal("r")
                         .executes(context -> KiloCommands.executeUsageFor("command.message.reply.usage", context.getSource()))
-                        .then(
-                            argument("message", greedyString())
-                                .executes(MessageCommand::executeReply))
-        );
+                        .then(argument("message", greedyString())
+                                .executes(MessageCommand::executeReply)));
 
         dispatcher.register(literal("ke_tell").redirect(node));
         dispatcher.register(literal("ke_whisper").redirect(node));
