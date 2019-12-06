@@ -235,8 +235,8 @@ public class ServerUser implements User {
 
     @Override
     public Text getRankedDisplayname() {
-        return Team.modifyText(KiloServer.getServer().getPlayer(this.uuid).getScoreboardTeam(),
-                new LiteralText(getDisplayname()));
+        return Team.modifyText(
+                KiloServer.getServer().getPlayer(this.uuid).getScoreboardTeam(), new LiteralText(getDisplayname()));
     }
 
     @Override
@@ -246,7 +246,7 @@ public class ServerUser implements User {
 
     @Override
     public String getUpstreamChannelId() {
-        return (this.upstreamChannelId != null) ? this.upstreamChannelId : "globa";
+        return (this.upstreamChannelId != null) ? this.upstreamChannelId : GlobalChat.getChannelId();
     }
 
     @Override
@@ -262,7 +262,6 @@ public class ServerUser implements User {
     @Override
     public Optional<String> getNickname() {
         return Optional.ofNullable(this.nickname);
-        //return this.nickname.equals("") ? this.name : this.nickname;
     }
 
     @Override

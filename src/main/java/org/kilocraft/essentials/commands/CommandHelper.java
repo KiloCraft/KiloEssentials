@@ -34,8 +34,8 @@ public class CommandHelper {
         return bool.get();
     }
 
-    public static boolean areTheSame(ServerPlayerEntity playerEntity_1, ServerPlayerEntity playerEntity_2) {
-        return playerEntity_1.getUuid() == playerEntity_2.getUuid();
+    public static boolean areTheSame(ServerPlayerEntity playerEntity1, ServerPlayerEntity playerEntity2) {
+        return playerEntity1.getUuid().equals(playerEntity2.getUuid());
     }
 
     public static boolean areTheSame(ServerCommandSource source, ServerPlayerEntity playerEntity) {

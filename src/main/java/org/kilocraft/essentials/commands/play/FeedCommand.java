@@ -49,7 +49,7 @@ public class FeedCommand {
                 KiloChat.sendMessageTo(source, LangText.getFormatter(true, "command.feed.exception.others", player.getName().asString()));
             } else {
                 KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.feed.announce", source.getName()));
-                KiloChat.sendMessageToSource(source, LangText.getFormatter(true, "command.feed.other", player.getName().toString()));
+                KiloChat.sendMessageToSource(source, LangText.getFormatter(true, "command.feed.other", player.getName().asString()));
             }
         }
 

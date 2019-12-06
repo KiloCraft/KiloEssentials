@@ -1,7 +1,9 @@
 package org.kilocraft.essentials.extensions.warps;
 
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import io.github.indicode.fabric.worlddata.NBTWorldData;
@@ -10,23 +12,18 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.api.feature.ServerProvidedFeature;
-import org.kilocraft.essentials.api.feature.UserProvidedFeature;
-import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.commands.WarpCommand;
 import org.kilocraft.essentials.extensions.warps.commands.WarpCommands;
-import org.kilocraft.essentials.user.ServerUser;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
 
 public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     public static WarpManager INSTANCE = new WarpManager();
@@ -95,7 +92,9 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
         return warps.stream().toArray(String[]::new);
     }
 
-    public static SuggestionProvider<ServerCommandSource> suggestWarps = ((context, builder) -> CommandSource.suggestMatching(warps.stream().map(Warp::getName), builder));
+    public static CompletableFuture<Suggestions> suggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(warps.stream().map(Warp::getName), builder);
+    }
 
     @Override
     public File getSaveFile(File file, File file1, boolean b) {

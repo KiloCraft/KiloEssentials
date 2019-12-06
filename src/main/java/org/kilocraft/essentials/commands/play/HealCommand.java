@@ -49,7 +49,7 @@ public class HealCommand {
                 KiloChat.sendMessageTo(source, LangText.getFormatter(true, "command.heal.exception.others", player.getName().asString()));
             } else {
                 KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.heal.announce", source.getName()));
-                KiloChat.sendMessageToSource(source, LangText.getFormatter(true, "command.heal.other", player.getName().toString()));
+                KiloChat.sendMessageToSource(source, LangText.getFormatter(true, "command.heal.other", player.getName().asString()));
             }
         }
 
