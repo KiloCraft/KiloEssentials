@@ -57,14 +57,14 @@ public class NicknameCommand {
                 .suggests(NicknameCommand::setOthersSuggestions).executes(NicknameCommand::setOther).build();
 
         LiteralCommandNode<ServerCommandSource> resetSelf = literal("reset").requires(PERMISSION_CHECK_SELF).executes(NicknameCommand::resetSelf).build();
-        LiteralCommandNode<ServerCommandSource> clearOther = literal("clear").requires(PERMISSION_CHECK_OTHER).executes(NicknameCommand::resetOther).build();
+        LiteralCommandNode<ServerCommandSource> resetOther = literal("reset").requires(PERMISSION_CHECK_OTHER).executes(NicknameCommand::resetOther).build();
 
         LiteralCommandNode<ServerCommandSource> other = literal("other").requires(PERMISSION_CHECK_OTHER).build();
 
         setOther.addChild(nicknameOther);
 
         target.addChild(setOther);
-        target.addChild(clearOther);
+        target.addChild(resetOther);
 
         other.addChild(target);
 
@@ -134,7 +134,7 @@ public class NicknameCommand {
         user.setNickname(nickname);
         player.setCustomName(new LiteralText(formattedNickname));
 
-        KiloChat.sendLangMessageTo(source, "template.#1", "nickname", formattedNickname, source.getName());
+        KiloChat.sendLangMessageTo(source, "template.#1", "nickname", formattedNickname, player.getName().asString());
         if (!CommandHelper.areTheSame(source, player))
             KiloChat.sendLangMessageTo(player, "template.#1.announce", source.getName(), "nickname", formattedNickname);
 

@@ -1,6 +1,7 @@
 package org.kilocraft.essentials;
 
 public enum EssentialPermissions {
+    STAFF("staff"),
     CHAT_COLOR("chat.color"),
     CHAT_BYPASS("chat.bypass"),
     CHAT_GET_PINGED("chat.ping.get_pinged"),

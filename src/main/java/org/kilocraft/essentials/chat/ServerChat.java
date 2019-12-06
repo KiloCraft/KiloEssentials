@@ -23,6 +23,7 @@ import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariabl
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
@@ -44,7 +45,7 @@ public class ServerChat {
                 KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_COLOR.getNode()));
 
         if (config.getBooleanSafely("chat.ping.enable", true)
-                && KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_PING_OTHER.getNode(), 3))
+                && KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_PING_OTHER.getNode(), 3)) {
 
             //Ping Everyone
             if (KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_PING_EVERYONE.getNode(), 3)
@@ -56,32 +57,34 @@ public class ServerChat {
                 }
             }
 
-        //Ping singleton target
-        for (String targetName : getServer().getPlayerManager().getPlayerNames()) {
-            if (rawMessage.contains(senderFormat.replace("%PLAYER_NAME%", targetName))) {
-                OnlineUser target = KiloServer.getServer().getUserManager().getOnline(targetName);
+            //Ping singleton target
+            for (String targetName : getServer().getPlayerManager().getPlayerNames()) {
+                if (rawMessage.contains(senderFormat.replace("%PLAYER_NAME%", targetName))) {
+                    OnlineUser target = KiloServer.getServer().getUserManager().getOnline(targetName);
 
-                if (!channel.isSubscribed(target))
-                    return;
+                    if (channel.isSubscribed(target)) {
+                        boolean canPing = KiloEssentials.hasPermissionNode(
+                                Objects.requireNonNull(target).getCommandSource(), EssentialPermissions.CHAT_GET_PINGED.getNode(), 4);
 
-                String senderPing = senderFormat.replace("%PLAYER_NAME%", targetName);
-                String displayPing = "&r" + displayFormat.replace("%PLAYER_DISPLAYNAME%", target.getDisplayname()) + "&r";
+                        System.out.println("Ping 1: " + targetName);
+                        if (isPingingAllowed && canPing) {
+                            String senderPing = senderFormat.replace("%PLAYER_NAME%", targetName);
+                            String displayPing = "&r" + displayFormat.replace("%PLAYER_DISPLAYNAME%",
+                                    target.getRankedDisplayname().asFormattedString()) + "&r";
 
-                boolean canPing = KiloEssentials.hasPermissionNode(
-                        target.getCommandSource(), EssentialPermissions.CHAT_GET_PINGED.getNode(), 4);
-
-                if (isPingingAllowed && canPing) {
-                    message.setMessage(rawMessage.replace(senderPing, displayPing), true);
-                    pingPlayer(getServer().getPlayer(targetName));
+                            System.out.println("Allowed " + targetName);
+                            message.setMessage(rawMessage.replace(senderPing, displayPing), true);
+                            pingPlayer(getServer().getPlayer(targetName));
+                        }
+                    }
                 }
-
             }
         }
 
         message.setMessage(config.getLocalReplacer()
                 .replace(template, new UserConfigVariables((ServerUser) sender), KiloConfig.getFileConfigOfMain())
                 .replace("%USER_DISPLAYNAME%", sender.getRankedDisplayname().asFormattedString())
-                .replace("%MESSAGE%", message.getOriginal()), true);
+                .replace("%MESSAGE%", message.getFormattedMessage()), true);
 
         Text text = new LiteralText(message.getFormattedMessage()
         ).styled((style) -> {
@@ -89,8 +92,12 @@ public class ServerChat {
             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getHoverMessage(player)));
         });
 
+        player.sendMessage(text);
+        KiloChat.broadCastToConsole(new ChatMessage(text.asString(), false));
+
         for (UUID subscriber : channel.getSubscribers()) {
-            KiloChat.sendMessageTo(KiloServer.getServer().getPlayer(subscriber), text);
+            if (!subscriber.equals(player.getUuid()))
+                KiloChat.sendMessageTo(KiloServer.getServer().getPlayer(subscriber), text);
         }
     }
 

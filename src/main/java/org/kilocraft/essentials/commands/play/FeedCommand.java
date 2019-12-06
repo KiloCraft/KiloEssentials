@@ -9,7 +9,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
@@ -50,7 +49,7 @@ public class FeedCommand {
                 KiloChat.sendMessageTo(source, LangText.getFormatter(true, "command.feed.exception.others", player.getName().asString()));
             } else {
                 KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.feed.announce", source.getName()));
-                TextFormat.sendToUniversalSource(source, LangText.getFormatter(true, "command.feed.other", player.getName().toString()), false);
+                KiloChat.sendMessageToSource(source, LangText.getFormatter(true, "command.feed.other", player.getName().toString()));
             }
         }
 

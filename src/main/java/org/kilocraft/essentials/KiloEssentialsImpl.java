@@ -49,8 +49,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		new KiloConfig();
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = commands;
-		Thimble.disableVanillaCommandPerms();
-
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
 		FeatureTypes.init(); // Register the built in feature types
