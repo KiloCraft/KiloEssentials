@@ -33,6 +33,7 @@ import org.kilocraft.essentials.commands.misc.ColorsCommand;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.PingCommand;
 import org.kilocraft.essentials.commands.misc.PreviewCommand;
+import org.kilocraft.essentials.commands.moderation.BanCommand;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.moderation.ProfileBanCommand;
 import org.kilocraft.essentials.commands.play.*;
@@ -96,6 +97,7 @@ public class KiloCommands {
         GamemodeCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
         ProfileBanCommand.register(this.dispatcher);
+        BanCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
         RandomTeleportCommand.register(this.dispatcher);
@@ -282,6 +284,12 @@ public class KiloCommands {
 
     public static SimpleCommandExceptionType getException(ExceptionMessageNode node, Object... objects) {
         String message = ModConstants.getMessageUtil().fromExceptionNode(node);
+        return commandException(
+                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
+    }
+
+    public static SimpleCommandExceptionType getException(CommandMessageNode node, Object... objects) {
+        String message = ModConstants.getMessageUtil().fromCommandNode(node);
         return commandException(
                 new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
     }

@@ -4,8 +4,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import io.github.indicode.fabric.permissions.PermChangeBehavior;
-import io.github.indicode.fabric.permissions.Thimble;
 import io.github.indicode.fabric.worlddata.NBTWorldData;
 import io.github.indicode.fabric.worlddata.WorldDataLib;
 import net.minecraft.nbt.CompoundTag;
@@ -15,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.commands.WarpCommand;
@@ -33,7 +32,12 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     @Override
     public boolean register() {
         WorldDataLib.addIOCallback(this);
-        warps.forEach(warp -> Thimble.PERMISSIONS.registerPermission(warp.getPermissionNode(), PermChangeBehavior.UPDATE_COMMAND_TREE));
+
+        for (Warp warp : warps) {
+            if (warp.doesRequirePermission())
+                KiloEssentials.registerPermission(warp.getPermissionNode());
+        }
+
         WarpCommand.register(KiloCommands.getDispatcher());
         WarpCommands.register(KiloCommands.getDispatcher());
         return true;

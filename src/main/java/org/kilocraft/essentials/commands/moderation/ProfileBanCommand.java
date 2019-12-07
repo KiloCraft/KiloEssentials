@@ -34,7 +34,7 @@ import static org.kilocraft.essentials.user.punishment.BanEntryType.PROFILE;
 
 public class ProfileBanCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> banCommand = literal("ke_ban")
+        LiteralArgumentBuilder<ServerCommandSource> banCommand = literal("old_ban")
                 .requires(src -> hasPermission(src, "ban", 3))
                 .executes(KiloCommands::executeSmartUsage);
 

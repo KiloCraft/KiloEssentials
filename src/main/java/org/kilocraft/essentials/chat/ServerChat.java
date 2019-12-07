@@ -66,13 +66,11 @@ public class ServerChat {
                         boolean canPing = KiloEssentials.hasPermissionNode(
                                 Objects.requireNonNull(target).getCommandSource(), EssentialPermissions.CHAT_GET_PINGED.getNode(), 4);
 
-                        System.out.println("Ping 1: " + targetName);
                         if (isPingingAllowed && canPing) {
                             String senderPing = senderFormat.replace("%PLAYER_NAME%", targetName);
                             String displayPing = "&r" + displayFormat.replace("%PLAYER_DISPLAYNAME%",
                                     target.getRankedDisplayname().asFormattedString()) + "&r";
 
-                            System.out.println("Allowed " + targetName);
                             message.setMessage(rawMessage.replace(senderPing, displayPing), true);
                             pingPlayer(getServer().getPlayer(targetName));
                         }

@@ -13,7 +13,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -44,11 +43,6 @@ public class WarpCommand {
         spawnLiteral.executes(c -> executeTeleport(c.getSource(), "spawn"));
 
         warpArg.suggests(WarpManager::suggestions);
-
-        for (Warp warp : WarpManager.getWarps()) {
-            if (warp.doesRequirePermission())
-                KiloEssentials.registerPermission(warp.getPermissionNode());
-        }
 
         builder.then(warpArg);
         registerAdmin(builder, dispatcher);
