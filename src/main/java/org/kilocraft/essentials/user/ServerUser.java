@@ -13,14 +13,13 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author CODY_AI
@@ -50,6 +49,8 @@ public class ServerUser implements User {
     private int randomTeleportsLeft = 3;
     private int displayParticleId = 0;
     public int messageCooldown;
+    private List<String> subscriptions;
+    private String upstreamChannelId;
     
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -60,6 +61,8 @@ public class ServerUser implements User {
         } catch (IOException e) {
             KiloEssentials.getLogger().error("Failed to Load User for [" + uuid.toString() + "]");
         }
+
+        this.subscriptions = new ArrayList<>();
     }
 
     protected CompoundTag serialize() {
@@ -101,6 +104,15 @@ public class ServerUser implements User {
             cacheTag.put("lastMessage", lastMessageTag);
         }
 
+        // Chat channels stuff
+        CompoundTag channelsCache = new CompoundTag();
+        CompoundTag subscriptionsTag = new CompoundTag();
+
+        if (this.upstreamChannelId != null)
+            channelsCache.putString("upstreamChannelId", this.upstreamChannelId);
+        cacheTag.put("channels", channelsCache);
+
+        // Abilities
         if (this.canFly)
             cacheTag.putBoolean("isFlyEnabled", true);
 
@@ -159,6 +171,15 @@ public class ServerUser implements User {
 
         }
 
+        if (cacheTag.contains("channels", NBTTypes.COMPOUND)) {
+            CompoundTag channelsTag = cacheTag.getCompound("channels");
+
+            if (channelsTag.contains("upstreamChannelId", NBTTypes.STRING))
+                this.upstreamChannelId = channelsTag.getString("upstreamChannelId");
+            else
+                this.upstreamChannelId = GlobalChat.getChannelId();
+        }
+
         if (cacheTag.getBoolean("isFlyEnabled"))
             this.canFly = true;
         if (cacheTag.getBoolean("isInvulnerable"))
@@ -214,8 +235,18 @@ public class ServerUser implements User {
 
     @Override
     public Text getRankedDisplayname() {
-        return Team.modifyText(KiloServer.getServer().getPlayer(this.uuid).getScoreboardTeam(),
-                new LiteralText(getDisplayname()));
+        return Team.modifyText(
+                KiloServer.getServer().getPlayer(this.uuid).getScoreboardTeam(), new LiteralText(getDisplayname()));
+    }
+
+    @Override
+    public List<String> getSubscriptionChannels() {
+        return this.subscriptions;
+    }
+
+    @Override
+    public String getUpstreamChannelId() {
+        return (this.upstreamChannelId != null) ? this.upstreamChannelId : GlobalChat.getChannelId();
     }
 
     @Override
@@ -231,7 +262,6 @@ public class ServerUser implements User {
     @Override
     public Optional<String> getNickname() {
         return Optional.ofNullable(this.nickname);
-        //return this.nickname.equals("") ? this.name : this.nickname;
     }
 
     @Override
@@ -302,6 +332,21 @@ public class ServerUser implements User {
     }
 
     @Override
+    public void addSubscriptionChannel(String id) {
+        this.subscriptions.add(id);
+    }
+
+    @Override
+    public void removeSubscriptionChannel(String id) {
+        this.subscriptions.remove(id);
+    }
+
+    @Override
+    public void setUpstreamChannelId(String id) {
+        this.upstreamChannelId = id;
+    }
+
+    @Override
     public boolean isInvulnerable() {
         return this.invulnerable;
     }
@@ -331,6 +376,11 @@ public class ServerUser implements User {
     }
 
     @Override
+    public void setLastPrivateMessage(String message) {
+        this.lastPrivateMessageText = message;
+    }
+
+    @Override
     public <F extends UserProvidedFeature> F feature(FeatureType<F> type) {
         return null; // TODO Impl
     }
@@ -338,4 +388,11 @@ public class ServerUser implements User {
     public void setDisplayParticleId (int id) {
     	this.displayParticleId = id;
     }
+
+    public void resetMessageCooldown() {
+        if (this.messageCooldown > 0) {
+            --this.messageCooldown;
+        }
+    }
+
 }

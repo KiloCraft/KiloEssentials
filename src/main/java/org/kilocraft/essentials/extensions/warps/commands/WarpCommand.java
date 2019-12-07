@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
@@ -26,33 +25,38 @@ import java.text.DecimalFormat;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.getCommandPermission;
 
 public class WarpCommand {
     private static final SimpleCommandExceptionType WARP_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the warp specified!"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("warp");
-        RequiredArgumentBuilder<ServerCommandSource, String> warpArg = CommandManager.argument("warp", string());
-        LiteralArgumentBuilder<ServerCommandSource> listLiteral = CommandManager.literal("warps");
+        LiteralArgumentBuilder<ServerCommandSource> builder = literal("warp");
+        RequiredArgumentBuilder<ServerCommandSource, String> warpArg = argument("warp", string());
+        LiteralArgumentBuilder<ServerCommandSource> listLiteral = literal("warps");
+        LiteralArgumentBuilder<ServerCommandSource> spawnLiteral = literal("spawn");
 
         warpArg.executes(c -> executeTeleport(c.getSource(), getString(c, "warp")));
         listLiteral.executes(c -> executeList(c.getSource()));
+        spawnLiteral.executes(c -> executeTeleport(c.getSource(), "spawn"));
 
-        warpArg.suggests((context, builder1) -> WarpManager.suggestWarps.getSuggestions(context, builder1));
+        warpArg.suggests(WarpManager::suggestions);
 
         builder.then(warpArg);
         registerAdmin(builder, dispatcher);
+        dispatcher.register(spawnLiteral);
         dispatcher.register(listLiteral);
         dispatcher.register(builder);
     }
 
     private static void registerAdmin(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> aliasAdd = CommandManager.literal("setwarp");
-        LiteralArgumentBuilder<ServerCommandSource> aliasRemove = CommandManager.literal("delwarp");
-        RequiredArgumentBuilder<ServerCommandSource, String> removeArg = CommandManager.argument("warp", string());
-        RequiredArgumentBuilder<ServerCommandSource, String> addArg = CommandManager.argument("name", string());
-        RequiredArgumentBuilder<ServerCommandSource, Boolean> argPermission = CommandManager.argument("requiresPermission", BoolArgumentType.bool());
+        LiteralArgumentBuilder<ServerCommandSource> aliasAdd = literal("setwarp");
+        LiteralArgumentBuilder<ServerCommandSource> aliasRemove = literal("delwarp");
+        RequiredArgumentBuilder<ServerCommandSource, String> removeArg = argument("warp", string());
+        RequiredArgumentBuilder<ServerCommandSource, String> addArg = argument("name", string());
+        RequiredArgumentBuilder<ServerCommandSource, Boolean> argPermission = argument("requiresPermission", BoolArgumentType.bool());
 
         aliasAdd.requires(s -> hasPermissionOrOp(s, getCommandPermission("warps.manage"), 2));
         aliasRemove.requires(s -> hasPermissionOrOp(s, getCommandPermission("warps.manage"), 2));
@@ -60,7 +64,7 @@ public class WarpCommand {
         removeArg.executes(c -> executeRemove(c.getSource(), getString(c, "warp")));
         argPermission.executes(c -> executeAdd(c.getSource(), getString(c, "name"), BoolArgumentType.getBool(c, "requiresPermission")));
 
-        removeArg.suggests((context, builder1) -> WarpManager.suggestWarps.getSuggestions(context, builder1));
+        removeArg.suggests(WarpManager::suggestions);
 
         addArg.then(argPermission);
         aliasAdd.then(addArg);
@@ -74,7 +78,7 @@ public class WarpCommand {
         if (WarpManager.getWarpsByName().contains(name)) {
             Warp warp = WarpManager.getWarp(name);
 
-            if (!warp.doesRequirePermission() && !Thimble.hasPermissionOrOp(source, warp.getPermissionNode(), 2))
+            if (warp.doesRequirePermission() && !Thimble.hasPermissionOrOp(source, warp.getPermissionNode(), 2))
                 throw new SimpleCommandExceptionType(KiloCommands.getPermissionError(warp.getPermissionNode())).create();
 
             ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimId()));

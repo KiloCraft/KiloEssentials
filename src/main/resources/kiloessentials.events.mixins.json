@@ -10,6 +10,7 @@
     "MixinMinecraftDedicatedServer",
     "MixinMinecraftServer$OnStop",
     "MixinMinecraftServer$OnTick",
+    "MixinMinecraftServer$OnSave",
     "MixinPlayerManager$PlayerEvent$OnConnect",
     "MixinServerPlayerEntity$PlayerEvent$OnDeath",
     "MixinServerPlayerNetworkHandler$PlayerEvent$OnDisconnect",

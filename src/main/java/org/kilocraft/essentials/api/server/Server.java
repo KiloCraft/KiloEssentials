@@ -9,9 +9,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
 
 import java.util.Collection;
@@ -41,6 +43,19 @@ public interface Server {
      * @return instance of UserManager
      */
     UserManager getUserManager();
+
+    OnlineUser getOnlineUser(String name);
+
+    OnlineUser getOnlineUser(ServerPlayerEntity player);
+
+    OnlineUser getOnlineUser(UUID uuid);
+
+    /**
+     * Gets the chat manager
+     *
+     * @return instance of ChatManager
+     */
+    ChatManager getChatManager();
 
     /**
      * Gets a player object by the given username.

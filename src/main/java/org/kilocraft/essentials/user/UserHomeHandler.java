@@ -42,6 +42,8 @@ public class UserHomeHandler implements ConfigurableFeature {
     public boolean register() {
         isEnabled = true;
         HomeCommand.register(KiloCommands.getDispatcher());
+
+        //KiloEssentials.registerPermissions();
         return true;
     }
 

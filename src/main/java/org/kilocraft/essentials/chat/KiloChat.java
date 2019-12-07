@@ -39,8 +39,7 @@ public class KiloChat {
 		sendMessageTo(player, new LiteralText(chatMessage.getFormattedMessage()));
 	}
 
-	public static void sendMessageTo(ServerCommandSource source, ChatMessage chatMessage)
-			throws CommandSyntaxException {
+	public static void sendMessageTo(ServerCommandSource source, ChatMessage chatMessage) throws CommandSyntaxException {
 		sendMessageTo(source.getPlayer(), new LiteralText(chatMessage.getFormattedMessage()));
 	}
 
@@ -88,20 +87,6 @@ public class KiloChat {
 			source.sendFeedback(LangText.getFormatter(true, key, objects), false);
 	}
 
-	public static void sendPrivateMessageTo(ServerCommandSource source, ServerPlayerEntity player, String message)
-			throws CommandSyntaxException {
-		String format = config.getValue("chat.privateMessageFormat");
-
-		String toSource = format.replace("%SOURCE%", "&r&aME&r")
-				.replace("%TARGET%", "&r" + player.getName().asString() + "&r").replace("%MESSAGE%", message);
-		String toTarget = format.replace("%SOURCE%", source.getName()).replace("%TARGET%", "&r&aME")
-				.replace("%MESSAGE%", message);
-		;
-
-		sendMessageTo(source, new ChatMessage(toSource, true));
-		sendMessageTo(player, new ChatMessage(toTarget, true));
-	}
-
 	public static void broadCastExceptConsole(ChatMessage chatMessage) {
 		for (PlayerEntity entity : getServer().getPlayerList()) {
 			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
@@ -145,7 +130,7 @@ public class KiloChat {
 		broadCast(new ChatMessage(getFormattedLang(key, objects), true));
 	}
 
-	public static void broadcastUserJoinEventMessage(ServerUser user) {
+	public static void onUserJoin(ServerUser user) {
 		broadCast(new ChatMessage(
 				messages.getLocal(true, "events.userJoin", new UserConfigVariables(user))
 					.replace("%USER_DISPLAYNAME%", user.getDisplayname()),
@@ -154,7 +139,7 @@ public class KiloChat {
 
 	}
 
-	public static void broadcastUserLeaveEventMessage(ServerUser user) {
+	public static void onUserLeave(ServerUser user) {
 		broadCast(new ChatMessage(
 				messages.getLocal(true, "events.userLeave", new UserConfigVariables(user))
 						.replace("%USER_DISPLAYNAME%", user.getDisplayname()),

@@ -10,6 +10,7 @@ import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,6 +26,10 @@ public interface User {
     String getDisplayname();
 
     Text getRankedDisplayname();
+
+    List<String> getSubscriptionChannels();
+
+    String getUpstreamChannelId();
 
     Optional<String> getNickname();
 
@@ -64,6 +69,12 @@ public interface User {
     @Nullable
     Date getFirstJoin();
 
+    void addSubscriptionChannel(String id);
+
+    void removeSubscriptionChannel(String id);
+
+    void setUpstreamChannelId(String id);
+
     boolean isInvulnerable();
 
     void setInvulnerable(boolean set);
@@ -79,6 +90,8 @@ public interface User {
     String getLastPrivateMessage();
 
     void setLastMessageSender(UUID uuid);
+
+    void setLastPrivateMessage(String message);
 
     <F extends UserProvidedFeature> F feature(FeatureType<F> type);
 

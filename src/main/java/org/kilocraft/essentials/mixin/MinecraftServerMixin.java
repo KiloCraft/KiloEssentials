@@ -1,12 +1,8 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
-
-import org.kilocraft.essentials.KiloEssentialsMod;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Brandable;
-import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.RollingAverage;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,9 +49,5 @@ public abstract class MinecraftServerMixin implements Brandable {
     public String getServerModName() {
         return KiloServer.getServer().getBrandName();
     }
-    
-    @Inject(at = @At("HEAD"), method = "setPlayerManager")
-    public void setPlayerManager(PlayerManager playerManager, CallbackInfo ci) {
-        KiloEssentialsMod.punishmentsManager = new PunishmentManager(playerManager);
-    }
+
 }

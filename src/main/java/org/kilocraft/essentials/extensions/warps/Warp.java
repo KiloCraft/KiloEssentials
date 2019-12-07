@@ -68,7 +68,7 @@ public class Warp {
 
 
     public String getPermissionNode() {
-        return "" + (this.requirePermission ? permissionBaseName + "." + this.name : "");
+        return this.requirePermission ? permissionBaseName + "." + this.name : "";
     }
 
     public CompoundTag toTag() {

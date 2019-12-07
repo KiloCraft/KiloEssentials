@@ -38,8 +38,8 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class NicknameCommand {
-    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> hasPermissionOrOp(s, KiloCommands.getCommandPermission("nick"), 2);
-    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER = (s) -> hasPermissionOrOp(s, KiloCommands.getCommandPermission("nick.other"), 3);
+    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> KiloCommands.hasPermission(s, "nick.self", 2);
+    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER = (s) -> KiloCommands.hasPermission(s, "nick.other", 2);
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_EITHER = (s) -> PERMISSION_CHECK_OTHER.test(s) || PERMISSION_CHECK_SELF.test(s);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -57,14 +57,14 @@ public class NicknameCommand {
                 .suggests(NicknameCommand::setOthersSuggestions).executes(NicknameCommand::setOther).build();
 
         LiteralCommandNode<ServerCommandSource> resetSelf = literal("reset").requires(PERMISSION_CHECK_SELF).executes(NicknameCommand::resetSelf).build();
-        LiteralCommandNode<ServerCommandSource> clearOther = literal("clear").requires(PERMISSION_CHECK_OTHER).executes(NicknameCommand::resetOther).build();
+        LiteralCommandNode<ServerCommandSource> resetOther = literal("reset").requires(PERMISSION_CHECK_OTHER).executes(NicknameCommand::resetOther).build();
 
         LiteralCommandNode<ServerCommandSource> other = literal("other").requires(PERMISSION_CHECK_OTHER).build();
 
         setOther.addChild(nicknameOther);
 
         target.addChild(setOther);
-        target.addChild(clearOther);
+        target.addChild(resetOther);
 
         other.addChild(target);
 
@@ -94,8 +94,7 @@ public class NicknameCommand {
         int maxLength = (int) unchecked;
         String nickname = getString(ctx, "nickname");
 
-        if (!nickname.matches("^([A-Za-z0-9-&]){3," + maxLength + "}$"))
-            //TODO: Fix this so it doesn't throw another exception
+        if (nickname.length() > maxLength)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = "";
@@ -126,7 +125,7 @@ public class NicknameCommand {
 
         int maxLength = (int) unchecked;
 
-        if (!nickname.matches("^([A-Za-z0-9-&]){3," + maxLength + "}$"))
+        if (nickname.length() > maxLength)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
@@ -135,7 +134,7 @@ public class NicknameCommand {
         user.setNickname(nickname);
         player.setCustomName(new LiteralText(formattedNickname));
 
-        KiloChat.sendLangMessageTo(source, "template.#1", "nickname", formattedNickname, source.getName());
+        KiloChat.sendLangMessageTo(source, "template.#1", "nickname", formattedNickname, player.getName().asString());
         if (!CommandHelper.areTheSame(source, player))
             KiloChat.sendLangMessageTo(player, "template.#1.announce", source.getName(), "nickname", formattedNickname);
 

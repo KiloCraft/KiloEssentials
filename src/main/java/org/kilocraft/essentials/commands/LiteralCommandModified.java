@@ -28,8 +28,6 @@ public class LiteralCommandModified {
         add("ke_tell");
         add("ke_time");
         add("ke_ban");
-        add("ke_teleport");
-        add("ke_tp");
         add("ke_ban");
         add("ke_kick");
     }};
@@ -54,8 +52,6 @@ public class LiteralCommandModified {
         add("ban-ip");
         add("pardon");
         add("pardon-ip");
-        add("teleport");
-        add("tp");
         add("save-all");
     }};
 
