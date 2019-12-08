@@ -88,7 +88,6 @@ public class KiloCommands {
         if (devEnv) {
             KiloEssentialsImpl.getLogger().info("Alert [!]: Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
-            //TestCommand.register(this.dispatcher);
         }
 
         VersionCommand.register(this.dispatcher);
