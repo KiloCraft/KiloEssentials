@@ -7,7 +7,9 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
@@ -47,6 +49,9 @@ public class FlyCommand {
             playerEntity.abilities.allowFlying = bool;
             playerEntity.abilities.flying = bool;
             playerEntity.sendAbilitiesUpdate();
+            
+            OnlineUser user = KiloServer.getServer().getUserManager().getOnline(playerEntity);
+            user.setFlight(bool);
 
             KiloChat.sendLangMessageTo(source, "template.#1", "Flight", bool, playerEntity.getName().asString());
 
