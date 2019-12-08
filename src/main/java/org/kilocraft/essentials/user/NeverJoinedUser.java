@@ -8,6 +8,7 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,6 +40,16 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public Text getRankedDisplayname() {
+        return null;
+    }
+
+    @Override
+    public List<String> getSubscriptionChannels() {
+        return null;
+    }
+
+    @Override
+    public String getUpstreamChannelId() {
         return null;
     }
 
@@ -93,7 +104,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public void setFlight(boolean set) {
-
     }
 
     @Override
@@ -105,6 +115,18 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     @Nullable
     public Date getFirstJoin() {
         return null;
+    }
+
+    @Override
+    public void addSubscriptionChannel(String id) {
+    }
+
+    @Override
+    public void removeSubscriptionChannel(String id) {
+    }
+
+    @Override
+    public void setUpstreamChannelId(String id) {
     }
 
     @Override
@@ -139,6 +161,10 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public void setLastMessageSender(UUID uuid) {
+    }
+
+    @Override
+    public void setLastPrivateMessage(String message) {
     }
 
     @Override

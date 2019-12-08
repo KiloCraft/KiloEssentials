@@ -26,16 +26,22 @@ import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
+import org.kilocraft.essentials.commands.messaging.BuildermsgCommand;
 import org.kilocraft.essentials.commands.messaging.MessageCommand;
+import org.kilocraft.essentials.commands.messaging.StaffmsgCommand;
 import org.kilocraft.essentials.commands.misc.ColorsCommand;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.PingCommand;
 import org.kilocraft.essentials.commands.misc.PreviewCommand;
+import org.kilocraft.essentials.commands.moderation.BanCommand;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.moderation.ProfileBanCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
-import org.kilocraft.essentials.commands.teleport.*;
+import org.kilocraft.essentials.commands.teleport.BackCommand;
+import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
+import org.kilocraft.essentials.commands.teleport.TeleportCommands;
+import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.messages.MessageUtil;
@@ -43,7 +49,10 @@ import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
@@ -88,6 +97,7 @@ public class KiloCommands {
         GamemodeCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
         ProfileBanCommand.register(this.dispatcher);
+        BanCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
         RandomTeleportCommand.register(this.dispatcher);
@@ -115,11 +125,12 @@ public class KiloCommands {
         PreviewCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
         NicknameCommand.register(this.dispatcher);
-        TpCommand.register(this.dispatcher);
         PingCommand.register(this.dispatcher);
         ClearchatCommand.register(this.dispatcher);
         EnderchestCommand.register(this.dispatcher);
         SaveCommand.register(this.dispatcher);
+        StaffmsgCommand.register(this.dispatcher);
+        BuildermsgCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> {
             initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
@@ -217,8 +228,9 @@ public class KiloCommands {
                 else {
                     executor.sendError(Texts.toText(e.getRawMessage()));
 
-                    KiloChat.sendMessageToSource(executor,
-                            new ChatMessage(messageUtil.fromCommandNode(CommandMessageNode.EXECUTION_EXCEPTION_HELP), true));
+                    if (e.getRawMessage().getString().equals("Incorrect argument for command"))
+                        KiloChat.sendMessageToSource(executor,
+                                new ChatMessage(messageUtil.fromCommandNode(CommandMessageNode.EXECUTION_EXCEPTION_HELP), true));
 
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         int cursor = Math.min(e.getInput().length(), e.getCursor());
@@ -231,8 +243,8 @@ public class KiloCommands {
 
                         text.append(e.getInput().substring(Math.max(0, cursor - 10), cursor));
                         if (cursor < e.getInput().length()) {
-                            Text text_2 = (new LiteralText(e.getInput().substring(cursor))).formatted(Formatting.RED, Formatting.UNDERLINE);
-                            text.append(text_2);
+                            Text errorAtPointMesssage = (new LiteralText(e.getInput().substring(cursor))).formatted(Formatting.RED, Formatting.UNDERLINE);
+                            text.append(errorAtPointMesssage);
                         }
 
                         text.append(new LiteralText("<--[HERE]").formatted(Formatting.RED, Formatting.ITALIC));
@@ -272,6 +284,12 @@ public class KiloCommands {
 
     public static SimpleCommandExceptionType getException(ExceptionMessageNode node, Object... objects) {
         String message = ModConstants.getMessageUtil().fromExceptionNode(node);
+        return commandException(
+                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
+    }
+
+    public static SimpleCommandExceptionType getException(CommandMessageNode node, Object... objects) {
+        String message = ModConstants.getMessageUtil().fromCommandNode(node);
         return commandException(
                 new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
     }

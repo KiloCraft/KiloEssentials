@@ -11,11 +11,13 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.user.ServerUserManager;
@@ -29,6 +31,7 @@ public class ServerImpl implements Server {
     private String serverDisplayBrand;
     private String serverName = "Minecraft server";
     private UserManager userManager;
+    private ChatManager chatManager;
 
     public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, ServerUserManager serverUserManager, String serverBrand) {
         this.server = minecraftServer;
@@ -36,9 +39,7 @@ public class ServerImpl implements Server {
         this.userManager = serverUserManager;
         this.serverDisplayBrand = serverBrand;
         this.eventRegistry = eventManager;
-    }
-
-    public void savePlayers() {
+        this.chatManager = new ChatManager();
     }
 
     @Override
@@ -54,6 +55,26 @@ public class ServerImpl implements Server {
     @Override
     public UserManager getUserManager() {
         return this.userManager;
+    }
+
+    @Override
+    public OnlineUser getOnlineUser(String name) {
+        return this.userManager.getOnline(name);
+    }
+
+    @Override
+    public OnlineUser getOnlineUser(ServerPlayerEntity player) {
+        return this.userManager.getOnline(player);
+    }
+
+    @Override
+    public OnlineUser getOnlineUser(UUID uuid) {
+        return this.userManager.getOnline(uuid);
+    }
+
+    @Override
+    public ChatManager getChatManager() {
+        return this.chatManager;
     }
 
     @Override
@@ -154,8 +175,6 @@ public class ServerImpl implements Server {
 
     @Override
     public void shutdown() {
-        savePlayers();
-
         this.server.stop(false);
     }
 

@@ -2,11 +2,11 @@ package org.kilocraft.essentials.util.messages.nodes;
 
 public enum ExceptionMessageNode {
     EMPTY(""),
-    TOO_MANY_SELECTIONS("too_many_selections"),
     ILLEGAL_STRING_ARGUMENT("illegal_string_argument"),
-    UNKNOWN_COMMAND_EXCEPTION("unknown_command_exception"),
-    NICKNAME_NOT_ACCEPTABLE("nickname_not_acceptable")
-    ;
+    INVALID_CHAT_UPSTREAM_ID("invalid_chat_upstream_id"),
+    NICKNAME_NOT_ACCEPTABLE("nickname_not_acceptable"),
+    TOO_MANY_SELECTIONS("too_many_selections"),
+    UNKNOWN_COMMAND_EXCEPTION("unknown_command_exception");
 
 
     private String key;

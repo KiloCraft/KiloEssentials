@@ -17,7 +17,7 @@ import static org.kilocraft.essentials.KiloCommands.hasPermission;
 public class PingCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("ping")
-                        .requires(src -> hasPermission(src, "ping", 2))
+                        .requires(src -> hasPermission(src, "ping.self", 2))
                         .executes(ctx -> execute(ctx.getSource(), ctx.getSource().getPlayer()))
                         .then(argument("player", player())
                                 .suggests(ArgumentSuggestions::allPlayers)
