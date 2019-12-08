@@ -7,10 +7,14 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.user.OnlineUser;
 
 import java.util.HashMap;
 
@@ -32,6 +36,10 @@ public class BackCommand {
 			backLocations.put(player, position);
 			backDimensions.put(player, dimension);
 		}
+		
+		OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
+		user.setBackPos(new BlockPos(player));
+		user.setBackDim(DimensionType.getId(dimension));
 	}
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -57,6 +65,10 @@ public class BackCommand {
 			backDimensions.remove(player);
 			player.sendMessage(
 					LangText.getFormatter(true, "command.back.success", player.getName().asFormattedString()));
+			
+			OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
+			user.setBackPos((Vec3d)null);
+			user.setBackDim(null);
 		} else {
 			player.sendMessage(LangText.get(true, "command.back.failture"));
 		}

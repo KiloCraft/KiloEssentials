@@ -6,7 +6,9 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
@@ -43,6 +45,9 @@ public class InvulnerablemodeCommand {
         player.setInvulnerable(set);
         KiloChat.sendLangMessageTo(source, "template.#1", "Invulnerable", set, player.getName().asString());
 
+        OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
+        user.setInvulnerable(set);
+        
         if (!CommandHelper.areTheSame(source, player))
             KiloChat.sendLangMessageTo(player, "template.#1.announce", source.getName(), "Invulnerable", set);
 

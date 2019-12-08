@@ -144,15 +144,18 @@ public class ServerUser implements User {
     }
 
     protected void deserialize(@NotNull CompoundTag compoundTag) {
-        CompoundTag metaTag = compoundTag.getCompound("meta");
+    	CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
-        CompoundTag lastPosTag = cacheTag.getCompound("lastPos");
-        this.backPos = new Vec3d(
-                lastPosTag.getDouble("x"),
+        if (cacheTag.contains("lastPos")) {
+        	CompoundTag lastPosTag = cacheTag.getCompound("lastPos");
+        	this.backPos = new Vec3d(
+        		lastPosTag.getDouble("x"),
                 lastPosTag.getDouble("y"),
                 lastPosTag.getDouble("z")
-        );
+        	);
+        	this.lastPosDim = new Identifier(lastPosTag.getString("dim"));
+        }
 
         CompoundTag posTag = cacheTag.getCompound("pos");
         this.pos = new Vec3d(
@@ -160,6 +163,7 @@ public class ServerUser implements User {
                 posTag.getDouble("y"),
                 posTag.getDouble("z")
         );
+        this.posDim = new Identifier(posTag.getString("dim"));
 
         if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
             CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
@@ -180,19 +184,22 @@ public class ServerUser implements User {
                 this.upstreamChannelId = GlobalChat.getChannelId();
         }
 
-        if (cacheTag.getBoolean("isFlyEnabled"))
+        if (cacheTag.getBoolean("isFlyEnabled")) {
             this.canFly = true;
-        if (cacheTag.getBoolean("isInvulnerable"))
+        }
+        
+        if (cacheTag.getBoolean("isInvulnerable")) {
             this.invulnerable = true;
+        }
 
 
-        if (compoundTag.getInt("displayParticleId") != 0)
-            this.displayParticleId = compoundTag.getInt("displayParticleId");
+        if (metaTag.getInt("displayParticleId") != 0)
+            this.displayParticleId = metaTag.getInt("displayParticleId");
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
 
-        if (compoundTag.contains("nick")) // Nicknames are an Optional, so we compensate for that.
+        if (metaTag.contains("nick")) // Nicknames are an Optional, so we compensate for that.
             this.nickname = metaTag.getString("nick");
 
         this.homeHandler.deserialize(compoundTag.getCompound("homes"));
@@ -268,7 +275,7 @@ public class ServerUser implements User {
     public void setNickname(String name) {
         String oldNick = this.nickname;
         this.nickname = name;
-        KiloServer.getServer().getUserManager().onChangeNickname(this, oldNick); // This is to update the entires in UserManager.
+        KiloServer.getServer().getUserManager().onChangeNickname(this, oldNick); // This is to update the entries in UserManager.
     }
 
     @Override

@@ -11,7 +11,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.ServerTickEvent;
 import org.kilocraft.essentials.user.ServerUserManager;
-
 import java.util.List;
 
 public class OnTick implements EventHandler<ServerTickEvent> {
@@ -27,10 +26,10 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 		List<ServerPlayerEntity> players = world.getPlayers();
 
 		for (int i = 0; i < players.size(); i++) {
-			if (players.get(i).isSpectator() == true || FabricLoader.INSTANCE.isModLoaded("vanish")) {
+			if (players.get(i).isSpectator() == true/* || FabricLoader.INSTANCE.isModLoaded("vanish")*/) {
 				return;
 			}
-
+			
 			int particle = KiloServer.getServer().getUserManager().getOnline(players.get(i).getUuid()).getDisplayParticleId();
 			if (particle != 0) {
 				double x = players.get(i).getX();
