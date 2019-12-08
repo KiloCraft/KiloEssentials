@@ -45,10 +45,6 @@ public interface KiloEssentials {
         return KiloEssentialsImpl.getLogger();
     }
 
-    static void registerPermissions() {
-        KiloEssentialsImpl.registerPermissions();
-    }
-
     static void registerPermission(String node) {
         KiloEssentialsImpl.registerPermission(node);
     }

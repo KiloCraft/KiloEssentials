@@ -132,9 +132,8 @@ public class KiloCommands {
         StaffmsgCommand.register(this.dispatcher);
         BuildermsgCommand.register(this.dispatcher);
 
-        permissionWriters.add((map, server) -> {
-            initializedPerms.forEach(perm -> map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE));
-        });
+        permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
+                map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
     }
 
     public static int executeUsageFor(String langKey, ServerCommandSource source) {

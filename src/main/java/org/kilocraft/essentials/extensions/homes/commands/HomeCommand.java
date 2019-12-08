@@ -13,7 +13,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.EssentialPermissions;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
@@ -32,6 +31,8 @@ import java.util.Collections;
 import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
 import static net.minecraft.command.arguments.GameProfileArgumentType.getProfileArgument;
 import static net.minecraft.server.command.CommandManager.argument;
+import static org.kilocraft.essentials.KiloCommands.executeUsageFor;
+import static org.kilocraft.essentials.KiloCommands.hasPermission;
 
 public class HomeCommand {
 
@@ -43,28 +44,28 @@ public class HomeCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home")
-                .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOME_SELF_TP.getNode(), 2))
-                .executes(context -> KiloCommands.executeUsageFor("command.home.usage", context.getSource()));
+                .requires(s -> hasPermission(s, EssentialPermissions.HOME_SELF_TP.getNode(), 2))
+                .executes(context -> executeUsageFor("command.home.usage", context.getSource()));
 
         LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome")
-                .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOME_SELF_SET.getNode(), 2))
-                .executes(context -> KiloCommands.executeUsageFor("command.home.usage", context.getSource()));
+                .requires(s -> hasPermission(s, EssentialPermissions.HOME_SELF_SET.getNode(), 2))
+                .executes(context -> executeUsageFor("command.home.usage", context.getSource()));
 
         LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome")
-                .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOME_SELF_REMOVE.getNode(), 2))
-                .executes(context -> KiloCommands.executeUsageFor("command.home.usage", context.getSource()));
+                .requires(s -> hasPermission(s, EssentialPermissions.HOME_SELF_REMOVE.getNode(), 2))
+                .executes(context -> executeUsageFor("command.home.usage", context.getSource()));
 
         LiteralArgumentBuilder<ServerCommandSource> homesLiteral = CommandManager.literal("homes")
-                .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOMES_SELF.getNode(), 2));
+                .requires(s -> hasPermission(s, EssentialPermissions.HOMES_SELF.getNode(), 2));
 
         RequiredArgumentBuilder<ServerCommandSource, String> argRemove, argSet, argTeleport;
 
         argRemove = argument("home", StringArgumentType.string())
-                .requires(s -> KiloCommands.hasPermission(s, "home.self.remove", 2));
+                .requires(s -> hasPermission(s, "home.self.remove", 2));
         argSet = argument("name", StringArgumentType.string())
-                .requires(s -> KiloCommands.hasPermission(s, "home.self.set", 2));
+                .requires(s -> hasPermission(s, "home.self.set", 2));
         argTeleport = argument("home", StringArgumentType.string())
-                .requires(s -> KiloCommands.hasPermission(s, "home.self.tp", 2));
+                .requires(s -> hasPermission(s, "home.self.tp", 2));
 
         argSet.executes(c -> executeSet(
                 c, Collections.singleton(c.getSource().getPlayer().getGameProfile())));
@@ -78,7 +79,7 @@ public class HomeCommand {
         homesLiteral.executes(c -> executeList(c.getSource(), Collections.singleton(c.getSource().getPlayer().getGameProfile())));
 
         homesLiteral.then(argument("player", gameProfile())
-                .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOMES_OTHERS.getNode(), 2))
+                .requires(s -> hasPermission(s, EssentialPermissions.HOMES_OTHERS.getNode(), 2))
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes(c -> executeList(c.getSource(), getProfileArgument(c, "player"))));
 
@@ -88,19 +89,19 @@ public class HomeCommand {
 
         argTeleport.then(
                 argument("player", gameProfile())
-                    .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOME_OTHERS_TP.getNode(), 2))
+                    .requires(s -> hasPermission(s, EssentialPermissions.HOME_OTHERS_TP.getNode(), 2))
                     .suggests(ArgumentSuggestions::allPlayers)
                     .executes(c -> executeTeleport(c, getProfileArgument(c, "player"))));
 
         argSet.then(
                 argument("player", gameProfile())
-                        .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOME_OTHERS_SET.getNode(), 2))
+                        .requires(s -> hasPermission(s, EssentialPermissions.HOME_OTHERS_SET.getNode(), 2))
                         .suggests(ArgumentSuggestions::allPlayers)
                         .executes(c -> executeSet(c, getProfileArgument(c, "player"))));
 
         argRemove.then(
                 argument("player", gameProfile())
-                        .requires(s -> KiloCommands.hasPermission(s, EssentialPermissions.HOME_OTHERS_REMOVE.getNode(), 2))
+                        .requires(s -> hasPermission(s, EssentialPermissions.HOME_OTHERS_REMOVE.getNode(), 2))
                         .suggests(ArgumentSuggestions::allPlayers)
                         .executes(c -> executeRemove(c, getProfileArgument(c, "player"))));
 

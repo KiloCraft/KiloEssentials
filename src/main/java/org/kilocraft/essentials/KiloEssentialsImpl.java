@@ -20,12 +20,21 @@ import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
+
+/**
+ * Main Implementation
+ *
+ * @see org.kilocraft.essentials.api.KiloEssentials
+ * @author CODY_AI
+ * @author MCRafterzz
+ * @author GiantNuker
+ * @author i509VCB
+ * @author DrexHD
+ * @since KE 1.6
+ */
 
 public class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
@@ -85,27 +94,20 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
 
-		//TODO: Move this to the UserHomeHandler
-		//Registers the limit permissions
-		for (int i = 0; i == KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
-			registerPermission(EssentialPermissions.HOME_SET_LIMIT.getNode() + i);
-		}
 
 		//Initializes the EssentialsPermissions, these permissions aren't used in the literal commands
 		for (EssentialPermissions value : EssentialPermissions.values()) {
-			initializedPerms.add(value.getNode());
+			initializedPerms.add(PERMISSION_PREFIX + value.getNode());
 		}
 
-		registerPermissions();
+		initializedPerms.forEach(System.out::println);
+
+		permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
+				map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
 	}
 
 	public static Logger getLogger() {
 		return logger;
-	}
-
-	public static void registerPermissions() {
-		permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
-						map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
 	}
 
 	public static void registerPermission(String node) {
