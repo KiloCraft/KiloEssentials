@@ -94,7 +94,7 @@ public class NicknameCommand {
         int maxLength = (int) unchecked;
         String nickname = getString(ctx, "nickname");
 
-        if (nickname.length() > maxLength)
+        if (nickname.length() > maxLength || nickname.length() < 3)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = "";
@@ -125,7 +125,7 @@ public class NicknameCommand {
 
         int maxLength = (int) unchecked;
 
-        if (nickname.length() > maxLength)
+        if (nickname.length() > maxLength || nickname.length() < 3)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
@@ -152,7 +152,6 @@ public class NicknameCommand {
     }
 
     private static int resetOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerCommandSource source = ctx.getSource();
         ServerPlayerEntity player = getPlayer(ctx, "target");
         User user = KiloServer.getServer().getUserManager().getOnline(player);
         user.clearNickname();

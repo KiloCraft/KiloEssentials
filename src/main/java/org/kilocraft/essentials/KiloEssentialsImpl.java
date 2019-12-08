@@ -97,7 +97,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		//Initializes the EssentialsPermissions, these permissions aren't used in the literal commands
 		for (EssentialPermissions value : EssentialPermissions.values()) {
-			initializedPerms.add(PERMISSION_PREFIX + value.getNode());
+			initializedPerms.add(value.getNode());
 		}
 
 		initializedPerms.forEach(System.out::println);

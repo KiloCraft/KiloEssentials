@@ -48,17 +48,22 @@ public class DateArgument implements CommandedArgument {
         if (!this.input.matches((this.simple) ? simpleRegex : completeRegex))
             throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_INVALID, this.input).create();
 
-        String[] strings = this.input.split("(?<=\\\\d)(?=\\\\p{L})");
-        System.out.println(Arrays.toString(strings));
+        String[] strings;
+        String[] parts;
 
-        for (String value : strings) {
-            System.out.println(value);
 
-            this.values.put(
-                    Integer.parseInt(value.replaceAll(RegexLib.ALL_EXCEPT_DIGITS.get(), "")),
-                    value.replaceAll(RegexLib.DIGITS.get(), "")
-            );
-        }
+
+        //String[] strings = this.input.split("(?<=\\\\d)(?=\\\\p{L})");
+//        System.out.println(Arrays.toString(strings));
+//
+//        for (String value : strings) {
+//            System.out.println(value);
+//
+//            this.values.put(
+//                    Integer.parseInt(value.replaceAll(RegexLib.ALL_EXCEPT_DIGITS.get(), "")),
+//                    value.replaceAll(RegexLib.DIGITS.get(), "")
+//            );
+//        }
 
         return this;
     }
