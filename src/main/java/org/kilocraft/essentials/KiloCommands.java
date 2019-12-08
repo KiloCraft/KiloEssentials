@@ -88,6 +88,7 @@ public class KiloCommands {
         }
 
         VersionCommand.register(this.dispatcher);
+        HelpCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);

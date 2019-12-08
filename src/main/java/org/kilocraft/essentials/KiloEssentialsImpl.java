@@ -15,7 +15,6 @@ import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
-import org.kilocraft.essentials.commands.misc.HelpCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
@@ -23,7 +22,10 @@ import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 
@@ -96,9 +98,8 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
-		features.tryToRegister(new DiscordCommand(), "commands.discord");
-		features.tryToRegister(new VoteCommand(), "commands.vote");
-		features.tryToRegister(new HelpCommand(), "commands.help");
+		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
+		features.tryToRegister(new VoteCommand(), "VoteCommand");
 
 		//Initializes the EssentialsPermissions, these permissions aren't used in the literal commands
 		for (EssentialPermissions value : EssentialPermissions.values()) {
