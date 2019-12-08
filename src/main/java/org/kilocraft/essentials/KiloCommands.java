@@ -29,10 +29,7 @@ import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.BuildermsgCommand;
 import org.kilocraft.essentials.commands.messaging.MessageCommand;
 import org.kilocraft.essentials.commands.messaging.StaffmsgCommand;
-import org.kilocraft.essentials.commands.misc.ColorsCommand;
-import org.kilocraft.essentials.commands.misc.DiscordCommand;
-import org.kilocraft.essentials.commands.misc.PingCommand;
-import org.kilocraft.essentials.commands.misc.PreviewCommand;
+import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.BanCommand;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.moderation.ProfileBanCommand;
@@ -70,9 +67,9 @@ public class KiloCommands {
     }
 
     public static String getCommandPermission(String command) {
-        if (!initializedPerms.contains(command)) {
+        if (!initializedPerms.contains(command))
             initializedPerms.add(command);
-        }
+
         return "kiloessentials.command." + command;
     }
 
@@ -104,7 +101,6 @@ public class KiloCommands {
         MessageCommand.register(this.dispatcher);
         SudoCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
-        DiscordCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
         PlayerParticlesCommand.register(this.dispatcher);
         AnvilCommand.register(this.dispatcher);

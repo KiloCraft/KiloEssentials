@@ -14,6 +14,9 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
+import org.kilocraft.essentials.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.commands.misc.HelpCommand;
+import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -93,14 +96,14 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
-
+		features.tryToRegister(new DiscordCommand(), "commands.discord");
+		features.tryToRegister(new VoteCommand(), "commands.vote");
+		features.tryToRegister(new HelpCommand(), "commands.help");
 
 		//Initializes the EssentialsPermissions, these permissions aren't used in the literal commands
 		for (EssentialPermissions value : EssentialPermissions.values()) {
 			initializedPerms.add(value.getNode());
 		}
-
-		initializedPerms.forEach(System.out::println);
 
 		permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
 				map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));

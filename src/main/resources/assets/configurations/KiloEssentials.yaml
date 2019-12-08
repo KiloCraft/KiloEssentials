@@ -77,6 +77,10 @@ server:
 features:
   #[<boolean>]
   #A list of the features you want to enable!
+  commands:
+    discord: true
+    vote: true
+    help: true
   PlayerHomes: true
   ServerWideWarps: true
 

@@ -62,6 +62,8 @@ commands:
 
   discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
 
+  vote: 'Edit this in KiloEssentials/config/Messages.yaml'
+
   serverWideWarps:
     teleportTo: '%GENERAL_PREFIX% &eTeleporting to warp &6%WARPNAME%&e...'
 
