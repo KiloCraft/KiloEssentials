@@ -8,7 +8,7 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.config.KiloConfig;
 
-public  class BrandedServer {
+public class BrandedServer {
     public static void provide() {
         String configBrand = KiloConfig.getProvider().getMain().get(true, "server.displayBrandName");
 

@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.servermeta.ServerMetaManager;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -223,4 +224,12 @@ public interface Server {
      * @return a instance of OperatorList
      */
     OperatorList getOperatorList();
+
+    /**
+     * Gets the server meta manager
+     *
+     * @return a instance of ServerMetaManager
+     */
+    ServerMetaManager getMetaManager();
+
 }
