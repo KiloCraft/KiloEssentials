@@ -52,12 +52,12 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
-	modImplementation "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
-	modImplementation "com.github.indi-code:WorldDataLib:${project.worlddatalib_version}"
+	modImplementation "com.github.voidpointerdev:TinyConfig:${project.tiny_config_version}"
+	modImplementation "com.github.voidpointerdev:Thimble-Permissions:${project.thimble_permissions_version}"
+	modImplementation "com.github.voidpointerdev:WorldDataLib:${project.worlddatalib_version}"
 	modImplementation "com.github.voidpointerdev:vanishmode:${project.vanish_version}"
 
-	include "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
+	include "com.github.voidpointerdev:TinyConfig:${project.tiny_config_version}"
 
 	compile group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
 	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
