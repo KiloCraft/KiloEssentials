@@ -78,7 +78,7 @@ public class KiloCommands {
     }
 
     public static boolean hasPermission(ServerCommandSource source, String shortNode, int op) {
-        return hasPermissionOrOp(source, getCommandPermission(shortNode), op);
+        return hasPermissionOrOp(source, "kiloessentials." + shortNode, op);
     }
 
     private void register(boolean devEnv) {
