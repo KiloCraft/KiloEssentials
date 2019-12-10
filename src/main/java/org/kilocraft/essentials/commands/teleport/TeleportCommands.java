@@ -4,18 +4,17 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.command.arguments.DimensionArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
+import static net.minecraft.command.arguments.DimensionArgumentType.dimension;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 import static net.minecraft.command.arguments.Vec3ArgumentType.getVec3;
@@ -44,7 +43,7 @@ public class TeleportCommands {
 
         LiteralCommandNode<ServerCommandSource> tpinCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportin"), 2))
-                .then(argument("dimension", string()).suggests(ArgumentSuggestions::dimensions).then(argument("pos", vec3())
+                .then(argument("dimension", dimension()).suggests(ArgumentSuggestions::dimensions).then(argument("pos", vec3())
                         .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
                             .then(argument("target", player()).suggests(ArgumentSuggestions::allPlayersExceptSource)
                                     .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
@@ -106,9 +105,7 @@ public class TeleportCommands {
     }
 
     private static int teleportIn(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
-        String arg = getString(ctx, "dimension");
-        int dim = (arg.equals("overworld") ? 0 : (arg.equals("the_nether") ? -1 : 1));
-        ServerWorld targetWorld = KiloServer.getServer().getVanillaServer().getWorld(DimensionType.byRawId(dim));
+        ServerWorld targetWorld = KiloServer.getServer().getVanillaServer().getWorld(DimensionArgumentType.getDimensionArgument(ctx, "dimension"));
         Vec3d vec = getVec3(ctx, "pos");
 
         target.teleport(
