@@ -18,6 +18,7 @@ import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.moderation.ModerationManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -46,10 +47,10 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private static Logger logger = LogManager.getFormatterLogger("KiloEssentials");
 	private static List<String> initializedPerms = new ArrayList<>();
 	private static KiloEssentialsImpl instance;
-	private KiloCommands commands;
 	private static ModConstants constants = new ModConstants();
-	public static String PERMISSION_PREFIX = "kiloessentials.";
-
+	private static String PERMISSION_PREFIX = "kiloessentials.";
+	private ModerationManager moderationManager;
+	private KiloCommands commands;
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 
@@ -100,6 +101,8 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
 		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
 		features.tryToRegister(new VoteCommand(), "VoteCommand");
+
+		moderationManager = new ModerationManager();
 
 		//Initializes the EssentialsPermissions, these permissions aren't used in the literal commands
 		for (EssentialPermissions value : EssentialPermissions.values()) {
@@ -163,6 +166,11 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	@Override
 	public ModConstants getConstants() {
 		return constants;
+	}
+
+	@Override
+	public ModerationManager getModerationManager() {
+		return this.moderationManager;
 	}
 
 	@Override

@@ -13,10 +13,12 @@ import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
 import java.util.HashMap;
+import java.util.Objects;
+import java.util.UUID;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -25,16 +27,16 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class BackCommand {
 
-	public static HashMap<ServerPlayerEntity, Vector3f> backLocations = new HashMap<ServerPlayerEntity, Vector3f>(); // TODO Do not cache ServerPlayerEntities in maps, store uuid
-	public static HashMap<ServerPlayerEntity, DimensionType> backDimensions = new HashMap<ServerPlayerEntity, DimensionType>(); // TODO Do not cache ServerPlayerEntities in maps, store uuid
+	public static HashMap<UUID, Vector3f> backLocations = new HashMap<>();
+	public static HashMap<UUID, DimensionType> backDimensions = new HashMap<>();
 
 	public static void setLocation(ServerPlayerEntity player, Vector3f position, DimensionType dimension) {
-		if (backLocations.containsKey(player)) {
-			backLocations.replace(player, position);
-			backDimensions.replace(player, dimension);
+		if (backLocations.containsKey(player.getUuid())) {
+			backLocations.replace(player.getUuid(), position);
+			backDimensions.replace(player.getUuid(), dimension);
 		} else {
-			backLocations.put(player, position);
-			backDimensions.put(player, dimension);
+			backLocations.put(player.getUuid(), position);
+			backDimensions.put(player.getUuid(), dimension);
 		}
 		
 		OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
@@ -49,7 +51,7 @@ public class BackCommand {
 				.then(argument("player", player())
 						.requires(
 								s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("back.others"), 2))
-						.suggests(ArgumentSuggestions::allPlayers)
+						.suggests(TabCompletions::allPlayers)
 						.executes(c -> goBack(getPlayer(c, "player"))));
 
 		dispatcher.register(argumentBuilder);
@@ -73,6 +75,15 @@ public class BackCommand {
 			player.sendMessage(LangText.get(true, "command.back.failture"));
 		}
 		return 0;
+	}
+
+	public static void saveLocation(OnlineUser user) {
+		backLocations.put(user.getUuid(), new Vector3f(Objects.requireNonNull(user.getBackPos())));
+		backDimensions.put(user.getUuid(), DimensionType.byId(user.getBackDimId()));
+	}
+
+	public static void saveLocation(ServerPlayerEntity player) {
+		saveLocation(KiloServer.getServer().getOnlineUser(player));
 	}
 
 }

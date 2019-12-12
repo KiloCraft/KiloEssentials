@@ -7,7 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
@@ -26,7 +26,7 @@ public class InvulnerablemodeCommand {
                 .executes(c -> executeToggle(c.getSource(), c.getSource().getPlayer()))
                 .then(
                         argument("player", player())
-                            .suggests(ArgumentSuggestions::allPlayers)
+                            .suggests(TabCompletions::allPlayers)
                             .executes(c -> executeToggle(c.getSource(), getPlayer(c, "player")))
                             .then(argument("set", bool())
                                     .executes(c -> executeSet(c.getSource(), getPlayer(c, "player"), getBool(c, "set")))

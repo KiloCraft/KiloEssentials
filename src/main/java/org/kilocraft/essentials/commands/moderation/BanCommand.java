@@ -13,7 +13,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.command.DateArgument;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.user.punishment.BanEntryType;
@@ -41,7 +41,7 @@ public class BanCommand {
         LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set");
         {
             RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> profileArg = argument("profile", gameProfile())
-                    .suggests(ArgumentSuggestions::allPlayers);
+                    .suggests(TabCompletions::allPlayers);
             RequiredArgumentBuilder<ServerCommandSource, String> typeArg = argument("type", string())
                     .suggests(BanCommand::ENTRY_TYPE_SUGGESTIONS);
 
@@ -62,7 +62,7 @@ public class BanCommand {
         LiteralArgumentBuilder<ServerCommandSource> clearArg = literal("clear");
         {
             RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> profileArg = argument("profile", gameProfile())
-                    .suggests(ArgumentSuggestions::allPlayers);
+                    .suggests(TabCompletions::allPlayers);
             RequiredArgumentBuilder<ServerCommandSource, String> typeArg = argument("type", string())
                     .suggests(BanCommand::ENTRY_TYPE_SUGGESTIONS)
                     .executes(BanCommand::executeClear);
@@ -73,7 +73,7 @@ public class BanCommand {
         LiteralArgumentBuilder<ServerCommandSource> checkArg = literal("check");
         {
             RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> profileArg = argument("profile", gameProfile())
-                    .suggests(ArgumentSuggestions::allPlayers);
+                    .suggests(TabCompletions::allPlayers);
 
             checkArg.then(profileArg);
         }

@@ -23,6 +23,7 @@ import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -117,13 +118,13 @@ public class UserHomeHandler implements ConfigurableFeature {
         return bool;
     }
 
-    public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException {
+    public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException, CommandSyntaxException {
         teleportToHome(user, getHome(name));
     }
 
-    public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
+    public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException, CommandSyntaxException {
         if (user.isOnline()) {
-            ServerWorld world = user.getPlayer().getServer().getWorld(DimensionType.byId(home.getDimId()));
+            ServerWorld world = Objects.requireNonNull(user.getPlayer().getServer()).getWorld(DimensionType.byId(home.getDimId()));
             if(world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
             }

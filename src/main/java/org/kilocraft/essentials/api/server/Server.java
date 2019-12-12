@@ -13,6 +13,7 @@ import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
@@ -50,6 +51,8 @@ public interface Server {
     OnlineUser getOnlineUser(ServerPlayerEntity player);
 
     OnlineUser getOnlineUser(UUID uuid);
+
+    CommandSourceUser getCommandSourceUser(ServerCommandSource source);
 
     /**
      * Gets the chat manager

@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandHelper;
@@ -32,7 +32,7 @@ public class MessageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(literal("ke_msg").executes(ctx ->
                 executeUsageFor("command.message.usage", ctx.getSource()))
-                        .then(argument("player", player()).suggests(ArgumentSuggestions::allPlayers)
+                        .then(argument("player", player()).suggests(TabCompletions::allPlayers)
                                 .then(argument("message", greedyString()).executes(ctx ->
                                                 executeSend(ctx.getSource(), getPlayer(ctx, "player"), getString(ctx, "message"))))));
 

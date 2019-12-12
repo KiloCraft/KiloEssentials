@@ -36,7 +36,7 @@ import org.kilocraft.essentials.commands.moderation.ProfileBanCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
-import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
+import org.kilocraft.essentials.commands.teleport.RtpCommand;
 import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
@@ -53,8 +53,7 @@ import java.util.Map;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
-import static org.kilocraft.essentials.api.KiloEssentials.getInstance;
-import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
+import static org.kilocraft.essentials.api.KiloEssentials.*;
 
 public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
@@ -97,7 +96,7 @@ public class KiloCommands {
         BanCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
-        RandomTeleportCommand.register(this.dispatcher);
+        RtpCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
         SudoCommand.register(this.dispatcher);
@@ -204,7 +203,7 @@ public class KiloCommands {
         if (stringReader.canRead() && stringReader.peek() == '/')
             stringReader.skip();
 
-        getInstance().getServer().getVanillaServer().getProfiler().push(commandToExecute);
+        getServer().getVanillaServer().getProfiler().push(commandToExecute);
 
         byte var = 0;
         try {
@@ -271,7 +270,7 @@ public class KiloCommands {
             return (byte) 0;
 
         } finally {
-            getInstance().getServer().getVanillaServer().getProfiler().pop();
+            getServer().getVanillaServer().getProfiler().pop();
         }
 
         return var;

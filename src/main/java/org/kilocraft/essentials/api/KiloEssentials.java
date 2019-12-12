@@ -34,6 +34,7 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.SingleInstanceConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.moderation.ModerationManager;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
 public interface KiloEssentials {
@@ -53,6 +54,10 @@ public interface KiloEssentials {
         return KiloEssentialsImpl.getPermissionFor(node);
     }
 
+    static Server getServer() {
+        return KiloServer.getServer();
+    }
+
     static boolean hasPermissionNode(ServerCommandSource source, String fullNode) {
         return KiloEssentialsImpl.hasPermissionNode(source, fullNode);
     }
@@ -63,9 +68,9 @@ public interface KiloEssentials {
 
     MessageUtil getMessageUtil();
 
-    Server getServer();
-
     ModConstants getConstants();
+
+    ModerationManager getModerationManager();
 
     KiloCommands getCommandHandler();
 

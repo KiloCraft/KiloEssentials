@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class KillCommand {
 
         argumentBuilder.then(
                 argument("targets", entities())
-                    .suggests(ArgumentSuggestions::allPlayers)
+                    .suggests(TabCompletions::allPlayers)
                     .executes(c -> execute(c.getSource(), getEntities(c, "targets")))
         );
 

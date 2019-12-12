@@ -4,8 +4,14 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.config.KiloConfig;
+
 import java.util.UUID;
 
 public class OnlineServerUser extends ServerUser implements OnlineUser {
@@ -16,6 +22,32 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     public ServerCommandSource getCommandSource() {
         return this.getPlayer().getCommandSource();
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        KiloChat.sendMessageTo(this.getPlayer(), new LiteralText(message));
+    }
+
+    @Override
+    public void sendMessage(Text text) {
+        KiloChat.sendMessageTo(this.getPlayer(), text);
+    }
+
+    @Override
+    public void sendMessage(ChatMessage chatMessage) {
+        KiloChat.sendMessageTo(this.getPlayer(), chatMessage);
+    }
+
+    @Override
+    public void sendLangMessage(String key, Object... objects) {
+        KiloChat.sendLangMessageTo(this.getPlayer(), key, objects);
+    }
+
+    @Override
+    public void sendConfigMessage(String key, Object... objects) {
+        String message = KiloConfig.getProvider().getMessages().getMessage(key, objects);
+        this.sendMessage(new ChatMessage(message, true));
     }
 
     public static OnlineServerUser of(UUID uuid) {

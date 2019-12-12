@@ -24,7 +24,7 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-public class ArgumentSuggestions {
+public class TabCompletions {
 
     private static PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 

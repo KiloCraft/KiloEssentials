@@ -53,7 +53,7 @@ public class KiloChat {
 
 	public static void sendMessageToSource(ServerCommandSource source, ChatMessage message) {
 		if (CommandHelper.isConsole(source))
-			KiloEssentials.getInstance().getServer().sendMessage(message.getOriginal());
+			KiloEssentials.getServer().sendMessage(message.getOriginal());
 		else
 			source.sendFeedback(new LiteralText(message.getFormattedMessage()), false);
 	}
@@ -82,7 +82,7 @@ public class KiloChat {
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key, Object... objects) {
 		if (CommandHelper.isConsole(source))
-			KiloEssentials.getInstance().getServer().sendMessage(getFormattedLang(key, objects));
+			KiloEssentials.getServer().sendMessage(getFormattedLang(key, objects));
 		else
 			source.sendFeedback(LangText.getFormatter(true, key, objects), false);
 	}

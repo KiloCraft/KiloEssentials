@@ -6,7 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 
@@ -24,7 +24,7 @@ public class PreviewCommand {
         LiteralCommandNode<ServerCommandSource> previewCommand = dispatcher.register(literal("colorpreview")
             .executes(ctx -> executeSmartUsageFor("preview", ctx.getSource()))
             .then(argument("string", greedyString())
-                    .suggests(ArgumentSuggestions::textformatChars)
+                    .suggests(TabCompletions::textformatChars)
                     .suggests(PreviewCommand::staticSuggestion)
                     .executes(PreviewCommand::execute)
         ));
@@ -41,6 +41,6 @@ public class PreviewCommand {
     }
 
     private static CompletableFuture<Suggestions> staticSuggestion(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return ArgumentSuggestions.suggestAtCursor("&", context);
+        return TabCompletions.suggestAtCursor("&", context);
     }
 }

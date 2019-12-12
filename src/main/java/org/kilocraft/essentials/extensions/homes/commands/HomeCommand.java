@@ -14,7 +14,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.EssentialPermissions;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
@@ -80,7 +80,7 @@ public class HomeCommand {
 
         homesLiteral.then(argument("player", gameProfile())
                 .requires(s -> hasPermission(s, EssentialPermissions.HOMES_OTHERS.getNode(), 2))
-                .suggests(ArgumentSuggestions::allPlayers)
+                .suggests(TabCompletions::allPlayers)
                 .executes(c -> executeList(c.getSource(), getProfileArgument(c, "player"))));
 
 
@@ -90,19 +90,19 @@ public class HomeCommand {
         argTeleport.then(
                 argument("player", gameProfile())
                     .requires(s -> hasPermission(s, EssentialPermissions.HOME_OTHERS_TP.getNode(), 2))
-                    .suggests(ArgumentSuggestions::allPlayers)
+                    .suggests(TabCompletions::allPlayers)
                     .executes(c -> executeTeleport(c, getProfileArgument(c, "player"))));
 
         argSet.then(
                 argument("player", gameProfile())
                         .requires(s -> hasPermission(s, EssentialPermissions.HOME_OTHERS_SET.getNode(), 2))
-                        .suggests(ArgumentSuggestions::allPlayers)
+                        .suggests(TabCompletions::allPlayers)
                         .executes(c -> executeSet(c, getProfileArgument(c, "player"))));
 
         argRemove.then(
                 argument("player", gameProfile())
                         .requires(s -> hasPermission(s, EssentialPermissions.HOME_OTHERS_REMOVE.getNode(), 2))
-                        .suggests(ArgumentSuggestions::allPlayers)
+                        .suggests(TabCompletions::allPlayers)
                         .executes(c -> executeRemove(c, getProfileArgument(c, "player"))));
 
         delhomeLiteral.then(argRemove);

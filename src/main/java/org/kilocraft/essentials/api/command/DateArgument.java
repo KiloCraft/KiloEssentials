@@ -99,9 +99,9 @@ public class DateArgument implements CommandedArgument {
     }
 
     public static CompletableFuture<Suggestions> suggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return ArgumentSuggestions.suggestAtCursor(
+        return TabCompletions.suggestAtCursor(
                 Arrays.stream(new String[]{"s", "m", "h", "d", "M", "y"}).filter((it) ->
-                        String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context))).matches(RegexLib.START_WITH_DIGITS.get())),
+                        String.valueOf(context.getInput().charAt(TabCompletions.getPendingCursor(context))).matches(RegexLib.START_WITH_DIGITS.get())),
                 context
         );
     }

@@ -17,7 +17,7 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
@@ -49,7 +49,7 @@ public class NicknameCommand {
 
         LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
         LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
-        ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("target", player()).requires(PERMISSION_CHECK_OTHER).suggests(ArgumentSuggestions::allPlayers).build();
+        ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("target", player()).requires(PERMISSION_CHECK_OTHER).suggests(TabCompletions::allPlayers).build();
 
         ArgumentCommandNode<ServerCommandSource, String> nicknameSelf = argument("nickname", greedyString())
                 .suggests(NicknameCommand::setSelfSuggestions).executes(NicknameCommand::setSelf).build();
