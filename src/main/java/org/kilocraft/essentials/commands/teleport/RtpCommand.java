@@ -107,7 +107,7 @@ public class RtpCommand {
 		if ((user.getRTPsLeft() - amountToRemove) < 0)
 			throw KiloCommands.getArgException(ArgExceptionMessageNode.NO_NEGATIVE_VALUES).create();
 
-		user.setRTPsLeft(user.getRTPsLeft() - user.getRTPsLeft());
+		user.setRTPsLeft(user.getRTPsLeft() - amountToRemove);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
 				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayname());
 

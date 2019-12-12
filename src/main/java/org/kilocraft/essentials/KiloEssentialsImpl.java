@@ -19,6 +19,8 @@ import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.moderation.ModerationManager;
+import org.kilocraft.essentials.modsupport.ModSupport;
+import org.kilocraft.essentials.modsupport.VanishModSupport;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -108,6 +110,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		for (EssentialPermissions value : EssentialPermissions.values()) {
 			initializedPerms.add(value.getNode());
 		}
+
+		//Registers the supported mods info
+		ModSupport.register(new VanishModSupport());
 
 		permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
 				map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));

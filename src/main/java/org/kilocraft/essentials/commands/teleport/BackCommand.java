@@ -58,7 +58,7 @@ public class BackCommand {
 	}
 
 	public static int goBack(ServerPlayerEntity player) {
-		if (backLocations.containsKey(player)) {
+		if (backLocations.containsKey(player.getUuid())) {
 			DimensionType dimension = backDimensions.get(player);
 			ServerWorld world = player.getServer().getWorld(dimension);
 			player.teleport(world, backLocations.get(player).getX(), backLocations.get(player).getY(),

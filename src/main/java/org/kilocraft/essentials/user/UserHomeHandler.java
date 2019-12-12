@@ -10,7 +10,6 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
-import org.kilocraft.essentials.EssentialPermissions;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
@@ -48,7 +47,7 @@ public class UserHomeHandler implements ConfigurableFeature {
         HomeCommand.register(KiloCommands.getDispatcher());
 
         for (int i = 0; i == KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
-            KiloEssentials.registerPermission(EssentialPermissions.HOME_SET_LIMIT.getNode() + i);
+            KiloEssentials.registerPermission("home.set.limit." + i);
         }
 
 

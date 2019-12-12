@@ -59,25 +59,26 @@ public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
     private CommandDispatcher<ServerCommandSource> dispatcher;
     private static MessageUtil messageUtil = ModConstants.getMessageUtil();
+    private static String PERMISSION_PREFIX = "kiloessentials.command.";
 
     public KiloCommands() {
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
         register(true);
     }
 
-    public static String getCommandPermission(String command) {
-        if (!initializedPerms.contains(command))
-            initializedPerms.add(command);
-
-        return "kiloessentials.command." + command;
+    public static boolean hasPermission(ServerCommandSource source, String shortNode, int op) {
+        return hasPermissionOrOp(source, getCommandPermission(shortNode), op);
     }
 
     public static boolean hasPermission(ServerCommandSource source, String shortNode) {
         return hasPermission(source, shortNode, 2);
     }
 
-    public static boolean hasPermission(ServerCommandSource source, String shortNode, int op) {
-        return hasPermissionOrOp(source, "kiloessentials." + shortNode, op);
+    public static String getCommandPermission(String command) {
+        if (!initializedPerms.contains(command))
+            initializedPerms.add(command);
+
+        return PERMISSION_PREFIX + command;
     }
 
     private void register(boolean devEnv) {
@@ -128,7 +129,7 @@ public class KiloCommands {
         BuildermsgCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
-                map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
+                map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
     }
 
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
