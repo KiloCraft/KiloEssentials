@@ -20,11 +20,10 @@ import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.ConfigValueGetter;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
+import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
@@ -116,6 +115,30 @@ public class ServerChat {
         target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
     }
 
+    public static void addSocialSpy(ServerPlayerEntity player) {
+        KiloServer.getServer().getOnlineUser(player).setSocialSpyOn(true);
+    }
+
+    public static void removeSocialSpy(ServerPlayerEntity player) {
+        KiloServer.getServer().getOnlineUser(player).setSocialSpyOn(false);
+    }
+
+    public static boolean isSocialSpy(ServerPlayerEntity player) {
+        return KiloServer.getServer().getOnlineUser(player).isSocialSpyOn();
+    }
+
+    public static void addCommandSpy(ServerPlayerEntity player) {
+        KiloServer.getServer().getOnlineUser(player).setCommandSpyOn(true);
+    }
+
+    public static void removeCommandSpy(ServerPlayerEntity player) {
+        KiloServer.getServer().getOnlineUser(player).setCommandSpyOn(false);
+    }
+
+    public static boolean isCommandSpy(ServerPlayerEntity player) {
+        return KiloServer.getServer().getOnlineUser(player).isCommandSpyOn();
+    }
+
     public static void sendPrivateMessage(ServerCommandSource source, OnlineUser target, String message) throws CommandSyntaxException {
         String format = config.getStringSafely("chat.privateMessages.format", "&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%") + "&r";
         String me_format = config.getStringSafely("chat.privateMessages.me_format", "&cme") + "&r";
@@ -128,10 +151,29 @@ public class ServerChat {
         String toTarget = format.replace("%SOURCE%", sourceName)
                 .replace("%TARGET%", me_format)
                 .replace("%MESSAGE%", "&r" + message);
+        String toSpy = format.replace("%SOURCE%", sourceName)
+                .replace("%TARGET%", target.getRankedDisplayname().asFormattedString() + "&r")
+                .replace("%MESSAGE%", "&r" + message);
 
         KiloChat.sendMessageToSource(source, new LiteralText(
                 new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.GRAY));
         KiloChat.sendMessageTo(target.getPlayer(), new LiteralText(
                 new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.GRAY));
+        for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
+            if (user.isSocialSpyOn()) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
+                    new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+        }
+    }
+
+    public static void sendCommandSpy(ServerCommandSource source, String message) throws CommandSyntaxException {
+        String format = config.getStringSafely("commandSpy.format", "&r&7%SOURCE% &3->&r /%MESSAGE%") + "&r";
+        String sourceName = CommandHelper.isConsole(source) ? source.getName() :
+                KiloServer.getServer().getOnlineUser(source.getPlayer()).getRankedDisplayname().asFormattedString();
+        String toSpy = format.replace("%SOURCE%", sourceName)
+                .replace("%MESSAGE%", "&r" + message);
+        for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
+            if (user.isCommandSpyOn()) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
+                    new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+        }
     }
 }
