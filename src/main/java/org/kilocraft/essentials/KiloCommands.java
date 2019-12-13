@@ -28,6 +28,7 @@ import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.BuildermsgCommand;
 import org.kilocraft.essentials.commands.messaging.MessageCommand;
+import org.kilocraft.essentials.commands.messaging.SocialspyCommand;
 import org.kilocraft.essentials.commands.messaging.StaffmsgCommand;
 import org.kilocraft.essentials.commands.misc.ColorsCommand;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
@@ -130,6 +131,7 @@ public class KiloCommands {
         SaveCommand.register(this.dispatcher);
         StaffmsgCommand.register(this.dispatcher);
         BuildermsgCommand.register(this.dispatcher);
+        SocialspyCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
                 map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));

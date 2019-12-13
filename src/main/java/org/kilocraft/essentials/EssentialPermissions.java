@@ -7,6 +7,7 @@ public enum EssentialPermissions {
     CHAT_GET_PINGED("chat.ping.get_pinged"),
     CHAT_PING_OTHER("chat.ping.other"),
     CHAT_PING_EVERYONE("chat.ping.everyone"),
+    CHAT_SOCIALSPY("chat.socialspy"),
     HOME_SELF_TP("home.self.tp"),
     HOME_SELF_SET("home.self.set"),
     HOME_SELF_REMOVE("home.self.remove"),
