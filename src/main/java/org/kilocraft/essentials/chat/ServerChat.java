@@ -20,6 +20,7 @@ import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.ConfigValueGetter;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
+import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.*;
@@ -114,32 +115,28 @@ public class ServerChat {
         target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
     }
 
-    protected static List<ServerPlayerEntity> socialSpyList = new ArrayList<>();
-
     public static void addSocialSpy(ServerPlayerEntity player) {
-        if (!socialSpyList.contains(player)) socialSpyList.add(player);
+        KiloServer.getServer().getOnlineUser(player).setSocialSpyOn(true);
     }
 
     public static void removeSocialSpy(ServerPlayerEntity player) {
-        socialSpyList.remove(player);
+        KiloServer.getServer().getOnlineUser(player).setSocialSpyOn(false);
     }
 
     public static boolean isSocialSpy(ServerPlayerEntity player) {
-        return socialSpyList.contains(player);
+        return KiloServer.getServer().getOnlineUser(player).isSocialSpyOn();
     }
 
-    protected static List<ServerPlayerEntity> commandSpyList = new ArrayList<>();
-
     public static void addCommandSpy(ServerPlayerEntity player) {
-        if (!commandSpyList.contains(player)) commandSpyList.add(player);
+        KiloServer.getServer().getOnlineUser(player).setCommandSpyOn(true);
     }
 
     public static void removeCommandSpy(ServerPlayerEntity player) {
-        commandSpyList.remove(player);
+        KiloServer.getServer().getOnlineUser(player).setCommandSpyOn(false);
     }
 
     public static boolean isCommandSpy(ServerPlayerEntity player) {
-        return commandSpyList.contains(player);
+        return KiloServer.getServer().getOnlineUser(player).isCommandSpyOn();
     }
 
     public static void sendPrivateMessage(ServerCommandSource source, OnlineUser target, String message) throws CommandSyntaxException {
@@ -162,8 +159,8 @@ public class ServerChat {
                 new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.GRAY));
         KiloChat.sendMessageTo(target.getPlayer(), new LiteralText(
                 new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.GRAY));
-        for (ServerPlayerEntity user : socialSpyList) {
-            KiloChat.sendMessageTo(user, new LiteralText(
+        for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
+            if (user.isSocialSpyOn()) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                     new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }
     }
@@ -174,8 +171,8 @@ public class ServerChat {
                 KiloServer.getServer().getOnlineUser(source.getPlayer()).getRankedDisplayname().asFormattedString();
         String toSpy = format.replace("%SOURCE%", sourceName)
                 .replace("%MESSAGE%", "&r" + message);
-        for (ServerPlayerEntity user : socialSpyList) {
-            KiloChat.sendMessageTo(user, new LiteralText(
+        for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
+            if (user.isCommandSpyOn()) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                     new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }
     }

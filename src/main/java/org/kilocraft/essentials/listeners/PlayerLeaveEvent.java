@@ -10,6 +10,5 @@ public class PlayerLeaveEvent implements EventHandler<PlayerDisconnectEvent> {
     @Override
     public void handle(PlayerDisconnectEvent event) {
         ((ServerUserManager) KiloServer.getServer().getUserManager()).onLeave(event.getPlayer());
-        ServerChat.removeSocialSpy(event.getPlayer());
     }
 }
