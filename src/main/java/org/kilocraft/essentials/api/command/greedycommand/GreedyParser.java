@@ -47,7 +47,7 @@ public class GreedyParser {
     }
 
     public ServerPlayerEntity getPlayer(int argPos) throws CommandSyntaxException {
-        ServerPlayerEntity target = KiloEssentials.getInstance().getServer().getPlayer(getString(argPos));
+        ServerPlayerEntity target = KiloEssentials.getServer().getPlayer(getString(argPos));
         if (target != null)
             return target;
         else

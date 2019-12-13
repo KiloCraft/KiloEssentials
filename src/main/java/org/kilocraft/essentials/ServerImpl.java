@@ -17,9 +17,12 @@ import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
+import org.kilocraft.essentials.servermeta.ServerMetaManager;
+import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 
 import java.util.*;
@@ -32,6 +35,7 @@ public class ServerImpl implements Server {
     private String serverName = "Minecraft server";
     private UserManager userManager;
     private ChatManager chatManager;
+    private ServerMetaManager metaManager;
 
     public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, ServerUserManager serverUserManager, String serverBrand) {
         this.server = minecraftServer;
@@ -40,6 +44,7 @@ public class ServerImpl implements Server {
         this.serverDisplayBrand = serverBrand;
         this.eventRegistry = eventManager;
         this.chatManager = new ChatManager();
+        this.metaManager = new ServerMetaManager(server.getServerMetadata());
     }
 
     @Override
@@ -70,6 +75,11 @@ public class ServerImpl implements Server {
     @Override
     public OnlineUser getOnlineUser(UUID uuid) {
         return this.userManager.getOnline(uuid);
+    }
+
+    @Override
+    public CommandSourceUser getCommandSourceUser(ServerCommandSource source) {
+        return new CommandSourceServerUser(source);
     }
 
     @Override
@@ -216,6 +226,11 @@ public class ServerImpl implements Server {
     @Override
     public OperatorList getOperatorList() {
         return server.getPlayerManager().getOpList();
+    }
+
+    @Override
+    public ServerMetaManager getMetaManager() {
+        return this.metaManager;
     }
 
     public String getBrandName() {

@@ -20,6 +20,11 @@ public class ConfigValueGetter {
         return valueFormatter(allowGlobalObjects, key);
     }
 
+    public String getMessage(String key, Object... objects) {
+        String string = valueFormatter(true, key);
+        return (objects != null) ? String.format(string, objects) : string;
+    }
+
     public String getFormatter(boolean allowGlobalObjects, String key, Object... objects) {
         return customValueFormatter(allowGlobalObjects, key, objects);
     }

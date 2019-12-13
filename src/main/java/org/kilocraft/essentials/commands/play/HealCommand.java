@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
@@ -24,7 +24,7 @@ public class HealCommand {
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.others"), 2))
-                .suggests(ArgumentSuggestions::allPlayers);
+                .suggests(TabCompletions::allPlayers);
 
         heal.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
         target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.other"), 2));

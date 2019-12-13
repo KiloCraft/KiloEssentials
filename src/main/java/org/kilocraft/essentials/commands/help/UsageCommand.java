@@ -6,7 +6,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -18,7 +18,7 @@ public class UsageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> usageCommand = dispatcher.register(literal("usage").then(
                         argument("command", word())
-                                .suggests(ArgumentSuggestions::usableCommands)
+                                .suggests(TabCompletions::usableCommands)
                                 .executes(context -> execute(context.getSource(), getString(context, "command")))
                 )
         );

@@ -14,7 +14,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -53,8 +53,8 @@ public class TpaCommand {
             RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerA = argument("player", player());
             RequiredArgumentBuilder<ServerCommandSource, EntitySelector> playerB = argument("player", player());
 
-            playerA.suggests(ArgumentSuggestions::allPlayers);
-            playerA.suggests(ArgumentSuggestions::allPlayers);
+            playerA.suggests(TabCompletions::allPlayers);
+            playerA.suggests(TabCompletions::allPlayers);
 
             playerA.executes(context -> executeRequest(context, false));
             playerB.executes(context -> executeRequest(context, true));

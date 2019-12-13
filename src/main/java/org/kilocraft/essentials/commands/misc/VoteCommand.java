@@ -12,15 +12,15 @@ import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVaria
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class DiscordCommand implements ConfigurableFeature {
+public class VoteCommand implements ConfigurableFeature {
 
     @Override
     public boolean register() {
-        KiloCommands.getDispatcher().register(literal("discord").executes(DiscordCommand::execute));
+        KiloCommands.getDispatcher().register(literal("vote").executes(VoteCommand::execute));
         return true;
     }
 
-    public DiscordCommand() {
+    public VoteCommand() {
     }
 
     public static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -28,7 +28,7 @@ public class DiscordCommand implements ConfigurableFeature {
                 new ChatMessage(
                         KiloConfig.getProvider().getMessages().getLocal(
                                 true,
-                                "commands.discord",
+                                "commands.vote",
                                 new PlayerConfigVariables(context.getSource().getPlayer())
                         ),
                         true

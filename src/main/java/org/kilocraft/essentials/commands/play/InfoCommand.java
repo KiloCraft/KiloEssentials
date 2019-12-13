@@ -11,7 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.User;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
@@ -29,7 +29,7 @@ public class InfoCommand {
         info.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.self", 2));
         target.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.info.others", 2));
 
-        target.suggests(ArgumentSuggestions::allPlayers);
+        target.suggests(TabCompletions::allPlayers);
 
         info.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
         target.executes(context -> execute(context.getSource(), getPlayer(context, "player")));

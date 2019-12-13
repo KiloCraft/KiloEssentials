@@ -14,7 +14,7 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 
@@ -32,11 +32,11 @@ public class SudoCommand {
                 .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                 .then(
                         argument("player", player())
-                            .suggests(ArgumentSuggestions::allPlayers)
+                            .suggests(TabCompletions::allPlayers)
                             .executes(c -> KiloCommands.executeUsageFor("command.sudo.usage", c.getSource()))
                             .then(
                                     argument("args", greedyString())
-                                            .suggests(ArgumentSuggestions::usableCommands)
+                                            .suggests(TabCompletions::usableCommands)
                                             .executes(c -> execute(dispatcher, c.getSource(), getPlayer(c, "player"), getString(c, "args")))
                             )
                 );

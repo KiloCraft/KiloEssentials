@@ -10,7 +10,7 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ public class KickCommand {
                 .executes(KiloCommands::executeSmartUsage);
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("targets", players())
-                .suggests(ArgumentSuggestions::allPlayers)
+                .suggests(TabCompletions::allPlayers)
                 .executes(ctx -> execute(ctx.getSource(), getPlayers(ctx, "targets"), ""))
                 .then(argument("reason", string())
                 .executes(ctx -> execute(ctx.getSource(), getPlayers(ctx, "targets"), getString(ctx, "reason"))));

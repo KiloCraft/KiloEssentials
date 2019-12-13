@@ -31,13 +31,17 @@ import org.kilocraft.essentials.commands.misc.ColorsCommand;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.PingCommand;
 import org.kilocraft.essentials.commands.misc.PreviewCommand;
+import org.kilocraft.essentials.commands.messaging.BuildermsgCommand;
+import org.kilocraft.essentials.commands.messaging.MessageCommand;
+import org.kilocraft.essentials.commands.messaging.StaffmsgCommand;
+import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.BanCommand;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.moderation.ProfileBanCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
-import org.kilocraft.essentials.commands.teleport.RandomTeleportCommand;
+import org.kilocraft.essentials.commands.teleport.RtpCommand;
 import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
@@ -54,32 +58,32 @@ import java.util.Map;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
-import static org.kilocraft.essentials.api.KiloEssentials.getInstance;
-import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
+import static org.kilocraft.essentials.api.KiloEssentials.*;
 
 public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
     private CommandDispatcher<ServerCommandSource> dispatcher;
     private static MessageUtil messageUtil = ModConstants.getMessageUtil();
+    private static String PERMISSION_PREFIX = "kiloessentials.command.";
 
     public KiloCommands() {
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
         register(true);
     }
 
-    public static String getCommandPermission(String command) {
-        if (!initializedPerms.contains(command)) {
-            initializedPerms.add(command);
-        }
-        return "kiloessentials.command." + command;
+    public static boolean hasPermission(ServerCommandSource source, String shortNode, int op) {
+        return hasPermissionOrOp(source, getCommandPermission(shortNode), op);
     }
 
     public static boolean hasPermission(ServerCommandSource source, String shortNode) {
         return hasPermission(source, shortNode, 2);
     }
 
-    public static boolean hasPermission(ServerCommandSource source, String shortNode, int op) {
-        return hasPermissionOrOp(source, "kiloessentials." + shortNode, op);
+    public static String getCommandPermission(String command) {
+        if (!initializedPerms.contains(command))
+            initializedPerms.add(command);
+
+        return PERMISSION_PREFIX + command;
     }
 
     private void register(boolean devEnv) {
@@ -89,6 +93,7 @@ public class KiloCommands {
         }
 
         VersionCommand.register(this.dispatcher);
+        HelpCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
@@ -97,12 +102,11 @@ public class KiloCommands {
         BanCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
-        RandomTeleportCommand.register(this.dispatcher);
+        RtpCommand.register(this.dispatcher);
         RealNameCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
         SudoCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
-        DiscordCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
         PlayerParticlesCommand.register(this.dispatcher);
         AnvilCommand.register(this.dispatcher);
@@ -132,7 +136,7 @@ public class KiloCommands {
         CommandspyCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
-                map.registerPermission("kiloessentials.command." + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
+                map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
     }
 
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
@@ -207,7 +211,7 @@ public class KiloCommands {
         if (stringReader.canRead() && stringReader.peek() == '/')
             stringReader.skip();
 
-        getInstance().getServer().getVanillaServer().getProfiler().push(commandToExecute);
+        getServer().getVanillaServer().getProfiler().push(commandToExecute);
 
         byte var = 0;
         try {
@@ -274,7 +278,7 @@ public class KiloCommands {
             return (byte) 0;
 
         } finally {
-            getInstance().getServer().getVanillaServer().getProfiler().pop();
+            getServer().getVanillaServer().getProfiler().pop();
         }
 
         return var;

@@ -12,14 +12,13 @@ import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 public class DateArgument implements CommandedArgument {
     private String input;
     private boolean simple;
+    private boolean isValid;
     private Date result;
-    private HashMap<Integer, String> values;
 
     public static DateArgument complex(String input) {
         return new DateArgument(input, false);
@@ -32,7 +31,6 @@ public class DateArgument implements CommandedArgument {
     private DateArgument(String input, boolean isSimple) {
         this.input = input;
         this.simple = isSimple;
-        this.values = new HashMap<>();
     }
 
     @Override
@@ -42,29 +40,16 @@ public class DateArgument implements CommandedArgument {
 
     @Override
     public DateArgument parse() throws CommandSyntaxException {
-        String simpleRegex = "^\\d+[smhdY]$";
-        String completeRegex = "^(((\\d+s)?(\\d+m)?(\\d+h)?(\\d+d)?(\\d+mo)?(\\d+y)?)|((\\d+y)?(\\d+mo)?(\\d+d)?(\\d+h)?(\\d+m)?(\\d+s)?))$";
+        String completeRegex = "^((\\d+s)?(\\d+m)?(\\d+h)?(\\d+d)?(\\d+M)?(\\d+y)?|(\\d+y)?(\\d+M)?(\\d+d)?(\\d+h)?(\\d+m)?(\\d+s)?)$";
+        String simpleRegex = "^\\d+[smhdy]$";
 
-        if (!this.input.matches((this.simple) ? simpleRegex : completeRegex))
+        if (!this.input.matches((this.simple) ? simpleRegex : completeRegex)) {
+            isValid = false;
             throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_INVALID, this.input).create();
+        }
 
-        String[] strings;
-        String[] parts;
-
-
-
-        //String[] strings = this.input.split("(?<=\\\\d)(?=\\\\p{L})");
-//        System.out.println(Arrays.toString(strings));
-//
-//        for (String value : strings) {
-//            System.out.println(value);
-//
-//            this.values.put(
-//                    Integer.parseInt(value.replaceAll(RegexLib.ALL_EXCEPT_DIGITS.get(), "")),
-//                    value.replaceAll(RegexLib.DIGITS.get(), "")
-//            );
-//        }
-
+        isValid = true;
+        this.result = thisDate();
         return this;
     }
 
@@ -73,45 +58,50 @@ public class DateArgument implements CommandedArgument {
     }
 
     private Date thisDate() {
+        if (!isValid)
+            return null;
+
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
 
-        this.values.forEach((amount, type) -> {
-            addToDate(calendar, amount, type);
-        });
+        char[] chars = this.input.toCharArray();
+        String number = "";
 
+        for (char value : chars) {
+            try {
+                System.out.println(value);
+                Integer.parseInt(String.valueOf(value));
+                number += value;
+            } catch (NumberFormatException ignored) {
+                System.out.println("V: " + value);
+                addToDate(calendar, Integer.parseInt(number), value);
+            }
+
+        }
 
         return calendar.getTime();
     }
 
-
-    private void addToDate(Calendar calendar, int amount, String dateType) {
+    private void addToDate(Calendar calendar, int amount, char dateType) {
         switch (dateType) {
-            case "s":
-                calendar.add(Calendar.SECOND, amount);
-            case "m":
-                calendar.add(Calendar.MINUTE, amount);
-            case "h":
-                calendar.add(Calendar.HOUR, amount);
-            case "d":
-                calendar.add(Calendar.DAY_OF_MONTH, amount);
-            case "mo":
-                calendar.add(Calendar.MONTH, amount);
-            case "y":
+            case 'y':
                 calendar.add(Calendar.YEAR, amount);
-            default:
-                try {
-                    throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_ERROR).create();
-                } catch (CommandSyntaxException e) {
-                    e.printStackTrace();
-                }
+            case 's':
+                calendar.add(Calendar.SECOND, amount);
+            case 'm':
+                calendar.add(Calendar.MINUTE, amount);
+            case 'h':
+                calendar.add(Calendar.HOUR, amount);
+            case 'd':
+                calendar.add(Calendar.DAY_OF_MONTH, amount);
+            case 'M':
+                calendar.add(Calendar.MONTH, amount);
         }
     }
 
     public static CompletableFuture<Suggestions> suggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return ArgumentSuggestions.suggestAtCursor(
-                Arrays.stream(new String[]{"s", "m", "h", "d", "mo", "y"}).filter((it) ->
-                        String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context))).matches(RegexLib.START_WITH_DIGITS.get())),
+        return TabCompletions.suggestAtCursor(
+                Arrays.stream(new String[]{"s", "m", "h", "d", "M", "y"}).filter((it) ->
+                        String.valueOf(context.getInput().charAt(TabCompletions.getPendingCursor(context))).matches(RegexLib.START_WITH_DIGITS.get())),
                 context
         );
     }

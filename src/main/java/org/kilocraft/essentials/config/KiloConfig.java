@@ -25,6 +25,7 @@ public class KiloConfig {
         put("KiloEssentials.yaml", workingDir + "/");
         put("Messages.yaml", configPath);
         put("Commands.yaml", configPath);
+        put("HelpCommandMessage.yaml", configPath);
     }};
 
     private static ConfigProvider provider;
@@ -35,7 +36,6 @@ public class KiloConfig {
 
         KiloEssentialsImpl.getLogger().info("Configurations are now loaded");
     }
-
 
     static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
     static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");

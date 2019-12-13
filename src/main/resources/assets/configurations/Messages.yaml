@@ -62,6 +62,8 @@ commands:
 
   discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
 
+  vote: 'Edit this in KiloEssentials/config/Messages.yaml'
+
   serverWideWarps:
     teleportTo: '%GENERAL_PREFIX% &eTeleporting to warp &6%WARPNAME%&e...'
 
@@ -73,6 +75,12 @@ commands:
       teleportTo: '&eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
       set: '&eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
       remove: '&eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
+
+  rtp:
+    empty: "%GENERAL_PREFIX% &cYou don't have any Random Teleports left!"
+    dimension_exception: "%GENERAL_PREFIX% &cYou can only randomly teleport in the Overworld!"
+    #Values: {BIOME}, {RTP_LEFT}, {cord.X}, {cord.Y}, {cord.Z}
+    teleported: "You've been teleported to this {BIOME} biome! you are falling from the sky but do not panic!"
 
   tpa:
     sender:

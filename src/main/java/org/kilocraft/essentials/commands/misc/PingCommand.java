@@ -3,7 +3,7 @@ package org.kilocraft.essentials.commands.misc;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
@@ -20,7 +20,7 @@ public class PingCommand {
                         .requires(src -> hasPermission(src, "ping.self", 2))
                         .executes(ctx -> execute(ctx.getSource(), ctx.getSource().getPlayer()))
                         .then(argument("player", player())
-                                .suggests(ArgumentSuggestions::allPlayers)
+                                .suggests(TabCompletions::allPlayers)
                                 .requires(src -> hasPermission(src, "ping.others", 2))
                                 .executes(ctx -> execute(ctx.getSource(), getPlayer(ctx, "player")))
                         )

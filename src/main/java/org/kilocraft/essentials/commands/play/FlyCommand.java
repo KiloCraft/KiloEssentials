@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
@@ -28,7 +28,7 @@ public class FlyCommand {
                 .then(
                         CommandManager.argument("player", player())
                                 .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("fly.others"), 2))
-                                .suggests(ArgumentSuggestions::allPlayers)
+                                .suggests(TabCompletions::allPlayers)
                                 .executes(c -> toggle(c.getSource(), getPlayer(c, "player")))
                                 .then(
                                         CommandManager.argument("set", bool())

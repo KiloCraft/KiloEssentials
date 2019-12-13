@@ -9,7 +9,6 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.PacketByteBuf;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.user.ServerUser;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -48,7 +47,7 @@ public class PlayerListPacketMixin {
 	               packetByteBuf_1.writeString(playerListS2CPacket$Entry_1.getProfile().getName());
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getProfile().getProperties().size());
 	               Iterator var4 = playerListS2CPacket$Entry_1.getProfile().getProperties().values().iterator();
-	               
+
 	               while(var4.hasNext()) {
 	                  Property property_1 = (Property)var4.next();
 	                  packetByteBuf_1.writeString(property_1.getName());
@@ -64,8 +63,7 @@ public class PlayerListPacketMixin {
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getGameMode().getId());
 	               packetByteBuf_1.writeVarInt(playerListS2CPacket$Entry_1.getLatency());
 	               packetByteBuf_1.writeBoolean(true);
-	               LiteralText displayText = new LiteralText(TextFormat.translateAlternateColorCodes('&',((Team) player.getScoreboardTeam()).getPrefix().asString()
-							+ "&r " + KiloServer.getServer().getUserManager().getOnline(player).getPlayer().getDisplayName().asFormattedString()));
+	               LiteralText displayText = new LiteralText(TextFormat.translateAlternateColorCodes('&',(KiloServer.getServer().getOnlineUser(player).getRankedDisplayname().asFormattedString())));
 	               packetByteBuf_1.writeText(displayText);
 	               break;
 	            case UPDATE_GAME_MODE:

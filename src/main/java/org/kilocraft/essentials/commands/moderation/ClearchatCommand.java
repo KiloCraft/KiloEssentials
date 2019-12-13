@@ -7,7 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.ChatMessage;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ public class ClearchatCommand {
                         .executes(ctx -> executeAll(ctx, true))
                 )
                 .then(argument("targets", players())
-                        .suggests(ArgumentSuggestions::allPlayers)
+                        .suggests(TabCompletions::allPlayers)
                         .executes(ctx -> executeMultiple(ctx, getPlayers(ctx, "targets"), false))
                         .then(literal("-silent")
                                 .executes(ctx -> executeMultiple(ctx, getPlayers(ctx, "targets"), true))
