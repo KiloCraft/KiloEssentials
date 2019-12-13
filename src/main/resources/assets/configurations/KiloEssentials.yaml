@@ -156,3 +156,6 @@ chat:
       # Default: 1.0
       pitch: '1.0'
 
+commandSpy:
+  format: '&r&7%SOURCE% &3->&r /%MESSAGE%'
+  saveToLogs: true

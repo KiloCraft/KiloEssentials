@@ -26,6 +26,11 @@ import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
+import org.kilocraft.essentials.commands.messaging.*;
+import org.kilocraft.essentials.commands.misc.ColorsCommand;
+import org.kilocraft.essentials.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.commands.misc.PingCommand;
+import org.kilocraft.essentials.commands.misc.PreviewCommand;
 import org.kilocraft.essentials.commands.messaging.BuildermsgCommand;
 import org.kilocraft.essentials.commands.messaging.MessageCommand;
 import org.kilocraft.essentials.commands.messaging.StaffmsgCommand;
@@ -127,6 +132,8 @@ public class KiloCommands {
         SaveCommand.register(this.dispatcher);
         StaffmsgCommand.register(this.dispatcher);
         BuildermsgCommand.register(this.dispatcher);
+        SocialspyCommand.register(this.dispatcher);
+        CommandspyCommand.register(this.dispatcher);
 
         permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
                 map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));

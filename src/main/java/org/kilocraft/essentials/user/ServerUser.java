@@ -51,6 +51,8 @@ public class ServerUser implements User {
     public int messageCooldown;
     private List<String> subscriptions;
     private String upstreamChannelId;
+    private boolean socialSpy = false;
+    private boolean commandSpy = false;
     
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -118,6 +120,12 @@ public class ServerUser implements User {
 
         if (this.invulnerable)
             cacheTag.putBoolean("isInvulnerable", true);
+
+        if (this.socialSpy)
+            cacheTag.putBoolean("socialSpy", true);
+
+        if (this.socialSpy)
+            cacheTag.putBoolean("commandSpy", true);
 
         // TODO When possible, move particle logic to a feature.
         if (this.displayParticleId != 0)
@@ -192,6 +200,9 @@ public class ServerUser implements User {
             this.invulnerable = true;
         }
 
+
+        this.socialSpy = cacheTag.getBoolean("socialSpy");
+        this.commandSpy = cacheTag.getBoolean("socialSpy");
 
         if (metaTag.getInt("displayParticleId") != 0)
             this.displayParticleId = metaTag.getInt("displayParticleId");
@@ -316,6 +327,26 @@ public class ServerUser implements User {
     @Override
     public boolean canFly() {
         return this.canFly;
+    }
+
+    @Override
+    public boolean isSocialSpyOn() {
+        return this.socialSpy;
+    }
+
+    @Override
+    public void setSocialSpyOn(boolean on) {
+        this.socialSpy = on;
+    }
+
+    @Override
+    public boolean isCommandSpyOn() {
+        return this.commandSpy;
+    }
+
+    @Override
+    public void setCommandSpyOn(boolean on) {
+        this.commandSpy = on;
     }
 
     @Override
