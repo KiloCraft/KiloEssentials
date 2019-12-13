@@ -128,6 +128,20 @@ public class ServerChat {
         return socialSpyList.contains(player);
     }
 
+    protected static List<ServerPlayerEntity> commandSpyList = new ArrayList<>();
+
+    public static void addCommandSpy(ServerPlayerEntity player) {
+        if (!commandSpyList.contains(player)) commandSpyList.add(player);
+    }
+
+    public static void removeCommandSpy(ServerPlayerEntity player) {
+        commandSpyList.remove(player);
+    }
+
+    public static boolean isCommandSpy(ServerPlayerEntity player) {
+        return commandSpyList.contains(player);
+    }
+
     public static void sendPrivateMessage(ServerCommandSource source, OnlineUser target, String message) throws CommandSyntaxException {
         String format = config.getStringSafely("chat.privateMessages.format", "&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%") + "&r";
         String me_format = config.getStringSafely("chat.privateMessages.me_format", "&cme") + "&r";
@@ -148,6 +162,18 @@ public class ServerChat {
                 new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.GRAY));
         KiloChat.sendMessageTo(target.getPlayer(), new LiteralText(
                 new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.GRAY));
+        for (ServerPlayerEntity user : socialSpyList) {
+            KiloChat.sendMessageTo(user, new LiteralText(
+                    new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+        }
+    }
+
+    public static void sendCommandSpy(ServerCommandSource source, String message) throws CommandSyntaxException {
+        String format = config.getStringSafely("commandSpy.format", "&r&7%SOURCE% &3->&r /%MESSAGE%") + "&r";
+        String sourceName = CommandHelper.isConsole(source) ? source.getName() :
+                KiloServer.getServer().getOnlineUser(source.getPlayer()).getRankedDisplayname().asFormattedString();
+        String toSpy = format.replace("%SOURCE%", sourceName)
+                .replace("%MESSAGE%", "&r" + message);
         for (ServerPlayerEntity user : socialSpyList) {
             KiloChat.sendMessageTo(user, new LiteralText(
                     new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
