@@ -13,7 +13,6 @@
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
-    "accessor.MinecraftServerAccessor",
     "PlayerListHeaderS2CPacketMixin"
   ],
   "injectors": {
