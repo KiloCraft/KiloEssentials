@@ -23,7 +23,9 @@ import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariabl
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
@@ -147,32 +149,33 @@ public class ServerChat {
 
         String toSource = format.replace("%SOURCE%", me_format)
                 .replace("%TARGET%", "&r" + target.getRankedDisplayname().asFormattedString() + "&r")
-                .replace("%MESSAGE%", "&r" + message);
+                .replace("%MESSAGE%", message);
         String toTarget = format.replace("%SOURCE%", sourceName)
                 .replace("%TARGET%", me_format)
-                .replace("%MESSAGE%", "&r" + message);
+                .replace("%MESSAGE%", message);
+
         String toSpy = format.replace("%SOURCE%", sourceName)
-                .replace("%TARGET%", target.getRankedDisplayname().asFormattedString() + "&r")
-                .replace("%MESSAGE%", "&r" + message);
+                .replace("%TARGET%", target.getUsername() + "&r")
+                .replace("%MESSAGE%", message);
 
         KiloChat.sendMessageToSource(source, new LiteralText(
                 new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.GRAY));
         KiloChat.sendMessageTo(target.getPlayer(), new LiteralText(
                 new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.GRAY));
+
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isSocialSpyOn()) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
+            if (user.isSocialSpyOn() && !CommandHelper.areTheSame(target, user)) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                     new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }
+
     }
 
-    public static void sendCommandSpy(ServerCommandSource source, String message) throws CommandSyntaxException {
+    public static void sendCommandSpy(ServerCommandSource source, String message) {
         String format = config.getStringSafely("commandSpy.format", "&r&7%SOURCE% &3->&r /%MESSAGE%") + "&r";
-        String sourceName = CommandHelper.isConsole(source) ? source.getName() :
-                KiloServer.getServer().getOnlineUser(source.getPlayer()).getRankedDisplayname().asFormattedString();
-        String toSpy = format.replace("%SOURCE%", sourceName)
-                .replace("%MESSAGE%", "&r" + message);
+        String toSpy = format.replace("%SOURCE%", source.getName())
+                .replace("%MESSAGE%",  message);
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isCommandSpyOn()) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
+            if (user.isCommandSpyOn() && !CommandHelper.areTheSame(source, user)) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                     new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }
     }

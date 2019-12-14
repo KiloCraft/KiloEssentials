@@ -1,39 +1,33 @@
 package org.kilocraft.essentials.modsupport;
 
 import org.kilocraft.essentials.api.SupportedMod;
+import org.kilocraft.essentials.config.KiloConfig;
 
-import java.util.UUID;
-
-public class VanishModSupport implements SupportedMod {
-    private boolean present = false;
+public class BungeecordSupport implements SupportedMod {
+    private boolean present = KiloConfig.getProvider().getMain().getBooleanSafely("bungeecord-mode", false);
 
     @Override
     public String getPackage() {
-        return "io.github.indicode.fabric.vanish";
+        return "";
     }
 
     @Override
     public String getModId() {
-        return "vanish";
+        return "bungeecord";
     }
 
     @Override
     public boolean isPresent() {
-        return present;
+        return false;
     }
 
     @Override
     public boolean isFabricMod() {
-        return true;
+        return false;
     }
 
     @Override
     public void setPresent(boolean set) {
-        present = set;
     }
 
-    public static boolean isVanished(UUID uuid) {
-
-        return false;
-    }
 }

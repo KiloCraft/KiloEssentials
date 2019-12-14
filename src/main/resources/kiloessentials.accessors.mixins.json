@@ -6,8 +6,7 @@
   "mixins": [
   ],
   "server": [
-    "MinecraftServerAccessor",
-    "ServerConfigEntryAccessor"
+    "MinecraftServerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

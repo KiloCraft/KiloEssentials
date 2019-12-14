@@ -39,31 +39,26 @@
 #
 #Config Schema
 #Used by the mod to define the config schema/version
-schema: 1.3
+schema: 1.4
 #Alternate color character
 #Instead of using the special character you can use your own color char
-#for defining the color/formatting codes!
-# [<Char> Default: '*']
-altcolorchar: '&'
+#for defining the color/formatting codes use the '&' character
 
 server:
   # [-] META
   # Server name
   # [<String>]
   name: Minecraft Server
-  # Message of the day!
-  # [<greedyString> c/f/GV]
-  # - The message you can see in the server list
-  description: "%SERVER_NAME% &7-&b JOIN NOW!"
-  # Player count custom text
-  # The message you'll see on when you hover your cursor
-  # over the player count
-  playercountmessage: "%SERVER_NAME% is waiting for you to join!\n*b Use /help for more info!"
   # Custom display brand name!
   # [<greedyString> c/f]
   # - You'll see this on the debug screen (F3 MENU) in the client
   # Default: "default", set it to 'DEFAULT' to display the default brand name
   displayBrandName: "default"
+  # Enables the bungeecord mode
+  # Adds support for Bungeecord/Waterfall servers
+  # Use the trampoline mod to connect your server to a proxy server
+  # https://www.curseforge.com/minecraft/mc-mods/trampoline
+  bungeecord-mode: false
   # Customize the server world!
   world:
     #[<boolean>]
@@ -123,7 +118,7 @@ chat:
   # [<greedyString> c]
   #Style of the private messages
   privateMessages:
-    format: '&r&7%SOURCE% &3-> &7%TARGET% &8>>&r %MESSAGE%'
+    format: '&r&7%SOURCE% &3-> &7%TARGET% &8>>&7 %MESSAGE%'
     me_format: '&cme'
 
   ping:

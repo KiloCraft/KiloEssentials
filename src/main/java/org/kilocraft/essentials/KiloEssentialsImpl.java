@@ -18,6 +18,9 @@ import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.modsupport.BungeecordSupport;
+import org.kilocraft.essentials.modsupport.ModSupport;
+import org.kilocraft.essentials.modsupport.VanishModSupport;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -99,6 +102,10 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
 		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
 		features.tryToRegister(new VoteCommand(), "VoteCommand");
+
+		ModSupport.register(new VanishModSupport());
+		ModSupport.register(new BungeecordSupport());
+		ModSupport.validateMods();
 
 		//Initializes the EssentialsPermissions, these permissions aren't used in the literal commands
 		for (EssentialPermissions value : EssentialPermissions.values()) {

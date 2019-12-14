@@ -4,6 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.user.OnlineUser;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -40,6 +41,14 @@ public class CommandHelper {
 
     public static boolean areTheSame(ServerCommandSource source, ServerPlayerEntity playerEntity) {
         return source.getName().equals(playerEntity.getName().asString());
+    }
+
+    public static boolean areTheSame(ServerCommandSource source, OnlineUser user) {
+        return source.getName().equals(user.getUsername());
+    }
+
+    public static boolean areTheSame(OnlineUser user1, OnlineUser user2) {
+        return user1.getUsername().equals(user2.getUsername());
     }
 
     public static String getDisplayName(ServerCommandSource source) throws CommandSyntaxException {

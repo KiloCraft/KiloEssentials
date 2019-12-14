@@ -39,26 +39,25 @@
 #
 #Config Schema
 #Used by the mod to define the config schema/version
-schema: 1.0
+schema: 1.4
 #Alternate color character
 #Instead of using the special character you can use your own color char
-#for defining the color/formatting codes!
-# [<Char> Default: '*']
-altcolorchar: '&'
+#for defining the color/formatting codes use the '&' character
+
 #General
 general:
   prefix: '&bKiloEssentials &8>&7>'
 
 events:
-  userJoin: '&8[&a+&8]&7 %USER_DISPLAYNAME%'
-  userLeave: '&8[&c-&8]&7 %USER_DISPLAYNAME%'
+  userJoin: '&7%USER_DISPLAYNAME% joined the game'
+  userLeave: '%USER_DISPLAYNAME% left the game.'
 
 #Messages used by commands
 commands:
   context:
-    execution_exception: '&8[&c ! &8] &eUnknown command or insufficient permissions'
+    execution_exception: 'Unknown command or insufficient permissions!'
 
-  broadcast_format: '&f[&c&lBroadCast&f]&r %MESSAGE%'
+  broadcast_format: '&f[&cBroadCast&f]&r %MESSAGE%'
 
   discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
 
