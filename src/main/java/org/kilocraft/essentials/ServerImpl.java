@@ -1,6 +1,7 @@
 package org.kilocraft.essentials;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -181,6 +182,13 @@ public class ServerImpl implements Server {
     @Override
     public String getDisplayBrandName() {
         return this.serverDisplayBrand;
+    }
+
+    @Override
+    public void sendGlobalPacket(Packet<?> packet) {
+        for (ServerPlayerEntity playerEntity : this.server.getPlayerManager().getPlayerList()) {
+            playerEntity.networkHandler.sendPacket(packet);
+        }
     }
 
     @Override

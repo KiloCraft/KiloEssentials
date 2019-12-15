@@ -52,13 +52,19 @@ server:
   # Custom display brand name!
   # [<greedyString> c/f]
   # - You'll see this on the debug screen (F3 MENU) in the client
-  # Default: "default", set it to 'DEFAULT' to display the default brand name
+  # Default: "default", set it to 'default' to display the default brand name
   displayBrandName: "default"
   # Enables the bungeecord mode
   # Adds support for Bungeecord/Waterfall servers
   # Use the trampoline mod to connect your server to a proxy server
   # https://www.curseforge.com/minecraft/mc-mods/trampoline
   bungeecord-mode: false
+  # Sets a messages for the command ui
+  # You'll see this when above the chat text box
+  # Note: It will add an extra dummy argument to the commands
+  #       and it will change the color of the first command node in the client from red to aqua
+  # Default: "default", set it to 'default' to disable this feature.
+  command-toast: 'Use &e/help&7 for more!'
   # Customize the server world!
   world:
     #[<boolean>]

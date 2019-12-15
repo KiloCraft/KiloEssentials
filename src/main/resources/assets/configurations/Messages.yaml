@@ -55,7 +55,7 @@ events:
 #Messages used by commands
 commands:
   context:
-    execution_exception: 'Unknown command or insufficient permissions!'
+    execution_exception: '&8[ &c!&8 ] &cUnknown command or insufficient permissions!'
 
   broadcast_format: '&f[&cBroadCast&f]&r %MESSAGE%'
 

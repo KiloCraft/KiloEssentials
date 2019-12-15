@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.api.server;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -193,6 +194,11 @@ public interface Server {
      * @return ""
      */
     String getDisplayBrandName();
+
+    /**
+     * Sends a packet to all the Online users
+     */
+    void sendGlobalPacket(Packet<?> packet);
 
     /**
      * Stops the server

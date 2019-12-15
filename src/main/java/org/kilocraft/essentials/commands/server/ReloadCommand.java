@@ -29,8 +29,7 @@ public class ReloadCommand {
 
         KiloConfig.load();
         source.getMinecraftServer().reload();
-        BrandedServer.provide();
-
+        BrandedServer.load();
         KiloChat.sendLangMessageTo(source, "command.reload.end");
 
         return 1;

@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.events.player.PlayerConnectEventImpl;
+import org.kilocraft.essentials.events.player.PlayerConnectedEventImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,8 +40,20 @@ public abstract class MixinPlayerManager$PlayerEvent$OnConnect {
 
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/text/Text;)V"), method = "onPlayerConnect")
-    private void oky$onPlayerConnect$sendToAll(PlayerManager playerManager, Text text_1) {
+
+    @Inject(at = @At("RETURN"), method = "onPlayerConnect")
+    private void oky$onPlayerConnected(ClientConnection connection, ServerPlayerEntity playerEntity, CallbackInfo ci) {
+        PlayerConnectedEventImpl e = KiloServer.getServer().triggerEvent(
+                new PlayerConnectedEventImpl(
+                        connection,
+                        playerEntity
+                )
+        );
 
     }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/text/Text;)V"), method = "onPlayerConnect")
+    private void oky$onPlayerConnect$sendToAll(PlayerManager playerManager, Text text_1) {
+    }
+
 }

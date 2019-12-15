@@ -6,6 +6,9 @@ import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.message.MessageFactory;
+import org.apache.logging.log4j.message.SimpleMessage;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -46,7 +49,8 @@ import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 
 public class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
-	private static Logger logger = LogManager.getFormatterLogger("KiloEssentials");
+	private static String KE_PREFIX = "[KiloEssentials] ";
+	private static final Logger logger = LogManager.getLogger("KiloEssentials", massageFactory());
 	private static List<String> initializedPerms = new ArrayList<>();
 	private static KiloEssentialsImpl instance;
 	private static ModConstants constants = new ModConstants();
@@ -58,11 +62,10 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(KiloEvents events, KiloCommands commands) {
+	public KiloEssentialsImpl(KiloEvents events, KiloConfig config ,KiloCommands commands) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
 
-		new KiloConfig();
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = commands;
 		/*
@@ -195,4 +198,24 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		return ft;
 	}
+
+	private static MessageFactory massageFactory() {
+		return new MessageFactory() {
+			@Override
+			public Message newMessage(Object message) {
+				return new SimpleMessage(KE_PREFIX + message);
+			}
+
+			@Override
+			public Message newMessage(String message) {
+				return new SimpleMessage(KE_PREFIX + message);
+			}
+
+			@Override
+			public Message newMessage(String message, Object... params) {
+				return new SimpleMessage(KE_PREFIX + message);
+			}
+		};
+	}
+
 }

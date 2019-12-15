@@ -16,12 +16,9 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 	@Override
 	public void handle(ServerTickEvent event) {
 		((ServerUserManager) KiloServer.getServer().getUserManager()).onTick();
-		proccessPlayers();
-	}
 
-	private void proccessPlayers() {
 		for (ServerPlayerEntity player : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-			proccessDimension(player);
+			processDimension(player);
 
 			if (KiloServer.getServer().getOnlineUser(player).getDisplayParticleId() != 0)
 				processParticles(player);
@@ -29,7 +26,7 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 
 	}
 
-	private void proccessDimension(ServerPlayerEntity player) {
+	private void processDimension(ServerPlayerEntity player) {
 		boolean allowNether = KiloConfig.getProvider().getMain().getBooleanSafely("server.world.allow_nether", false);
 		boolean allowTheEnd = KiloConfig.getProvider().getMain().getBooleanSafely("server.world.allow_the_end", false);
 		boolean kickFromDim = KiloConfig.getProvider().getMain().getBooleanSafely("server.also_kick_from_dim", false);

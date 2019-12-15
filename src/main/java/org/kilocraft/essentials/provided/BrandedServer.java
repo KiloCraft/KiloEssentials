@@ -6,35 +6,35 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.PacketByteBuf;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.modsupport.ModSupport;
-
-import java.util.Objects;
 
 public class BrandedServer {
-    public static void provide() {
-        String configBrand = KiloConfig.getProvider().getMain().get(true, "server.displayBrandName");
-        String bungeeBrand = ModConstants.getProperties().getProperty("server.brand.bungee");
-        String defaultBrand = String.format(
-                ModConstants.getProperties().getProperty("server.brand.custom"),
-                "&r" + configBrand + "&r",
-                ModConstants.getVersionInt());
+    public static void set() {
+        KiloServer.getServer().setDisplayBrandName(getFinalBrandName());
+    }
 
-        boolean useDefault = configBrand.equalsIgnoreCase("default");
-        boolean bungee = Objects.requireNonNull(ModSupport.getMod("bungeecord")).isPresent();
+    public static void load() {
+        set();
+        KiloServer.getServer().sendGlobalPacket(getPacket());
+    }
 
-        String finalBrand = useDefault ? (bungee ? bungeeBrand : defaultBrand) : configBrand;
+    public static void provide(ServerPlayerEntity player) {
+        player.networkHandler.sendPacket(getPacket());
+    }
 
-        KiloServer.getServer().setDisplayBrandName(finalBrand);
+    private static String getFinalBrandName() {
+        String configBrand = KiloConfig.getProvider().getMain().getStringSafely("server.displayBrandName", "default");
+        boolean useDefault = configBrand.equals("default");
 
-        CustomPayloadS2CPacket customPayloadS2CPacket = new CustomPayloadS2CPacket(
+        return TextFormat.translate(useDefault ? ModConstants.getProperties().getProperty("server.brand") :
+                String.format(ModConstants.getProperties().getProperty("server.brand.custom"), configBrand + "&r"));
+    }
+
+    private static CustomPayloadS2CPacket getPacket() {
+        return new CustomPayloadS2CPacket(
                 CustomPayloadS2CPacket.BRAND,
-                (new PacketByteBuf(Unpooled.buffer())).writeString(KiloServer.getServer().getDisplayBrandName()));
-
-        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-            playerEntity.networkHandler.sendPacket(customPayloadS2CPacket);
-        }
-
+                (new PacketByteBuf(Unpooled.buffer())).writeString(getFinalBrandName()));
     }
 
 }

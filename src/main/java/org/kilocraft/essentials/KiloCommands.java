@@ -4,14 +4,17 @@ import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
@@ -28,13 +31,9 @@ import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.ColorsCommand;
-import org.kilocraft.essentials.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.commands.misc.HelpCommand;
 import org.kilocraft.essentials.commands.misc.PingCommand;
 import org.kilocraft.essentials.commands.misc.PreviewCommand;
-import org.kilocraft.essentials.commands.messaging.BuildermsgCommand;
-import org.kilocraft.essentials.commands.messaging.MessageCommand;
-import org.kilocraft.essentials.commands.messaging.StaffmsgCommand;
-import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.BanCommand;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.moderation.ProfileBanCommand;
@@ -58,7 +57,8 @@ import java.util.Map;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
-import static org.kilocraft.essentials.api.KiloEssentials.*;
+import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
+import static org.kilocraft.essentials.api.KiloEssentials.getServer;
 
 public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
@@ -92,6 +92,8 @@ public class KiloCommands {
             SharedConstants.isDevelopment = devEnv;
         }
 
+        registerToast();
+
         VersionCommand.register(this.dispatcher);
         HelpCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
@@ -121,6 +123,7 @@ public class KiloCommands {
         SpeedCommand.register(this.dispatcher);
         InfoCommand.register(this.dispatcher);
         StopCommand.register(this.dispatcher);
+        RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         InvulnerablemodeCommand.register(this.dispatcher);
         PreviewCommand.register(this.dispatcher);
@@ -137,6 +140,15 @@ public class KiloCommands {
 
         permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
                 map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
+    }
+
+    private static void registerToast() {
+        String configValue = KiloConfig.getProvider().getMain().getStringSafely("server.command-toast", "default");
+        if  (!configValue.equalsIgnoreCase("default")) {
+            ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument(
+                    TextFormat.translate(configValue + "&r"), StringArgumentType.greedyString()).build();
+            getDispatcher().getRoot().addChild(toast);
+        }
     }
 
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
