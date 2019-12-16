@@ -23,8 +23,7 @@ public class RealNameCommand {
 				.then(argument("target", string()).executes(context -> {
 
 					String input = getString(context, "target");	
-					for (int i = 0; i < KiloServer.getServer().getPlayerList().size(); i++) {
-						PlayerEntity player = KiloServer.getServer().getPlayerManager().getPlayerList().get(i);
+					for (PlayerEntity player : KiloServer.getServer().getPlayerList()) {
 						OnlineUser serverUser = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
 						if (serverUser.getNickname().isPresent() == true && input.equals(serverUser.getNickname().get()) && input != "") {
 							context.getSource().getPlayer().sendMessage(LangText.getFormatter(true,
