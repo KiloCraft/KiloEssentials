@@ -107,7 +107,7 @@ public class GamemodeCommand {
     }
 
     private static CompletableFuture<Suggestions> suggestGameModes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        int select = new Random().nextInt((1) + 1);
+        int select = new Random().nextInt((2) + 1);
         List<String> strings = new ArrayList<>();
         List<String> integers = new ArrayList<>();
         List<String> firstChar = new ArrayList<>();
