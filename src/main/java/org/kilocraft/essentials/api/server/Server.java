@@ -206,12 +206,25 @@ public interface Server {
     void shutdown();
 
     /**
+     * Restarts the server
+     */
+    void restart();
+
+    /**
      * Stops the server
      * @param reason is used for kicking the players
      */
     void shutdown(String reason);
 
     void shutdown(Text reason);
+
+    /**
+     * Restarts the server
+     * @param reason is used for kicking the player
+     */
+    void restart(String reason);
+
+    void restart(Text reason);
 
     /**
      * Kicks all the players on the server
@@ -240,5 +253,12 @@ public interface Server {
      * @return a instance of ServerMetaManager
      */
     ServerMetaManager getMetaManager();
+
+    /**
+     * Checks if the console supports ANSI formatting codes
+     *
+     * @return does console support ANSI formatting codes
+     */
+    boolean supportsANSICodes();
 
 }

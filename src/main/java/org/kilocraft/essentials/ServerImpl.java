@@ -11,6 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -25,6 +26,7 @@ import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
+import org.kilocraft.essentials.util.TextFormatAnsiHelper;
 
 import java.util.*;
 
@@ -37,6 +39,7 @@ public class ServerImpl implements Server {
     private UserManager userManager;
     private ChatManager chatManager;
     private ServerMetaManager metaManager;
+    private TextFormatAnsiHelper ansiHelper;
 
     public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, ServerUserManager serverUserManager, String serverBrand) {
         this.server = minecraftServer;
@@ -46,6 +49,7 @@ public class ServerImpl implements Server {
         this.eventRegistry = eventManager;
         this.chatManager = new ChatManager();
         this.metaManager = new ServerMetaManager(server.getServerMetadata());
+        this.ansiHelper = new TextFormatAnsiHelper();
     }
 
     @Override
@@ -171,7 +175,7 @@ public class ServerImpl implements Server {
 
     @Override
     public void execute(ServerCommandSource source, String command) {
-        server.getCommandManager().execute(source, command);
+        KiloEssentials.getInstance().getCommandHandler().execute(server.getCommandSource(), command);
     }
 
     @Override
@@ -197,6 +201,11 @@ public class ServerImpl implements Server {
     }
 
     @Override
+    public void restart() {
+        //TODO: Make this method work
+    }
+
+    @Override
     public void shutdown(String reason) {
         kickAll(reason);
         shutdown();
@@ -206,6 +215,16 @@ public class ServerImpl implements Server {
     public void shutdown(Text reason) {
         kickAll(reason);
         shutdown();
+    }
+
+    @Override
+    public void restart(String reason) {
+        //TODO: Make this method work
+    }
+
+    @Override
+    public void restart(Text reason) {
+        //TODO: Make this method work
     }
 
     @Override
@@ -226,7 +245,9 @@ public class ServerImpl implements Server {
         String[] lines = message.split("\n");
 
         for (String line : lines) {
-            getLogger().info(TextFormat.removeAlternateColorCodes('&', line));
+            getLogger().info(
+                    supportsANSICodes() ? ansiHelper.getFormattedString(message) :
+                            TextFormat.removeAlternateColorCodes('&', line));
         }
 
     }
@@ -241,7 +262,18 @@ public class ServerImpl implements Server {
         return this.metaManager;
     }
 
+    @SuppressWarnings("untested")
+    @Override
+    public boolean supportsANSICodes() {
+        return System.console() != null && System.getenv().get("TERM") != null;
+    }
+
     public String getBrandName() {
         return serverBrand;
     }
+
+    public TextFormatAnsiHelper getAnsiHelper() {
+        return this.ansiHelper;
+    }
+
 }

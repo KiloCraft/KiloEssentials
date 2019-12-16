@@ -1,7 +1,6 @@
 package org.kilocraft.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
-import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
@@ -33,8 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
-
 /**
  * Main Implementation
  *
@@ -42,7 +39,7 @@ import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
  * @author CODY_AI
  * @author MCRafterzz
  * @author GiantNuker
- * @author i509VCB
+ * @author I509VCB
  * @author DrexHD
  * @since KE 1.6
  */
@@ -51,10 +48,10 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 	private static String KE_PREFIX = "[KiloEssentials] ";
 	private static final Logger logger = LogManager.getLogger("KiloEssentials", massageFactory());
-	private static List<String> initializedPerms = new ArrayList<>();
+//	private static List<String> initializedPerms = new ArrayList<>();
 	private static KiloEssentialsImpl instance;
 	private static ModConstants constants = new ModConstants();
-	private static String PERMISSION_PREFIX = "kiloessentials.";
+	public static String PERMISSION_PREFIX = "kiloessentials.";
 	private KiloCommands commands;
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
@@ -68,6 +65,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = commands;
+
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
 		FeatureTypes.init(); // Register the built in feature types
@@ -110,13 +108,15 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		ModSupport.register(new BungeecordSupport());
 		ModSupport.validateMods();
 
-		//Initializes the EssentialsPermissions, these permissions aren't used in the literal commands
-		for (EssentialPermissions value : EssentialPermissions.values()) {
-			initializedPerms.add(value.getNode());
-		}
 
-		permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
-				map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
+//		for (EssentialPermission value : EssentialPermission.values()) {
+//			permissionWriters.add((map, server) -> {
+//				for (CommandPermission perm : CommandPermission.values()) {
+//					map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+//				}
+//			});
+//		}
+
 	}
 
 	public static Logger getLogger() {
@@ -124,24 +124,16 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public static void registerPermission(String node) {
-		if (!initializedPerms.contains(PERMISSION_PREFIX + node))
-			initializedPerms.add(node);
+//		if (!initializedPerms.contains(PERMISSION_PREFIX + node))
+//			initializedPerms.add(node);
 	}
 
-	public static String getPermissionFor(String node) {
-		if (!initializedPerms.contains(node))
-			initializedPerms.add(node);
-		return "kiloessentials." + node;
+	public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm) {
+		return Thimble.hasPermissionOrOp(source, perm.getNode(), 2);
 	}
 
-	public static boolean hasPermissionNode(ServerCommandSource source, String fullNode) {
-		registerPermission(fullNode);
-		return Thimble.hasPermissionOrOp(source, PERMISSION_PREFIX + fullNode, 4);
-	}
-
-	public static boolean hasPermissionNode(ServerCommandSource source, String fullNode, int opLevel) {
-		registerPermission(fullNode);
-		return Thimble.hasPermissionOrOp(source, PERMISSION_PREFIX + fullNode, opLevel);
+	public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm, int minOpLevel) {
+		return Thimble.hasPermissionOrOp(source, perm.getNode(), minOpLevel);
 	}
 
 	@Override

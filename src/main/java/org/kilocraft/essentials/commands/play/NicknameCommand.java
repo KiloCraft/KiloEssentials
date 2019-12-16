@@ -14,6 +14,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -38,8 +39,8 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class NicknameCommand {
-    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> KiloCommands.hasPermission(s, "nick.self", 2);
-    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER = (s) -> KiloCommands.hasPermission(s, "nick.other", 2);
+    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> KiloCommands.hasPermission(s, CommandPermission.NICKNAME_SELF);
+    public static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER = (s) -> KiloCommands.hasPermission(s, CommandPermission.NICKNAME_OTHERS);
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_EITHER = (s) -> PERMISSION_CHECK_OTHER.test(s) || PERMISSION_CHECK_SELF.test(s);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -98,7 +99,7 @@ public class NicknameCommand {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = "";
-        if (hasPermissionOrOp(ctx.getSource(), KiloCommands.getCommandPermission("nick.formatting"), 2)) {
+        if (KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING)) {
         	formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
         } else {
         	formattedNickname = TextFormat.removeAlternateColorCodes('&', nickname);

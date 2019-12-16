@@ -15,17 +15,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -35,20 +35,10 @@ import static org.kilocraft.essentials.KiloCommands.*;
 public class GamemodeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> gamemodeCommand = literal("ke_gamemode")
-                .requires(src -> hasPermissionOrOp(src, getCommandPermission("gamemode"), 2));
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.GAMEMODE));
 
         LiteralArgumentBuilder<ServerCommandSource> gmCommand = literal("gm")
-                .requires(src -> hasPermissionOrOp(src, getCommandPermission("gamemode"), 2));
-
-        getCommandPermission("gamemode");
-        getCommandPermission("gamemode.self");
-        getCommandPermission("gamemode.others");
-        for (GameMode gameMode: GameMode.values()) {
-            if (gameMode.getName().isEmpty()) continue;
-            getCommandPermission("gamemode.self." + gameMode.getName());
-            getCommandPermission("gamemode.others." + gameMode.getName());
-        }
-
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.GAMEMODE));
 
         build(gamemodeCommand);
         build(gmCommand);
@@ -65,8 +55,7 @@ public class GamemodeCommand {
                 .suggests(TabCompletions::allPlayers)
                 .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null,false))
                 .then(literal("-silent")
-                        .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null, true))
-                );
+                        .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null, true)));
 
 
         gameTypeArgument.then(targetArgument);
@@ -81,11 +70,11 @@ public class GamemodeCommand {
         if (selectedMode == null)
             throw new SimpleCommandExceptionType(new LiteralText("Please select a valid Game type!")).create();
 
-        if (players.size() == 1 && !hasPermissionOrOp(src, getCommandPermission(getPermission("self", selectedMode)), 2))
-            throw new SimpleCommandExceptionType(getPermissionError(getPermission("self", selectedMode))).create();
+        if (players.size() == 1 && !hasPermission(src, getPermission("self", selectedMode), 2))
+            throw new SimpleCommandExceptionType(getPermissionError(getPermission("self", selectedMode).getNode())).create();
 
-        if (players.size() > 1 && !hasPermissionOrOp(src, getCommandPermission(getPermission("others", selectedMode)), 3))
-            throw new SimpleCommandExceptionType(getPermissionError(getPermission("others", selectedMode))).create();
+        if (players.size() > 1 && !hasPermission(src, getPermission("others", selectedMode), 2))
+            throw new SimpleCommandExceptionType(getPermissionError(getPermission("others", selectedMode).getNode())).create();
 
         for (ServerPlayerEntity player : players) {
             if (!silent && !CommandHelper.areTheSame(src, player))
@@ -109,16 +98,41 @@ public class GamemodeCommand {
             return GameMode.CREATIVE;
         if  (arg.startsWith("a") || arg.startsWith("2"))
             return GameMode.ADVENTURE;
-        else
-            return null;
+
+        return null;
     }
 
-    private static String getPermission(String type, GameMode gameMode) {
-        return "gamemode." + type + "." + (gameMode != null ? gameMode.getName() : null);
+    private static CommandPermission getPermission(String type, GameMode mode) {
+        return CommandPermission.byName("gamemode." + type + mode.getName());
     }
 
     private static CompletableFuture<Suggestions> suggestGameModes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(new String[]{"survival", "creative", "adventure", "spectator"}, builder);
+        int select = new Random().nextInt((1) + 1);
+        List<String> strings = new ArrayList<>();
+        List<String> integers = new ArrayList<>();
+        List<String> firstChar = new ArrayList<>();
+        firstChar.add("sp");
+        for (GameMode value : GameMode.values()) {
+            if (value.equals(GameMode.NOT_SET)) continue;
+            strings.add(value.getName());
+            integers.add(String.valueOf(value.getId()));
+            if (!value.equals(GameMode.SPECTATOR))
+                firstChar.add(String.valueOf(value.getName().charAt(0)));
+        }
+
+        System.out.println(select);
+
+        List<String> finalStrings = new ArrayList<>();
+        switch (select) {
+            case 0:
+                finalStrings = integers;
+            case 1:
+                finalStrings = firstChar;
+            default:
+                finalStrings = strings;
+        }
+
+        return CommandSource.suggestMatching(finalStrings, builder);
     }
 
 }

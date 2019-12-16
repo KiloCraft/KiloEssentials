@@ -59,6 +59,7 @@ dependencies {
 
 	include "com.github.voidpointerdev:TinyConfig:${project.tiny_config_version}"
 
+	compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
 	compile group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
 	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
 }

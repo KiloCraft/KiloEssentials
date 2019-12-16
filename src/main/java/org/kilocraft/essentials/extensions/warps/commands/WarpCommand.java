@@ -12,7 +12,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.registry.Registry;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -24,10 +26,8 @@ import java.text.DecimalFormat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
-import static org.kilocraft.essentials.KiloCommands.getCommandPermission;
 
 public class WarpCommand {
     private static final SimpleCommandExceptionType WARP_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the warp specified!"));
@@ -58,8 +58,8 @@ public class WarpCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> addArg = argument("name", string());
         RequiredArgumentBuilder<ServerCommandSource, Boolean> argPermission = argument("requiresPermission", BoolArgumentType.bool());
 
-        aliasAdd.requires(s -> hasPermissionOrOp(s, getCommandPermission("warps.manage"), 2));
-        aliasRemove.requires(s -> hasPermissionOrOp(s, getCommandPermission("warps.manage"), 2));
+        aliasAdd.requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.WARP_MANAGE));
+        aliasRemove.requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.WARP_MANAGE));
 
         removeArg.executes(c -> executeRemove(c.getSource(), getString(c, "warp")));
         argPermission.executes(c -> executeAdd(c.getSource(), getString(c, "name"), BoolArgumentType.getBool(c, "requiresPermission")));

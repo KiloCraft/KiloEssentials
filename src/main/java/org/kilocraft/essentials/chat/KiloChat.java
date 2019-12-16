@@ -71,6 +71,13 @@ public class KiloChat {
 			source.sendFeedback(LangText.get(true, key), false);
 	}
 
+	public static void sendLangComamandFeedback(ServerCommandSource source, String key, boolean sendToOPs, Object... objects) {
+		if (CommandHelper.isConsole(source))
+			getServer().sendMessage(getFormattedLang(key, objects));
+		else
+			source.sendFeedback(LangText.getFormatter(true, key, objects), sendToOPs);
+	}
+
 	public static void sendLangMessageTo(ServerPlayerEntity player, String key) {
 		sendMessageTo(player, LangText.get(true, key));
 	}
