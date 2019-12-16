@@ -2,6 +2,8 @@ package org.kilocraft.essentials.commands.play;
 
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.command.TabCompletions;
+
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,9 +22,9 @@ public class RealNameCommand {
 				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("realname"), 2)).executes(KiloCommands::executeSmartUsage)
 				.then(argument("target", string()).executes(context -> {
 
-					String input = getString(context, "target");
-					for (int i = 0; i < context.getSource().getWorld().getPlayers().size(); i++) {
-						PlayerEntity player = context.getSource().getWorld().getPlayers().get(i);
+					String input = getString(context, "target");	
+					for (int i = 0; i < KiloServer.getServer().getPlayerList().size(); i++) {
+						PlayerEntity player = KiloServer.getServer().getPlayerManager().getPlayerList().get(i);
 						OnlineUser serverUser = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
 						if (serverUser.getNickname().isPresent() == true && input.equals(serverUser.getNickname().get()) && input != "") {
 							context.getSource().getPlayer().sendMessage(LangText.getFormatter(true,
@@ -35,6 +37,6 @@ public class RealNameCommand {
 							.sendMessage(LangText.getFormatter(true, "command.realname.error", input));
 
 					return 0;
-				})));
+				}).suggests(TabCompletions::allPlayerNicks)));
 	}
 }
