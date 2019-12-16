@@ -4,18 +4,17 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.command.arguments.DimensionArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
+import static net.minecraft.command.arguments.DimensionArgumentType.dimension;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 import static net.minecraft.command.arguments.Vec3ArgumentType.getVec3;
@@ -29,7 +28,7 @@ public class TeleportCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> tptoCommand = dispatcher.register(literal("teleportto")
             .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportto"), 2))
-            .then(argument("target", player()).suggests(ArgumentSuggestions::allPlayersExceptSource).executes(TeleportCommands::teleportTo))
+            .then(argument("target", player()).suggests(TabCompletions::allPlayersExceptSource).executes(TeleportCommands::teleportTo))
         );
 
         LiteralCommandNode<ServerCommandSource> tpposCommand = dispatcher.register(literal("teleportpos")
@@ -39,14 +38,14 @@ public class TeleportCommands {
 
         LiteralCommandNode<ServerCommandSource> tphereCommand = dispatcher.register(literal("teleporthere")
                 .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleporthere"), 2))
-                .then(argument("target", player()).suggests(ArgumentSuggestions::allPlayersExceptSource).executes(TeleportCommands::teleportHere))
+                .then(argument("target", player()).suggests(TabCompletions::allPlayersExceptSource).executes(TeleportCommands::teleportHere))
         );
 
         LiteralCommandNode<ServerCommandSource> tpinCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportin"), 2))
-                .then(argument("dimension", string()).suggests(ArgumentSuggestions::dimensions).then(argument("pos", vec3())
+                .then(argument("dimension", dimension()).suggests(TabCompletions::dimensions).then(argument("pos", vec3())
                         .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
-                            .then(argument("target", player()).suggests(ArgumentSuggestions::allPlayersExceptSource)
+                            .then(argument("target", player()).suggests(TabCompletions::allPlayersExceptSource)
                                     .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
                     )
                 )
@@ -61,6 +60,7 @@ public class TeleportCommands {
     private static int teleportTo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity target = getPlayer(ctx, "target");
 
+        BackCommand.saveLocation(target);
         ctx.getSource().getPlayer().teleport(
                 target.getServerWorld(),
                 target.getPos().getX(), target.getPos().getY(), target.getPos().getZ(),
@@ -77,6 +77,7 @@ public class TeleportCommands {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         Vec3d vec = getVec3(ctx, "pos");
 
+        BackCommand.saveLocation(player);
         ctx.getSource().getPlayer().teleport(
                 player.getServerWorld(),
                 vec.getX(), vec.getY(), vec.getZ(),
@@ -93,6 +94,7 @@ public class TeleportCommands {
         ServerPlayerEntity target = getPlayer(ctx, "target");
         ServerPlayerEntity sender = ctx.getSource().getPlayer();
 
+        BackCommand.saveLocation(target);
         target.teleport(
                 sender.getServerWorld(),
                 sender.getPos().getX(), sender.getPos().getY(), sender.getPos().getZ(),
@@ -106,11 +108,10 @@ public class TeleportCommands {
     }
 
     private static int teleportIn(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
-        String arg = getString(ctx, "dimension");
-        int dim = (arg.equals("overworld") ? 0 : (arg.equals("the_nether") ? -1 : 1));
-        ServerWorld targetWorld = KiloServer.getServer().getVanillaServer().getWorld(DimensionType.byRawId(dim));
+        ServerWorld targetWorld = KiloServer.getServer().getVanillaServer().getWorld(DimensionArgumentType.getDimensionArgument(ctx, "dimension"));
         Vec3d vec = getVec3(ctx, "pos");
 
+        BackCommand.saveLocation(target);
         target.teleport(
                 targetWorld,
                 vec.getX(), vec.getY(), vec.getZ(),

@@ -161,7 +161,7 @@ public class ServerUserManager implements UserManager {
         this.onlineUsers.put(playerEntity.getUuid(), serverUser);
         this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUuid());
 
-        if(serverUser.hasNickname()) {
+        if (serverUser.getNickname().isPresent()) {
            this.nicknameToUUID.put(serverUser.getNickname().get(), playerEntity.getUuid());
         }
 

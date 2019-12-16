@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "essentials",
+  "id": "kee",
   "version": "${version}",
 
   "name": "Essentials for Fabric",
@@ -23,7 +23,8 @@
   },
   "mixins": [
     "kiloessentials.events.mixins.json",
-    "kiloessentials.mixins.json"
+    "kiloessentials.mixins.json",
+    "kiloessentials.accessors.mixins.json"
   ],
 
   "depends": {

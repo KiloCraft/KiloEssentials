@@ -107,6 +107,26 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public boolean isSocialSpyOn() {
+        return false;
+    }
+
+    @Override
+    public void setSocialSpyOn(boolean on) {
+
+    }
+
+    @Override
+    public boolean isCommandSpyOn() {
+        return false;
+    }
+
+    @Override
+    public void setCommandSpyOn(boolean on) {
+
+    }
+
+    @Override
     public boolean hasJoinedBefore() {
         return false;
     }

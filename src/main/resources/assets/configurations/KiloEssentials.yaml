@@ -77,6 +77,8 @@ server:
 features:
   #[<boolean>]
   #A list of the features you want to enable!
+  DiscordCommand: true
+  VoteCommand: true
   PlayerHomes: true
   ServerWideWarps: true
 
@@ -154,3 +156,6 @@ chat:
       # Default: 1.0
       pitch: '1.0'
 
+commandSpy:
+  format: '&r&7%SOURCE% &3->&r /%MESSAGE%'
+  saveToLogs: true

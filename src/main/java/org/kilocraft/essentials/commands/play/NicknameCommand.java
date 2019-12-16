@@ -17,7 +17,7 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
@@ -49,7 +49,7 @@ public class NicknameCommand {
 
         LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
         LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
-        ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("target", player()).requires(PERMISSION_CHECK_OTHER).suggests(ArgumentSuggestions::allPlayers).build();
+        ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("target", player()).requires(PERMISSION_CHECK_OTHER).suggests(TabCompletions::allPlayers).build();
 
         ArgumentCommandNode<ServerCommandSource, String> nicknameSelf = argument("nickname", greedyString())
                 .suggests(NicknameCommand::setSelfSuggestions).executes(NicknameCommand::setSelf).build();
@@ -94,7 +94,7 @@ public class NicknameCommand {
         int maxLength = (int) unchecked;
         String nickname = getString(ctx, "nickname");
 
-        if (nickname.length() > maxLength)
+        if (nickname.length() > maxLength || nickname.length() < 3)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = "";
@@ -125,7 +125,7 @@ public class NicknameCommand {
 
         int maxLength = (int) unchecked;
 
-        if (nickname.length() > maxLength)
+        if (nickname.length() > maxLength || nickname.length() < 3)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
@@ -152,7 +152,6 @@ public class NicknameCommand {
     }
 
     private static int resetOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerCommandSource source = ctx.getSource();
         ServerPlayerEntity player = getPlayer(ctx, "target");
         User user = KiloServer.getServer().getUserManager().getOnline(player);
         user.clearNickname();

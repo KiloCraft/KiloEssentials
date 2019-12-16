@@ -5,7 +5,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.inventory.ServerUserInventory;
@@ -22,7 +22,7 @@ public class EnderchestCommand {
                 .executes(ctx -> execute(ctx.getSource().getPlayer(), ctx.getSource().getPlayer()))
                 .then(argument("user", EntityArgumentType.player())
                         .requires(src -> hasPermission(src, "enderchest.others", 3))
-                        .suggests(ArgumentSuggestions::allPlayers)
+                        .suggests(TabCompletions::allPlayers)
                 )
         );
 

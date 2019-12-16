@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.extensions.homes.api;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
@@ -134,7 +135,7 @@ public class Home {
         this.dY = dY;
     }
 
-    public static void teleportTo(OnlineUser user, Home home) {
+    public static void teleportTo(OnlineUser user, Home home) throws CommandSyntaxException {
         ServerPlayerEntity player = user.getPlayer();
         DimensionType type = DimensionType.byId(home.getDimId());
         if(type == null) {

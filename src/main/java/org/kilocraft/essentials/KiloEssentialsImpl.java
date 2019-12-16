@@ -14,6 +14,8 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
+import org.kilocraft.essentials.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -27,15 +29,26 @@ import java.util.Map;
 
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 
+/**
+ * Main Implementation
+ *
+ * @see org.kilocraft.essentials.api.KiloEssentials
+ * @author CODY_AI
+ * @author MCRafterzz
+ * @author GiantNuker
+ * @author i509VCB
+ * @author DrexHD
+ * @since KE 1.6
+ */
+
 public class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 	private static Logger logger = LogManager.getFormatterLogger("KiloEssentials");
 	private static List<String> initializedPerms = new ArrayList<>();
 	private static KiloEssentialsImpl instance;
-	private KiloCommands commands;
 	private static ModConstants constants = new ModConstants();
-	public static String PERMISSION_PREFIX = "kiloessentials.";
-
+	private static String PERMISSION_PREFIX = "kiloessentials.";
+	private KiloCommands commands;
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 
@@ -84,28 +97,20 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
-
-		//TODO: Move this to the UserHomeHandler
-		//Registers the limit permissions
-		for (int i = 0; i == KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
-			registerPermission(EssentialPermissions.HOME_SET_LIMIT.getNode() + i);
-		}
+		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
+		features.tryToRegister(new VoteCommand(), "VoteCommand");
 
 		//Initializes the EssentialsPermissions, these permissions aren't used in the literal commands
 		for (EssentialPermissions value : EssentialPermissions.values()) {
 			initializedPerms.add(value.getNode());
 		}
 
-		registerPermissions();
+		permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
+				map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
 	}
 
 	public static Logger getLogger() {
 		return logger;
-	}
-
-	public static void registerPermissions() {
-		permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
-						map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
 	}
 
 	public static void registerPermission(String node) {

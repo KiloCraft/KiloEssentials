@@ -64,6 +64,14 @@ public interface User {
 
     void setFlight(boolean set);
 
+    boolean isSocialSpyOn();
+
+    void setSocialSpyOn(boolean on);
+
+    boolean isCommandSpyOn();
+
+    void setCommandSpyOn(boolean on);
+
     boolean hasJoinedBefore();
 
     @Nullable

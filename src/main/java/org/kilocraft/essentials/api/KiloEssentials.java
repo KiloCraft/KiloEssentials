@@ -45,16 +45,16 @@ public interface KiloEssentials {
         return KiloEssentialsImpl.getLogger();
     }
 
-    static void registerPermissions() {
-        KiloEssentialsImpl.registerPermissions();
-    }
-
     static void registerPermission(String node) {
         KiloEssentialsImpl.registerPermission(node);
     }
 
     static String getPermissionFor(String node) {
         return KiloEssentialsImpl.getPermissionFor(node);
+    }
+
+    static Server getServer() {
+        return KiloServer.getServer();
     }
 
     static boolean hasPermissionNode(ServerCommandSource source, String fullNode) {
@@ -66,8 +66,6 @@ public interface KiloEssentials {
     }
 
     MessageUtil getMessageUtil();
-
-    Server getServer();
 
     ModConstants getConstants();
 
