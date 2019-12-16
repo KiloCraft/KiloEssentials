@@ -34,7 +34,7 @@ import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
  *
  * @see org.kilocraft.essentials.api.KiloEssentials
  * @author CODY_AI
- * @author MCRafterzz
+ * @author MCrafterzz
  * @author GiantNuker
  * @author i509VCB
  * @author DrexHD
