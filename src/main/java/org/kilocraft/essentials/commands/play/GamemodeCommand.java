@@ -122,15 +122,11 @@ public class GamemodeCommand {
 
         System.out.println(select);
 
-        List<String> finalStrings = new ArrayList<>();
-        switch (select) {
-            case 0:
-                finalStrings = integers;
-            case 1:
-                finalStrings = firstChar;
-            default:
-                finalStrings = strings;
-        }
+        List<String> finalStrings = strings;
+        if (select == 0)
+            finalStrings = integers;
+        else if (select == 1)
+            finalStrings = firstChar;
 
         return CommandSource.suggestMatching(finalStrings, builder);
     }
