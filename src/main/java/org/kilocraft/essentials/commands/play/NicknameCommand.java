@@ -93,8 +93,9 @@ public class NicknameCommand {
 
         int maxLength = (int) unchecked;
         String nickname = getString(ctx, "nickname");
-
-        if (nickname.length() > maxLength || nickname.length() < 3)
+        int length = TextFormat.removeAlternateColorCodes('&', nickname).length();
+        
+        if (length > maxLength || length < 3)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
         String formattedNickname = "";
