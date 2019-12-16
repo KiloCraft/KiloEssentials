@@ -242,4 +242,22 @@ public class CommandSourceServerUser implements CommandSourceUser {
     public boolean isConsole() {
         return CommandHelper.isConsole(this.source);
     }
+
+	@Override
+	public boolean isSocialSpyOn() {
+		return false;
+	}
+
+	@Override
+	public void setSocialSpyOn(boolean on) {
+	}
+
+	@Override
+	public boolean isCommandSpyOn() {
+		return false;
+	}
+
+	@Override
+	public void setCommandSpyOn(boolean on) {
+	}
 }
