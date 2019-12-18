@@ -2,7 +2,6 @@ package org.kilocraft.essentials.commands.server;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -12,9 +11,6 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.chat.KiloChat;
-
-import java.io.File;
-import java.io.IOException;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -47,15 +43,8 @@ public class RestartCommand {
             return 0;
         }
 
-        source.getMinecraftServer().stop(false);
-        File marker = new File(FabricLoader.getInstance().getGameDirectory(), "RESTARTME");
+        KiloServer.getServer().restart();
 
-        try {
-            marker.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return 1;
+        return 0;
     }
 }

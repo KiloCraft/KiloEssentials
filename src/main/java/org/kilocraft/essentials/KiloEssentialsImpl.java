@@ -1,7 +1,7 @@
 package org.kilocraft.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
-import io.github.indicode.fabric.permissions.Thimble;
+import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,13 +24,16 @@ import org.kilocraft.essentials.modsupport.BungeecordSupport;
 import org.kilocraft.essentials.modsupport.ModSupport;
 import org.kilocraft.essentials.modsupport.VanishModSupport;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
+import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 
 /**
  * Main Implementation
@@ -48,7 +51,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 	private static String KE_PREFIX = "[KiloEssentials] ";
 	private static final Logger logger = LogManager.getLogger("KiloEssentials", massageFactory());
-//	private static List<String> initializedPerms = new ArrayList<>();
 	private static KiloEssentialsImpl instance;
 	private static ModConstants constants = new ModConstants();
 	public static String PERMISSION_PREFIX = "kiloessentials.";
@@ -65,6 +67,14 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = commands;
+
+		KiloServer.getServer().setName(KiloConfig.getProvider().getMessages().getStringSafely("server.name", "Minecraft Server"));
+
+		permissionWriters.add((map, server) -> {
+			for (EssentialPermission perm : EssentialPermission.values()) {
+				map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+			}
+		});
 
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
@@ -108,32 +118,20 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		ModSupport.register(new BungeecordSupport());
 		ModSupport.validateMods();
 
-
-//		for (EssentialPermission value : EssentialPermission.values()) {
-//			permissionWriters.add((map, server) -> {
-//				for (CommandPermission perm : CommandPermission.values()) {
-//					map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
-//				}
-//			});
-//		}
-
+		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
+			new StartupScript();
 	}
 
 	public static Logger getLogger() {
 		return logger;
 	}
 
-	public static void registerPermission(String node) {
-//		if (!initializedPerms.contains(PERMISSION_PREFIX + node))
-//			initializedPerms.add(node);
-	}
-
 	public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm) {
-		return Thimble.hasPermissionOrOp(source, perm.getNode(), 2);
+		return hasPermissionOrOp(source, perm.getNode(), 2);
 	}
 
 	public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm, int minOpLevel) {
-		return Thimble.hasPermissionOrOp(source, perm.getNode(), minOpLevel);
+		return hasPermissionOrOp(source, perm.getNode(), minOpLevel);
 	}
 
 	@Override
@@ -147,11 +145,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		return instance;
     }
-
-    public static RuntimeException getRuntimeException(ExceptionMessageNode node, Object... objects) {
-		String string = ModConstants.getMessageUtil().fromExceptionNode(node);
-		return new RuntimeException((objects != null) ? String.format(string, objects) : string);
-	}
 
 	private static String featureEntry(String name) {
 		return "kiloess:" + name;

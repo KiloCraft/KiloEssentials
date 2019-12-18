@@ -46,7 +46,7 @@ public class HomeCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home")
-                .requires(s -> hasPermission(s, CommandPermission.HOME_SELF_TPPT))
+                .requires(s -> hasPermission(s, CommandPermission.HOME_SELF_TP))
                 .executes(context -> executeUsageFor("command.home.usage", context.getSource()));
 
         LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome")
@@ -158,7 +158,7 @@ public class HomeCommand {
                 throw NO_HOMES_EXCEPTION.create();
 
             int homes = serverUser.getHomesHandler().getHomes().size();
-            boolean canSet = Thimble.hasPermissionOrOp(context.getSource(), CommandPermission.HOME_SET_LIMIT.getNode() + (homes + 1), 3) ||
+            boolean canSet = Thimble.hasPermissionOrOp(context.getSource(), CommandPermission.HOME_SET_LIMIT.getNode() + "." + (homes + 1), 3) ||
                     KiloCommands.hasPermission(context.getSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3);
 
             if (!canSet)

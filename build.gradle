@@ -53,9 +53,9 @@ dependencies {
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation "com.github.voidpointerdev:TinyConfig:${project.tiny_config_version}"
+	modImplementation "com.github.voidpointerdev:vanishmode:${project.vanish_version}"
 	modImplementation "com.github.voidpointerdev:Thimble-Permissions:${project.thimble_permissions_version}"
 	modImplementation "com.github.voidpointerdev:WorldDataLib:${project.worlddatalib_version}"
-	modImplementation "com.github.voidpointerdev:vanishmode:${project.vanish_version}"
 
 	include "com.github.voidpointerdev:TinyConfig:${project.tiny_config_version}"
 

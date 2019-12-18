@@ -11,6 +11,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
+import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.CommandManager;
@@ -53,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
+import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 import static org.kilocraft.essentials.api.KiloEssentials.getServer;
 
@@ -92,6 +94,12 @@ public class KiloCommands {
             KiloEssentialsImpl.getLogger().info("Alert [!]: Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
         }
+
+        permissionWriters.add((map, server) -> {
+            for (CommandPermission perm : CommandPermission.values()) {
+                map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+            }
+        });
 
         registerToast();
 
@@ -133,23 +141,13 @@ public class KiloCommands {
         BuildermsgCommand.register(this.dispatcher);
         SocialspyCommand.register(this.dispatcher);
         CommandspyCommand.register(this.dispatcher);
-
-        //TODO: Uncomment
-//        for (CommandPermission value : CommandPermission.values()) {
-//            permissionWriters.add((map, server) -> {
-//                for (CommandPermission perm : CommandPermission.values()) {
-//                    System.out.println(perm + " -> " + perm.getNode());
-//                    map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
-//                }
-//            });
-//        }
     }
 
     private static void registerToast() {
         String configValue = KiloConfig.getProvider().getMain().getStringSafely("server.command-toast", "default");
         if  (!configValue.equalsIgnoreCase("default")) {
             ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument(
-                    TextFormat.translate(configValue + "&r"), StringArgumentType.greedyString()).build();
+                    TextFormat.translate(configValue + "&r&7"), StringArgumentType.greedyString()).build();
             getDispatcher().getRoot().addChild(toast);
         }
     }

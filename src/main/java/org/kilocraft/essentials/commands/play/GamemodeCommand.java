@@ -120,8 +120,6 @@ public class GamemodeCommand {
                 firstChar.add(String.valueOf(value.getName().charAt(0)));
         }
 
-        System.out.println(select);
-
         List<String> finalStrings = strings;
         if (select == 0)
             finalStrings = integers;

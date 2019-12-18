@@ -1,7 +1,7 @@
 package org.kilocraft.essentials;
 
 public enum CommandPermission {
-    HOME_SELF_TPPT("home.self.test"),
+    HOME_SELF_TP("home.self.tp"),
     HOME_SELF_SET("home.self.set"),
     HOME_SELF_REMOVE("home.self.remove"),
     HOMES_SELF("homes.self"),
@@ -9,7 +9,7 @@ public enum CommandPermission {
     HOME_OTHERS_TP("home.others.tp"),
     HOME_OTHERS_SET("home.others.set"),
     HOME_OTHERS_REMOVE("home.others.remove"),
-    HOME_SET_LIMIT("home.set.limit."),
+    HOME_SET_LIMIT("home.set.limit"),
     HOME_SET_LIMIT_BYPASS("home.set.limit.bypass"),
     RELOAD("reload"),
     GAMEMODE("gamemode"),

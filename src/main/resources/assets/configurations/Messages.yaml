@@ -49,18 +49,23 @@ general:
   prefix: '&bKiloEssentials &8>&7>'
 
 events:
+  # [<boolean>]
+  # If set to true it will disable the event messages if the bungeecord mode is on
+  disable-on-bungee-mode: false
+  # [<greedyString> c]
   userJoin: '&7%USER_DISPLAYNAME% joined the game'
   userLeave: '%USER_DISPLAYNAME% left the game.'
 
 #Messages used by commands
 commands:
+  # [<greedyString> c]
   context:
     execution_exception: '&8[ &c!&8 ] &cUnknown command or insufficient permissions!'
-
+  # [<greedyString> c]
   broadcast_format: '&f[&cBroadCast&f]&r %MESSAGE%'
-
+  # [<greedyString> c]
   discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
-
+  # [<greedyString> c]
   vote: 'Edit this in KiloEssentials/config/Messages.yaml'
 
   serverWideWarps:
@@ -80,18 +85,3 @@ commands:
     dimension_exception: "%GENERAL_PREFIX% &cYou can only randomly teleport in the Overworld!"
     #Values: {BIOME}, {RTP_LEFT}, {cord.X}, {cord.Y}, {cord.Z}
     teleported: "You've been teleported to this {BIOME} biome! you are falling from the sky but do not panic!"
-
-  tpa:
-    sender:
-      requested: ''
-      cooldownMessage: ''
-      teleporting: ''
-    recever:
-      requested: ''
-  tpahere:
-    sender:
-      requested: ''
-      recever:
-        requested: ''
-        cooldownMessage: ''
-        teleporting: ''

@@ -44,6 +44,32 @@ schema: 1.4
 #Instead of using the special character you can use your own color char
 #for defining the color/formatting codes use the '&' character
 
+# The Script you use to start the server
+startupScript:
+  # [<boolean>]
+  # Set it to true to auto generate the script
+  # It will get saved in the same directory as the server
+  # If you are using a custom script then set this to false
+  auto-generate: true
+  # [<String>]
+  # The name of the fabric loader jar to use
+  # Default: 'fabric-loader.jar'
+  fabric-loader-name: 'fabric-loader.jar'
+  # [<boolean>]
+  # Set this to true if you're using screen on a linux distro
+  linux-screen-mode: false
+  # Sets the name of the screen If the above option is enabled
+  linux-screen-name: 'KE-Server'
+  # [<String>]
+  # The name of the script to use
+  # Note: DO Not put the extension in the name
+  #       It will be a Shell Script (.sh) file
+  script-name: 'start-server'
+  # [<Integer>]
+  # Sets the maximum memory size
+  # E.g: '4G' for 4 Gigabytes of memory, '712M' for 712 for 712 Megabytes of memory
+  maximum-memory-size: '3G'
+
 server:
   # [-] META
   # Server name
@@ -95,7 +121,7 @@ homes.limit: 10
 commands.suggestions.require_permission: true
 
 # Maximum length of a nickname. This cannot be negative.
-# Includes color formatting
+# Doesn't include color formatting
 nickname-max-length: 25
 
 chat:

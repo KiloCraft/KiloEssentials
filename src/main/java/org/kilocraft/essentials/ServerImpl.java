@@ -1,5 +1,6 @@
 package org.kilocraft.essentials;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
@@ -28,6 +29,8 @@ import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.TextFormatAnsiHelper;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class ServerImpl implements Server {
@@ -35,7 +38,7 @@ public class ServerImpl implements Server {
     private final EventRegistry eventRegistry;
     private final String serverBrand;
     private String serverDisplayBrand;
-    private String serverName = "Minecraft server";
+    private String serverName = "Minecraft Server";
     private UserManager userManager;
     private ChatManager chatManager;
     private ServerMetaManager metaManager;
@@ -202,7 +205,14 @@ public class ServerImpl implements Server {
 
     @Override
     public void restart() {
-        //TODO: Make this method work
+        shutdown();
+        File marker = new File(FabricLoader.getInstance().getGameDirectory(), "RESTARTME");
+
+        try {
+            marker.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -219,12 +229,14 @@ public class ServerImpl implements Server {
 
     @Override
     public void restart(String reason) {
-        //TODO: Make this method work
+        kickAll(reason);
+        restart();
     }
 
     @Override
     public void restart(Text reason) {
-        //TODO: Make this method work
+        kickAll(reason);
+        restart();
     }
 
     @Override
