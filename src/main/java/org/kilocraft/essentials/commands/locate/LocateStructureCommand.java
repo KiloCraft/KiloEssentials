@@ -1,11 +1,12 @@
 package org.kilocraft.essentials.commands.locate;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.ThreadManager;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.world.Structures;
-import org.kilocraft.essentials.ThreadManager;
 import org.kilocraft.essentials.provided.LocateStructureProvided;
 import org.kilocraft.essentials.threaded.ThreadedStructureLocator;
 
@@ -15,7 +16,7 @@ public class LocateStructureCommand {
     public static void registerAsChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
 
         LiteralArgumentBuilder<ServerCommandSource> literalStructure = literal("structure")
-                .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.locate.structure", 2));
+                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.LOCATE_STRUCTURE));
 
         Structures.list.forEach((structure) -> {
             literalStructure.then(literal(structure.toLowerCase())

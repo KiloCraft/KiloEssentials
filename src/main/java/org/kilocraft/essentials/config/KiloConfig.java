@@ -39,7 +39,7 @@ public class KiloConfig {
 
     static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
     static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");
-    static FileConfig COMMANDS = FileConfig.of(configPath + "Commands.yaml");
+    //static FileConfig COMMANDS = FileConfig.of(configPath + "Commands.yaml");
 
     private void handle() {
         try {
@@ -80,7 +80,8 @@ public class KiloConfig {
     }
 
     public static FileConfig getFileConfigOfCommands() {
-        return COMMANDS;
+        return null;
+        //return COMMANDS;
     }
 
     public static ConfigProvider getProvider() {
@@ -98,7 +99,7 @@ public class KiloConfig {
     public static void load() {
         MAIN.load();
         MESSAGES.load();
-        COMMANDS.load();
+        //COMMANDS.load();
     }
 
 }

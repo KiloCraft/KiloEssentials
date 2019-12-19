@@ -5,7 +5,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.OperatorEntry;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -14,7 +13,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -34,12 +35,10 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class OperatorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        KiloCommands.getCommandPermission("server.manage");
-        String pNode = KiloCommands.getCommandPermission("server.manage.operators");
         LiteralArgumentBuilder<ServerCommandSource> builder = literal("operator")
-                .requires(s -> Thimble.hasPermissionOrOp(s, pNode, 2));
+                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_OPERATORS));
         LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = literal("ke_op")
-                .requires(s -> Thimble.hasPermissionOrOp(s, pNode, 2));
+                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_OPERATORS));
 
         LiteralArgumentBuilder<ServerCommandSource> addLiteral = literal("add");
         LiteralArgumentBuilder<ServerCommandSource> removeLiteral = literal("remove");

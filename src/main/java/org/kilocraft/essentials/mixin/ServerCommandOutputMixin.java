@@ -20,19 +20,19 @@ public abstract class ServerCommandOutputMixin {
 
         new ModConstants().loadConstants();
 
+        String brand = ModConstants.getProperties().getProperty("server.brand");
+
         KiloServer.setServer(
                 new ServerImpl(
                     minecraftServer,
                     new EventRegistryImpl(),
                     new ServerUserManager(minecraftServer.getPlayerManager()),
-                    String.format(
-                            ModConstants.getProperties().getProperty("server.brand"),
-                                ModConstants.getVersion(),
-                                ModConstants.getLoaderVersion(),
-                                ModConstants.getMappingsVersion())
-            )
-        );
+                    brand));
 
-        ModConstants.getLogger().info("Server set: " + KiloServer.getServer().getBrandName());
+        ModConstants.getLogger().info("[ i ] Server set: " + String.format(
+                ModConstants.getProperties().getProperty("server.brand.full"),
+                ModConstants.getVersion(),
+                ModConstants.getLoaderVersion(),
+                ModConstants.getMappingsVersion()));
     }
 }

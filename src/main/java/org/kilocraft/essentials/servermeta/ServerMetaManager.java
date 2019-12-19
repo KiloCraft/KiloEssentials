@@ -1,12 +1,7 @@
 package org.kilocraft.essentials.servermeta;
 
-import io.netty.buffer.Unpooled;
 import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
 import net.minecraft.server.ServerMetadata;
-import net.minecraft.util.PacketByteBuf;
-import org.kilocraft.essentials.api.KiloServer;
-
-import java.io.IOException;
 
 public class ServerMetaManager {
     private ServerMetadata metadata;
@@ -19,18 +14,18 @@ public class ServerMetaManager {
     }
 
     public void provide() {
-        PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
+//        PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
 
 //        ((ModifiablePlayerListMeta) playerListPacket).setHeader(new LiteralText("Test HEADER"));
 //
 //        ((ModifiablePlayerListMeta) playerListPacket).setFooter(new LiteralText("Test2"));
-
-        try {
-            packet.write(new PacketByteBuf(Unpooled.buffer()).writeString("{\"text\":\"This is stupid\"}"));
-            KiloServer.getServer().getPlayerManager().sendToAll(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//
+//        try {
+//            packet.write(new PacketByteBuf(Unpooled.buffer()).writeString("{\"text\":\"This is stupid\"}"));
+//            KiloServer.getServer().getPlayerManager().sendToAll(packet);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 

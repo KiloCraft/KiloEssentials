@@ -1,18 +1,19 @@
 package org.kilocraft.essentials.extensions.warps.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.registry.Registry;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -24,23 +25,27 @@ import java.text.DecimalFormat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
-import static org.kilocraft.essentials.KiloCommands.getCommandPermission;
 
 public class WarpCommand {
     private static final SimpleCommandExceptionType WARP_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the warp specified!"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = literal("warp");
+        LiteralArgumentBuilder<ServerCommandSource> builder = literal("warp")
+                .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.WARP));
         RequiredArgumentBuilder<ServerCommandSource, String> warpArg = argument("warp", string());
         LiteralArgumentBuilder<ServerCommandSource> listLiteral = literal("warps");
-        LiteralArgumentBuilder<ServerCommandSource> spawnLiteral = literal("spawn");
+
+        LiteralArgumentBuilder<ServerCommandSource> spawnLiteral = literal("spawn")
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.WARP_SPAWN));
+        LiteralArgumentBuilder<ServerCommandSource> setSpawnLiteral = literal("setspawn")
+                .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.WARP_MANAGE));
 
         warpArg.executes(c -> executeTeleport(c.getSource(), getString(c, "warp")));
         listLiteral.executes(c -> executeList(c.getSource()));
         spawnLiteral.executes(c -> executeTeleport(c.getSource(), "spawn"));
+        setSpawnLiteral.executes(c -> executeAdd(c.getSource(), "spawn"));
 
         warpArg.suggests(WarpManager::suggestions);
 
@@ -56,17 +61,15 @@ public class WarpCommand {
         LiteralArgumentBuilder<ServerCommandSource> aliasRemove = literal("delwarp");
         RequiredArgumentBuilder<ServerCommandSource, String> removeArg = argument("warp", string());
         RequiredArgumentBuilder<ServerCommandSource, String> addArg = argument("name", string());
-        RequiredArgumentBuilder<ServerCommandSource, Boolean> argPermission = argument("requiresPermission", BoolArgumentType.bool());
 
-        aliasAdd.requires(s -> hasPermissionOrOp(s, getCommandPermission("warps.manage"), 2));
-        aliasRemove.requires(s -> hasPermissionOrOp(s, getCommandPermission("warps.manage"), 2));
+        aliasAdd.requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.WARP_MANAGE));
+        aliasRemove.requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.WARP_MANAGE));
 
         removeArg.executes(c -> executeRemove(c.getSource(), getString(c, "warp")));
-        argPermission.executes(c -> executeAdd(c.getSource(), getString(c, "name"), BoolArgumentType.getBool(c, "requiresPermission")));
+        addArg.executes(c -> executeAdd(c.getSource(), getString(c, "name")));
 
         removeArg.suggests(WarpManager::suggestions);
 
-        addArg.then(argPermission);
         aliasAdd.then(addArg);
         aliasRemove.then(removeArg);
 
@@ -77,9 +80,6 @@ public class WarpCommand {
     private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
         if (WarpManager.getWarpsByName().contains(name)) {
             Warp warp = WarpManager.getWarp(name);
-
-            if (warp.doesRequirePermission() && !Thimble.hasPermissionOrOp(source, warp.getPermissionNode(), 2))
-                throw new SimpleCommandExceptionType(KiloCommands.getPermissionError(warp.getPermissionNode())).create();
 
             ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimId()));
 
@@ -97,6 +97,11 @@ public class WarpCommand {
     }
 
     private static int executeList(ServerCommandSource source) throws CommandSyntaxException {
+        if (WarpManager.getWarps().isEmpty()) {
+            KiloChat.sendMessageTo(source, new ChatMessage("&cNo warps!", true));
+            return 1;
+        }
+
         StringBuilder warps = new StringBuilder();
         warps.append("&6Warps&8:");
 
@@ -105,13 +110,12 @@ public class WarpCommand {
         }
 
         KiloChat.sendMessageTo(source, new ChatMessage(
-                warps.toString().replaceFirst("&7,", ""), true
-        ));
+                warps.toString().replaceFirst("&7,", ""), true));
 
         return 1;
     }
 
-    private static int executeAdd(ServerCommandSource source, String name, boolean requiresPermission) throws CommandSyntaxException {
+    private static int executeAdd(ServerCommandSource source, String name) throws CommandSyntaxException {
         DecimalFormat df = new DecimalFormat("#.##");
         WarpManager.addWarp(
                 new Warp(
@@ -121,12 +125,9 @@ public class WarpCommand {
                         Double.parseDouble(df.format(source.getPlayer().getPos().z)),
                         Float.parseFloat(df.format(source.getPlayer().yaw)),
                         Float.parseFloat(df.format(source.getPlayer().pitch)),
-                        Registry.DIMENSION.getId(source.getWorld().getDimension().getType()),
-                        requiresPermission
-                )
-        );
+                        Registry.DIMENSION.getId(source.getWorld().getDimension().getType())));
 
-        KiloChat.sendMessageTo(source, new ChatMessage("&eYou have &aadded&e the &6" + name + "&e warp!", true));
+        KiloChat.sendLangMessageTo(source, "command.warp.set", name);
 
         return 1;
     }
@@ -134,7 +135,7 @@ public class WarpCommand {
     private static int executeRemove(ServerCommandSource source, String warp) throws CommandSyntaxException {
         if (WarpManager.getWarpsByName().contains(warp)) {
             WarpManager.removeWarp(warp);
-            KiloChat.sendMessageTo(source, new ChatMessage("&eYou have &cremoved&e the &6" + warp + "&e warp!", true));
+            KiloChat.sendLangMessageTo(source, "command.warp.remove", warp);
         }
         else
             throw WARP_NOT_FOUND_EXCEPTION.create();

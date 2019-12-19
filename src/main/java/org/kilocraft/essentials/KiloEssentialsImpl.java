@@ -2,10 +2,12 @@ package org.kilocraft.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.message.MessageFactory;
+import org.apache.logging.log4j.message.SimpleMessage;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -18,15 +20,19 @@ import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.modsupport.BungeecordSupport;
+import org.kilocraft.essentials.modsupport.ModSupport;
+import org.kilocraft.essentials.modsupport.VanishModSupport;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 
 /**
@@ -34,20 +40,20 @@ import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
  *
  * @see org.kilocraft.essentials.api.KiloEssentials
  * @author CODY_AI
- * @author MCrafterzz
+ * @author MCRafterzz
  * @author GiantNuker
- * @author i509VCB
+ * @author I509VCB
  * @author DrexHD
  * @since KE 1.6
  */
 
 public class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
-	private static Logger logger = LogManager.getFormatterLogger("KiloEssentials");
-	private static List<String> initializedPerms = new ArrayList<>();
+	private static String KE_PREFIX = "[KiloEssentials] ";
+	private static final Logger logger = LogManager.getLogger("KiloEssentials", massageFactory());
 	private static KiloEssentialsImpl instance;
 	private static ModConstants constants = new ModConstants();
-	private static String PERMISSION_PREFIX = "kiloessentials.";
+	public static String PERMISSION_PREFIX = "kiloessentials.";
 	private KiloCommands commands;
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
@@ -55,13 +61,21 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(KiloEvents events, KiloCommands commands) {
+	public KiloEssentialsImpl(KiloEvents events, KiloConfig config ,KiloCommands commands) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
 
-		new KiloConfig();
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = commands;
+
+		KiloServer.getServer().setName(KiloConfig.getProvider().getMessages().getStringSafely("server.name", "Minecraft Server"));
+
+		permissionWriters.add((map, server) -> {
+			for (EssentialPermission perm : EssentialPermission.values()) {
+				map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+			}
+		});
+
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
 		FeatureTypes.init(); // Register the built in feature types
@@ -100,38 +114,24 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
 		features.tryToRegister(new VoteCommand(), "VoteCommand");
 
-		//Initializes the EssentialsPermissions, these permissions aren't used in the literal commands
-		for (EssentialPermissions value : EssentialPermissions.values()) {
-			initializedPerms.add(value.getNode());
-		}
+		ModSupport.register(new VanishModSupport());
+		ModSupport.register(new BungeecordSupport());
+		ModSupport.validateMods();
 
-		permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
-				map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
+		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
+			new StartupScript();
 	}
 
 	public static Logger getLogger() {
 		return logger;
 	}
 
-	public static void registerPermission(String node) {
-		if (!initializedPerms.contains(PERMISSION_PREFIX + node))
-			initializedPerms.add(node);
+	public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm) {
+		return hasPermissionOrOp(source, perm.getNode(), 2);
 	}
 
-	public static String getPermissionFor(String node) {
-		if (!initializedPerms.contains(node))
-			initializedPerms.add(node);
-		return "kiloessentials." + node;
-	}
-
-	public static boolean hasPermissionNode(ServerCommandSource source, String fullNode) {
-		registerPermission(fullNode);
-		return Thimble.hasPermissionOrOp(source, PERMISSION_PREFIX + fullNode, 4);
-	}
-
-	public static boolean hasPermissionNode(ServerCommandSource source, String fullNode, int opLevel) {
-		registerPermission(fullNode);
-		return Thimble.hasPermissionOrOp(source, PERMISSION_PREFIX + fullNode, opLevel);
+	public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm, int minOpLevel) {
+		return hasPermissionOrOp(source, perm.getNode(), minOpLevel);
 	}
 
 	@Override
@@ -145,11 +145,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		return instance;
     }
-
-    public static RuntimeException getRuntimeException(ExceptionMessageNode node, Object... objects) {
-		String string = ModConstants.getMessageUtil().fromExceptionNode(node);
-		return new RuntimeException((objects != null) ? String.format(string, objects) : string);
-	}
 
 	private static String featureEntry(String name) {
 		return "kiloess:" + name;
@@ -188,4 +183,24 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		return ft;
 	}
+
+	private static MessageFactory massageFactory() {
+		return new MessageFactory() {
+			@Override
+			public Message newMessage(Object message) {
+				return new SimpleMessage((String) message);
+			}
+
+			@Override
+			public Message newMessage(String message) {
+				return new SimpleMessage(message);
+			}
+
+			@Override
+			public Message newMessage(String message, Object... params) {
+				return new SimpleMessage(message);
+			}
+		};
+	}
+
 }

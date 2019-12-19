@@ -7,5 +7,7 @@ public interface SupportedMod {
 
     boolean isPresent();
 
+    boolean isFabricMod();
+
     void setPresent(boolean set);
 }

@@ -7,6 +7,6 @@ import org.kilocraft.essentials.provided.BrandedServer;
 public class OnServerReady implements EventHandler<ServerReadyEvent> {
     @Override
     public void handle(ServerReadyEvent event) {
-        BrandedServer.provide();
+        BrandedServer.set();
     }
 }

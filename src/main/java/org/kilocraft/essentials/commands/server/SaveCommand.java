@@ -8,28 +8,29 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
+import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.SUCCESS;
-import static org.kilocraft.essentials.KiloCommands.hasPermission;
 
 public class SaveCommand {
     private static final SimpleCommandExceptionType SAVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.save.failed", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> saveCommand = literal("save")
-                .requires(s -> hasPermission(s, "save", 4))
+                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_SAVE))
                 .executes(ctx -> executeAll(ctx.getSource(), false))
                 .then(literal("-flush")
                         .executes(ctx -> executeAll(ctx.getSource(), true)));;
 
         LiteralArgumentBuilder<ServerCommandSource> usersArgument = literal("users")
-                .requires(s -> hasPermission(s, "save.users", 4))
+                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_SAVE))
                 .executes(ctx -> executeUsers(ctx.getSource()));
 
         LiteralArgumentBuilder<ServerCommandSource> minecraftArgument = literal("game")
-                .requires(s -> hasPermission(s, "save.game", 4))
+                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_SAVE))
                 .executes(ctx -> executeAll(ctx.getSource(), false))
                 .then(literal("flush")
                         .executes(ctx -> executeMinecraft(ctx.getSource(), true)));

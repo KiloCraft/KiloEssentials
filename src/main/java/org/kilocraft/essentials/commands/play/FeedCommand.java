@@ -3,10 +3,10 @@ package org.kilocraft.essentials.commands.play;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.TabCompletions;
@@ -21,13 +21,10 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class FeedCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> feed = literal("feed")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.self"), 2));
+                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FEED_SELF));
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.others"), 2))
+                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FEED_OTHERS))
                 .suggests(TabCompletions::allPlayers);
-
-        feed.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.self"), 2));
-        target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("feed.other"), 2));
 
         feed.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
         target.executes(context -> execute(context.getSource(), getPlayer(context, "target")));
