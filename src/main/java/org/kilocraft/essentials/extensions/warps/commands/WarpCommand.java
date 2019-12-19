@@ -97,6 +97,11 @@ public class WarpCommand {
     }
 
     private static int executeList(ServerCommandSource source) throws CommandSyntaxException {
+        if (WarpManager.getWarps().isEmpty()) {
+            KiloChat.sendMessageTo(source, new ChatMessage("&cNo warps!", true));
+            return 1;
+        }
+
         StringBuilder warps = new StringBuilder();
         warps.append("&6Warps&8:");
 
@@ -105,8 +110,7 @@ public class WarpCommand {
         }
 
         KiloChat.sendMessageTo(source, new ChatMessage(
-                warps.toString().replaceFirst("&7,", ""), true
-        ));
+                warps.toString().replaceFirst("&7,", ""), true));
 
         return 1;
     }
@@ -121,11 +125,9 @@ public class WarpCommand {
                         Double.parseDouble(df.format(source.getPlayer().getPos().z)),
                         Float.parseFloat(df.format(source.getPlayer().yaw)),
                         Float.parseFloat(df.format(source.getPlayer().pitch)),
-                        Registry.DIMENSION.getId(source.getWorld().getDimension().getType())
-                )
-        );
+                        Registry.DIMENSION.getId(source.getWorld().getDimension().getType())));
 
-        KiloChat.sendMessageTo(source, new ChatMessage("&eYou have &aadded&e the &6" + name + "&e warp!", true));
+        KiloChat.sendLangMessageTo(source, "command.warp.set", name);
 
         return 1;
     }
@@ -133,7 +135,7 @@ public class WarpCommand {
     private static int executeRemove(ServerCommandSource source, String warp) throws CommandSyntaxException {
         if (WarpManager.getWarpsByName().contains(warp)) {
             WarpManager.removeWarp(warp);
-            KiloChat.sendMessageTo(source, new ChatMessage("&eYou have &cremoved&e the &6" + warp + "&e warp!", true));
+            KiloChat.sendLangMessageTo(source, "command.warp.remove", warp);
         }
         else
             throw WARP_NOT_FOUND_EXCEPTION.create();
