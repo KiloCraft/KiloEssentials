@@ -50,6 +50,7 @@ public enum CommandPermission {
     NICKNAME_SELF("nickname.self"),
     NICKNAME_OTHERS("nickname.others"),
     NICKNAME_FORMATTING("nickname.formatting"),
+    REALNAME("realname"),
     CLEARCHAT("clearchat"),
     ENDERCHEST_SELF("enderchest.self"),
     ENDERCHEST_OTHERS("enderchest.others"),
