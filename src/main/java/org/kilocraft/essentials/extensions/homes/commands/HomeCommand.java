@@ -158,7 +158,7 @@ public class HomeCommand {
                 throw NO_HOMES_EXCEPTION.create();
 
             int homes = serverUser.getHomesHandler().getHomes().size();
-            boolean canSet = Thimble.hasPermissionOrOp(context.getSource(), CommandPermission.HOME_SET_LIMIT.getNode() + "." + (homes + 1), 3) ||
+            boolean canSet = Thimble.hasPermissionOrOp(context.getSource(), CommandPermission.HOME_LIMIT.getNode() + "." + (homes + 1), 3) ||
                     KiloCommands.hasPermission(context.getSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3);
 
             if (!canSet)

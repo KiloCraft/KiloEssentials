@@ -10,7 +10,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
     @Override
     public void handle(OnCommandExecutionEvent event) {
-        if (!CommandHelper.isConsole(event.getExecutor())) {
+        if (CommandHelper.isPlayer(event.getExecutor())) {
             String command = event.getCommand().startsWith("/") ? event.getCommand().substring(1) : event.getCommand();
             ServerChat.sendCommandSpy(event.getExecutor(), command);
 

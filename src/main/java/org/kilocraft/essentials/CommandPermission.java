@@ -12,7 +12,7 @@ public enum CommandPermission {
     HOME_OTHERS_TP("home.others.tp"),
     HOME_OTHERS_SET("home.others.set"),
     HOME_OTHERS_REMOVE("home.others.remove"),
-    HOME_SET_LIMIT("home.set.limit"),
+    HOME_LIMIT("home.limit"),
     HOME_SET_LIMIT_BYPASS("home.set.limit.bypass"),
     RELOAD("reload"),
     GAMEMODE_SELF_SURVIVAL("gamemode.self.survival"),
