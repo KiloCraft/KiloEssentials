@@ -1,6 +1,8 @@
 package org.kilocraft.essentials;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -10,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -24,7 +27,10 @@ import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
+import org.kilocraft.essentials.util.TextFormatAnsiHelper;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class ServerImpl implements Server {
@@ -32,10 +38,11 @@ public class ServerImpl implements Server {
     private final EventRegistry eventRegistry;
     private final String serverBrand;
     private String serverDisplayBrand;
-    private String serverName = "Minecraft server";
+    private String serverName = "Minecraft Server";
     private UserManager userManager;
     private ChatManager chatManager;
     private ServerMetaManager metaManager;
+    private TextFormatAnsiHelper ansiHelper;
 
     public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, ServerUserManager serverUserManager, String serverBrand) {
         this.server = minecraftServer;
@@ -45,6 +52,7 @@ public class ServerImpl implements Server {
         this.eventRegistry = eventManager;
         this.chatManager = new ChatManager();
         this.metaManager = new ServerMetaManager(server.getServerMetadata());
+        this.ansiHelper = new TextFormatAnsiHelper();
     }
 
     @Override
@@ -170,7 +178,7 @@ public class ServerImpl implements Server {
 
     @Override
     public void execute(ServerCommandSource source, String command) {
-        server.getCommandManager().execute(source, command);
+        KiloEssentials.getInstance().getCommandHandler().execute(server.getCommandSource(), command);
     }
 
     @Override
@@ -184,8 +192,27 @@ public class ServerImpl implements Server {
     }
 
     @Override
+    public void sendGlobalPacket(Packet<?> packet) {
+        for (ServerPlayerEntity playerEntity : this.server.getPlayerManager().getPlayerList()) {
+            playerEntity.networkHandler.sendPacket(packet);
+        }
+    }
+
+    @Override
     public void shutdown() {
         this.server.stop(false);
+    }
+
+    @Override
+    public void restart() {
+        shutdown();
+        File marker = new File(FabricLoader.getInstance().getGameDirectory(), "RESTARTME");
+
+        try {
+            marker.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -198,6 +225,18 @@ public class ServerImpl implements Server {
     public void shutdown(Text reason) {
         kickAll(reason);
         shutdown();
+    }
+
+    @Override
+    public void restart(String reason) {
+        kickAll(reason);
+        restart();
+    }
+
+    @Override
+    public void restart(Text reason) {
+        kickAll(reason);
+        restart();
     }
 
     @Override
@@ -218,7 +257,9 @@ public class ServerImpl implements Server {
         String[] lines = message.split("\n");
 
         for (String line : lines) {
-            getLogger().info(TextFormat.removeAlternateColorCodes('&', line));
+            getLogger().info(
+                    supportsANSICodes() ? ansiHelper.getFormattedString(message) :
+                            TextFormat.removeAlternateColorCodes('&', line));
         }
 
     }
@@ -233,7 +274,18 @@ public class ServerImpl implements Server {
         return this.metaManager;
     }
 
+    @SuppressWarnings("untested")
+    @Override
+    public boolean supportsANSICodes() {
+        return System.console() != null && System.getenv().get("TERM") != null;
+    }
+
     public String getBrandName() {
         return serverBrand;
     }
+
+    public TextFormatAnsiHelper getAnsiHelper() {
+        return this.ansiHelper;
+    }
+
 }

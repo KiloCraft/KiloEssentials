@@ -13,6 +13,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.command.TabCompletions;
@@ -28,12 +30,11 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.SUCCESS;
-import static org.kilocraft.essentials.KiloCommands.hasPermission;
 
 public class StaffmsgCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> rootCommand = dispatcher.register(literal("staffmsg")
-            .requires(src -> hasPermission(src, "staffmsg", 2)));
+            .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_STAFFMSG)));
 
         LiteralCommandNode<ServerCommandSource> listArg = literal("list")
                 .executes(StaffmsgCommand::executeList).build();

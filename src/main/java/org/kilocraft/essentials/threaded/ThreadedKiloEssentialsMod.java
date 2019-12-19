@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.KiloEvents;
+import org.kilocraft.essentials.config.KiloConfig;
 
 public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
     private Logger logger;
@@ -22,6 +23,7 @@ public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
     public void run() {
         new KiloEssentialsImpl(
                 new KiloEvents(),
+                new KiloConfig(),
                 new KiloCommands()
         );
     }

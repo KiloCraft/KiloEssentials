@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.api.server;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -195,9 +196,19 @@ public interface Server {
     String getDisplayBrandName();
 
     /**
+     * Sends a packet to all the Online users
+     */
+    void sendGlobalPacket(Packet<?> packet);
+
+    /**
      * Stops the server
      */
     void shutdown();
+
+    /**
+     * Restarts the server
+     */
+    void restart();
 
     /**
      * Stops the server
@@ -206,6 +217,14 @@ public interface Server {
     void shutdown(String reason);
 
     void shutdown(Text reason);
+
+    /**
+     * Restarts the server
+     * @param reason is used for kicking the player
+     */
+    void restart(String reason);
+
+    void restart(Text reason);
 
     /**
      * Kicks all the players on the server
@@ -234,5 +253,12 @@ public interface Server {
      * @return a instance of ServerMetaManager
      */
     ServerMetaManager getMetaManager();
+
+    /**
+     * Checks if the console supports ANSI formatting codes
+     *
+     * @return does console support ANSI formatting codes
+     */
+    boolean supportsANSICodes();
 
 }

@@ -8,10 +8,12 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.dimension.DimensionType;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.TabCompletions;
@@ -44,28 +46,25 @@ public class HomeCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> homeLiteral = CommandManager.literal("home")
-                .requires(s -> hasPermission(s, "home.self.tp"))
+                .requires(s -> hasPermission(s, CommandPermission.HOME_SELF_TP))
                 .executes(context -> executeUsageFor("command.home.usage", context.getSource()));
 
         LiteralArgumentBuilder<ServerCommandSource> sethomeLiteral = CommandManager.literal("sethome")
-                .requires(s -> hasPermission(s, "home.self.set"))
+                .requires(s -> hasPermission(s, CommandPermission.HOME_SELF_SET))
                 .executes(context -> executeUsageFor("command.home.usage", context.getSource()));
 
         LiteralArgumentBuilder<ServerCommandSource> delhomeLiteral = CommandManager.literal("delhome")
-                .requires(s -> hasPermission(s, "home.self.remove"))
+                .requires(s -> hasPermission(s, CommandPermission.HOME_SELF_REMOVE))
                 .executes(context -> executeUsageFor("command.home.usage", context.getSource()));
 
         LiteralArgumentBuilder<ServerCommandSource> homesLiteral = CommandManager.literal("homes")
-                .requires(s -> hasPermission(s, "homes.self"));
+                .requires(s -> hasPermission(s, CommandPermission.HOMES_SELF));
 
         RequiredArgumentBuilder<ServerCommandSource, String> argRemove, argSet, argTeleport;
 
-        argRemove = argument("home", StringArgumentType.string())
-                .requires(s -> hasPermission(s, "home.self.remove", 2));
-        argSet = argument("name", StringArgumentType.string())
-                .requires(s -> hasPermission(s, "home.self.set", 2));
-        argTeleport = argument("home", StringArgumentType.string())
-                .requires(s -> hasPermission(s, "home.self.tp", 2));
+        argRemove = argument("home", StringArgumentType.string());
+        argSet = argument("name", StringArgumentType.string());
+        argTeleport = argument("home", StringArgumentType.string());
 
         argSet.executes(c -> executeSet(
                 c, Collections.singleton(c.getSource().getPlayer().getGameProfile())));
@@ -79,7 +78,7 @@ public class HomeCommand {
         homesLiteral.executes(c -> executeList(c.getSource(), Collections.singleton(c.getSource().getPlayer().getGameProfile())));
 
         homesLiteral.then(argument("player", gameProfile())
-                .requires(s -> hasPermission(s, "homes.others", 2))
+                .requires(s -> hasPermission(s, CommandPermission.HOMES_OTHERS, 2))
                 .suggests(TabCompletions::allPlayers)
                 .executes(c -> executeList(c.getSource(), getProfileArgument(c, "player"))));
 
@@ -89,19 +88,19 @@ public class HomeCommand {
 
         argTeleport.then(
                 argument("player", gameProfile())
-                    .requires(s -> hasPermission(s, "home.others.tp", 2))
+                    .requires(s -> hasPermission(s, CommandPermission.HOME_OTHERS_TP, 2))
                     .suggests(TabCompletions::allPlayers)
                     .executes(c -> executeTeleport(c, getProfileArgument(c, "player"))));
 
         argSet.then(
                 argument("player", gameProfile())
-                        .requires(s -> hasPermission(s, "home.others.set", 2))
+                        .requires(s -> hasPermission(s, CommandPermission.HOME_OTHERS_SET, 2))
                         .suggests(TabCompletions::allPlayers)
                         .executes(c -> executeSet(c, getProfileArgument(c, "player"))));
 
         argRemove.then(
                 argument("player", gameProfile())
-                        .requires(s -> hasPermission(s, "home.others.tp", 2))
+                        .requires(s -> hasPermission(s, CommandPermission.HOME_OTHERS_REMOVE, 2))
                         .suggests(TabCompletions::allPlayers)
                         .executes(c -> executeRemove(c, getProfileArgument(c, "player"))));
 
@@ -155,46 +154,43 @@ public class HomeCommand {
             GameProfile gameProfile = gameProfiles.iterator().next();
             User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
 
-            if(serverUser instanceof NeverJoinedUser) {
+            if(serverUser instanceof NeverJoinedUser)
                 throw NO_HOMES_EXCEPTION.create();
-            }
 
             int homes = serverUser.getHomesHandler().getHomes().size();
-            boolean canSet = KiloCommands.hasPermission(context.getSource(), "home.set.limit." + (homes + 1), 3) ||
-                    KiloCommands.hasPermission(context.getSource(), "home.set.limit.bypass", 3);
+            boolean canSet = Thimble.hasPermissionOrOp(context.getSource(), CommandPermission.HOME_SET_LIMIT.getNode() + "." + (homes + 1), 3) ||
+                    KiloCommands.hasPermission(context.getSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3);
 
             if (!canSet)
                 throw REACHED_THE_LIMIT.create();
-            else {
-                if (serverUser.getHomesHandler().hasHome(arg)) {
-                    serverUser.getHomesHandler().removeHome(arg);
-                }
+            if (serverUser.getHomesHandler().hasHome(arg)) {
+                serverUser.getHomesHandler().removeHome(arg);
+            }
 
-                serverUser.getHomesHandler().addHome(
-                        new Home(
-                                gameProfile.getId(),
-                                arg,
-                                Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
-                                Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getY())),
-                                Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
-                                DimensionType.getId(source.getWorld().getDimension().getType()),
-                                Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
-                                Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))
-                        )
-                );
+            serverUser.getHomesHandler().addHome(
+                    new Home(
+                            gameProfile.getId(),
+                            arg,
+                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
+                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getY())),
+                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
+                            DimensionType.getId(source.getWorld().getDimension().getType()),
+                            Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
+                            Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))
+                    )
+            );
 
-                if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
-                    KiloChat.sendMessageTo(source, new ChatMessage(
-                            KiloConfig.getProvider().getMessages().get(true, "commands.playerHomes.set").replace("%HOMENAME%", arg),
-                            true
-                    ));
-                } else {
-                    KiloChat.sendMessageTo(source, new ChatMessage(
-                            KiloConfig.getProvider().getMessages().get(true, "commands.playerHomes.admin.set")
-                                    .replace("%HOMENAME%", arg).replace("%OWNER%", gameProfile.getName()),
-                            true
-                    ));
-                }
+            if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
+                KiloChat.sendMessageTo(source, new ChatMessage(
+                        KiloConfig.getProvider().getMessages().get(true, "commands.playerHomes.set").replace("%HOMENAME%", arg),
+                        true
+                ));
+            } else {
+                KiloChat.sendMessageTo(source, new ChatMessage(
+                        KiloConfig.getProvider().getMessages().get(true, "commands.playerHomes.admin.set")
+                                .replace("%HOMENAME%", arg).replace("%OWNER%", gameProfile.getName()),
+                        true
+                ));
             }
 
         } else

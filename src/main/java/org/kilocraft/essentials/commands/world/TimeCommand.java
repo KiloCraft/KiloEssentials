@@ -4,9 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -23,7 +23,7 @@ public class TimeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher){
 
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("ke_time")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time"),2));
+                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.TIME));
 
         LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add")
                 .then(argument("time", time()).executes(context -> executeAdd(context, getInteger(context, "time"))));

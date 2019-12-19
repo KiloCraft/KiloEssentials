@@ -13,11 +13,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.commands.WarpCommand;
-import org.kilocraft.essentials.extensions.warps.commands.WarpCommands;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,14 +30,7 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
     @Override
     public boolean register() {
         WorldDataLib.addIOCallback(this);
-
-        for (Warp warp : warps) {
-            if (warp.doesRequirePermission())
-                KiloEssentials.registerPermission(warp.getPermissionNode());
-        }
-
         WarpCommand.register(KiloCommands.getDispatcher());
-        WarpCommands.register(KiloCommands.getDispatcher());
         return true;
     }
 
@@ -78,7 +69,6 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
 
     public void reload() {
         WorldDataLib.triggerCallbackLoad(this);
-        WarpCommands.register(KiloCommands.getDispatcher());
     }
 
     public void save() {

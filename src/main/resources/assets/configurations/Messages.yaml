@@ -39,60 +39,49 @@
 #
 #Config Schema
 #Used by the mod to define the config schema/version
-schema: 1.0
+schema: 1.4
 #Alternate color character
 #Instead of using the special character you can use your own color char
-#for defining the color/formatting codes!
-# [<Char> Default: '*']
-altcolorchar: '&'
+#for defining the color/formatting codes use the '&' character
+
 #General
 general:
   prefix: '&bKiloEssentials &8>&7>'
 
 events:
-  userJoin: '&8[&a+&8]&7 %USER_DISPLAYNAME%'
-  userLeave: '&8[&c-&8]&7 %USER_DISPLAYNAME%'
+  # [<boolean>]
+  # If set to true it will disable the event messages if the bungeecord mode is on
+  disable-on-bungee-mode: false
+  # [<greedyString> c]
+  userJoin: '&7%USER_DISPLAYNAME% joined the game'
+  userLeave: '%USER_DISPLAYNAME% left the game.'
 
 #Messages used by commands
 commands:
+  # [<greedyString> c]
   context:
-    execution_exception: '&8[&c ! &8] &eUnknown command or insufficient permissions'
-
-  broadcast_format: '&f[&c&lBroadCast&f]&r %MESSAGE%'
-
+    execution_exception: '&f[ &c!&f ] &cUnknown command or insufficient permissions!'
+  # [<greedyString> c]
+  broadcast_format: '&f[&cBroadCast&f]&r %MESSAGE%'
+  # [<greedyString> c]
   discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
-
+  # [<greedyString> c]
   vote: 'Edit this in KiloEssentials/config/Messages.yaml'
 
   serverWideWarps:
-    teleportTo: '%GENERAL_PREFIX% &eTeleporting to warp &6%WARPNAME%&e...'
+    teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%WARPNAME%&e...'
 
   playerHomes:
-    teleportTo: '&eTeleporting to home &6%HOMENAME%&e...'
-    set: '&eYou have &aset&e the home &6%HOMENAME%&e!'
-    remove: '&eYou have &cremoved&e the home &6%HOMENAME%!'
+    teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%HOMENAME%&e...'
+    set: '&8[ &6i&8 ] &aYou have set the home &6%HOMENAME%&e!'
+    remove: '&8[ &6i&8 ] &cYou have removed the home &6%HOMENAME%&e!'
     admin:
-      teleportTo: '&eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
-      set: '&eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
-      remove: '&eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
+      teleportTo: '&8[ &6i&8 ] &eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
+      set: '&8[ &6i&8 ] &eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
+      remove: '&8[ &6i&8 ] &eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
 
   rtp:
     empty: "%GENERAL_PREFIX% &cYou don't have any Random Teleports left!"
     dimension_exception: "%GENERAL_PREFIX% &cYou can only randomly teleport in the Overworld!"
     #Values: {BIOME}, {RTP_LEFT}, {cord.X}, {cord.Y}, {cord.Z}
     teleported: "You've been teleported to this {BIOME} biome! you are falling from the sky but do not panic!"
-
-  tpa:
-    sender:
-      requested: ''
-      cooldownMessage: ''
-      teleporting: ''
-    recever:
-      requested: ''
-  tpahere:
-    sender:
-      requested: ''
-      recever:
-        requested: ''
-        cooldownMessage: ''
-        teleporting: ''

@@ -7,6 +7,8 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.ChatMessage;
 
@@ -23,7 +25,7 @@ import static org.kilocraft.essentials.chat.KiloChat.*;
 public class ClearchatCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> clearchatCommand = dispatcher.register(literal("cc")
-                .requires(src -> hasPermission(src, "clearchat", 3))
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.CLEARCHAT))
                 .executes(ctx -> executeAll(ctx, false))
                 .then(literal("-silent")
                         .executes(ctx -> executeAll(ctx, true))
