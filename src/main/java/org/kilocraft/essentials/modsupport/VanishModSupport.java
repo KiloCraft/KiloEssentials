@@ -5,7 +5,7 @@ import org.kilocraft.essentials.api.SupportedMod;
 import java.util.UUID;
 
 public class VanishModSupport implements SupportedMod {
-    private boolean present = false;
+    private static boolean present = false;
 
     @Override
     public String getPackage() {
@@ -33,7 +33,7 @@ public class VanishModSupport implements SupportedMod {
     }
 
     public static boolean isVanished(UUID uuid) {
-
         return false;
     }
+
 }

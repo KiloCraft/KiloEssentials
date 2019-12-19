@@ -23,7 +23,7 @@ public class StartupScript {
             return;
 
         KiloEssentials.getLogger().info("Generating the start script...");
-        this.MAX_MEMORY = config.get(false, "startup-script.maximum-memory-size");
+        this.MAX_MEMORY = config.getStringSafely("startup-script.maximum-memory-size", "2G");
         String SCREEN_NAME = config.getStringSafely("startup-script.linux-screen-name", "mc-server");
         String LOADER_NAME = config.getStringSafely("startup-script.fabric-loader-name", "fabric-loader.jar");
         boolean generateForLinuxScreen = config.getBooleanSafely("startup-script.linux-screen-mode", false);

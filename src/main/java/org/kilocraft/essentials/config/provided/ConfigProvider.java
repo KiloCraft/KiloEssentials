@@ -11,7 +11,7 @@ public class ConfigProvider {
     public ConfigProvider() {
         main = new ConfigValueGetter(KiloConfig.getFileConfigOfMain());
         messages = new ConfigValueGetter(KiloConfig.getFileConfigOfMessages());
-        commands = new ConfigValueGetter(KiloConfig.getFileConfigOfCommands());
+        //commands = new ConfigValueGetter(KiloConfig.getFileConfigOfCommands());
     }
 
     public ConfigValueGetter getMain() {

@@ -23,6 +23,7 @@ import org.kilocraft.essentials.commands.CommandHelper;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
@@ -33,12 +34,18 @@ import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.*;
 
 public class GamemodeCommand {
+    private static Predicate<ServerCommandSource> PERMISSION_CHECK = (src) ->
+            KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_ADVENTURE) ||
+                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SURVIVAL) ||
+                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SPECTATOR) ||
+                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_CREATIVE);
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> gamemodeCommand = literal("ke_gamemode")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.GAMEMODE));
+                .requires(src -> PERMISSION_CHECK.test(src));
 
         LiteralArgumentBuilder<ServerCommandSource> gmCommand = literal("gm")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.GAMEMODE));
+                .requires(src -> PERMISSION_CHECK.test(src));
 
         build(gamemodeCommand);
         build(gmCommand);
@@ -67,13 +74,15 @@ public class GamemodeCommand {
         String arg = cValue == null ? getString(ctx, "gameType") : cValue.getName();
         GameMode selectedMode = getMode(arg);
 
+        System.out.println(getPermission("self", selectedMode));
+
         if (selectedMode == null)
             throw new SimpleCommandExceptionType(new LiteralText("Please select a valid Game type!")).create();
 
-        if (players.size() == 1 && !hasPermission(src, getPermission("self", selectedMode), 2))
+        if (players.size() == 1 && !hasPermission(src, getPermission("self", selectedMode)))
             throw new SimpleCommandExceptionType(getPermissionError(getPermission("self", selectedMode).getNode())).create();
 
-        if (players.size() > 1 && !hasPermission(src, getPermission("others", selectedMode), 2))
+        if (players.size() > 1 && !hasPermission(src, getPermission("others", selectedMode)))
             throw new SimpleCommandExceptionType(getPermissionError(getPermission("others", selectedMode).getNode())).create();
 
         for (ServerPlayerEntity player : players) {
@@ -103,7 +112,7 @@ public class GamemodeCommand {
     }
 
     private static CommandPermission getPermission(String type, GameMode mode) {
-        return CommandPermission.byName("gamemode." + type + mode.getName());
+        return CommandPermission.byName("gamemode." + type + "." + mode.getName().toLowerCase());
     }
 
     private static CompletableFuture<Suggestions> suggestGameModes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

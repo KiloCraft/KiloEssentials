@@ -12,10 +12,13 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
+import org.kilocraft.essentials.modsupport.VanishModSupport;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +32,9 @@ public class TabCompletions {
     private static PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 
     public static CompletableFuture<Suggestions> allPlayers(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(playerManager.getPlayerNames(), builder);
+        return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((it) ->
+                KiloEssentials.hasPermissionNode(it.getCommandSource(), EssentialPermission.STAFF) || !VanishModSupport.isVanished(it.getUuid()))
+                .map(PlayerEntity::getEntityName), builder);
     }
 
     public static CompletableFuture<Suggestions> allPlayersExceptSource(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

@@ -2,24 +2,19 @@ package org.kilocraft.essentials.extensions.warps;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
-import org.kilocraft.essentials.config.KiloConfig;
 
 public class Warp {
-    private String permissionBaseName = KiloConfig.getProvider().getMain().getValue("warps.permission_prefix");
     private String name;
     private double x, y, z;
     private Identifier dimensionId;
-    private boolean requirePermission;
-
     private float dX, dY;
 
-    public Warp(String name, double x, double y, double z, float yaw, float pitch, Identifier dimensionId, boolean requirePermission) {
+    public Warp(String name, double x, double y, double z, float yaw, float pitch, Identifier dimensionId) {
         this.name = name;
         this.x = x;
         this.y = y;
         this.z = z;
         this.dimensionId = dimensionId;
-        this.requirePermission = requirePermission;
         this.dX = pitch;
         this.dY = yaw;
     }
@@ -29,17 +24,8 @@ public class Warp {
         fromTag(tag);
     }
 
-    public String getPermissionBaseName() {
-        return permissionBaseName;
-    }
-
     public String getName() {
         return this.name;
-    }
-
-
-    public boolean doesRequirePermission() {
-        return this.requirePermission;
     }
 
     public float getPitch() {
@@ -67,10 +53,6 @@ public class Warp {
     }
 
 
-    public String getPermissionNode() {
-        return this.requirePermission ? permissionBaseName + "." + this.name : "";
-    }
-
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
 
@@ -91,7 +73,6 @@ public class Warp {
         }
 
         compoundTag.putString("dimension", this.dimensionId.toString());
-        compoundTag.putBoolean("requires_permission", this.requirePermission);
 
         return compoundTag;
     }
@@ -110,6 +91,5 @@ public class Warp {
             this.dY = dir.getFloat("dY");
         }
 
-        this.requirePermission = tag.getBoolean("requires_permission");
     }
 }

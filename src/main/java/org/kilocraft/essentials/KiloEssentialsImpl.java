@@ -188,17 +188,17 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		return new MessageFactory() {
 			@Override
 			public Message newMessage(Object message) {
-				return new SimpleMessage(KE_PREFIX + message);
+				return new SimpleMessage((String) message);
 			}
 
 			@Override
 			public Message newMessage(String message) {
-				return new SimpleMessage(KE_PREFIX + message);
+				return new SimpleMessage((String) message);
 			}
 
 			@Override
 			public Message newMessage(String message, Object... params) {
-				return new SimpleMessage(KE_PREFIX + message);
+				return new SimpleMessage((String) message);
 			}
 		};
 	}

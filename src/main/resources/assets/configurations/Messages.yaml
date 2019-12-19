@@ -60,7 +60,7 @@ events:
 commands:
   # [<greedyString> c]
   context:
-    execution_exception: '&8[ &c!&8 ] &cUnknown command or insufficient permissions!'
+    execution_exception: '&f[ &c!&f ] &cUnknown command or insufficient permissions!'
   # [<greedyString> c]
   broadcast_format: '&f[&cBroadCast&f]&r %MESSAGE%'
   # [<greedyString> c]
@@ -69,16 +69,16 @@ commands:
   vote: 'Edit this in KiloEssentials/config/Messages.yaml'
 
   serverWideWarps:
-    teleportTo: '%GENERAL_PREFIX% &eTeleporting to warp &6%WARPNAME%&e...'
+    teleportTo: '&8[ &6i&8 ]  &eTeleporting to &6%WARPNAME%&e...'
 
   playerHomes:
-    teleportTo: '&eTeleporting to home &6%HOMENAME%&e...'
-    set: '&eYou have &aset&e the home &6%HOMENAME%&e!'
-    remove: '&eYou have &cremoved&e the home &6%HOMENAME%!'
+    teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%HOMENAME%&e...'
+    set: '&8[ &6i&8 ] &aYou have set the home &6%HOMENAME%&e!'
+    remove: '&8[ &6i&8 ] &cYou have removed the home &6%HOMENAME%&e!'
     admin:
-      teleportTo: '&eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
-      set: '&eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
-      remove: '&eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
+      teleportTo: '&8[ &6i&8 ] &eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
+      set: '&8[ &6i&8 ] &eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
+      remove: '&8[ &6i&8 ] &eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
 
   rtp:
     empty: "%GENERAL_PREFIX% &cYou don't have any Random Teleports left!"

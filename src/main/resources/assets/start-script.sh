@@ -1,5 +1,5 @@
 #Auto generated script, by KiloEssentials
-#Initializes the startup scriptnh
+#Initializes the startup script
 run() {
   echo "Maximum memory is set to %MAXIMUM_RAM%"
   %STARTUP_CODE%

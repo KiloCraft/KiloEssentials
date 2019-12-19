@@ -90,7 +90,7 @@ server:
   # Note: It will add an extra dummy argument to the commands
   #       and it will change the color of the first command node in the client from red to aqua
   # Default: "default", set it to 'default' to disable this feature.
-  command-toast: 'Use &e/help&7 for more!'
+  command-toast: 'Use &3/usage &8<&3command&8>&7 for more!'
   # Customize the server world!
   world:
     #[<boolean>]
@@ -109,8 +109,6 @@ features:
   PlayerHomes: true
   ServerWideWarps: true
 
-#If a warp requires a permission, its gonna be like this: 'permission_prefix.warp_name'
-warps.permission_prefix: 'warp'
 #The Maximum limit of homes a player can set
 #Permission node: 'kiloessentials.command.home.set.limit.<Limit integer>'
 #You can bypass this by 'kiloessentials.command.home.set.limit.bypass'
@@ -137,15 +135,15 @@ chat:
       leave: '&o&7%s &o&7left the %s chat.'
     meta:
       # [<greedyString> c]
-      staff_prefix: '&f[&cStaff&f]&r'
-      builder_prefix: '&f[&aBuilder&f]&r'
+      staff_prefix: '&4[&cStaff&4]&r'
+      builder_prefix: '&2[&aBuilder&2]&r'
       global_prefix: '&f[&6Global&f]&r'
     # [<greedyString> c/f/GV]
     #You can set how the messages would look like on  the server
     formats:
       global: '&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
-      staff: '&f[&cStaff&f]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
-      builder: '&f[&aBuilder&f]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+      staff: '&4[&cStaff&4]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+      builder: '&2[&aBuilder&2]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
 
   # [<greedyString> c]
   #Style of the private messages

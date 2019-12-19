@@ -16,9 +16,11 @@ import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -143,7 +145,7 @@ public class KiloCommands {
         CommandspyCommand.register(this.dispatcher);
     }
 
-    private static void registerToast() {
+    public static void registerToast() {
         String configValue = KiloConfig.getProvider().getMain().getStringSafely("server.command-toast", "default");
         if  (!configValue.equalsIgnoreCase("default")) {
             ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument(
@@ -322,6 +324,12 @@ public class KiloCommands {
         String message = ModConstants.getMessageUtil().fromArgumentExceptionNode(node);
         return commandException(
                 new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
+    }
+
+    public static void updateCommandTreeForEveryone() {
+        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
+                KiloServer.getServer().getPlayerManager().sendCommandTree(playerEntity);
+        }
     }
 
     public static int SUCCESS() {

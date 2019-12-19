@@ -1,6 +1,7 @@
 package org.kilocraft.essentials;
 
 public enum CommandPermission {
+    WARP_SPAWN("warp.spawn"),
     HOME_SELF_TP("home.self.tp"),
     HOME_SELF_SET("home.self.set"),
     HOME_SELF_REMOVE("home.self.remove"),
@@ -12,7 +13,6 @@ public enum CommandPermission {
     HOME_SET_LIMIT("home.set.limit"),
     HOME_SET_LIMIT_BYPASS("home.set.limit.bypass"),
     RELOAD("reload"),
-    GAMEMODE("gamemode"),
     GAMEMODE_SELF_SURVIVAL("gamemode.self.survival"),
     GAMEMODE_SELF_ADVENTURE("gamemode.self.adventure"),
     GAMEMODE_SELF_CREATIVE("gamemode.self.creative"),
@@ -64,7 +64,7 @@ public enum CommandPermission {
 
     public static CommandPermission byName(String name) {
         for (CommandPermission value : CommandPermission.values()) {
-            if (value.node.equals(name.toUpperCase()))
+            if (name.toLowerCase().equals(value.node.toLowerCase()))
                 return value;
         }
 
