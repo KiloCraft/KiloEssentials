@@ -8,7 +8,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.util.CommandHelper;
+import org.kilocraft.essentials.commands.CommandHelper;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -143,7 +143,7 @@ public enum TextFormat {
         return code;
     }
 
-    public String[] getList() {
+    public static String[] getList() {
         return list();
     }
 
@@ -229,7 +229,6 @@ public enum TextFormat {
      * @return Text containing the ChatColor.COLOR_CODE color code character.
      */
 
-
     @NotNull
     public static String translateAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
@@ -244,6 +243,10 @@ public enum TextFormat {
         return new String(b);
     }
 
+    @NotNull
+    public static String translate(String string) {
+        return translateAlternateColorCodes('&', string);
+    }
 
     public static LiteralText translateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");

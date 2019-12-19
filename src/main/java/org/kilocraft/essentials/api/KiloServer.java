@@ -1,12 +1,10 @@
 package org.kilocraft.essentials.api;
 
-import org.kilocraft.essentials.api.commands.KiloAPICommands;
+import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.server.Server;
-import org.kilocraft.essentials.api.util.SomeGlobals;
 
 public class KiloServer {
     private static Server server;
-    private String dataDir = System.getProperty("user.dir") + "/KiloEssentials/data/";
 
     /**
      * Get the global server instance
@@ -31,7 +29,7 @@ public class KiloServer {
             throw new RuntimeException("Server is already set!");
         else KiloServer.server = server;
 
-        KiloAPICommands.register(SomeGlobals.commandDispatcher);
+        KiloAPICommands.register(KiloEssentialsImpl.commandDispatcher);
     }
 
 

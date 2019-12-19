@@ -39,7 +39,7 @@
 #
 #Config Schema
 #Used by the mod to define the config schema/version
-schema: 1.1
+schema: 1.3
 #Alternate color character
 #Instead of using the special character you can use your own color char
 #for defining the color/formatting codes!
@@ -47,7 +47,7 @@ schema: 1.1
 altcolorchar: '&'
 
 server:
-# [-] META
+  # [-] META
   # Server name
   # [<String>]
   name: Minecraft Server
@@ -62,39 +62,85 @@ server:
   # Custom display brand name!
   # [<greedyString> c/f]
   # - You'll see this on the debug screen (F3 MENU) in the client
-  # Default: "DEFAULT", set it to 'DEFAULT' to display the default brand name
-  displayBrandName: "DEFAULT"
+  # Default: "default", set it to 'DEFAULT' to display the default brand name
+  displayBrandName: "default"
   # Customize the server world!
   world:
     #[<boolean>]
     #If set to false, no one can go to that dimension
     allow_nether: true
     allow_the_end: true
+    #[<boolean>]
+    #If set to true, all the players in the disabled dimensions will get kicked to their spawn point
+    also_kick_from_dim: true
 
 features:
   #[<boolean>]
   #A list of the features you want to enable!
+  DiscordCommand: true
+  VoteCommand: true
   PlayerHomes: true
   ServerWideWarps: true
 
 #If a warp requires a permission, its gonna be like this: 'permission_prefix.warp_name'
 warps.permission_prefix: 'warp'
+#The Maximum limit of homes a player can set
+#Permission node: 'kiloessentials.command.home.set.limit.<Limit integer>'
+#You can bypass this by 'kiloessentials.command.home.set.limit.bypass'
+homes.limit: 10
+
+#Set if the command suggestions need the player to have the permission to use them
+#[<boolean>] Default: false
+commands.suggestions.require_permission: true
+
+# Maximum length of a nickname. This cannot be negative.
+# Includes color formatting
+nickname-max-length: 25
 
 chat:
-  # [<greedyString> c/f/GV]
-  #You can set how the messages would look like on  the server
-  messageFormat: '&r%PLAYER_DISPLAYNAME% &8>&7>&r %MESSAGE%'
-  privateMessageFormat: '&r&7%SOURCE% &7-> &7%TARGET% &8>&7> %MESSAGE%'
+  # [Boolean]
+  #If set to true, it will disable the KiloEssentials chat
+  use-vanilla-chat-instead: false
+  channels:
+    messages:
+      # [<greedyString> c]
+      # The messages you see when someone joins a chat channel.
+      # It wont show up for the Global chat
+      join: '&o&7%s &o&7joined the %s chat.'
+      leave: '&o&7%s &o&7left the %s chat.'
+    meta:
+      # [<greedyString> c]
+      staff_prefix: '&f[&cStaff&f]&r'
+      builder_prefix: '&f[&aBuilder&f]&r'
+      global_prefix: '&f[&6Global&f]&r'
+    # [<greedyString> c/f/GV]
+    #You can set how the messages would look like on  the server
+    formats:
+      global: '&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+      staff: '&f[&cStaff&f]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+      builder: '&f[&aBuilder&f]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+
+  # [<greedyString> c]
+  #Style of the private messages
+  privateMessages:
+    format: '&r&7%SOURCE% &3-> &7%TARGET% &8>>&r %MESSAGE%'
+    me_format: '&cme'
+
   ping:
     #Pong! by enabling this players can ping each other inside the game!
     #ps: they need to have the permission node "kiloessentials.chat.ping"
+    # [Boolean]
     enable: true
+    #Ping everyone!
+    #This is how you have to type the format in the chat to ping everyone!
+    format_everyone: '@everyone'
+    pinged_everyone: '&b&o@everyone'
     # [<String>]
     #This is how you have to type someone's name in order to ping them
     format: '%PLAYER_NAME%'
     # [<COLOR/FORMATTING CODE> e.g: 'altColorChar' + Color code, &a]
     #The color of the pinged player's name!
-    pinged: '&a%PLAYER_NAME%'
+    pinged: '&a&o%PLAYER_DISPLAYNAME%'
     #The sound you hear when someone pings you!
     sound:
       #[<boolean>]
@@ -109,3 +155,7 @@ chat:
       # [Float]
       # Default: 1.0
       pitch: '1.0'
+
+commandSpy:
+  format: '&r&7%SOURCE% &3->&r /%MESSAGE%'
+  saveToLogs: true
