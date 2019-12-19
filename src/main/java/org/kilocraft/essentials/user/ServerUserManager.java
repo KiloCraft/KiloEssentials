@@ -11,7 +11,7 @@ import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.EssentialPermissions;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -205,7 +205,7 @@ public class ServerUserManager implements UserManager {
 
         ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
 
-        if (user.messageCooldown > 1000 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_BYPASS.getNode())) {
+        if (user.messageCooldown > 1000 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_BYPASS)) {
             player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
         }
 

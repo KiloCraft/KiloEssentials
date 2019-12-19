@@ -4,18 +4,23 @@ import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -28,16 +33,10 @@ import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.ColorsCommand;
-import org.kilocraft.essentials.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.commands.misc.HelpCommand;
 import org.kilocraft.essentials.commands.misc.PingCommand;
 import org.kilocraft.essentials.commands.misc.PreviewCommand;
-import org.kilocraft.essentials.commands.messaging.BuildermsgCommand;
-import org.kilocraft.essentials.commands.messaging.MessageCommand;
-import org.kilocraft.essentials.commands.messaging.StaffmsgCommand;
-import org.kilocraft.essentials.commands.misc.*;
-import org.kilocraft.essentials.commands.moderation.BanCommand;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
-import org.kilocraft.essentials.commands.moderation.ProfileBanCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -58,39 +57,46 @@ import java.util.Map;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
-import static org.kilocraft.essentials.api.KiloEssentials.*;
+import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
+import static org.kilocraft.essentials.api.KiloEssentials.getServer;
 
 public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
     private CommandDispatcher<ServerCommandSource> dispatcher;
     private static MessageUtil messageUtil = ModConstants.getMessageUtil();
-    private static String PERMISSION_PREFIX = "kiloessentials.command.";
+    public static String PERMISSION_PREFIX = "kiloessentials.command.";
 
     public KiloCommands() {
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
         register(true);
     }
 
-    public static boolean hasPermission(ServerCommandSource source, String shortNode, int op) {
-        return hasPermissionOrOp(source, getCommandPermission(shortNode), op);
+    public static boolean hasPermission(ServerCommandSource src, CommandPermission perm) {
+        return hasPermissionOrOp(src, perm.getNode(), 2);
     }
 
-    public static boolean hasPermission(ServerCommandSource source, String shortNode) {
-        return hasPermission(source, shortNode, 2);
+    public static boolean hasPermission(ServerCommandSource src, CommandPermission perm, int minOpLevel) {
+        return hasPermissionOrOp(src, perm.getNode(), minOpLevel);
     }
 
-    public static String getCommandPermission(String command) {
-        if (!initializedPerms.contains(command))
-            initializedPerms.add(command);
-
-        return PERMISSION_PREFIX + command;
+    @Deprecated
+    public static boolean hasPermission(ServerCommandSource src, String cmdPerm, int minOpLevel) {
+        return hasPermissionOrOp(src, cmdPerm, minOpLevel);
     }
 
     private void register(boolean devEnv) {
         if (devEnv) {
-            KiloEssentialsImpl.getLogger().info("Alert [!]: Server is running in debug mode!");
+            KiloEssentialsImpl.getLogger().info("[!] Alert: Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
         }
+
+        permissionWriters.add((map, server) -> {
+            for (CommandPermission perm : CommandPermission.values()) {
+                map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+            }
+        });
+
+        registerToast();
 
         VersionCommand.register(this.dispatcher);
         HelpCommand.register(this.dispatcher);
@@ -98,12 +104,8 @@ public class KiloCommands {
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
-        ProfileBanCommand.register(this.dispatcher);
-        BanCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
-        RealNameCommand.register(this.dispatcher);
         RtpCommand.register(this.dispatcher);
-        RealNameCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
         SudoCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
@@ -118,9 +120,8 @@ public class KiloCommands {
         FeedCommand.register(this.dispatcher);
         TimeCommand.register(this.dispatcher);
         FlyCommand.register(this.dispatcher);
-        SpeedCommand.register(this.dispatcher);
-        InfoCommand.register(this.dispatcher);
         StopCommand.register(this.dispatcher);
+        RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         InvulnerablemodeCommand.register(this.dispatcher);
         PreviewCommand.register(this.dispatcher);
@@ -134,9 +135,15 @@ public class KiloCommands {
         BuildermsgCommand.register(this.dispatcher);
         SocialspyCommand.register(this.dispatcher);
         CommandspyCommand.register(this.dispatcher);
+    }
 
-        permissionWriters.add((map, server) -> initializedPerms.forEach(perm ->
-                map.registerPermission(PERMISSION_PREFIX + perm, PermChangeBehavior.UPDATE_COMMAND_TREE)));
+    public static void registerToast() {
+        String configValue = KiloConfig.getProvider().getMain().getStringSafely("server.command-toast", "default");
+        if  (!configValue.equalsIgnoreCase("default")) {
+            ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument(
+                    TextFormat.translate(configValue + "&r&7"), StringArgumentType.greedyString()).build();
+            getDispatcher().getRoot().addChild(toast);
+        }
     }
 
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
@@ -309,6 +316,12 @@ public class KiloCommands {
         String message = ModConstants.getMessageUtil().fromArgumentExceptionNode(node);
         return commandException(
                 new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
+    }
+
+    public static void updateCommandTreeForEveryone() {
+        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
+                KiloServer.getServer().getPlayerManager().sendCommandTree(playerEntity);
+        }
     }
 
     public static int SUCCESS() {

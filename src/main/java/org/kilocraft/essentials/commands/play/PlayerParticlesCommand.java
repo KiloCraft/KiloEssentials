@@ -6,7 +6,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.user.User;
@@ -17,6 +19,7 @@ public class PlayerParticlesCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> particlesNode = literal("playerparticles")
+				.requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.PLAYERPARTICLE))
 				.executes(KiloCommands::executeSmartUsage).build();
 
 		LiteralCommandNode<ServerCommandSource> setNode = literal("set").build();

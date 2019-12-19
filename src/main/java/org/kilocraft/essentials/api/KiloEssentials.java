@@ -26,6 +26,7 @@ package org.kilocraft.essentials.api;
 
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
@@ -45,24 +46,21 @@ public interface KiloEssentials {
         return KiloEssentialsImpl.getLogger();
     }
 
+    @Deprecated
     static void registerPermission(String node) {
-        KiloEssentialsImpl.registerPermission(node);
-    }
-
-    static String getPermissionFor(String node) {
-        return KiloEssentialsImpl.getPermissionFor(node);
+        //KiloEssentialsImpl.registerPermission(node);
     }
 
     static Server getServer() {
         return KiloServer.getServer();
     }
 
-    static boolean hasPermissionNode(ServerCommandSource source, String fullNode) {
-        return KiloEssentialsImpl.hasPermissionNode(source, fullNode);
+    static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm) {
+        return KiloEssentialsImpl.hasPermissionNode(source, perm);
     }
 
-    static boolean hasPermissionNode(ServerCommandSource source, String fullNode, int opLevel) {
-        return KiloEssentialsImpl.hasPermissionNode(source, fullNode, opLevel);
+    static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm, int minOpLevel) {
+        return KiloEssentialsImpl.hasPermissionNode(source, perm, minOpLevel);
     }
 
     MessageUtil getMessageUtil();

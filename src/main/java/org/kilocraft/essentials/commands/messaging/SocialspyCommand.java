@@ -3,12 +3,12 @@ package org.kilocraft.essentials.commands.messaging;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.EssentialPermissions;
+import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.chat.ServerChat;
 
 public class SocialspyCommand {
@@ -20,7 +20,7 @@ public class SocialspyCommand {
             } catch (CommandSyntaxException e) {
                 return false;
             }
-            return Thimble.hasPermissionOrOp(source, EssentialPermissions.CHAT_SOCIALSPY.getNode(), 2);
+            return KiloEssentials.hasPermissionNode(source, EssentialPermission.SPY_CHAT);
         });
         command.executes(context -> {
             if (ServerChat.isSocialSpy(context.getSource().getPlayer())) {

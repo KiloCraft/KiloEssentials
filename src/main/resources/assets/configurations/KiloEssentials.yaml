@@ -39,31 +39,58 @@
 #
 #Config Schema
 #Used by the mod to define the config schema/version
-schema: 1.3
+schema: 1.4
 #Alternate color character
 #Instead of using the special character you can use your own color char
-#for defining the color/formatting codes!
-# [<Char> Default: '*']
-altcolorchar: '&'
+#for defining the color/formatting codes use the '&' character
+
+# The Script you use to start the server
+startupScript:
+  # [<boolean>]
+  # Set it to true to auto generate the script
+  # It will get saved in the same directory as the server
+  # If you are using a custom script then set this to false
+  auto-generate: true
+  # [<String>]
+  # The name of the fabric loader jar to use
+  # Default: 'fabric-loader.jar'
+  fabric-loader-name: 'fabric-loader.jar'
+  # [<boolean>]
+  # Set this to true if you're using screen on a linux distro
+  linux-screen-mode: false
+  # Sets the name of the screen If the above option is enabled
+  linux-screen-name: 'KE-Server'
+  # [<String>]
+  # The name of the script to use
+  # Note: DO Not put the extension in the name
+  #       It will be a Shell Script (.sh) file
+  script-name: 'start-server'
+  # [<Integer>]
+  # Sets the maximum memory size
+  # E.g: '4G' for 4 Gigabytes of memory, '712M' for 712 for 712 Megabytes of memory
+  maximum-memory-size: '3G'
 
 server:
   # [-] META
   # Server name
   # [<String>]
   name: Minecraft Server
-  # Message of the day!
-  # [<greedyString> c/f/GV]
-  # - The message you can see in the server list
-  description: "%SERVER_NAME% &7-&b JOIN NOW!"
-  # Player count custom text
-  # The message you'll see on when you hover your cursor
-  # over the player count
-  playercountmessage: "%SERVER_NAME% is waiting for you to join!\n*b Use /help for more info!"
   # Custom display brand name!
   # [<greedyString> c/f]
   # - You'll see this on the debug screen (F3 MENU) in the client
-  # Default: "default", set it to 'DEFAULT' to display the default brand name
+  # Default: "default", set it to 'default' to display the default brand name
   displayBrandName: "default"
+  # Enables the bungeecord mode
+  # Adds support for Bungeecord/Waterfall servers
+  # Use the trampoline mod to connect your server to a proxy server
+  # https://www.curseforge.com/minecraft/mc-mods/trampoline
+  bungeecord-mode: false
+  # Sets a messages for the command ui
+  # You'll see this when above the chat text box
+  # Note: It will add an extra dummy argument to the commands
+  #       and it will change the color of the first command node in the client from red to aqua
+  # Default: "default", set it to 'default' to disable this feature.
+  command-toast: 'Use &3/usage &8<&3command&8>&7 for more!'
   # Customize the server world!
   world:
     #[<boolean>]
@@ -82,8 +109,6 @@ features:
   PlayerHomes: true
   ServerWideWarps: true
 
-#If a warp requires a permission, its gonna be like this: 'permission_prefix.warp_name'
-warps.permission_prefix: 'warp'
 #The Maximum limit of homes a player can set
 #Permission node: 'kiloessentials.command.home.set.limit.<Limit integer>'
 #You can bypass this by 'kiloessentials.command.home.set.limit.bypass'
@@ -94,7 +119,7 @@ homes.limit: 10
 commands.suggestions.require_permission: true
 
 # Maximum length of a nickname. This cannot be negative.
-# Includes color formatting
+# Doesn't include color formatting
 nickname-max-length: 25
 
 chat:
@@ -110,20 +135,20 @@ chat:
       leave: '&o&7%s &o&7left the %s chat.'
     meta:
       # [<greedyString> c]
-      staff_prefix: '&f[&cStaff&f]&r'
-      builder_prefix: '&f[&aBuilder&f]&r'
+      staff_prefix: '&4[&cStaff&4]&r'
+      builder_prefix: '&2[&aBuilder&2]&r'
       global_prefix: '&f[&6Global&f]&r'
     # [<greedyString> c/f/GV]
     #You can set how the messages would look like on  the server
     formats:
       global: '&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
-      staff: '&f[&cStaff&f]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
-      builder: '&f[&aBuilder&f]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+      staff: '&4[&cStaff&4]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+      builder: '&2[&aBuilder&2]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
 
   # [<greedyString> c]
   #Style of the private messages
   privateMessages:
-    format: '&r&7%SOURCE% &3-> &7%TARGET% &8>>&r %MESSAGE%'
+    format: '&r&7%SOURCE% &3-> &7%TARGET% &8>>&7 %MESSAGE%'
     me_format: '&cme'
 
   ping:

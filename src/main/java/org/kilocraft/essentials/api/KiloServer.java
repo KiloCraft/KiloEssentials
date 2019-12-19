@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api;
 
+import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.server.Server;
 
@@ -32,5 +33,8 @@ public class KiloServer {
         KiloAPICommands.register(KiloEssentialsImpl.commandDispatcher);
     }
 
+    public static Logger getLogger() {
+        return server.getLogger();
+    }
 
 }

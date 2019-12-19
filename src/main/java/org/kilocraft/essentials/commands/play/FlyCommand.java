@@ -2,10 +2,10 @@ package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.TabCompletions;
@@ -21,13 +21,12 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class FlyCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        KiloCommands.getCommandPermission("fly");
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("fly")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("fly"), 2))
+                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FLY_SELF))
                 .executes(c -> toggle(c.getSource(), c.getSource().getPlayer()))
                 .then(
                         CommandManager.argument("player", player())
-                                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("fly.others"), 2))
+                                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FLY_OTHERS))
                                 .suggests(TabCompletions::allPlayers)
                                 .executes(c -> toggle(c.getSource(), getPlayer(c, "player")))
                                 .then(

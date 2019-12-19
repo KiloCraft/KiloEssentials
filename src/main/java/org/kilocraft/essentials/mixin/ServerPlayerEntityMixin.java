@@ -14,8 +14,8 @@ public abstract class ServerPlayerEntityMixin {
 
     @Inject(method = "changeDimension", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayerEntity;changeDimension(Lnet/minecraft/world/dimension/DimensionType;)Lnet/minecraft/entity/Entity;"))
     private void modify(DimensionType dimensionType_1, CallbackInfoReturnable<Entity> cir) {
-        boolean allowNether = KiloConfig.getProvider().getMain().getValue("server.world.allow_nether");
-        boolean allowTheEnd = KiloConfig.getProvider().getMain().getValue("server.world.allow_the_end");
+        boolean allowNether = KiloConfig.getProvider().getMain().getBooleanSafely("server.world.allow_nether", false);
+        boolean allowTheEnd = KiloConfig.getProvider().getMain().getBooleanSafely("server.world.allow_the_end", false);
 
         if (dimensionType_1.equals(DimensionType.THE_NETHER) && !allowNether)
             cir.cancel();
