@@ -1,14 +1,13 @@
-package org.kilocraft.essentials.commands.play;
+package org.kilocraft.essentials.commands.misc;
 
+import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.TabCompletions;
-
-import com.mojang.brigadier.CommandDispatcher;
-import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -19,10 +18,10 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class RealNameCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(literal("realname")
-				.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("realname"), 2)).executes(KiloCommands::executeSmartUsage)
+				.requires(s -> KiloCommands.hasPermission(s, CommandPermission.REALNAME)).executes(KiloCommands::executeSmartUsage)
 				.then(argument("target", string()).executes(context -> {
 
-					String input = getString(context, "target");	
+					String input = getString(context, "target");
 					for (PlayerEntity player : KiloServer.getServer().getPlayerList()) {
 						OnlineUser serverUser = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
 						if (serverUser.getNickname().isPresent() == true && input.equals(serverUser.getNickname().get()) && input != "") {
