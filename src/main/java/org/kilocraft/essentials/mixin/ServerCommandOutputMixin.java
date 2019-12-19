@@ -27,14 +27,12 @@ public abstract class ServerCommandOutputMixin {
                     minecraftServer,
                     new EventRegistryImpl(),
                     new ServerUserManager(minecraftServer.getPlayerManager()),
-                    brand)
-        );
+                    brand));
 
-        ModConstants.getLogger().info("Server set: " + String.format(
+        ModConstants.getLogger().info("[ i ] Server set: " + String.format(
                 ModConstants.getProperties().getProperty("server.brand.full"),
                 ModConstants.getVersion(),
                 ModConstants.getLoaderVersion(),
-                ModConstants.getMappingsVersion()
-                ));
+                ModConstants.getMappingsVersion()));
     }
 }

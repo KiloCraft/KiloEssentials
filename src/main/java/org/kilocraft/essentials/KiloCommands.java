@@ -84,16 +84,9 @@ public class KiloCommands {
         return hasPermissionOrOp(src, cmdPerm, minOpLevel);
     }
 
-    public static String registerPermission(String command) {
-        if (!initializedPerms.contains(command))
-            initializedPerms.add(command);
-
-        return PERMISSION_PREFIX + command;
-    }
-
     private void register(boolean devEnv) {
         if (devEnv) {
-            KiloEssentialsImpl.getLogger().info("Alert [!]: Server is running in debug mode!");
+            KiloEssentialsImpl.getLogger().info("[!] Alert: Server is running in debug mode!");
             SharedConstants.isDevelopment = devEnv;
         }
 
@@ -111,7 +104,6 @@ public class KiloCommands {
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
-        //BanCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RtpCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);

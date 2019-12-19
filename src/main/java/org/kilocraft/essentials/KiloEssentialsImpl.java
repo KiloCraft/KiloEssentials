@@ -193,12 +193,12 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 			@Override
 			public Message newMessage(String message) {
-				return new SimpleMessage((String) message);
+				return new SimpleMessage(message);
 			}
 
 			@Override
 			public Message newMessage(String message, Object... params) {
-				return new SimpleMessage((String) message);
+				return new SimpleMessage(message);
 			}
 		};
 	}

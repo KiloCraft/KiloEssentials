@@ -69,7 +69,7 @@ commands:
   vote: 'Edit this in KiloEssentials/config/Messages.yaml'
 
   serverWideWarps:
-    teleportTo: '&8[ &6i&8 ]  &eTeleporting to &6%WARPNAME%&e...'
+    teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%WARPNAME%&e...'
 
   playerHomes:
     teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%HOMENAME%&e...'

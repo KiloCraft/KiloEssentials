@@ -1,6 +1,8 @@
 package org.kilocraft.essentials;
 
 public enum CommandPermission {
+    PING_SELF("ping.self"),
+    PING_OTHERS("ping.others"),
     WARP_SPAWN("warp.spawn"),
     HOME_SELF_TP("home.self.tp"),
     HOME_SELF_SET("home.self.set"),

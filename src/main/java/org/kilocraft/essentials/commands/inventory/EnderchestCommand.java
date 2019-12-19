@@ -25,8 +25,7 @@ public class EnderchestCommand {
                 .then(argument("user", EntityArgumentType.player())
                         .requires(src -> KiloCommands.hasPermission(src, CommandPermission.ENDERCHEST_OTHERS))
                         .suggests(TabCompletions::allPlayers)
-                )
-        );
+                        .executes(ctx -> execute(ctx.getSource().getPlayer(), EntityArgumentType.getPlayer(ctx, "user")))));
 
         dispatcher.getRoot().addChild(enderchestCommand);
         dispatcher.register(literal("enderchest").redirect(enderchestCommand).requires(src -> hasPermission(src, "enderchest", 3))
