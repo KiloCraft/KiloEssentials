@@ -11,6 +11,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
@@ -116,6 +117,24 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void setFlight(boolean set) {
+    }
+
+    @Override
+    public boolean isSocialSpyOn() {
+        return false;
+    }
+
+    @Override
+    public void setSocialSpyOn(boolean on) {
+    }
+
+    @Override
+    public boolean isCommandSpyOn() {
+        return false;
+    }
+
+    @Override
+    public void setCommandSpyOn(boolean on) {
     }
 
     @Override
@@ -243,21 +262,8 @@ public class CommandSourceServerUser implements CommandSourceUser {
         return CommandHelper.isConsole(this.source);
     }
 
-	@Override
-	public boolean isSocialSpyOn() {
-		return false;
-	}
-
-	@Override
-	public void setSocialSpyOn(boolean on) {
-	}
-
-	@Override
-	public boolean isCommandSpyOn() {
-		return false;
-	}
-
-	@Override
-	public void setCommandSpyOn(boolean on) {
-	}
+    @Override
+    public @Nullable OnlineUser getUser() throws CommandSyntaxException {
+        return KiloServer.getServer().getOnlineUser(source.getPlayer());
+    }
 }
