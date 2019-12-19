@@ -21,7 +21,7 @@ public class RealNameCommand {
 				.requires(s -> KiloCommands.hasPermission(s, CommandPermission.REALNAME)).executes(KiloCommands::executeSmartUsage)
 				.then(argument("target", string()).executes(context -> {
 
-					String input = getString(context, "target");	
+					String input = getString(context, "target");
 					for (PlayerEntity player : KiloServer.getServer().getPlayerList()) {
 						OnlineUser serverUser = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
 						if (serverUser.getNickname().isPresent() == true && input.equals(serverUser.getNickname().get()) && input != "") {
