@@ -11,9 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -33,14 +31,15 @@ public class WarpCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = literal("warp")
-                .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.WARP));
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.WARP));
         RequiredArgumentBuilder<ServerCommandSource, String> warpArg = argument("warp", string());
         LiteralArgumentBuilder<ServerCommandSource> listLiteral = literal("warps");
 
         LiteralArgumentBuilder<ServerCommandSource> spawnLiteral = literal("spawn")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.WARP_SPAWN));
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.WARP));
+
         LiteralArgumentBuilder<ServerCommandSource> setSpawnLiteral = literal("setspawn")
-                .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.WARP_MANAGE));
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SETWARP));
 
         warpArg.executes(c -> executeTeleport(c.getSource(), getString(c, "warp")));
         listLiteral.executes(c -> executeList(c.getSource()));
@@ -52,6 +51,7 @@ public class WarpCommand {
         builder.then(warpArg);
         registerAdmin(builder, dispatcher);
         dispatcher.register(spawnLiteral);
+        dispatcher.register(setSpawnLiteral);
         dispatcher.register(listLiteral);
         dispatcher.register(builder);
     }
@@ -62,8 +62,8 @@ public class WarpCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> removeArg = argument("warp", string());
         RequiredArgumentBuilder<ServerCommandSource, String> addArg = argument("name", string());
 
-        aliasAdd.requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.WARP_MANAGE));
-        aliasRemove.requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.WARP_MANAGE));
+        aliasAdd.requires(s -> KiloCommands.hasPermission(s, CommandPermission.SETWARP));
+        aliasRemove.requires(s -> KiloCommands.hasPermission(s, CommandPermission.DELWARP));
 
         removeArg.executes(c -> executeRemove(c.getSource(), getString(c, "warp")));
         addArg.executes(c -> executeAdd(c.getSource(), getString(c, "name")));

@@ -103,7 +103,6 @@ public interface User {
 
     <F extends UserProvidedFeature> F feature(FeatureType<F> type);
 
-    @Deprecated
     UserHomeHandler getHomesHandler();
 
     /**

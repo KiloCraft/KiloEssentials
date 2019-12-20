@@ -75,7 +75,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 				map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
 			}
 
-			for (int i = 0; i < KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20) + 1; i++) {
+			for (int i = 1; i <= KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
 				map.registerPermission(CommandPermission.HOME_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
 			}
 		});

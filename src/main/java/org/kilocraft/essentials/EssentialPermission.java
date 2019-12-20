@@ -2,7 +2,6 @@ package org.kilocraft.essentials;
 
 public enum EssentialPermission {
     STAFF("staff"),
-    WARP("warp"),
     CHAT_COLOR("chat.color"),
     CHAT_BYPASS("chat.bypass"),
     CHAT_GET_PINGED("chat.ping.get_pinged"),
@@ -16,7 +15,6 @@ public enum EssentialPermission {
     SERVER_MANAGE_SAVE("server.manage.save"),
     CHAT_CHANNEL_STAFFMSG("chat.channel.staff"),
     CHAT_CHANNEL_BUILDERMSG("chat.channel.builder"),
-    WARP_MANAGE("warp.manage"),
     RTP_SELF("rtp.self"),
     RTP_OTHERS("rtp.others"),
     RTP_BYPASS("rtp.bypass"),

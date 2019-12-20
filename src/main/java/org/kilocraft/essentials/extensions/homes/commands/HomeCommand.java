@@ -14,10 +14,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -145,6 +148,19 @@ public class HomeCommand {
         return 1;
     }
 
+    private static boolean canSetHome(User user) {
+        for (int i = 1; i < KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
+            String thisPerm = "kiloessentials.command.home.limit." + i;
+            int amount = Integer.parseInt(thisPerm.split("\\.")[4]);
+            if (user.getHomesHandler().getHomes().size() < amount &&
+                    Thimble.hasPermissionOrOp(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static int executeSet(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         String arg = StringArgumentType.getString(context, "name");
@@ -158,17 +174,19 @@ public class HomeCommand {
                 throw NO_HOMES_EXCEPTION.create();
 
             int homes = serverUser.getHomesHandler().getHomes().size();
-            boolean canSet = Thimble.hasPermissionOrOp(context.getSource(), CommandPermission.HOME_LIMIT.getNode() + "." + (homes + 1), 3) ||
-                    KiloCommands.hasPermission(context.getSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3);
+            boolean canSetOld = homes == 0 || (Thimble.hasPermissionOrOp(
+                    context.getSource(), CommandPermission.HOME_LIMIT.getNode() + "." + (homes + 1), 3) ||
+                    KiloCommands.hasPermission(context.getSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3) ||
+                    KiloEssentials.hasPermissionNode(context.getSource(), EssentialPermission.STAFF));
 
-            if (!canSet)
+            if (!canSetHome(serverUser))
                 throw REACHED_THE_LIMIT.create();
+
             if (serverUser.getHomesHandler().hasHome(arg)) {
                 serverUser.getHomesHandler().removeHome(arg);
             }
 
-            serverUser.getHomesHandler().addHome(
-                    new Home(
+            serverUser.getHomesHandler().addHome(new Home(
                             gameProfile.getId(),
                             arg,
                             Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
@@ -176,9 +194,7 @@ public class HomeCommand {
                             Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
                             DimensionType.getId(source.getWorld().getDimension().getType()),
                             Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
-                            Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))
-                    )
-            );
+                            Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))));
 
             if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                 KiloChat.sendMessageTo(source, new ChatMessage(
