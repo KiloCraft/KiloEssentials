@@ -54,7 +54,7 @@ startupScript:
   # [<String>]
   # The name of the fabric loader jar to use
   # Default: 'fabric-loader.jar'
-  fabric-loader-name: 'fabric-loader.jar'
+  fabric-loader-name: 'fabric-server-launch.jar'
   # [<boolean>]
   # Set this to true if you're using screen on a linux distro
   linux-screen-mode: false

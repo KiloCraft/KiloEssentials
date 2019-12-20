@@ -11,11 +11,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
-import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
@@ -46,12 +44,6 @@ public class UserHomeHandler implements ConfigurableFeature {
         isEnabled = true;
         HomeCommand.register(KiloCommands.getDispatcher());
 
-        for (int i = 0; i == KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
-            KiloEssentials.registerPermission("home.set.limit." + i);
-        }
-
-
-        //KiloEssentials.registerPermissions();
         return true;
     }
 

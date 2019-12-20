@@ -54,6 +54,16 @@ public abstract class MixinPlayerManager$PlayerEvent$OnConnect {
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/text/Text;)V"), method = "onPlayerConnect")
     private void oky$onPlayerConnect$sendToAll(PlayerManager playerManager, Text text_1) {
+        //Ignored
     }
+
+    @Redirect(at = @At(value = "INVOKE",
+            target = "Lorg/apache/logging/log4j/Logger;info(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V"),
+            method = "onPlayerConnect")
+    private void oky$onPlayerConnect$sendToAll(Logger logger, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
+        //Ignored
+    }
+
+
 
 }

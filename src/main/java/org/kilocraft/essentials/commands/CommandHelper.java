@@ -18,6 +18,15 @@ public class CommandHelper {
         }
     }
 
+    public static boolean isPlayer(ServerCommandSource source) {
+        try {
+            source.getPlayer();
+            return true;
+        } catch (CommandSyntaxException e) {
+            return false;
+        }
+    }
+
     public static void failIfConsole(ServerCommandSource source) throws CommandSyntaxException {
         source.getEntityOrThrow();
     }
