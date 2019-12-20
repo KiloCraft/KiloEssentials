@@ -1,21 +1,25 @@
 package org.kilocraft.essentials.api.server;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.api.command.CommandRegistry;
+import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
-import org.kilocraft.essentials.api.world.World;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.servermeta.ServerMetaManager;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,6 +39,28 @@ public interface Server {
      */
 
     PlayerManager getPlayerManager();
+
+    /**
+     * Gets the KiloServer's UserManager
+     *
+     * @return instance of UserManager
+     */
+    UserManager getUserManager();
+
+    OnlineUser getOnlineUser(String name);
+
+    OnlineUser getOnlineUser(ServerPlayerEntity player);
+
+    OnlineUser getOnlineUser(UUID uuid);
+
+    CommandSourceUser getCommandSourceUser(ServerCommandSource source);
+
+    /**
+     * Gets the chat manager
+     *
+     * @return instance of ChatManager
+     */
+    ChatManager getChatManager();
 
     /**
      * Gets a player object by the given username.
@@ -92,7 +118,7 @@ public interface Server {
      *
      * @return all worlds in this Server
      */
-    List<World> getWorlds();
+    Iterable<ServerWorld> getWorlds();
 
     /**
      * Checks if we are running inside the Server's main thread
@@ -115,10 +141,6 @@ public interface Server {
      */
     EventRegistry getEventRegistry();
 
-    /**
-     * @return instance of CommandRegistry
-     */
-    CommandRegistry getCommandRegistry();
 
     /**
      * Triggers an event
@@ -174,9 +196,19 @@ public interface Server {
     String getDisplayBrandName();
 
     /**
+     * Sends a packet to all the Online users
+     */
+    void sendGlobalPacket(Packet<?> packet);
+
+    /**
      * Stops the server
      */
     void shutdown();
+
+    /**
+     * Restarts the server
+     */
+    void restart();
 
     /**
      * Stops the server
@@ -184,7 +216,15 @@ public interface Server {
      */
     void shutdown(String reason);
 
-    void shutdown(LiteralText reason);
+    void shutdown(Text reason);
+
+    /**
+     * Restarts the server
+     * @param reason is used for kicking the player
+     */
+    void restart(String reason);
+
+    void restart(Text reason);
 
     /**
      * Kicks all the players on the server
@@ -192,7 +232,7 @@ public interface Server {
      */
     void kickAll(String reason);
 
-    void kickAll(LiteralText reason);
+    void kickAll(Text reason);
 
     /**
      * Sends a message to console
@@ -206,4 +246,19 @@ public interface Server {
      * @return a instance of OperatorList
      */
     OperatorList getOperatorList();
+
+    /**
+     * Gets the server meta manager
+     *
+     * @return a instance of ServerMetaManager
+     */
+    ServerMetaManager getMetaManager();
+
+    /**
+     * Checks if the console supports ANSI formatting codes
+     *
+     * @return does console support ANSI formatting codes
+     */
+    boolean supportsANSICodes();
+
 }

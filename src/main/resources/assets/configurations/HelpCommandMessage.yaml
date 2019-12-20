@@ -1,0 +1,4 @@
+#Help command message
+message: |
+  Example config
+  go to &a/KiloEssentials/config/HelpCommandMessage.text/&r to modify this message!

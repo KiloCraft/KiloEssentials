@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.7.11",
+  "package": "org.kilocraft.essentials.mixin.events",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "server": [
+    "MixinBlockItem$PlayerEvent$OnPlaceBlock",
+    "MixinMinecraftDedicatedServer",
+    "MixinMinecraftServer$OnStop",
+    "MixinMinecraftServer$OnTick",
+    "MixinMinecraftServer$OnSave",
+    "MixinPlayerManager$PlayerEvent$OnConnect",
+    "MixinServerPlayerEntity$PlayerEvent$OnDeath",
+    "MixinServerPlayerNetworkHandler$PlayerEvent$OnDisconnect",
+    "MixinServerPlayerNetworkHandler$PlayerEvent$OnBreakingBlock",
+    "MixinCommandManager$ServerEvent$OnCommandExecuted",
+    "MixinMinecraftServer$OnStart"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
