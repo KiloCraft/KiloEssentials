@@ -65,9 +65,9 @@ public class HomeCommand {
 
         RequiredArgumentBuilder<ServerCommandSource, String> argRemove, argSet, argTeleport;
 
-        argRemove = argument("home", StringArgumentType.string());
-        argSet = argument("name", StringArgumentType.string());
-        argTeleport = argument("home", StringArgumentType.string());
+        argRemove = argument("home", StringArgumentType.word());
+        argSet = argument("name", StringArgumentType.word());
+        argTeleport = argument("home", StringArgumentType.word());
 
         argSet.executes(c -> executeSet(
                 c, Collections.singleton(c.getSource().getPlayer().getGameProfile())));

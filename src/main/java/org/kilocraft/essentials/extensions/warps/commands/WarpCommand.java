@@ -22,7 +22,7 @@ import org.kilocraft.essentials.extensions.warps.WarpManager;
 import java.text.DecimalFormat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -32,7 +32,7 @@ public class WarpCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = literal("warp")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.WARP));
-        RequiredArgumentBuilder<ServerCommandSource, String> warpArg = argument("warp", string());
+        RequiredArgumentBuilder<ServerCommandSource, String> warpArg = argument("warp", word());
         LiteralArgumentBuilder<ServerCommandSource> listLiteral = literal("warps");
 
         LiteralArgumentBuilder<ServerCommandSource> spawnLiteral = literal("spawn")
@@ -59,8 +59,8 @@ public class WarpCommand {
     private static void registerAdmin(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> aliasAdd = literal("setwarp");
         LiteralArgumentBuilder<ServerCommandSource> aliasRemove = literal("delwarp");
-        RequiredArgumentBuilder<ServerCommandSource, String> removeArg = argument("warp", string());
-        RequiredArgumentBuilder<ServerCommandSource, String> addArg = argument("name", string());
+        RequiredArgumentBuilder<ServerCommandSource, String> removeArg = argument("warp", word());
+        RequiredArgumentBuilder<ServerCommandSource, String> addArg = argument("name", word());
 
         aliasAdd.requires(s -> KiloCommands.hasPermission(s, CommandPermission.SETWARP));
         aliasRemove.requires(s -> KiloCommands.hasPermission(s, CommandPermission.DELWARP));
