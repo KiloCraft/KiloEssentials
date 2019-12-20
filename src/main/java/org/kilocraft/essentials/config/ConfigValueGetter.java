@@ -50,6 +50,10 @@ public class ConfigValueGetter {
         return (int) this.config.getOrElse(key, defaultValue);
     }
 
+    public Long getLongSafely(String key, long defaultValue) {
+        return this.config.getLongOrElse(key, defaultValue);
+    }
+
     public Float getFloatSafely(String key, String defaultValue) {
         return Float.parseFloat(this.config.getOrElse(key, defaultValue));
     }

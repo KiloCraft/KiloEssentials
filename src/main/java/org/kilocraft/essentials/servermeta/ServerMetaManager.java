@@ -2,6 +2,9 @@ package org.kilocraft.essentials.servermeta;
 
 import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
 import net.minecraft.server.ServerMetadata;
+import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.server.ModifiablePlayerListMeta;
 
 public class ServerMetaManager {
     private ServerMetadata metadata;
@@ -14,19 +17,19 @@ public class ServerMetaManager {
     }
 
     public void provide() {
-//        PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
+        this.playerListPacket = new PlayerListHeaderS2CPacket();
 
-//        ((ModifiablePlayerListMeta) playerListPacket).setHeader(new LiteralText("Test HEADER"));
-//
-//        ((ModifiablePlayerListMeta) playerListPacket).setFooter(new LiteralText("Test2"));
-//
+        ((ModifiablePlayerListMeta) this.playerListPacket).setHeader(new LiteralText("This is the Header"));
+
+        ((ModifiablePlayerListMeta) this.playerListPacket).setFooter(new LiteralText("Hi Header i'm footer"));
+
 //        try {
-//            packet.write(new PacketByteBuf(Unpooled.buffer()).writeString("{\"text\":\"This is stupid\"}"));
-//            KiloServer.getServer().getPlayerManager().sendToAll(packet);
+//            playerListPacket.write(new PacketByteBuf(Unpooled.buffer()).writeText(new LiteralText("HELLO THERE").formatted(Formatting.OBFUSCATED)));
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
 
+        KiloServer.getServer().sendGlobalPacket(this.playerListPacket);
     }
 
     public void setPlayerListHeader(String string) {
