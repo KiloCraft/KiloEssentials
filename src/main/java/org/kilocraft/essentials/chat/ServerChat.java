@@ -94,8 +94,9 @@ public class ServerChat {
         KiloChat.broadCastToConsole(new ChatMessage(text.asString(), false));
 
         for (UUID subscriber : channel.getSubscribers()) {
-            if (!subscriber.equals(player.getUuid()))
-                KiloChat.sendMessageTo(KiloServer.getServer().getPlayer(subscriber), text);
+            ServerPlayerEntity playerEntity = KiloServer.getServer().getPlayer(subscriber);
+            if (!subscriber.equals(player.getUuid()) && playerEntity != null)
+                KiloChat.sendMessageTo(player, text);
         }
     }
 

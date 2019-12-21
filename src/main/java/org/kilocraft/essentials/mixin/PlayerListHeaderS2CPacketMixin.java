@@ -1,15 +1,12 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.server.ModifiablePlayerListMeta;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(PlayerListHeaderS2CPacket.class)
 public abstract class PlayerListHeaderS2CPacketMixin implements ModifiablePlayerListMeta {
-    private Text text = new LiteralText("Test");
-
     private Text header;
 
     private Text footer;
