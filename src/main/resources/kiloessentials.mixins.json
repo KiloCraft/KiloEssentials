@@ -13,8 +13,7 @@
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
-    "PlayerListHeaderS2CPacketMixin",
-    "GameJoinS2CPacketMixin"
+    "PlayerListHeaderS2CPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1
