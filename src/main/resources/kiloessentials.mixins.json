@@ -14,7 +14,7 @@
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "PlayerListHeaderS2CPacketMixin",
-    "GameJoinS2CPacketMixin"
+    "AnvilMixin"
   ],
   "injectors": {
     "defaultRequire": 1
