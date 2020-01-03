@@ -45,6 +45,7 @@ import org.kilocraft.essentials.commands.teleport.RtpCommand;
 import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
+import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.util.messages.MessageUtil;
@@ -141,7 +142,7 @@ public class KiloCommands {
     }
 
     public static void registerToast() {
-        String configValue = KiloConfig.getProvider().getMain().getStringSafely("server.command-toast", "default");
+        String configValue = KiloConfig.getProvider().getMain().getStringSafely(ConfigCache.SERVER_COMMAND_TOAST, "default");
         if  (!configValue.equalsIgnoreCase("default")) {
             ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument(
                     TextFormat.translate(configValue + "&r&7"), StringArgumentType.greedyString()).build();

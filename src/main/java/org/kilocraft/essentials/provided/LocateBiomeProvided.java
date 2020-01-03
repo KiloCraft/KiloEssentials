@@ -23,6 +23,7 @@ public class LocateBiomeProvided {
         return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
     }
 
+    @SuppressWarnings("Do not run on main thread")
     public static int execute(ServerCommandSource source, Biome biome) {
         source.sendFeedback(LangText.getFormatter(true, "command.locate.scanning", getBiomeName(biome)), false);
         BlockPos executorPos = new BlockPos(source.getPosition());
@@ -49,7 +50,8 @@ public class LocateBiomeProvided {
 
         source.sendFeedback(new TranslatableText("commands.locate.success", biomeName, coordinates, distance), false);
 
-        return 0;
+        Thread.currentThread().interrupt();
+        return 1;
     }
 
     static long start;

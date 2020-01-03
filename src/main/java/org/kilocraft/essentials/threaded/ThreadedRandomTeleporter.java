@@ -14,7 +14,6 @@ public class ThreadedRandomTeleporter implements Runnable, KiloThread {
     public ThreadedRandomTeleporter(ServerPlayerEntity player, ServerCommandSource source) {
         this.playerEntity = player;
         this.commandSource = source;
-
     }
 
     @Override

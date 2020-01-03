@@ -35,9 +35,9 @@ public class EnderchestCommand {
     private static int execute(ServerPlayerEntity sender, ServerPlayerEntity target) {
         ServerUserInventory.openEnderchest(sender, target);
         if (CommandHelper.areTheSame(sender, target))
-            KiloChat.sendLangMessageTo(sender, "command.enderchest.open");
+            KiloChat.sendLangMessageTo(sender, "general.open_container", "Ender chest");
         else
-            KiloChat.sendLangMessageTo(sender, "command.enderchest.open.others", target.getEntityName());
+            KiloChat.sendLangMessageTo(sender, "general.seek_container", target.getEntityName(), "Ender chest");
 
         return SUCCESS();
     }

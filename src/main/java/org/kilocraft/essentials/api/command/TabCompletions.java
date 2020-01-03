@@ -6,6 +6,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
@@ -71,9 +72,11 @@ public class TabCompletions {
 
     public static CompletableFuture<Suggestions> usableCommands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> LiteralCommandModified.canSourceUse(child, context.getSource())).map(CommandNode::getName),
-                builder
-        );
+                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter(
+                        (child) -> LiteralCommandModified.canSourceUse(child, context.getSource())
+                                && child instanceof LiteralCommandNode)
+                        .map(CommandNode::getName),
+                builder);
     }
 
     public static CompletableFuture<Suggestions> commands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

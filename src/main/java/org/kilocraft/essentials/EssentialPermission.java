@@ -7,6 +7,7 @@ public enum EssentialPermission {
     CHAT_GET_PINGED("chat.ping.get_pinged"),
     CHAT_PING_OTHER("chat.ping.other"),
     CHAT_PING_EVERYONE("chat.ping.everyone"),
+    SIGN_COLOR("sign.color"),
     SPY_CHAT("spy.chat"),
     SPY_COMMAND("spy.command"),
     SERVER_MANAGE_STOP("server.manage.stop"),

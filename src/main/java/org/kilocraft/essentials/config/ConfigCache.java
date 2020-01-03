@@ -9,6 +9,7 @@ import static org.kilocraft.essentials.config.KiloConfig.MESSAGES;
 public enum  ConfigCache {
     SERVER_NAME("server.name", "general"),
     SERVER_DISPLAY_BRANDNAME("server.displayBrandName", "general"),
+    SERVER_COMMAND_TOAST("server.command-toast", "general"),
     CHAT_PING_FORMAT_EVERYONE("chat.ping.format_everyone", "general"),
     CHAT_PING_FORMAT("chat.ping.format", "general"),
     CHAT_PING_PINGED("chat.ping.pinged", "general"),
