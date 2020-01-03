@@ -12,6 +12,7 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 
+@SuppressWarnings("not tested")
 public class SystemMonitor {
     public static OperatingSystemMXBean systemMXBean = (OperatingSystemMXBean) ManagementFactoryHelper.getOperatingSystemMXBean();
     public static ThreadMXBean threadMXBean = (ThreadMXBean) ManagementFactoryHelper.getThreadMXBean();
@@ -49,7 +50,7 @@ public class SystemMonitor {
         RAM_USED_PERCENTAGE = ((double) RAM_USED / RAM_TOTAL) * 100;
     }
 
-    @SuppressWarnings("Haevy process")
+    @SuppressWarnings({"Heavy process", "un checked"})
     public static double getCpuLoadPercentage() throws Exception {
 
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
