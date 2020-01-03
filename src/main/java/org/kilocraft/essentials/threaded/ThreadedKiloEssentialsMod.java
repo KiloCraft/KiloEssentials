@@ -24,8 +24,7 @@ public class ThreadedKiloEssentialsMod implements Runnable, KiloThread {
         new KiloEssentialsImpl(
                 new KiloEvents(),
                 new KiloConfig(),
-                new KiloCommands()
-        );
+                new KiloCommands());
     }
 
     @Override

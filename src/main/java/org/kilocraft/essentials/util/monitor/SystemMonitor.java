@@ -15,7 +15,7 @@ import java.text.DecimalFormat;
 public class SystemMonitor {
     public static OperatingSystemMXBean systemMXBean = (OperatingSystemMXBean) ManagementFactoryHelper.getOperatingSystemMXBean();
     public static ThreadMXBean threadMXBean = (ThreadMXBean) ManagementFactoryHelper.getThreadMXBean();
-    
+
     private static Runtime runTime = Runtime.getRuntime();
     private static DecimalFormat decimalFormat = new DecimalFormat("##.##");
 
