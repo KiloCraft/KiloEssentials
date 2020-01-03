@@ -30,9 +30,8 @@ public class ItemLoreCommand {
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
 		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 10));
-		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString()).executes(context -> {
-					return changeLore(context, getInteger(context, "line"));
-				});
+		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString()).executes(context ->
+				changeLore(context, getInteger(context, "line")));
 
 		builder.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.item.lore", 2));
 
@@ -40,7 +39,7 @@ public class ItemLoreCommand {
 			ItemStack item = context.getSource().getPlayer().getMainHandStack();
 			CompoundTag itemTag = item.getTag();
 
-			if (item.equals(null)|| item.isEmpty()) {
+			if (item == ItemStack.EMPTY || item.isEmpty()) {
 				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 			} else {
 				if (itemTag == null || !itemTag.contains("lore") || !itemTag.getCompound("display").contains("Lore")) {
@@ -62,7 +61,6 @@ public class ItemLoreCommand {
 	}
 
 	public static int changeLore(CommandContext<ServerCommandSource> context, int inputLine) throws CommandSyntaxException {
-		int line = inputLine;
 		PlayerEntity player = context.getSource().getPlayer();
 		ItemStack item = player.getMainHandStack();
 
@@ -74,12 +72,12 @@ public class ItemLoreCommand {
 				return 1;
 			}
 
-			if (player.isCreative() == false) {
+			if (!player.isCreative()) {
 				player.addExperienceLevels(-1);
 			}
 
 			CompoundTag itemTag = item.getTag();
-			if (item.hasTag() == false || itemTag == null) {
+			if (!item.hasTag() || itemTag == null) {
 				itemTag = new CompoundTag();
 			}
 
@@ -92,8 +90,8 @@ public class ItemLoreCommand {
 				lore = new ListTag();
 			}
 
-			if (line > lore.size() - 1) {
-				for (int i = lore.size(); i <= line; i++) {
+			if (inputLine > lore.size() - 1) {
+				for (int i = lore.size(); i <= inputLine; i++) {
 					lore.add(StringTag.of("{\"text\":\"\"}"));
 				}
 			}
@@ -105,11 +103,11 @@ public class ItemLoreCommand {
 				text = TextFormat.removeAlternateColorCodes('&', text);
 			}
 
-			lore.set(line, StringTag.of("{\"text\":\"" + text + "\"}"));
+			lore.set(inputLine, StringTag.of("{\"text\":\"" + text + "\"}"));
 			itemTag.getCompound("display").put("Lore", lore);
 			item.setTag(itemTag);
 
-			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", line,
+			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", inputLine,
 					getString(context, "name...")));
 		}
 		return 1;
