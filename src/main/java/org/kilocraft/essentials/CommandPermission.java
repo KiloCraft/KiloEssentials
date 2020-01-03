@@ -58,7 +58,8 @@ public enum CommandPermission {
     CLEARCHAT("clearchat"),
     ENDERCHEST_SELF("enderchest.self"),
     ENDERCHEST_OTHERS("enderchest.others"),
-    STATUS("status")
+    STATUS("status"),
+    SEEK_INVENTORY("seek_inventory")
     ;
 
     private String node;

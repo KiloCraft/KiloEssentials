@@ -30,6 +30,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
+import org.kilocraft.essentials.commands.inventory.InventoryCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
@@ -139,6 +140,7 @@ public class KiloCommands {
         SocialspyCommand.register(this.dispatcher);
         CommandspyCommand.register(this.dispatcher);
         StatusCommand.register(this.dispatcher);
+        InventoryCommand.register(this.dispatcher);
     }
 
     public static void registerToast() {
