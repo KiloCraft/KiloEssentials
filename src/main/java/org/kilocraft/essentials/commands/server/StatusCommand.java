@@ -4,18 +4,21 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.util.monitor.PerformanceMonitor;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
 import java.lang.management.OperatingSystemMXBean;
+import java.util.Objects;
 
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.api.chat.TextFormat.getFormattedTPS;
@@ -50,8 +53,6 @@ public class StatusCommand {
     }
 
     private static String getInfo() throws Exception {
-        PerformanceMonitor monitor = new PerformanceMonitor();
-
         return "&eGeneral status:&r\n" +
                 "&7- Platform&8: &6" + bean.getArch() + " &d" + System.getProperty("os.name") +
                 "\n&7- TPS:" +
@@ -71,21 +72,32 @@ public class StatusCommand {
                 "&8(&e" + SystemMonitor.getDiskUsedGB() + " GB" + "&8/&e" +
                 SystemMonitor.getDiskUsableGB() + " GB" + "&8)" +
                 "\n&7- Worlds&8:&e" +
-                "\n&7 - Overworld&8: &6" + getWorldInfo(monitor.getOverworldInfo()) +
-                "\n&7 - TheEnd&8: &6" + getWorldInfo(monitor.getTheEndInfo()) +
-                "\n&7 - TheNether&8: &6" + getWorldInfo(monitor.getNetherInfo()) +
+                addWorldInfo() +
                 "\n&7- Java version: " + System.getProperty("java.version") +
                 "&8 (&7" + System.getProperty("java.runtime.version") + "&8)";
     }
 
-    private static String getWorldInfo(MonitorableWorld world) {
+    private static String addWorldInfo() {
         String worldInfoLoaded = "&6%s Chunks &e%s Entities &6%s Players";
         String worldInfoNotLoaded = "&7&oNot loaded.";
+        StringBuilder builder = new StringBuilder();
 
-        if (world.totalLoadedChunks() != 0)
-            return String.format(worldInfoLoaded, world.totalLoadedChunks(), world.loadedEntities(), world.players());
+        for (ServerWorld world : KiloServer.getServer().getWorlds()) {
+            MonitorableWorld monitoredWorld = (MonitorableWorld) world;
+            builder.append("\n&7 - ").append(getWorldName(world)).append("&8: ");
 
-        return worldInfoNotLoaded;
+            if (monitoredWorld.totalLoadedChunks() != 0)
+                builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.loadedEntities(), monitoredWorld.players()));
+            else
+                builder.append(worldInfoNotLoaded);
+        }
+
+        return builder.toString();
+    }
+
+    private static String getWorldName(ServerWorld world) {
+        String s = Objects.requireNonNull(Registry.DIMENSION.getId(world.dimension.getType())).getPath();
+        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
     }
 
 }

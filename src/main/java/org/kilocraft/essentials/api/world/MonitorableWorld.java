@@ -1,7 +1,5 @@
 package org.kilocraft.essentials.api.world;
 
-import net.minecraft.server.world.ServerWorld;
-
 public interface MonitorableWorld {
     int cachedChunks();
 
@@ -10,6 +8,4 @@ public interface MonitorableWorld {
     int loadedEntities();
 
     int players();
-
-    ServerWorld getWorld();
 }

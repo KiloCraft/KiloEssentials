@@ -12,7 +12,8 @@
     "MinecraftServerMixin",
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
-    "ServerPlayNetworkHandlerMixin"
+    "ServerPlayNetworkHandlerMixin",
+    "ServerWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1
