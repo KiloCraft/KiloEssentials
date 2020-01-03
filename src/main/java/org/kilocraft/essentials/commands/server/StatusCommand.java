@@ -27,6 +27,7 @@ public class StatusCommand {
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.STATUS)).executes(StatusCommand::execute);
 
         dispatcher.register(rootCommand);
+
     }
 
     private static OperatingSystemMXBean bean = SystemMonitor.getOsSystemMXBean();

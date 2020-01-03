@@ -19,7 +19,6 @@ public class SystemMonitor {
     private static DecimalFormat decimalFormat = new DecimalFormat("##.##");
     private static long RAM_MAX_MB, RAM_TOTAL_MB, RAM_FREE_MB, RAM_USED_MB;
     private static long DISK_MAX_GB, DISK_FREE_GB, DISK_USABLE_GB, DISK_USED_GB;
-
     private static double RAM_USED_PERCENTAGE, DISK_USED_PERCENTAGE;
 
     private static void updateDiskInfo() {

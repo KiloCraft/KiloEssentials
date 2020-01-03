@@ -112,7 +112,6 @@ public class ItemLoreCommand {
 			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", line,
 					getString(context, "name...")));
 		}
-
 		return 1;
 	}
 }
