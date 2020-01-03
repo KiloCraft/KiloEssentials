@@ -24,7 +24,8 @@ import static org.kilocraft.essentials.util.TPSTracker.*;
 public class StatusCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> rootCommand = literal("status")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.STATUS)).executes(StatusCommand::execute);
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.STATUS))
+                .executes(StatusCommand::execute);
 
         dispatcher.register(rootCommand);
     }
