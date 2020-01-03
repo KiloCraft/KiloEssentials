@@ -21,7 +21,6 @@ public class MessageUtil {
         COMMAND_MESSAGES.load(getResourceAsStream(getPath("commands")));
         EXCEPTION_MESSAGES.load(getResourceAsStream(getPath("exceptions")));
         ARGUMENT_EXCEPTION_MESSAGES.load(getResourceAsStream(getPath("arg_exceptions")));
-        
     }
 
     private String getPath(String fileName) {
