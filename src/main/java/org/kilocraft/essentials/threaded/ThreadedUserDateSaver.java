@@ -30,7 +30,6 @@ public class ThreadedUserDateSaver implements KiloThread, Runnable {
                 e.printStackTrace();
             }
         }
-
         logger.info("Saved the users data!");
     }
 
