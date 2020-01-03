@@ -27,7 +27,6 @@ public class StatusCommand {
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.STATUS)).executes(StatusCommand::execute);
 
         dispatcher.register(rootCommand);
-
     }
 
     private static OperatingSystemMXBean bean = SystemMonitor.getOsSystemMXBean();
@@ -37,7 +36,7 @@ public class StatusCommand {
             KiloChat.sendMessageToSource(ctx.getSource(), new ChatMessage(getInfo(), true));
         } catch (Exception e) {
             String msg = "An unexpected exception occurred when processing the cpu usage" +
-                    "Please report this to a Administrat";
+                    "Please report this to a Administrator";
             KiloChat.sendMessageTo(ctx.getSource(),
                     new LiteralText(msg + "\n Exception message:")
                             .append(new LiteralText(e.getMessage()).formatted(Formatting.WHITE)).formatted(Formatting.RED));
