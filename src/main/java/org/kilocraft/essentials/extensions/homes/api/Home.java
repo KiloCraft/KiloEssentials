@@ -138,9 +138,8 @@ public class Home {
     public static void teleportTo(OnlineUser user, Home home) throws CommandSyntaxException {
         ServerPlayerEntity player = user.getPlayer();
         DimensionType type = DimensionType.byId(home.getDimId());
-        if(type == null) {
+        if (type == null)
             return;
-        }
 
         ServerWorld destinationWorld = player.getServer().getWorld(type);
         Vec3d destination = new Vec3d(home.getX(), home.getY(), home.getZ());

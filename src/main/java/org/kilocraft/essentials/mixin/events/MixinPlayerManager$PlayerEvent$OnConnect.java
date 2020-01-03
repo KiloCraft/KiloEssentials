@@ -1,20 +1,13 @@
 package org.kilocraft.essentials.mixin.events;
 
-import net.minecraft.client.network.packet.GameJoinS2CPacket;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.player.PlayerConnectEventImpl;
 import org.kilocraft.essentials.events.player.PlayerConnectedEventImpl;
 import org.spongepowered.asm.mixin.Final;
@@ -47,7 +40,7 @@ public abstract class MixinPlayerManager$PlayerEvent$OnConnect {
     }
 
 
-    @Inject(at = @At("RETURN"), method = "onPlayerConnect")
+    @Inject(at = @At("TAIL"), method = "onPlayerConnect")
     private void onPlayerConnected(ClientConnection connection, ServerPlayerEntity playerEntity, CallbackInfo ci) {
         PlayerConnectedEventImpl e = KiloServer.getServer().triggerEvent(new PlayerConnectedEventImpl(connection, playerEntity));
     }

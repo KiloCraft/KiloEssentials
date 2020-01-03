@@ -1,19 +1,20 @@
 package org.kilocraft.essentials.listeners;
 
-import io.github.indicode.fabric.permissions.Thimble;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.lifecycle.ServerReloadEvent;
-import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.provided.BrandedServer;
 
 public class OnReload implements EventHandler<ServerReloadEvent> {
     @Override
     public void handle(ServerReloadEvent event) {
-        WarpManager.INSTANCE.reload();
-        Thimble.reload();
+        KiloConfig.load();
         KiloCommands.registerToast();
         KiloCommands.updateCommandTreeForEveryone();
-        KiloServer.getServer().getMetaManager().provide();
+        BrandedServer.load();
+        KiloServer.getServer().getMetaManager().load();
+        KiloServer.getServer().getMetaManager().updateAll();
     }
 }

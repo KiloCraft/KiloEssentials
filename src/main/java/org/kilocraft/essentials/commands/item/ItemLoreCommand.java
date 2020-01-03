@@ -11,6 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 
@@ -23,13 +25,13 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class ItemLoreCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		LiteralArgumentBuilder<ServerCommandSource> builder = literal("lore");
+		LiteralArgumentBuilder<ServerCommandSource> builder = literal("lore")
+				.requires(src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE));
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
-		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(0, 10));
-		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString()).executes(context -> {
-					return changeLore(context, getInteger(context, "line"));
-				});
+		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 10));
+		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString()).executes(context ->
+				changeLore(context, getInteger(context, "line")));
 
 		builder.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.item.lore", 2));
 
@@ -37,7 +39,7 @@ public class ItemLoreCommand {
 			ItemStack item = context.getSource().getPlayer().getMainHandStack();
 			CompoundTag itemTag = item.getTag();
 
-			if (item == null || item.isEmpty() == true) {
+			if (item == ItemStack.EMPTY || item.isEmpty()) {
 				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 			} else {
 				if (itemTag == null || !itemTag.contains("lore") || !itemTag.getCompound("display").contains("Lore")) {
@@ -58,7 +60,7 @@ public class ItemLoreCommand {
 		argumentBuilder.then(builder);
 	}
 
-	public static int changeLore(CommandContext<ServerCommandSource> context, int line) throws CommandSyntaxException {
+	public static int changeLore(CommandContext<ServerCommandSource> context, int inputLine) throws CommandSyntaxException {
 		PlayerEntity player = context.getSource().getPlayer();
 		ItemStack item = player.getMainHandStack();
 
@@ -70,12 +72,12 @@ public class ItemLoreCommand {
 				return 1;
 			}
 
-			if (player.isCreative() == false) {
+			if (!player.isCreative()) {
 				player.addExperienceLevels(-1);
 			}
 
 			CompoundTag itemTag = item.getTag();
-			if (item.hasTag() == false || itemTag == null) {
+			if (!item.hasTag() || itemTag == null) {
 				itemTag = new CompoundTag();
 			}
 
@@ -88,27 +90,26 @@ public class ItemLoreCommand {
 				lore = new ListTag();
 			}
 
-			if (line > lore.size() - 1) {
-				for (int i = lore.size(); i <= line; i++) {
+			if (inputLine > lore.size() - 1) {
+				for (int i = lore.size(); i <= inputLine; i++) {
 					lore.add(StringTag.of("{\"text\":\"\"}"));
 				}
 			}
 
 			String text = getString(context, "name...");
-			if (Thimble.hasPermissionOrOp(context.getSource(), "kiloessentials.command.item.lore.colour", 2)) {
+			if (KiloCommands.hasPermission(context.getSource(), CommandPermission.ITEM_FORMATTING)) {
 				text = TextFormat.translateAlternateColorCodes('&', text);
 			} else {
 				text = TextFormat.removeAlternateColorCodes('&', text);
 			}
 
-			lore.set(line, StringTag.of("{\"text\":\"" + text + "\"}"));
+			lore.set(inputLine, StringTag.of("{\"text\":\"" + text + "\"}"));
 			itemTag.getCompound("display").put("Lore", lore);
 			item.setTag(itemTag);
 
-			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", line,
+			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", inputLine,
 					getString(context, "name...")));
 		}
-
 		return 1;
 	}
 }

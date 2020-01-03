@@ -25,7 +25,6 @@ public class ThreadedBiomeLocator implements KiloThread, Runnable {
     public void run() {
         logger = LogManager.getFormatterLogger(getName());
         getLogger().info("Started thread BiomeLocator by %s for biome \"%s\"", source.getName(), LocateBiomeProvided.getBiomeName(biome));
-
         LocateBiomeProvided.execute(source, biome);
     }
 

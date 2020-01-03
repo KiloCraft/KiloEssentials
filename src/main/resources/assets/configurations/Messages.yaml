@@ -53,8 +53,8 @@ events:
   # If set to true it will disable the event messages if the bungeecord mode is on
   disable-on-bungee-mode: false
   # [<greedyString> c]
-  userJoin: '&7%USER_DISPLAYNAME% joined the game'
-  userLeave: '%USER_DISPLAYNAME% left the game.'
+  userJoin: '&e%USER_DISPLAYNAME%&e joined the game'
+  userLeave: '&e%USER_DISPLAYNAME%&e left the game.'
 
 #Messages used by commands
 commands:

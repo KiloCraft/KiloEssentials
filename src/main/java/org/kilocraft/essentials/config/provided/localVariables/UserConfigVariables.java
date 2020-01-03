@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.config.provided.localVariables;
 
-import org.kilocraft.essentials.config.localVariableHelper.LocalConfigVariable;
+import org.kilocraft.essentials.config.variablehelper.LocalConfigVariable;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.HashMap;
@@ -22,6 +22,8 @@ public class UserConfigVariables implements LocalConfigVariable {
     public HashMap<String, String> variables() {
         return new HashMap<String, String>(){{
             put("NAME", serverUser.getUsername());
+            put("DISPLAYNAME", serverUser.getDisplayname());
         }};
     }
+
 }

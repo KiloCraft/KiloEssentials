@@ -43,6 +43,13 @@ schema: 1.4
 #Alternate color character
 #Instead of using the special character you can use your own color char
 #for defining the color/formatting codes use the '&' character
+#Variables ->
+# Player:
+#   NAME, DISPLAYNAME, PING, FORMATTED_PING
+# User:
+#   NAME, DISPLAYNAME, RANKED_DISPLAYNAME
+# Server:
+#   NAME, TPS, FORMATTED_TPS
 
 # The Script you use to start the server
 startupScript:
@@ -100,7 +107,18 @@ server:
     #[<boolean>]
     #If set to true, all the players in the disabled dimensions will get kicked to their spawn point
     also_kick_from_dim: true
-
+  # Tab player list
+  player_list:
+    # [<greedyString: Multiline>]
+    # Note: Do Not remove the first splitter character "|"
+    #       Player list only supports two lines per each element!
+    # Supported Values: USER, PLAYER, SERVER
+    header: |
+      &7Welcome &6%USER_DISPLAYNAME%&r
+      &7Ping: %PLAYER_FORMATTED_PING% &8-&7 Online: &b%SERVER_PLAYER_COUNT% &8-&7 &7TPS: &r%SERVER_FORMATTED_TPS%
+    footer: |
+      &3Discord&8: &7discord.gg/uzuQEe9
+      &aStore&8: &7kilocraft.craftingstore.net
 features:
   #[<boolean>]
   #A list of the features you want to enable!
@@ -120,7 +138,7 @@ commands.suggestions.require_permission: true
 
 # Maximum length of a nickname. This cannot be negative.
 # Doesn't include color formatting
-nickname-max-length: 25
+nickname-max-length: 35
 
 chat:
   # [Boolean]
@@ -141,9 +159,9 @@ chat:
     # [<greedyString> c/f/GV]
     #You can set how the messages would look like on  the server
     formats:
-      global: '&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
-      staff: '&4[&cStaff&4]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
-      builder: '&2[&aBuilder&2]&r &r%USER_DISPLAYNAME% &8>>&r %MESSAGE%'
+      global: '&r%USER_RANKED_DISPLAYNAME% &8>>&r %MESSAGE%'
+      staff: '&4[&cStaff&4]&r &r%USER_RANKED_DISPLAYNAME% &8>>&r %MESSAGE%'
+      builder: '&2[&aBuilder&2]&r &r%USER_RANKED_DISPLAYNAME% &8>>&r %MESSAGE%'
 
   # [<greedyString> c]
   #Style of the private messages
@@ -164,8 +182,11 @@ chat:
     #This is how you have to type someone's name in order to ping them
     format: '%PLAYER_NAME%'
     # [<COLOR/FORMATTING CODE> e.g: 'altColorChar' + Color code, &a]
-    #The color of the pinged player's name!
+    #The format of the pinged player's name!
     pinged: '&a&o%PLAYER_DISPLAYNAME%'
+    #The format of the not pinged player's name!
+    #This will be used if the pinging that player is not allowed
+    not_pinged: '&a&o&m%PLAYER_DISPLAYNAME%'
     #The sound you hear when someone pings you!
     sound:
       #[<boolean>]

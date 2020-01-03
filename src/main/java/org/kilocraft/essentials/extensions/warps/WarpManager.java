@@ -67,10 +67,6 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
         return var;
     }
 
-    public void reload() {
-        WorldDataLib.triggerCallbackLoad(this);
-    }
-
     public void save() {
         WorldDataLib.triggerCallbackSave(this);
     }

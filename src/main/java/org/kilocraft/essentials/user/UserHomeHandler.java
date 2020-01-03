@@ -11,6 +11,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -100,13 +101,12 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public static boolean hasHome(UUID uuid, String name) {
-        boolean bool = false;
         for (Home loadedHome : loadedHomes) {
             if (loadedHome.getName().equals(name) && loadedHome.getOwner().equals(uuid))
-                bool = true;
+                return true;
         }
 
-        return bool;
+        return false;
     }
 
     public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException, CommandSyntaxException {
@@ -144,6 +144,7 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     }
 
+    @Deprecated
     public static List<Home> getHomesOf(UUID uuid) {
         List<Home> list = new ArrayList<>();
         for (Home home : loadedHomes) {
@@ -153,12 +154,14 @@ public class UserHomeHandler implements ConfigurableFeature {
         return list;
     }
 
+
     public static List<Home> getLoadedHomes() {
         return loadedHomes;
     }
 
     public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-        return CommandSource.suggestMatching(getHomesOf(context.getSource().getPlayer().getUuid()).stream().map(Home::getName), builder);
+        return CommandSource.suggestMatching(KiloServer.getServer().getOnlineUser(
+                context.getSource().getPlayer()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
     }
 
     public enum Reason {

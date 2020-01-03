@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.config;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
-import org.kilocraft.essentials.config.localVariableHelper.LocalConfigVariable;
-import org.kilocraft.essentials.config.localVariableHelper.LocalVariableReplaced;
-import org.kilocraft.essentials.config.localVariableHelper.ProvidedValueReplaced;
+import org.kilocraft.essentials.config.variablehelper.LocalConfigVariable;
+import org.kilocraft.essentials.config.variablehelper.LocalVariableReplaced;
+import org.kilocraft.essentials.config.variablehelper.ProvidedValueReplaced;
 
 public class ConfigValueGetter {
     private FileConfig config;
@@ -18,6 +18,10 @@ public class ConfigValueGetter {
 
     public String get(boolean allowGlobalObjects, String key) {
         return valueFormatter(allowGlobalObjects, key);
+    }
+
+    public String get(boolean allowGlobalObjects, ConfigCache c) {
+        return allowGlobalObjects ? this.valueReplaced.replaceGlobalObjects(String.valueOf(c.getValue())) : String.valueOf(c.getValue());
     }
 
     public String getMessage(String key, Object... objects) {
@@ -38,12 +42,21 @@ public class ConfigValueGetter {
         return String.format(string, objects);
     }
 
+    @SafeVarargs
+    public final <L extends LocalConfigVariable> String getLocalFormatter(String key, L... localFormatters) {
+        return this.localReplaced.replace(getValue(key), localFormatters);
+    }
+
     public <T> T getValue(String key) {
         return this.config.get(key);
     }
 
     public Boolean getBooleanSafely(String key, boolean defaultValue) {
         return (boolean) this.config.getOrElse(key, defaultValue);
+    }
+
+    public Boolean getBooleanSafely(ConfigCache c, boolean defaultValue) {
+        return c.getValue().equals("NULL") ? defaultValue : (Boolean) c.getValue();
     }
 
     public Integer getIntegerSafely(String key, int defaultValue) {
@@ -60,6 +73,10 @@ public class ConfigValueGetter {
 
     public String getStringSafely(String key, String defaultValue) {
         return this.config.getOrElse(key, defaultValue);
+    }
+
+    public String getStringSafely(ConfigCache c, String defaultValue) {
+        return c.getValue().equals("NULL") ? defaultValue : String.valueOf(c.getValue());
     }
 
     public ProvidedValueReplaced getValueReplacer() {

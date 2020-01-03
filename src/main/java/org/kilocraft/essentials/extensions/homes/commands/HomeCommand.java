@@ -14,9 +14,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
@@ -158,7 +156,7 @@ public class HomeCommand {
             }
         }
 
-        return false;
+        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3);
     }
 
     private static int executeSet(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
@@ -172,12 +170,6 @@ public class HomeCommand {
 
             if(serverUser instanceof NeverJoinedUser)
                 throw NO_HOMES_EXCEPTION.create();
-
-            int homes = serverUser.getHomesHandler().getHomes().size();
-            boolean canSetOld = homes == 0 || (Thimble.hasPermissionOrOp(
-                    context.getSource(), CommandPermission.HOME_LIMIT.getNode() + "." + (homes + 1), 3) ||
-                    KiloCommands.hasPermission(context.getSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3) ||
-                    KiloEssentials.hasPermissionNode(context.getSource(), EssentialPermission.STAFF));
 
             if (!canSetHome(serverUser))
                 throw REACHED_THE_LIMIT.create();
@@ -218,7 +210,6 @@ public class HomeCommand {
     private static int executeRemove(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         String arg = StringArgumentType.getString(context, "home");
-
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();

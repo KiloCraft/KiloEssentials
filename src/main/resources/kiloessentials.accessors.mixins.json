@@ -4,6 +4,9 @@
   "package": "org.kilocraft.essentials.mixin.accessor",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "PlayerListHeaderS2CPacketMixin",
+    "ServerWorldAccessor",
+    "MinecraftServerAccessor"
   ],
   "server": [
     "MinecraftServerAccessor"

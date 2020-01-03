@@ -201,8 +201,10 @@ public class ServerUser implements User {
         }
 
 
-        this.socialSpy = cacheTag.getBoolean("socialSpy");
-        this.commandSpy = cacheTag.getBoolean("socialSpy");
+        if (cacheTag.contains("socialSpy"))
+            this.socialSpy = cacheTag.getBoolean("socialSpy");
+        if (cacheTag.contains("commandSpy"))
+            this.commandSpy = cacheTag.getBoolean("commandSpy");
 
         if (metaTag.getInt("displayParticleId") != 0)
             this.displayParticleId = metaTag.getInt("displayParticleId");

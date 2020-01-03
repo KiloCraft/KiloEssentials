@@ -8,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 
@@ -18,7 +20,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class ItemNameCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		LiteralArgumentBuilder<ServerCommandSource> builder = literal("name");
+		LiteralArgumentBuilder<ServerCommandSource> builder = literal("name")
+				.requires(src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_NAME));
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
 		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString());
@@ -39,7 +42,7 @@ public class ItemNameCommand {
 					player.addExperienceLevels(-1);
 				}
 
-				if (Thimble.hasPermissionOrOp(context.getSource(), "kiloessentials.command.item.name.colour", 2)) {
+				if (KiloCommands.hasPermission(context.getSource(), CommandPermission.ITEM_FORMATTING)) {
 					item.setCustomName(new LiteralText(TextFormat.translateAlternateColorCodes('&',
 							getString(context, "name..."))));
 				} else {

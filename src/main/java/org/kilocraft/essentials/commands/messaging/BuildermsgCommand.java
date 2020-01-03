@@ -92,7 +92,7 @@ public class BuildermsgCommand {
             OnlineUser user = KiloServer.getServer().getOnlineUser(subscriber);
 
             text.append(new LiteralText("\n- ").formatted(Formatting.GRAY))
-                    .append(user.getRankedDisplayname());
+                    .append(user.getRankedDisplayname().asFormattedString());
         }
 
         ctx.getSource().sendFeedback(text, false);

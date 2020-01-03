@@ -271,18 +271,7 @@ public enum TextFormat {
     }
 
     public static LiteralText translateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
-        Validate.notNull(textToTranslate, "Cannot translate null text");
-        LiteralText literalText = new LiteralText("");
-        char[] b = textToTranslate.toCharArray();
-
-        for (int i = 0; i < b.length -1; i++) {
-            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
-                b[i] = TextFormat.COLOR_CHAR;
-                b[i+1] = Character.toLowerCase(b[i+1]);
-            }
-        }
-
-        return literalText;
+        return new LiteralText(translateAlternateColorCodes(altColorChar, textToTranslate));
     }
 
 
@@ -361,6 +350,24 @@ public enum TextFormat {
         }
 
         return result;
+    }
+
+    public static String getFormattedPing(int i) {
+        if (i < 200)
+            return "&a" + i;
+        if (i > 200 && i < 400)
+            return "&e" + i;
+
+        return "&c" + i;
+    }
+
+    public static char getFormattedTPS(double tps) {
+        if (tps > 15)
+            return 'a';
+        if (tps > 10)
+            return 'e';
+
+        return 'c';
     }
 
     static {

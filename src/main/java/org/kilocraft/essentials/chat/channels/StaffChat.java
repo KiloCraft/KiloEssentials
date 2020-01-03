@@ -1,11 +1,11 @@
 package org.kilocraft.essentials.chat.channels;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.ChatMessage;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.config.ConfigValueGetter;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -17,10 +17,8 @@ import java.util.UUID;
 
 public class StaffChat implements ChatChannel {
     private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
-    private List<UUID> subscribers;
 
     public StaffChat() {
-        this.subscribers = new ArrayList<>();
     }
 
     public static String getChannelId() {
@@ -50,44 +48,26 @@ public class StaffChat implements ChatChannel {
 
     @Override
     public boolean isSubscribed(OnlineUser user) {
-        return this.subscribers.contains(user.getUuid());
+        return KiloEssentials.hasPermissionNode(user.getCommandSource(), EssentialPermission.STAFF, 2);
     }
 
     @Override
     public List<UUID> getSubscribers() {
-        return this.subscribers;
+        List<UUID> uuids = new ArrayList<>();
+        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
+            if (KiloEssentials.hasPermissionNode(playerEntity.getCommandSource(), EssentialPermission.STAFF, 2))
+                uuids.add(playerEntity.getUuid());
+        }
+
+        return uuids;
     }
 
     @Override
     public void join(ServerUser user) {
-        if (isSubscribed((OnlineUser) user))
-            return;
-
-        this.subscribers.add(user.getUuid());
-        sendToSubscribers(new ChatMessage(
-                config.getFormatter(true, "chat.channels.meta.staff_prefix") +
-                        config.getFormatter(true, "chat.channels.messages.join",
-                                user.getUsername() + "&r", getChannelId()),
-                true));
     }
 
     @Override
     public void leave(ServerUser user) {
-        if (!isSubscribed((OnlineUser) user))
-            return;
-
-        sendToSubscribers(new ChatMessage(
-                config.getFormatter(true, "chat.channels.meta.staff_prefix") +
-                        config.getFormatter(true, "chat.channels.messages.leave",
-                                user.getUsername() + "&r", getChannelId()),
-                true));
-        this.subscribers.remove(user.getUuid());
-    }
-
-    private void sendToSubscribers(ChatMessage chatMessage) {
-        for (UUID subscriber : this.subscribers) {
-            KiloChat.sendMessageTo(KiloServer.getServer().getPlayer(subscriber), chatMessage);
-        }
     }
 
 }

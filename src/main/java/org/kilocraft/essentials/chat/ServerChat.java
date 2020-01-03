@@ -5,6 +5,7 @@ import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -17,6 +18,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.ConfigValueGetter;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
@@ -30,80 +32,79 @@ import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class ServerChat {
     private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
-    private static ConfigValueGetter messages = KiloConfig.getProvider().getMessages();
-    private static String everyone_template = config.getStringSafely("chat.ping.format_everyone", "@everyone");
-    private static String senderFormat = config.get(false, "chat.ping.format");
-    private static String displayFormat = config.get(false, "chat.ping.pinged");
-    private static String everyone_displayFormat = config.getStringSafely("chat.ping.pinged_everyone", "&b&o@everyone");
+    private static String everyone_template = config.getStringSafely(ConfigCache.CHAT_PING_FORMAT_EVERYONE, "@everyone");
+    private static String senderFormat = config.getStringSafely(ConfigCache.CHAT_PING_FORMAT, "%PLAYER_NAME");
+    private static String displayFormat = config.getStringSafely(ConfigCache.CHAT_PING_PINGED, "&a%PLAYER_DISPLAYNAME%");
+    private static String not_pinged_displayFormat = config.getStringSafely(ConfigCache.CHAT_PING_NOT_PINGED, "&a&o&m%PLAYER_DISPLAYNAME%");
+    private static String everyone_displayFormat = config.getStringSafely(ConfigCache.CHAT_PINGED_EVERYONE, "&b&o@everyone");
+    private static boolean pingSoundEnabled = config.getBooleanSafely(ConfigCache.CHAT_PING_SOUND_ENABLED, true);
+    private static boolean pingEnabled = config.getBooleanSafely(ConfigCache.CHAT_PING_ENABLED, true);
 
     public static void send(OnlineUser sender, String rawMessage, ChatChannel channel) {
-        String template = config.getStringSafely("chat.channels.formats." + channel.getId(), "&r[&r%USER_DISPLAYNAME%&r]:&r %MESSAGE%");
+        String template = config.getStringSafely(ConfigCache.valueOf(
+                ("chat.channels.formats." + channel.getId()).replaceAll("\\.", "_").toUpperCase()),
+                "&r[&r%USER_DISPLAYNAME%&r]:&r %MESSAGE%");
         ServerPlayerEntity player = sender.getPlayer();
-        boolean isPingingAllowed = config.getBooleanSafely("chat.ping.sound.enable", true);
 
-        ChatMessage message = new ChatMessage(rawMessage,
-                KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_COLOR));
+        ChatMessage message = new ChatMessage(rawMessage, KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_COLOR));
 
-        if (config.getBooleanSafely("chat.ping.enable", true)
-                && KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_PING_OTHER)) {
+        try {
+            if (pingEnabled && KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_PING_OTHER)) {
+                if (KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_PING_EVERYONE)
+                        && rawMessage.contains(everyone_template)) {
+                    message.setMessage(message.getFormattedMessage().replaceAll(everyone_template, everyone_displayFormat), true);
 
-            //Ping Everyone
-            if (KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_PING_EVERYONE)
-                    && rawMessage.contains(everyone_template)) {
-                message.setMessage(rawMessage.replace(everyone_template, everyone_displayFormat + "&r"), true);
-
-                for (UUID subscriber : channel.getSubscribers()) {
-                    pingPlayer(KiloServer.getServer().getPlayer(subscriber));
+                    for (UUID subscriber : channel.getSubscribers()) {
+                        pingPlayer(KiloServer.getServer().getPlayer(subscriber));
+                    }
                 }
-            }
 
-            //Ping singleton target
-            for (String targetName : getServer().getPlayerManager().getPlayerNames()) {
-                if (rawMessage.contains(senderFormat.replace("%PLAYER_NAME%", targetName))) {
-                    OnlineUser target = KiloServer.getServer().getUserManager().getOnline(targetName);
+                for (String targetName : getServer().getPlayerManager().getPlayerNames()) {
+                    String format = senderFormat.replace("%PLAYER_NAME%", targetName);
+                    OnlineUser target = KiloServer.getServer().getOnlineUser(targetName);
 
-                    if (channel.isSubscribed(target)) {
-                        assert target != null;
-                        boolean canPing = KiloEssentials.hasPermissionNode(target.getCommandSource(), EssentialPermission.CHAT_GET_PINGED);
+                    if (message.getFormattedMessage().contains(format)) {
+                        boolean canPing = channel.isSubscribed(target) &&
+                                KiloEssentials.hasPermissionNode(target.getCommandSource(), EssentialPermission.CHAT_GET_PINGED);
 
-                        if (isPingingAllowed && canPing) {
-                            String senderPing = senderFormat.replace("%PLAYER_NAME%", targetName);
-                            String displayPing = "&r" + displayFormat.replace("%PLAYER_DISPLAYNAME%",
-                                    target.getRankedDisplayname().asFormattedString()) + "&r";
-
-                            message.setMessage(rawMessage.replace(senderPing, displayPing), true);
-                            pingPlayer(getServer().getPlayer(targetName));
-                        }
+                        String formatOfThisPing = canPing ? displayFormat : not_pinged_displayFormat;
+                        message.setMessage(message.getFormattedMessage().replaceAll(format,
+                                formatOfThisPing.replaceAll(
+                                        "%PLAYER_DISPLAYNAME%", target.getDisplayname()) + "&r"), true);
+                        if (pingSoundEnabled && canPing) pingPlayer(target.getPlayer());
                     }
                 }
             }
+        } catch (Exception e) {
+            KiloChat.sendMessageTo(sender.getPlayer(), new LiteralText(e.getMessage()));
         }
 
         message.setMessage(config.getLocalReplacer()
-                .replace(template, new UserConfigVariables((ServerUser) sender), KiloConfig.getFileConfigOfMain())
-                .replace("%USER_DISPLAYNAME%", sender.getRankedDisplayname().asFormattedString())
+                    .replace(template, new UserConfigVariables((ServerUser) sender), KiloConfig.getFileConfigOfMain())
+                .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayname().asFormattedString())
                 .replace("%MESSAGE%", message.getFormattedMessage()), true);
 
-        Text text = new LiteralText(message.getFormattedMessage()
-        ).styled((style) -> {
+        Text text = new LiteralText(message.getFormattedMessage()).styled((style) -> {
             style.setColor(Formatting.RESET);
             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getHoverMessage(player)));
+            style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + sender.getUsername() + " "));
         });
 
-        player.sendMessage(text);
-        KiloChat.broadCastToConsole(new ChatMessage(text.asString(), false));
-
-        for (UUID subscriber : channel.getSubscribers()) {
-            if (!subscriber.equals(player.getUuid()))
-                KiloChat.sendMessageTo(KiloServer.getServer().getPlayer(subscriber), text);
-        }
+        KiloServer.getServer().getUserManager().getOnlineUsers().forEach((uuid, user) -> {
+            if (channel.isSubscribed(user))
+                KiloChat.sendMessageTo(user.getPlayer(), text);
+        });
     }
 
     private static Text getHoverMessage(ServerPlayerEntity player) {
         Text text = new LiteralText("");
-        text.append(new LiteralText("Sent at: ").formatted(Formatting.YELLOW));
-        text.append(new LiteralText(new Date().toGMTString()).formatted(Formatting.GOLD));
-
+        text.append(new LiteralText("[").formatted(Formatting.DARK_GRAY))
+                .append(new LiteralText(" i ").formatted(Formatting.GREEN))
+        .append(new LiteralText("] ").formatted(Formatting.DARK_GRAY));
+        text.append(new LiteralText("Click here to reply").formatted(Formatting.GREEN));
+        text.append("\n");
+        text.append(new LiteralText("Sent at: ").formatted(Formatting.GRAY));
+        text.append(new LiteralText(new Date().toGMTString()).formatted(Formatting.YELLOW));
         return text;
     }
 
@@ -174,8 +175,9 @@ public class ServerChat {
         String toSpy = format.replace("%SOURCE%", source.getName())
                 .replace("%MESSAGE%",  message);
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isCommandSpyOn() && !CommandHelper.areTheSame(source, user)) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
-                    new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+            if (user.isCommandSpyOn() && !CommandHelper.areTheSame(source, user))
+                KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
+                        new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }
     }
 }
