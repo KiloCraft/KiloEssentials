@@ -9,7 +9,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVariables;
 import org.kilocraft.essentials.config.provided.localVariables.ServerConfigVariables;
 import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
-import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketMixin;
+import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketAccessor;
 import org.kilocraft.essentials.user.ServerUser;
 
 public class PlayerListMeta {
@@ -34,8 +34,8 @@ public class PlayerListMeta {
                 .replaceAll("%USER_DISPLAYNAME%", user.getRankedDisplayname().asFormattedString());
 
         PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
-        ((PlayerListHeaderS2CPacketMixin) packet).setHeader(TextFormat.translateToLiteralText('&', thisHeader));
-        ((PlayerListHeaderS2CPacketMixin) packet).setFooter(TextFormat.translateToLiteralText('&', thisFooter));
+        ((PlayerListHeaderS2CPacketAccessor) packet).setHeader(TextFormat.translateToLiteralText('&', thisHeader));
+        ((PlayerListHeaderS2CPacketAccessor) packet).setFooter(TextFormat.translateToLiteralText('&', thisFooter));
 
         if (packet != null)
             player.networkHandler.sendPacket(packet);

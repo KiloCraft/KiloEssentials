@@ -22,9 +22,9 @@
     ]
   },
   "mixins": [
-    "kiloessentials.events.mixins.json",
-    "kiloessentials.mixins.json",
-    "kiloessentials.accessors.mixins.json"
+    "mixins.events.kiloessentials.json",
+    "mixins.kiloessentials.json",
+    "mixins.accessors.kiloessentials.json"
   ],
 
   "depends": {

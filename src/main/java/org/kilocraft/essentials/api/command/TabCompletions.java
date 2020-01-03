@@ -11,7 +11,10 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -27,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TabCompletions {
@@ -161,4 +165,12 @@ public class TabCompletions {
         return getInput(context).split(" ").length;
     }
 
+	public static CompletableFuture<Suggestions> biomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        for (Biome biome : Registry.BIOME.stream().collect(Collectors.toList())) {
+            Identifier id = Registry.BIOME.getId(biome);
+            builder.suggest(id.toString(), new TranslatableText(biome.getTranslationKey()));
+        }
+
+        return builder.buildFuture();
+	}
 }

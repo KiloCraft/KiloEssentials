@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(PlayerListHeaderS2CPacket.class)
-public abstract interface PlayerListHeaderS2CPacketMixin extends Packet<ClientPlayPacketListener> {
+public interface PlayerListHeaderS2CPacketAccessor extends Packet<ClientPlayPacketListener> {
 
     @Accessor("header")
     void setHeader(Text text);
