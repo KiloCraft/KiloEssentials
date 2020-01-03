@@ -29,7 +29,7 @@ public class ItemLoreCommand {
 				.requires(src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE));
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
-		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(0, 10));
+		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 10));
 		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString()).executes(context -> {
 					return changeLore(context, getInteger(context, "line"));
 				});
@@ -62,7 +62,7 @@ public class ItemLoreCommand {
 	}
 
 	public static int changeLore(CommandContext<ServerCommandSource> context, int inputLine) throws CommandSyntaxException {
-		int line = inputLine + 1;
+		int line = inputLine;
 		PlayerEntity player = context.getSource().getPlayer();
 		ItemStack item = player.getMainHandStack();
 
