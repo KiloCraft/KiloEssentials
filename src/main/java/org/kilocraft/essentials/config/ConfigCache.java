@@ -19,7 +19,9 @@ public enum  ConfigCache {
     CHAT_CHANNELS_FORMATS_GLOBAL("chat.channels.formats.global", "general"),
     CHAT_CHANNELS_FORMATS_STAFF("chat.channels.formats.staff", "general"),
     CHAT_CHANNELS_FORMATS_BUILDER("chat.channels.formats.builder", "general"),
-    CHAT_PING_ENABLED("chat.ping.enable", "general");
+    CHAT_PING_ENABLED("chat.ping.enable", "general"),
+    COMMANDS_CONTEXT_EXECUTION_EXCEPTION("commands.context.execution_exception", "messages"),
+    COMMANDS_CONTEXT_PERMISSION_EXCEPTION("commands.context.permission_exception", "messages"),
     ;
 
     private String key;

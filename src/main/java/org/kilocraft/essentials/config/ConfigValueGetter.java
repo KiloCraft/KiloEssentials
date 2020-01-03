@@ -29,6 +29,11 @@ public class ConfigValueGetter {
         return (objects != null) ? String.format(string, objects) : string;
     }
 
+    public String getMessage(ConfigCache c, Object... objects) {
+        String string = this.valueReplaced.replaceGlobalObjects(String.valueOf(c.getValue()));
+        return (objects != null) ? String.format(string, objects) : string;
+    }
+
     public String getFormatter(boolean allowGlobalObjects, String key, Object... objects) {
         return customValueFormatter(allowGlobalObjects, key, objects);
     }
