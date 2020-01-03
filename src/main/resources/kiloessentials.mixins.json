@@ -12,7 +12,9 @@
     "MinecraftServerMixin",
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
-    "ServerPlayNetworkHandlerMixin"
+    "ServerPlayNetworkHandlerMixin",
+    "PlayerListHeaderS2CPacketMixin",
+    "AnvilMixin"
   ],
   "injectors": {
     "defaultRequire": 1
