@@ -13,7 +13,9 @@
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
+    "PlayerListHeaderS2CPacketMixin",
     "ServerWorldMixin"
+    "AnvilMixin"
   ],
   "injectors": {
     "defaultRequire": 1
