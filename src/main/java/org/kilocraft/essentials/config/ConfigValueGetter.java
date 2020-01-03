@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.config;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
-import org.kilocraft.essentials.config.localVariableHelper.LocalConfigVariable;
-import org.kilocraft.essentials.config.localVariableHelper.LocalVariableReplaced;
-import org.kilocraft.essentials.config.localVariableHelper.ProvidedValueReplaced;
+import org.kilocraft.essentials.config.variablehelper.LocalConfigVariable;
+import org.kilocraft.essentials.config.variablehelper.LocalVariableReplaced;
+import org.kilocraft.essentials.config.variablehelper.ProvidedValueReplaced;
 
 public class ConfigValueGetter {
     private FileConfig config;
