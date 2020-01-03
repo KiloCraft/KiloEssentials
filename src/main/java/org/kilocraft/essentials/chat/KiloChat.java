@@ -71,7 +71,7 @@ public class KiloChat {
 			source.sendFeedback(LangText.get(true, key), false);
 	}
 
-	public static void sendLangComamandFeedback(ServerCommandSource source, String key, boolean sendToOPs, Object... objects) {
+	public static void sendLangCommandFeedback(ServerCommandSource source, String key, boolean sendToOPs, Object... objects) {
 		if (CommandHelper.isConsole(source))
 			getServer().sendMessage(getFormattedLang(key, objects));
 		else

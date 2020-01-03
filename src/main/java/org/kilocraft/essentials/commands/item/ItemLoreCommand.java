@@ -11,6 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 
@@ -23,7 +25,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class ItemLoreCommand {
 	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		LiteralArgumentBuilder<ServerCommandSource> builder = literal("lore");
+		LiteralArgumentBuilder<ServerCommandSource> builder = literal("lore")
+				.requires(src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE));
 		LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset");
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
 		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(0, 10));
@@ -37,7 +40,7 @@ public class ItemLoreCommand {
 			ItemStack item = context.getSource().getPlayer().getMainHandStack();
 			CompoundTag itemTag = item.getTag();
 
-			if (item == null || item.isEmpty() == true) {
+			if (item.equals(null)|| item.isEmpty()) {
 				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
 			} else {
 				if (itemTag == null || !itemTag.contains("lore") || !itemTag.getCompound("display").contains("Lore")) {
@@ -58,7 +61,8 @@ public class ItemLoreCommand {
 		argumentBuilder.then(builder);
 	}
 
-	public static int changeLore(CommandContext<ServerCommandSource> context, int line) throws CommandSyntaxException {
+	public static int changeLore(CommandContext<ServerCommandSource> context, int inputLine) throws CommandSyntaxException {
+		int line = inputLine + 1;
 		PlayerEntity player = context.getSource().getPlayer();
 		ItemStack item = player.getMainHandStack();
 
@@ -95,7 +99,7 @@ public class ItemLoreCommand {
 			}
 
 			String text = getString(context, "name...");
-			if (Thimble.hasPermissionOrOp(context.getSource(), "kiloessentials.command.item.lore.colour", 2)) {
+			if (KiloCommands.hasPermission(context.getSource(), CommandPermission.ITEM_FORMATTING)) {
 				text = TextFormat.translateAlternateColorCodes('&', text);
 			} else {
 				text = TextFormat.removeAlternateColorCodes('&', text);

@@ -74,8 +74,6 @@ public class GamemodeCommand {
         String arg = cValue == null ? getString(ctx, "gameType") : cValue.getName();
         GameMode selectedMode = getMode(arg);
 
-        System.out.println(getPermission("self", selectedMode));
-
         if (selectedMode == null)
             throw new SimpleCommandExceptionType(new LiteralText("Please select a valid Game type!")).create();
 

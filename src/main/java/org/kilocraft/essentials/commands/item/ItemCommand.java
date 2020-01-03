@@ -12,7 +12,8 @@ public class ItemCommand {
     private static LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("item").executes(KiloCommands::executeSmartUsage);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-    	argumentBuilder.requires(s -> KiloCommands.hasPermission(s, CommandPermission.ITEM));
+    	argumentBuilder.requires(s -> KiloCommands.hasPermission(s, CommandPermission.ITEM_NAME) ||
+                KiloCommands.hasPermission(s, CommandPermission.ITEM_LORE));
     	
         ItemNameCommand.registerChild(argumentBuilder);
         ItemLoreCommand.registerChild(argumentBuilder);

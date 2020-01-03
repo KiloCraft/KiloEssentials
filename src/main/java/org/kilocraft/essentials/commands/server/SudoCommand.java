@@ -49,7 +49,7 @@ public class SudoCommand {
         String consoleName = KiloServer.getServer().getVanillaServer().getCommandSource().getName();
 
         KiloServer.getServer().execute(command);
-        KiloChat.sendLangComamandFeedback(source, "command.sudo.success", true, consoleName);
+        KiloChat.sendLangCommandFeedback(source, "command.sudo.success", true, consoleName);
 
         return 1;
     }
@@ -62,13 +62,13 @@ public class SudoCommand {
             KiloServer.getServer().getChatManager().getChannel(GlobalChat.getChannelId()).sendChatMessage(
                     KiloServer.getServer().getOnlineUser(player), command.replaceFirst("c:", ""));
 
-            KiloChat.sendLangComamandFeedback(source, "command.sudo.chat_success", true, player.getName().asString());
+            KiloChat.sendLangCommandFeedback(source, "command.sudo.chat_success", true, player.getName().asString());
             return 1;
         }
 
         try {
             dispatcher.execute(command.replace("/", ""), player.getCommandSource());
-            KiloChat.sendLangComamandFeedback(source, "command.sudo.success", true, player.getName().asString());
+            KiloChat.sendLangCommandFeedback(source, "command.sudo.success", true, player.getName().asString());
         } catch (CommandSyntaxException e) {
             source.sendError(LangText.getFormatter(true, "command.sudo.failed", player.getName().asString()));
         }

@@ -5,9 +5,9 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.provided.BrandedServer;
+import org.kilocraft.essentials.events.server.ServerReloadEventImpl;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -28,9 +28,8 @@ public class ReloadCommand {
     private static int execute(ServerCommandSource source) {
         KiloChat.sendLangMessageTo(source, "command.reload.start");
 
-        KiloConfig.load();
+        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl());
         source.getMinecraftServer().reload();
-        BrandedServer.load();
         KiloChat.sendLangMessageTo(source, "command.reload.end");
 
         return 1;

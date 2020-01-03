@@ -15,16 +15,13 @@ public class TpsCommand {
     }
 
     private static int run(CommandContext<ServerCommandSource> context) {
-
         KiloChat.sendMessageToSource(context.getSource(), new ChatMessage(String.format(
-                        "&6TPS &8(&71m&8/&75m&8/&715m&8)&%s %s&8,&%s %s&8,&%s %s&r",
-                        tpstoColorCode(tps1.getAverage()),
-                        tps1.getShortAverage(),
-                        tpstoColorCode(tps5.getAverage()),
-                        tps5.getShortAverage(),
-                        tpstoColorCode(tps15.getAverage()),
-                        tps15.getShortAverage()
-                ), true));
+                        "&6TPS&8:&%s %s&7 &8(&75m&8/&715m&8/&730m&8/&71h&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
+                        tpstoColorCode(tps1.getAverage()), tps1.getShortAverage(),
+                        tpstoColorCode(tps5.getAverage()), tps5.getShortAverage(),
+                        tpstoColorCode(tps15.getAverage()), tps15.getShortAverage(),
+                        tpstoColorCode(tps30.getAverage()), tps30.getShortAverage(),
+                        tpstoColorCode(tps60.getAverage()), tps60.getShortAverage()), true));
 
         return (int) Math.floor(tps1.getAverage());
     }

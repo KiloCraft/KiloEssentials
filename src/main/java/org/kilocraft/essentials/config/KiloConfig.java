@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @author  CODY_AI
- * @version 1.2
+ * @version 1.3
  */
 
 public class KiloConfig {
@@ -99,6 +99,7 @@ public class KiloConfig {
     public static void load() {
         MAIN.load();
         MESSAGES.load();
+        ConfigCache.load();
         //COMMANDS.load();
     }
 

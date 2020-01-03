@@ -32,7 +32,6 @@ import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -86,7 +85,7 @@ public class NicknameCommand {
         ServerCommandSource source = ctx.getSource();
         ServerPlayerEntity self = source.getPlayer();
 
-        Object unchecked = KiloConfig.getProvider().getMain().getIntegerSafely("nickname-max-length", 16);
+        Object unchecked = KiloConfig.getProvider().getMain().getIntegerSafely("nickname-max-length", 35);
 
         if (unchecked == null) {
             throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();

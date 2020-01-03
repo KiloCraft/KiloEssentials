@@ -31,7 +31,9 @@ public enum CommandPermission {
     SUDO_CONSOLE("sudo.console"),
     BROADCAST("broadcast"),
     ANVIL("anvil"),
-    ITEM("item"),
+    ITEM_FORMATTING("item.formatting"),
+    ITEM_NAME("item.name"),
+    ITEM_LORE("item.lore"),
     LOCATE("locate"),
     LOCATE_BIOME("locate.biome"),
     LOCATE_STRUCTURE("locate.structure"),
@@ -56,6 +58,7 @@ public enum CommandPermission {
     CLEARCHAT("clearchat"),
     ENDERCHEST_SELF("enderchest.self"),
     ENDERCHEST_OTHERS("enderchest.others"),
+    STATUS("status")
     ;
 
     private String node;

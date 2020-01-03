@@ -214,7 +214,6 @@ public class ServerUserManager implements UserManager {
     public void onTick() {
         for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
             ((ServerUser) getOnline(playerEntity)).resetMessageCooldown();
-
         }
     }
 

@@ -2,6 +2,8 @@ package org.kilocraft.essentials.config.localVariableHelper;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class LocalVariableReplaced {
 
     public LocalVariableReplaced() {
@@ -17,6 +19,16 @@ public class LocalVariableReplaced {
         });
 
         return result[0];
+    }
+
+    public final <L extends LocalConfigVariable> String replace(String input, L... localFormatters) {
+        AtomicReference<String> string = new AtomicReference<>(input);
+        for (L localFormatter : localFormatters) {
+            localFormatter.variables().forEach((name, value) ->
+                    string.set(string.get().replaceAll("%" + localFormatter.getPrefix() + "_" + name + "%", value)));
+        }
+
+        return string.get();
     }
 
 

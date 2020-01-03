@@ -8,9 +8,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
-import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -65,11 +62,7 @@ public abstract class CommandManagerMixin {
     @Inject(method = "execute", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))
     private void modifyExecute(ServerCommandSource serverCommandSource_1, String string_1, CallbackInfoReturnable<Integer> cir) {
         cir.cancel();
-        OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(serverCommandSource_1, string_1);
-        KiloServer.getServer().triggerEvent(new OnCommandExecutionEventImpl(serverCommandSource_1, string_1));
-
-        if (!event.isCancelled())
-            KiloEssentials.getInstance().getCommandHandler().execute(serverCommandSource_1, string_1);
+        KiloEssentials.getInstance().getCommandHandler().execute(serverCommandSource_1, string_1);
     }
 
 }

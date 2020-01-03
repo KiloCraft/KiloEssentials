@@ -24,6 +24,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.UsageCommand;
@@ -45,6 +46,7 @@ import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
@@ -135,6 +137,7 @@ public class KiloCommands {
         BuildermsgCommand.register(this.dispatcher);
         SocialspyCommand.register(this.dispatcher);
         CommandspyCommand.register(this.dispatcher);
+        StatusCommand.register(this.dispatcher);
     }
 
     public static void registerToast() {
@@ -214,11 +217,22 @@ public class KiloCommands {
     }
 
     public int execute(ServerCommandSource executor, String commandToExecute) {
-        StringReader stringReader = new StringReader(commandToExecute);
+        OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(executor, commandToExecute);
+        String cmd = commandToExecute;
+
+        if (!commandToExecute.endsWith("--push") && !executor.hasPermissionLevel(4))
+            KiloServer.getServer().triggerEvent(event);
+        else
+            cmd = commandToExecute.replace(" --push", "");
+
+        if (event.isCancelled()) return 0;
+
+        StringReader stringReader = new StringReader(cmd);
+
         if (stringReader.canRead() && stringReader.peek() == '/')
             stringReader.skip();
 
-        getServer().getVanillaServer().getProfiler().push(commandToExecute);
+        getServer().getVanillaServer().getProfiler().push(cmd);
 
         byte var = 0;
         try {

@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.commands.messaging;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -22,7 +21,6 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
-import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.UUID;
 
@@ -39,25 +37,19 @@ public class StaffmsgCommand {
         LiteralCommandNode<ServerCommandSource> listArg = literal("list")
                 .executes(StaffmsgCommand::executeList).build();
 
-        LiteralCommandNode<ServerCommandSource> joinArg = literal("join")
+        LiteralCommandNode<ServerCommandSource> joinArg = literal("on")
                 .executes(ctx -> executeJoin(ctx.getSource(), ctx.getSource().getPlayer()))
                 .then(argument("player", EntityArgumentType.player()).suggests(TabCompletions::allPlayers)
                         .executes(ctx -> executeJoin(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
-        LiteralCommandNode<ServerCommandSource> leaveArg = literal("leave")
+        LiteralCommandNode<ServerCommandSource> leaveArg = literal("off")
                 .executes(ctx -> executeLeave(ctx.getSource(), ctx.getSource().getPlayer()))
                 .then(argument("player", EntityArgumentType.player()).suggests(TabCompletions::allPlayers)
                         .executes(ctx -> executeLeave(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
-        LiteralCommandNode<ServerCommandSource> receiveArg = literal("receive")
-                .executes(StaffmsgCommand::executeToggleReceive)
-                .then(argument("set", BoolArgumentType.bool())
-                        .executes(ctx -> executeSetReceive(ctx, BoolArgumentType.getBool(ctx, "set")))).build();
-
         ArgumentCommandNode<ServerCommandSource, String> sendArg = argument("message", greedyString())
                 .executes(StaffmsgCommand::executeSend).build();
 
-        rootCommand.addChild(receiveArg);
         rootCommand.addChild(listArg);
         rootCommand.addChild(joinArg);
         rootCommand.addChild(leaveArg);
@@ -66,16 +58,19 @@ public class StaffmsgCommand {
 
     private static int executeJoin(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
-        KiloServer.getServer().getChatManager().getChannel(StaffChat.getChannelId()).join((ServerUser) user);
         user.setUpstreamChannelId(StaffChat.getChannelId());
+        KiloChat.sendLangMessageTo(source, "command.setchannel.set_upstream",
+                user.getUpstreamChannelId(), user.getRankedDisplayname().asFormattedString());
 
         return SUCCESS();
     }
 
     private static int executeLeave(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
-        KiloServer.getServer().getChatManager().getChannel(StaffChat.getChannelId()).leave((ServerUser) user);
         user.setUpstreamChannelId(GlobalChat.getChannelId());
+        KiloChat.sendLangMessageTo(source, "command.setchannel.set_upstream",
+                user.getUpstreamChannelId(), user.getRankedDisplayname().asFormattedString());
+
         return SUCCESS();
     }
 
@@ -92,32 +87,10 @@ public class StaffmsgCommand {
             OnlineUser user = KiloServer.getServer().getOnlineUser(subscriber);
 
             text.append(new LiteralText("\n- ").formatted(Formatting.GRAY))
-                .append(user.getRankedDisplayname());
+                .append(user.getRankedDisplayname().asFormattedString());
         }
 
         ctx.getSource().sendFeedback(text, false);
-        return SUCCESS();
-    }
-
-    private static int executeToggleReceive(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
-        executeSetReceive(ctx, !KiloServer.getServer().getChatManager().getChannel(StaffChat.getChannelId()).isSubscribed(user));
-
-        return SUCCESS();
-    }
-
-    private static int executeSetReceive(CommandContext<ServerCommandSource> ctx, boolean bool) throws CommandSyntaxException {
-        OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
-
-        if (!bool) {
-            KiloServer.getServer().getChatManager().getChannel(StaffChat.getChannelId()).leave((ServerUser) user);
-            KiloChat.sendLangMessageTo(ctx.getSource(), "command.setchannel.unsubscribed", StaffChat.getChannelId());
-            return SUCCESS();
-        }
-
-        KiloServer.getServer().getChatManager().getChannel(StaffChat.getChannelId()).join((ServerUser) user);
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.setchannel.subscribed", StaffChat.getChannelId());
-
         return SUCCESS();
     }
 

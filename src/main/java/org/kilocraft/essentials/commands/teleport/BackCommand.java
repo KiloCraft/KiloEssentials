@@ -12,9 +12,9 @@ import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -59,21 +59,20 @@ public class BackCommand {
 
 	public static int goBack(ServerPlayerEntity player) {
 		if (backLocations.containsKey(player.getUuid())) {
-			DimensionType dimension = backDimensions.get(player);
+			DimensionType dimension = backDimensions.get(player.getUuid());
 			ServerWorld world = player.getServer().getWorld(dimension);
-			player.teleport(world, backLocations.get(player).getX(), backLocations.get(player).getY(),
-					backLocations.get(player).getZ(), 90, 0);
-			backLocations.remove(player);
-			backDimensions.remove(player);
-			player.sendMessage(
-					LangText.getFormatter(true, "command.back.success", player.getName().asFormattedString()));
+			player.teleport(world, backLocations.get(player.getUuid()).getX(), backLocations.get(player.getUuid()).getY(),
+					backLocations.get(player.getUuid()).getZ(), 90, 0);
+			backLocations.remove(player.getUuid());
+			backDimensions.remove(player.getUuid());
+			KiloChat.sendLangMessageTo(player, "command.back.success", player.getName().asFormattedString());
 			
 			OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
 			user.setBackPos((Vec3d)null);
 			user.setBackDim(null);
-		} else {
-			player.sendMessage(LangText.get(true, "command.back.failture"));
-		}
+		} else
+			KiloChat.sendLangMessageTo(player, "command.back.failture");
+
 		return 0;
 	}
 
