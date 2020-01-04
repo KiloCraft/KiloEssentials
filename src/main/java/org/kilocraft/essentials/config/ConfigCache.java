@@ -9,6 +9,7 @@ import static org.kilocraft.essentials.config.KiloConfig.MESSAGES;
 public enum  ConfigCache {
     SERVER_NAME("server.name", "general"),
     SERVER_DISPLAY_BRANDNAME("server.displayBrandName", "general"),
+    SERVER_COMMAND_TOAST("server.command-toast", "general"),
     CHAT_PING_FORMAT_EVERYONE("chat.ping.format_everyone", "general"),
     CHAT_PING_FORMAT("chat.ping.format", "general"),
     CHAT_PING_PINGED("chat.ping.pinged", "general"),
@@ -18,7 +19,9 @@ public enum  ConfigCache {
     CHAT_CHANNELS_FORMATS_GLOBAL("chat.channels.formats.global", "general"),
     CHAT_CHANNELS_FORMATS_STAFF("chat.channels.formats.staff", "general"),
     CHAT_CHANNELS_FORMATS_BUILDER("chat.channels.formats.builder", "general"),
-    CHAT_PING_ENABLED("chat.ping.enable", "general");
+    CHAT_PING_ENABLED("chat.ping.enable", "general"),
+    COMMANDS_CONTEXT_EXECUTION_EXCEPTION("commands.context.execution_exception", "messages"),
+    COMMANDS_CONTEXT_PERMISSION_EXCEPTION("commands.context.permission_exception", "messages"),
     ;
 
     private String key;

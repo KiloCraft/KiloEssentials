@@ -60,7 +60,8 @@ public class ItemLoreCommand {
 		argumentBuilder.then(builder);
 	}
 
-	public static int changeLore(CommandContext<ServerCommandSource> context, int inputLine) throws CommandSyntaxException {
+	public static int changeLore(CommandContext<ServerCommandSource> context, int line) throws CommandSyntaxException {
+		int inputLine = line - 1;
 		PlayerEntity player = context.getSource().getPlayer();
 		ItemStack item = player.getMainHandStack();
 

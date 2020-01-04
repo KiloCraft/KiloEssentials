@@ -130,6 +130,7 @@ public class RtpCommand {
 		return 1;
 	}
 
+	@SuppressWarnings("Do not run on main thread")
 	public static void teleportRandomly(ServerCommandSource source, ServerPlayerEntity target) {
 		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
 		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
@@ -179,5 +180,8 @@ public class RtpCommand {
 					, true));
 		} else
 			sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
+
+		Thread.currentThread().interrupt();
+		return;
 	}
 }

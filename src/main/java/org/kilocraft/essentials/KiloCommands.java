@@ -30,6 +30,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
+import org.kilocraft.essentials.commands.inventory.InventoryCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
@@ -45,6 +46,7 @@ import org.kilocraft.essentials.commands.teleport.RtpCommand;
 import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
+import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.util.messages.MessageUtil;
@@ -138,10 +140,11 @@ public class KiloCommands {
         SocialspyCommand.register(this.dispatcher);
         CommandspyCommand.register(this.dispatcher);
         StatusCommand.register(this.dispatcher);
+        InventoryCommand.register(this.dispatcher);
     }
 
     public static void registerToast() {
-        String configValue = KiloConfig.getProvider().getMain().getStringSafely("server.command-toast", "default");
+        String configValue = KiloConfig.getProvider().getMain().getStringSafely(ConfigCache.SERVER_COMMAND_TOAST, "default");
         if  (!configValue.equalsIgnoreCase("default")) {
             ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument(
                     TextFormat.translate(configValue + "&r&7"), StringArgumentType.greedyString()).build();
@@ -243,12 +246,18 @@ public class KiloCommands {
                 var = 0;
                 return var;
             } catch (CommandSyntaxException e) {
-                if (e.getRawMessage().getString().equals("Unknown command"))
-                    KiloChat.sendMessageToSource(executor,
-                            new ChatMessage(KiloConfig.getProvider().getMessages().get(
-                                    true, "commands.context.execution_exception"), true));
+                if (e.getRawMessage().getString().equals("Unknown command")) {
+                    String literalName = cmd.split(" ")[0].replace("/", "");
+                    if (isCommand(literalName))
+                        KiloChat.sendMessageToSource(executor, new ChatMessage(
+                                KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_PERMISSION_EXCEPTION)
+                                ,true));
+                    else
+                        KiloChat.sendMessageToSource(executor, new ChatMessage(
+                                KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_EXECUTION_EXCEPTION)
+                                , true));
 
-                else {
+                } else {
                     executor.sendError(Texts.toText(e.getRawMessage()));
 
                     if (e.getRawMessage().getString().equals("Incorrect argument for command"))
@@ -303,6 +312,10 @@ public class KiloCommands {
         }
 
         return var;
+    }
+
+    private boolean isCommand(String literal) {
+        return dispatcher.getRoot().getChild(literal) != null;
     }
 
     public static SimpleCommandExceptionType getException(ExceptionMessageNode node, Object... objects) {

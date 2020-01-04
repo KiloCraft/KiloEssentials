@@ -270,6 +270,11 @@ public enum TextFormat {
         return translateAlternateColorCodes('&', string);
     }
 
+    @NotNull
+    public static String translate(String string, boolean allowFormats) {
+        return allowFormats ? translate(string) : TextFormat.removeAlternateColorCodes('&', string);
+    }
+
     public static LiteralText translateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
         return new LiteralText(translateAlternateColorCodes(altColorChar, textToTranslate));
     }

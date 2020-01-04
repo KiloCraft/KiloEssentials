@@ -16,6 +16,7 @@ public class LocateStructureProvided {
         return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
     }
 
+    @SuppressWarnings("Do not run on main thread")
     public static int execute(ServerCommandSource source, String structure) throws CommandSyntaxException {
         BlockPos blockPos_1 = new BlockPos(source.getPosition());
         BlockPos blockPos_2 = source.getWorld().locateStructure(structure, blockPos_1, 100, false);
@@ -23,10 +24,11 @@ public class LocateStructureProvided {
             throw FAILED_EXCEPTION.create();
         } else {
             int int_1 = MathHelper.floor(getDistance(blockPos_1.getX(), blockPos_1.getZ(), blockPos_2.getX(), blockPos_2.getZ()));
-            Text text_1 = Texts.bracketed(new TranslatableText("chat.coordinates", new Object[]{blockPos_2.getX(), "~", blockPos_2.getZ()})).styled((style_1) -> {
+            Text text_1 = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos_2.getX(), "~", blockPos_2.getZ())).styled((style_1) -> {
                 style_1.setColor(Formatting.GREEN).setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + source.getName() + " " + blockPos_2.getX() + " ~ " + blockPos_2.getZ())).setHoverEvent(new HoverEvent(net.minecraft.text.HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip", new Object[0])));
             });
-            source.sendFeedback(new TranslatableText("commands.locate.success", new Object[]{getStructureName(structure), text_1, int_1}), false);
+            source.sendFeedback(new TranslatableText("commands.locate.success", getStructureName(structure), text_1, int_1), false);
+            Thread.currentThread().interrupt();
             return int_1;
         }
     }

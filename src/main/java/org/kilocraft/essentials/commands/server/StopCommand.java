@@ -45,7 +45,6 @@ public class StopCommand {
         } else
             KiloServer.getServer().shutdown();
 
-
         return 1;
     }
 
