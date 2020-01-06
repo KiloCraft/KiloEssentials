@@ -32,6 +32,9 @@ public class ItemLoreCommand {
 		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 10));
 		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString()).executes(context ->
 				changeLore(context, getInteger(context, "line")));
+		LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove");
+		RequiredArgumentBuilder<ServerCommandSource, Integer> removeLineArgument = argument("line", integer(1, 10)).executes(context ->
+				removeLore(context, getInteger(context, "line")));
 
 		builder.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.item.lore", 2));
 
@@ -56,8 +59,32 @@ public class ItemLoreCommand {
 		builder.then(resetArgument);
 		lineArgument.then(nameArgument);
 		setArgument.then(lineArgument);
+		removeArgument.then(removeLineArgument);
+		builder.then(removeArgument);
 		builder.then(setArgument);
 		argumentBuilder.then(builder);
+	}
+
+	public static int removeLore (CommandContext<ServerCommandSource> context, int line) throws CommandSyntaxException {
+		int inputLine = line - 1;
+		PlayerEntity player = context.getSource().getPlayer();
+		ItemStack item = player.getMainHandStack();
+
+		if (item == null || item.isEmpty() == true) {
+			context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
+		} else {
+			if (!item.hasTag() || item.getTag() == null || !item.getTag().contains("display") || !item.getTag().getCompound("display").contains("Lore")) {
+				return 0;
+			}
+
+			ListTag lore = item.getTag().getCompound("display").getList("Lore", 8);
+			if (inputLine >= lore.size()) {
+				return 0;
+			}
+
+			lore.remove(inputLine);
+		}
+		return 0;
 	}
 
 	public static int changeLore(CommandContext<ServerCommandSource> context, int line) throws CommandSyntaxException {
