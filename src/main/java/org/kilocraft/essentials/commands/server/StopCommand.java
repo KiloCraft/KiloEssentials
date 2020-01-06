@@ -10,6 +10,7 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
@@ -20,11 +21,11 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = literal("stop")
+        LiteralArgumentBuilder<ServerCommandSource> builder = literal("shutdown")
                 .then(argument("args", greedyString())
-                    .executes(c -> execute(c.getSource(), getString(c, "args")))
-                )
-                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_RESTART, 4))
+                        .suggests(TabCompletions::noSuggestions)
+                        .executes(c -> execute(c.getSource(), getString(c, "args"))))
+                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_STOP, 4))
                 .executes(c -> execute(c.getSource(), ""));
 
         dispatcher.register(builder);
@@ -38,7 +39,7 @@ public class StopCommand {
             literalText.styled((style) -> {
                 style.setColor(Formatting.RED);
                 style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW)));
-                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));
+                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/shutdown -confirmed"));
             });
 
             KiloChat.sendMessageTo(source, literalText);

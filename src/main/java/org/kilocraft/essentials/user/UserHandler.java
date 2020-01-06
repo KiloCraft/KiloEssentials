@@ -13,9 +13,7 @@ public class UserHandler {
     private static File saveDir = new File(System.getProperty("user.dir") + "/KiloEssentials/users/");
 
     public void handleUser(ServerUser serverUser) throws IOException {
-        if (getUserFile(serverUser).exists())
-            serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(serverUser))));
-        else {
+        if (!loadUser(serverUser)) {
             saveDir.mkdirs();
             getUserFile(serverUser).createNewFile();
             saveData(serverUser);
@@ -24,10 +22,12 @@ public class UserHandler {
 
     }
 
-    public void loadUser(ServerUser serverUser) throws IOException {
-        if (getUserFile(serverUser).exists())
+    public boolean loadUser(ServerUser serverUser) throws IOException {
+        if (getUserFile(serverUser).exists()) {
             serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(serverUser))));
-
+            return true;
+        }
+        return false;
     }
 
     void saveData(ServerUser serverUser) throws IOException {
@@ -44,7 +44,7 @@ public class UserHandler {
     }
 
     public File getUserFile(ServerUser serverUser) {
-        return new File( KiloConfig.getWorkingDirectory() + "/KiloEssentials/users/" + serverUser.getUuid().toString() + ".dat");
+        return getUserFile(serverUser.uuid);
     }
 
     public File getUserFile(UUID uuid) {

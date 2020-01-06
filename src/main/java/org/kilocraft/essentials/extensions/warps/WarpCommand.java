@@ -50,7 +50,7 @@ public class WarpCommand {
         registerAliases();
     }
 
-    static void registerAliases() {
+    public static void registerAliases() {
         for (Warp warp : WarpManager.getWarps()) {
             if (warp.getAddCommand()) {
                 SimpleCommandManager.register(

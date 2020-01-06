@@ -61,7 +61,6 @@ public class Warp {
 
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
-
         {
             CompoundTag pos = new CompoundTag();
             pos.putDouble("x", this.x);
@@ -80,6 +79,9 @@ public class Warp {
 
         compoundTag.putString("dimension", this.dimensionId.toString());
 
+        if (this.addCommand)
+            compoundTag.putBoolean("addCmd", true);
+
         return compoundTag;
     }
 
@@ -96,6 +98,9 @@ public class Warp {
             this.dX = dir.getFloat("dX");
             this.dY = dir.getFloat("dY");
         }
+
+        if (tag.contains("addCmd"))
+            this.addCommand = true;
 
     }
 }

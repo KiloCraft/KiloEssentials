@@ -18,7 +18,7 @@ public class BungeecordSupport implements SupportedMod {
 
     @Override
     public boolean isPresent() {
-        return false;
+        return present;
     }
 
     @Override
@@ -28,6 +28,7 @@ public class BungeecordSupport implements SupportedMod {
 
     @Override
     public void setPresent(boolean set) {
+        this.present = set;
     }
 
 }

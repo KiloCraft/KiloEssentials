@@ -55,6 +55,7 @@ public class LiteralCommandModified {
         add("pardon");
         add("pardon-ip");
         add("save-all");
+        add("stop");
     }};
 
     public static boolean isVanillaCommand(String nodeName) {

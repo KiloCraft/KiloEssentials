@@ -81,10 +81,6 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
         return 1;
     }
 
-    public static String[] getWarpsAsArray() {
-        return warps.stream().toArray(String[]::new);
-    }
-
     public static CompletableFuture<Suggestions> suggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(warps.stream().map(Warp::getName), builder);
     }
