@@ -7,11 +7,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.container.Container;
+import net.minecraft.container.ContainerType;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -63,8 +63,9 @@ public class InventoryCommand {
 
             @Override
             public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                return GenericContainer.createGeneric9x6(i, playerInventory, new DoubleInventory(target.inventory, target.getEnderChestInventory()));
+                return new GenericContainer(ContainerType.GENERIC_9X4, i, source.inventory, target.inventory, 4);
             }
+
         };
 
         KiloChat.sendLangMessageTo(source, "general.seek_container", target.getEntityName(), "Inventory");

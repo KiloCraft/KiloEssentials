@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.commands.misc;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
@@ -18,13 +19,16 @@ import static org.kilocraft.essentials.KiloCommands.hasPermission;
 
 public class PingCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("ping")
-                        .requires(src -> hasPermission(src, CommandPermission.PING_SELF))
-                        .executes(ctx -> execute(ctx.getSource(), ctx.getSource().getPlayer()))
-                        .then(argument("player", player())
-                                .suggests(TabCompletions::allPlayers)
-                                .requires(src -> hasPermission(src, CommandPermission.PING_OTHERS))
-                                .executes(ctx -> execute(ctx.getSource(), getPlayer(ctx, "player")))));
+        LiteralCommandNode<ServerCommandSource> rootCommand = literal("ping")
+                .requires(src -> hasPermission(src, CommandPermission.PING_SELF))
+                .executes(ctx -> execute(ctx.getSource(), ctx.getSource().getPlayer()))
+                .then(argument("player", player())
+                        .suggests(TabCompletions::allPlayers)
+                        .requires(src -> hasPermission(src, CommandPermission.PING_OTHERS))
+                        .executes(ctx -> execute(ctx.getSource(), getPlayer(ctx, "player")))).build();
+
+        dispatcher.getRoot().addChild(rootCommand);
+        dispatcher.register(literal("latency").redirect(rootCommand));
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity target) {

@@ -8,8 +8,9 @@ public class Warp {
     private double x, y, z;
     private Identifier dimensionId;
     private float dX, dY;
+    private boolean addCommand;
 
-    public Warp(String name, double x, double y, double z, float yaw, float pitch, Identifier dimensionId) {
+    public Warp(String name, double x, double y, double z, float yaw, float pitch, Identifier dimensionId, boolean addCommand) {
         this.name = name;
         this.x = x;
         this.y = y;
@@ -17,6 +18,7 @@ public class Warp {
         this.dimensionId = dimensionId;
         this.dX = pitch;
         this.dY = yaw;
+        this.addCommand = addCommand;
     }
 
     public Warp(String name, CompoundTag tag) {
@@ -50,6 +52,10 @@ public class Warp {
 
     public Identifier getDimId() {
         return this.dimensionId;
+    }
+
+    public boolean getAddCommand() {
+        return this.addCommand;
     }
 
 

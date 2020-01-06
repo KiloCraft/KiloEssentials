@@ -265,6 +265,19 @@ public enum TextFormat {
         return new String(b);
     }
 
+    public static String reverseTranslate(String textToTranslate, char altColorChar) {
+        Validate.notNull(textToTranslate, "Cannot translate null text");
+        char[] b = textToTranslate.toCharArray();
+
+        for (int i = 0; i < b.length - 1; i++) {
+            if (b[i] == COLOR_CHAR && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
+                b[i] = altColorChar;
+                b[i+1] = Character.toLowerCase(b[i+1]);
+            }
+        }
+        return new String(b);
+    }
+
     @NotNull
     public static String translate(String string) {
         return translateAlternateColorCodes('&', string);

@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.warps.commands.WarpCommand;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,6 +31,10 @@ public class WarpManager extends NBTWorldData implements ConfigurableFeature {
         WorldDataLib.addIOCallback(this);
         WarpCommand.register(KiloCommands.getDispatcher());
         return true;
+    }
+
+    public static void load() {
+        WarpCommand.registerAliases();
     }
 
     public static List<Warp> getWarps() { // TODO Move all access to Feature Types in future.

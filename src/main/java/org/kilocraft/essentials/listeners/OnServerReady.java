@@ -18,7 +18,7 @@ public class OnServerReady implements EventHandler<ServerReadyEvent> {
 
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(() ->
-                KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 10, 2, TimeUnit.SECONDS);
+                KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 0, 2, TimeUnit.SECONDS);
 
     }
 }

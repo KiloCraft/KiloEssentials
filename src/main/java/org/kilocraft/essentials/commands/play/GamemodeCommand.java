@@ -55,8 +55,7 @@ public class GamemodeCommand {
 
     private static void build(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
         RequiredArgumentBuilder<ServerCommandSource, String> gameTypeArgument = argument("gameType", string())
-                .suggests(GamemodeCommand::suggestGameModes)
-                .executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), null,false));
+                .suggests(GamemodeCommand::suggestGameModes).executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), null,false));
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("target", players())
                 .suggests(TabCompletions::allPlayers)
@@ -114,26 +113,15 @@ public class GamemodeCommand {
     }
 
     private static CompletableFuture<Suggestions> suggestGameModes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        int select = new Random().nextInt((2) + 1);
         List<String> strings = new ArrayList<>();
-        List<String> integers = new ArrayList<>();
-        List<String> firstChar = new ArrayList<>();
-        firstChar.add("sp");
         for (GameMode value : GameMode.values()) {
-            if (value.equals(GameMode.NOT_SET)) continue;
+            if (value.equals(GameMode.NOT_SET))
+                continue;
+
             strings.add(value.getName());
-            integers.add(String.valueOf(value.getId()));
-            if (!value.equals(GameMode.SPECTATOR))
-                firstChar.add(String.valueOf(value.getName().charAt(0)));
         }
 
-        List<String> finalStrings = strings;
-        if (select == 0)
-            finalStrings = integers;
-        else if (select == 1)
-            finalStrings = firstChar;
-
-        return CommandSource.suggestMatching(finalStrings, builder);
+        return CommandSource.suggestMatching(strings, builder);
     }
 
 }

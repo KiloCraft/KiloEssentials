@@ -15,8 +15,8 @@ public class ItemCommand {
     	argumentBuilder.requires(s -> KiloCommands.hasPermission(s, CommandPermission.ITEM_NAME) ||
                 KiloCommands.hasPermission(s, CommandPermission.ITEM_LORE));
     	
-        ItemNameCommand.registerChild(argumentBuilder);
-        ItemLoreCommand.registerChild(argumentBuilder);
+        ItemNameCommand.registerChild(argumentBuilder, dispatcher);
+        ItemLoreCommand.registerChild(argumentBuilder, dispatcher);
 
         dispatcher.register(argumentBuilder);
     }

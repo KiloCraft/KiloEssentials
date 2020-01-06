@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
+import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.CommandManagerMixin;
 
@@ -57,7 +58,7 @@ public class LiteralCommandModified {
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
-        return LiteralCommandModified.vanillaCommandsToRename.contains(nodeName);
+        return vanillaCommandsToRename.contains(nodeName);
     }
 
     public static boolean isCustomCommand(String nodeName) {
@@ -78,7 +79,7 @@ public class LiteralCommandModified {
 
 
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
-        if (!KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
+        if (!KiloConfig.getProvider().getMain().getBooleanSafely(ConfigCache.COMMANDS_SUGGESTIONS_REQUIRE_PERMISSION, false)) {
             if (commandNode.canUse(source)) {
                 if (isCustomCommand(commandNode.getName()))
                     return true;

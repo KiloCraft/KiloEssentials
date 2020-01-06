@@ -33,12 +33,15 @@ public class MessageCommand {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(literal("ke_msg").executes(ctx ->
                 executeUsageFor("command.message.usage", ctx.getSource()))
                         .then(argument("player", player()).suggests(TabCompletions::allPlayers)
-                                .then(argument("message", greedyString()).executes(ctx ->
+                                .then(argument("message", greedyString())
+                                        .suggests(TabCompletions::noSuggestions)
+                                        .executes(ctx ->
                                                 executeSend(ctx.getSource(), getPlayer(ctx, "player"), getString(ctx, "message"))))));
 
         LiteralCommandNode<ServerCommandSource> replyNode = dispatcher.register(literal("r")
                         .executes(context -> executeUsageFor("command.message.reply.usage", context.getSource()))
                         .then(argument("message", greedyString())
+                                .suggests(TabCompletions::noSuggestions)
                                 .executes(MessageCommand::executeReply)));
 
         dispatcher.register(literal("ke_tell").redirect(node));

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.extensions.warps.commands;
+package org.kilocraft.essentials.extensions.warps;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -16,11 +16,13 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.warps.Warp;
-import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.simplecommand.SimpleCommand;
+import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 
 import java.text.DecimalFormat;
 
+import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
+import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -35,25 +37,29 @@ public class WarpCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> warpArg = argument("warp", word());
         LiteralArgumentBuilder<ServerCommandSource> listLiteral = literal("warps");
 
-        LiteralArgumentBuilder<ServerCommandSource> spawnLiteral = literal("spawn")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.WARP));
-
-        LiteralArgumentBuilder<ServerCommandSource> setSpawnLiteral = literal("setspawn")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SETWARP));
-
         warpArg.executes(c -> executeTeleport(c.getSource(), getString(c, "warp")));
         listLiteral.executes(c -> executeList(c.getSource()));
-        spawnLiteral.executes(c -> executeTeleport(c.getSource(), "spawn"));
-        setSpawnLiteral.executes(c -> executeAdd(c.getSource(), "spawn"));
 
         warpArg.suggests(WarpManager::suggestions);
 
         builder.then(warpArg);
         registerAdmin(builder, dispatcher);
-        dispatcher.register(spawnLiteral);
-        dispatcher.register(setSpawnLiteral);
         dispatcher.register(listLiteral);
         dispatcher.register(builder);
+
+        registerAliases();
+    }
+
+    static void registerAliases() {
+        for (Warp warp : WarpManager.getWarps()) {
+            if (warp.getAddCommand()) {
+                SimpleCommandManager.register(
+                        new SimpleCommand(
+                                "warp." + warp.getName().toLowerCase(),
+                                warp.getName().toLowerCase(),
+                                (source, args, server) -> executeTeleport(source, warp.getName())));
+            }
+        }
     }
 
     private static void registerAdmin(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -66,7 +72,8 @@ public class WarpCommand {
         aliasRemove.requires(s -> KiloCommands.hasPermission(s, CommandPermission.DELWARP));
 
         removeArg.executes(c -> executeRemove(c.getSource(), getString(c, "warp")));
-        addArg.executes(c -> executeAdd(c.getSource(), getString(c, "name")));
+        addArg.then(argument("registerCommand", bool())
+                .executes(c -> executeAdd(c.getSource(), getString(c, "name"), getBool(c, "registerCommand"))));
 
         removeArg.suggests(WarpManager::suggestions);
 
@@ -115,7 +122,7 @@ public class WarpCommand {
         return 1;
     }
 
-    private static int executeAdd(ServerCommandSource source, String name) throws CommandSyntaxException {
+    private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
         DecimalFormat df = new DecimalFormat("#.##");
         WarpManager.addWarp(
                 new Warp(
@@ -125,9 +132,11 @@ public class WarpCommand {
                         Double.parseDouble(df.format(source.getPlayer().getPos().z)),
                         Float.parseFloat(df.format(source.getPlayer().yaw)),
                         Float.parseFloat(df.format(source.getPlayer().pitch)),
-                        Registry.DIMENSION.getId(source.getWorld().getDimension().getType())));
+                        Registry.DIMENSION.getId(source.getWorld().getDimension().getType()),
+                        addCommand));
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
+        registerAliases();
 
         return 1;
     }
@@ -136,9 +145,11 @@ public class WarpCommand {
         if (WarpManager.getWarpsByName().contains(warp)) {
             WarpManager.removeWarp(warp);
             KiloChat.sendLangMessageTo(source, "command.warp.remove", warp);
+            registerAliases();
         }
         else
             throw WARP_NOT_FOUND_EXCEPTION.create();
+
         return 1;
     }
 

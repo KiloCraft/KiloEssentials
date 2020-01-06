@@ -1,17 +1,27 @@
 package org.kilocraft.essentials.commands.item;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import io.github.indicode.fabric.permissions.Thimble;
-import net.minecraft.entity.player.PlayerEntity;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.chat.KiloChat;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -19,61 +29,57 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class ItemNameCommand {
-	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
-		LiteralArgumentBuilder<ServerCommandSource> builder = literal("name")
-				.requires(src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_NAME));
-		LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset");
-		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
-		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name...", greedyString());
+	private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_NAME);
+	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
+		LiteralCommandNode<ServerCommandSource> rootCommand = literal("name")
+				.requires(PERMISSION_CHECK).build();
+		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", greedyString())
+				.suggests(ItemNameCommand::itemNameSuggestions)
+				.executes(ItemNameCommand::execute);
 
-		nameArgument.executes(context -> {
-			PlayerEntity player = context.getSource().getPlayer();
-			ItemStack item = player.getMainHandStack();
-
-			if (item == null || item.isEmpty() == true) {
-				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
-			} else {
-				if (player.experienceLevel < 1 && !player.isCreative()) {
-					context.getSource().sendFeedback(LangText.get(true, "command.item.name.noxp"), false);
-					return 1;
-				}
-
-				if (player.isCreative() == false) {
-					player.addExperienceLevels(-1);
-				}
-
-				if (KiloCommands.hasPermission(context.getSource(), CommandPermission.ITEM_FORMATTING)) {
-					item.setCustomName(new LiteralText(TextFormat.translateAlternateColorCodes('&',
-							getString(context, "name..."))));
-				} else {
-					item.setCustomName(new LiteralText(TextFormat.removeAlternateColorCodes('&',
-							getString(context, "name..."))));
-				}
-
-				player.sendMessage(LangText.getFormatter(true, "command.item.name.success",
-						getString(context, "name...")));
-			}
-
-			return 0;
-		});
-
-		resetArgument.executes(context -> {
-			ItemStack item = context.getSource().getPlayer().getMainHandStack();
-			if (item == null || item.isEmpty() == true) {
-				context.getSource().sendFeedback(LangText.get(true, "command.item.name.noitem"), false);
-			} else {
-				context.getSource().sendFeedback(LangText.get(true, "command.item.name.reset.success"), false);
-				item.setCustomName(new TranslatableText(item.getItem().getTranslationKey()));
-			}
-
-			return 0;
-		});
-
-		builder.requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.command.item.name", 2));
-
-		setArgument.then(nameArgument);
-		builder.then(setArgument);
-		builder.then(resetArgument);
-		argumentBuilder.then(builder);
+		rootCommand.addChild(nameArgument.build());
+		builder.then(rootCommand);
+		dispatcher.register(literal("rename").requires(PERMISSION_CHECK).redirect(rootCommand));
 	}
+
+	private static CompletableFuture<Suggestions> itemNameSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+		ItemStack item = context.getSource().getPlayer().getMainHandStack();
+		List<String> list = new ArrayList<String>(){{ add("reset"); }};
+		if (!item.isEmpty())
+			list.add(TextFormat.reverseTranslate(item.getName().asFormattedString(), '&'));
+		return CommandSource.suggestMatching(list, builder);
+	}
+
+	private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+		ServerPlayerEntity player = ctx.getSource().getPlayer();
+		String inputString = getString(ctx, "name");
+		ItemStack item = player.getMainHandStack();
+
+		if (inputString.length() >= 90) {
+			KiloChat.sendLangMessageTo(player, "command.item.too_long");
+			return 0;
+		}
+
+		if (item.isEmpty()) {
+			KiloChat.sendLangMessageTo(player, "command.item.invalid_item");
+			return 0;
+		}
+
+		if (!player.isCreative())
+			player.addExperienceLevels(-1);
+
+		if (inputString.equalsIgnoreCase("reset")) {
+			item.removeCustomName();
+			KiloChat.sendLangMessageTo(player, "command.item.reset", "name", item.getName().asFormattedString());
+
+			return 1;
+		}
+
+		String nameToSet = TextFormat.translate(inputString, KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING));
+		KiloChat.sendLangMessageTo(player, "command.item.set", "name", nameToSet);
+		item.setCustomName(new LiteralText(nameToSet));
+
+		return 1;
+	}
+
 }

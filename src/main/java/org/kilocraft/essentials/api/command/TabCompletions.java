@@ -6,7 +6,6 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
@@ -23,16 +22,17 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.modsupport.VanishModSupport;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 public class TabCompletions {
 
     private static PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
+
+    public static CompletableFuture<Suggestions> noSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return new CompletableFuture<>();
+    }
 
     public static CompletableFuture<Suggestions> allPlayers(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((it) ->
@@ -66,17 +66,12 @@ public class TabCompletions {
 
     public static CompletableFuture<Suggestions> dimensions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         List<String> dims = new ArrayList<>();
-        Registry.DIMENSION.forEach(dimType -> dims.add(DimensionType.getId(dimType).toString()));
+        Registry.DIMENSION.forEach(dimType -> dims.add(Objects.requireNonNull(DimensionType.getId(dimType)).toString()));
         return CommandSource.suggestMatching(dims.stream(), builder);
     }
 
     public static CompletableFuture<Suggestions> usableCommands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter(
-                        (child) -> LiteralCommandModified.canSourceUse(child, context.getSource())
-                                && child instanceof LiteralCommandNode)
-                        .map(CommandNode::getName),
-                builder);
+        return KiloCommands.toastSuggestions(context, builder);
     }
 
     public static CompletableFuture<Suggestions> commands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

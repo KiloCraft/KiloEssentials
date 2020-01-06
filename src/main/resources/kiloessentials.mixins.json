@@ -9,12 +9,12 @@
     "CommandManagerMixin",
     "CreeperEntityMixin",
     "EntityRaytraceMixin",
+    "AnvilContainerMixin",
     "MinecraftServerMixin",
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
-    "AnvilContainerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
