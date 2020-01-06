@@ -83,6 +83,8 @@ public class ItemLoreCommand {
 			}
 
 			lore.remove(inputLine);
+
+			player.sendMessage(LangText.getFormatter(true, "command.item.lore.remove.success", inputLine + 1));
 		}
 		return 0;
 	}
@@ -135,7 +137,7 @@ public class ItemLoreCommand {
 			itemTag.getCompound("display").put("Lore", lore);
 			item.setTag(itemTag);
 
-			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", inputLine,
+			player.sendMessage(LangText.getFormatter(true, "command.item.lore.success", inputLine + 1,
 					getString(context, "name...")));
 		}
 		return 1;
