@@ -9,6 +9,7 @@ public class ThreadManager {
     private Thread thread;
     private boolean isMain;
 
+    @Deprecated
     public <T extends KiloThread & Runnable> ThreadManager(T t) {
         this.kiloThread = t;
         this.isMain = false;
