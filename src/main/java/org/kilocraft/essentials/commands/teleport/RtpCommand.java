@@ -7,8 +7,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -30,6 +28,7 @@ import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.util.Location;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -51,25 +50,43 @@ public class RtpCommand {
 		LiteralCommandNode<ServerCommandSource> rootCommand = literal("randomteleport").requires(PERMISSION_CHECK_SELF).executes(RtpCommand::executeSelf).build();
 
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
-				.requires(PERMISSION_CHECK_OTHERS).suggests(TabCompletions::allPlayers).executes(RtpCommand::executeOthers);
+				.requires(PERMISSION_CHECK_OTHERS)
+				.suggests(TabCompletions::allPlayers)
+				.executes(RtpCommand::executeOthers);
 
-		LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add").requires(PERMISSION_CHECK_MANAGE)
-				.then(argument("amount", integer(1)).executes(RtpCommand::executeAdd));
+		LiteralArgumentBuilder<ServerCommandSource> leftArg = literal("-left")
+				.requires(PERMISSION_CHECK_SELF)
+				.executes(RtpCommand::executeGet);
 
-		LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set").requires(PERMISSION_CHECK_MANAGE)
-				.then(argument("amount", integer(0)).executes(RtpCommand::executeSet));
+		LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add")
+				.requires(PERMISSION_CHECK_MANAGE)
+				.then(argument("amount", integer(1))
+						.executes(RtpCommand::executeAdd));
 
-		LiteralArgumentBuilder<ServerCommandSource> getArg = literal("get").requires(PERMISSION_CHECK_MANAGE).executes(RtpCommand::executeGet);
+		LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set")
+				.requires(PERMISSION_CHECK_MANAGE)
+				.then(argument("amount", integer(0))
+						.executes(RtpCommand::executeSet));
 
-		LiteralArgumentBuilder<ServerCommandSource> removeArg = literal("remove").requires(PERMISSION_CHECK_MANAGE)
-				.then(argument("amount", integer(0)).executes(RtpCommand::executeRemove));
+		LiteralArgumentBuilder<ServerCommandSource> getArg = literal("get")
+				.requires(PERMISSION_CHECK_MANAGE)
+				.executes(RtpCommand::executeGet);
+
+		LiteralArgumentBuilder<ServerCommandSource> removeArg = literal("remove")
+				.requires(PERMISSION_CHECK_MANAGE)
+				.then(argument("amount", integer(0))
+						.executes(RtpCommand::executeRemove));
 
 		selectorArg.then(addArg);
 		selectorArg.then(setArg);
 		selectorArg.then(getArg);
 		selectorArg.then(removeArg);
+		rootCommand.addChild(leftArg.build());
 		rootCommand.addChild(selectorArg.build());
 		dispatcher.getRoot().addChild(literal("rtp").requires(PERMISSION_CHECK_SELF).executes(RtpCommand::executeSelf).redirect(rootCommand).build());
+		dispatcher.getRoot().addChild(literal("wilderness").requires(PERMISSION_CHECK_SELF).executes(RtpCommand::executeSelf).redirect(rootCommand).build());
+		dispatcher.getRoot().addChild(literal("wild").requires(PERMISSION_CHECK_SELF).executes(RtpCommand::executeSelf).redirect(rootCommand).build());
+
 		dispatcher.getRoot().addChild(rootCommand);
 	}
 
@@ -146,47 +163,20 @@ public class RtpCommand {
 		int randomX = random.nextInt(30000) - 15000; // -15000 to +15000
 		int randomZ = random.nextInt(30000) - 15000; // -15000 to  +15000
 
-		Location loc = Location.of(randomX, 0, randomZ, target.dimension);
-
-		loc.setOnGround();
-
-		return 1;
-	}
-
-	@Deprecated
-	public static void teleportRandomly(ServerCommandSource source, ServerPlayerEntity target) {
-		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
-		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
-
-		//Check if the player has any rtps left or permission to ignore the limit
-		if (CommandHelper.areTheSame(source, target) && targetUser.getRTPsLeft() <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
-			targetUser.sendConfigMessage("commands.rtp.empty");
-			return;
-		}
-
-		//Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-		if (!target.dimension.equals(DimensionType.OVERWORLD) && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(source)) {
-			targetUser.sendConfigMessage("commands.rtp.dimension_exception");
-			return;
-		}
-
-		//Generate random coordinates
-		Random random = new Random();
-		int randomX = random.nextInt(30000) - 15000; // -15000 to +15000
-		int randomZ = random.nextInt(30000) - 15000; // -15000 to  +15000
-
 		Biome.Category biomeCategory = target.world.getBiomeAccess().getBiome(new BlockPos(randomX, 65, randomZ)).getCategory();
 
 		if (biomeCategory == Category.OCEAN || biomeCategory == Category.RIVER) {
-			teleportRandomly(source, target);
-			return;
+			execute(source, target);
+			return 0;
 		}
 
-		target.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 600, 255, false, false, false));
-		target.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 600, 255, false, false, false));
+		Location loc = Location.of(randomX, 0, randomZ, target.dimension);
 
 		BackCommand.saveLocation(targetUser);
-		target.teleport(target.getServerWorld(), randomX, 255, randomZ, 0, 0);
+		BlockPos pos = Objects.requireNonNull(loc.getPosOnGround());
+		target.teleport(target.getServerWorld(), pos.getX(), pos.getY(), pos.getZ(), 0, 0);
+
+
 
 		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
@@ -201,9 +191,12 @@ public class RtpCommand {
 							.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
 							.replace("{cord.Z}", String.valueOf(randomZ))
 					, true));
-		} else
-			sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
 
-		//Thread.currentThread().interrupt();
+			return 1;
+		}
+
+		sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
+		return 1;
 	}
+
 }
