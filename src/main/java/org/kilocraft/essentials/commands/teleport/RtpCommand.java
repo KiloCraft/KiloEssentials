@@ -56,7 +56,7 @@ public class RtpCommand {
 
 		LiteralArgumentBuilder<ServerCommandSource> leftArg = literal("-left")
 				.requires(PERMISSION_CHECK_SELF)
-				.executes(RtpCommand::executeGet);
+				.executes(RtpCommand::executeLeft);
 
 		LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add")
 				.requires(PERMISSION_CHECK_MANAGE)
@@ -88,6 +88,14 @@ public class RtpCommand {
 		dispatcher.getRoot().addChild(literal("wild").requires(PERMISSION_CHECK_SELF).executes(RtpCommand::executeSelf).redirect(rootCommand).build());
 
 		dispatcher.getRoot().addChild(rootCommand);
+	}
+
+	private static int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+		OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
+		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
+				.sendLangMessage("command.rtp.get", user.getDisplayname(), user.getRTPsLeft());
+
+		return user.getRTPsLeft();
 	}
 
 	private static int executeAdd(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
