@@ -11,13 +11,13 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.ThreadManager;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.TabCompletions;
@@ -27,7 +27,7 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
-import org.kilocraft.essentials.threaded.ThreadedRandomTeleporter;
+import org.kilocraft.essentials.util.Location;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
 import java.util.Random;
@@ -54,7 +54,7 @@ public class RtpCommand {
 				.requires(PERMISSION_CHECK_OTHERS).suggests(TabCompletions::allPlayers).executes(RtpCommand::executeOthers);
 
 		LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add").requires(PERMISSION_CHECK_MANAGE)
-				.then(argument("amount", integer(0)).executes(RtpCommand::executeAdd));
+				.then(argument("amount", integer(1)).executes(RtpCommand::executeAdd));
 
 		LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set").requires(PERMISSION_CHECK_MANAGE)
 				.then(argument("amount", integer(0)).executes(RtpCommand::executeSet));
@@ -116,21 +116,44 @@ public class RtpCommand {
 	}
 
 	private static int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-		return execute(ctx.getSource().getPlayer(), ctx.getSource());
+		return execute(ctx.getSource(), ctx.getSource().getPlayer());
 	}
 
 	private static int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-		return execute(getPlayer(ctx, "target"), ctx.getSource());
+		return execute(ctx.getSource(), getPlayer(ctx, "target"));
 	}
 
-	private static int execute(ServerPlayerEntity player, ServerCommandSource source) {
-		ThreadManager thread = new ThreadManager(new ThreadedRandomTeleporter(player, source));
-		thread.start();
+	private static int execute(ServerCommandSource source, ServerPlayerEntity target) {
+		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
+		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
+
+		//Check if the player has any rtps left or permission to ignore the limit
+		if (CommandHelper.areTheSame(source, target) && targetUser.getRTPsLeft() <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
+			targetUser.sendConfigMessage("commands.rtp.empty");
+			return 0;
+		}
+
+		//Check if the target is in the correct dimension or has permission to perform the command in other dimensions
+		if (!target.dimension.equals(DimensionType.OVERWORLD) && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(source)) {
+			targetUser.sendConfigMessage("commands.rtp.dimension_exception");
+			return 0;
+		}
+
+		ServerWorld world = target.getServerWorld();
+
+		//Generate random coordinates
+		Random random = new Random();
+		int randomX = random.nextInt(30000) - 15000; // -15000 to +15000
+		int randomZ = random.nextInt(30000) - 15000; // -15000 to  +15000
+
+		Location loc = Location.of(randomX, 0, randomZ, target.dimension);
+
+		loc.setOnGround();
 
 		return 1;
 	}
 
-	@SuppressWarnings("Do not run on main thread")
+	@Deprecated
 	public static void teleportRandomly(ServerCommandSource source, ServerPlayerEntity target) {
 		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
 		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
@@ -181,7 +204,6 @@ public class RtpCommand {
 		} else
 			sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
 
-		Thread.currentThread().interrupt();
-		return;
+		//Thread.currentThread().interrupt();
 	}
 }

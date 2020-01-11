@@ -2,6 +2,7 @@ package org.kilocraft.essentials.threaded;
 
 import org.apache.logging.log4j.Logger;
 
+@Deprecated
 public interface KiloThread {
     /**
      * Name of the thread

@@ -35,7 +35,7 @@ public enum  ConfigCache {
 
     static void load() {
         for (ConfigCache it : values()) {
-            it.value = getFile(it).getOrElse(it.key, "NULL");
+            it.value = getFile(it).getOrElse(it.key, "NULL<Cache>");
         }
     }
 

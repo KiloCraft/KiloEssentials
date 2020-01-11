@@ -153,17 +153,34 @@ public class KiloCommands {
         CommandspyCommand.register(this.dispatcher);
         StatusCommand.register(this.dispatcher);
         InventoryCommand.register(this.dispatcher);
+        SayasCommand.register(this.dispatcher);
     }
 
     private void registerToast() {
         ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument("label", StringArgumentType.string())
-                .suggests(KiloCommands::toastSuggestions)
                 .then(CommandManager.argument("args", StringArgumentType.greedyString())
                         .suggests(TabCompletions::noSuggestions))
                 .build();
 
         getDispatcher().getRoot().addChild(toast);
     }
+
+    public static CompletableFuture<Suggestions> toastSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        List<String> suggestions = new ArrayList<>();
+
+        for (SimpleCommand command : KiloEssentials.getInstance().getCommandHandler().simpleCommandManager.getCommands()) {
+            suggestions.add(command.getLabel());
+        }
+
+        getDispatcher().getRoot().getChildren().stream().filter((child) ->
+                LiteralCommandModified.canSourceUse(child, context.getSource()) && child instanceof LiteralCommandNode &&
+                        !LiteralCommandModified.isVanillaCommand(child.getName()))
+                .map(CommandNode::getName).forEach(suggestions::add);
+
+
+        return CommandSource.suggestMatching(suggestions, builder);
+    }
+
 
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
         String fromLang = ModConstants.getLang().getProperty(langKey);
@@ -265,22 +282,6 @@ public class KiloCommands {
         for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
             KiloServer.getServer().getPlayerManager().sendCommandTree(playerEntity);
         }
-    }
-
-    public static CompletableFuture<Suggestions> toastSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        List<String> suggestions = new ArrayList<>();
-
-        for (SimpleCommand command : KiloEssentials.getInstance().getCommandHandler().simpleCommandManager.getCommands()) {
-            suggestions.add(command.getLabel());
-        }
-
-        getDispatcher().getRoot().getChildren().stream().filter((child) ->
-                LiteralCommandModified.canSourceUse(child, context.getSource()) && child instanceof LiteralCommandNode &&
-                !LiteralCommandModified.isVanillaCommand(child.getName()))
-                .map(CommandNode::getName).forEach(suggestions::add);
-
-
-        return CommandSource.suggestMatching(suggestions, builder);
     }
 
     public int execute(ServerCommandSource executor, String commandToExecute) {

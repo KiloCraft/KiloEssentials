@@ -50,7 +50,7 @@ public class LocateBiomeProvided {
 
         source.sendFeedback(new TranslatableText("commands.locate.success", biomeName, coordinates, distance), false);
 
-        Thread.currentThread().interrupt();
+        //Thread.currentThread().interrupt();
         return 1;
     }
 

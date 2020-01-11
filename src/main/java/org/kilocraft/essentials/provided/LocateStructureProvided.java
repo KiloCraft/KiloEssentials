@@ -28,7 +28,7 @@ public class LocateStructureProvided {
                 style_1.setColor(Formatting.GREEN).setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + source.getName() + " " + blockPos_2.getX() + " ~ " + blockPos_2.getZ())).setHoverEvent(new HoverEvent(net.minecraft.text.HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip", new Object[0])));
             });
             source.sendFeedback(new TranslatableText("commands.locate.success", getStructureName(structure), text_1, int_1), false);
-            Thread.currentThread().interrupt();
+            //Thread.currentThread().interrupt();
             return int_1;
         }
     }

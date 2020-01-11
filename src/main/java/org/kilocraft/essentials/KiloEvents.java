@@ -24,9 +24,8 @@ public class KiloEvents {
             add(new OnScheduledUpdate());
         }};
 
-        for (EventHandler event : events) {
+        for (EventHandler event : events)
             KiloServer.getServer().registerEvent(event);
-        }
 
     }
 }

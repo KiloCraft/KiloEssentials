@@ -4,7 +4,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.commands.teleport.RtpCommand;
 
 public class ThreadedRandomTeleporter implements Runnable, KiloThread {
     private Logger logger;
@@ -23,9 +22,9 @@ public class ThreadedRandomTeleporter implements Runnable, KiloThread {
 
     @Override
     public void run() {
-        logger = LogManager.getFormatterLogger(getName());
-        logger.info("RandomTeleporter thread started by " + this.commandSource.getName());
-        RtpCommand.teleportRandomly(this.commandSource, this.playerEntity);
+//        logger = LogManager.getFormatterLogger(getName());
+//        logger.info("RandomTeleporter thread started by " + this.commandSource.getName());
+//        RtpCommand.teleportRandomly(this.commandSource, this.playerEntity);
     }
 
     @Override
