@@ -152,6 +152,9 @@ public class RtpCommand {
 		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
 		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
 
+		if (targetUser.getRTPsLeft() < 0)
+			targetUser.setRTPsLeft(0);
+
 		//Check if the player has any rtps left or permission to ignore the limit
 		if (CommandHelper.areTheSame(source, target) && targetUser.getRTPsLeft() <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
 			targetUser.sendConfigMessage("commands.rtp.empty");

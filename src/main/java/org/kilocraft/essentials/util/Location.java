@@ -119,9 +119,13 @@ public class Location {
 
         for (int i = 0; i < blocksLeft; i++) {
             BlockPos pos = new BlockPos(this.x, i, this.z);
+
+            System.out.println("L: " + i + " " + pos.toString());
+
             if (this.getWorld().getBlockState(pos).isAir())
                 continue;
 
+            System.out.println("S: " + i + " " + pos.toString());
             finalPos = pos;
         }
 
