@@ -6,6 +6,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
@@ -97,7 +98,7 @@ public class Location {
 
         boolean safe = false;
 
-        for (int i = 0; i < 4; i--) {
+        for (int i = 0; i < 4; i++) {
             BlockPos pos = new BlockPos(this.x, i, this.z);
             if (this.getWorld().getBlockState(pos).isOpaque()) {
                 safe = true;
@@ -108,6 +109,7 @@ public class Location {
         return safe;
     }
 
+    @Nullable
     public BlockPos getPosOnGround() {
         if (this.dimension == null)
             return null;
@@ -115,7 +117,7 @@ public class Location {
         BlockPos finalPos = this.getPos();
         int blocksLeft = MAX_BUILD_LIMIT - this.y;
 
-        for (int i = 0; i < blocksLeft; i--) {
+        for (int i = 0; i < blocksLeft; i++) {
             BlockPos pos = new BlockPos(this.x, i, this.z);
             if (this.getWorld().getBlockState(pos).isAir())
                 continue;
