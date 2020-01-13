@@ -7,12 +7,11 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.EntitySelector;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ChunkTicketType;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.dimension.DimensionType;
@@ -29,10 +28,8 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
-import org.kilocraft.essentials.util.Location;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
-import java.util.Objects;
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -161,6 +158,7 @@ public class RtpCommand {
 		return 1;
 	}
 
+	//TODO: Update this
 	static void teleportRandomly(ServerCommandSource source, ServerPlayerEntity target) {
 		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
 		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
@@ -180,16 +178,11 @@ public class RtpCommand {
 			return;
 		}
 
-		ServerWorld world = target.getServerWorld();
-
 		//Generate random coordinates
 		Random random = new Random();
 		int randomX = random.nextInt(30000) - 15000; // -15000 to +15000
 		int randomZ = random.nextInt(30000) - 15000; // -15000 to  +15000
 
-		BlockPos blockPos = new BlockPos(randomX, 0, randomZ);
-
-		world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(blockPos), 0, target.getEntityId());
 		Biome.Category biomeCategory = target.world.getBiomeAccess().getBiome(new BlockPos(randomX, 65, randomZ)).getCategory();
 
 		if (biomeCategory == Category.OCEAN || biomeCategory == Category.RIVER) {
@@ -197,16 +190,17 @@ public class RtpCommand {
 			return;
 		}
 
-		Location loc = Location.of(randomX, 0, randomZ, target.dimension);
+		target.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 600, 255, false, false, false));
+		target.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 600, 255, false, false, false));
 
 		BackCommand.saveLocation(targetUser);
-		BlockPos pos = Objects.requireNonNull(loc.getPosOnGround());
-		target.teleport(target.getServerWorld(), pos.getX(), pos.getY(), pos.getZ(), 0, 0);
+		target.teleport(target.getServerWorld(), randomX, 255, randomZ, 0, 0);
 
 		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
 		if (CommandHelper.areTheSame(source, target)) {
-			targetUser.setRTPsLeft(targetUser.getRTPsLeft() - 1);
+			if (!PERMISSION_CHECK_IGNORE_LIMIT.test(source))
+				targetUser.setRTPsLeft(targetUser.getRTPsLeft() - 1);
 
 			targetUser.sendMessage(new ChatMessage(
 					KiloConfig.getProvider().getMessages().getMessage("commands.rtp.teleported")
@@ -216,11 +210,10 @@ public class RtpCommand {
 							.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
 							.replace("{cord.Z}", String.valueOf(randomZ))
 					, true));
+		} else
+			sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
 
-			return;
-		}
-
-		sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
+		Thread.currentThread().interrupt();
 	}
 
 }

@@ -11,7 +11,11 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -22,6 +26,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
@@ -122,25 +127,46 @@ public class HomeCommand {
         GameProfile gameProfile = gameProfiles.iterator().next();
         User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
 
-        if(serverUser instanceof NeverJoinedUser)
+        if (serverUser instanceof NeverJoinedUser)
             throw NO_HOMES_EXCEPTION.create();
 
-        StringBuilder homes = new StringBuilder();
         int homesSize = serverUser.getHomesHandler().getHomes().size();
 
-        if (homesSize > 0)
+        if (homesSize == 0)
             throw NO_HOMES_EXCEPTION.create();
 
-        if (source.getPlayer().getUuid().equals(gameProfile.getId())) homes.append("&6Homes&8 (&b").append(homesSize).append("&8)&7:");
-        else homes.append("&6" + gameProfile.getName() + "'s homes&8 (&b").append(homesSize).append("&8)&7:");
+        String prefix = CommandHelper.areTheSame(source, serverUser) ? "Homes" : serverUser.getDisplayname() + "'s Homes";
+        Text text = new LiteralText(prefix).formatted(Formatting.GOLD)
+                .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
+                .append(new LiteralText(String.valueOf(homesSize)).formatted(Formatting.LIGHT_PURPLE))
+                .append(new LiteralText(" ]: ").formatted(Formatting.DARK_GRAY));
 
-        for (Home home  : serverUser.getHomesHandler().getHomes()) {
-            homes.append("&7, &f").append(home.getName());
+        int i = 0;
+        boolean nextColor = false;
+        for (Home home : serverUser.getHomesHandler().getHomes()) {
+            LiteralText thisHome = new LiteralText("");
+            i++;
+
+            Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
+
+            thisHome.append(new LiteralText(home.getName()).styled((style) -> {
+                style.setColor(thisFormat);
+                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new LiteralText("[i] ").formatted(Formatting.YELLOW)
+                                .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN))));
+                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                        "/home " + home.getName() + " " + serverUser.getUsername()));
+            }));
+
+            if (homesSize != i)
+                thisHome.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
+
+            nextColor = !nextColor;
+
+            text.append(thisHome);
         }
 
-        KiloChat.sendMessageTo(source, new ChatMessage(
-                homes.toString().replaceFirst("&7,", ""), true));
-
+        KiloChat.sendMessageToSource(source, text);
         return 1;
     }
 

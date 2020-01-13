@@ -19,6 +19,7 @@ import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.modsupport.BungeecordSupport;
 import org.kilocraft.essentials.modsupport.ModSupport;
@@ -31,6 +32,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
@@ -57,6 +61,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private KiloCommands commands;
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
+	private ScheduledExecutorService scheduledUpdateExecutorService;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
@@ -207,6 +212,17 @@ public class KiloEssentialsImpl implements KiloEssentials {
 				return new SimpleMessage(message);
 			}
 		};
+	}
+
+	public void onServerReady() {
+		this.scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+		scheduledUpdateExecutorService.scheduleAtFixedRate(() ->
+				KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 0, 6, TimeUnit.SECONDS);
+	}
+
+	public void onServerStop() {
+		this.scheduledUpdateExecutorService.shutdown();
 	}
 
 }

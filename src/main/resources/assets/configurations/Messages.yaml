@@ -75,10 +75,10 @@ commands:
 
   playerHomes:
     teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%HOMENAME%&e...'
-    set: '&8[ &6i&8 ] &aYou have set the home &6%HOMENAME%&e!'
-    remove: '&8[ &6i&8 ] &cYou have removed the home &6%HOMENAME%&e!'
+    set: '&8[ &6i&8 ] &aYou have set the home &6%HOMENAME%&a!'
+    remove: '&8[ &6i&8 ] &cYou have removed the home &6%HOMENAME%&c!'
     admin:
-      teleportTo: '&8[ &6i&8 ] &eTeleporting to home &6%HOMENAME%&e &7(&3%OWNER%&7)'
+      teleportTo: '&8[ &6i&8 ] &eTeleporting to home &6%HOMENAME% &7(&3%OWNER%&7)'
       set: '&8[ &6i&8 ] &eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
       remove: '&8[ &6i&8 ] &eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
 
