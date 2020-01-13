@@ -25,6 +25,8 @@ public interface User {
 
     String getDisplayname();
 
+    String getFormattedDisplayname();
+
     Text getRankedDisplayname();
 
     List<String> getSubscriptionChannels();

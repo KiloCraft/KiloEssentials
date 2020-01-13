@@ -10,6 +10,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
@@ -251,6 +252,11 @@ public class ServerUser implements User {
     @Override
     public String getDisplayname() {
         return (hasNickname()) ? this.nickname : this.name;
+    }
+
+    @Override
+    public String getFormattedDisplayname() {
+        return TextFormat.translate(getDisplayname());
     }
 
     @Override

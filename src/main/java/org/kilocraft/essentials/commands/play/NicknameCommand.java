@@ -46,7 +46,7 @@ public class NicknameCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RootCommandNode<ServerCommandSource> rootCommandNode = dispatcher.getRoot();
 
-        LiteralCommandNode<ServerCommandSource> nickRootCommand = dispatcher.register(literal("nickname").requires(PERMISSION_CHECK_EITHER));
+        LiteralCommandNode<ServerCommandSource> nickRootCommand = dispatcher.register(literal("nick").requires(PERMISSION_CHECK_EITHER));
 
         LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
         LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
@@ -78,7 +78,7 @@ public class NicknameCommand {
 
         rootCommandNode.addChild(nickRootCommand);
 
-        LiteralCommandNode<ServerCommandSource> redirect_Nickname = literal("nick").requires(PERMISSION_CHECK_EITHER).redirect(setSelf).build();
+        LiteralCommandNode<ServerCommandSource> redirect_Nickname = literal("nickname").requires(PERMISSION_CHECK_EITHER).redirect(nickRootCommand).build();
         rootCommandNode.addChild(redirect_Nickname);
     }
 
