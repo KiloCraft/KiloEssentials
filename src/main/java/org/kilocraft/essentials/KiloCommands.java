@@ -33,7 +33,6 @@ import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
@@ -73,6 +72,7 @@ import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 import static org.kilocraft.essentials.api.KiloEssentials.getServer;
+import static org.kilocraft.essentials.commands.LiteralCommandModified.*;
 
 public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
@@ -112,7 +112,8 @@ public class KiloCommands {
             }
         });
 
-        registerToast();
+        //TODO: Fix the Toast suggestions
+        //registerToast();
 
         VersionCommand.register(this.dispatcher);
         HelpCommand.register(this.dispatcher);
@@ -173,8 +174,8 @@ public class KiloCommands {
         }
 
         getDispatcher().getRoot().getChildren().stream().filter((child) ->
-                LiteralCommandModified.canSourceUse(child, context.getSource()) && child instanceof LiteralCommandNode &&
-                        !LiteralCommandModified.isVanillaCommand(child.getName()))
+                  child instanceof LiteralCommandNode && canSourceUse(child, context.getSource()) &&
+                        !isVanillaCommand(child.getName()) && shouldUse(child.getName()))
                 .map(CommandNode::getName).forEach(suggestions::add);
 
 

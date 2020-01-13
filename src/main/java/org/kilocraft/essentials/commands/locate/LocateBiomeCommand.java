@@ -6,9 +6,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.ThreadManager;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
-import org.kilocraft.essentials.threaded.ThreadedBiomeLocator;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -26,8 +24,7 @@ public class LocateBiomeCommand {
     }
 
     private static int execute(ServerCommandSource source, Biome biome) {
-        ThreadManager thread = new ThreadManager(new ThreadedBiomeLocator(source, biome));
-        thread.start();
+
 
         return 1;
     }

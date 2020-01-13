@@ -18,6 +18,7 @@ import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
+import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.modsupport.BungeecordSupport;
@@ -126,6 +127,10 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
 			new StartupScript();
+
+		System.out.println(KiloConfig.getProvider().getMain().getBooleanSafely(ConfigCache.BUNGEECORD_MODE, false));
+		System.out.println(KiloConfig.getProvider().getMessages().getBooleanSafely(ConfigCache.DISABLE_EVENT_MESSAGES_ON_BUNGEE_MODE, false));
+
 	}
 
 	public static Logger getLogger() {

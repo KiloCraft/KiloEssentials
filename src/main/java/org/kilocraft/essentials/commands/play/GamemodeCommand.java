@@ -38,7 +38,11 @@ public class GamemodeCommand {
             KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_ADVENTURE) ||
                     KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SURVIVAL) ||
                     KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SPECTATOR) ||
-                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_CREATIVE);
+                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_CREATIVE) ||
+                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_ADVENTURE) ||
+                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SURVIVAL) ||
+                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SPECTATOR) ||
+                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_CREATIVE);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> gamemodeCommand = literal("ke_gamemode")
@@ -82,27 +86,32 @@ public class GamemodeCommand {
         if (players.size() > 1 && !hasPermission(src, getPermission("others", selectedMode)))
             throw new SimpleCommandExceptionType(getPermissionError(getPermission("others", selectedMode).getNode())).create();
 
+        String singletonName = null;
         for (ServerPlayerEntity player : players) {
             if (!silent && !CommandHelper.areTheSame(src, player))
                 KiloChat.sendLangMessageTo(player, "template.#1.announce", src.getName(), "gamemode", selectedMode.getName());
             player.setGameMode(selectedMode);
-
+            if (players.size() == 1)
+                singletonName = player.getEntityName();
         }
 
+        if (singletonName == null)
+            singletonName = src.getName();
+
         KiloChat.sendLangMessageTo(src, "template.#1", "gamemode",
-                selectedMode.getName(), (players.size() == 1) ? src.getName() : players.size() + " players");
+                selectedMode.getName(), (players.size() == 1) ? singletonName : players.size() + " players");
 
         return SUCCESS();
     }
 
     private static GameMode getMode(String arg) {
-        if  (arg.startsWith("sp") || arg.startsWith("3"))
+        if  (arg.startsWith("sp") || arg.equals("3"))
             return GameMode.SPECTATOR;
-        if  (arg.startsWith("s") || arg.startsWith("0"))
+        if  (arg.startsWith("s") || arg.equals("0"))
             return GameMode.SURVIVAL;
-        if  (arg.startsWith("c") || arg.startsWith("1"))
+        if  (arg.startsWith("c") || arg.equals("1"))
             return GameMode.CREATIVE;
-        if  (arg.startsWith("a") || arg.startsWith("2"))
+        if  (arg.startsWith("a") || arg.equals("2"))
             return GameMode.ADVENTURE;
 
         return null;

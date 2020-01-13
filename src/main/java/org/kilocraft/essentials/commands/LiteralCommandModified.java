@@ -79,7 +79,8 @@ public class LiteralCommandModified {
     }
 
     public static boolean shouldUse(String name) {
-        return !vanillaCommandsToRename.contains(name.replace(NMSCommandNamePrefix, ""));
+        return !vanillaCommandsToRename.contains(name.replace(NMSCommandNamePrefix, ""))
+                || isCustomCommand(keCommandPrefix + name);
     }
 
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
@@ -90,22 +91,6 @@ public class LiteralCommandModified {
             return shouldUse(commandNode.getName());
 
         return shouldUse(commandNode.getName()) && commandNode.canUse(source);
-    }
-
-    public static <S> boolean canSourceUseOLD(CommandNode<S> commandNode, S source) {
-        boolean sugReqPerm = KiloConfig.getProvider().getMain().getBooleanSafely(
-                ConfigCache.COMMANDS_SUGGESTIONS_REQUIRE_PERMISSION, true);
-
-        if (sugReqPerm) {
-            if (commandNode.canUse(source)) {
-                if (isCustomCommand(commandNode.getName()))
-                    return true;
-            } else
-                return false;
-        }
-
-        return !isVanillaCommand(commandNode.getName().replace(NMSCommandNamePrefix, ""))
-                || isCustomCommand(keCommandPrefix + commandNode.getName());
     }
 
 }

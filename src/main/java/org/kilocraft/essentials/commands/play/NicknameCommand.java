@@ -20,6 +20,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -45,7 +46,7 @@ public class NicknameCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RootCommandNode<ServerCommandSource> rootCommandNode = dispatcher.getRoot();
 
-        LiteralCommandNode<ServerCommandSource> nickRootCommand = dispatcher.register(literal("nick").requires(PERMISSION_CHECK_EITHER));
+        LiteralCommandNode<ServerCommandSource> nickRootCommand = dispatcher.register(literal("nickname").requires(PERMISSION_CHECK_EITHER));
 
         LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
         LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
@@ -77,7 +78,7 @@ public class NicknameCommand {
 
         rootCommandNode.addChild(nickRootCommand);
 
-        LiteralCommandNode<ServerCommandSource> redirect_Nickname = literal("nickname").requires(PERMISSION_CHECK_EITHER).redirect(nickRootCommand).build();
+        LiteralCommandNode<ServerCommandSource> redirect_Nickname = literal("nick").requires(PERMISSION_CHECK_EITHER).redirect(setSelf).build();
         rootCommandNode.addChild(redirect_Nickname);
     }
 
@@ -105,10 +106,15 @@ public class NicknameCommand {
         }
 
         User user = KiloServer.getServer().getUserManager().getOnline(self);
+
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setSelf")
+                .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayname())
+                .replace("{NICK_NEW}", nickname)
+                , true));
+
         user.setNickname(nickname);
         self.setCustomName(new LiteralText(formattedNickname));
 
-        KiloChat.sendLangMessageTo(source, "template.#1", "nickname", formattedNickname, source.getName());
         return 1;
     }
 
@@ -131,10 +137,16 @@ public class NicknameCommand {
         String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
 
         User user = KiloServer.getServer().getUserManager().getOnline(player);
-        user.setNickname(nickname);
-        player.setCustomName(new LiteralText(formattedNickname));
 
-        KiloChat.sendLangMessageTo(source, "template.#1", "nickname", formattedNickname, player.getName().asString());
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setOthers")
+                        .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayname())
+                        .replace("{NICK_NEW}", nickname)
+                        .replace("{TARGET}", player.getEntityName())
+                , true));
+
+        player.setCustomName(new LiteralText(formattedNickname));
+        user.setNickname(nickname);
+
         if (!CommandHelper.areTheSame(source, player))
             KiloChat.sendLangMessageTo(player, "template.#1.announce", source.getName(), "nickname", formattedNickname);
 
@@ -147,7 +159,7 @@ public class NicknameCommand {
         user.clearNickname();
         // This is an Optional.ofNullable, so the DataTracker will just reset the name without any other magic since TrackedData is always and automatically synchronized with the client.
         player.setCustomName(null);
-        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "nickname", "&ddefault", ctx.getSource().getName());
+        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendConfigMessage("commands.nickname.resetSelf");
         return 1;
     }
 
@@ -158,7 +170,7 @@ public class NicknameCommand {
         // This is an Optional.ofNullable, so the DataTracker will just reset the name without any other magic since TrackedData is always and automatically synchronized with the client.
         player.setCustomName(null);
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "nickname", "&ddefault", ctx.getSource().getName());
+        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendConfigMessage("commands.nickname.resetOthers", player.getEntityName());
         return 1;
     }
 
@@ -174,7 +186,7 @@ public class NicknameCommand {
     private static CompletableFuture<Suggestions> setOthersSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         User user = KiloServer.getServer().getUserManager().getOnline(getPlayer(context, "target"));
         List<String> strings = new ArrayList<>();
-        if (user.hasNickname())
+        if (user.getNickname().isPresent())
             strings.add(user.getNickname().get());
 
         return CommandSource.suggestMatching(strings, builder);

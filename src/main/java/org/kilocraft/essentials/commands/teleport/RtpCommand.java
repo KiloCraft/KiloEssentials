@@ -9,11 +9,15 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.dimension.DimensionType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -149,6 +153,15 @@ public class RtpCommand {
 	}
 
 	private static int execute(ServerCommandSource source, ServerPlayerEntity target) {
+		KiloServer.getServer().getOnlineUser(target).sendConfigMessage("commands.rtp.start");
+
+		RandomTeleportThread rtp = new RandomTeleportThread(source, target);
+		Thread rtpThread = new Thread(rtp ,"RTP thread");
+		rtpThread.start();
+		return 1;
+	}
+
+	static void teleportRandomly(ServerCommandSource source, ServerPlayerEntity target) {
 		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
 		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
 
@@ -158,13 +171,13 @@ public class RtpCommand {
 		//Check if the player has any rtps left or permission to ignore the limit
 		if (CommandHelper.areTheSame(source, target) && targetUser.getRTPsLeft() <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
 			targetUser.sendConfigMessage("commands.rtp.empty");
-			return 0;
+			return;
 		}
 
 		//Check if the target is in the correct dimension or has permission to perform the command in other dimensions
 		if (!target.dimension.equals(DimensionType.OVERWORLD) && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(source)) {
 			targetUser.sendConfigMessage("commands.rtp.dimension_exception");
-			return 0;
+			return;
 		}
 
 		ServerWorld world = target.getServerWorld();
@@ -174,11 +187,14 @@ public class RtpCommand {
 		int randomX = random.nextInt(30000) - 15000; // -15000 to +15000
 		int randomZ = random.nextInt(30000) - 15000; // -15000 to  +15000
 
+		BlockPos blockPos = new BlockPos(randomX, 0, randomZ);
+
+		world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(blockPos), 0, target.getEntityId());
 		Biome.Category biomeCategory = target.world.getBiomeAccess().getBiome(new BlockPos(randomX, 65, randomZ)).getCategory();
 
 		if (biomeCategory == Category.OCEAN || biomeCategory == Category.RIVER) {
-			execute(source, target);
-			return 0;
+			teleportRandomly(source, target);
+			return;
 		}
 
 		Location loc = Location.of(randomX, 0, randomZ, target.dimension);
@@ -186,8 +202,6 @@ public class RtpCommand {
 		BackCommand.saveLocation(targetUser);
 		BlockPos pos = Objects.requireNonNull(loc.getPosOnGround());
 		target.teleport(target.getServerWorld(), pos.getX(), pos.getY(), pos.getZ(), 0, 0);
-
-
 
 		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
@@ -203,11 +217,27 @@ public class RtpCommand {
 							.replace("{cord.Z}", String.valueOf(randomZ))
 					, true));
 
-			return 1;
+			return;
 		}
 
 		sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
-		return 1;
 	}
 
+}
+
+class RandomTeleportThread implements Runnable {
+	private Logger logger = LogManager.getLogger();
+	private ServerCommandSource source;
+	private ServerPlayerEntity target;
+
+	public RandomTeleportThread(ServerCommandSource source, ServerPlayerEntity target) {
+		this.source = source;
+		this.target = target;
+	}
+
+	@Override
+	public void run() {
+		logger.info("Randomly teleporting " + target.getEntityName() + ". executed by " + source.getName());
+		RtpCommand.teleportRandomly(this.source, this.target);
+	}
 }

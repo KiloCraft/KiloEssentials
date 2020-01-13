@@ -7,12 +7,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class Location {
-    private static int MAX_BUILD_LIMIT = 255;
+    public static int MAX_BUILD_LIMIT = KiloServer.getServer().getVanillaServer().getWorldHeight();
     private int x, y, z;
     private double yaw, pitch;
     private Identifier dimension;
@@ -93,43 +94,41 @@ public class Location {
     }
 
     public boolean isSafe() {
-        if (this.dimension == null)
-            return false;
+        return LocationUtil.isBlockSafe(this);
+    }
 
-        boolean safe = false;
-
-        for (int i = 0; i < 4; i++) {
-            BlockPos pos = new BlockPos(this.x, i, this.z);
-            if (this.getWorld().getBlockState(pos).isOpaque()) {
-                safe = true;
-                break;
-            }
-        }
-
-        return safe;
+    public boolean isSafeFor(OnlineUser user) {
+        return LocationUtil.isBlockSafeFor(user, this);
     }
 
     @Nullable
     public BlockPos getPosOnGround() {
-        if (this.dimension == null)
-            return null;
+        return LocationUtil.getPosOnGround(this);
+    }
 
-        BlockPos finalPos = this.getPos();
-        int blocksLeft = MAX_BUILD_LIMIT - this.y;
+    public void setPos(BlockPos pos) {
+        this.x = pos.getX();
+        this.y = pos.getY();
+        this.z = pos.getZ();
+    }
 
-        for (int i = 0; i < blocksLeft; i++) {
-            BlockPos pos = new BlockPos(this.x, i, this.z);
+    public void setPos(int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 
-            System.out.println("L: " + i + " " + pos.toString());
+    public void setDimension(Identifier dimension) {
+        this.dimension = dimension;
+    }
 
-            if (this.getWorld().getBlockState(pos).isAir())
-                continue;
+    public void setDimension(DimensionType dimension) {
+        this.dimension = Registry.DIMENSION.getId(dimension);
+    }
 
-            System.out.println("S: " + i + " " + pos.toString());
-            finalPos = pos;
-        }
-
-        return finalPos;
+    public void setView(double yaw, double pitch) {
+        this.yaw = yaw;
+        this.pitch = pitch;
     }
 
 }
