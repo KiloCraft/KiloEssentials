@@ -21,4 +21,13 @@ public class Structures { // We can do better than this, to allow custom structu
         add("Village");
         add("Mansion");
     }};
+
+    public static boolean isValid(String name) {
+        for (String s : list) {
+            if (s.toLowerCase().equals(name.toLowerCase()))
+                return true;
+        }
+
+        return false;
+    }
 }

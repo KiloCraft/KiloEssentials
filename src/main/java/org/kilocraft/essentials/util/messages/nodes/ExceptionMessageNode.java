@@ -8,7 +8,8 @@ public enum ExceptionMessageNode {
     TOO_MANY_SELECTIONS("too_many_selections"),
     UNKNOWN_COMMAND_EXCEPTION("unknown_command_exception"),
     ILLEGA_SUDO_LOOP("illegal_sudo_loop"),
-    CONTAINS_ENCHANTMENT_NAME("contains_enchantment_name")
+    CONTAINS_ENCHANTMENT_NAME("contains_enchantment_name"),
+    INCORRECT_IDENTIFIER("incorrect_identifier"),
     ;
 
 

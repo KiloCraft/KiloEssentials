@@ -116,33 +116,31 @@ public class HomeCommand {
     }
 
     private static int executeList(ServerCommandSource source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
-        if (gameProfiles.size() == 1) {
-            GameProfile gameProfile = gameProfiles.iterator().next();
-            User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
-
-            if(serverUser instanceof NeverJoinedUser) {
-                throw NO_HOMES_EXCEPTION.create();
-            }
-
-            StringBuilder homes = new StringBuilder();
-            int homesSize = serverUser.getHomesHandler().getHomes().size();
-
-            if (homesSize > 0) {
-                if (source.getPlayer().getUuid().equals(gameProfile.getId())) homes.append("&6Homes&8 (&b").append(homesSize).append("&8)&7:");
-                else homes.append("&6" + gameProfile.getName() + "'s homes&8 (&b").append(homesSize).append("&8)&7:");
-
-                for (Home home  : serverUser.getHomesHandler().getHomes()) {
-                    homes.append("&7, &f").append(home.getName());
-                }
-
-                KiloChat.sendMessageTo(source, new ChatMessage(
-                        homes.toString().replaceFirst("&7,", ""), true
-                ));
-            } else
-                throw NO_HOMES_EXCEPTION.create();
-
-        } else
+        if (gameProfiles.size() > 1)
             throw TOO_MANY_PROFILES.create();
+
+        GameProfile gameProfile = gameProfiles.iterator().next();
+        User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+
+        if(serverUser instanceof NeverJoinedUser)
+            throw NO_HOMES_EXCEPTION.create();
+
+        StringBuilder homes = new StringBuilder();
+        int homesSize = serverUser.getHomesHandler().getHomes().size();
+
+        if (homesSize > 0)
+            throw NO_HOMES_EXCEPTION.create();
+
+        if (source.getPlayer().getUuid().equals(gameProfile.getId())) homes.append("&6Homes&8 (&b").append(homesSize).append("&8)&7:");
+        else homes.append("&6" + gameProfile.getName() + "'s homes&8 (&b").append(homesSize).append("&8)&7:");
+
+        for (Home home  : serverUser.getHomesHandler().getHomes()) {
+            homes.append("&7, &f").append(home.getName());
+        }
+
+        KiloChat.sendMessageTo(source, new ChatMessage(
+                homes.toString().replaceFirst("&7,", ""), true));
+
         return 1;
     }
 
