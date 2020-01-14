@@ -1,9 +1,11 @@
 package org.kilocraft.essentials.commands.teleport;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -60,15 +62,15 @@ public class RtpCommand {
 
 		RequiredArgumentBuilder<ServerCommandSource, String> actionArg = argument("action", word())
 				.suggests(RtpCommand::actionSuggestions)
-				.executes(ctx -> execute(ctx, true, null));
+				.executes(ctx -> execute(ctx, false, null));
 
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
 				.requires(PERMISSION_CHECK_OTHERS)
 				.suggests(TabCompletions::allPlayers)
-				.executes(ctx -> execute(ctx, true, getPlayer(ctx, "target")));
+				.executes(ctx -> execute(ctx, false, getPlayer(ctx, "target")));
 
 		RequiredArgumentBuilder<ServerCommandSource, Integer> amountArg = argument("amount", integer(0))
-				.executes(ctx -> execute(ctx, true, null));
+				.executes(ctx -> execute(ctx, true, getPlayer(ctx, "target")));
 
 
 		selectorArg.then(amountArg);
@@ -83,35 +85,35 @@ public class RtpCommand {
 
 	private static int execute(CommandContext<ServerCommandSource> ctx, boolean isAction, @Nullable ServerPlayerEntity target) throws CommandSyntaxException {
 		ServerCommandSource src = ctx.getSource();
-		if (isAction) {
-			String actionType = getString(ctx, "action");
-			if (actionType.equalsIgnoreCase("left"))
-				return executeLeft(ctx);
+		String actionType = getString(ctx, "action");
 
-			if (actionType.equalsIgnoreCase("send") && target != null) {
-				if (CommandHelper.areTheSame(src, target))
-					return executeSelf(ctx);
+		if (actionType.equalsIgnoreCase("check")) {
+			if (target != null)
+				return executeGet(ctx);
 
-				return executeOthers(ctx);
-			}
+			return executeLeft(ctx);
+		}
 
-			if (target != null) {
+		if (actionType.equalsIgnoreCase("send") && target != null) {
+			if (CommandHelper.areTheSame(src, target))
+				return executeSelf(ctx);
 
-				switch (actionType) {
-					case "add":
-					 	return executeAdd(ctx);
-					case "set":
-						return executeSet(ctx);
-					case "remove":
-						return executeRemove(ctx);
-				}
+			return executeOthers(ctx);
+		}
 
+		if (target != null && isAction) {
+			switch (actionType) {
+				case "add":
+					 return executeAdd(ctx);
+				case "set":
+					return executeSet(ctx);
+				case "remove":
+					return executeRemove(ctx);
 			}
 
 		}
 
-
-		return 0;
+		throw new SimpleCommandExceptionType(new LiteralMessage("Please enter a valid action type!")).create();
 	}
 
 	private static int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
