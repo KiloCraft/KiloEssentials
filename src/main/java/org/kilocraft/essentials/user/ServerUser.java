@@ -256,7 +256,7 @@ public class ServerUser implements User {
 
     @Override
     public String getFormattedDisplayname() {
-        return TextFormat.translate(getDisplayname());
+        return TextFormat.translate(getDisplayname() + "&r");
     }
 
     @Override
