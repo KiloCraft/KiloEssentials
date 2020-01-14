@@ -28,7 +28,6 @@ public class PingCommand {
                         .executes(ctx -> execute(ctx.getSource(), getPlayer(ctx, "player")))).build();
 
         dispatcher.getRoot().addChild(rootCommand);
-        dispatcher.register(literal("latency").redirect(rootCommand));
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity target) {

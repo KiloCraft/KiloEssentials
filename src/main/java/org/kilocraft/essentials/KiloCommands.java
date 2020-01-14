@@ -83,7 +83,7 @@ public class KiloCommands {
     public KiloCommands() {
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
         this.simpleCommandManager = new SimpleCommandManager(KiloServer.getServer(), this.dispatcher);
-        register(true);
+        register(false);
     }
 
     public static boolean hasPermission(ServerCommandSource src, CommandPermission perm) {
@@ -112,7 +112,7 @@ public class KiloCommands {
         });
 
         //TODO: Fix the Toast suggestions
-        //registerToast();
+        registerToast();
 
         VersionCommand.register(this.dispatcher);
         HelpCommand.register(this.dispatcher);

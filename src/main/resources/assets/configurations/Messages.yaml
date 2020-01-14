@@ -21,6 +21,15 @@
 # You can get a value of a parameter from this file by requesting it
 # e.g: %PATH_TO_VARIABLE% like %SERVER_NAME% or %SERVER_MOTD_LINE1%
 #
+# [TEXT COMPONENT]
+#                   Some keys might require a TextComponenet
+# Its a JSON String that Minecraft uses for all the Texts!
+# And it supports different Events!
+# You can use a generator to make a beautiful TextComponenet
+# e.g: https://minecraft.tools/en/tellraw.php
+# Just copy the json part like, like: {"text":"Welcome to Minecraft Tools"}
+#
+#
 # [PARAMETER TYPES]
 #                   Parameter types are a good hint for you!
 # You can see what type of data the parameter needs to use!
@@ -65,10 +74,10 @@ commands:
     permission_exception: "&c[ &f!&c ] &fInsufficient permission! You can't use that command"
   # [<greedyString> c]
   broadcast_format: '&f[&cBroadCast&f]&r %MESSAGE%'
-  # [<greedyString> c]
-  discord: '&9&lDISCORD &8>&7> &fhttps://discord.gg/uzuQEe9'
-  # [<greedyString> c]
-  vote: 'Edit this in KiloEssentials/config/Messages.yaml'
+  # [TextComponenet]
+  discord: '["",{"text":"Discord","color":"blue"},{"text":" >","color":"dark_gray"},{"text":">","color":"gray"},{"text":" "},{"text":"https://discord.gg/uzuQEe9","color":"white","clickEvent":{"action":"open_url","value":"https://discord.gg/uzuQEe9"},"hoverEvent":{"action":"show_text","value":{"text":"Click Here", "color":"green"}}}]'
+  # [TextComponenet]
+  vote: '{"text":"Edit this in KiloEssentials/config/Messages.yaml", "color":"green"}'
 
   serverWideWarps:
     teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%WARPNAME%&e...'
