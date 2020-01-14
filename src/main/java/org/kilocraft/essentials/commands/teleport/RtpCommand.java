@@ -1,23 +1,29 @@
 package org.kilocraft.essentials.commands.teleport;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.dimension.DimensionType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.ThreadManager;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.TabCompletions;
@@ -27,14 +33,18 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
-import org.kilocraft.essentials.threaded.ThreadedRandomTeleporter;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -50,27 +60,68 @@ public class RtpCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> rootCommand = literal("randomteleport").requires(PERMISSION_CHECK_SELF).executes(RtpCommand::executeSelf).build();
 
+		RequiredArgumentBuilder<ServerCommandSource, String> actionArg = argument("action", word())
+				.suggests(RtpCommand::actionSuggestions)
+				.executes(ctx -> execute(ctx, false, null));
+
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
-				.requires(PERMISSION_CHECK_OTHERS).suggests(TabCompletions::allPlayers).executes(RtpCommand::executeOthers);
+				.requires(PERMISSION_CHECK_OTHERS)
+				.suggests(TabCompletions::allPlayers)
+				.executes(ctx -> execute(ctx, false, getPlayer(ctx, "target")));
 
-		LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add").requires(PERMISSION_CHECK_MANAGE)
-				.then(argument("amount", integer(0)).executes(RtpCommand::executeAdd));
+		RequiredArgumentBuilder<ServerCommandSource, Integer> amountArg = argument("amount", integer(0))
+				.executes(ctx -> execute(ctx, true, getPlayer(ctx, "target")));
 
-		LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set").requires(PERMISSION_CHECK_MANAGE)
-				.then(argument("amount", integer(0)).executes(RtpCommand::executeSet));
 
-		LiteralArgumentBuilder<ServerCommandSource> getArg = literal("get").requires(PERMISSION_CHECK_MANAGE).executes(RtpCommand::executeGet);
-
-		LiteralArgumentBuilder<ServerCommandSource> removeArg = literal("remove").requires(PERMISSION_CHECK_MANAGE)
-				.then(argument("amount", integer(0)).executes(RtpCommand::executeRemove));
-
-		selectorArg.then(addArg);
-		selectorArg.then(setArg);
-		selectorArg.then(getArg);
-		selectorArg.then(removeArg);
-		rootCommand.addChild(selectorArg.build());
+		selectorArg.then(amountArg);
+		actionArg.then(selectorArg);
+		rootCommand.addChild(actionArg.build());
 		dispatcher.getRoot().addChild(literal("rtp").requires(PERMISSION_CHECK_SELF).executes(RtpCommand::executeSelf).redirect(rootCommand).build());
+		dispatcher.getRoot().addChild(literal("wilderness").requires(PERMISSION_CHECK_SELF).executes(RtpCommand::executeSelf).redirect(rootCommand).build());
+		dispatcher.getRoot().addChild(literal("wild").requires(PERMISSION_CHECK_SELF).executes(RtpCommand::executeSelf).redirect(rootCommand).build());
+
 		dispatcher.getRoot().addChild(rootCommand);
+	}
+
+	private static int execute(CommandContext<ServerCommandSource> ctx, boolean isAction, @Nullable ServerPlayerEntity target) throws CommandSyntaxException {
+		ServerCommandSource src = ctx.getSource();
+		String actionType = getString(ctx, "action");
+
+		if (actionType.equalsIgnoreCase("check")) {
+			if (target != null)
+				return executeGet(ctx);
+
+			return executeLeft(ctx);
+		}
+
+		if (actionType.equalsIgnoreCase("send") && target != null) {
+			if (CommandHelper.areTheSame(src, target))
+				return executeSelf(ctx);
+
+			return executeOthers(ctx);
+		}
+
+		if (target != null && isAction) {
+			switch (actionType) {
+				case "add":
+					 return executeAdd(ctx);
+				case "set":
+					return executeSet(ctx);
+				case "remove":
+					return executeRemove(ctx);
+			}
+
+		}
+
+		throw new SimpleCommandExceptionType(new LiteralMessage("Please enter a valid action type!")).create();
+	}
+
+	private static int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+		OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
+		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
+				.sendLangMessage("command.rtp.get", user.getDisplayname(), user.getRTPsLeft());
+
+		return user.getRTPsLeft();
 	}
 
 	private static int executeAdd(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -116,24 +167,29 @@ public class RtpCommand {
 	}
 
 	private static int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-		return execute(ctx.getSource().getPlayer(), ctx.getSource());
+		return execute(ctx.getSource(), ctx.getSource().getPlayer());
 	}
 
 	private static int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-		return execute(getPlayer(ctx, "target"), ctx.getSource());
+		return execute(ctx.getSource(), getPlayer(ctx, "target"));
 	}
 
-	private static int execute(ServerPlayerEntity player, ServerCommandSource source) {
-		ThreadManager thread = new ThreadManager(new ThreadedRandomTeleporter(player, source));
-		thread.start();
+	private static int execute(ServerCommandSource source, ServerPlayerEntity target) {
+		KiloServer.getServer().getOnlineUser(target).sendConfigMessage("commands.rtp.start");
 
+		RandomTeleportThread rtp = new RandomTeleportThread(source, target);
+		Thread rtpThread = new Thread(rtp ,"RTP thread");
+		rtpThread.start();
 		return 1;
 	}
 
-	@SuppressWarnings("Do not run on main thread")
-	public static void teleportRandomly(ServerCommandSource source, ServerPlayerEntity target) {
+	//TODO: Update this
+	static void teleportRandomly(ServerCommandSource source, ServerPlayerEntity target) {
 		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
 		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
+
+		if (targetUser.getRTPsLeft() < 0)
+			targetUser.setRTPsLeft(0);
 
 		//Check if the player has any rtps left or permission to ignore the limit
 		if (CommandHelper.areTheSame(source, target) && targetUser.getRTPsLeft() <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
@@ -168,7 +224,8 @@ public class RtpCommand {
 		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
 		if (CommandHelper.areTheSame(source, target)) {
-			targetUser.setRTPsLeft(targetUser.getRTPsLeft() - 1);
+			if (!PERMISSION_CHECK_IGNORE_LIMIT.test(source))
+				targetUser.setRTPsLeft(targetUser.getRTPsLeft() - 1);
 
 			targetUser.sendMessage(new ChatMessage(
 					KiloConfig.getProvider().getMessages().getMessage("commands.rtp.teleported")
@@ -182,6 +239,37 @@ public class RtpCommand {
 			sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
 
 		Thread.currentThread().interrupt();
-		return;
+	}
+
+	private static CompletableFuture<Suggestions> actionSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+		List<String> strings = new ArrayList<>();
+		strings.add("check");
+
+		if (PERMISSION_CHECK_MANAGE.test(context.getSource())) {
+			strings.add("add");
+			strings.add("set");
+			strings.add("remove");
+			strings.add("send");
+		}
+
+		return CommandSource.suggestMatching(strings, builder);
+	}
+
+}
+
+class RandomTeleportThread implements Runnable {
+	private Logger logger = LogManager.getLogger();
+	private ServerCommandSource source;
+	private ServerPlayerEntity target;
+
+	public RandomTeleportThread(ServerCommandSource source, ServerPlayerEntity target) {
+		this.source = source;
+		this.target = target;
+	}
+
+	@Override
+	public void run() {
+		logger.info("Randomly teleporting " + target.getEntityName() + ". executed by " + source.getName());
+		RtpCommand.teleportRandomly(this.source, this.target);
 	}
 }

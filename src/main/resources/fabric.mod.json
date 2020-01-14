@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "kee",
+  "id": "kilo_essentials",
   "version": "${version}",
 
-  "name": "Essentials for Fabric",
+  "name": "KiloEssentials",
   "description": "Server management made easy with this mod",
   "authors": [
     "CODY_AI",

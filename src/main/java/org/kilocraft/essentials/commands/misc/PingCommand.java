@@ -28,7 +28,6 @@ public class PingCommand {
                         .executes(ctx -> execute(ctx.getSource(), getPlayer(ctx, "player")))).build();
 
         dispatcher.getRoot().addChild(rootCommand);
-        dispatcher.register(literal("latency").redirect(rootCommand));
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity target) {
@@ -51,7 +50,9 @@ public class PingCommand {
             key = prefix + "good";
         else if (i > 200 && i < 400)
             key = prefix + "medium";
-        else key =  prefix + "bad";
+        else if (i > 400 && i < 800)
+            key = prefix + "bad";
+        else key =  prefix + "oof";
 
         return ModConstants.getLang().getProperty(key);
     }

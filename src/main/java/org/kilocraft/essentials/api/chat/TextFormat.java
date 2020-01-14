@@ -3,6 +3,7 @@ package org.kilocraft.essentials.api.chat;
 import com.google.common.collect.Maps;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
@@ -238,6 +239,10 @@ public enum TextFormat {
         }
 
         return STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
+    }
+
+    public static Text translateToNMSText(String jsonString) {
+        return Text.Serializer.fromJson(jsonString);
     }
 
     /**

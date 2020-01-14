@@ -25,7 +25,6 @@ public class LocateBiomeProvided {
 
     @SuppressWarnings("Do not run on main thread")
     public static int execute(ServerCommandSource source, Biome biome) {
-        source.sendFeedback(LangText.getFormatter(true, "command.locate.scanning", getBiomeName(biome)), false);
         BlockPos executorPos = new BlockPos(source.getPosition());
         BlockPos biomePos = null;
         String biomeName = getBiomeName(biome);

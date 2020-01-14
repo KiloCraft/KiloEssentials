@@ -150,7 +150,7 @@ public class ServerUserManager implements UserManager {
     }
 
     private void profileSanityCheck(GameProfile profile) {
-        if(!profile.isComplete() && profile.getId() == null) {
+        if (!profile.isComplete() && profile.getId() == null) {
             throw new IllegalArgumentException("Cannot use GameProfile with missing username to get an OfflineUser");
         }
     }

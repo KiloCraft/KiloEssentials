@@ -61,7 +61,9 @@ public enum CommandPermission {
     ENDERCHEST_SELF("enderchest.self"),
     ENDERCHEST_OTHERS("enderchest.others"),
     STATUS("status"),
-    SEEK_INVENTORY("seek_inventory")
+    SEEK_INVENTORY("seek_inventory"),
+    SAYAS_OTHERS("sayas.others"),
+    SAYAS_SERVER("sayas.server"),
     ;
 
     private String node;

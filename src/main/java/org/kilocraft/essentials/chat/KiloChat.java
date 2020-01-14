@@ -11,6 +11,7 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.ConfigValueGetter;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
@@ -137,6 +138,9 @@ public class KiloChat {
 	}
 
 	public static void onUserJoin(ServerUser user) {
+		if (DISABLE_EVENT_MESSAGES)
+			return;
+
 		broadCast(new ChatMessage(
 				messages.getLocal(true, "events.userJoin", new UserConfigVariables(user))
 					.replace("%USER_DISPLAYNAME%", user.getDisplayname()),
@@ -146,6 +150,9 @@ public class KiloChat {
 	}
 
 	public static void onUserLeave(ServerUser user) {
+		if (DISABLE_EVENT_MESSAGES)
+			return;
+
 		broadCast(new ChatMessage(
 				messages.getLocal(true, "events.userLeave", new UserConfigVariables(user))
 						.replace("%USER_DISPLAYNAME%", user.getDisplayname()),
@@ -154,5 +161,8 @@ public class KiloChat {
 
 	}
 
+	public static boolean DISABLE_EVENT_MESSAGES =
+			messages.getBooleanSafely(ConfigCache.DISABLE_EVENT_MESSAGES_ON_BUNGEE_MODE, true) &&
+			config.getBooleanSafely(ConfigCache.BUNGEECORD_MODE, false);
 
 }

@@ -22,6 +22,8 @@ public enum  ConfigCache {
     COMMANDS_CONTEXT_EXECUTION_EXCEPTION("commands.context.execution_exception", "messages"),
     COMMANDS_CONTEXT_PERMISSION_EXCEPTION("commands.context.permission_exception", "messages"),
     COMMANDS_SUGGESTIONS_REQUIRE_PERMISSION("commands.suggestions.require_permission", "general"),
+    DISABLE_EVENT_MESSAGES_ON_BUNGEE_MODE("events.disable-on-bungee-mode", "messages"),
+    BUNGEECORD_MODE("server.bungeecord-mode", "general"),
     ;
 
     private String key;
@@ -35,7 +37,7 @@ public enum  ConfigCache {
 
     static void load() {
         for (ConfigCache it : values()) {
-            it.value = getFile(it).getOrElse(it.key, "NULL");
+            it.value = getFile(it).getOrElse(it.key, "NULL<Cache>");
         }
     }
 

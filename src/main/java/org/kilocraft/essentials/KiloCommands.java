@@ -33,11 +33,9 @@ import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
-import org.kilocraft.essentials.commands.inventory.InventoryCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
@@ -73,6 +71,7 @@ import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 import static org.kilocraft.essentials.api.KiloEssentials.getServer;
+import static org.kilocraft.essentials.commands.LiteralCommandModified.*;
 
 public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
@@ -84,7 +83,7 @@ public class KiloCommands {
     public KiloCommands() {
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
         this.simpleCommandManager = new SimpleCommandManager(KiloServer.getServer(), this.dispatcher);
-        register(true);
+        register(false);
     }
 
     public static boolean hasPermission(ServerCommandSource src, CommandPermission perm) {
@@ -112,6 +111,7 @@ public class KiloCommands {
             }
         });
 
+        //TODO: Fix the Toast suggestions
         registerToast();
 
         VersionCommand.register(this.dispatcher);
@@ -152,18 +152,35 @@ public class KiloCommands {
         SocialspyCommand.register(this.dispatcher);
         CommandspyCommand.register(this.dispatcher);
         StatusCommand.register(this.dispatcher);
-        InventoryCommand.register(this.dispatcher);
+        //InventoryCommand.register(this.dispatcher);
+        SayasCommand.register(this.dispatcher);
     }
 
     private void registerToast() {
         ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument("label", StringArgumentType.string())
-                .suggests(KiloCommands::toastSuggestions)
                 .then(CommandManager.argument("args", StringArgumentType.greedyString())
                         .suggests(TabCompletions::noSuggestions))
                 .build();
 
         getDispatcher().getRoot().addChild(toast);
     }
+
+    public static CompletableFuture<Suggestions> toastSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        List<String> suggestions = new ArrayList<>();
+
+        for (SimpleCommand command : KiloEssentials.getInstance().getCommandHandler().simpleCommandManager.getCommands()) {
+            suggestions.add(command.getLabel());
+        }
+
+        getDispatcher().getRoot().getChildren().stream().filter((child) ->
+                  child instanceof LiteralCommandNode && canSourceUse(child, context.getSource()) &&
+                        !isVanillaCommand(child.getName()) && shouldUse(child.getName()))
+                .map(CommandNode::getName).forEach(suggestions::add);
+
+
+        return CommandSource.suggestMatching(suggestions, builder);
+    }
+
 
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
         String fromLang = ModConstants.getLang().getProperty(langKey);
@@ -265,22 +282,6 @@ public class KiloCommands {
         for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
             KiloServer.getServer().getPlayerManager().sendCommandTree(playerEntity);
         }
-    }
-
-    public static CompletableFuture<Suggestions> toastSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        List<String> suggestions = new ArrayList<>();
-
-        for (SimpleCommand command : KiloEssentials.getInstance().getCommandHandler().simpleCommandManager.getCommands()) {
-            suggestions.add(command.getLabel());
-        }
-
-        getDispatcher().getRoot().getChildren().stream().filter((child) ->
-                LiteralCommandModified.canSourceUse(child, context.getSource()) && child instanceof LiteralCommandNode &&
-                !LiteralCommandModified.isVanillaCommand(child.getName()))
-                .map(CommandNode::getName).forEach(suggestions::add);
-
-
-        return CommandSource.suggestMatching(suggestions, builder);
     }
 
     public int execute(ServerCommandSource executor, String commandToExecute) {

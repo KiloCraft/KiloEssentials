@@ -6,6 +6,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -16,8 +17,10 @@ import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.kilocraft.essentials.KiloCommands.hasPermission;
-import static org.kilocraft.essentials.KiloCommands.sendPermissionError;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+import static org.kilocraft.essentials.KiloCommands.*;
 import static org.kilocraft.essentials.api.ModConstants.getMessageUtil;
 
 public class SimpleCommandManager {
@@ -32,8 +35,12 @@ public class SimpleCommandManager {
     }
 
     public static void register(SimpleCommand command) {
-        if (INSTANCE != null && INSTANCE.commands != null)
+        if (INSTANCE != null && INSTANCE.commands != null) {
             INSTANCE.commands.add(command);
+
+            getDispatcher().register(literal(command.getLabel())
+                    .then(argument("args", greedyString()).suggests(TabCompletions::noSuggestions)));
+        }
     }
 
     public static void unregister(SimpleCommand command) {
