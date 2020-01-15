@@ -126,7 +126,6 @@ public class KiloCommands {
         SudoCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
-        PlayerParticlesCommand.register(this.dispatcher);
         AnvilCommand.register(this.dispatcher);
         ItemCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
@@ -153,6 +152,7 @@ public class KiloCommands {
         CommandspyCommand.register(this.dispatcher);
         StatusCommand.register(this.dispatcher);
         //InventoryCommand.register(this.dispatcher);
+        //PlayerParticlesCommand.register(this.dispatcher);
         SayasCommand.register(this.dispatcher);
     }
 

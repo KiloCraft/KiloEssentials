@@ -5,11 +5,14 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.registry.Registry;
@@ -20,6 +23,7 @@ import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
@@ -52,7 +56,7 @@ public class ItemLoreCommand {
 				.suggests(TabCompletions::noSuggestions);
 
 		RequiredArgumentBuilder<ServerCommandSource, String> textArgument = argument("text", greedyString())
-				.suggests(TabCompletions::noSuggestions)
+				.suggests(ItemLoreCommand::loreSuggestions)
 				.executes(ItemLoreCommand::execute);
 
 		removeArgument.then(removeLineArgument);
@@ -63,6 +67,32 @@ public class ItemLoreCommand {
 		rootCommand.addChild(setArgument.build());
 		builder.then(rootCommand);
 		dispatcher.register(literal("relore").requires(PERMISSION_CHECK).redirect(rootCommand));
+	}
+
+	private static CompletableFuture<Suggestions> loreSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+		ItemStack item = context.getSource().getPlayer().getMainHandStack();
+
+		if (item.isEmpty() || !item.hasTag() || item.getTag() == null ||
+				!item.getTag().contains("display") || !item.getTag().getCompound("display").contains("Lore"))
+			return TabCompletions.noSuggestions(context, builder);
+
+		int inputLine = 0;
+
+		char[] chars = context.getInput().toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			try	{
+				inputLine = Integer.parseInt(String.valueOf(chars[i])) - 1;
+				if (chars[i++] == 0) inputLine = chars[i] + '0';
+			} catch (NumberFormatException ignored) { }
+		}
+
+		ListTag lore = item.getTag().getCompound("display").getList("Lore", 8);
+		String[] strings = {
+				TextFormat.reverseTranslate(
+						lore.getString(inputLine).replace("{\"text\":\"", "").replace("\"}", ""),
+						'&')
+		};
+		return CommandSource.suggestMatching(strings, builder);
 	}
 
 	private static int executeRemove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -76,7 +106,8 @@ public class ItemLoreCommand {
 		}
 
 		if (!item.hasTag() || item.getTag() == null || !item.getTag().contains("display") || !item.getTag().getCompound("display").contains("Lore")) {
-
+			KiloChat.sendLangMessageTo(player, "command.item.nothing_to_reset");
+			return -1;
 		}
 
 		ListTag lore = item.getTag().getCompound("display").getList("Lore", 8);

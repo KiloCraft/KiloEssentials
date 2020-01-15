@@ -138,6 +138,8 @@ chat:
   # [Boolean]
   #If set to true, it will disable the KiloEssentials chat
   use-vanilla-chat-instead: false
+  #Kick the player if they use Illegal characters in the chat
+  kick-if-illegal-characters: false
   channels:
     messages:
       # [<greedyString> c]

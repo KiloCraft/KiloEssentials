@@ -24,6 +24,8 @@ public enum  ConfigCache {
     COMMANDS_SUGGESTIONS_REQUIRE_PERMISSION("commands.suggestions.require_permission", "general"),
     DISABLE_EVENT_MESSAGES_ON_BUNGEE_MODE("events.disable-on-bungee-mode", "messages"),
     BUNGEECORD_MODE("server.bungeecord-mode", "general"),
+    USE_VANILLA_CHAT("chat.use-vanilla-chat-instead", "general"),
+    KICK_IF_ILLEGAL_CHARACTERS("chat.kick-if-illegal-characters", "general"),
     ;
 
     private String key;
