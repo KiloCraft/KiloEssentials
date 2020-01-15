@@ -54,7 +54,11 @@ public class CommandHelper {
     }
 
     public static boolean areTheSame(ServerCommandSource source, OnlineUser user) {
-        return source.getName().equals(user.getUsername());
+        try {
+            return source.getPlayer().getUuid().equals(user.getUuid());
+        } catch (CommandSyntaxException ignored) {
+            return false;
+        }
     }
 
     public static boolean areTheSame(OnlineUser user1, OnlineUser user2) {

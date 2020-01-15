@@ -39,10 +39,7 @@ import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
-import org.kilocraft.essentials.commands.misc.ColorsCommand;
-import org.kilocraft.essentials.commands.misc.HelpCommand;
-import org.kilocraft.essentials.commands.misc.PingCommand;
-import org.kilocraft.essentials.commands.misc.PreviewCommand;
+import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
@@ -116,6 +113,7 @@ public class KiloCommands {
 
         VersionCommand.register(this.dispatcher);
         HelpCommand.register(this.dispatcher);
+        RulesCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
@@ -153,6 +151,7 @@ public class KiloCommands {
         StatusCommand.register(this.dispatcher);
         //InventoryCommand.register(this.dispatcher);
         //PlayerParticlesCommand.register(this.dispatcher);
+        //WorkbenchCommand.register(this.dispatcher);
         SayasCommand.register(this.dispatcher);
     }
 

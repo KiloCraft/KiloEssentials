@@ -33,6 +33,7 @@ public enum CommandPermission {
     SUDO_CONSOLE("sudo.console"),
     BROADCAST("broadcast"),
     ANVIL("anvil"),
+    WORKBENCH("workbench"),
     ITEM_FORMATTING("item.formatting"),
     ITEM_NAME("item.name"),
     ITEM_LORE("item.lore"),

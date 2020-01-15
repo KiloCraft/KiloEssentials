@@ -161,13 +161,14 @@ public class ServerChat {
                 .replace("%MESSAGE%", message);
 
         KiloChat.sendMessageToSource(source, new LiteralText(
-                new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.GRAY));
+                new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.WHITE));
         KiloChat.sendMessageTo(target.getPlayer(), new LiteralText(
-                new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.GRAY));
+                new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.WHITE));
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isSocialSpyOn() && !CommandHelper.areTheSame(target, user)) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
-                    new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+            if (user.isSocialSpyOn() && !CommandHelper.areTheSame(target, user))
+                KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
+                    new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
         }
 
         KiloServer.getServer().sendMessage(String.format("[Chat/Private] %s -> %s: %s", source.getName(), target.getUsername(), message));
@@ -177,6 +178,7 @@ public class ServerChat {
         String format = config.getStringSafely("commandSpy.format", "&r&7%SOURCE% &3->&r /%MESSAGE%") + "&r";
         String toSpy = format.replace("%SOURCE%", source.getName())
                 .replace("%MESSAGE%",  message);
+
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.isCommandSpyOn() && !CommandHelper.areTheSame(source, user))
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(

@@ -10,13 +10,13 @@ import org.kilocraft.essentials.config.KiloConfig;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class HelpCommand {
+public class RulesCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("ke_help").executes(HelpCommand::execute));
+        dispatcher.register(literal("rules").executes(HelpCommand::execute));
     }
 
     public static int execute(CommandContext<ServerCommandSource> context) {
-        FileConfig config = FileConfig.of(KiloConfig.getConfigPath() + "HelpMessage.yaml");
+        FileConfig config = FileConfig.of(KiloConfig.getConfigPath() + "Rules.yaml");
         config.load();
         String message = config.getOrElse("message", "Missing config");
         message = TextFormat.translate(message);
@@ -25,5 +25,4 @@ public class HelpCommand {
 
         return 1;
     }
-
 }

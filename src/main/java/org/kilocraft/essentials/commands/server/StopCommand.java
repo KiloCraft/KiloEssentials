@@ -21,7 +21,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = literal("shutdown")
+        LiteralArgumentBuilder<ServerCommandSource> builder = literal("stop")
                 .then(argument("args", greedyString())
                         .suggests(TabCompletions::noSuggestions)
                         .executes(c -> execute(c.getSource(), getString(c, "args"))))
@@ -29,6 +29,7 @@ public class StopCommand {
                 .executes(c -> execute(c.getSource(), ""));
 
         dispatcher.register(builder);
+        dispatcher.register(literal("shutdown").executes(c -> execute(c.getSource(), "")).redirect(builder.build()));
     }
 
     private static int execute(ServerCommandSource source, String args) {

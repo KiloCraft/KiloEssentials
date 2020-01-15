@@ -52,9 +52,30 @@ public class InventoryCommand {
         ServerPlayerEntity source = ctx.getSource().getPlayer();
         ServerPlayerEntity target = getPlayer(ctx, "target");
 
-        target.inventory.onInvOpen(source);
+        //target.inventory.onInvOpen(source);
 
-        NameableContainerProvider container = new NameableContainerProvider() {
+//        NameableContainerProvider container = new NameableContainerProvider() {
+//            @Override
+//            public Text getDisplayName() {
+//                String displayName = KiloServer.getServer().getOnlineUser(target).getDisplayname();
+//                return new LiteralText(TextFormat.translate(displayName + "&r's Inventory", false));
+//            }
+//
+//            @Override
+//            public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+//                return new GenericContainer(ContainerType.GENERIC_9X4, i, source.inventory, target.inventory, 4);
+//            }
+//
+//        };
+
+        KiloChat.sendLangMessageTo(source, "general.seek_container", target.getEntityName(), "Inventory");
+        source.openContainer(container(source, target));
+
+        return 1;
+    }
+
+    private static NameableContainerProvider container(ServerPlayerEntity player, ServerPlayerEntity target) {
+        return new NameableContainerProvider() {
             @Override
             public Text getDisplayName() {
                 String displayName = KiloServer.getServer().getOnlineUser(target).getDisplayname();
@@ -63,15 +84,9 @@ public class InventoryCommand {
 
             @Override
             public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                return new GenericContainer(ContainerType.GENERIC_9X4, i, source.inventory, target.inventory, 4);
+                return new GenericContainer(ContainerType.GENERIC_9X4, i, playerInventory, target.inventory, 4);
             }
-
         };
-
-        KiloChat.sendLangMessageTo(source, "general.seek_container", target.getEntityName(), "Inventory");
-        source.openContainer(container);
-
-        return 1;
     }
 
 }

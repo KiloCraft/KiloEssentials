@@ -24,8 +24,9 @@ public class KiloConfig {
     private static HashMap<String, String> configFiles = new HashMap<String, String>(){{
         put("KiloEssentials.yaml", workingDir + "/");
         put("Messages.yaml", configPath);
-        put("Commands.yaml", configPath);
-        put("HelpCommandMessage.yaml", configPath);
+        //put("Commands.yaml", configPath);
+        put("HelpMessage.yaml", configPath);
+        put("Rules.yaml", configPath);
     }};
 
     private static ConfigProvider provider;
