@@ -83,7 +83,7 @@ public class KiloCommands {
     public KiloCommands() {
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
         this.simpleCommandManager = new SimpleCommandManager(KiloServer.getServer(), this.dispatcher);
-        register(false);
+        register(true);
     }
 
     public static boolean hasPermission(ServerCommandSource src, CommandPermission perm) {
@@ -101,7 +101,7 @@ public class KiloCommands {
 
     private void register(boolean devEnv) {
         if (devEnv) {
-            KiloEssentials.getLogger().info("[!] Alert: Server is running in development mode!");
+            KiloEssentials.getLogger().warn("[!] Alert: Server is running in development mode!");
             SharedConstants.isDevelopment = true;
         }
 
