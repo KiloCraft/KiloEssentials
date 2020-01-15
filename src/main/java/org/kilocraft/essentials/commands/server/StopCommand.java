@@ -29,7 +29,6 @@ public class StopCommand {
                 .executes(c -> execute(c.getSource(), ""));
 
         dispatcher.register(builder);
-        dispatcher.register(literal("shutdown").executes(c -> execute(c.getSource(), "")).redirect(builder.build()));
     }
 
     private static int execute(ServerCommandSource source, String args) {
