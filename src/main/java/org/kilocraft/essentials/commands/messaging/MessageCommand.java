@@ -49,7 +49,6 @@ public class MessageCommand {
         dispatcher.register(literal("reply").redirect(replyNode));
     }
 
-
     private static int executeReply(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getUserManager().getOnline(context.getSource());
         String message = getString(context, "message");

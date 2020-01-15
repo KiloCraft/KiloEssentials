@@ -131,6 +131,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
 			new StartupScript();
+
 	}
 
 	public static Logger getLogger() {

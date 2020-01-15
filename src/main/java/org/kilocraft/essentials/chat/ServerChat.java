@@ -86,7 +86,7 @@ public class ServerChat {
 
         Text text = new LiteralText(message.getFormattedMessage()).styled((style) -> {
             style.setColor(Formatting.RESET);
-            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getHoverMessage(player)));
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getHoverMessage(sender)));
             style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + sender.getUsername() + " "));
         });
 
@@ -94,14 +94,16 @@ public class ServerChat {
             if (channel.isSubscribed(user))
                 KiloChat.sendMessageTo(user.getPlayer(), text);
         });
+
+        KiloServer.getServer().sendMessage(String.format("[Chat/%s] %s: %s", channel.getId(), sender.getUsername(), rawMessage));
     }
 
-    private static Text getHoverMessage(ServerPlayerEntity player) {
+    private static Text getHoverMessage(OnlineUser user) {
         Text text = new LiteralText("");
         text.append(new LiteralText("[").formatted(Formatting.DARK_GRAY))
                 .append(new LiteralText(" i ").formatted(Formatting.GREEN))
         .append(new LiteralText("] ").formatted(Formatting.DARK_GRAY));
-        text.append(new LiteralText("Click here to reply").formatted(Formatting.GREEN));
+        text.append(new LiteralText("Click here to reply to " + user.getFormattedDisplayname()).formatted(Formatting.GREEN));
         text.append("\n");
         text.append(new LiteralText("Sent at: ").formatted(Formatting.GRAY));
         text.append(new LiteralText(new Date().toGMTString()).formatted(Formatting.YELLOW));
@@ -168,6 +170,7 @@ public class ServerChat {
                     new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }
 
+        KiloServer.getServer().sendMessage(String.format("[Chat/Private] %s -> %s: %s", source.getName(), target.getUsername(), message));
     }
 
     public static void sendCommandSpy(ServerCommandSource source, String message) {
