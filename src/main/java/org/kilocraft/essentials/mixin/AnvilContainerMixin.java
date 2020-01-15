@@ -8,6 +8,7 @@ import net.minecraft.text.LiteralText;
 import org.apache.commons.lang3.StringUtils;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,6 +37,7 @@ public abstract class AnvilContainerMixin {
     public void setNewItemName(String string) {
         newItemName = TextFormat.translate(string,
                 KiloCommands.hasPermission(player.getCommandSource(), CommandPermission.ITEM_NAME));
+
 
         if (((AnvilContainer)(Object)this).getSlot(2).hasStack()) {
             ItemStack itemStack = ((AnvilContainer)(Object)this).getSlot(2).getStack();
