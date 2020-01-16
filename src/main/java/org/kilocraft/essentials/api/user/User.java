@@ -122,22 +122,4 @@ public interface User {
     @Deprecated
     void setDisplayParticleId(int i);
 
-    /**
-     * Gets the VanishHandler for this User
-     * @return VanishHandler
-     */
-    VanishHandler getVanishHandler();
-
-    /**
-     * Sets if the Player is vanished
-     * @param set vanish
-     */
-    void setVanished(boolean set);
-
-    /**
-     * Gets if the Player is vanished
-     * @return is player vanished
-     */
-    boolean isVanished();
-
 }
