@@ -16,7 +16,6 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.vanish.VanishHandler;
 
 import java.util.Date;
 import java.util.List;
@@ -220,20 +219,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void setDisplayParticleId(int i) {
-    }
-
-    @Override
-    public VanishHandler getVanishHandler() {
-        return null;
-    }
-
-    @Override
-    public void setVanished(boolean set) {
-    }
-
-    @Override
-    public boolean isVanished() {
-        return false;
     }
 
     @Override
