@@ -8,7 +8,11 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -30,6 +34,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class WarpCommand {
     private static final SimpleCommandExceptionType WARP_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the warp specified!"));
+    private static final SimpleCommandExceptionType NO_WARPS = new SimpleCommandExceptionType(new LiteralText("There are no Warps set!"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = literal("warp")
@@ -104,21 +109,42 @@ public class WarpCommand {
     }
 
     private static int executeList(ServerCommandSource source) throws CommandSyntaxException {
-        if (WarpManager.getWarps().isEmpty()) {
-            KiloChat.sendMessageTo(source, new ChatMessage("&cNo warps!", true));
-            return 1;
-        }
+        int warpsSize = WarpManager.getWarps().size();
 
-        StringBuilder warps = new StringBuilder();
-        warps.append("&6Warps&8:");
+        if (warpsSize == 0)
+            throw NO_WARPS.create();
 
+        Text text = new LiteralText("Warps").formatted(Formatting.GOLD)
+                .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
+                .append(new LiteralText(String.valueOf(warpsSize)).formatted(Formatting.LIGHT_PURPLE))
+                .append(new LiteralText(" ]: ").formatted(Formatting.DARK_GRAY));
+
+        int i = 0;
+        boolean nextColor = false;
         for (Warp warp : WarpManager.getWarps()) {
-            warps.append("&7,&f ").append(warp.getName());
+            LiteralText thisHome = new LiteralText("");
+            i++;
+
+            Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
+
+            thisHome.append(new LiteralText(warp.getName()).styled((style) -> {
+                style.setColor(thisFormat);
+                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new LiteralText("[i] ").formatted(Formatting.YELLOW)
+                                .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN))));
+                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                        "/warp " + warp.getName()));
+            }));
+
+            if (warpsSize != i)
+                thisHome.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
+
+            nextColor = !nextColor;
+
+            text.append(thisHome);
         }
 
-        KiloChat.sendMessageTo(source, new ChatMessage(
-                warps.toString().replaceFirst("&7,", ""), true));
-
+        KiloChat.sendMessageToSource(source, text);
         return 1;
     }
 
