@@ -120,4 +120,16 @@ public interface User {
      */
     @Deprecated
     void setDisplayParticleId(int i);
+
+    /**
+     * Checks if a User is vanished or not
+     * @return is user vanished
+     */
+    boolean isVanished();
+
+    /**
+     * Sets if a User is vanished or not
+     * @param set vanish
+     */
+    void setVanished(boolean set);
 }

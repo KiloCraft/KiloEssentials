@@ -54,6 +54,7 @@ public class ServerUser implements User {
     private String upstreamChannelId;
     private boolean socialSpy = false;
     private boolean commandSpy = false;
+    private boolean vanished = false;
     
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -89,7 +90,7 @@ public class ServerUser implements User {
         posTag.putDouble("y", this.pos.getY());
         posTag.putDouble("z", this.pos.getZ());
 
-        if(this.posDim == null) { // This should be impossible
+        if (this.posDim == null) { // This should be impossible
             // TODO Notify admins and throw a giant error log into Console to reflect error. Set it to a temp value
             this.posDim = new Identifier("minecraft", "overworld");
         }
@@ -127,6 +128,9 @@ public class ServerUser implements User {
 
         if (this.socialSpy)
             cacheTag.putBoolean("commandSpy", true);
+
+        if (this.vanished)
+            cacheTag.putBoolean("vanished", true);
 
         // TODO When possible, move particle logic to a feature.
         if (this.displayParticleId != 0)
@@ -170,11 +174,10 @@ public class ServerUser implements User {
         this.pos = new Vec3d(
                 posTag.getDouble("x"),
                 posTag.getDouble("y"),
-                posTag.getDouble("z")
-        );
+                posTag.getDouble("z"));
         this.posDim = new Identifier(posTag.getString("dim"));
 
-        if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
+        if (cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
             CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
             if(lastMessageTag.contains("destUUID", NBTTypes.STRING))
                 this.lastPrivateMessageGetterUUID = UUID.fromString(lastMessageTag.getString("destUUID"));
@@ -201,11 +204,12 @@ public class ServerUser implements User {
             this.invulnerable = true;
         }
 
-
         if (cacheTag.contains("socialSpy"))
             this.socialSpy = cacheTag.getBoolean("socialSpy");
         if (cacheTag.contains("commandSpy"))
             this.commandSpy = cacheTag.getBoolean("commandSpy");
+        if (cacheTag.contains("vanished"))
+            this.vanished = cacheTag.getBoolean("vanished");
 
         if (metaTag.getInt("displayParticleId") != 0)
             this.displayParticleId = metaTag.getInt("displayParticleId");
@@ -433,6 +437,16 @@ public class ServerUser implements User {
 
     public void setDisplayParticleId (int id) {
     	this.displayParticleId = id;
+    }
+
+    @Override
+    public boolean isVanished() {
+        return this.vanished;
+    }
+
+    @Override
+    public void setVanished(boolean set) {
+        this.vanished = set;
     }
 
     public void resetMessageCooldown() {
