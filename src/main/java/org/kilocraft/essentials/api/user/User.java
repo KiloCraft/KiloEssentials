@@ -7,6 +7,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.extensions.vanish.VanishHandler;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
 import java.util.Date;
@@ -122,14 +123,21 @@ public interface User {
     void setDisplayParticleId(int i);
 
     /**
-     * Checks if a User is vanished or not
-     * @return is user vanished
+     * Gets the VanishHandler for this User
+     * @return VanishHandler
      */
-    boolean isVanished();
+    VanishHandler getVanishHandler();
 
     /**
-     * Sets if a User is vanished or not
+     * Sets if the Player is vanished
      * @param set vanish
      */
     void setVanished(boolean set);
+
+    /**
+     * Gets if the Player is vanished
+     * @return is player vanished
+     */
+    boolean isVanished();
+
 }

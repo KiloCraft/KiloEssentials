@@ -6,6 +6,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.extensions.vanish.VanishHandler;
 
 import java.util.Date;
 import java.util.List;
@@ -209,5 +210,19 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public void setDisplayParticleId(int i) {
+    }
+
+    @Override
+    public VanishHandler getVanishHandler() {
+        return null;
+    }
+
+    @Override
+    public void setVanished(boolean set) {
+    }
+
+    @Override
+    public boolean isVanished() {
+        return false;
     }
 }

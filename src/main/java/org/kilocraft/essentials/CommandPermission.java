@@ -65,6 +65,8 @@ public enum CommandPermission {
     SEEK_INVENTORY("seek_inventory"),
     SAYAS_OTHERS("sayas.others"),
     SAYAS_SERVER("sayas.server"),
+    VANISH_SELF("vanish.self"),
+    VANISH_OTHERS("vanish.others"),
     ;
 
     private String node;

@@ -2,26 +2,21 @@ package org.kilocraft.essentials.extensions.vanish;
 
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.user.ServerUser;
 
 public class VanishSettings {
-    private boolean enableEventMessages;
-    private boolean nightVision;
-    private boolean showBossbar;
-    private boolean disablePrivateMessages;
-    private boolean pickupItems;
-    private boolean invulnerable;
-    private boolean ignoreEvents;
+    private ServerUser user;
+    private boolean enableEventMessages = false;
+    private boolean nightVision = true;
+    private boolean showBossbar = true;
+    private boolean disablePrivateMessages = true;
+    private boolean pickupItems = false;
+    private boolean invulnerable = true;
+    private boolean ignoreEvents = true;
+    private boolean canDamageOthers = false;
 
-    public VanishSettings(boolean enableEventMessages, boolean nightVision, boolean showBossbar,
-                          boolean disablePrivateMessages, boolean pickupItems, boolean invulnerable,
-                          boolean ignoreEvents) {
-        this.enableEventMessages = enableEventMessages;
-        this.nightVision = nightVision;
-        this.showBossbar = showBossbar;
-        this.disablePrivateMessages = disablePrivateMessages;
-        this.pickupItems = pickupItems;
-        this.invulnerable = invulnerable;
-        this.ignoreEvents = ignoreEvents;
+    VanishSettings(ServerUser user) {
+        this.user = user;
     }
 
     protected CompoundTag serialize() {
@@ -33,6 +28,7 @@ public class VanishSettings {
         tag.putBoolean("pickupItems", this.pickupItems);
         tag.putBoolean("invulnerable", this.invulnerable);
         tag.putBoolean("ignoreEvents", this.ignoreEvents);
+        tag.putBoolean("canDamageOthers", this.canDamageOthers);
 
         return tag;
     }
@@ -45,13 +41,28 @@ public class VanishSettings {
         this.pickupItems = compoundTag.getBoolean("pickupItems");
         this.invulnerable = compoundTag.getBoolean("invulnerable");
         this.ignoreEvents = compoundTag.getBoolean("ignoreEvents");
+        this.canDamageOthers = compoundTag.getBoolean("canDamageOthers");
+    }
+
+    public static String[] getKeys() {
+        return new String[]{"enableEventMessages", "nightVision", "showBossbar", "disablePrivateMessage",
+                "pickupItems", "invulnerable", "ignoreEvents", "canDamageOthers"};
+    }
+
+    public static boolean isValidKey(String key) {
+        for (String s : getKeys()) {
+            if (key.equals(s))
+                return true;
+        }
+
+        return false;
     }
 
     public void setEnableEventMessages(boolean enableEventMessages) {
         this.enableEventMessages = enableEventMessages;
     }
 
-    public void setNightVisionEnabled(boolean nightVision) {
+    public void setNightVision(boolean nightVision) {
         this.nightVision = nightVision;
     }
 
@@ -63,7 +74,7 @@ public class VanishSettings {
         this.disablePrivateMessages = disablePrivateMessages;
     }
 
-    public void setPickupItemsEnabled(boolean pickupItems) {
+    public void setPickupItems(boolean pickupItems) {
         this.pickupItems = pickupItems;
     }
 
@@ -75,23 +86,28 @@ public class VanishSettings {
         this.ignoreEvents = ignoreEvents;
     }
 
-    public boolean enableEventMessages() {
+    public void setCanDamageOthers(boolean canDamageOthers) {
+        this.canDamageOthers = canDamageOthers;
+    }
+
+
+    public boolean isEnableEventMessages() {
         return enableEventMessages;
     }
 
-    public boolean isNightVisionEnabled() {
+    public boolean isNightVision() {
         return nightVision;
     }
 
-    public boolean showBossbar() {
+    public boolean isShowBossbar() {
         return showBossbar;
     }
 
-    public boolean isDisabledPrivateMessages() {
+    public boolean isDisablePrivateMessages() {
         return disablePrivateMessages;
     }
 
-    public boolean pickupItems() {
+    public boolean isPickupItems() {
         return pickupItems;
     }
 
@@ -99,8 +115,12 @@ public class VanishSettings {
         return invulnerable;
     }
 
-    public boolean ignoreEvents() {
+    public boolean isIgnoreEvents() {
         return ignoreEvents;
+    }
+
+    public boolean isCanDamageOthers() {
+        return canDamageOthers;
     }
 
 }

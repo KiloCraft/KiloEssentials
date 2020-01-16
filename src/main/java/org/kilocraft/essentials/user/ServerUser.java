@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.extensions.vanish.VanishHandler;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class ServerUser implements User {
     UUID uuid;
     String name = "";
     private UserHomeHandler homeHandler;
+    private VanishHandler vanishHandler;
     private Vec3d backPos = Vec3d.ZERO;
     private Vec3d pos = Vec3d.ZERO;
     private Identifier lastPosDim;
@@ -129,8 +131,10 @@ public class ServerUser implements User {
         if (this.socialSpy)
             cacheTag.putBoolean("commandSpy", true);
 
-        if (this.vanished)
-            cacheTag.putBoolean("vanished", true);
+        if (this.vanished || this.vanishHandler != null) {
+            cacheTag.putBoolean("vanished", this.vanished);
+            cacheTag.put("vanishSettings", this.vanishHandler.serialize());
+        }
 
         // TODO When possible, move particle logic to a feature.
         if (this.displayParticleId != 0)
@@ -208,8 +212,16 @@ public class ServerUser implements User {
             this.socialSpy = cacheTag.getBoolean("socialSpy");
         if (cacheTag.contains("commandSpy"))
             this.commandSpy = cacheTag.getBoolean("commandSpy");
-        if (cacheTag.contains("vanished"))
+
+        if (cacheTag.contains("vanished")) {
             this.vanished = cacheTag.getBoolean("vanished");
+
+            if (this.vanishHandler == null) {
+                this.vanishHandler = new VanishHandler(this);
+                this.vanishHandler.deserialize(cacheTag.getCompound("vanishSettings"));
+            }
+
+        }
 
         if (metaTag.getInt("displayParticleId") != 0)
             this.displayParticleId = metaTag.getInt("displayParticleId");
@@ -440,13 +452,22 @@ public class ServerUser implements User {
     }
 
     @Override
-    public boolean isVanished() {
-        return this.vanished;
+    public VanishHandler getVanishHandler() {
+        return this.vanishHandler;
     }
 
     @Override
     public void setVanished(boolean set) {
         this.vanished = set;
+
+        if (set && this.vanishHandler == null) {
+            this.vanishHandler = new VanishHandler(this);
+        }
+    }
+
+    @Override
+    public boolean isVanished() {
+        return this.vanished;
     }
 
     public void resetMessageCooldown() {
