@@ -7,7 +7,6 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
-import org.kilocraft.essentials.extensions.vanish.VanishHandler;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
 import java.util.Date;

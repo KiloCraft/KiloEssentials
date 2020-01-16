@@ -15,7 +15,6 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
-import org.kilocraft.essentials.extensions.vanish.VanishHandler;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
