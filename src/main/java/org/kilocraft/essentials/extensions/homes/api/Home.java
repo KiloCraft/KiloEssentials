@@ -52,7 +52,7 @@ public class Home {
                     new BlockPos(pos.getDouble("x"), pos.getDouble("y"), pos.getDouble("z")));
 
             CompoundTag dir = compoundTag.getCompound("dir");
-            this.location.setView(dir.getFloat("dX"), dir.getFloat("dY"));
+            this.location.setView(dir.getFloat("dY"), dir.getFloat("dX"));
             return;
         }
 
