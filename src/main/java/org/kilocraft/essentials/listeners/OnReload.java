@@ -7,6 +7,7 @@ import org.kilocraft.essentials.api.event.server.lifecycle.ServerReloadEvent;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.provided.BrandedServer;
+import org.kilocraft.essentials.util.NBTStorageUtil;
 
 public class OnReload implements EventHandler<ServerReloadEvent> {
     @Override
@@ -17,5 +18,7 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
         BrandedServer.load();
         KiloServer.getServer().getMetaManager().load();
         KiloServer.getServer().getMetaManager().updateAll();
+
+        NBTStorageUtil.onLoad();
     }
 }

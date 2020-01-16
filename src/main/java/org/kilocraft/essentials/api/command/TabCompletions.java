@@ -20,7 +20,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
-import org.kilocraft.essentials.modsupport.VanishModSupport;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -36,7 +35,7 @@ public class TabCompletions {
 
     public static CompletableFuture<Suggestions> allPlayers(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((it) ->
-                KiloEssentials.hasPermissionNode(it.getCommandSource(), EssentialPermission.STAFF) || !VanishModSupport.isVanished(it.getUuid()))
+                KiloEssentials.hasPermissionNode(it.getCommandSource(), EssentialPermission.STAFF))
                 .map(PlayerEntity::getEntityName), builder);
     }
 
