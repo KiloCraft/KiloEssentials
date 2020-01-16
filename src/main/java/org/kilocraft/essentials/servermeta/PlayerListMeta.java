@@ -37,7 +37,7 @@ public class PlayerListMeta {
         ((PlayerListHeaderS2CPacketMixin) packet).setHeader(TextFormat.translateToLiteralText('&', thisHeader));
         ((PlayerListHeaderS2CPacketMixin) packet).setFooter(TextFormat.translateToLiteralText('&', thisFooter));
 
-        if (packet != null)
+        if (player.networkHandler != null)
             player.networkHandler.sendPacket(packet);
     }
 

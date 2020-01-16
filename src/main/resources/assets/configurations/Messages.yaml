@@ -70,8 +70,8 @@ events:
 commands:
   # [<greedyString> c]
   context:
-    execution_exception: '&c[ &f!&c ] &fUnknown command! Please type /help for help'
-    permission_exception: "&c[ &f!&c ] &fInsufficient permission! You can't use that command"
+    execution_exception: '&fUnknown command! Please type "/help" for help'
+    permission_exception: "&fInsufficient permission! You can't use that command"
   # [<greedyString> c]
   broadcast_format: '&f[&cBroadCast&f]&r %MESSAGE%'
   # [TextComponenet]
