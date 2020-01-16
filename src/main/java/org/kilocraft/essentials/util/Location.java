@@ -41,6 +41,10 @@ public class Location {
         this.z = z;
     }
 
+    public static Location dummy() {
+        return new Location(0, 0, 0);
+    }
+
     public static Location of(BlockPos pos) {
         return new Location(pos.getX(), pos.getY(), pos.getZ(), 0, 0, null);
     }

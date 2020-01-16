@@ -39,7 +39,7 @@ public class StopCommand {
             literalText.styled((style) -> {
                 style.setColor(Formatting.RED);
                 style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW)));
-                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/shutdown -confirmed"));
+                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));
             });
 
             KiloChat.sendMessageTo(source, literalText);

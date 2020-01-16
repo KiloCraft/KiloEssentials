@@ -11,25 +11,19 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.util.Location;
 
 import java.util.UUID;
 
 public class Home {
     private UUID owner_uuid;
     private String name;
-    private Identifier dimensionId;
-    private double x, y, z;
-    private float dX, dY;
+    private Location location;
 
-    public Home(UUID uuid, String name, double x, double y, double z, Identifier dimensionId, float yaw, float pitch) {
+    public Home(UUID uuid, String name, Location location) {
         this.owner_uuid = uuid;
         this.name = name;
-        this.dimensionId = dimensionId;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.dY = yaw;
-        this.dX = pitch;
+        this.location = location;
     }
 
     public Home() {
@@ -41,34 +35,28 @@ public class Home {
 
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putString("dimension", this.dimensionId.toString());
+        compoundTag.put("loc", this.location.toTag());
 
-        CompoundTag pos = new CompoundTag();
-        pos.putDouble("x", this.x);
-        pos.putDouble("y", this.y);
-        pos.putDouble("z", this.z);
-
-        compoundTag.put("pos", pos);
-
-        CompoundTag dir = new CompoundTag();
-        dir.putDouble("dX", dX);
-        dir.putDouble("dY", dY);
-
-        compoundTag.put("dir", dir);
         return compoundTag;
     }
 
     public void fromTag(CompoundTag compoundTag) {
-        this.dimensionId = new Identifier(compoundTag.getString("dimension"));
+        if (this.location == null)
+            this.location = Location.dummy();
 
-        CompoundTag pos = compoundTag.getCompound("pos");
-        this.x = pos.getDouble("x");
-        this.y = pos.getDouble("y");
-        this.z = pos.getDouble("z");
+        if (compoundTag.contains("pos")) { //OLD Format
+            this.location.setDimension(new Identifier(compoundTag.getString("dimension")));
 
-        CompoundTag dir = compoundTag.getCompound("dir");
-        this.dX = dir.getFloat("dX");
-        this.dY = dir.getFloat("dY");
+            CompoundTag pos = compoundTag.getCompound("pos");
+            this.location.setPos(
+                    new BlockPos(pos.getDouble("x"), pos.getDouble("y"), pos.getDouble("z")));
+
+            CompoundTag dir = compoundTag.getCompound("dir");
+            this.location.setView(dir.getFloat("dX"), dir.getFloat("dY"));
+            return;
+        }
+
+        this.location.fromTag(compoundTag.getCompound("loc"));
     }
 
     public UUID getOwner() {
@@ -87,66 +75,23 @@ public class Home {
         this.name = name;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
-    public void setZ(double z) {
-        this.z = z;
-    }
-
-    public Identifier getDimId() {
-        return dimensionId;
-    }
-
-    public void setDimension(Identifier dimensionType) {
-        this.dimensionId = dimensionId;
-    }
-
-    public float getPitch() {
-        return dX;
-    }
-
-    public void setPitch(float dX) {
-        this.dX = dX;
-    }
-
-    public float getYaw() {
-        return dY;
-    }
-
-    public void setYaw(float dY) {
-        this.dY = dY;
+    public Location getLocation() {
+        return this.location;
     }
 
     public static void teleportTo(OnlineUser user, Home home) throws CommandSyntaxException {
         ServerPlayerEntity player = user.getPlayer();
-        DimensionType type = DimensionType.byId(home.getDimId());
+        DimensionType type = DimensionType.byId(home.getLocation().getDimensionId());
         if (type == null)
             return;
 
         ServerWorld destinationWorld = player.getServer().getWorld(type);
-        Vec3d destination = new Vec3d(home.getX(), home.getY(), home.getZ());
-        float yaw = home.getYaw();
-        float pitch = home.getPitch();
+        Vec3d destination = new Vec3d(home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ());
+        float yaw = home.getLocation().getYaw();
+        float pitch = home.getLocation().getPitch();
 
         destinationWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getEntityId()); // Lag reduction magic
-        player.teleport(destinationWorld, home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+        player.teleport(destinationWorld, home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ(),
+                home.getLocation().getYaw(), home.getLocation().getPitch());
     }
 }

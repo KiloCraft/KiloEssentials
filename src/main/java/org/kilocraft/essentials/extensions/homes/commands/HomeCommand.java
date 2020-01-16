@@ -16,7 +16,6 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
@@ -31,8 +30,8 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.Location;
 
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -186,7 +185,6 @@ public class HomeCommand {
     private static int executeSet(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         String arg = StringArgumentType.getString(context, "name");
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
@@ -202,15 +200,7 @@ public class HomeCommand {
                 serverUser.getHomesHandler().removeHome(arg);
             }
 
-            serverUser.getHomesHandler().addHome(new Home(
-                            gameProfile.getId(),
-                            arg,
-                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
-                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getY())),
-                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
-                            DimensionType.getId(source.getWorld().getDimension().getType()),
-                            Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
-                            Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))));
+            serverUser.getHomesHandler().addHome(new Home(gameProfile.getId(), arg, Location.of(source.getPlayer())));
 
             if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                 KiloChat.sendMessageTo(source, new ChatMessage(

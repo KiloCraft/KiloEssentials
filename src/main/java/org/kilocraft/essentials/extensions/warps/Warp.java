@@ -43,7 +43,10 @@ public class Warp {
     }
 
     public void fromTag(CompoundTag tag) {
-        this.location.fromTag(tag);
+        if (this.location == null)
+            this.location = Location.dummy();
+
+        this.location.fromTag(tag.getCompound("loc"));
 
         if (tag.contains("addCmd"))
             this.addCommand = true;

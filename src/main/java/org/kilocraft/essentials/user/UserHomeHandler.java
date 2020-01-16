@@ -115,7 +115,7 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException, CommandSyntaxException {
         if (user.isOnline()) {
-            ServerWorld world = Objects.requireNonNull(user.getPlayer().getServer()).getWorld(DimensionType.byId(home.getDimId()));
+            ServerWorld world = Objects.requireNonNull(user.getPlayer().getServer()).getWorld(DimensionType.byId(home.getLocation().getDimensionId()));
             if(world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
             }

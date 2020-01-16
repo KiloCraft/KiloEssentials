@@ -24,8 +24,6 @@ import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.util.Location;
 
-import java.text.DecimalFormat;
-
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -150,7 +148,6 @@ public class WarpCommand {
     }
 
     private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
-        DecimalFormat df = new DecimalFormat("#.##");
         WarpManager.addWarp(new Warp(name, Location.of(source.getPlayer()), addCommand));
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
