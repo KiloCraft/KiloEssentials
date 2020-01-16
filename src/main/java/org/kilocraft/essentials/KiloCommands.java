@@ -51,8 +51,6 @@ import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
-import org.kilocraft.essentials.extensions.vanish.VanishCommand;
-import org.kilocraft.essentials.extensions.vanish.VanishEditCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.util.messages.MessageUtil;
@@ -155,8 +153,6 @@ public class KiloCommands {
         //PlayerParticlesCommand.register(this.dispatcher);
         //WorkbenchCommand.register(this.dispatcher);
         SayasCommand.register(this.dispatcher);
-        VanishCommand.register(this.dispatcher);
-        VanishEditCommand.register(this.dispatcher);
     }
 
     private void registerToast() {
