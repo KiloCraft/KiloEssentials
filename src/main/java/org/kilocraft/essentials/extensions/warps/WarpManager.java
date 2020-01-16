@@ -71,8 +71,9 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
     }
 
     public static int teleport(ServerCommandSource source, Warp warp) throws CommandSyntaxException {
-        ServerWorld world = source.getMinecraftServer().getWorld(DimensionType.byId(warp.getDimId()));
-        source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
+        ServerWorld world = source.getMinecraftServer().getWorld(DimensionType.byId(warp.getLocation().getDimensionId()));
+        source.getPlayer().teleport(world, warp.getLocation().getX(), warp.getLocation().getY(), warp.getLocation().getZ(),
+                warp.getLocation().getYaw(), warp.getLocation().getPitch());
 
         return 1;
     }

@@ -22,6 +22,7 @@ import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
+import org.kilocraft.essentials.util.Location;
 
 import java.text.DecimalFormat;
 
@@ -93,7 +94,7 @@ public class WarpCommand {
         if (WarpManager.getWarpsByName().contains(name)) {
             Warp warp = WarpManager.getWarp(name);
 
-            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getDimId()));
+            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getLocation().getDimensionId()));
 
             KiloChat.sendMessageTo(source, new ChatMessage(
                     KiloConfig.getProvider().getMessages().get(true, "commands.serverWideWarps.teleportTo")
@@ -102,7 +103,7 @@ public class WarpCommand {
             ));
 
             BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
-            source.getPlayer().teleport(world, warp.getX(), warp.getY(), warp.getZ(), warp.getYaw(), warp.getPitch());
+            WarpManager.teleport(source, warp);
         } else
             throw WARP_NOT_FOUND_EXCEPTION.create();
         return 1;
@@ -150,16 +151,7 @@ public class WarpCommand {
 
     private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
         DecimalFormat df = new DecimalFormat("#.##");
-        WarpManager.addWarp(
-                new Warp(
-                        name,
-                        Double.parseDouble(df.format(source.getPlayer().getPos().x)),
-                        Double.parseDouble(df.format(source.getPlayer().getPos().y)),
-                        Double.parseDouble(df.format(source.getPlayer().getPos().z)),
-                        Float.parseFloat(df.format(source.getPlayer().yaw)),
-                        Float.parseFloat(df.format(source.getPlayer().pitch)),
-                        Registry.DIMENSION.getId(source.getWorld().getDimension().getType()),
-                        addCommand));
+        WarpManager.addWarp(new Warp(name, Location.of(source.getPlayer()), addCommand));
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
         registerAliases();

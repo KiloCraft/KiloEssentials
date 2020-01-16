@@ -1,23 +1,16 @@
 package org.kilocraft.essentials.extensions.warps;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Identifier;
+import org.kilocraft.essentials.util.Location;
 
 public class Warp {
     private String name;
-    private double x, y, z;
-    private Identifier dimensionId;
-    private float dX, dY;
+    private Location location;
     private boolean addCommand;
 
-    public Warp(String name, double x, double y, double z, float yaw, float pitch, Identifier dimensionId, boolean addCommand) {
+    public Warp(String name, Location location, boolean addCommand) {
         this.name = name;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.dimensionId = dimensionId;
-        this.dX = pitch;
-        this.dY = yaw;
+        this.location = location;
         this.addCommand = addCommand;
     }
 
@@ -30,28 +23,8 @@ public class Warp {
         return this.name;
     }
 
-    public float getPitch() {
-        return this.dX;
-    }
-
-    public float getYaw() {
-        return this.dY;
-    }
-
-    public double getX() {
-        return this.x;
-    }
-
-    public double getY() {
-        return this.y;
-    }
-
-    public double getZ() {
-        return this.z;
-    }
-
-    public Identifier getDimId() {
-        return this.dimensionId;
+    public Location getLocation() {
+        return this.location;
     }
 
     public boolean getAddCommand() {
@@ -61,23 +34,7 @@ public class Warp {
 
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
-        {
-            CompoundTag pos = new CompoundTag();
-            pos.putDouble("x", this.x);
-            pos.putDouble("y", this.y);
-            pos.putDouble("z", this.z);
-
-            compoundTag.put("pos", pos);
-        }
-        {
-            CompoundTag direction = new CompoundTag();
-            direction.putFloat("dX", this.dX);
-            direction.putFloat("dY", this.dY);
-
-            compoundTag.put("direction", direction);
-        }
-
-        compoundTag.putString("dimension", this.dimensionId.toString());
+        compoundTag.put("loc", this.location.toTag());
 
         if (this.addCommand)
             compoundTag.putBoolean("addCmd", true);
@@ -86,18 +43,7 @@ public class Warp {
     }
 
     public void fromTag(CompoundTag tag) {
-        {
-            CompoundTag pos = tag.getCompound("pos");
-            this.x = pos.getDouble("x");
-            this.y = pos.getDouble("y");
-            this.z = pos.getDouble("z");
-        }
-        {
-            CompoundTag dir = tag.getCompound("direction");
-            this.dimensionId = new Identifier(tag.getString("dimension"));
-            this.dX = dir.getFloat("dX");
-            this.dY = dir.getFloat("dY");
-        }
+        this.location.fromTag(tag);
 
         if (tag.contains("addCmd"))
             this.addCommand = true;

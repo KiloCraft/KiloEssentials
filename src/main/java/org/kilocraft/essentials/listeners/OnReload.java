@@ -19,6 +19,6 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
         KiloServer.getServer().getMetaManager().load();
         KiloServer.getServer().getMetaManager().updateAll();
 
-        NBTStorageUtil.onLoad();
+        NBTStorageUtil.onSave();
     }
 }

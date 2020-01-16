@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.util;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -15,10 +16,10 @@ import static org.kilocraft.essentials.api.KiloServer.getServer;
 public class Location {
     public static int MAX_BUILD_LIMIT = KiloServer.getServer().getVanillaServer().getWorldHeight();
     private int x, y, z;
-    private double yaw, pitch;
+    private float yaw, pitch;
     private Identifier dimension;
 
-    public Location(int x, int y, int z, double yaw, double pitch, Identifier dimension) {
+    public Location(int x, int y, int z, float yaw, float pitch, Identifier dimension) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -73,11 +74,11 @@ public class Location {
         return this.z;
     }
 
-    public double getYaw() {
+    public float getYaw() {
         return this.yaw;
     }
 
-    public double getPitch() {
+    public float getPitch() {
         return this.pitch;
     }
 
@@ -126,9 +127,48 @@ public class Location {
         this.dimension = Registry.DIMENSION.getId(dimension);
     }
 
-    public void setView(double yaw, double pitch) {
+    public void setView(float yaw, float pitch) {
         this.yaw = yaw;
         this.pitch = pitch;
+    }
+
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
+        CompoundTag pos = new CompoundTag();
+
+        pos.putInt("x", this.x);
+        pos.putInt("y", this.y);
+        pos.putInt("z", this.z);
+
+        tag.put("pos", pos);
+
+        if (this.dimension != null)
+            tag.putString("dim", this.dimension.toString());
+
+        if (yaw != 0 && pitch != 0) {
+            CompoundTag view = new CompoundTag();
+            view.putFloat("yaw", this.yaw);
+            view.putFloat("pitch", this.pitch);
+            tag.put("view", view);
+        }
+
+        return tag;
+    }
+
+    public void fromTag(CompoundTag compoundTag) {
+        CompoundTag pos = compoundTag.getCompound("pos");
+        this.x = pos.getInt("x");
+        this.y = pos.getInt("y");
+        this.z = pos.getInt("z");
+
+        if (compoundTag.contains("dim"))
+            this.dimension = new Identifier(compoundTag.getString("dim"));
+
+        if (compoundTag.contains("view")) {
+            CompoundTag view = compoundTag.getCompound("view");
+            this.yaw = view.getFloat("yaw");
+            this.pitch = view.getFloat("pitch");
+        }
     }
 
 }
