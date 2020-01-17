@@ -152,6 +152,7 @@ public class WarpCommand {
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
         registerAliases();
+        KiloCommands.updateCommandTreeForEveryone();
 
         return 1;
     }

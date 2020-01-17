@@ -162,7 +162,7 @@ chat:
   # [<greedyString> c]
   #Style of the private messages
   privateMessages:
-    format: '&r&7%SOURCE% &3-> &7%TARGET% &8>>&7 %MESSAGE%'
+    format: '&7[&3%SOURCE%&r&7 -> &7%TARGET%&r&7]&f %MESSAGE%'
     me_format: '&cme'
 
   ping:

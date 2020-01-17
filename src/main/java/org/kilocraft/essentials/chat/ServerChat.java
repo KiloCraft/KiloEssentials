@@ -150,7 +150,7 @@ public class ServerChat {
                 KiloServer.getServer().getOnlineUser(source.getPlayer()).getRankedDisplayname().asFormattedString();
 
         String toSource = format.replace("%SOURCE%", me_format)
-                .replace("%TARGET%", "&r" + target.getRankedDisplayname().asFormattedString() + "&r")
+                .replace("%TARGET%", "&r" + target.getUsername() + "&r")
                 .replace("%MESSAGE%", message);
         String toTarget = format.replace("%SOURCE%", sourceName)
                 .replace("%TARGET%", me_format)
@@ -175,6 +175,8 @@ public class ServerChat {
     }
 
     public static void sendCommandSpy(ServerCommandSource source, String message) {
+
+
         String format = config.getStringSafely("commandSpy.format", "&r&7%SOURCE% &3->&r /%MESSAGE%") + "&r";
         String toSpy = format.replace("%SOURCE%", source.getName())
                 .replace("%MESSAGE%",  message);
@@ -185,4 +187,5 @@ public class ServerChat {
                         new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }
     }
+
 }

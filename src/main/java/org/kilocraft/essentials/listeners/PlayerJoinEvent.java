@@ -16,7 +16,7 @@ public class PlayerJoinEvent implements EventHandler<PlayerConnectEvent> {
         // Accually use the saved data
         ServerPlayerEntity player = event.getPlayer();
         OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
-        
+
         if (user.getBackPos() != null)
         	BackCommand.saveLocation(user);
     }

@@ -12,10 +12,18 @@ public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
     public void handle(OnCommandExecutionEvent event) {
         if (CommandHelper.isPlayer(event.getExecutor())) {
             String command = event.getCommand().startsWith("/") ? event.getCommand().substring(1) : event.getCommand();
+
+            for (String messageCommand : messageCommands) {
+                if (command.replace("/", "").startsWith(messageCommand))
+                    return;
+            }
+
             ServerChat.sendCommandSpy(event.getExecutor(), command);
 
             if (KiloConfig.getProvider().getMain().getBooleanSafely("commandSpy.saveToLog", true))
                 KiloServer.getLogger().info("[" + event.getExecutor().getName() + "]: " + command);
         }
     }
+
+    private static String[] messageCommands = new String[]{"msg", "tell", "whisper", "r", "reply"};
 }

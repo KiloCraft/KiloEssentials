@@ -63,8 +63,10 @@ public class MessageCommand {
     private static int executeSend(ServerCommandSource source, ServerPlayerEntity target, String message) throws CommandSyntaxException {
         if  (!CommandHelper.isConsole(source)) {
             OnlineUser user = KiloServer.getServer().getOnlineUser(target);
+            OnlineUser srcUser = KiloServer.getServer().getOnlineUser(source.getPlayer());
             user.setLastMessageSender(source.getPlayer().getUuid());
-            user.setLastPrivateMessage(message);
+            srcUser.setLastMessageSender(target.getUuid());
+            srcUser.setLastPrivateMessage(message);
         }
 
         if (CommandHelper.areTheSame(source, target))

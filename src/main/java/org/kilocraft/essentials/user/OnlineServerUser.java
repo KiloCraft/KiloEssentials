@@ -76,4 +76,19 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         // All the other serialization logic is handled.
         super.deserialize(tag);
     }
+
+    @Override
+    public void setFlight(boolean set) {
+        super.setFlight(true);
+        this.getPlayer().abilities.allowFlying = set;
+        this.getPlayer().abilities.flying = set;
+        this.getPlayer().sendAbilitiesUpdate();
+    }
+
+    public void onJoined() {
+        if (this.canFly())
+            this.setFlight(true);
+
+    }
+
 }
