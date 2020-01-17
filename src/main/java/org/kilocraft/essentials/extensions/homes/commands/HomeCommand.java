@@ -11,8 +11,11 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
@@ -22,12 +25,13 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.Location;
 
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -116,33 +120,52 @@ public class HomeCommand {
     }
 
     private static int executeList(ServerCommandSource source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
-        if (gameProfiles.size() == 1) {
-            GameProfile gameProfile = gameProfiles.iterator().next();
-            User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
-
-            if(serverUser instanceof NeverJoinedUser) {
-                throw NO_HOMES_EXCEPTION.create();
-            }
-
-            StringBuilder homes = new StringBuilder();
-            int homesSize = serverUser.getHomesHandler().getHomes().size();
-
-            if (homesSize > 0) {
-                if (source.getPlayer().getUuid().equals(gameProfile.getId())) homes.append("&6Homes&8 (&b").append(homesSize).append("&8)&7:");
-                else homes.append("&6" + gameProfile.getName() + "'s homes&8 (&b").append(homesSize).append("&8)&7:");
-
-                for (Home home  : serverUser.getHomesHandler().getHomes()) {
-                    homes.append("&7, &f").append(home.getName());
-                }
-
-                KiloChat.sendMessageTo(source, new ChatMessage(
-                        homes.toString().replaceFirst("&7,", ""), true
-                ));
-            } else
-                throw NO_HOMES_EXCEPTION.create();
-
-        } else
+        if (gameProfiles.size() > 1)
             throw TOO_MANY_PROFILES.create();
+
+        GameProfile gameProfile = gameProfiles.iterator().next();
+        User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+
+        if (serverUser instanceof NeverJoinedUser)
+            throw NO_HOMES_EXCEPTION.create();
+
+        int homesSize = serverUser.getHomesHandler().getHomes().size();
+
+        if (homesSize == 0)
+            throw NO_HOMES_EXCEPTION.create();
+
+        String prefix = CommandHelper.areTheSame(source, serverUser) ? "Homes" : serverUser.getFormattedDisplayname() + "'s Homes";
+        Text text = new LiteralText(prefix).formatted(Formatting.GOLD)
+                .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
+                .append(new LiteralText(String.valueOf(homesSize)).formatted(Formatting.LIGHT_PURPLE))
+                .append(new LiteralText(" ]: ").formatted(Formatting.DARK_GRAY));
+
+        int i = 0;
+        boolean nextColor = false;
+        for (Home home : serverUser.getHomesHandler().getHomes()) {
+            LiteralText thisHome = new LiteralText("");
+            i++;
+
+            Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
+
+            thisHome.append(new LiteralText(home.getName()).styled((style) -> {
+                style.setColor(thisFormat);
+                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new LiteralText("[i] ").formatted(Formatting.YELLOW)
+                                .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN))));
+                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                        "/home " + home.getName() + " " + serverUser.getUsername()));
+            }));
+
+            if (homesSize != i)
+                thisHome.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
+
+            nextColor = !nextColor;
+
+            text.append(thisHome);
+        }
+
+        KiloChat.sendMessageToSource(source, text);
         return 1;
     }
 
@@ -162,7 +185,6 @@ public class HomeCommand {
     private static int executeSet(CommandContext<ServerCommandSource> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         String arg = StringArgumentType.getString(context, "name");
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
@@ -178,15 +200,7 @@ public class HomeCommand {
                 serverUser.getHomesHandler().removeHome(arg);
             }
 
-            serverUser.getHomesHandler().addHome(new Home(
-                            gameProfile.getId(),
-                            arg,
-                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getX())),
-                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getY())),
-                            Double.parseDouble(decimalFormat.format(source.getPlayer().getPos().getZ())),
-                            DimensionType.getId(source.getWorld().getDimension().getType()),
-                            Float.parseFloat(decimalFormat.format(source.getPlayer().yaw)),
-                            Float.parseFloat(decimalFormat.format(source.getPlayer().pitch))));
+            serverUser.getHomesHandler().addHome(new Home(gameProfile.getId(), arg, Location.of(source.getPlayer())));
 
             if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                 KiloChat.sendMessageTo(source, new ChatMessage(

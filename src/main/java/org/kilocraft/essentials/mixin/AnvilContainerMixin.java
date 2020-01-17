@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.mixin;
 
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import org.apache.commons.lang3.StringUtils;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.spongepowered.asm.mixin.Final;
@@ -35,20 +35,16 @@ public abstract class AnvilContainerMixin {
     }
 
     public void setNewItemName(String string) {
-        newItemName = string;
+        newItemName = TextFormat.translate(string,
+                KiloCommands.hasPermission(player.getCommandSource(), CommandPermission.ITEM_NAME));
 
-        if (Thimble.PERMISSIONS.hasPermission(EssentialPermission.ANVIL_COLOR.getNode(), player.getGameProfile().getId()) || player.allowsPermissionLevel(2)) {
-            newItemName = TextFormat.translateAlternateColorCodes('&', string);
-        } else {
-            newItemName = TextFormat.removeAlternateColorCodes('&', string);
-        }
 
         if (((AnvilContainer)(Object)this).getSlot(2).hasStack()) {
             ItemStack itemStack = ((AnvilContainer)(Object)this).getSlot(2).getStack();
             if (StringUtils.isBlank(string)) {
                 itemStack.removeCustomName();
             } else {
-                itemStack.setCustomName(new LiteralText( newItemName));
+                itemStack.setCustomName(new LiteralText(newItemName));
             }
         }
 

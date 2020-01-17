@@ -30,4 +30,8 @@ public class ChatMessage {
                 TextFormat.removeAlternateColorCodes('&', string);
     }
 
+    public boolean isFormattingAllowed() {
+        return this.formatText;
+    }
+
 }

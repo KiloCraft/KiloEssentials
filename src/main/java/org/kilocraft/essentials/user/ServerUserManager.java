@@ -18,6 +18,8 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.config.ConfigCache;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
 import java.io.IOException;
@@ -150,7 +152,7 @@ public class ServerUserManager implements UserManager {
     }
 
     private void profileSanityCheck(GameProfile profile) {
-        if(!profile.isComplete() && profile.getId() == null) {
+        if (!profile.isComplete() && profile.getId() == null) {
             throw new IllegalArgumentException("Cannot use GameProfile with missing username to get an OfflineUser");
         }
     }
@@ -193,7 +195,11 @@ public class ServerUserManager implements UserManager {
 
         for(int i = 0; i < string.length(); ++i) {
             if (!SharedConstants.isValidChar(string.charAt(i))) {
-                player.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+                if (KiloConfig.getProvider().getMain().getBooleanSafely(ConfigCache.KICK_IF_ILLEGAL_CHARACTERS, false))
+                    player.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+                else
+                    player.getCommandSource().sendError(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+
                 return;
             }
         }

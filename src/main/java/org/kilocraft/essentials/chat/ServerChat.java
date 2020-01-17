@@ -86,7 +86,7 @@ public class ServerChat {
 
         Text text = new LiteralText(message.getFormattedMessage()).styled((style) -> {
             style.setColor(Formatting.RESET);
-            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getHoverMessage(player)));
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getHoverMessage(sender)));
             style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + sender.getUsername() + " "));
         });
 
@@ -94,14 +94,16 @@ public class ServerChat {
             if (channel.isSubscribed(user))
                 KiloChat.sendMessageTo(user.getPlayer(), text);
         });
+
+        KiloServer.getServer().sendMessage(String.format("[Chat/%s] %s: %s", channel.getId(), sender.getUsername(), rawMessage));
     }
 
-    private static Text getHoverMessage(ServerPlayerEntity player) {
+    private static Text getHoverMessage(OnlineUser user) {
         Text text = new LiteralText("");
         text.append(new LiteralText("[").formatted(Formatting.DARK_GRAY))
                 .append(new LiteralText(" i ").formatted(Formatting.GREEN))
         .append(new LiteralText("] ").formatted(Formatting.DARK_GRAY));
-        text.append(new LiteralText("Click here to reply").formatted(Formatting.GREEN));
+        text.append(new LiteralText("Click here to reply to " + user.getFormattedDisplayname()).formatted(Formatting.GREEN));
         text.append("\n");
         text.append(new LiteralText("Sent at: ").formatted(Formatting.GRAY));
         text.append(new LiteralText(new Date().toGMTString()).formatted(Formatting.YELLOW));
@@ -148,7 +150,7 @@ public class ServerChat {
                 KiloServer.getServer().getOnlineUser(source.getPlayer()).getRankedDisplayname().asFormattedString();
 
         String toSource = format.replace("%SOURCE%", me_format)
-                .replace("%TARGET%", "&r" + target.getRankedDisplayname().asFormattedString() + "&r")
+                .replace("%TARGET%", "&r" + target.getUsername() + "&r")
                 .replace("%MESSAGE%", message);
         String toTarget = format.replace("%SOURCE%", sourceName)
                 .replace("%TARGET%", me_format)
@@ -159,25 +161,31 @@ public class ServerChat {
                 .replace("%MESSAGE%", message);
 
         KiloChat.sendMessageToSource(source, new LiteralText(
-                new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.GRAY));
+                new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.WHITE));
         KiloChat.sendMessageTo(target.getPlayer(), new LiteralText(
-                new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.GRAY));
+                new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.WHITE));
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isSocialSpyOn() && !CommandHelper.areTheSame(target, user)) KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
-                    new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+            if (user.isSocialSpyOn() && !CommandHelper.areTheSame(target, user))
+                KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
+                    new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
         }
 
+        KiloServer.getServer().sendMessage(String.format("[Chat/Private] %s -> %s: %s", source.getName(), target.getUsername(), message));
     }
 
     public static void sendCommandSpy(ServerCommandSource source, String message) {
+
+
         String format = config.getStringSafely("commandSpy.format", "&r&7%SOURCE% &3->&r /%MESSAGE%") + "&r";
         String toSpy = format.replace("%SOURCE%", source.getName())
                 .replace("%MESSAGE%",  message);
+
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.isCommandSpyOn() && !CommandHelper.areTheSame(source, user))
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                         new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }
     }
+
 }

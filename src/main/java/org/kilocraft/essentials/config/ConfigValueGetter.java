@@ -61,7 +61,7 @@ public class ConfigValueGetter {
     }
 
     public Boolean getBooleanSafely(ConfigCache c, boolean defaultValue) {
-        return c.getValue().equals("NULL") ? defaultValue : (Boolean) c.getValue();
+        return c.getValue().equals("NULL<Cache>") ? defaultValue : (Boolean) c.getValue();
     }
 
     public Integer getIntegerSafely(String key, int defaultValue) {
@@ -81,7 +81,7 @@ public class ConfigValueGetter {
     }
 
     public String getStringSafely(ConfigCache c, String defaultValue) {
-        return c.getValue().equals("NULL") ? defaultValue : String.valueOf(c.getValue());
+        return c.getValue().equals("NULL<Cache>") ? defaultValue : String.valueOf(c.getValue());
     }
 
     public ProvidedValueReplaced getValueReplacer() {

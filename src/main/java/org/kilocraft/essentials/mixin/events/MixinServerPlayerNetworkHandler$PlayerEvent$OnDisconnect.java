@@ -31,7 +31,7 @@ public abstract class MixinServerPlayerNetworkHandler$PlayerEvent$OnDisconnect {
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/text/Text;)V"), method = "onDisconnected")
     private void oky$remove$sendToAll(PlayerManager playerManager, Text text_1) {
-        LOGGER.info("{} lost connection: {}", this.player.getName(), text_1.toString());
+        //Ignored
     }
 
 }

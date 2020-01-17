@@ -9,7 +9,6 @@ import static org.kilocraft.essentials.config.KiloConfig.MESSAGES;
 public enum  ConfigCache {
     SERVER_NAME("server.name", "general"),
     SERVER_DISPLAY_BRANDNAME("server.displayBrandName", "general"),
-    SERVER_COMMAND_TOAST("server.command-toast", "general"),
     CHAT_PING_FORMAT_EVERYONE("chat.ping.format_everyone", "general"),
     CHAT_PING_FORMAT("chat.ping.format", "general"),
     CHAT_PING_PINGED("chat.ping.pinged", "general"),
@@ -22,6 +21,11 @@ public enum  ConfigCache {
     CHAT_PING_ENABLED("chat.ping.enable", "general"),
     COMMANDS_CONTEXT_EXECUTION_EXCEPTION("commands.context.execution_exception", "messages"),
     COMMANDS_CONTEXT_PERMISSION_EXCEPTION("commands.context.permission_exception", "messages"),
+    COMMANDS_SUGGESTIONS_REQUIRE_PERMISSION("commands.suggestions.require_permission", "general"),
+    DISABLE_EVENT_MESSAGES_ON_BUNGEE_MODE("events.disable-on-bungee-mode", "messages"),
+    BUNGEECORD_MODE("server.bungeecord-mode", "general"),
+    USE_VANILLA_CHAT("chat.use-vanilla-chat-instead", "general"),
+    KICK_IF_ILLEGAL_CHARACTERS("chat.kick-if-illegal-characters", "general"),
     ;
 
     private String key;
@@ -35,7 +39,7 @@ public enum  ConfigCache {
 
     static void load() {
         for (ConfigCache it : values()) {
-            it.value = getFile(it).getOrElse(it.key, "NULL");
+            it.value = getFile(it).getOrElse(it.key, "NULL<Cache>");
         }
     }
 

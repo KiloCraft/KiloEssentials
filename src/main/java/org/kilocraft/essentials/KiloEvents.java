@@ -22,11 +22,11 @@ public class KiloEvents {
             add(new OnTick());
             add(new OnStart());
             add(new OnScheduledUpdate());
+            add(new OnServerStop());
         }};
 
-        for (EventHandler event : events) {
+        for (EventHandler event : events)
             KiloServer.getServer().registerEvent(event);
-        }
 
     }
 }

@@ -24,8 +24,9 @@ public class KiloConfig {
     private static HashMap<String, String> configFiles = new HashMap<String, String>(){{
         put("KiloEssentials.yaml", workingDir + "/");
         put("Messages.yaml", configPath);
-        put("Commands.yaml", configPath);
-        put("HelpCommandMessage.yaml", configPath);
+        //put("Commands.yaml", configPath);
+        put("HelpMessage.yaml", configPath);
+        put("Rules.yaml", configPath);
     }};
 
     private static ConfigProvider provider;
@@ -96,11 +97,19 @@ public class KiloConfig {
         return configPath;
     }
 
+    public static String getMessage(String key, Object... objects) {
+        return provider.getMessages().getMessage(key, objects);
+    }
+
+    public String getMessage(ConfigCache c, Object... objects) {
+        return provider.getMessages().getMessage(c, objects);
+    }
+
     public static void load() {
         MAIN.load();
         MESSAGES.load();
-        ConfigCache.load();
         //COMMANDS.load();
+        ConfigCache.load();
     }
 
 }

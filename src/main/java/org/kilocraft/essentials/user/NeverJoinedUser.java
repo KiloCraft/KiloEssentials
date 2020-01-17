@@ -39,6 +39,11 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public String getFormattedDisplayname() {
+        return null;
+    }
+
+    @Override
     public Text getRankedDisplayname() {
         return null;
     }
@@ -205,4 +210,5 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     @Override
     public void setDisplayParticleId(int i) {
     }
+
 }

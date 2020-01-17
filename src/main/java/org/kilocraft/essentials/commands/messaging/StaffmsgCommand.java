@@ -16,6 +16,7 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -87,7 +88,7 @@ public class StaffmsgCommand {
             OnlineUser user = KiloServer.getServer().getOnlineUser(subscriber);
 
             text.append(new LiteralText("\n- ").formatted(Formatting.GRAY))
-                .append(user.getRankedDisplayname().asFormattedString());
+                .append(TextFormat.translate(user.getRankedDisplayname().asFormattedString()));
         }
 
         ctx.getSource().sendFeedback(text, false);

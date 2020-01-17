@@ -19,10 +19,8 @@ import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
-import org.kilocraft.essentials.modsupport.BungeecordSupport;
-import org.kilocraft.essentials.modsupport.ModSupport;
-import org.kilocraft.essentials.modsupport.VanishModSupport;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
@@ -31,6 +29,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
@@ -57,6 +58,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private KiloCommands commands;
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
+	private ScheduledExecutorService scheduledUpdateExecutorService;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
@@ -120,12 +122,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
 		features.tryToRegister(new VoteCommand(), "VoteCommand");
 
-		ModSupport.register(new VanishModSupport());
-		ModSupport.register(new BungeecordSupport());
-		ModSupport.validateMods();
-
 		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
 			new StartupScript();
+
 	}
 
 	public static Logger getLogger() {
@@ -194,12 +193,12 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		return new MessageFactory() {
 			@Override
 			public Message newMessage(Object message) {
-				return new SimpleMessage((String) message);
+				return new SimpleMessage(KE_PREFIX + message);
 			}
 
 			@Override
 			public Message newMessage(String message) {
-				return new SimpleMessage(message);
+				return new SimpleMessage(KE_PREFIX + message);
 			}
 
 			@Override
@@ -207,6 +206,17 @@ public class KiloEssentialsImpl implements KiloEssentials {
 				return new SimpleMessage(message);
 			}
 		};
+	}
+
+	public void onServerReady() {
+		this.scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+		scheduledUpdateExecutorService.scheduleAtFixedRate(() ->
+				KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 0, 6, TimeUnit.SECONDS);
+	}
+
+	public void onServerStop() {
+		this.scheduledUpdateExecutorService.shutdown();
 	}
 
 }

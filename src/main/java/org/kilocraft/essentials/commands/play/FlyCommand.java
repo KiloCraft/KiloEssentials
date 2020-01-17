@@ -2,6 +2,7 @@ package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,26 +39,20 @@ public class FlyCommand {
         dispatcher.register(argumentBuilder);
     }
 
-    private static int toggle(ServerCommandSource source, ServerPlayerEntity playerEntity) {
-        execute(source, playerEntity, !playerEntity.abilities.allowFlying);
-        return 1;
+    private static int toggle(ServerCommandSource source, ServerPlayerEntity playerEntity) throws CommandSyntaxException {
+        return execute(source, playerEntity, !playerEntity.abilities.allowFlying);
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity playerEntity, boolean bool) {
-        if (!playerEntity.abilities.allowFlying == bool) {
-            playerEntity.abilities.allowFlying = bool;
-            playerEntity.abilities.flying = bool;
-            playerEntity.sendAbilitiesUpdate();
-            
-            OnlineUser user = KiloServer.getServer().getUserManager().getOnline(playerEntity);
-            user.setFlight(bool);
+        OnlineUser user = KiloServer.getServer().getOnlineUser(playerEntity);
+        user.setFlight(bool);
 
-            KiloChat.sendLangMessageTo(source, "template.#1", "Flight", bool, playerEntity.getName().asString());
+        KiloChat.sendLangMessageTo(source, "template.#1", "Flight", bool, playerEntity.getName().asString());
 
-            if (!CommandHelper.areTheSame(source, playerEntity))
-                KiloChat.sendLangMessageTo(playerEntity, "template.#1.announce", source.getName(), "Flight", bool);
-        }
+        if (!CommandHelper.areTheSame(source, playerEntity))
+            KiloChat.sendLangMessageTo(playerEntity, "template.#1.announce", source.getName(), "Flight", bool);
 
         return 1;
     }
+
 }

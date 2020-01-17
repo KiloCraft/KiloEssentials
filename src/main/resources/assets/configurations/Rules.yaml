@@ -1,0 +1,11 @@
+#Help command message
+# [TEXT COMPONENT]
+#                   Some keys might require a TextComponenet
+# Its a JSON String that Minecraft uses for all the Texts!
+# And it supports different Events!
+# You can use a generator to make a beautiful TextComponenet
+# e.g: https://minecraft.tools/en/tellraw.php
+# Just copy the json part like, like: {"text":"Welcome to Minecraft Tools"}
+message: |
+  [{"text":"Example config\n"},
+  {"text":"go to &e/KiloEssentials/config/Rules.yaml/&r to modify this message!", "color":"green"}]

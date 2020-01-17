@@ -37,16 +37,13 @@ public class VersionCommand {
                 ModConstants.getMinecraftVersion(),
                 gameVersion.isStable(),
                 gameVersion.getReleaseTarget(),
-                gameVersion.getWorldVersion()
-        );
+                gameVersion.getWorldVersion());
 
         return KiloCommands.SUCCESS();
     }
 
     private static int executeInfo(ServerCommandSource source) {
-        KiloChat.sendLangMessageTo(source, "command.info",
-                ModConstants.getMinecraftVersion()
-        );
+        KiloChat.sendLangMessageTo(source, "command.info", ModConstants.getMinecraftVersion());
 
         return KiloCommands.SUCCESS();
     }

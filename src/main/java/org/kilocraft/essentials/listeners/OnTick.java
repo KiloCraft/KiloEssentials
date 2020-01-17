@@ -6,7 +6,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.ServerTickEvent;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.modsupport.VanishModSupport;
 import org.kilocraft.essentials.user.ServerUserManager;
 
 public class OnTick implements EventHandler<ServerTickEvent> {

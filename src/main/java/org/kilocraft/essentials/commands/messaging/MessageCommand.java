@@ -33,19 +33,21 @@ public class MessageCommand {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(literal("ke_msg").executes(ctx ->
                 executeUsageFor("command.message.usage", ctx.getSource()))
                         .then(argument("player", player()).suggests(TabCompletions::allPlayers)
-                                .then(argument("message", greedyString()).executes(ctx ->
+                                .then(argument("message", greedyString())
+                                        .suggests(TabCompletions::noSuggestions)
+                                        .executes(ctx ->
                                                 executeSend(ctx.getSource(), getPlayer(ctx, "player"), getString(ctx, "message"))))));
 
         LiteralCommandNode<ServerCommandSource> replyNode = dispatcher.register(literal("r")
                         .executes(context -> executeUsageFor("command.message.reply.usage", context.getSource()))
                         .then(argument("message", greedyString())
+                                .suggests(TabCompletions::noSuggestions)
                                 .executes(MessageCommand::executeReply)));
 
         dispatcher.register(literal("ke_tell").redirect(node));
         dispatcher.register(literal("ke_whisper").redirect(node));
         dispatcher.register(literal("reply").redirect(replyNode));
     }
-
 
     private static int executeReply(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getUserManager().getOnline(context.getSource());
@@ -61,8 +63,10 @@ public class MessageCommand {
     private static int executeSend(ServerCommandSource source, ServerPlayerEntity target, String message) throws CommandSyntaxException {
         if  (!CommandHelper.isConsole(source)) {
             OnlineUser user = KiloServer.getServer().getOnlineUser(target);
+            OnlineUser srcUser = KiloServer.getServer().getOnlineUser(source.getPlayer());
             user.setLastMessageSender(source.getPlayer().getUuid());
-            user.setLastPrivateMessage(message);
+            srcUser.setLastMessageSender(target.getUuid());
+            srcUser.setLastPrivateMessage(message);
         }
 
         if (CommandHelper.areTheSame(source, target))

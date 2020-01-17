@@ -1,5 +1,7 @@
 package org.kilocraft.essentials;
 
+import org.jetbrains.annotations.Nullable;
+
 public enum CommandPermission {
     PING_SELF("ping.self"),
     PING_OTHERS("ping.others"),
@@ -31,6 +33,7 @@ public enum CommandPermission {
     SUDO_CONSOLE("sudo.console"),
     BROADCAST("broadcast"),
     ANVIL("anvil"),
+    WORKBENCH("workbench"),
     ITEM_FORMATTING("item.formatting"),
     ITEM_NAME("item.name"),
     ITEM_LORE("item.lore"),
@@ -59,11 +62,15 @@ public enum CommandPermission {
     ENDERCHEST_SELF("enderchest.self"),
     ENDERCHEST_OTHERS("enderchest.others"),
     STATUS("status"),
-    SEEK_INVENTORY("seek_inventory")
+    SEEK_INVENTORY("seek_inventory"),
+    SAYAS_OTHERS("sayas.others"),
+    SAYAS_SERVER("sayas.server"),
+    VANISH_SELF("vanish.self"),
+    VANISH_OTHERS("vanish.others"),
     ;
 
     private String node;
-    private CommandPermission(String string) {
+    CommandPermission(String string) {
         this.node = string;
     }
 
@@ -71,6 +78,7 @@ public enum CommandPermission {
         return KiloCommands.PERMISSION_PREFIX + node;
     }
 
+    @Nullable
     public static CommandPermission byName(String name) {
         for (CommandPermission value : CommandPermission.values()) {
             if (name.toLowerCase().equals(value.node.toLowerCase()))
@@ -79,4 +87,24 @@ public enum CommandPermission {
 
         return null;
     }
+
+    @Nullable
+    public static CommandPermission get(String string) {
+        for (CommandPermission value : CommandPermission.values())
+            if (string.toUpperCase().replaceAll(".", "_").equals(value.name()))
+                return value;
+
+        return null;
+    }
+
+    @Nullable
+    public static CommandPermission getByNode(String partOfNode) {
+        for (CommandPermission value : CommandPermission.values()) {
+            if (value.node.contains(partOfNode))
+                return value;
+        }
+
+        return null;
+    }
+
 }

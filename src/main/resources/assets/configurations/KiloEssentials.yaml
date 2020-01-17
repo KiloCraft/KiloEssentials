@@ -92,12 +92,6 @@ server:
   # Use the trampoline mod to connect your server to a proxy server
   # https://www.curseforge.com/minecraft/mc-mods/trampoline
   bungeecord-mode: false
-  # Sets a messages for the command ui
-  # You'll see this when above the chat text box
-  # Note: It will add an extra dummy argument to the commands
-  #       and it will change the color of the first command node in the client from red to aqua
-  # Default: "default", set it to 'default' to disable this feature.
-  command-toast: 'Use &3/usage &8<&3command&8>&7 for more!'
   # Customize the server world!
   world:
     #[<boolean>]
@@ -144,6 +138,8 @@ chat:
   # [Boolean]
   #If set to true, it will disable the KiloEssentials chat
   use-vanilla-chat-instead: false
+  #Kick the player if they use Illegal characters in the chat
+  kick-if-illegal-characters: false
   channels:
     messages:
       # [<greedyString> c]
@@ -166,7 +162,7 @@ chat:
   # [<greedyString> c]
   #Style of the private messages
   privateMessages:
-    format: '&r&7%SOURCE% &3-> &7%TARGET% &8>>&7 %MESSAGE%'
+    format: '&7[&3%SOURCE%&r&7 -> &7%TARGET%&r&7]&f %MESSAGE%'
     me_format: '&cme'
 
   ping:

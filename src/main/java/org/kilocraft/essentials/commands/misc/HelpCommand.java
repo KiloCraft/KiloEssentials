@@ -4,7 +4,7 @@ import com.electronwill.nightconfig.core.file.FileConfig;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 
@@ -16,10 +16,12 @@ public class HelpCommand {
     }
 
     public static int execute(CommandContext<ServerCommandSource> context) {
-        FileConfig config = FileConfig.of(KiloConfig.getConfigPath() + "HelpCommandMessage.yaml");
+        FileConfig config = FileConfig.of(KiloConfig.getConfigPath() + "HelpMessage.yaml");
         config.load();
         String message = config.getOrElse("message", "Missing config");
-        KiloChat.sendMessageToSource(context.getSource(), new ChatMessage(message, true));
+        message = TextFormat.translate(message);
+        KiloChat.sendMessageToSource(context.getSource(), TextFormat.translateToNMSText(message));
+        config.close();
 
         return 1;
     }

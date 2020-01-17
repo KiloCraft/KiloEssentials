@@ -51,7 +51,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public String getDisplayname() {
-        return null;
+        return source.getName();
+    }
+
+    @Override
+    public String getFormattedDisplayname() {
+        return getDisplayname();
     }
 
     @Override

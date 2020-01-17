@@ -5,8 +5,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.config.ConfigValueGetter;
-import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.ArrayList;
@@ -15,13 +13,6 @@ import java.util.UUID;
 
 public class GlobalChat implements ChatChannel {
     private List<UUID> subscribers;
-    private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
-    private static ConfigValueGetter messages = KiloConfig.getProvider().getMessages();
-    private static String template = config.getStringSafely("chat.channels.formats.global", "&r[&r%USER_DISPLAYNAME%&r]:&r %MESSAGE%");
-    private static String everyone_template = config.getStringSafely("chat.ping.format_everyone", "@everyone");
-    private static String senderFormat = config.get(false, "chat.ping.format");
-    private static String displayFormat = config.get(false, "chat.ping.pinged");
-    private static String everyone_displayFormat = config.getStringSafely("chat.ping.pinged_everyone", "&b&o@everyone");
 
     public GlobalChat() {
         this.subscribers = new ArrayList<>();

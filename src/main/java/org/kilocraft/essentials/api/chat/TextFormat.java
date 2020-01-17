@@ -3,6 +3,7 @@ package org.kilocraft.essentials.api.chat;
 import com.google.common.collect.Maps;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
@@ -240,6 +241,10 @@ public enum TextFormat {
         return STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
     }
 
+    public static Text translateToNMSText(String jsonString) {
+        return Text.Serializer.fromJson(jsonString);
+    }
+
     /**
      * Translates a string using an alternate color code character into a
      * string that uses the internal ChatColor.COLOR_CODE color code
@@ -259,6 +264,19 @@ public enum TextFormat {
         for (int i = 0; i < b.length - 1; i++) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
                 b[i] = TextFormat.COLOR_CHAR;
+                b[i+1] = Character.toLowerCase(b[i+1]);
+            }
+        }
+        return new String(b);
+    }
+
+    public static String reverseTranslate(String textToTranslate, char altColorChar) {
+        Validate.notNull(textToTranslate, "Cannot translate null text");
+        char[] b = textToTranslate.toCharArray();
+
+        for (int i = 0; i < b.length - 1; i++) {
+            if (b[i] == COLOR_CHAR && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
+                b[i] = altColorChar;
                 b[i+1] = Character.toLowerCase(b[i+1]);
             }
         }

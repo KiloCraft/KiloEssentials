@@ -26,7 +26,7 @@ public enum EssentialPermission {
     ;
 
     private String node;
-    private EssentialPermission(String node) {
+    EssentialPermission(String node) {
         this.node = node;
     }
 

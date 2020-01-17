@@ -257,9 +257,8 @@ public class ServerImpl implements Server {
         String[] lines = message.split("\n");
 
         for (String line : lines) {
-            getLogger().info(
-                    supportsANSICodes() ? ansiHelper.getFormattedString(message) :
-                            TextFormat.removeAlternateColorCodes('&', line));
+            String str = TextFormat.removeAlternateColorCodes('&', line);
+            getLogger().info(TextFormat.removeAlternateColorCodes(TextFormat.COLOR_CHAR, str));
         }
 
     }
@@ -277,7 +276,8 @@ public class ServerImpl implements Server {
     @SuppressWarnings("untested")
     @Override
     public boolean supportsANSICodes() {
-        return System.console() != null && System.getenv().get("TERM") != null;
+        //return System.console() != null && System.getenv().get("TERM") != null;
+        return false;
     }
 
     public String getBrandName() {

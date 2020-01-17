@@ -9,35 +9,37 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
-import org.kilocraft.essentials.commands.inventory.InventoryCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
-import org.kilocraft.essentials.commands.misc.ColorsCommand;
-import org.kilocraft.essentials.commands.misc.HelpCommand;
-import org.kilocraft.essentials.commands.misc.PingCommand;
-import org.kilocraft.essentials.commands.misc.PreviewCommand;
+import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
@@ -49,6 +51,8 @@ import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
+import org.kilocraft.essentials.simplecommand.SimpleCommand;
+import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
@@ -58,20 +62,24 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 import static org.kilocraft.essentials.api.KiloEssentials.getServer;
+import static org.kilocraft.essentials.commands.LiteralCommandModified.*;
 
 public class KiloCommands {
     private static List<String> initializedPerms = new ArrayList<>();
     private CommandDispatcher<ServerCommandSource> dispatcher;
+    private SimpleCommandManager simpleCommandManager;
     private static MessageUtil messageUtil = ModConstants.getMessageUtil();
     public static String PERMISSION_PREFIX = "kiloessentials.command.";
 
     public KiloCommands() {
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
+        this.simpleCommandManager = new SimpleCommandManager(KiloServer.getServer(), this.dispatcher);
         register(true);
     }
 
@@ -90,8 +98,8 @@ public class KiloCommands {
 
     private void register(boolean devEnv) {
         if (devEnv) {
-            KiloEssentialsImpl.getLogger().info("[!] Alert: Server is running in debug mode!");
-            SharedConstants.isDevelopment = devEnv;
+            KiloEssentials.getLogger().warn("[!] Alert: Server is running in development mode!");
+            SharedConstants.isDevelopment = true;
         }
 
         permissionWriters.add((map, server) -> {
@@ -100,10 +108,12 @@ public class KiloCommands {
             }
         });
 
+        //TODO: Fix the Toast suggestions
         registerToast();
 
         VersionCommand.register(this.dispatcher);
         HelpCommand.register(this.dispatcher);
+        RulesCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         GamemodeCommand.register(this.dispatcher);
@@ -114,7 +124,6 @@ public class KiloCommands {
         SudoCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
-        PlayerParticlesCommand.register(this.dispatcher);
         AnvilCommand.register(this.dispatcher);
         ItemCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
@@ -140,17 +149,37 @@ public class KiloCommands {
         SocialspyCommand.register(this.dispatcher);
         CommandspyCommand.register(this.dispatcher);
         StatusCommand.register(this.dispatcher);
-        InventoryCommand.register(this.dispatcher);
+        //InventoryCommand.register(this.dispatcher);
+        //PlayerParticlesCommand.register(this.dispatcher);
+        //WorkbenchCommand.register(this.dispatcher);
+        SayasCommand.register(this.dispatcher);
     }
 
-    public static void registerToast() {
-        String configValue = KiloConfig.getProvider().getMain().getStringSafely(ConfigCache.SERVER_COMMAND_TOAST, "default");
-        if  (!configValue.equalsIgnoreCase("default")) {
-            ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument(
-                    TextFormat.translate(configValue + "&r&7"), StringArgumentType.greedyString()).build();
-            getDispatcher().getRoot().addChild(toast);
-        }
+    private void registerToast() {
+        ArgumentCommandNode<ServerCommandSource, String> toast = CommandManager.argument("label", StringArgumentType.string())
+                .then(CommandManager.argument("args", StringArgumentType.greedyString())
+                        .suggests(TabCompletions::noSuggestions))
+                .build();
+
+        getDispatcher().getRoot().addChild(toast);
     }
+
+    public static CompletableFuture<Suggestions> toastSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        List<String> suggestions = new ArrayList<>();
+
+        for (SimpleCommand command : KiloEssentials.getInstance().getCommandHandler().simpleCommandManager.getCommands()) {
+            suggestions.add(command.getLabel());
+        }
+
+        getDispatcher().getRoot().getChildren().stream().filter((child) ->
+                  child instanceof LiteralCommandNode && canSourceUse(child, context.getSource()) &&
+                        !isVanillaCommand(child.getName()) && shouldUse(child.getName()))
+                .map(CommandNode::getName).forEach(suggestions::add);
+
+
+        return CommandSource.suggestMatching(suggestions, builder);
+    }
+
 
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
         String fromLang = ModConstants.getLang().getProperty(langKey);
@@ -215,8 +244,43 @@ public class KiloCommands {
         return literalText;
     }
 
-    public static CommandDispatcher<ServerCommandSource> getDispatcher() {
-        return KiloEssentialsImpl.commandDispatcher;
+    public static void sendPermissionError(ServerCommandSource source) {
+        KiloChat.sendMessageToSource(source, new ChatMessage(
+                KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_PERMISSION_EXCEPTION)
+                ,true));
+    }
+
+    public static SimpleCommandExceptionType getException(ExceptionMessageNode node, Object... objects) {
+        String message = ModConstants.getMessageUtil().fromExceptionNode(node);
+        return commandException(
+                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
+    }
+
+    public static SimpleCommandExceptionType getException(CommandMessageNode node, Object... objects) {
+        String message = ModConstants.getMessageUtil().fromCommandNode(node);
+        return commandException(
+                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
+    }
+
+    public static SimpleCommandExceptionType commandException(String message) {
+        return new SimpleCommandExceptionType(
+                new LiteralText(TextFormat.translateAlternateColorCodes('&', message)));
+    }
+
+    public static SimpleCommandExceptionType commandException(Text text) {
+        return new SimpleCommandExceptionType(text);
+    }
+
+    public static SimpleCommandExceptionType getArgException(ArgExceptionMessageNode node, Object... objects) {
+        String message = ModConstants.getMessageUtil().fromArgumentExceptionNode(node);
+        return commandException(
+                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
+    }
+
+    public static void updateCommandTreeForEveryone() {
+        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
+            KiloServer.getServer().getPlayerManager().sendCommandTree(playerEntity);
+        }
     }
 
     public int execute(ServerCommandSource executor, String commandToExecute) {
@@ -229,6 +293,9 @@ public class KiloCommands {
             cmd = commandToExecute.replace(" --push", "");
 
         if (event.isCancelled()) return 0;
+
+        if (this.simpleCommandManager.canExecute(cmd))
+            return this.simpleCommandManager.execute(cmd, executor);
 
         StringReader stringReader = new StringReader(cmd);
 
@@ -248,10 +315,10 @@ public class KiloCommands {
             } catch (CommandSyntaxException e) {
                 if (e.getRawMessage().getString().equals("Unknown command")) {
                     String literalName = cmd.split(" ")[0].replace("/", "");
-                    if (isCommand(literalName))
-                        KiloChat.sendMessageToSource(executor, new ChatMessage(
-                                KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_PERMISSION_EXCEPTION)
-                                ,true));
+                    CommandPermission reqPerm = CommandPermission.getByNode(literalName);
+
+                    if (isCommand(literalName) && (reqPerm != null && !hasPermission(executor, reqPerm)))
+                        sendPermissionError(executor);
                     else
                         KiloChat.sendMessageToSource(executor, new ChatMessage(
                                 KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_EXECUTION_EXCEPTION)
@@ -314,41 +381,12 @@ public class KiloCommands {
         return var;
     }
 
+    public static CommandDispatcher<ServerCommandSource> getDispatcher() {
+        return KiloEssentialsImpl.commandDispatcher;
+    }
+
     private boolean isCommand(String literal) {
         return dispatcher.getRoot().getChild(literal) != null;
-    }
-
-    public static SimpleCommandExceptionType getException(ExceptionMessageNode node, Object... objects) {
-        String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        return commandException(
-                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
-    }
-
-    public static SimpleCommandExceptionType getException(CommandMessageNode node, Object... objects) {
-        String message = ModConstants.getMessageUtil().fromCommandNode(node);
-        return commandException(
-                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
-    }
-
-    public static SimpleCommandExceptionType commandException(String message) {
-        return new SimpleCommandExceptionType(
-                new LiteralText(TextFormat.translateAlternateColorCodes('&', message)));
-    }
-
-    public static SimpleCommandExceptionType commandException(Text text) {
-        return new SimpleCommandExceptionType(text);
-    }
-
-    public static SimpleCommandExceptionType getArgException(ArgExceptionMessageNode node, Object... objects) {
-        String message = ModConstants.getMessageUtil().fromArgumentExceptionNode(node);
-        return commandException(
-                new LiteralText((objects != null) ? String.format(message, objects) : message).formatted(Formatting.RED));
-    }
-
-    public static void updateCommandTreeForEveryone() {
-        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-                KiloServer.getServer().getPlayerManager().sendCommandTree(playerEntity);
-        }
     }
 
     public static int SUCCESS() {

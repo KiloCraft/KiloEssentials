@@ -5,6 +5,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.User;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -53,11 +54,23 @@ public class CommandHelper {
     }
 
     public static boolean areTheSame(ServerCommandSource source, OnlineUser user) {
-        return source.getName().equals(user.getUsername());
+        try {
+            return source.getPlayer().getUuid().equals(user.getUuid());
+        } catch (CommandSyntaxException ignored) {
+            return false;
+        }
     }
 
     public static boolean areTheSame(OnlineUser user1, OnlineUser user2) {
         return user1.getUsername().equals(user2.getUsername());
+    }
+
+    public static boolean areTheSame(ServerCommandSource source, User user) {
+        try {
+            return source.getPlayer().getUuid().equals(user.getUuid());
+        } catch (CommandSyntaxException ignored) {
+            return false;
+        }
     }
 
     public static String getDisplayName(ServerCommandSource source) throws CommandSyntaxException {

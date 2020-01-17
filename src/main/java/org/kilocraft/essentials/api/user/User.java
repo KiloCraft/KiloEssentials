@@ -25,6 +25,8 @@ public interface User {
 
     String getDisplayname();
 
+    String getFormattedDisplayname();
+
     Text getRankedDisplayname();
 
     List<String> getSubscriptionChannels();
@@ -118,4 +120,5 @@ public interface User {
      */
     @Deprecated
     void setDisplayParticleId(int i);
+
 }
