@@ -170,8 +170,9 @@ public class NicknameCommand {
         // This is an Optional.ofNullable, so the DataTracker will just reset the name without any other magic since TrackedData is always and automatically synchronized with the client.
         player.setCustomName(null);
 
-        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendConfigMessage("commands.nickname.resetOthers", player.getEntityName());
-        return 1;
+        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.resetOthers")
+                .replace("{TARGET}", player.getEntityName())
+                , true));        return 1;
     }
 
     private static CompletableFuture<Suggestions> setSelfSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
