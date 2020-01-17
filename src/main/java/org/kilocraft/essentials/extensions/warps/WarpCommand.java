@@ -148,7 +148,7 @@ public class WarpCommand {
     }
 
     private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
-        WarpManager.addWarp(new Warp(name, Location.of(source.getPlayer()), addCommand));
+        WarpManager.addWarp(new Warp(name, Location.ofDouble(source.getPlayer()), addCommand));
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
         registerAliases();
