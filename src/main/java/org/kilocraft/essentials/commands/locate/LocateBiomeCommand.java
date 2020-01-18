@@ -12,8 +12,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -35,7 +33,7 @@ public class LocateBiomeCommand {
 
         RequiredArgumentBuilder<ServerCommandSource, Identifier> biomeArg = argument("identifier", identifier())
                 .suggests(LocateBiomeCommand::biomeNames)
-                .executes(c -> execute(c.getSource(), IdentifierArgumentType.getIdentifier(c, "identifier")));
+                .executes(LocateBiomeCommand::execute);
 
         literalBiome.then(biomeArg);
         builder.then(literalBiome);
@@ -47,35 +45,19 @@ public class LocateBiomeCommand {
         return CommandSource.suggestMatching(strings, builder);
     }
 
-    private static int execute(ServerCommandSource source, Identifier identifier) throws CommandSyntaxException {
-        Biome biome = Registry.BIOME.get(identifier);
+    private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        Biome biome = Registry.BIOME.get(IdentifierArgumentType.getIdentifier(ctx, "identifier"));
 
         if (biome == null)
             throw KiloCommands.getException(ExceptionMessageNode.INCORRECT_IDENTIFIER, "biome").create();
 
-        KiloChat.sendLangMessageTo(source, "command.locate.scanning", LocateBiomeProvided.getBiomeName(biome));
-        BiomeLocatorThread locatorThread = new BiomeLocatorThread(source, biome);
-        Thread thread = new Thread(locatorThread, "Biome locator thread");
-        thread.start();
+        KiloChat.sendLangMessageTo(ctx.getSource(), "command.locate.scanning", LocateBiomeProvided.getBiomeName(biome));
+        LocateBiomeProvided locator = new LocateBiomeProvided(biome);
+        locator.run(ctx);
 
         return 1;
     }
 
 }
 
-class BiomeLocatorThread implements Runnable {
-    private Logger logger = LogManager.getLogger();
-    private ServerCommandSource source;
-    private Biome biome;
 
-    public BiomeLocatorThread(ServerCommandSource source, Biome biome) {
-        this.source = source;
-        this.biome = biome;
-    }
-
-    @Override
-    public void run() {
-        logger.info("Locating biome \"" + LocateBiomeProvided.getBiomeId(biome) + "\", executed by " + source.getName());
-        LocateBiomeProvided.execute(this.source, this.biome);
-    }
-}

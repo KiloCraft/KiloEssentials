@@ -13,9 +13,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
-import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -34,8 +32,7 @@ public class TabCompletions {
     }
 
     public static CompletableFuture<Suggestions> allPlayers(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((it) ->
-                KiloEssentials.hasPermissionNode(it.getCommandSource(), EssentialPermission.STAFF))
+        return CommandSource.suggestMatching(playerManager.getPlayerList().stream()
                 .map(PlayerEntity::getEntityName), builder);
     }
 
