@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.provided;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
@@ -9,18 +11,36 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.chat.LangText;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-public class LocateBiomeProvided {
-    public static String getBiomeId(Biome biome) {
-        return Objects.requireNonNull(Registry.BIOME.getId(biome)).toString().replace("minecraft:", "");
+public class LocateBiomeProvided implements Command {
+    private static List<Thread> threads = new ArrayList<>();
+    private Biome biome;
+
+    public LocateBiomeProvided(Biome biome) {
+        this.biome = biome;
     }
 
-    public static String getBiomeName(Biome biome) {
-        String s = getBiomeId(biome).replaceAll("_", " ");
-        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
+    @Override
+    public int run(CommandContext context) {
+        BiomeLocatorThread locatorThread = new BiomeLocatorThread((ServerCommandSource) context.getSource(), biome);
+        Thread thread = new Thread(locatorThread, "Biome locator thread");
+        thread.start();
+
+        threads.add(thread);
+        return SINGLE_SUCCESS;
+    }
+
+    public static void stopAll() {
+        for (Thread thread : threads) {
+            thread.stop();
+        }
     }
 
     @SuppressWarnings("Do not run on main thread")
@@ -33,9 +53,12 @@ public class LocateBiomeProvided {
         } catch (CommandSyntaxException e) {
             e.printStackTrace();
         }
+
         if (biomePos == null) {
             source.sendFeedback(LangText.getFormatter(true, "command.locate.biome.failed",  getBiomeName(biome), (System.currentTimeMillis() - start) / 1000), false);
+            return 0;
         }
+
         BlockPos finalBiomePos = biomePos;
 
         int distance = MathHelper.floor(getDistance(executorPos.getX(), executorPos.getZ(), finalBiomePos.getX(), finalBiomePos.getZ()));
@@ -70,6 +93,8 @@ public class LocateBiomeProvided {
         for (int n = 0; dist < Integer.MAX_VALUE; ++n) {
             if ((System.currentTimeMillis() - start) > timeout)
                 return null;
+
+
             double rootN = Math.sqrt(n);
             dist = a * rootN;
             x = startX + (dist * Math.sin(b * rootN));
@@ -96,9 +121,34 @@ public class LocateBiomeProvided {
         return null;
     }
 
-
     private static double getDistance(int posX, int posZ, int biomeX, int biomeZ) {
         return MathHelper.sqrt(Math.pow(biomeX - posX, 2) + Math.pow(biomeZ - posZ, 2));
     }
 
+    public static String getBiomeId(Biome biome) {
+        return Objects.requireNonNull(Registry.BIOME.getId(biome)).toString().replace("minecraft:", "");
+    }
+
+    public static String getBiomeName(Biome biome) {
+        String s = getBiomeId(biome).replaceAll("_", " ");
+        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
+    }
+
+}
+
+class BiomeLocatorThread implements Runnable {
+    private Logger logger = LogManager.getLogger();
+    private ServerCommandSource source;
+    private Biome biome;
+
+    public BiomeLocatorThread(ServerCommandSource source, Biome biome) {
+        this.source = source;
+        this.biome = biome;
+    }
+
+    @Override
+    public void run() {
+        logger.info("Locating biome \"" + LocateBiomeProvided.getBiomeId(biome) + "\", executed by " + source.getName());
+        LocateBiomeProvided.execute(this.source, this.biome);
+    }
 }
