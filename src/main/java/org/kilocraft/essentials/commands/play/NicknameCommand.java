@@ -50,7 +50,8 @@ public class NicknameCommand {
 
         LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
         LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
-        ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("target", player()).requires(PERMISSION_CHECK_OTHER).suggests(TabCompletions::allPlayers).build();
+        ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("target", player())
+                .requires(PERMISSION_CHECK_OTHER).suggests(TabCompletions::allPlayers).build();
 
         ArgumentCommandNode<ServerCommandSource, String> nicknameSelf = argument("nickname", greedyString())
                 .suggests(NicknameCommand::setSelfSuggestions).executes(NicknameCommand::setSelf).build();
@@ -178,7 +179,7 @@ public class NicknameCommand {
     private static CompletableFuture<Suggestions> setSelfSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         User user = KiloServer.getServer().getUserManager().getOnline(context.getSource().getPlayer());
         List<String> strings = new ArrayList<>();
-        if (user.hasNickname())
+        if (user.getNickname().isPresent())
             strings.add(user.getNickname().get());
 
         return CommandSource.suggestMatching(strings, builder);
