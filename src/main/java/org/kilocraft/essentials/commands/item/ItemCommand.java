@@ -1,23 +1,28 @@
 package org.kilocraft.essentials.commands.item;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 
-import static net.minecraft.server.command.CommandManager.literal;
+import java.util.function.Predicate;
 
-public class ItemCommand {
-    private static LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("item").executes(KiloCommands::executeSmartUsage);
+public class ItemCommand extends EssentialCommand {
+    private Predicate<ServerCommandSource> PERMISSION_CHECK = src ->
+            KiloCommands.hasPermission(src, CommandPermission.ITEM_NAME) ||
+                    KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE) ||
+                    KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS);
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-    	argumentBuilder.requires(s -> KiloCommands.hasPermission(s, CommandPermission.ITEM_NAME) ||
-                KiloCommands.hasPermission(s, CommandPermission.ITEM_LORE));
-    	
+    public ItemCommand() {
+        super("item");
+        super.PERMISSION_CHECK_ROOT = PERMISSION_CHECK;
+    }
+
+    @Override
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         ItemNameCommand.registerChild(argumentBuilder, dispatcher);
         ItemLoreCommand.registerChild(argumentBuilder, dispatcher);
-
-        dispatcher.register(argumentBuilder);
+        ItemNbtCommand.registerChild(argumentBuilder, dispatcher);
     }
 }

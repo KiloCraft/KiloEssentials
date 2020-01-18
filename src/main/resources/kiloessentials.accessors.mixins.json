@@ -9,7 +9,8 @@
     "MinecraftServerAccessor"
   ],
   "server": [
-    "MinecraftServerAccessor"
+    "MinecraftServerAccessor",
+    "EntityRaytraceAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

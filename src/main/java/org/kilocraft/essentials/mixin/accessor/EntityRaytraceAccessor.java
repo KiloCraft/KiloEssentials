@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.mixin;
+package org.kilocraft.essentials.mixin.accessor;
 
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import net.minecraft.entity.Entity;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Entity.class)
 @Implements(@Interface(iface = EntityServerRayTraceable.class, prefix = "server$")) // We use implements cause it's a bit cleaner and will allow method to simply be called rayTrace inside of EntityServerRayTraceable.
-public abstract class EntityRaytraceMixin {
+public abstract class EntityRaytraceAccessor {
     @Shadow
     public World world;
 

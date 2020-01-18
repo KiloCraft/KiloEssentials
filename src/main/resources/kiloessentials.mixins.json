@@ -8,13 +8,13 @@
   "server": [
     "CommandManagerMixin",
     "CreeperEntityMixin",
-    "EntityRaytraceMixin",
     "AnvilContainerMixin",
     "MinecraftServerMixin",
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
+    "ItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
