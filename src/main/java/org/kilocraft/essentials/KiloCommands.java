@@ -135,6 +135,7 @@ public class KiloCommands {
         for (EssentialCommand command : this.commands) {
             command.register(this.dispatcher);
             rootNode.addChild(command.getArgumentBuilder().build());
+            rootNode.addChild(literal(command.getLabel()).requires(command.getRootPermissionPredicate()).build());
             rootNode.addChild(command.getCommandNode());
 
             if (command.getAlias() != null) {
@@ -146,8 +147,8 @@ public class KiloCommands {
                 }
             }
 
-            dispatcher.register(command.getArgumentBuilder());
             dispatcher.getRoot().addChild(command.getCommandNode());
+            dispatcher.register(command.getArgumentBuilder());
         }
 
         dispatcher.getRoot().addChild(rootNode);
@@ -163,7 +164,6 @@ public class KiloCommands {
         TpaCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         RtpCommand.register(this.dispatcher);
-        MessageCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
         AnvilCommand.register(this.dispatcher);
@@ -188,6 +188,7 @@ public class KiloCommands {
         BuildermsgCommand.register(this.dispatcher);
         SocialspyCommand.register(this.dispatcher);
         CommandspyCommand.register(this.dispatcher);
+        MessageCommand.register(this.dispatcher);
         StatusCommand.register(this.dispatcher);
         //InventoryCommand.register(this.dispatcher);
         //PlayerParticlesCommand.register(this.dispatcher);

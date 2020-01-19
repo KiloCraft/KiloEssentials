@@ -62,14 +62,14 @@ public class ItemNbtCommand {
         rootCommand.addChild(removeArgument.build());
         rootCommand.addChild(resetArgument.build());
         rootCommand.addChild(setArgument.build());
+        dispatcher.register(literal("powertool").requires(PERMISSION_CHECK).redirect(rootCommand));
         builder.then(rootCommand);
     }
 
     private static CompletableFuture<Suggestions> commandSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         ItemStack item = context.getSource().getPlayer().getMainHandStack();
 
-        if (item.isEmpty() || !item.hasTag() || item.getTag() == null ||
-                !item.getTag().contains("display") || !item.getTag().contains("NBTCommands"))
+        if (item.isEmpty() || !item.hasTag() || item.getTag() == null || !item.getTag().contains("NBTCommands"))
             return TabCompletions.noSuggestions(context, builder);
 
         int inputLine = 0;
@@ -97,12 +97,12 @@ public class ItemNbtCommand {
             return -1;
         }
 
-        if (!item.hasTag() || item.getTag() == null || !item.getTag().contains("display") || !item.getTag().getCompound("display").contains("Lore")) {
+        if (!item.hasTag() || item.getTag() == null || !item.getTag().contains("NBTCommands")) {
             KiloChat.sendLangMessageTo(player, "command.item.nothing_to_reset");
             return -1;
         }
 
-        ListTag lore = item.getTag().getCompound("display").getList("Lore", 8);
+        ListTag lore = item.getTag().getList("NBTCommands", 8);
 
         if (inputLine >= lore.size()) {
             KiloChat.sendLangMessageTo(player, "command.item.nothing_to_reset");
@@ -111,7 +111,7 @@ public class ItemNbtCommand {
 
         lore.remove(inputLine);
 
-        KiloChat.sendLangMessageTo(player, "command.item.lore.remove", inputLine + 1);
+        KiloChat.sendLangMessageTo(player, "command.item.command.remove", inputLine + 1);
         return 1;
     }
 
@@ -128,8 +128,8 @@ public class ItemNbtCommand {
             return -1;
         }
 
-        Objects.requireNonNull(item.getTag()).getCompound("display").remove("Lore");
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.lore.reset");
+        Objects.requireNonNull(item.getTag()).remove("NBTCommands");
+        KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.reset", "command");
         return 1;
     }
 
@@ -163,6 +163,15 @@ public class ItemNbtCommand {
 
         if (command == null) {
             command = new ListTag();
+        }
+
+        if (inputLine > command.size() - 1) {
+            for (int i = command.size(); i <= inputLine; i++) {
+                if (!command.getString(i).isEmpty())
+                    continue;
+
+                command.add(StringTag.of(inputString));
+            }
         }
 
         command.set(inputLine, StringTag.of(inputString));

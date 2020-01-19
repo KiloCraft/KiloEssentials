@@ -166,7 +166,7 @@ public class ServerChat {
                 new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.WHITE));
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isSocialSpyOn() && !CommandHelper.areTheSame(source, user))
+            if (user.isSocialSpyOn() && !CommandHelper.areTheSame(source, user) && !CommandHelper.areTheSame(target, user))
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                     new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
         }

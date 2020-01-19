@@ -28,9 +28,29 @@ public abstract class EssentialCommand implements IEssentialCommand {
     protected transient CommandPermission PERMISSION;
     protected transient int MIN_OP_LEVEL;
 
+    public EssentialCommand() {
+    }
+
     public EssentialCommand(final String label) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = src -> true;
+        this.argumentBuilder = literal(label);
+        this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
+    }
+
+    public EssentialCommand(final String label, String[] alias) {
+        this.label = label;
+        this.alias = alias;
+        this.PERMISSION_CHECK_ROOT = src -> true;
+        this.argumentBuilder = literal(label);
+        this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
+    }
+
+    public EssentialCommand(final String label, Predicate<ServerCommandSource> predicate) {
+        this.label = label;
+        this.PERMISSION_CHECK_ROOT = predicate;
         this.argumentBuilder = literal(label);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
@@ -104,6 +124,10 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public Predicate<ServerCommandSource> getRootPermissionPredicate() {
         return this.PERMISSION_CHECK_ROOT;
+    }
+
+    public void setPermissionPredicate(Predicate<ServerCommandSource> predicate) {
+        this.PERMISSION_CHECK_ROOT = predicate;
     }
 
     @Override

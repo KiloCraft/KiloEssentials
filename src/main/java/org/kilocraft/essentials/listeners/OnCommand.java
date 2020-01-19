@@ -13,7 +13,7 @@ public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
         if (CommandHelper.isPlayer(event.getExecutor())) {
             String command = event.getCommand().startsWith("/") ? event.getCommand().substring(1) : event.getCommand();
 
-            for (String messageCommand : messageCommands) {
+            for (String messageCommand : new String[]{"msg", "tell", "whisper", "r", "reply"}) {
                 if (command.replace("/", "").startsWith(messageCommand))
                     return;
             }
@@ -24,6 +24,4 @@ public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
                 KiloServer.getLogger().info("[" + event.getExecutor().getName() + "]: " + command);
         }
     }
-
-    private static String[] messageCommands = new String[]{"msg", "tell", "whisper", "r", "reply"};
 }
