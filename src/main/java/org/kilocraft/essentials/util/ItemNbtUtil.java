@@ -25,7 +25,7 @@ public class ItemNbtUtil {
             KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), str);
         }
 
-        return TypedActionResult.pass(stack);
+        return TypedActionResult.success(stack);
     }
 
 }

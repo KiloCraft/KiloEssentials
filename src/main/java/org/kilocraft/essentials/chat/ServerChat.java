@@ -146,8 +146,7 @@ public class ServerChat {
     public static void sendPrivateMessage(ServerCommandSource source, OnlineUser target, String message) throws CommandSyntaxException {
         String format = config.getStringSafely("chat.privateMessages.format", "&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%") + "&r";
         String me_format = config.getStringSafely("chat.privateMessages.me_format", "&cme") + "&r";
-        String sourceName = CommandHelper.isConsole(source) ? source.getName() :
-                KiloServer.getServer().getOnlineUser(source.getPlayer()).getRankedDisplayname().asFormattedString();
+        String sourceName = source.getName();
 
         String toSource = format.replace("%SOURCE%", me_format)
                 .replace("%TARGET%", "&r" + target.getUsername() + "&r")

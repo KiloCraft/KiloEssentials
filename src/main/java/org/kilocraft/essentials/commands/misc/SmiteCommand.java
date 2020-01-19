@@ -24,7 +24,7 @@ public class SmiteCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        Vec3d vec3d = ((EntityServerRayTraceable) player).rayTrace(90.0D, 90.0F, false).getPos();
+        Vec3d vec3d = ((EntityServerRayTraceable) player).rayTrace(90.0D, 0.0F, true).getPos();
         LightningEntity lightning = new LightningEntity(player.getServerWorld(), vec3d.x, vec3d.y, vec3d.z, false);
         player.getServerWorld().addLightning(lightning);
 

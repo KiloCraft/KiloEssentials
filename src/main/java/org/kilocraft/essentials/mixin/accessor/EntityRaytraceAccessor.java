@@ -27,6 +27,6 @@ public abstract class EntityRaytraceAccessor {
         Vec3d cameraPos = this.getCameraPosVec(float_1);
         Vec3d rotationVec = this.getRotationVec(float_1);
         Vec3d facingVec = cameraPos.add(rotationVec.x * double_1, rotationVec.y * double_1, rotationVec.z * double_1);
-        return this.world.rayTrace(new RayTraceContext(cameraPos, facingVec, RayTraceContext.ShapeType.OUTLINE, passesThroughFluid ? RayTraceContext.FluidHandling.ANY : RayTraceContext.FluidHandling.NONE, ((Entity) (Object) this)));
+        return this.world.rayTrace(new RayTraceContext(cameraPos, facingVec, RayTraceContext.ShapeType.OUTLINE, passesThroughFluid ? RayTraceContext.FluidHandling.NONE : RayTraceContext.FluidHandling.ANY, ((Entity) (Object) this)));
     }
 }

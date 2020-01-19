@@ -35,6 +35,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
+import org.kilocraft.essentials.commands.inventory.WorkbenchCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
@@ -122,6 +123,7 @@ public class KiloCommands {
             add(new SayasCommand());
             add(new SudoCommand());
             add(new ItemCommand());
+            add(new WorkbenchCommand());
         }};
 
         this.commands.addAll(commandsList);
@@ -135,15 +137,14 @@ public class KiloCommands {
         for (EssentialCommand command : this.commands) {
             command.register(this.dispatcher);
             rootNode.addChild(command.getArgumentBuilder().build());
-            rootNode.addChild(literal(command.getLabel()).requires(command.getRootPermissionPredicate()).build());
             rootNode.addChild(command.getCommandNode());
 
             if (command.getAlias() != null) {
                 for (String alias : command.getAlias()) {
                     dispatcher.register(literal(alias)
                             .requires(command.getRootPermissionPredicate())
-                            .executes(command.getArgumentBuilder().getCommand())
-                            .redirect(command.getArgumentBuilder().build()));
+                            .redirect(command.getCommandNode())
+                            .executes(command.getArgumentBuilder().getCommand()));
                 }
             }
 
