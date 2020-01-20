@@ -12,7 +12,8 @@
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
-    "ServerWorldMixin"
+    "ServerWorldMixin",
+    "CraftingTableContainerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
