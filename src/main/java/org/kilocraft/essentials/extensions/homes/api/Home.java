@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.extensions.homes.api;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
@@ -10,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.Location;
 
@@ -79,13 +79,13 @@ public class Home {
         return this.location;
     }
 
-    public static void teleportTo(OnlineUser user, Home home) throws CommandSyntaxException {
+    public static void teleportTo(OnlineUser user, Home home) {
         ServerPlayerEntity player = user.getPlayer();
         DimensionType type = DimensionType.byId(home.getLocation().getDimensionId());
         if (type == null)
             return;
 
-        ServerWorld destinationWorld = player.getServer().getWorld(type);
+        ServerWorld destinationWorld = KiloServer.getServer().getVanillaServer().getWorld(type);
         Vec3d destination = new Vec3d(home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ());
         float yaw = home.getLocation().getYaw();
         float pitch = home.getLocation().getPitch();

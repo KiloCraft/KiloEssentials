@@ -13,8 +13,7 @@
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
-    "ServerWorldMixin",
-    "ItemMixin"
+    "ServerWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

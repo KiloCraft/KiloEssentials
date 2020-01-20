@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,12 +133,12 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     @Override
     public LiteralArgumentBuilder<ServerCommandSource> literal(String label) {
-        return LiteralArgumentBuilder.literal(label);
+        return CommandManager.literal(label);
     }
 
     @Override
     public <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String string, ArgumentType<T> argumentType) {
-        return RequiredArgumentBuilder.argument(string, argumentType);
+        return CommandManager.argument(string, argumentType);
     }
 
     @Override

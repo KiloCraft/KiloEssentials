@@ -14,6 +14,5 @@ public class ItemCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         ItemNameCommand.registerChild(argumentBuilder, dispatcher);
         ItemLoreCommand.registerChild(argumentBuilder, dispatcher);
-        ItemNbtCommand.registerChild(argumentBuilder, dispatcher);
     }
 }

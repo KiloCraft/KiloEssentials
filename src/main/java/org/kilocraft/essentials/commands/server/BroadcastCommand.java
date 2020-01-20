@@ -28,7 +28,6 @@ public class BroadcastCommand {
 
     private static int execute(String message) {
         String format = KiloConfig.getProvider().getMessages().getValue("commands.broadcast_format");
-        System.out.println(format);
         KiloChat.broadCast(
                 new ChatMessage(
                         format.replace("%MESSAGE%", message),
