@@ -6,7 +6,6 @@
   "mixins": [
   ],
   "server": [
-    "MixinBlockItem$PlayerEvent$OnPlaceBlock",
     "MixinMinecraftDedicatedServer",
     "MixinMinecraftServer$OnStop",
     "MixinMinecraftServer$OnTick",
@@ -14,7 +13,6 @@
     "MixinPlayerManager$PlayerEvent$OnConnect",
     "MixinServerPlayerEntity$PlayerEvent$OnDeath",
     "MixinServerPlayerNetworkHandler$PlayerEvent$OnDisconnect",
-    "MixinServerPlayerNetworkHandler$PlayerEvent$OnBreakingBlock",
     "MixinCommandManager$ServerEvent$OnCommandExecuted",
     "MixinMinecraftServer$OnStart"
   ],
