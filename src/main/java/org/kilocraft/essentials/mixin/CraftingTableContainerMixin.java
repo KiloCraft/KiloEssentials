@@ -45,7 +45,11 @@ public abstract class CraftingTableContainerMixin extends CraftingContainer<Craf
 
     @Inject(method = "close", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/container/CraftingTableContainer;close(Lnet/minecraft/entity/player/PlayerEntity;)V"))
     public void modifyClose(PlayerEntity playerEntity, CallbackInfo ci) {
-
+        if (this.context == BlockContext.EMPTY) {
+            super.close(playerEntity);
+            this.dropInventory(playerEntity, playerEntity.getEntityWorld(), this.craftingInv);
+            ci.cancel();
+        }
     }
 
 }
