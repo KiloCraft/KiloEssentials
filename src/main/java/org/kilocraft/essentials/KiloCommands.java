@@ -35,6 +35,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
+import org.kilocraft.essentials.commands.inventory.WorkbenchCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
@@ -122,7 +123,7 @@ public class KiloCommands {
             add(new SayasCommand());
             add(new SudoCommand());
             add(new ItemCommand());
-            //add(new WorkbenchCommand());
+            add(new WorkbenchCommand());
         }};
 
         this.commands.addAll(commandsList);

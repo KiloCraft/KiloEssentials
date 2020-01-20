@@ -7,7 +7,6 @@
   ],
   "server": [
     "CommandManagerMixin",
-    "CreeperEntityMixin",
     "AnvilContainerMixin",
     "MinecraftServerMixin",
     "ServerCommandOutputMixin",
