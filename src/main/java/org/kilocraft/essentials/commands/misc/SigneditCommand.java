@@ -58,7 +58,7 @@ public class SigneditCommand extends EssentialCommand {
         LiteralArgumentBuilder<ServerCommandSource> guiNode = literal("gui")
                 .executes(ctx -> openGui(ctx, ctx.getSource().getPlayer()));
         LiteralArgumentBuilder<ServerCommandSource> dyeColorNode = literal("color");
-        LiteralArgumentBuilder<ServerCommandSource> executesNode = literal("executes");
+        LiteralArgumentBuilder<ServerCommandSource> executesNode = literal("runs");
 
         RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 4))
                 .suggests(TabCompletions::noSuggestions);
@@ -132,8 +132,8 @@ public class SigneditCommand extends EssentialCommand {
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
         Text text = sign.text[line].styled((style) -> style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, input)));
         sign.setTextOnRow(line, text);
-
         updateSign(sign, player.getServerWorld(), blockEntity.getPos());
+        KiloChat.sendLangMessageTo(player, "command.signedit.set_command", line, input);
         return SINGLE_SUCCESS;
     }
 
@@ -152,6 +152,7 @@ public class SigneditCommand extends EssentialCommand {
         DyeColor dyeColor = DyeColor.valueOf(inputColor.toUpperCase());
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
         sign.setTextColor(dyeColor);
+        updateSign(sign, player.getServerWorld(), sign.getPos());
 
         KiloChat.sendLangMessageTo(player, "command.signedit.set_color", inputColor);
         return SINGLE_SUCCESS;
