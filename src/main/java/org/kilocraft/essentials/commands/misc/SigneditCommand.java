@@ -119,9 +119,18 @@ public class SigneditCommand extends EssentialCommand {
         }
 
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
+
+        if (input.equals("reset")) {
+            sign.setTextOnRow(line, new LiteralText(""));
+            updateSign(sign, player.getServerWorld(), blockEntity.getPos());
+            KiloChat.sendLangMessageTo(player, "command.signedit.reset_text", line + 1);
+            return SINGLE_SUCCESS;
+        }
+
         sign.setTextOnRow(line, new LiteralText(TextFormat.translate(input)));
 
         updateSign(sign, player.getServerWorld(), blockEntity.getPos());
+        KiloChat.sendLangMessageTo(player, "command.signedit.set_text", line + 1, input.substring(17));
         return SINGLE_SUCCESS;
     }
 
@@ -137,6 +146,14 @@ public class SigneditCommand extends EssentialCommand {
         }
 
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
+
+        if (input.equals("reset")) {
+            Text text = sign.text[line].styled((style) -> style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "")));
+            sign.setTextOnRow(line, text);
+            KiloChat.sendLangMessageTo(player, "command.signedit.reset_command", line + 1);
+            return SINGLE_SUCCESS;
+        }
+
         Text text = sign.text[line].styled((style) -> style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, input)));
         sign.setTextOnRow(line, text);
         updateSign(sign, player.getServerWorld(), blockEntity.getPos());
@@ -182,7 +199,7 @@ public class SigneditCommand extends EssentialCommand {
         if (CommandHelper.areTheSame(ctx.getSource(), target))
             KiloChat.sendLangMessageTo(target, "general.open_gui", "Sign");
         else
-            KiloChat.sendLangMessageTo(target, "general.open_gui.others", "Sign", target.getEntityName());
+            KiloChat.sendLangMessageTo(ctx.getSource(), "general.open_gui.others", "Sign", target.getEntityName());
 
         return SINGLE_SUCCESS;
     }
@@ -217,6 +234,7 @@ public class SigneditCommand extends EssentialCommand {
 
     private CompletableFuture<Suggestions> setTextSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         List<String> strings = new ArrayList<>();
+        strings.add("reset");
         ServerPlayerEntity player = context.getSource().getPlayer();
         int line = getInteger(context, "line") - 1;
 
@@ -232,6 +250,7 @@ public class SigneditCommand extends EssentialCommand {
 
     private CompletableFuture<Suggestions> setCommandSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         List<String> strings = new ArrayList<>();
+        strings.add("reset");
         ServerPlayerEntity player = context.getSource().getPlayer();
         int line = getInteger(context, "line") - 1;
 
