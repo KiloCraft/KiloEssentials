@@ -32,6 +32,7 @@ public class LiteralCommandModified {
         add("ke_ban");
         add("ke_kick");
         add("ke_help");
+        add("ke_enchant");
     }};
 
     private static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
@@ -78,8 +79,8 @@ public class LiteralCommandModified {
     }
 
     public static boolean shouldUse(String name) {
-        return !vanillaCommandsToRename.contains(name.replace(NMSCommandNamePrefix, ""))
-                || isCustomCommand(keCommandPrefix + name);
+        return isCustomCommand(keCommandPrefix + name) ||
+                !vanillaCommandsToRename.contains(name.replace(NMSCommandNamePrefix, ""));
     }
 
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {

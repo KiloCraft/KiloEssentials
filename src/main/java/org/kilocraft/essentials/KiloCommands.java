@@ -124,6 +124,7 @@ public class KiloCommands {
             add(new SudoCommand());
             add(new ItemCommand());
             add(new WorkbenchCommand());
+
         }};
 
         this.commands.addAll(commandsList);

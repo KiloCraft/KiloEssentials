@@ -47,10 +47,12 @@ public abstract class AnvilContainerMixin extends Container {
         }
     }
 
-    public void setNewItemName(String string) {
+    @Inject(method = "setNewItemName", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/container/AnvilContainer;setNewItemName(Ljava/lang/String;)V\n"))
+    public void modifySetNewItemName(String string, CallbackInfo ci) {
+        ci.cancel();
+
         newItemName = TextFormat.translate(string,
                 KiloCommands.hasPermission(player.getCommandSource(), CommandPermission.ITEM_NAME));
-
 
         if (((AnvilContainer)(Object)this).getSlot(2).hasStack()) {
             ItemStack itemStack = ((AnvilContainer)(Object)this).getSlot(2).getStack();
