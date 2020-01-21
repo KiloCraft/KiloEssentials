@@ -35,7 +35,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     public EssentialCommand(final String label) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = src -> true;
-        this.argumentBuilder = literal(label);
+        this.argumentBuilder = literal(label).requires(PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
     }
@@ -44,7 +44,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.label = label;
         this.alias = alias;
         this.PERMISSION_CHECK_ROOT = src -> true;
-        this.argumentBuilder = literal(label);
+        this.argumentBuilder = literal(label).requires(PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
     }
@@ -52,7 +52,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     public EssentialCommand(final String label, Predicate<ServerCommandSource> predicate) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = predicate;
-        this.argumentBuilder = literal(label);
+        this.argumentBuilder = literal(label).requires(PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
     }

@@ -49,7 +49,13 @@ import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
 
 public class SigneditCommand extends EssentialCommand {
     public SigneditCommand() {
-        super("signedit", CommandPermission.SIGNEDIT);
+        super("signedit", src ->
+                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_TEXT) ||
+                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_TEXT) ||
+                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_COMMAND) ||
+                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_SELF) ||
+                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_OTHERS) ||
+                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_COLOR));
     }
 
     @Override
@@ -123,9 +129,6 @@ public class SigneditCommand extends EssentialCommand {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         int line = getInteger(ctx, "line") - 1;
         String input = getString(ctx, "command");
-
-        if (TextFormat.removeAlternateColorCodes('&', input).length() > 17)
-            throw KiloCommands.getException(ExceptionMessageNode.STRING_TOO_LONG, 17).create();
 
         BlockEntity blockEntity = getBlockEntityAtCrosshair(player);
         if (blockEntity == null) {

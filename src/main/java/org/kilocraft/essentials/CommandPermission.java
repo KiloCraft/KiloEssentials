@@ -70,7 +70,7 @@ public enum CommandPermission {
     VANISH_SELF("vanish.self"),
     VANISH_OTHERS("vanish.others"),
     SMITE("smite"),
-    SIGNEDIT("signedit"),
+    SIGNEDIT_TEXT("signedit.text"),
     SIGNEDIT_GUI_SELF("signedit.gui.self"),
     SIGNEDIT_GUI_OTHERS("signedit.gui.others"),
     SIGNEDIT_COMMAND("signedit.command"),
