@@ -71,6 +71,10 @@ public enum CommandPermission {
     VANISH_OTHERS("vanish.others"),
     SMITE("smite"),
     SIGNEDIT("signedit"),
+    SIGNEDIT_GUI_SELF("signedit.gui.self"),
+    SIGNEDIT_GUI_OTHERS("signedit.gui.others"),
+    SIGNEDIT_COMMAND("signedit.command"),
+    SIGNEDIT_COLOR("signedit.color"),
     ;
 
     private String node;

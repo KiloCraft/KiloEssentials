@@ -56,9 +56,11 @@ public class SigneditCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> editNode = literal("text");
         LiteralArgumentBuilder<ServerCommandSource> guiNode = literal("gui")
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_SELF))
                 .executes(ctx -> openGui(ctx, ctx.getSource().getPlayer()));
         LiteralArgumentBuilder<ServerCommandSource> dyeColorNode = literal("color");
-        LiteralArgumentBuilder<ServerCommandSource> executesNode = literal("runs");
+        LiteralArgumentBuilder<ServerCommandSource> executesNode = literal("runs")
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_COMMAND));
 
         RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 4))
                 .suggests(TabCompletions::noSuggestions);
@@ -68,10 +70,12 @@ public class SigneditCommand extends EssentialCommand {
                 .executes(this::setText);
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> guiSelectorArgument = argument("target", player())
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_OTHERS))
                 .suggests(TabCompletions::allPlayers)
                 .executes(ctx -> openGui(ctx, getPlayer(ctx, "target")));
 
         RequiredArgumentBuilder<ServerCommandSource, Identifier> dyeColorArgument = argument("color", identifier())
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_COLOR))
                 .suggests(this::dyeColorSuggestions)
                 .executes(this::setDyeColor);
 
@@ -133,7 +137,7 @@ public class SigneditCommand extends EssentialCommand {
         Text text = sign.text[line].styled((style) -> style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, input)));
         sign.setTextOnRow(line, text);
         updateSign(sign, player.getServerWorld(), blockEntity.getPos());
-        KiloChat.sendLangMessageTo(player, "command.signedit.set_command", line, input);
+        KiloChat.sendLangMessageTo(player, "command.signedit.set_command", line + 1, input);
         return SINGLE_SUCCESS;
     }
 
