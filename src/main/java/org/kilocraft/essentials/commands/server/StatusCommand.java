@@ -96,7 +96,7 @@ public class StatusCommand {
     }
 
     private static String getWorldName(ServerWorld world) {
-        String s = Objects.requireNonNull(Registry.DIMENSION.getId(world.dimension.getType())).getPath();
+        String s = Objects.requireNonNull(Registry.DIMENSION_TYPE.getId(world.dimension.getType())).getPath();
         return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
     }
 

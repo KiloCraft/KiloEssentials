@@ -62,7 +62,7 @@ public class TabCompletions {
 
     public static CompletableFuture<Suggestions> dimensions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         List<String> dims = new ArrayList<>();
-        Registry.DIMENSION.forEach(dimType -> dims.add(Objects.requireNonNull(DimensionType.getId(dimType)).toString()));
+        Registry.DIMENSION_TYPE.forEach(dimType -> dims.add(Objects.requireNonNull(DimensionType.getId(dimType)).toString()));
         return CommandSource.suggestMatching(dims.stream(), builder);
     }
 

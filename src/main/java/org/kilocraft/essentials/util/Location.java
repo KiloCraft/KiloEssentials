@@ -87,19 +87,19 @@ public class Location {
 
     public static Location of(ServerPlayerEntity player) {
         BlockPos pos = player.getBlockPos();
-        return new Location(pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch, Registry.DIMENSION.getId(player.dimension));
+        return new Location(pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch, Registry.DIMENSION_TYPE.getId(player.dimension));
     }
 
     public static Location ofDouble(ServerPlayerEntity player) {
-        return new Location(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, Registry.DIMENSION.getId(player.dimension));
+        return new Location(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, Registry.DIMENSION_TYPE.getId(player.dimension));
     }
 
     public static Location of(int x, int y, int z, DimensionType dimensionType) {
-        return new Location(x, y, z, Registry.DIMENSION.getId(dimensionType));
+        return new Location(x, y, z, Registry.DIMENSION_TYPE.getId(dimensionType));
     }
 
     public static Location ofDouble(double x, double y, double z, DimensionType dimensionType) {
-        return new Location(x, y, z, Registry.DIMENSION.getId(dimensionType));
+        return new Location(x, y, z, Registry.DIMENSION_TYPE.getId(dimensionType));
     }
 
     public static Location of(OnlineUser user) {
@@ -155,7 +155,7 @@ public class Location {
     }
 
     public DimensionType getDimension() {
-        return Registry.DIMENSION.get(this.dimension);
+        return Registry.DIMENSION_TYPE.get(this.dimension);
     }
 
     public ServerWorld getWorld() {
@@ -192,7 +192,7 @@ public class Location {
     }
 
     public void setDimension(DimensionType dimension) {
-        this.dimension = Registry.DIMENSION.getId(dimension);
+        this.dimension = Registry.DIMENSION_TYPE.getId(dimension);
     }
 
     public void setView(float yaw, float pitch) {

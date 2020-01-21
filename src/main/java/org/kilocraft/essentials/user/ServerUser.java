@@ -222,7 +222,7 @@ public class ServerUser implements User {
 
     public void updatePos() {
         this.pos = KiloServer.getServer().getPlayer(this.uuid).getPos();
-        this.posDim = Registry.DIMENSION.getId(KiloServer.getServer().getPlayer(this.uuid).getServerWorld().getDimension().getType());
+        this.posDim = Registry.DIMENSION_TYPE.getId(KiloServer.getServer().getPlayer(this.uuid).getServerWorld().getDimension().getType());
     }
 
     private Date getUserFirstJoinDate(String stringToParse) {

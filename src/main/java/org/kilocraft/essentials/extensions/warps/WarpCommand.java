@@ -92,7 +92,7 @@ public class WarpCommand {
         if (WarpManager.getWarpsByName().contains(name)) {
             Warp warp = WarpManager.getWarp(name);
 
-            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getLocation().getDimensionId()));
+            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION_TYPE.get(warp.getLocation().getDimensionId()));
 
             KiloChat.sendMessageTo(source, new ChatMessage(
                     KiloConfig.getProvider().getMessages().get(true, "commands.serverWideWarps.teleportTo")

@@ -124,7 +124,8 @@ public class KiloCommands {
             add(new SudoCommand());
             add(new ItemCommand());
             add(new WorkbenchCommand());
-
+            add(new AnvilCommand());
+            add(new SigneditCommand());
         }};
 
         this.commands.addAll(commandsList);
@@ -164,7 +165,6 @@ public class KiloCommands {
         RtpCommand.register(this.dispatcher);
         BroadcastCommand.register(this.dispatcher);
         UsageCommand.register(this.dispatcher);
-        AnvilCommand.register(this.dispatcher);
         ColorsCommand.register(this.dispatcher);
         WorldLocateCommand.register(this.dispatcher);
         BackCommand.register(this.dispatcher);

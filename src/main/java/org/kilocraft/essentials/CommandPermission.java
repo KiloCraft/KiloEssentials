@@ -70,6 +70,7 @@ public enum CommandPermission {
     VANISH_SELF("vanish.self"),
     VANISH_OTHERS("vanish.others"),
     SMITE("smite"),
+    SIGNEDIT("signedit"),
     ;
 
     private String node;
