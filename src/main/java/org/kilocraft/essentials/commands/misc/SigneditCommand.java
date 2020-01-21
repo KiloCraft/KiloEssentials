@@ -102,6 +102,7 @@ public class SigneditCommand extends EssentialCommand {
         commandNode.addChild(guiNode.build());
         commandNode.addChild(dyeColorNode.build());
         commandNode.addChild(executesNode.build());
+        argumentBuilder.executes(ctx -> openGui(ctx, ctx.getSource().getPlayer()));
     }
 
     private int setText(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -213,7 +214,7 @@ public class SigneditCommand extends EssentialCommand {
     private BlockEntity getBlockEntityAtCrosshair(ServerPlayerEntity player) {
         ServerWorld world = player.getServerWorld();
 
-        HitResult hitResult = ((EntityServerRayTraceable) player).rayTrace(5, 1, true);
+        HitResult hitResult = ((EntityServerRayTraceable) player).rayTrace(10, 1, true);
 
         if (hitResult.getType() != HitResult.Type.BLOCK)
             return null;

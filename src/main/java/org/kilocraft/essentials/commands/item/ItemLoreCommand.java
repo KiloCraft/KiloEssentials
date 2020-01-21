@@ -101,7 +101,7 @@ public class ItemLoreCommand {
 		ItemStack item = player.getMainHandStack();
 
 		if (item.isEmpty()) {
-			KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.invalid_item");
+			KiloChat.sendLangMessageTo(ctx.getSource(), "general.no_item");
 			return -1;
 		}
 
@@ -127,7 +127,7 @@ public class ItemLoreCommand {
 		ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
 
 		if (item.isEmpty()) {
-			KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.invalid_item");
+			KiloChat.sendLangMessageTo(ctx.getSource(), "general.no_item");
 			return -1;
 		}
 
@@ -152,7 +152,7 @@ public class ItemLoreCommand {
 		}
 
 		if (item.isEmpty()) {
-			KiloChat.sendLangMessageTo(player, "command.item.invalid_item");
+			KiloChat.sendLangMessageTo(player, "general.no_item");
 			return -1;
 		}
 

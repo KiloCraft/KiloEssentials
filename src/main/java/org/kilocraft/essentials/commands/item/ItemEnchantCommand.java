@@ -106,7 +106,7 @@ public class ItemEnchantCommand {
         ItemStack itemStack = source.getPlayer().getMainHandStack();
 
         if (itemStack.isEmpty()) {
-            KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.invalid_item");
+            KiloChat.sendLangMessageTo(ctx.getSource(), "general.no_item");
             return -1;
         }
 
@@ -121,7 +121,7 @@ public class ItemEnchantCommand {
         ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
 
         if (item.isEmpty()) {
-            KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.invalid_item");
+            KiloChat.sendLangMessageTo(ctx.getSource(), "general.no_item");
             return -1;
         }
 
@@ -141,7 +141,7 @@ public class ItemEnchantCommand {
         ItemStack itemStack = source.getPlayer().getMainHandStack();
 
         if (itemStack.isEmpty()) {
-            KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.invalid_item");
+            KiloChat.sendLangMessageTo(ctx.getSource(), "general.no_item");
             return -1;
         }
 

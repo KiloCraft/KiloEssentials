@@ -126,6 +126,7 @@ public class KiloCommands {
             add(new WorkbenchCommand());
             add(new AnvilCommand());
             add(new SigneditCommand());
+            add(new HatCommand());
         }};
 
         this.commands.addAll(commandsList);
