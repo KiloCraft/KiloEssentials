@@ -80,10 +80,6 @@ public class LiteralCommandModified {
     }
 
     public static boolean shouldUse(String name) {
-        System.out.println(name);
-        System.out.println("is vanilla:  " + isVanillaCommand(name.replace(NMSCommandNamePrefix, "")));
-        System.out.println("is KE: " + isCustomCommand(keCommandPrefix + name));
-
         if (isCustomCommand(keCommandPrefix + name) &&
                 isVanillaCommand(name.replace(NMSCommandNamePrefix, "")))
             return true;

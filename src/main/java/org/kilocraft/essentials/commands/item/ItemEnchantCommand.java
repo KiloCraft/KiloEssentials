@@ -66,8 +66,8 @@ public class ItemEnchantCommand {
         rootCommand.addChild(removeArgument.build());
         rootCommand.addChild(resetArgument.build());
         rootCommand.addChild(addArgument.build());
-        builder.then(rootCommand);
-        dispatcher.getRoot().addChild(literal("enchantments").requires(PERMISSION_CHECK).redirect(rootCommand).build());
+        dispatcher.getRoot().addChild(rootCommand);
+        builder.then(literal("enchants").requires(PERMISSION_CHECK).redirect(rootCommand));
     }
 
     private static CompletableFuture<Suggestions> enchantmentSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
