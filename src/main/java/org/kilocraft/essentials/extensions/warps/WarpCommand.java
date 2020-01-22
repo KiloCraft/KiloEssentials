@@ -22,7 +22,7 @@ import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
-import org.kilocraft.essentials.util.Location;
+import org.kilocraft.essentials.util.LocationImpl;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
@@ -148,7 +148,7 @@ public class WarpCommand {
     }
 
     private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
-        WarpManager.addWarp(new Warp(name, Location.ofDouble(source.getPlayer()).shortDecimalForVector(), addCommand));
+        WarpManager.addWarp(new Warp(name, LocationImpl.ofDouble(source.getPlayer()).shortDecimalForVector(), addCommand));
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
         registerAliases();

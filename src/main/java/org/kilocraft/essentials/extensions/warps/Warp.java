@@ -1,14 +1,14 @@
 package org.kilocraft.essentials.extensions.warps;
 
 import net.minecraft.nbt.CompoundTag;
-import org.kilocraft.essentials.util.Location;
+import org.kilocraft.essentials.util.LocationImpl;
 
 public class Warp {
     private String name;
-    private Location location;
+    private LocationImpl location;
     private boolean addCommand;
 
-    public Warp(String name, Location location, boolean addCommand) {
+    public Warp(String name, LocationImpl location, boolean addCommand) {
         this.name = name;
         this.location = location;
         this.addCommand = addCommand;
@@ -23,7 +23,7 @@ public class Warp {
         return this.name;
     }
 
-    public Location getLocation() {
+    public LocationImpl getLocation() {
         return this.location;
     }
 
@@ -44,7 +44,7 @@ public class Warp {
 
     public void fromTag(CompoundTag tag) {
         if (this.location == null)
-            this.location = Location.dummy();
+            this.location = LocationImpl.dummy();
 
         this.location.fromTag(tag.getCompound("loc"));
 

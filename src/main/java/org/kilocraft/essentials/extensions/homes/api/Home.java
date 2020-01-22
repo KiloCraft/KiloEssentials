@@ -11,16 +11,16 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.util.Location;
+import org.kilocraft.essentials.util.LocationImpl;
 
 import java.util.UUID;
 
 public class Home {
     private UUID owner_uuid;
     private String name;
-    private Location location;
+    private LocationImpl location;
 
-    public Home(UUID uuid, String name, Location location) {
+    public Home(UUID uuid, String name, LocationImpl location) {
         this.owner_uuid = uuid;
         this.name = name;
         this.location = location;
@@ -42,7 +42,7 @@ public class Home {
 
     public void fromTag(CompoundTag compoundTag) {
         if (this.location == null)
-            this.location = Location.dummy();
+            this.location = LocationImpl.dummy();
 
         if (compoundTag.contains("pos")) { //OLD Format
             this.location.setDimension(new Identifier(compoundTag.getString("dimension")));
@@ -75,7 +75,7 @@ public class Home {
         this.name = name;
     }
 
-    public Location getLocation() {
+    public LocationImpl getLocation() {
         return this.location;
     }
 

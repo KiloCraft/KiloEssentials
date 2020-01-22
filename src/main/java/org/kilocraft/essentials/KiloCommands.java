@@ -117,7 +117,7 @@ public class KiloCommands {
             }
         });
 
-        List<EssentialCommand> commandsList = new ArrayList<EssentialCommand>(){{
+        List<EssentialCommand> commandsList = new ArrayList<EssentialCommand>() {{
             add(new SmiteCommand());
             add(new NicknameCommand());
             add(new SayasCommand());
@@ -215,7 +215,6 @@ public class KiloCommands {
         return CommandSource.suggestMatching(suggestions, builder);
     }
 
-
     public static int executeUsageFor(String langKey, ServerCommandSource source) {
         String fromLang = ModConstants.getLang().getProperty(langKey);
         if (fromLang != null)
@@ -228,47 +227,45 @@ public class KiloCommands {
     public static int executeSmartUsage(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String command = ctx.getInput().replace("/", "");
         ParseResults<ServerCommandSource> parseResults = getDispatcher().parse(command, ctx.getSource());
-        if (parseResults.getContext().getNodes().isEmpty()) {
+        if (parseResults.getContext().getNodes().isEmpty())
             throw getException(ExceptionMessageNode.UNKNOWN_COMMAND_EXCEPTION).create();
-        } else {
-            Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = getDispatcher().getSmartUsage(((ParsedCommandNode) Iterables.getLast(parseResults.getContext().getNodes())).getNode(), ctx.getSource());
-            Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
-            KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.firstRow", command);
-            KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.commandRow", command, "");
+        Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = getDispatcher().getSmartUsage(((ParsedCommandNode) Iterables.getLast(parseResults.getContext().getNodes())).getNode(), ctx.getSource());
+        Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
-            while (iterator.hasNext()) {
-                if (iterator.next().equals("/" + command)) continue;
-                KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.commandRow", command, iterator.next());
-            }
+        KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.firstRow", command);
+        KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.commandRow", command, "");
 
-            return 1;
+        while (iterator.hasNext()) {
+            if (iterator.next().equals("/" + command)) continue;
+            KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.commandRow", command, iterator.next());
         }
+
+        return 1;
     }
 
     public static int executeSmartUsageFor(String command, ServerCommandSource source) throws CommandSyntaxException {
         ParseResults<ServerCommandSource> parseResults = getDispatcher().parse(command, source);
-        if (parseResults.getContext().getNodes().isEmpty()) {
+        if (parseResults.getContext().getNodes().isEmpty())
             throw getException(ExceptionMessageNode.UNKNOWN_COMMAND_EXCEPTION).create();
-        } else {
-            Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = getDispatcher().getSmartUsage(((ParsedCommandNode)Iterables.getLast(parseResults.getContext().getNodes())).getNode(), source);
-            Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
-            KiloChat.sendLangMessageTo(source, "command.usage.firstRow", parseResults.getReader().getString());
-            if (parseResults.getContext().getNodes().get(0).getNode().getCommand() != null)
-                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
+        Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = getDispatcher().getSmartUsage(((ParsedCommandNode)Iterables.getLast(parseResults.getContext().getNodes())).getNode(), source);
+        Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
-            int usages = 0;
-            while (iterator.hasNext()) {
-                usages++;
-                String usage = iterator.next();
-                KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), usage);
-            }
+        KiloChat.sendLangMessageTo(source, "command.usage.firstRow", parseResults.getReader().getString());
+        if (parseResults.getContext().getNodes().get(0).getNode().getCommand() != null)
+            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
 
-            if (usages == 0) KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
-
-            return commandNodeStringMap.size();
+        int usages = 0;
+        while (iterator.hasNext()) {
+            usages++;
+            String usage = iterator.next();
+            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), usage);
         }
+
+        if (usages == 0) KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
+
+        return commandNodeStringMap.size();
     }
 
     private int sendInfo(CommandContext<ServerCommandSource> ctx) {

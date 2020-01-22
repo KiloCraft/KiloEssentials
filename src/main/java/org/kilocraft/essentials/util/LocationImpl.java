@@ -16,7 +16,7 @@ import java.text.DecimalFormat;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
-public class Location {
+public class LocationImpl {
     public static int MAX_BUILD_LIMIT = KiloServer.getServer().getVanillaServer().getWorldHeight();
     private int x, y, z;
     private double xx, yy, zz;
@@ -26,7 +26,7 @@ public class Location {
     private boolean useShortDecimals = false;
     private DecimalFormat decimalFormat = new DecimalFormat("##.##");
 
-    public Location(int x, int y, int z, float yaw, float pitch, Identifier dimension) {
+    public LocationImpl(int x, int y, int z, float yaw, float pitch, Identifier dimension) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -35,7 +35,7 @@ public class Location {
         this.dimension = dimension;
     }
 
-    public Location(double x, double y, double z, float yaw, float pitch, Identifier dimension) {
+    public LocationImpl(double x, double y, double z, float yaw, float pitch, Identifier dimension) {
         this.xx = x;
         this.yy = y;
         this.zz = z;
@@ -45,14 +45,14 @@ public class Location {
         this.isVector = true;
     }
 
-    public Location(int x, int y, int z, Identifier dimension) {
+    public LocationImpl(int x, int y, int z, Identifier dimension) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.dimension = dimension;
     }
 
-    public Location(double x, double y, double z, Identifier dimension) {
+    public LocationImpl(double x, double y, double z, Identifier dimension) {
         this.xx = x;
         this.yy = y;
         this.zz = z;
@@ -60,54 +60,54 @@ public class Location {
         this.isVector = true;
     }
 
-    public Location(int x, int y, int z) {
+    public LocationImpl(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Location(double x, double y, double z) {
+    public LocationImpl(double x, double y, double z) {
         this.xx = x;
         this.yy = y;
         this.zz = z;
         this.isVector = true;
     }
 
-    public static Location dummy() {
-        return new Location(0, 0, 0);
+    public static LocationImpl dummy() {
+        return new LocationImpl(0, 0, 0);
     }
 
-    public static Location dummyOfDouble() {
-        return new Location(0.0D, 0.0D, 0.0D);
+    public static LocationImpl dummyOfDouble() {
+        return new LocationImpl(0.0D, 0.0D, 0.0D);
     }
 
-    public static Location of(BlockPos pos) {
-        return new Location(pos.getX(), pos.getY(), pos.getZ(), 0, 0, null);
+    public static LocationImpl of(BlockPos pos) {
+        return new LocationImpl(pos.getX(), pos.getY(), pos.getZ(), 0, 0, null);
     }
 
-    public static Location of(ServerPlayerEntity player) {
+    public static LocationImpl of(ServerPlayerEntity player) {
         BlockPos pos = player.getBlockPos();
-        return new Location(pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch, Registry.DIMENSION_TYPE.getId(player.dimension));
+        return new LocationImpl(pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch, Registry.DIMENSION_TYPE.getId(player.dimension));
     }
 
-    public static Location ofDouble(ServerPlayerEntity player) {
-        return new Location(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, Registry.DIMENSION_TYPE.getId(player.dimension));
+    public static LocationImpl ofDouble(ServerPlayerEntity player) {
+        return new LocationImpl(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, Registry.DIMENSION_TYPE.getId(player.dimension));
     }
 
-    public static Location of(int x, int y, int z, DimensionType dimensionType) {
-        return new Location(x, y, z, Registry.DIMENSION_TYPE.getId(dimensionType));
+    public static LocationImpl of(int x, int y, int z, DimensionType dimensionType) {
+        return new LocationImpl(x, y, z, Registry.DIMENSION_TYPE.getId(dimensionType));
     }
 
-    public static Location ofDouble(double x, double y, double z, DimensionType dimensionType) {
-        return new Location(x, y, z, Registry.DIMENSION_TYPE.getId(dimensionType));
+    public static LocationImpl ofDouble(double x, double y, double z, DimensionType dimensionType) {
+        return new LocationImpl(x, y, z, Registry.DIMENSION_TYPE.getId(dimensionType));
     }
 
-    public static Location of(OnlineUser user) {
-        return Location.of(user.getPlayer());
+    public static LocationImpl of(OnlineUser user) {
+        return LocationImpl.of(user.getPlayer());
     }
 
-    public static Location ofDouble(OnlineUser user) {
-        return Location.ofDouble(user.getPlayer());
+    public static LocationImpl ofDouble(OnlineUser user) {
+        return LocationImpl.ofDouble(user.getPlayer());
     }
 
     public BlockPos getPos() {
@@ -254,7 +254,7 @@ public class Location {
         }
     }
 
-    public Location shortDecimalForVector() {
+    public LocationImpl shortDecimalForVector() {
         this.useShortDecimals = true;
 
         DecimalFormat decimalFormat = new DecimalFormat("##.##");

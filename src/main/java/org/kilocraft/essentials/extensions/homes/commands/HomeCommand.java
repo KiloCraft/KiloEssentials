@@ -30,7 +30,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.util.Location;
+import org.kilocraft.essentials.util.LocationImpl;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -200,7 +200,7 @@ public class HomeCommand {
                 serverUser.getHomesHandler().removeHome(arg);
             }
 
-            serverUser.getHomesHandler().addHome(new Home(gameProfile.getId(), arg, Location.of(source.getPlayer())));
+            serverUser.getHomesHandler().addHome(new Home(gameProfile.getId(), arg, LocationImpl.of(source.getPlayer())));
 
             if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                 KiloChat.sendMessageTo(source, new ChatMessage(

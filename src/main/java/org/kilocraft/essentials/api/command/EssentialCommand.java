@@ -124,20 +124,8 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.argumentBuilder;
     }
 
-    public CommandPermission getPERMISSION() {
-        return this.PERMISSION;
-    }
-
-    public int getMinOpLevelRequired() {
-        return this.MIN_OP_LEVEL;
-    }
-
     public Predicate<ServerCommandSource> getRootPermissionPredicate() {
         return this.PERMISSION_CHECK_ROOT;
-    }
-
-    public void setPermissionPredicate(Predicate<ServerCommandSource> predicate) {
-        this.PERMISSION_CHECK_ROOT = predicate;
     }
 
     @Override
