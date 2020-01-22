@@ -28,6 +28,7 @@ public class HealCommand extends EssentialCommand {
                 .executes(context -> execute(context.getSource(), getPlayer(context, "target")));
 
         argumentBuilder.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
+        commandNode.addChild(target.build());
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
