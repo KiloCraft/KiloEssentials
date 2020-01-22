@@ -14,8 +14,7 @@ public class ConfigurableFeatures {
                 KiloEssentialsImpl.getLogger().info("Initialing \"" + configID + "\"");
                 feature.register();
             }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+        } catch (NullPointerException ignored) {
             //Don't enable the feature:: PASS
         }
 

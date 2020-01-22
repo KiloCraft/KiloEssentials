@@ -41,6 +41,11 @@ public interface Server {
     PlayerManager getPlayerManager();
 
     /**
+     * Reloads the Server
+     */
+    void reload();
+
+    /**
      * Gets the KiloServer's UserManager
      *
      * @return instance of UserManager

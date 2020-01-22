@@ -127,12 +127,30 @@ public class KiloCommands {
             add(new AnvilCommand());
             add(new SigneditCommand());
             add(new HatCommand());
+            add(new VersionCommand());
+            add(new HelpCommand());
+            add(new RulesCommand());
+            add(new ReloadCommand());
+            add(new TextformatsCommand());
+            add(new GamemodeCommand());
+            add(new RtpCommand());
+            add(new BroadcastCommand());
+            add(new UsageCommand());
+            add(new BackCommand());
+            add(new HealCommand());
+            add(new FeedCommand());
+            add(new TimeCommand());
+            add(new FlyCommand());
         }};
 
         this.commands.addAll(commandsList);
 
         LiteralCommandNode<ServerCommandSource> rootNode = literal("essentials")
-                .then(argument("args", greedyString())).build();
+                .then(argument("args", greedyString()))
+                .executes(ctx -> {
+                    KiloChat.sendLangMessageTo(ctx.getSource(), "command.info", ModConstants.getMinecraftVersion());
+                    return 1;
+                }).build();
 
         for (EssentialCommand command : this.commands) {
             command.register(this.dispatcher);
@@ -155,24 +173,8 @@ public class KiloCommands {
         dispatcher.getRoot().addChild(rootNode);
 
         registerToast();
-        VersionCommand.register(this.dispatcher);
-        HelpCommand.register(this.dispatcher);
-        RulesCommand.register(this.dispatcher);
-        ReloadCommand.register(this.dispatcher);
-        ColorsCommand.register(this.dispatcher);
-        GamemodeCommand.register(this.dispatcher);
         TpaCommand.register(this.dispatcher);
-        KillCommand.register(this.dispatcher);
-        RtpCommand.register(this.dispatcher);
-        BroadcastCommand.register(this.dispatcher);
-        UsageCommand.register(this.dispatcher);
-        ColorsCommand.register(this.dispatcher);
         WorldLocateCommand.register(this.dispatcher);
-        BackCommand.register(this.dispatcher);
-        HealCommand.register(this.dispatcher);
-        FeedCommand.register(this.dispatcher);
-        TimeCommand.register(this.dispatcher);
-        FlyCommand.register(this.dispatcher);
         StopCommand.register(this.dispatcher);
         RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
@@ -191,7 +193,6 @@ public class KiloCommands {
         StatusCommand.register(this.dispatcher);
         //InventoryCommand.register(this.dispatcher);
         //PlayerParticlesCommand.register(this.dispatcher);
-        //WorkbenchCommand.register(this.dispatcher);
     }
 
     private void registerToast() {
@@ -432,12 +433,9 @@ public class KiloCommands {
         return this.commands;
     }
 
+    @Deprecated
     public static int SUCCESS() {
         return 1;
-    }
-
-    public static int FAILED() {
-        return -1;
     }
 
 }

@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
@@ -9,32 +8,29 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 
-public class HealCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> heal = literal("heal")
-                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.HEAL_SELF));
+public class HealCommand extends EssentialCommand {
+    public HealCommand() {
+        super("heal", CommandPermission.HEAL_SELF);
+    }
+
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> KiloCommands.hasPermission(s, CommandPermission.HEAL_OTHERS))
-                .suggests(TabCompletions::allPlayers);
+                .suggests(TabCompletions::allPlayers)
+                .executes(context -> execute(context.getSource(), getPlayer(context, "target")));
 
-        heal.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
-        target.executes(context -> execute(context.getSource(), getPlayer(context, "target")));
-
-        heal.then(target);
-        dispatcher.register(heal);
+        argumentBuilder.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
-
         if (CommandHelper.areTheSame(source, player)) {
             if (player.getHealth() == player.getMaximumHealth()) {
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.exception.self"));

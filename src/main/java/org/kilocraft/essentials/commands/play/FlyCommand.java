@@ -1,14 +1,14 @@
 package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.CommandManager;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -18,28 +18,27 @@ import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.server.command.CommandManager.literal;
 
-public class FlyCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("fly")
-                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FLY_SELF))
-                .executes(c -> toggle(c.getSource(), c.getSource().getPlayer()))
-                .then(
-                        CommandManager.argument("player", player())
-                                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FLY_OTHERS))
-                                .suggests(TabCompletions::allPlayers)
-                                .executes(c -> toggle(c.getSource(), getPlayer(c, "player")))
-                                .then(
-                                        CommandManager.argument("set", bool())
-                                                .executes(c -> execute(c.getSource(), getPlayer(c, "player"), getBool(c, "set")))
-                                )
-                );
-
-        dispatcher.register(argumentBuilder);
+public class FlyCommand extends EssentialCommand {
+    public FlyCommand() {
+        super("fly", CommandPermission.FLY_SELF, new String[]{"flight"});
     }
 
-    private static int toggle(ServerCommandSource source, ServerPlayerEntity playerEntity) throws CommandSyntaxException {
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("player", player())
+                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FLY_OTHERS))
+                .suggests(TabCompletions::allPlayers)
+                .executes(c -> toggle(c.getSource(), getPlayer(c, "player")));
+
+        RequiredArgumentBuilder<ServerCommandSource, Boolean> setArgument = argument("set", bool())
+                .executes(c -> execute(c.getSource(), getPlayer(c, "player"), getBool(c, "set")));
+
+        selectorArgument.then(setArgument);
+        commandNode.addChild(selectorArgument.build());
+        argumentBuilder.executes(ctx -> toggle(ctx.getSource(), ctx.getSource().getPlayer()));
+    }
+
+    private static int toggle(ServerCommandSource source, ServerPlayerEntity playerEntity) {
         return execute(source, playerEntity, !playerEntity.abilities.allowFlying);
     }
 

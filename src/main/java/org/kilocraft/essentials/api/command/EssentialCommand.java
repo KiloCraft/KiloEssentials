@@ -57,6 +57,15 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.server = KiloEssentials.getServer();
     }
 
+    public EssentialCommand(final String label, Predicate<ServerCommandSource> predicate, String[] alias) {
+        this.label = label;
+        this.PERMISSION_CHECK_ROOT = predicate;
+        this.alias = alias;
+        this.argumentBuilder = literal(label).requires(PERMISSION_CHECK_ROOT);
+        this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
+    }
+
     public EssentialCommand(final String label, CommandPermission PERMISSION) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = src -> KiloCommands.hasPermission(src, PERMISSION);

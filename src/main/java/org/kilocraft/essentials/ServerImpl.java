@@ -13,6 +13,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -23,6 +24,7 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.events.server.ServerReloadEventImpl;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
@@ -63,6 +65,12 @@ public class ServerImpl implements Server {
     @Override
     public PlayerManager getPlayerManager() {
         return this.server.getPlayerManager();
+    }
+
+    @Override
+    public void reload() {
+        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl());
+        this.server.reload();
     }
 
     @Override
