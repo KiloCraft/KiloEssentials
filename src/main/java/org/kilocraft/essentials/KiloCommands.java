@@ -155,12 +155,7 @@ public class KiloCommands {
 
         this.commands.addAll(commandsList);
 
-        LiteralCommandNode<ServerCommandSource> rootNode = literal("essentials")
-                .then(argument("args", greedyString()))
-                .executes(ctx -> {
-                    KiloChat.sendLangMessageTo(ctx.getSource(), "command.info", ModConstants.getMinecraftVersion());
-                    return 1;
-                }).build();
+        LiteralCommandNode<ServerCommandSource> rootNode = literal("essentials").executes(this::sendInfo).build();
 
         for (EssentialCommand command : this.commands) {
             command.register(this.dispatcher);
@@ -274,6 +269,13 @@ public class KiloCommands {
 
             return commandNodeStringMap.size();
         }
+    }
+
+    private int sendInfo(CommandContext<ServerCommandSource> ctx) {
+        ctx.getSource().sendFeedback(
+                LangText.getFormatter(true, "command.info", ModConstants.getMinecraftVersion())
+                        .formatted(Formatting.WHITE), false);
+        return 1;
     }
 
     public static LiteralText getPermissionError(String hoverText) {
