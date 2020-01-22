@@ -141,6 +141,16 @@ public class KiloCommands {
             add(new FeedCommand());
             add(new TimeCommand());
             add(new FlyCommand());
+            add(new InvulnerablemodeCommand());
+            add(new FormatPreviewCommand());
+            add(new PingCommand());
+            add(new ClearchatCommand());
+            add(new EnderchestCommand());
+            add(new StatusCommand());
+            add(new StaffmsgCommand());
+            add(new BuildermsgCommand());
+            add(new SocialspyCommand());
+            add(new CommandspyCommand());
         }};
 
         this.commands.addAll(commandsList);
@@ -178,19 +188,9 @@ public class KiloCommands {
         StopCommand.register(this.dispatcher);
         RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
-        InvulnerablemodeCommand.register(this.dispatcher);
-        PreviewCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
-        PingCommand.register(this.dispatcher);
-        ClearchatCommand.register(this.dispatcher);
-        EnderchestCommand.register(this.dispatcher);
         SaveCommand.register(this.dispatcher);
-        StaffmsgCommand.register(this.dispatcher);
-        BuildermsgCommand.register(this.dispatcher);
-        SocialspyCommand.register(this.dispatcher);
-        CommandspyCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
-        StatusCommand.register(this.dispatcher);
         //InventoryCommand.register(this.dispatcher);
         //PlayerParticlesCommand.register(this.dispatcher);
     }

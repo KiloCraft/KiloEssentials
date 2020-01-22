@@ -1,33 +1,35 @@
 package org.kilocraft.essentials.commands.misc;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.hasPermission;
 
-public class PingCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> rootCommand = literal("ping")
-                .requires(src -> hasPermission(src, CommandPermission.PING_SELF))
-                .executes(ctx -> execute(ctx.getSource(), ctx.getSource().getPlayer()))
-                .then(argument("player", player())
-                        .suggests(TabCompletions::allPlayers)
-                        .requires(src -> hasPermission(src, CommandPermission.PING_OTHERS))
-                        .executes(ctx -> execute(ctx.getSource(), getPlayer(ctx, "player")))).build();
+public class PingCommand extends EssentialCommand {
+    public PingCommand() {
+        super("ping", CommandPermission.PING_SELF, new String[]{"latency"});
+    }
 
-        dispatcher.getRoot().addChild(rootCommand);
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("player", player())
+                .requires(src -> hasPermission(src, CommandPermission.PING_OTHERS))
+                .suggests(TabCompletions::allPlayers)
+                .executes(ctx -> execute(ctx.getSource(), getPlayer(ctx, "player")));
+
+        argumentBuilder.executes(ctx -> execute(ctx.getSource(), ctx.getSource().getPlayer()));
+        commandNode.addChild(selectorArgument.build());
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity target) {
