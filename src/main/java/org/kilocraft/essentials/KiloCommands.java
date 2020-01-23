@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -164,10 +165,15 @@ public class KiloCommands {
 
             if (command.getAlias() != null) {
                 for (String alias : command.getAlias()) {
-                    dispatcher.register(literal(alias)
+                    LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
                             .requires(command.getRootPermissionPredicate())
-                            .redirect(command.getCommandNode())
-                            .executes(command.getArgumentBuilder().getCommand()));
+                            .executes(command.getArgumentBuilder().getCommand());
+
+                    for (CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
+                        argumentBuilder.then(child);
+                    }
+
+                    dispatcher.register(argumentBuilder);
                 }
             }
 

@@ -22,7 +22,7 @@ public class NbtCommands {
 
         for (int i = 0; i < listTag.size(); i++) {
             String str = listTag.getString(i);
-            KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), str);
+            KiloEssentials.getServer().execute(player.getCommandSource(), str);
         }
 
         return ActionResult.SUCCESS;
