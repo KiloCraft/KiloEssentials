@@ -15,5 +15,6 @@ public class ItemCommand extends EssentialCommand {
         ItemNameCommand.registerChild(argumentBuilder, dispatcher);
         ItemLoreCommand.registerChild(argumentBuilder, dispatcher);
         ItemEnchantCommand.registerChild(argumentBuilder, dispatcher);
+        PowertoolsCommand.registerChild(argumentBuilder, dispatcher);
     }
 }

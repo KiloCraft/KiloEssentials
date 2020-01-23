@@ -4,6 +4,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
@@ -25,27 +27,27 @@ public class Vec3iLocation implements Location {
         this.dimension = dimension;
     }
 
-    public Vec3iLocation of(int x, int y, int z, float yaw, float pitch, Identifier dimension) {
+    public static Vec3iLocation of(int x, int y, int z, float yaw, float pitch, Identifier dimension) {
         return new Vec3iLocation(x, y, z, yaw, pitch, dimension);
     }
 
-    public Vec3iLocation of(int x, int y, int z, float yaw, float pitch) {
+    public static Vec3iLocation of(int x, int y, int z, float yaw, float pitch) {
         return new Vec3iLocation(x, y, z, yaw, pitch, null);
     }
 
-    public Vec3iLocation of(int x, int y, int z) {
+    public static Vec3iLocation of(int x, int y, int z) {
         return new Vec3iLocation(x, y, z, 0.0F, 0.0F, null);
     }
 
-    public Vec3iLocation of(Vec3i Vec3i) {
+    public static Vec3iLocation of(Vec3i Vec3i) {
         return of(Vec3i.getX(), Vec3i.getY(), Vec3i.getZ());
     }
 
-    public Vec3iLocation of(ServerPlayerEntity player) {
+    public static Vec3iLocation of(ServerPlayerEntity player) {
         return new Vec3iLocation((int) player.getX(), (int) player.getY(), (int) player.getZ(), player.yaw, player.pitch, RegistryUtils.toIdentifier(player.dimension));
     }
 
-    public Vec3iLocation of(OnlineUser user) {
+    public static Vec3iLocation of(OnlineUser user) {
         return of(user.getPlayer());
     }
 
@@ -151,6 +153,11 @@ public class Vec3iLocation implements Location {
     }
 
     @Override
+    public void setRotation(float yaw, float pitch) {
+        this.rotation = new PlayerRotation(yaw, pitch);
+    }
+
+    @Override
     public void setDimension(Identifier dimension) {
         this.dimension = dimension;
     }
@@ -160,4 +167,22 @@ public class Vec3iLocation implements Location {
         this.dimension = RegistryUtils.toIdentifier(type);
     }
 
+    @Override
+    public BlockPos toPos() {
+        return new BlockPos(this.x, this.y, this.z);
+    }
+
+    @Override
+    public Vec3d toVec3d() {
+        return new Vec3d(this.x, this.y, this.z);
+    }
+
+    @Override
+    public Vec3i toVec3i() {
+        return new Vec3i(this.z, this.y, this.z);
+    }
+
+    public static Vec3iLocation dummy() {
+        return of(0, 100, 0);
+    }
 }

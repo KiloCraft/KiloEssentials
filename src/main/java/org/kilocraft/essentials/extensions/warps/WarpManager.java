@@ -71,9 +71,9 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
     }
 
     public static int teleport(ServerCommandSource source, Warp warp) throws CommandSyntaxException {
-        ServerWorld world = source.getMinecraftServer().getWorld(DimensionType.byId(warp.getLocation().getDimensionId()));
-        source.getPlayer().teleport(world, warp.getLocation().getXx(), warp.getLocation().getYy(), warp.getLocation().getZz(),
-                warp.getLocation().getYaw(), warp.getLocation().getPitch());
+        ServerWorld world = source.getMinecraftServer().getWorld(DimensionType.byId(warp.getLocation().getDimension()));
+        source.getPlayer().teleport(world, warp.getLocation().getX(), warp.getLocation().getY(), warp.getLocation().getZ(),
+                warp.getLocation().getRotation().getYaw(), warp.getLocation().getRotation().getPitch());
 
         return 1;
     }
@@ -84,7 +84,7 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
 
     @Override
     public File getSaveFile() {
-        return new File( KiloConfig.getWorkingDirectory() + "/warps.dat");
+        return new File( KiloConfig.getDataDirectory() + "warps.dat");
     }
 
     @Override

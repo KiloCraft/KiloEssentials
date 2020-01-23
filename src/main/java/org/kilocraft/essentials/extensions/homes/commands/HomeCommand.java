@@ -23,6 +23,7 @@ import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
@@ -30,7 +31,6 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.util.LocationImpl;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -200,7 +200,7 @@ public class HomeCommand {
                 serverUser.getHomesHandler().removeHome(arg);
             }
 
-            serverUser.getHomesHandler().addHome(new Home(gameProfile.getId(), arg, LocationImpl.of(source.getPlayer())));
+            serverUser.getHomesHandler().addHome(new Home(gameProfile.getId(), arg, Vec3dLocation.of(source.getPlayer()).shortDecimals()));
 
             if (source.getPlayer().getUuid().equals(gameProfile.getId())) {
                 KiloChat.sendMessageTo(source, new ChatMessage(

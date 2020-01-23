@@ -16,13 +16,13 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
-import org.kilocraft.essentials.util.LocationImpl;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
@@ -92,7 +92,7 @@ public class WarpCommand {
         if (WarpManager.getWarpsByName().contains(name)) {
             Warp warp = WarpManager.getWarp(name);
 
-            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION_TYPE.get(warp.getLocation().getDimensionId()));
+            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION_TYPE.get(warp.getLocation().getDimension()));
 
             KiloChat.sendMessageTo(source, new ChatMessage(
                     KiloConfig.getProvider().getMessages().get(true, "commands.serverWideWarps.teleportTo")
@@ -148,7 +148,7 @@ public class WarpCommand {
     }
 
     private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
-        WarpManager.addWarp(new Warp(name, LocationImpl.ofDouble(source.getPlayer()).shortDecimalForVector(), addCommand));
+        WarpManager.addWarp(new Warp(name, Vec3dLocation.of(source.getPlayer()).shortDecimals(), addCommand));
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
         registerAliases();

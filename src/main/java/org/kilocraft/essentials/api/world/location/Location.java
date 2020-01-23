@@ -4,6 +4,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
@@ -29,6 +32,14 @@ public interface Location {
     void setY(double y);
     void setZ(double z);
 
+    void setRotation(float yaw, float pitch);
+
     void setDimension(Identifier dimension);
     void setDimension(DimensionType type);
+
+    BlockPos toPos();
+
+    Vec3d toVec3d();
+
+    Vec3i toVec3i();
 }

@@ -2,7 +2,7 @@ package org.kilocraft.essentials.extensions.betterchairs;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.util.LocationImpl;
+import org.kilocraft.essentials.api.world.location.Location;
 
 public class BetterChairs implements ConfigurableFeature {
     public static boolean enabled = false;
@@ -13,7 +13,7 @@ public class BetterChairs implements ConfigurableFeature {
         return true;
     }
 
-    public boolean sit(ServerPlayerEntity player, LocationImpl loc) {
+    public boolean sit(ServerPlayerEntity player, Location loc) {
 
         return false;
     }

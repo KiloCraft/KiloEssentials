@@ -11,16 +11,17 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.util.LocationImpl;
+import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 
 import java.util.UUID;
 
 public class Home {
     private UUID owner_uuid;
     private String name;
-    private LocationImpl location;
+    private Location location;
 
-    public Home(UUID uuid, String name, LocationImpl location) {
+    public Home(UUID uuid, String name, Location location) {
         this.owner_uuid = uuid;
         this.name = name;
         this.location = location;
@@ -42,17 +43,16 @@ public class Home {
 
     public void fromTag(CompoundTag compoundTag) {
         if (this.location == null)
-            this.location = LocationImpl.dummy();
+            this.location = Vec3dLocation.dummy();
 
         if (compoundTag.contains("pos")) { //OLD Format
             this.location.setDimension(new Identifier(compoundTag.getString("dimension")));
 
             CompoundTag pos = compoundTag.getCompound("pos");
-            this.location.setPos(
-                    new BlockPos(pos.getDouble("x"), pos.getDouble("y"), pos.getDouble("z")));
+            ((Vec3dLocation) this.location).setVector(new Vec3d(pos.getDouble("x"), pos.getDouble("y"), pos.getDouble("z")));
 
             CompoundTag dir = compoundTag.getCompound("dir");
-            this.location.setView(dir.getFloat("dY"), dir.getFloat("dX"));
+            this.location.setRotation(dir.getFloat("dY"), dir.getFloat("dX"));
             return;
         }
 
@@ -75,23 +75,21 @@ public class Home {
         this.name = name;
     }
 
-    public LocationImpl getLocation() {
+    public Location getLocation() {
         return this.location;
     }
 
     public static void teleportTo(OnlineUser user, Home home) {
         ServerPlayerEntity player = user.getPlayer();
-        DimensionType type = DimensionType.byId(home.getLocation().getDimensionId());
+        DimensionType type = DimensionType.byId(home.getLocation().getDimension());
         if (type == null)
             return;
 
         ServerWorld destinationWorld = KiloServer.getServer().getVanillaServer().getWorld(type);
         Vec3d destination = new Vec3d(home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ());
-        float yaw = home.getLocation().getYaw();
-        float pitch = home.getLocation().getPitch();
 
         destinationWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getEntityId()); // Lag reduction magic
         player.teleport(destinationWorld, home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ(),
-                home.getLocation().getYaw(), home.getLocation().getPitch());
+                home.getLocation().getRotation().getYaw(), home.getLocation().getRotation().getPitch());
     }
 }

@@ -24,12 +24,12 @@ details.branchName // is null if the repository in detached HEAD mode
 details.isCleanTag
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version
+version = project.mod_version as Object
 def buildType = details.isCleanTag ? "stable" : "dirty"
 
 def gitVersion = "${version}-${buildType}+git.${details.branchName}-${details.gitHash}"
 def buildTime = new Date();
-group = project.maven_group
+group = project.maven_group as Object
 
 minecraft {
 }
@@ -70,7 +70,6 @@ tasks.jar.archiveClassifier = "compile"
 task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
 	from zipTree(shadowJar.archiveFile) dependsOn shadowJar
 }
-
 
 processResources {
 	inputs.property "version", project.gitVersion

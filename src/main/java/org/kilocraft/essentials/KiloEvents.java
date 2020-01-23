@@ -22,6 +22,7 @@ public class KiloEvents {
             add(new OnTick());
             add(new OnStart());
             add(new OnScheduledUpdate());
+            add(new OnInteractItem());
             add(new OnServerStop());
         }};
 
