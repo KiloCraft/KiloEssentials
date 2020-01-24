@@ -58,11 +58,9 @@ public class KiloDebugUtils {
         bossBar.setValue(tps);
 
         String debugText = String.format(ModConstants.getProperties().getProperty("debug_bar_text"),
-                TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()), entities, loadedChunks, ModConstants.getVersionInt().split(" ")[0]);
+                TextFormat.getFormattedTPS(tps) + tps, entities, loadedChunks, ModConstants.getVersionInt().split("-")[0]);
 
-        Text text = new LiteralText("[").formatted(Formatting.BOLD)
-                .append(new LiteralText("Debug").formatted(Formatting.YELLOW, Formatting.BOLD)
-                .append(new LiteralText("]").formatted(Formatting.BOLD).append(TextFormat.translateToLiteralText('&', debugText))));
+        Text text = getDebugText().append(TextFormat.translateToLiteralText('&', debugText));
 
         if (tps > 15) {
             bossBar.setColor(BossBar.Color.GREEN);
@@ -78,6 +76,11 @@ public class KiloDebugUtils {
         bossBar.setName(text);
         if (minecraftServer.getPlayerManager().getPlayerList() != null)
             bossBar.addPlayers(minecraftServer.getPlayerManager().getPlayerList());
+    }
+
+    private Text getDebugText() {
+        return new LiteralText("[").formatted(Formatting.WHITE).append(new LiteralText("Debug")
+                .formatted(Formatting.YELLOW)).append("] ").formatted(Formatting.WHITE);
     }
 
 }
