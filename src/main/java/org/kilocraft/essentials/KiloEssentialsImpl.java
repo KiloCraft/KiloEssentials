@@ -2,6 +2,7 @@ package org.kilocraft.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,7 @@ import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.events.server.ServerDebugScheduledUpdateEventImpl;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
@@ -59,11 +61,13 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 	private ScheduledExecutorService scheduledUpdateExecutorService;
+	private ScheduledExecutorService debugScheduledUpdateExecutorService;
+	private KiloDebugUtils debugUtils;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(KiloEvents events, KiloConfig config ,KiloCommands commands) {
+	public KiloEssentialsImpl(KiloEvents events, KiloConfig config, KiloCommands commands) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
 
@@ -111,6 +115,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			}
 		}
 		*/
+
+		if (SharedConstants.isDevelopment)
+			this.debugUtils = new KiloDebugUtils(this);
 
 		getServer().getChatManager().register(new GlobalChat());
 		getServer().getChatManager().register(new StaffChat());
@@ -210,10 +217,16 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public void onServerReady() {
-		this.scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
+		scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
 
 		scheduledUpdateExecutorService.scheduleAtFixedRate(() ->
-				KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 0, 6, TimeUnit.SECONDS);
+				getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 0, 6, TimeUnit.SECONDS);
+
+		if (SharedConstants.isDevelopment) {
+			debugScheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
+			debugScheduledUpdateExecutorService.scheduleAtFixedRate(() ->
+					getServer().triggerEvent(new ServerDebugScheduledUpdateEventImpl()), 0, 3, TimeUnit.SECONDS);
+		}
 	}
 
 	public void onServerStop() {
@@ -221,6 +234,13 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			PlayerSitManager.INSTANCE.killAll();
 
 		this.scheduledUpdateExecutorService.shutdown();
+
+		if (SharedConstants.isDevelopment)
+			this.debugScheduledUpdateExecutorService.shutdown();
+	}
+
+	public KiloDebugUtils getDebugUtils() {
+		return this.debugUtils;
 	}
 
 }

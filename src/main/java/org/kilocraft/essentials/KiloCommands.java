@@ -106,10 +106,6 @@ public class KiloCommands {
     }
 
     private void register() {
-        //TODO: Comment these before BUILD
-        KiloEssentials.getLogger().warn("[!] Alert: Server is running in development mode!");
-        SharedConstants.isDevelopment = true;
-
         permissionWriters.add((map, server) -> {
             for (CommandPermission perm : CommandPermission.values()) {
                 map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
