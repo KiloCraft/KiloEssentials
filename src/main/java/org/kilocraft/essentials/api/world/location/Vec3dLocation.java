@@ -190,6 +190,10 @@ public class Vec3dLocation implements Location {
         return new Vec3i(this.z, this.y, this.z);
     }
 
+    public Vec3iLocation toVec3iLocation() {
+        return Vec3iLocation.of((int) x, (int) y, (int) z, rotation.getYaw(), rotation.getPitch(), dimension);
+    }
+
     public static Vec3dLocation dummy() {
         return of(0, 100, 0);
     }
@@ -211,6 +215,10 @@ public class Vec3dLocation implements Location {
                 Float.parseFloat(decimalFormat.format(this.rotation.getPitch())));
 
         return this;
+    }
+
+    public Vec3dLocation center() {
+        return of(x + 0.5D, y, z + 0.5D, rotation.getYaw(), rotation.getPitch(), dimension);
     }
 
     public boolean isUsingShortDecimals() {

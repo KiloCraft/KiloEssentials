@@ -129,7 +129,7 @@ public class PowertoolsCommand {
         }
 
         Objects.requireNonNull(item.getTag()).remove("NBTCommands");
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.reset", "command");
+        KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.reset", "command", "not-set");
         return 1;
     }
 

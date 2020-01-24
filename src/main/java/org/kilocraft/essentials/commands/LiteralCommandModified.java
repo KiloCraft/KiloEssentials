@@ -23,7 +23,6 @@ public class LiteralCommandModified {
         add("ke_reload");
         add("ke_locate");
         add("ke_op");
-        add("ke_kill");
         add("ke_tp");
         add("ke_msg");
         add("ke_whisper");
@@ -37,7 +36,6 @@ public class LiteralCommandModified {
 
     private static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
         add("gamemode");
-        add("kill");
         add("help");
         add("locate");
         add("op");

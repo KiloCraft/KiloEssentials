@@ -182,6 +182,10 @@ public class Vec3iLocation implements Location {
         return new Vec3i(this.z, this.y, this.z);
     }
 
+    public Vec3dLocation toVec3dLocation() {
+        return Vec3dLocation.of(x, y, z, rotation.getYaw(), rotation.getPitch(), dimension);
+    }
+
     public static Vec3iLocation dummy() {
         return of(0, 100, 0);
     }

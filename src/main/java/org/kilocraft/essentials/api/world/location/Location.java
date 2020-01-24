@@ -42,4 +42,5 @@ public interface Location {
     Vec3d toVec3d();
 
     Vec3i toVec3i();
+
 }

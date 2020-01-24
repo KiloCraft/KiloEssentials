@@ -4,28 +4,34 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.world.World;
 import org.kilocraft.essentials.api.KiloEssentials;
 
 public class NbtCommands {
+    public static boolean fromRightClick(PlayerEntity player, Hand hand) {
+        return trigger(player, hand, !player.isHandSwinging);
+    }
 
-    public static ActionResult trigger(PlayerEntity player, World world, ItemStack itemStack, Hand hand) {
+    private static boolean trigger(PlayerEntity player, Hand hand, boolean swingHand) {
+        if (hand == Hand.OFF_HAND)
+            return false;
+
         ItemStack stack = player.getMainHandStack();
         CompoundTag tag = stack.getTag();
 
         if (tag == null || tag.isEmpty() || !tag.contains("NBTCommands") && !player.isSneaking())
-            return null;
+            return false;
+
+        if (swingHand && !player.isHandSwinging)
+            player.swingHand(Hand.MAIN_HAND, true);
 
         ListTag listTag = tag.getList("NBTCommands", 8);
 
         for (int i = 0; i < listTag.size(); i++) {
-            String str = listTag.getString(i);
-            KiloEssentials.getServer().execute(player.getCommandSource(), str);
+            KiloEssentials.getServer().execute(player.getCommandSource(), listTag.getString(i));
         }
 
-        return ActionResult.SUCCESS;
+        return true;
     }
 
 }

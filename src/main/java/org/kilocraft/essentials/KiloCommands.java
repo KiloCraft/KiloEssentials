@@ -82,11 +82,13 @@ public class KiloCommands {
     private SimpleCommandManager simpleCommandManager;
     private static MessageUtil messageUtil = ModConstants.getMessageUtil();
     public static String PERMISSION_PREFIX = "kiloessentials.command.";
+    private static LiteralCommandNode<ServerCommandSource> rootNode;
 
     public KiloCommands() {
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
         this.simpleCommandManager = new SimpleCommandManager(KiloServer.getServer(), this.dispatcher);
         this.commands = new ArrayList<>();
+        rootNode = literal("essentials").executes(this::sendInfo).build();
         register();
     }
 
@@ -101,10 +103,6 @@ public class KiloCommands {
     @Deprecated
     public static boolean hasPermission(ServerCommandSource src, String cmdPerm, int minOpLevel) {
         return hasPermissionOrOp(src, cmdPerm, minOpLevel);
-    }
-
-    public <C extends EssentialCommand> void register(C c) {
-        this.commands.add(c);
     }
 
     private void register() {
@@ -156,29 +154,8 @@ public class KiloCommands {
 
         this.commands.addAll(commandsList);
 
-        LiteralCommandNode<ServerCommandSource> rootNode = literal("essentials").executes(this::sendInfo).build();
-
         for (EssentialCommand command : this.commands) {
-            command.register(this.dispatcher);
-            rootNode.addChild(command.getArgumentBuilder().build());
-            rootNode.addChild(command.getCommandNode());
-
-            if (command.getAlias() != null) {
-                for (String alias : command.getAlias()) {
-                    LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
-                            .requires(command.getRootPermissionPredicate())
-                            .executes(command.getArgumentBuilder().getCommand());
-
-                    for (CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
-                        argumentBuilder.then(child);
-                    }
-
-                    dispatcher.register(argumentBuilder);
-                }
-            }
-
-            dispatcher.getRoot().addChild(command.getCommandNode());
-            dispatcher.register(command.getArgumentBuilder());
+            registerCommand(command);
         }
 
         dispatcher.getRoot().addChild(rootNode);
@@ -194,6 +171,33 @@ public class KiloCommands {
         MessageCommand.register(this.dispatcher);
         //InventoryCommand.register(this.dispatcher);
         //PlayerParticlesCommand.register(this.dispatcher);
+    }
+
+    public <C extends EssentialCommand> void register(C c) {
+        registerCommand(c);
+    }
+
+    private <C extends EssentialCommand> void registerCommand(C command) {
+        command.register(this.dispatcher);
+        rootNode.addChild(command.getArgumentBuilder().build());
+        rootNode.addChild(command.getCommandNode());
+
+        if (command.getAlias() != null) {
+            for (String alias : command.getAlias()) {
+                LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
+                        .requires(command.getRootPermissionPredicate())
+                        .executes(command.getArgumentBuilder().getCommand());
+
+                for (CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
+                    argumentBuilder.then(child);
+                }
+
+                dispatcher.register(argumentBuilder);
+            }
+        }
+
+        dispatcher.getRoot().addChild(command.getCommandNode());
+        dispatcher.register(command.getArgumentBuilder());
     }
 
     private void registerToast() {

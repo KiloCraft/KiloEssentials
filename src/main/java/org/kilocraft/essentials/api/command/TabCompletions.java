@@ -40,21 +40,19 @@ public class TabCompletions {
         return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((p) -> {
             try {
                 return !p.equals(context.getSource().getPlayer());
-            } catch (CommandSyntaxException e) {
-                e.printStackTrace();
-            }
+            } catch (CommandSyntaxException ignored) {}
             return false;
         }).map(PlayerEntity::getEntityName), builder);
     }
 
     public static CompletableFuture<Suggestions> allPlayerNicks(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        ArrayList<String> nicks = new ArrayList<String>();
+        List<String> nicks = new ArrayList<>();
         for (int i = 0; i < playerManager.getCurrentPlayerCount(); i++) {
             ServerPlayerEntity player = playerManager.getPlayerList().get(i);
             OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
-            if (user.hasNickname()) {
+
+            if (user.hasNickname())
                 nicks.add(user.getUsername());
-            }
         }
 
         return CommandSource.suggestMatching(nicks, builder);
@@ -106,6 +104,10 @@ public class TabCompletions {
         return null;
     }
 
+    public static CompletableFuture<Suggestions> boolStyle(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(new String[]{"on", "off"}, builder);
+    }
+
     public static CompletableFuture<Suggestions> suggestAtArg(int arg, String[] strings, CommandContext<ServerCommandSource> context) {
         return suggestAt(getCursorAtArg(arg, context), strings, context);
     }
@@ -151,7 +153,6 @@ public class TabCompletions {
     }
 
     private static int getCursorAtArg(int pos, CommandContext<ServerCommandSource> context) {
-
         return getInput(context).split(" ").length;
     }
 

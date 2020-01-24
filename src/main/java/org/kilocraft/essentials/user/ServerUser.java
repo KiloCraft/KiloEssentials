@@ -54,6 +54,8 @@ public class ServerUser implements User {
     private String upstreamChannelId;
     private boolean socialSpy = false;
     private boolean commandSpy = false;
+    private boolean sitting = false;
+    private boolean canSit = false;
     
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -128,6 +130,12 @@ public class ServerUser implements User {
         if (this.socialSpy)
             cacheTag.putBoolean("commandSpy", true);
 
+        if (this.sitting)
+            cacheTag.putBoolean("sitting", true);
+
+        if (this.canSit)
+            cacheTag.putBoolean("canSit", true);
+
         // TODO When possible, move particle logic to a feature.
         if (this.displayParticleId != 0)
             metaTag.putInt("displayParticleId", this.displayParticleId);
@@ -170,8 +178,7 @@ public class ServerUser implements User {
         this.pos = new Vec3d(
                 posTag.getDouble("x"),
                 posTag.getDouble("y"),
-                posTag.getDouble("z")
-        );
+                posTag.getDouble("z"));
         this.posDim = new Identifier(posTag.getString("dim"));
 
         if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
@@ -207,6 +214,12 @@ public class ServerUser implements User {
         if (cacheTag.contains("commandSpy"))
             this.commandSpy = cacheTag.getBoolean("commandSpy");
 
+        if (cacheTag.contains("sitting"))
+            this.sitting = cacheTag.getBoolean("sitting");
+
+        if (cacheTag.contains("canSit"))
+            this.sitting = cacheTag.getBoolean("canSit");
+
         if (metaTag.getInt("displayParticleId") != 0)
             this.displayParticleId = metaTag.getInt("displayParticleId");
 
@@ -237,6 +250,26 @@ public class ServerUser implements User {
 
     public UserHomeHandler getHomesHandler() {
         return this.homeHandler;
+    }
+
+    @Override
+    public boolean isSitting() {
+        return this.sitting;
+    }
+
+    @Override
+    public void setSitting(boolean set) {
+        this.sitting = set;
+    }
+
+    @Override
+    public boolean canSit() {
+        return this.canSit;
+    }
+
+    @Override
+    public void setCanSit(boolean set) {
+        this.canSit = set;
     }
 
     @Override

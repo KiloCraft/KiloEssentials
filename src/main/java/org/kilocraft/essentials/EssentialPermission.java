@@ -22,7 +22,8 @@ public enum EssentialPermission {
     RTP_BYPASS("rtp.bypass"),
     RTP_OTHERDIMENSIONS("rtp.otherdimensions"),
     RTP_MANAGE("rtp.manage"),
-    PLAYERPARTICLE("playerparticle")
+    PLAYERPARTICLE("playerparticle"),
+    SIT("sit"),
     ;
 
     private String node;

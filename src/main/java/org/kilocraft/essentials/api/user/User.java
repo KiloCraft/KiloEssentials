@@ -107,6 +107,14 @@ public interface User {
 
     UserHomeHandler getHomesHandler();
 
+    boolean isSitting();
+
+    void setSitting(boolean set);
+
+    boolean canSit();
+
+    void setCanSit(boolean set);
+
     /**
      * This should be moved to it's own FeatureType
      * @return

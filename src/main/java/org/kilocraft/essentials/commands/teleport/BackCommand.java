@@ -19,7 +19,6 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
@@ -76,7 +75,10 @@ public class BackCommand extends EssentialCommand {
 	}
 
 	public static void saveLocation(OnlineUser user) {
-		backLocations.put(user.getUuid(), new Vector3f(Objects.requireNonNull(user.getBackPos())));
+		if (user.getPlayer() == null)
+			return;
+
+		backLocations.put(user.getUuid(), new Vector3f(user.getPlayer().getPos()));
 		backDimensions.put(user.getUuid(), DimensionType.byId(user.getBackDimId()));
 	}
 

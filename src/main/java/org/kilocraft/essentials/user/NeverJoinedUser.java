@@ -203,6 +203,24 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public boolean isSitting() {
+        return false;
+    }
+
+    @Override
+    public void setSitting(boolean set) {
+    }
+
+    @Override
+    public boolean canSit() {
+        return false;
+    }
+
+    @Override
+    public void setCanSit(boolean set) {
+    }
+
+    @Override
     public int getDisplayParticleId() {
         return 0;
     }
