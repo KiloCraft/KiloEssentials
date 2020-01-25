@@ -4,19 +4,23 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.chat.KiloChat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
+import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.arguments.EntityArgumentType.player;
 
 public class SitCommand extends EssentialCommand {
     public SitCommand() {
-        super("sit", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT));
+        super("sit", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_SELF));
     }
 
     @Override
@@ -25,8 +29,13 @@ public class SitCommand extends EssentialCommand {
                 .suggests(TabCompletions::boolStyle)
                 .executes(this::set);
 
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
+                .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
+                .suggests(TabCompletions::allPlayers)
+                .executes(this::setOthers);
 
         argumentBuilder.executes(this::execute);
+        boolArgument.then(selectorArg);
         commandNode.addChild(boolArgument.build());
     }
 
@@ -36,7 +45,10 @@ public class SitCommand extends EssentialCommand {
         boolean bool = input.equals("on");
 
         user.setCanSit(bool);
-        user.sendLangMessage("template.#2", "canSit", bool);
+        if (bool)
+            user.sendLangMessage("command.sit.enabled");
+        else
+            user.sendLangMessage("command.sit.disabled");
         return SINGLE_SUCCESS;
     }
 
@@ -44,7 +56,20 @@ public class SitCommand extends EssentialCommand {
         OnlineUser user = getOnlineUser(ctx.getSource());
 
         user.setCanSit(!user.canSit());
-        user.sendLangMessage("template.#2", "canSit", user.canSit());
+        if (user.canSit())
+            user.sendLangMessage("command.sit.enabled");
+        else
+            user.sendLangMessage("command.sit.disabled");
+        return SINGLE_SUCCESS;
+    }
+
+    private int setOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        OnlineUser target = getOnlineUser(getPlayer(ctx, "target").getCommandSource());
+        String input = getString(ctx, "set");
+        boolean bool = input.equals("on");
+
+        target.setCanSit(bool);
+        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "canSit", bool, target.getUsername());
         return SINGLE_SUCCESS;
     }
 

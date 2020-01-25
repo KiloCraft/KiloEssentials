@@ -1,6 +1,7 @@
 package org.kilocraft.essentials;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
@@ -101,6 +102,16 @@ public class ServerImpl implements Server {
     @Override
     public ChatManager getChatManager() {
         return this.chatManager;
+    }
+
+    @Override
+    public Entity getEntity(UUID uuid) {
+        for (ServerWorld world : this.getWorlds()) {
+            if (world.getEntity(uuid) != null)
+                return world.getEntity(uuid);
+        }
+
+        return null;
     }
 
     @Override

@@ -13,8 +13,10 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -254,6 +256,9 @@ public class ServerUser implements User {
 
     @Override
     public boolean isSitting() {
+        if (this instanceof OnlineUser)
+            return PlayerSitManager.INSTANCE.isSitting(((OnlineUser) this).getPlayer());
+
         return this.sitting;
     }
 

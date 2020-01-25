@@ -18,12 +18,14 @@ import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.util.TPSTracker;
 
 public class KiloDebugUtils {
+    public static KiloDebugUtils INSTANCE;
     private KiloEssentials ess;
     private Server server;
     private MinecraftServer minecraftServer;
     private CommandBossBar bossBar;
 
     public KiloDebugUtils(KiloEssentials ess) {
+        INSTANCE = this;
         this.ess = ess;
         this.server = KiloServer.getServer();
         this.minecraftServer = server.getVanillaServer();
@@ -58,19 +60,16 @@ public class KiloDebugUtils {
         bossBar.setValue(tps);
 
         String debugText = String.format(ModConstants.getProperties().getProperty("debug_bar_text"),
-                TextFormat.getFormattedTPS(tps) + tps, entities, loadedChunks, ModConstants.getVersionInt().split("-")[0]);
+                TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()), tps, entities, loadedChunks, ModConstants.getVersionInt());
 
         Text text = getDebugText().append(TextFormat.translateToLiteralText('&', debugText));
 
         if (tps > 15) {
             bossBar.setColor(BossBar.Color.GREEN);
-            text.formatted(Formatting.GREEN);
         } else if (tps > 10) {
             bossBar.setColor(BossBar.Color.YELLOW);
-            text.formatted(Formatting.YELLOW);
         } else {
             bossBar.setColor(BossBar.Color.RED);
-            text.formatted(Formatting.RED);
         }
 
         bossBar.setName(text);
@@ -80,7 +79,7 @@ public class KiloDebugUtils {
 
     private Text getDebugText() {
         return new LiteralText("[").formatted(Formatting.WHITE).append(new LiteralText("Debug")
-                .formatted(Formatting.YELLOW)).append("] ").formatted(Formatting.WHITE);
+                .formatted(Formatting.YELLOW)).append("] ").formatted(Formatting.WHITE).formatted(Formatting.BOLD);
     }
 
 }

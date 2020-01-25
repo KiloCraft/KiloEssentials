@@ -20,7 +20,6 @@ import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.events.server.ServerDebugScheduledUpdateEventImpl;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
@@ -61,7 +60,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 	private ScheduledExecutorService scheduledUpdateExecutorService;
-	private ScheduledExecutorService debugScheduledUpdateExecutorService;
 	private KiloDebugUtils debugUtils;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
@@ -217,16 +215,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public void onServerReady() {
-		scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
-
+		this.scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
 		scheduledUpdateExecutorService.scheduleAtFixedRate(() ->
-				getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 0, 6, TimeUnit.SECONDS);
-
-		if (SharedConstants.isDevelopment) {
-			debugScheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
-			debugScheduledUpdateExecutorService.scheduleAtFixedRate(() ->
-					getServer().triggerEvent(new ServerDebugScheduledUpdateEventImpl()), 0, 3, TimeUnit.SECONDS);
-		}
+				KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 6, 6, TimeUnit.SECONDS);
 	}
 
 	public void onServerStop() {
@@ -234,9 +225,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			PlayerSitManager.INSTANCE.killAll();
 
 		this.scheduledUpdateExecutorService.shutdown();
-
-		if (SharedConstants.isDevelopment)
-			this.debugScheduledUpdateExecutorService.shutdown();
 	}
 
 	public KiloDebugUtils getDebugUtils() {

@@ -15,6 +15,9 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.TabCompletions;
@@ -37,6 +40,7 @@ public class PowertoolsCommand {
     public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> rootCommand = literal("command")
                 .requires(PERMISSION_CHECK)
+                .executes(PowertoolsCommand::executeList)
                 .build();
 
         LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset")
@@ -62,7 +66,7 @@ public class PowertoolsCommand {
         rootCommand.addChild(removeArgument.build());
         rootCommand.addChild(resetArgument.build());
         rootCommand.addChild(setArgument.build());
-        dispatcher.register(literal("powertool").requires(PERMISSION_CHECK).redirect(rootCommand));
+        dispatcher.register(literal("powertool").requires(PERMISSION_CHECK).executes(PowertoolsCommand::executeList).redirect(rootCommand));
         builder.then(rootCommand);
     }
 
@@ -82,8 +86,8 @@ public class PowertoolsCommand {
             } catch (NumberFormatException ignored) { }
         }
 
-        ListTag lore = item.getTag().getList("NBTCommands", 8);
-        String[] strings = {lore.getString(inputLine)};
+        ListTag commands = item.getTag().getList("NBTCommands", 8);
+        String[] strings = {commands.getString(inputLine)};
         return CommandSource.suggestMatching(strings, builder);
     }
 
@@ -130,6 +134,37 @@ public class PowertoolsCommand {
 
         Objects.requireNonNull(item.getTag()).remove("NBTCommands");
         KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.reset", "command", "not-set");
+        return 1;
+    }
+
+    private static int executeList(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        String inputString = getString(ctx, "command").replaceFirst("/", "");
+        ItemStack item = player.getMainHandStack();
+
+        if (item.isEmpty()) {
+            KiloChat.sendLangMessageTo(player, "general.no_item");
+            return -1;
+        }
+
+        if (!item.hasTag() || item.getTag() == null || !item.getTag().contains("NBTCommands")) {
+            KiloChat.sendLangMessageTo(player, "command.item.command.no_commands");
+            return -1;
+        }
+
+        ListTag commands = item.getTag().getList("NBTCommands", 8);
+
+        Text text = new LiteralText("PowerTool Commands:").formatted(Formatting.GOLD);
+
+        for (int i = 0; i < 10; i++) {
+            if (commands.getString(i) == null)
+                continue;
+
+            text.append(new LiteralText("\n - ").formatted(Formatting.YELLOW))
+                .append(new LiteralText(commands.getString(i)).formatted(Formatting.WHITE));
+        }
+
+        KiloChat.sendMessageTo(ctx.getSource(), text);
         return 1;
     }
 

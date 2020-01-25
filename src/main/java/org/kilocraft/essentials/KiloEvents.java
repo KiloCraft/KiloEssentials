@@ -1,6 +1,5 @@
 package org.kilocraft.essentials;
 
-import net.minecraft.SharedConstants;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.listeners.*;
@@ -24,12 +23,9 @@ public class KiloEvents {
             add(new OnStart());
             add(new OnScheduledUpdate());
             add(new OnInteractItem());
+            add(new OnStopRiding());
             add(new OnInteractBlock());
-            add(new OnClientCommand());
             add(new OnServerStop());
-
-            if (SharedConstants.isDevelopment)
-                add(new OnDebugScheduledUpdate());
         }};
 
         for (EventHandler event : events)

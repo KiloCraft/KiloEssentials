@@ -23,7 +23,8 @@ public enum EssentialPermission {
     RTP_OTHERDIMENSIONS("rtp.otherdimensions"),
     RTP_MANAGE("rtp.manage"),
     PLAYERPARTICLE("playerparticle"),
-    SIT("sit"),
+    SIT_SELF("sit.self"),
+    SIT_OTHERS("sit.others"),
     ;
 
     private String node;

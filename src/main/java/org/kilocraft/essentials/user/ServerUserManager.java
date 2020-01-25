@@ -184,6 +184,8 @@ public class ServerUserManager implements UserManager {
         }
 
         this.onlineUsers.remove(player.getUuid());
+        user.setSitting(false);
+
         KiloChat.onUserLeave(user);
     }
 

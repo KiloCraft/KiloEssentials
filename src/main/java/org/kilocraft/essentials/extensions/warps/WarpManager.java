@@ -14,9 +14,9 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.NBTStorageUtil;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -83,8 +83,8 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
     }
 
     @Override
-    public File getSaveFile() {
-        return new File( KiloConfig.getDataDirectory() + "warps.dat");
+    public KiloFile getSaveFile() {
+        return new KiloFile("warps.dat", KiloConfig.getDataDirectory());
     }
 
     @Override

@@ -2,12 +2,11 @@ package org.kilocraft.essentials.api;
 
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
+import org.kilocraft.essentials.provided.KiloFile;
 
 public interface NBTStorage {
 
-    File getSaveFile();
+    KiloFile getSaveFile();
 
     CompoundTag serialize();
 
