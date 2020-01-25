@@ -139,7 +139,6 @@ public class PowertoolsCommand {
 
     private static int executeList(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        String inputString = getString(ctx, "command").replaceFirst("/", "");
         ItemStack item = player.getMainHandStack();
 
         if (item.isEmpty()) {
@@ -156,12 +155,12 @@ public class PowertoolsCommand {
 
         Text text = new LiteralText("PowerTool Commands:").formatted(Formatting.GOLD);
 
-        for (int i = 0; i < 10; i++) {
-            if (commands.getString(i) == null)
+        for (int i = 0; i < commands.size(); i++) {
+            if (commands.getString(i).equals(""))
                 continue;
 
             text.append(new LiteralText("\n - ").formatted(Formatting.YELLOW))
-                .append(new LiteralText(commands.getString(i)).formatted(Formatting.WHITE));
+                    .append(new LiteralText(commands.getString(i)).formatted(Formatting.WHITE));
         }
 
         KiloChat.sendMessageTo(ctx.getSource(), text);
