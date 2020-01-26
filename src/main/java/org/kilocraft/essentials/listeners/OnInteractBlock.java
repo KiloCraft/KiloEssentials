@@ -7,9 +7,9 @@ import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 public class OnInteractBlock implements EventHandler<PlayerInteractBlockEvent> {
     @Override
     public void handle(PlayerInteractBlockEvent event) {
-        if (event.getHitResult() == null)
+        if (event.getHitResult() == null || !PlayerSitManager.enabled)
             return;
-
+        
         event.setCancelled(PlayerSitManager.INSTANCE.onInteractBlock(event.getPlayer(), event.getHitResult(), event.getHand()));
     }
 }

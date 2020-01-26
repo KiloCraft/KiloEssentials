@@ -55,7 +55,6 @@ public class PlayerSitManager implements ConfigurableFeature {
         ServerWorld world = player.getServerWorld();
         BlockState blockState = world.getBlockState(targetBlock);
 
-        player.swingHand(Hand.MAIN_HAND, true);
         Vec3dLocation vec3dLoc = Vec3dLocation.of(targetBlock.getX(), targetBlock.getY() + 1, targetBlock.getZ(),
                 player.yaw, player.pitch, RegistryUtils.toIdentifier(world.dimension.getType()));
 
@@ -93,6 +92,7 @@ public class PlayerSitManager implements ConfigurableFeature {
         if (armorStand == null)
             return false;
 
+        player.swingHand(Hand.MAIN_HAND, true);
         armorStand.setInvisible(true);
         armorStand.setNoGravity(true);
         armorStand.setInvulnerable(true);

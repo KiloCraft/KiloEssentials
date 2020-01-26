@@ -45,9 +45,6 @@ public class KiloDebugUtils {
     }
 
     public void updateBossbar() {
-        if (minecraftServer.getBossBarManager().get(new Identifier("kiloessentials", "debug_bar")) == null)
-            setupBossBar();
-
         int loadedChunks = 0;
         int entities = 0;
         for (ServerWorld world : minecraftServer.getWorlds()) {

@@ -277,7 +277,7 @@ public class KiloCommands {
     private int sendInfo(CommandContext<ServerCommandSource> ctx) {
         ctx.getSource().sendFeedback(
                 LangText.getFormatter(true, "command.info", ModConstants.getMinecraftVersion())
-                        .formatted(Formatting.WHITE), false);
+                        .formatted(Formatting.GRAY), false);
         return 1;
     }
 
