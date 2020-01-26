@@ -55,11 +55,11 @@ public class SitCommand extends EssentialCommand {
         OnlineUser user = getOnlineUser(ctx.getSource());
 
         if (!user.getPlayer().onGround) {
-            user.sendLangMessage("");
+            user.sendLangMessage("general.on_ground");
             return -1;
         }
 
-        //PlayerSitManager.INSTANCE.sitOn(user.getPlayer());
+        PlayerSitManager.INSTANCE.sitOn(user.getPlayer(), user.getLocationAsVector(), PlayerSitManager.SummonType.COMMAND);
         return SINGLE_SUCCESS;
     }
 

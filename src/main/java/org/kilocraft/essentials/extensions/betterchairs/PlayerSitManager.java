@@ -1,9 +1,6 @@
 package org.kilocraft.essentials.extensions.betterchairs;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -61,10 +58,10 @@ public class PlayerSitManager implements ConfigurableFeature {
 
         if (blockState.getBlock() instanceof StairsBlock) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.40D);
-            return sitOn(player, vec3dLoc.center());
+            return sitOn(player, vec3dLoc.center(), SummonType.INTERACT_BLOCK);
         } else if (blockState.getBlock() instanceof SlabBlock && blockState.get(Properties.SLAB_TYPE) == SlabType.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.45D);
-            return sitOn(player, vec3dLoc.center());
+            return sitOn(player, vec3dLoc.center(), SummonType.INTERACT_BLOCK);
         }
 
         return false;
@@ -78,11 +75,7 @@ public class PlayerSitManager implements ConfigurableFeature {
         return armorStand != null && !armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#");
     }
 
-    public boolean set(ServerPlayerEntity player, Vec3dLocation loc, boolean sit) {
-        return sit ? sitOn(player, loc) : sitOff(player);
-    }
-
-    public boolean sitOn(ServerPlayerEntity player, Vec3dLocation loc) {
+    public boolean sitOn(ServerPlayerEntity player, Vec3dLocation loc, SummonType type) {
         if (player.isSpectator() || !KiloServer.getServer().getOnlineUser(player).canSit())
             return false;
 
@@ -132,9 +125,9 @@ public class PlayerSitManager implements ConfigurableFeature {
             if (armorStand != null && armorStand.hasPlayerRider() && armorStand.getCustomName() != null &&
                     armorStand.getCustomName().asString().startsWith("KE$SitStand#")
                     && armorStand.getScoreboardTags().contains("KE$SitStand@" + player.getUuid().toString())) {
-                teleportOut(player);
                 sitStands.remove(RegistryUtils.toIdentifier(armorStand.dimension), armorStand.getUuid());
                 armorStand.kill();
+                teleportOut(player);
             }
         }
     }
@@ -142,17 +135,25 @@ public class PlayerSitManager implements ConfigurableFeature {
     private void teleportOut(ServerPlayerEntity player) {
         Block block = player.getServerWorld().getBlockState(player.getBlockPos()).getBlock();
         if (block instanceof StairsBlock) {
-            player.teleport(player.getX(), player.getY() + 0.50D, player.getZ());
+            player.teleport(player.getX(), player.getY() + 1.50D, player.getZ());
         } else {
-            player.teleport(player.getX(), player.getY() + 0.10D, player.getZ());
+            player.teleport(player.getX(), player.getY() + 0.30D, player.getZ());
         }
     }
 
     public void onScheduledUpdate() {
         sitStands.forEach((dim, uuid) -> {
-            ArmorStandEntity armorStand = (ArmorStandEntity) KiloServer.getServer().getVanillaServer().getWorld(RegistryUtils.toDimension(dim)).getEntity(uuid);
-            if (armorStand != null && !armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#"))
-                armorStand.kill();
+            ServerWorld world = KiloServer.getServer().getVanillaServer().getWorld(RegistryUtils.toDimension(dim));
+            ArmorStandEntity armorStand = (ArmorStandEntity) world.getEntity(uuid);
+            if (armorStand != null) {
+                if (!armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#"))
+                    armorStand.kill();
+
+                if (world.getBlockState(armorStand.getBlockPos().up().up()).getBlock() == Blocks.AIR &&
+                        armorStand.hasPassengers() && armorStand.getPassengerList().get(0) instanceof ServerPlayerEntity &&
+                        KiloServer.getServer().getOnlineUser((ServerPlayerEntity) armorStand.getPassengerList().get(0)).getSittingType() != SummonType.COMMAND)
+                    armorStand.kill();
+            }
         });
     }
 
@@ -166,6 +167,7 @@ public class PlayerSitManager implements ConfigurableFeature {
 
     public enum SummonType {
         COMMAND,
-        INTERACT_BLOCK
+        INTERACT_BLOCK,
+        OTHERS,
     }
 }

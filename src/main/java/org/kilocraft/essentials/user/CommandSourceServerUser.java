@@ -11,10 +11,12 @@ import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 
 import java.util.Date;
 import java.util.List;
@@ -255,6 +257,20 @@ public class CommandSourceServerUser implements CommandSourceUser {
     public void sendConfigMessage(String key, Object... objects) {
         String string = KiloConfig.getProvider().getMessages().getMessage(key, objects);
         KiloChat.sendMessageToSource(this.source, new ChatMessage(string, true));
+    }
+
+    @Override
+    public Vec3dLocation getLocationAsVector() {
+        return null;
+    }
+
+    @Override
+    public void setSittingType(PlayerSitManager.SummonType type) {
+    }
+
+    @Override
+    public @Nullable PlayerSitManager.SummonType getSittingType() {
+        return null;
     }
 
     @Override

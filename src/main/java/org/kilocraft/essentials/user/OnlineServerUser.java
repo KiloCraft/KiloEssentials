@@ -8,18 +8,22 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 
 import java.util.UUID;
 
 public class OnlineServerUser extends ServerUser implements OnlineUser {
+    private PlayerSitManager.SummonType sitState;
 
     public ServerPlayerEntity getPlayer() {
         return KiloServer.getServer().getPlayer(this.uuid);
@@ -61,6 +65,22 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     public void sendConfigMessage(String key, Object... objects) {
         String message = KiloConfig.getProvider().getMessages().getMessage(key, objects);
         this.sendMessage(new ChatMessage(message, true));
+    }
+
+    @Override
+    public Vec3dLocation getLocationAsVector() {
+        return Vec3dLocation.of(this);
+    }
+
+    @Override
+    public void setSittingType(PlayerSitManager.SummonType type) {
+        this.sitState = type;
+    }
+
+    @Nullable
+    @Override
+    public PlayerSitManager.SummonType getSittingType() {
+        return this.sitState;
     }
 
     public static OnlineServerUser of(UUID uuid) {
