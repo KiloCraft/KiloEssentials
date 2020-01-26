@@ -4,7 +4,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
+import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
+import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -14,6 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -70,7 +73,7 @@ public class PlayerSitManager implements ConfigurableFeature {
         Vec3dLocation vec3dLoc = Vec3dLocation.of(targetBlock.getX(), targetBlock.getY() + 1, targetBlock.getZ(),
                 player.yaw, player.pitch, RegistryUtils.toIdentifier(world.dimension.getType()));
 
-        if (blockState.getBlock() instanceof StairsBlock) {
+        if (blockState.getBlock() instanceof StairsBlock && blockState.get(Properties.BLOCK_HALF) == BlockHalf.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.40D);
             return sitOn(player, getPosForStair(blockState, vec3dLoc.center()), SummonType.INTERACT_BLOCK, true);
         } else if (blockState.getBlock() instanceof SlabBlock && blockState.get(Properties.SLAB_TYPE) == SlabType.BOTTOM) {
@@ -81,36 +84,12 @@ public class PlayerSitManager implements ConfigurableFeature {
         return false;
     }
 
-    private Vec3dLocation getPosForStair(BlockState blockState, Vec3dLocation vec3dLoc) {
-        Direction direction = blockState.get(Properties.HORIZONTAL_FACING);
-        Vec3dLocation loc = vec3dLoc;
-        double d = 0.205D;
-
-        if (direction == Direction.NORTH) {
-            loc.setZ(vec3dLoc.getZ() + d);
-        }
-
-        if (direction == Direction.WEST) {
-            loc.setX(vec3dLoc.getX() + d);
-        }
-
-        if (direction == Direction.SOUTH) {
-            loc.setZ(vec3dLoc.getZ() - d);
-        }
-
-        if (direction == Direction.EAST) {
-            loc.setX(vec3dLoc.getX() - d);
-        }
-
-        return loc;
-    }
-
     public boolean isSitting(ServerPlayerEntity player) {
         if (!player.hasVehicle())
             return false;
 
         ArmorStandEntity armorStand = (ArmorStandEntity) player.getVehicle();
-        return armorStand != null && !armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#");
+        return armorStand != null && armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#");
     }
 
     public boolean sitOn(ServerPlayerEntity player, Vec3dLocation loc, SummonType type, boolean swingHand) {
@@ -137,6 +116,10 @@ public class PlayerSitManager implements ConfigurableFeature {
         loc.getWorld().spawnEntity(armorStand);
         player.startRiding(armorStand, true);
         sitStands.put(RegistryUtils.toIdentifier(player.dimension), armorStand.getUuid());
+
+        player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE,
+                new LiteralText("Now Seating").formatted(Formatting.WHITE), 1, 3, 1));
+        player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, new LiteralText(""), 1, 3, 1));
 
         return true;
     }
@@ -196,6 +179,30 @@ public class PlayerSitManager implements ConfigurableFeature {
             if (armorStand != null && !armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#"))
                 armorStand.kill();
         });
+    }
+
+    private Vec3dLocation getPosForStair(BlockState blockState, Vec3dLocation vec3dLoc) {
+        Direction direction = blockState.get(Properties.HORIZONTAL_FACING);
+        Vec3dLocation loc = vec3dLoc;
+        double d = 0.205D;
+
+        if (direction == Direction.NORTH) {
+            loc.setZ(vec3dLoc.getZ() + d);
+        }
+
+        if (direction == Direction.WEST) {
+            loc.setX(vec3dLoc.getX() + d);
+        }
+
+        if (direction == Direction.SOUTH) {
+            loc.setZ(vec3dLoc.getZ() - d);
+        }
+
+        if (direction == Direction.EAST) {
+            loc.setX(vec3dLoc.getX() - d);
+        }
+
+        return loc;
     }
 
     public enum SummonType {
