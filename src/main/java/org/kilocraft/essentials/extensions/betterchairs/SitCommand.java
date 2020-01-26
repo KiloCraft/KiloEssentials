@@ -54,12 +54,17 @@ public class SitCommand extends EssentialCommand {
     private int seat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
 
+        if (PlayerSitManager.INSTANCE.isSitting(user.getPlayer())) {
+            user.sendLangMessage("command.sit.already_sitting");
+            return -1;
+        }
+
         if (!user.getPlayer().onGround) {
             user.sendLangMessage("general.on_ground");
             return -1;
         }
 
-        PlayerSitManager.INSTANCE.sitOn(user.getPlayer(), user.getLocationAsVector(), PlayerSitManager.SummonType.COMMAND);
+        PlayerSitManager.INSTANCE.sitOn(user.getPlayer(), user.getLocationAsVector(), PlayerSitManager.SummonType.COMMAND, false);
         return SINGLE_SUCCESS;
     }
 

@@ -5,6 +5,7 @@ import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -14,14 +15,18 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.util.RegistryUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class PlayerSitManager implements ConfigurableFeature {
     public static PlayerSitManager INSTANCE;
@@ -46,7 +51,13 @@ public class PlayerSitManager implements ConfigurableFeature {
 
     public boolean onInteractBlock(ServerPlayerEntity player, BlockHitResult hitResult, Hand hand) {
         if (hand != Hand.MAIN_HAND || !player.getMainHandStack().equals(ItemStack.EMPTY) ||
-                player.getVehicle() != null || !KiloServer.getServer().getOnlineUser(player).canSit() || !hasPermission(player) || player.isSneaking())
+                player.getVehicle() != null || !hasPermission(player) || player.isSneaking())
+            return false;
+
+        if (hitResult.getSide() == Direction.DOWN)
+            return false;
+
+        if (!KiloServer.getServer().getOnlineUser(player).canSit())
             return false;
 
         BlockPos targetBlock = hitResult.getBlockPos();
@@ -58,13 +69,31 @@ public class PlayerSitManager implements ConfigurableFeature {
 
         if (blockState.getBlock() instanceof StairsBlock) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.40D);
-            return sitOn(player, vec3dLoc.center(), SummonType.INTERACT_BLOCK);
+            return sitOn(player, getPosForStair(blockState, vec3dLoc.center()), SummonType.INTERACT_BLOCK, true);
         } else if (blockState.getBlock() instanceof SlabBlock && blockState.get(Properties.SLAB_TYPE) == SlabType.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.45D);
-            return sitOn(player, vec3dLoc.center(), SummonType.INTERACT_BLOCK);
+            return sitOn(player, vec3dLoc.center(), SummonType.INTERACT_BLOCK, true);
         }
 
         return false;
+    }
+
+    private Vec3dLocation getPosForStair(BlockState blockState, Vec3dLocation vec3dLoc) {
+        Direction direction = blockState.get(Properties.HORIZONTAL_FACING);
+
+        double d = 0.25D;
+        switch (direction) {
+            case NORTH:
+                vec3dLoc.setZ(vec3dLoc.getZ() + d);
+            case SOUTH:
+                vec3dLoc.setZ(vec3dLoc.getZ() - d);
+            case EAST:
+                vec3dLoc.setX(vec3dLoc.getX() - d);
+            case WEST:
+                vec3dLoc.setX(vec3dLoc.getX() + d);
+        }
+
+        return vec3dLoc;
     }
 
     public boolean isSitting(ServerPlayerEntity player) {
@@ -75,7 +104,7 @@ public class PlayerSitManager implements ConfigurableFeature {
         return armorStand != null && !armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#");
     }
 
-    public boolean sitOn(ServerPlayerEntity player, Vec3dLocation loc, SummonType type) {
+    public boolean sitOn(ServerPlayerEntity player, Vec3dLocation loc, SummonType type, boolean swingHand) {
         if (player.isSpectator() || !KiloServer.getServer().getOnlineUser(player).canSit())
             return false;
 
@@ -86,12 +115,15 @@ public class PlayerSitManager implements ConfigurableFeature {
         if (armorStand == null)
             return false;
 
-        player.swingHand(Hand.MAIN_HAND, true);
+        if (swingHand)
+            player.swingHand(Hand.MAIN_HAND, true);
+
         armorStand.setInvisible(true);
         armorStand.setNoGravity(true);
         armorStand.setInvulnerable(true);
         armorStand.addScoreboardTag("KE$SitStand@" + player.getUuid().toString());
         armorStand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
+        KiloServer.getServer().getOnlineUser(player).setSittingType(type);
 
         loc.getWorld().spawnEntity(armorStand);
         player.startRiding(armorStand, true);
@@ -133,9 +165,9 @@ public class PlayerSitManager implements ConfigurableFeature {
     }
 
     private void teleportOut(ServerPlayerEntity player) {
-        Block block = player.getServerWorld().getBlockState(player.getBlockPos()).getBlock();
+        Block block = player.getServerWorld().getBlockState(player.getBlockPos().up()).getBlock();
         if (block instanceof StairsBlock) {
-            player.teleport(player.getX(), player.getY() + 1.50D, player.getZ());
+            player.teleport(player.getX(), player.getY() + 2.50D, player.getZ());
         } else {
             player.teleport(player.getX(), player.getY() + 0.30D, player.getZ());
         }
@@ -150,9 +182,12 @@ public class PlayerSitManager implements ConfigurableFeature {
                     armorStand.kill();
 
                 if (world.getBlockState(armorStand.getBlockPos().up().up()).getBlock() == Blocks.AIR &&
-                        armorStand.hasPassengers() && armorStand.getPassengerList().get(0) instanceof ServerPlayerEntity &&
-                        KiloServer.getServer().getOnlineUser((ServerPlayerEntity) armorStand.getPassengerList().get(0)).getSittingType() != SummonType.COMMAND)
-                    armorStand.kill();
+                        armorStand.hasPassengers() && armorStand.getPassengerList().get(0) instanceof PlayerEntity) {
+
+                    OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) armorStand.getPassengerList().get(0));
+                    if (user.getSittingType() != null && user.getSittingType() != SummonType.COMMAND)
+                        armorStand.kill();
+                }
             }
         });
     }

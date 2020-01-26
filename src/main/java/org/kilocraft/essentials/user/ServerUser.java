@@ -76,16 +76,18 @@ public class ServerUser implements User {
         // Here we store the players current location
         if (this.location == null)
             updateLocation();
+
         mainTag.put("loc", this.location.toTag());
+        this.location.shortDecimals();
 
         if (this.lastLocation != null)
             cacheTag.put("lastLoc", this.lastLocation.toTag());
 
         // Private messaging stuff
-        if(this.getLastPrivateMessageSender() != null) {
+        if (this.getLastPrivateMessageSender() != null) {
             CompoundTag lastMessageTag = new CompoundTag();
             lastMessageTag.putString("destUUID", this.getLastPrivateMessageSender().toString());
-            if(this.getLastPrivateMessage() != null) {
+            if (this.getLastPrivateMessage() != null) {
                 lastMessageTag.putString("text", this.getLastPrivateMessage());
             }
             cacheTag.put("lastMessage", lastMessageTag);
@@ -150,6 +152,7 @@ public class ServerUser implements User {
         if (compoundTag.contains("loc")) {
         	this.location = Vec3dLocation.dummy();
         	this.location.fromTag(compoundTag.getCompound("loc"));
+        	this.location.shortDecimals();
         }
 
         if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
