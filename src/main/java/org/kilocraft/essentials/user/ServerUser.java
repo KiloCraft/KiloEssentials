@@ -78,6 +78,9 @@ public class ServerUser implements User {
             updateLocation();
         mainTag.put("loc", this.location.toTag());
 
+        if (this.lastLocation != null)
+            cacheTag.put("lastLoc", this.lastLocation.toTag());
+
         // Private messaging stuff
         if(this.getLastPrivateMessageSender() != null) {
             CompoundTag lastMessageTag = new CompoundTag();
@@ -139,6 +142,11 @@ public class ServerUser implements User {
     	CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
+        if (cacheTag.contains("lastLoc")) {
+            this.lastLocation = Vec3dLocation.dummy();
+            this.lastLocation.fromTag(cacheTag.getCompound("lastLoc"));
+        }
+
         if (compoundTag.contains("loc")) {
         	this.location = Vec3dLocation.dummy();
         	this.location.fromTag(compoundTag.getCompound("loc"));
@@ -171,7 +179,6 @@ public class ServerUser implements User {
             this.invulnerable = true;
         }
 
-
         if (cacheTag.contains("socialSpy"))
             this.socialSpy = cacheTag.getBoolean("socialSpy");
         if (cacheTag.contains("commandSpy"))
@@ -194,7 +201,7 @@ public class ServerUser implements User {
     }
 
     public void updateLocation() {
-        if (this instanceof OnlineUser) this.location = Vec3dLocation.of((OnlineUser) this);
+        if (this instanceof OnlineUser) this.location = Vec3dLocation.of((OnlineUser) this).shortDecimals();
     }
 
     private Date getUserFirstJoinDate(String stringToParse) {
@@ -289,7 +296,7 @@ public class ServerUser implements User {
     @Override
     public void saveLocation() {
         if (this instanceof OnlineUser)
-            this.lastLocation = Vec3dLocation.of((OnlineUser) this);
+            this.lastLocation = Vec3dLocation.of((OnlineUser) this).shortDecimals();
     }
 
     @Override

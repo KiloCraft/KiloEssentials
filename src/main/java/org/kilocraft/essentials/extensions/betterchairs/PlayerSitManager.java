@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.extensions.betterchairs;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
@@ -114,6 +115,7 @@ public class PlayerSitManager implements ConfigurableFeature {
         if (armorStand != null && !armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#")
                 && armorStand.getScoreboardTags().contains("KE$SitStand@" + player.getUuid().toString())) {
             sitStands.remove(RegistryUtils.toIdentifier(armorStand.dimension), armorStand.getUuid());
+            teleportOut(player);
             armorStand.kill();
             return true;
         }
@@ -130,9 +132,19 @@ public class PlayerSitManager implements ConfigurableFeature {
             if (armorStand != null && armorStand.hasPlayerRider() && armorStand.getCustomName() != null &&
                     armorStand.getCustomName().asString().startsWith("KE$SitStand#")
                     && armorStand.getScoreboardTags().contains("KE$SitStand@" + player.getUuid().toString())) {
+                teleportOut(player);
                 sitStands.remove(RegistryUtils.toIdentifier(armorStand.dimension), armorStand.getUuid());
                 armorStand.kill();
             }
+        }
+    }
+
+    private void teleportOut(ServerPlayerEntity player) {
+        Block block = player.getServerWorld().getBlockState(player.getBlockPos()).getBlock();
+        if (block instanceof StairsBlock) {
+            player.teleport(player.getX(), player.getY() + 0.50D, player.getZ());
+        } else {
+            player.teleport(player.getX(), player.getY() + 0.10D, player.getZ());
         }
     }
 
