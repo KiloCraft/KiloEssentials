@@ -1,6 +1,9 @@
 package org.kilocraft.essentials.extensions.betterchairs;
 
-import net.minecraft.block.*;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -80,20 +83,26 @@ public class PlayerSitManager implements ConfigurableFeature {
 
     private Vec3dLocation getPosForStair(BlockState blockState, Vec3dLocation vec3dLoc) {
         Direction direction = blockState.get(Properties.HORIZONTAL_FACING);
+        Vec3dLocation loc = vec3dLoc;
+        double d = 0.205D;
 
-        double d = 0.25D;
-        switch (direction) {
-            case NORTH:
-                vec3dLoc.setZ(vec3dLoc.getZ() + d);
-            case SOUTH:
-                vec3dLoc.setZ(vec3dLoc.getZ() - d);
-            case EAST:
-                vec3dLoc.setX(vec3dLoc.getX() - d);
-            case WEST:
-                vec3dLoc.setX(vec3dLoc.getX() + d);
+        if (direction == Direction.NORTH) {
+            loc.setZ(vec3dLoc.getZ() + d);
         }
 
-        return vec3dLoc;
+        if (direction == Direction.WEST) {
+            loc.setX(vec3dLoc.getX() + d);
+        }
+
+        if (direction == Direction.SOUTH) {
+            loc.setZ(vec3dLoc.getZ() - d);
+        }
+
+        if (direction == Direction.EAST) {
+            loc.setX(vec3dLoc.getX() - d);
+        }
+
+        return loc;
     }
 
     public boolean isSitting(ServerPlayerEntity player) {
@@ -140,7 +149,6 @@ public class PlayerSitManager implements ConfigurableFeature {
         if (armorStand != null && !armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#")
                 && armorStand.getScoreboardTags().contains("KE$SitStand@" + player.getUuid().toString())) {
             sitStands.remove(RegistryUtils.toIdentifier(armorStand.dimension), armorStand.getUuid());
-            teleportOut(player);
             armorStand.kill();
             return true;
         }
@@ -159,17 +167,7 @@ public class PlayerSitManager implements ConfigurableFeature {
                     && armorStand.getScoreboardTags().contains("KE$SitStand@" + player.getUuid().toString())) {
                 sitStands.remove(RegistryUtils.toIdentifier(armorStand.dimension), armorStand.getUuid());
                 armorStand.kill();
-                teleportOut(player);
             }
-        }
-    }
-
-    private void teleportOut(ServerPlayerEntity player) {
-        Block block = player.getServerWorld().getBlockState(player.getBlockPos().up()).getBlock();
-        if (block instanceof StairsBlock) {
-            player.teleport(player.getX(), player.getY() + 2.50D, player.getZ());
-        } else {
-            player.teleport(player.getX(), player.getY() + 0.30D, player.getZ());
         }
     }
 
