@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -25,6 +27,14 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     public ServerCommandSource getCommandSource() {
         return this.getPlayer().getCommandSource();
+    }
+
+    @Override
+    public void teleport(Location loc, boolean sendTicket) {
+        if (sendTicket)
+            loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 1, getPlayer().getEntityId());
+
+        getPlayer().teleport(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getRotation().getYaw(), loc.getRotation().getPitch());
     }
 
     @Override

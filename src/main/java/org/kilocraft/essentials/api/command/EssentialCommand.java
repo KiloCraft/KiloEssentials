@@ -3,17 +3,23 @@ package org.kilocraft.essentials.api.command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.function.Predicate;
 
@@ -128,6 +134,34 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.PERMISSION_CHECK_ROOT;
     }
 
+    public boolean hasPermission(ServerCommandSource src, CommandPermission cmdPerm) {
+        return KiloCommands.hasPermission(src, cmdPerm);
+    }
+
+    public boolean hasPermission(ServerCommandSource src, CommandPermission cmdPerm, int minOpLevel) {
+        return KiloCommands.hasPermission(src, cmdPerm, minOpLevel);
+    }
+
+    public boolean hasPermission(ServerCommandSource src, EssentialPermission essPerm) {
+        return KiloEssentials.hasPermissionNode(src, essPerm);
+    }
+
+    public boolean hasPermission(ServerCommandSource src, EssentialPermission essPerm, int minOpLevel) {
+        return KiloEssentials.hasPermissionNode(src, essPerm, minOpLevel);
+    }
+
+    public void sendMessage(CommandContext<ServerCommandSource> ctx, String key, Object... objects) {
+        KiloChat.sendLangMessageTo(ctx.getSource(), key, objects);
+    }
+
+    public void sendMessage(ServerCommandSource src, String key, Object... objects) {
+        KiloChat.sendLangMessageTo(src, key, objects);
+    }
+
+    public Text getLang(String key, Object... objects) {
+        return LangText.getFormatter(true, key, objects);
+    }
+
     @Override
     public LiteralArgumentBuilder<ServerCommandSource> literal(String label) {
         return CommandManager.literal(label);
@@ -146,6 +180,14 @@ public abstract class EssentialCommand implements IEssentialCommand {
     @Override
     public OnlineUser getOnlineUser(ServerCommandSource source) throws CommandSyntaxException {
         return server.getOnlineUser(source.getPlayer());
+    }
+
+    public OnlineUser getOnlineUser(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        return getOnlineUser(ctx.getSource());
+    }
+
+    public OnlineUser getOnlineUser(ServerPlayerEntity player) throws CommandSyntaxException {
+        return server.getOnlineUser(player);
     }
 
 }

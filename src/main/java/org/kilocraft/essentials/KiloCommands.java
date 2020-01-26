@@ -44,10 +44,7 @@ import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
-import org.kilocraft.essentials.commands.teleport.BackCommand;
-import org.kilocraft.essentials.commands.teleport.RtpCommand;
-import org.kilocraft.essentials.commands.teleport.TeleportCommands;
-import org.kilocraft.essentials.commands.teleport.TpaCommand;
+import org.kilocraft.essentials.commands.teleport.*;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -131,7 +128,6 @@ public class KiloCommands {
             add(new RtpCommand());
             add(new BroadcastCommand());
             add(new UsageCommand());
-            add(new BackCommand());
             add(new HealCommand());
             add(new FeedCommand());
             add(new TimeCommand());
@@ -146,6 +142,7 @@ public class KiloCommands {
             add(new BuildermsgCommand());
             add(new SocialspyCommand());
             add(new CommandspyCommand());
+            add(new BackCommand());
         }};
 
         this.commands.addAll(commandsList);

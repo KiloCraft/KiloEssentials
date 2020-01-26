@@ -62,7 +62,7 @@ public class GamemodeCommand extends EssentialCommand {
         commandNode.addChild(gameTypeArgument.build());
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players, @Nullable GameMode cValue, boolean silent) throws CommandSyntaxException {
+    private int execute(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players, @Nullable GameMode cValue, boolean silent) throws CommandSyntaxException {
         ServerCommandSource src = ctx.getSource();
         String arg = cValue == null ? getString(ctx, "gameType") : cValue.getName();
         GameMode selectedMode = getMode(arg);

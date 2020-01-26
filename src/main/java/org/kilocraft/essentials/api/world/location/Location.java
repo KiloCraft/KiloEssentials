@@ -5,6 +5,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.dimension.DimensionType;
@@ -36,6 +37,8 @@ public interface Location {
 
     void setDimension(Identifier dimension);
     void setDimension(DimensionType type);
+
+    ChunkPos toChunkPos();
 
     BlockPos toPos();
 

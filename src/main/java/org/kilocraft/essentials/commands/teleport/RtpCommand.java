@@ -214,7 +214,7 @@ public class RtpCommand extends EssentialCommand {
 		target.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 600, 255, false, false, false));
 		target.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 600, 255, false, false, false));
 
-		BackCommand.saveLocation(targetUser);
+		targetUser.saveLocation();
 		target.teleport(target.getServerWorld(), randomX, 255, randomZ, 0, 0);
 
 		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));

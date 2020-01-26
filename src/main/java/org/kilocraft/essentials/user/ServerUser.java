@@ -4,10 +4,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -15,8 +13,9 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
-import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -38,10 +37,8 @@ public class ServerUser implements User {
     UUID uuid;
     String name = "";
     private UserHomeHandler homeHandler;
-    private Vec3d backPos = Vec3d.ZERO;
-    private Vec3d pos = Vec3d.ZERO;
-    private Identifier lastPosDim;
-    private Identifier posDim;
+    private Vec3dLocation location;
+    private Vec3dLocation lastLocation;
     private String nickname;
     private boolean canFly = false;
     private boolean invulnerable = false;
@@ -56,7 +53,6 @@ public class ServerUser implements User {
     private String upstreamChannelId;
     private boolean socialSpy = false;
     private boolean commandSpy = false;
-    private boolean sitting = false;
     private boolean canSit = false;
     
     public ServerUser(UUID uuid) {
@@ -77,29 +73,10 @@ public class ServerUser implements User {
         CompoundTag metaTag = new CompoundTag();
         CompoundTag cacheTag = new CompoundTag();
 
-        // Here we store the players previous position that is refered to with /back.
-        if(this.getBackPos() != null && this.getBackDimId() != null) { // Well this crashes without a safety check.
-            CompoundTag lastPosTag = new CompoundTag();
-            lastPosTag.putDouble("x", this.backPos.getX());
-            lastPosTag.putDouble("y", this.backPos.getY());
-            lastPosTag.putDouble("z", this.backPos.getZ());
-            lastPosTag.putString("dim", this.lastPosDim.toString());
-            cacheTag.put("lastPos", lastPosTag);
-        }
-
-        // Now the User's real position.
-        CompoundTag posTag = new CompoundTag();
-        posTag.putDouble("x", this.pos.getX());
-        posTag.putDouble("y", this.pos.getY());
-        posTag.putDouble("z", this.pos.getZ());
-
-        if(this.posDim == null) { // This should be impossible
-            // TODO Notify admins and throw a giant error log into Console to reflect error. Set it to a temp value
-            this.posDim = new Identifier("minecraft", "overworld");
-        }
-
-        posTag.putString("dim", this.posDim.toString());
-        mainTag.put("pos", posTag);
+        // Here we store the players current location
+        if (this.location == null)
+            updateLocation();
+        mainTag.put("loc", this.location.toTag());
 
         // Private messaging stuff
         if(this.getLastPrivateMessageSender() != null) {
@@ -113,7 +90,6 @@ public class ServerUser implements User {
 
         // Chat channels stuff
         CompoundTag channelsCache = new CompoundTag();
-        CompoundTag subscriptionsTag = new CompoundTag();
 
         if (this.upstreamChannelId != null)
             channelsCache.putString("upstreamChannelId", this.upstreamChannelId);
@@ -131,9 +107,6 @@ public class ServerUser implements User {
 
         if (this.socialSpy)
             cacheTag.putBoolean("commandSpy", true);
-
-        if (this.sitting)
-            cacheTag.putBoolean("sitting", true);
 
         if (this.canSit)
             cacheTag.putBoolean("canSit", true);
@@ -166,22 +139,10 @@ public class ServerUser implements User {
     	CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
-        if (cacheTag.contains("lastPos")) {
-        	CompoundTag lastPosTag = cacheTag.getCompound("lastPos");
-        	this.backPos = new Vec3d(
-        		lastPosTag.getDouble("x"),
-                lastPosTag.getDouble("y"),
-                lastPosTag.getDouble("z")
-        	);
-        	this.lastPosDim = new Identifier(lastPosTag.getString("dim"));
+        if (compoundTag.contains("loc")) {
+        	this.location = Vec3dLocation.dummy();
+        	this.location.fromTag(compoundTag.getCompound("loc"));
         }
-
-        CompoundTag posTag = cacheTag.getCompound("pos");
-        this.pos = new Vec3d(
-                posTag.getDouble("x"),
-                posTag.getDouble("y"),
-                posTag.getDouble("z"));
-        this.posDim = new Identifier(posTag.getString("dim"));
 
         if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
             CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
@@ -216,11 +177,8 @@ public class ServerUser implements User {
         if (cacheTag.contains("commandSpy"))
             this.commandSpy = cacheTag.getBoolean("commandSpy");
 
-        if (cacheTag.contains("sitting"))
-            this.sitting = cacheTag.getBoolean("sitting");
-
         if (cacheTag.contains("canSit"))
-            this.sitting = cacheTag.getBoolean("canSit");
+            this.canSit = cacheTag.getBoolean("canSit");
 
         if (metaTag.getInt("displayParticleId") != 0)
             this.displayParticleId = metaTag.getInt("displayParticleId");
@@ -235,9 +193,8 @@ public class ServerUser implements User {
         this.randomTeleportsLeft = compoundTag.getInt("rtpLeft");
     }
 
-    public void updatePos() {
-        this.pos = KiloServer.getServer().getPlayer(this.uuid).getPos();
-        this.posDim = Registry.DIMENSION_TYPE.getId(KiloServer.getServer().getPlayer(this.uuid).getServerWorld().getDimension().getType());
+    public void updateLocation() {
+        if (this instanceof OnlineUser) this.location = Vec3dLocation.of((OnlineUser) this);
     }
 
     private Date getUserFirstJoinDate(String stringToParse) {
@@ -252,19 +209,6 @@ public class ServerUser implements User {
 
     public UserHomeHandler getHomesHandler() {
         return this.homeHandler;
-    }
-
-    @Override
-    public boolean isSitting() {
-        if (this instanceof OnlineUser)
-            return PlayerSitManager.INSTANCE.isSitting(((OnlineUser) this).getPlayer());
-
-        return this.sitting;
-    }
-
-    @Override
-    public void setSitting(boolean set) {
-        this.sitting = set;
     }
 
     @Override
@@ -329,6 +273,26 @@ public class ServerUser implements User {
     }
 
     @Override
+    public Location getLocation() {
+        if (this.location == null)
+            updateLocation();
+
+        return this.location;
+    }
+
+    @Nullable
+    @Override
+    public Location getLastSavedLocation() {
+        return this.lastLocation;
+    }
+
+    @Override
+    public void saveLocation() {
+        if (this instanceof OnlineUser)
+            this.lastLocation = Vec3dLocation.of((OnlineUser) this);
+    }
+
+    @Override
     public void setNickname(String name) {
         String oldNick = this.nickname;
         this.nickname = name;
@@ -341,33 +305,8 @@ public class ServerUser implements User {
     }
 
     @Override
-    public Vec3d getBackPos() {
-        return this.backPos;
-    }
-
-    @Override
-    public Vec3d getPos() {
-        return this.pos;
-    }
-
-    @Override
-    public Identifier getPosDim() {
-        return this.posDim;
-    }
-
-    @Override
-    public Identifier getBackDimId() {
-        return this.lastPosDim;
-    }
-
-    @Override
-    public void setBackPos(Vec3d pos) {
-        this.backPos = pos;
-    }
-
-    @Override
-    public void setBackDim(Identifier dimId) {
-        this.lastPosDim = dimId;
+    public void setLastLocation(Location loc) {
+        this.lastLocation = (Vec3dLocation) loc;
     }
 
     @Override
@@ -413,16 +352,6 @@ public class ServerUser implements User {
     @Override
     public Date getFirstJoin() {
         return this.firstJoin;
-    }
-
-    @Override
-    public void addSubscriptionChannel(String id) {
-        this.subscriptions.add(id);
-    }
-
-    @Override
-    public void removeSubscriptionChannel(String id) {
-        this.subscriptions.remove(id);
     }
 
     @Override

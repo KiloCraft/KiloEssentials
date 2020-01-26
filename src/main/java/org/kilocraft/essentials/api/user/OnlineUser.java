@@ -3,12 +3,15 @@ package org.kilocraft.essentials.api.user;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.chat.ChatMessage;
 
 public interface OnlineUser extends User {
     ServerPlayerEntity getPlayer();
 
     ServerCommandSource getCommandSource();
+
+    void teleport(Location loc, boolean sendTicket);
 
     void sendMessage(String message);
 

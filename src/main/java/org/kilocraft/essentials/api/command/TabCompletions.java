@@ -108,6 +108,10 @@ public class TabCompletions {
         return CommandSource.suggestMatching(new String[]{"on", "off"}, builder);
     }
 
+    public static CompletableFuture<Suggestions> stateSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(new String[]{"on", "off", "toggle"}, builder);
+    }
+
     public static CompletableFuture<Suggestions> suggestAtArg(int arg, String[] strings, CommandContext<ServerCommandSource> context) {
         return suggestAt(getCursorAtArg(arg, context), strings, context);
     }

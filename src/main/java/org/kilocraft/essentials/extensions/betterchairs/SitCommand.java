@@ -26,7 +26,7 @@ public class SitCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> boolArgument =  argument("set", word())
-                .suggests(TabCompletions::boolStyle)
+                .suggests(TabCompletions::stateSuggestions)
                 .executes(this::set);
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
@@ -34,7 +34,7 @@ public class SitCommand extends EssentialCommand {
                 .suggests(TabCompletions::allPlayers)
                 .executes(this::setOthers);
 
-        argumentBuilder.executes(this::execute);
+        argumentBuilder.executes(this::seat);
         boolArgument.then(selectorArg);
         commandNode.addChild(boolArgument.build());
     }
@@ -42,24 +42,24 @@ public class SitCommand extends EssentialCommand {
     private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
         String input = getString(ctx, "set");
-        boolean bool = input.equals("on");
+        user.setCanSit(input.equalsIgnoreCase("toggle") ? !user.canSit() : input.equals("on"));
 
-        user.setCanSit(bool);
-        if (bool)
+        if (user.canSit())
             user.sendLangMessage("command.sit.enabled");
         else
             user.sendLangMessage("command.sit.disabled");
         return SINGLE_SUCCESS;
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int seat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
 
-        user.setCanSit(!user.canSit());
-        if (user.canSit())
-            user.sendLangMessage("command.sit.enabled");
-        else
-            user.sendLangMessage("command.sit.disabled");
+        if (!user.getPlayer().onGround) {
+            user.sendLangMessage("");
+            return -1;
+        }
+
+        //PlayerSitManager.INSTANCE.sitOn(user.getPlayer());
         return SINGLE_SUCCESS;
     }
 

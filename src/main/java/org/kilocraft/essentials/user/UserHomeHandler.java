@@ -4,7 +4,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
@@ -14,7 +13,6 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
@@ -120,7 +118,6 @@ public class UserHomeHandler implements ConfigurableFeature {
             if(world == null)
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
 
-            BackCommand.setLocation(user.getPlayer(), new Vector3f(user.getPlayer().getPos()), user.getPlayer().getServerWorld().getDimension().getType());
             Home.teleportTo(user, home);
         }
 

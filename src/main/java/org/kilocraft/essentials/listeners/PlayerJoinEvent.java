@@ -5,7 +5,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.player.PlayerConnectEvent;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.user.ServerUserManager;
 
 public class PlayerJoinEvent implements EventHandler<PlayerConnectEvent> {
@@ -17,7 +16,7 @@ public class PlayerJoinEvent implements EventHandler<PlayerConnectEvent> {
         ServerPlayerEntity player = event.getPlayer();
         OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
 
-        if (user.getBackPos() != null)
-        	BackCommand.saveLocation(user);
+        if (user.getLastSavedLocation() == null)
+        	user.saveLocation();
     }
 }
