@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.command;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -19,9 +20,13 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
+
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
 public abstract class EssentialCommand implements IEssentialCommand {
     private String label;
@@ -188,6 +193,22 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public OnlineUser getOnlineUser(ServerPlayerEntity player) throws CommandSyntaxException {
         return server.getOnlineUser(player);
+    }
+
+    public CompletableFuture<User> getOfflineUser(GameProfile profile) {
+        return server.getUserManager().getOffline(profile);
+    }
+
+    public CompletableFuture<User> getOfflineUser(String name) {
+        return server.getUserManager().getOffline(name);
+    }
+
+    public boolean isOnline(User user) {
+        return server.getUserManager().isOnline(user);
+    }
+
+    public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(String label) {
+        return argument(label, string()).suggests(TabCompletions::allPlayers);
     }
 
 }

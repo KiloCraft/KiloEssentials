@@ -62,7 +62,7 @@ public class ServerUser implements User {
         try {
             manager.getHandler().handleUser(this);
         } catch (IOException e) {
-            KiloEssentials.getLogger().error("Failed to Load User for [" + uuid.toString() + "]");
+            KiloEssentials.getLogger().error("Failed to Load User Data [" + uuid.toString() + "]");
         }
 
         this.subscriptions = new ArrayList<>();
@@ -233,7 +233,7 @@ public class ServerUser implements User {
 
     @Override
     public boolean isOnline() {
-        return KiloServer.getServer().getPlayerManager().getPlayer(this.uuid) != null;
+        return this instanceof OnlineUser || KiloServer.getServer().getUserManager().isOnline(this);
     }
 
     @Override

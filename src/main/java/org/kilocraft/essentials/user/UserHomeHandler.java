@@ -10,12 +10,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
-import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
+import org.kilocraft.essentials.extensions.homes.commands.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,17 @@ public class UserHomeHandler implements ConfigurableFeature {
     @Override
     public boolean register() {
         isEnabled = true;
-        HomeCommand.register(KiloCommands.getDispatcher());
+        HomeCommandOLD.register(KiloCommands.getDispatcher());
+
+        List<EssentialCommand> commands = new ArrayList<EssentialCommand>(){{
+            add(new HomeCommand());
+            add(new HomesCommand());
+            add(new SethomeCommand());
+            add(new DelhomeCommand());
+        }};
+
+        for (EssentialCommand command : commands)
+            KiloEssentials.getInstance().getCommandHandler().register(command);
 
         return true;
     }
