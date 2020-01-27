@@ -55,7 +55,7 @@ public class SitCommand extends EssentialCommand {
         OnlineUser user = getOnlineUser(ctx.getSource());
 
         if (PlayerSitManager.INSTANCE.isSitting(user.getPlayer())) {
-            user.sendLangMessage("command.sit.already_sitting");
+            PlayerSitManager.INSTANCE.sitOff(user.getPlayer());
             return -1;
         }
 

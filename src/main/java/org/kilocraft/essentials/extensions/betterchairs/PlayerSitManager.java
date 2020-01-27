@@ -6,7 +6,6 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
-import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -16,7 +15,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -25,6 +23,7 @@ import net.minecraft.util.math.Direction;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -117,41 +116,27 @@ public class PlayerSitManager implements ConfigurableFeature {
         player.startRiding(armorStand, true);
         sitStands.put(RegistryUtils.toIdentifier(player.dimension), armorStand.getUuid());
 
-        player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE,
-                new LiteralText("Now Seating").formatted(Formatting.WHITE), 1, 3, 1));
-        player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, new LiteralText(""), 1, 3, 1));
-
         return true;
     }
 
-    public boolean sitOff(ServerPlayerEntity player) {
-        if (player == null || !player.hasVehicle())
-            return false;
+    public void sitOff(ServerPlayerEntity player) {
+        if (player == null || !player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity))
+            return;
 
         ArmorStandEntity armorStand = (ArmorStandEntity) player.getVehicle();
-        if (armorStand != null && !armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#")
+        if (armorStand != null && armorStand.hasPlayerRider() && armorStand.getCustomName() != null &&
+                armorStand.getCustomName().asString().startsWith("KE$SitStand#")
                 && armorStand.getScoreboardTags().contains("KE$SitStand@" + player.getUuid().toString())) {
             sitStands.remove(RegistryUtils.toIdentifier(armorStand.dimension), armorStand.getUuid());
             armorStand.kill();
-            return true;
+
+            player.addChatMessage(LangText.get(true, "sit.stop_riding"), true);
         }
 
-        return false;
     }
 
     public void onStopRiding(ServerPlayerEntity player) {
-        if (player == null || !player.hasVehicle())
-            return;
-
-        if (player.getVehicle() instanceof ArmorStandEntity) {
-            ArmorStandEntity armorStand = (ArmorStandEntity) player.getVehicle();
-            if (armorStand != null && armorStand.hasPlayerRider() && armorStand.getCustomName() != null &&
-                    armorStand.getCustomName().asString().startsWith("KE$SitStand#")
-                    && armorStand.getScoreboardTags().contains("KE$SitStand@" + player.getUuid().toString())) {
-                sitStands.remove(RegistryUtils.toIdentifier(armorStand.dimension), armorStand.getUuid());
-                armorStand.kill();
-            }
-        }
+        sitOff(player);
     }
 
     public void onScheduledUpdate() {

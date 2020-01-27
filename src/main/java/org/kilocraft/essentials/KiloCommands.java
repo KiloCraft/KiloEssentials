@@ -143,6 +143,7 @@ public class KiloCommands {
             add(new SocialspyCommand());
             add(new CommandspyCommand());
             add(new BackCommand());
+            add(new ShootCommand());
         }};
 
         this.commands.addAll(commandsList);

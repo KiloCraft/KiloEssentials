@@ -11,6 +11,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.commands.CommandHelper;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
@@ -48,7 +49,9 @@ public class BackCommand extends EssentialCommand {
             return -1;
         }
 
-        user.teleport(user.getLastSavedLocation(), true);
+        Location loc = user.getLastSavedLocation();
+        user.saveLocation();
+        user.teleport(loc, true);
 
         if (CommandHelper.areTheSame(ctx.getSource(), target))
             ctx.getSource().getPlayer().addChatMessage(getLang("command.back.self"), true);

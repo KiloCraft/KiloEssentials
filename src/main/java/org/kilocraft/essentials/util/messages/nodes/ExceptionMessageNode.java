@@ -12,6 +12,8 @@ public enum ExceptionMessageNode {
     INCORRECT_IDENTIFIER("incorrect_identifier"),
     INVALID_DYE_COLOR("invalid_dye_color"),
     STRING_TOO_LONG("string_too_long"),
+    INVALID("invalid"),
+    INTERNAL_ERROR("internal_error"),
     ;
 
 

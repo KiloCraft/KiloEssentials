@@ -77,6 +77,7 @@ public enum CommandPermission {
     SIGNEDIT_COLOR("signedit.color"),
     HAT_SELF("hat.self"),
     HAT_OTHERS("hat.others"),
+    SHOOT("shoot"),
     ;
 
     private String node;
