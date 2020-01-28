@@ -42,6 +42,8 @@ public class MagicParticlesCommand extends EssentialCommand {
 		particles.add("flames");
 		particles.add("glass");
 		particles.add("stormcloud");
+		particles.add("dragonbreath");
+		particles.add("bonemeal");
 
 		LiteralCommandNode<ServerCommandSource> setNode = literal("set").build();
 
@@ -87,7 +89,7 @@ public class MagicParticlesCommand extends EssentialCommand {
 		}
 
 		User user = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
-		user.setDisplayParticleId(particles.indexOf(name));
+		user.setDisplayParticleId(particles.indexOf(name) + 1);
 
 		if (player == context.getSource().getPlayer()) {
 			context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.particleset", name), false);
