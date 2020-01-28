@@ -267,7 +267,7 @@ public class HomeCommandOLD {
             GameProfile gameProfile = gameProfiles.iterator().next();
             User user = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
 
-            if(user instanceof NeverJoinedUser) {
+            if (user instanceof NeverJoinedUser) {
                 throw NO_HOMES_EXCEPTION.create();
             }
 

@@ -56,12 +56,17 @@ schema: 1.4
 #General
 general:
   prefix: '&bKiloEssentials &8>&7>'
-  info-prefix: '&7[&e i &7]&7'
+  info-prefix: '&7[&6 i &7]&7'
+  error-prefix: '&7[&c ! &7]&7'
+  # [<greedyString> C]
+  # Values: {NAME}, {DISPLAYNAME}, {RANKED_DISPLAYNAME}
+  online-user-tag: '&6{DISPLAYNAME}'
+  offline-user-tag: '&6{DISPLAYNAME} (&cOffline)'
 
 events:
   # [<boolean>]
   # If set to true it will disable the event messages if the bungeecord mode is on
-  disable-on-bungee-mode: true
+  disable-on-bungee-mode: false
   # [<greedyString> c]
   userJoin: '&e%USER_DISPLAYNAME%&e joined the game'
   userLeave: '&e%USER_DISPLAYNAME%&e left the game.'
@@ -70,8 +75,8 @@ events:
 commands:
   # [<greedyString> c]
   context:
-    execution_exception: '&cUnknown command! Please type "/help" for help'
-    permission_exception: "&cInsufficient permission! You can't use that command"
+    execution_exception: '%GENERAL_ERROR-PREFIX% &cUnknown command! Please type "/help" for help'
+    permission_exception: "%GENERAL_ERROR-PREFIX% &cInsufficient permission! You can't use that command"
   # [<greedyString> c]
   broadcast_format: '&f[&cBroadCast&f]&r %MESSAGE%'
   # [TextComponenet]
@@ -80,17 +85,17 @@ commands:
   vote: '{"text":"Edit this in KiloEssentials/config/Messages.yaml", "color":"green"}'
 
   serverWideWarps:
-    teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%WARPNAME%&e...'
+    teleportTo: 'Teleporting to %WARPNAME%'
 
   playerHomes:
-    invalid_home: 'Can not find the home specified!'
-    teleportTo: '%GENERAL_PREFIX% Teleporting to %HOME_NAME%'
-    set: '&8[ &6i&8 ] &aYou have set the home &6%HOMENAME%&a!'
-    remove: '&8[ &6i&8 ] &cYou have removed the home &6%HOMENAME%&c!'
+    invalid_home: '&cCan not find the home specified!'
+    teleporting: 'Teleporting to {HOME_NAME}'
+    set: 'Set the Home {HOME_NAME}'
+    remove: 'Removed the Home {HOME_NAME}'
     admin:
-      teleportTo: '&8[ &6i&8 ] &eTeleporting to home &6%HOMENAME% &7(&3%OWNER%&7)'
-      set: '&8[ &6i&8 ] &eYou have set the home &6%HOMENAME%&e for &3%OWNER%'
-      remove: '&8[ &6i&8 ] &eYou have removed the home &6%HOMENAME%&e for &3%OWNER%'
+      teleporting: 'Teleporting to {HOME_NAME} {TARGET_TAG}'
+      set: 'Set the Home {HOME_NAME} for {TARGET_TAG}'
+      remove: 'Removed the Home {HOME_NAME} for {TARGET_TAG}'
 
   rtp:
     start: "%GENERAL_INFO-PREFIX% &ePlease wait..."

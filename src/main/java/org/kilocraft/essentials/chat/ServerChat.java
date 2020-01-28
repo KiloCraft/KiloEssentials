@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.chat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -143,6 +144,26 @@ public class ServerChat {
         return KiloServer.getServer().getOnlineUser(player).isCommandSpyOn();
     }
 
+    public static int executeSend(ServerCommandSource source, ServerPlayerEntity target, String message) throws CommandSyntaxException {
+        if  (!CommandHelper.isConsole(source)) {
+            OnlineUser user = KiloServer.getServer().getOnlineUser(target);
+            OnlineUser srcUser = KiloServer.getServer().getOnlineUser(source.getPlayer());
+            user.setLastMessageSender(source.getPlayer().getUuid());
+            srcUser.setLastMessageSender(target.getUuid());
+            srcUser.setLastPrivateMessage(message);
+        }
+
+        if (target == null)
+            throw TARGET_OFFLINE_EXCEPTION.create();
+
+        if (CommandHelper.areTheSame(source, target))
+            throw SAME_TARGETS_EXCEPTION.create();
+
+        ServerChat.sendPrivateMessage(source, KiloServer.getServer().getOnlineUser(target), message);
+
+        return 1;
+    }
+
     public static void sendPrivateMessage(ServerCommandSource source, OnlineUser target, String message) throws CommandSyntaxException {
         String format = config.getStringSafely("chat.privateMessages.format", "&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%") + "&r";
         String me_format = config.getStringSafely("chat.privateMessages.me_format", "&cme") + "&r";
@@ -185,4 +206,6 @@ public class ServerChat {
         }
     }
 
+    private static final SimpleCommandExceptionType SAME_TARGETS_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You can't message your self!"));
+    private static final SimpleCommandExceptionType TARGET_OFFLINE_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("The Target player is offline!"));
 }

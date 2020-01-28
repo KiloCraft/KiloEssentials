@@ -65,6 +65,10 @@ public class CommandHelper {
         return user1.getUsername().equals(user2.getUsername());
     }
 
+    public static boolean areTheSame(User user1, User user2) {
+        return user1.getUsername().equals(user2.getUsername());
+    }
+
     public static boolean areTheSame(ServerCommandSource source, User user) {
         try {
             return source.getPlayer().getUuid().equals(user.getUuid());

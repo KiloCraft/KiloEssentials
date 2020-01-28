@@ -1,5 +1,9 @@
 package org.kilocraft.essentials.mixin.events;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -7,10 +11,13 @@ import net.minecraft.server.network.packet.ClientCommandC2SPacket;
 import net.minecraft.server.network.packet.HandSwingC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.*;
 import org.kilocraft.essentials.events.player.*;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,6 +30,10 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
 
     @Shadow
     public ServerPlayerEntity player;
+
+    @Shadow public abstract void onClientCommand(ClientCommandC2SPacket clientCommandC2SPacket);
+
+    @Shadow @Final private MinecraftServer server;
 
     @Inject(at = @At("HEAD"), method = "onDisconnected")
     private void oky$remove(Text text_1, CallbackInfo ci) {
@@ -37,11 +48,23 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     @Inject(method = "onPlayerInteractItem", cancellable = true,
             at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onPlayerInteractItem(Lnet/minecraft/server/network/packet/PlayerInteractItemC2SPacket;)V"))
     private void modifyOnPlayerInteractItem(PlayerInteractItemC2SPacket playerInteractItemC2SPacket, CallbackInfo ci) {
-        PlayerInteractItemStartEvent event = new PlayerInteractItemStartEventImpl(
-                player, player.getEntityWorld(), playerInteractItemC2SPacket.getHand(), player.getStackInHand(playerInteractItemC2SPacket.getHand()));
-        KiloServer.getServer().triggerEvent(event);
-        if (event.isCancelled())
-            ci.cancel();
+        ci.cancel();
+        NetworkThreadUtils.forceMainThread(playerInteractItemC2SPacket, (ServerPlayPacketListener) this, this.player.getServerWorld());
+        ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
+        Hand hand = playerInteractItemC2SPacket.getHand();
+        ItemStack itemStack = this.player.getStackInHand(hand);
+        this.player.updateLastActionTime();
+
+        if (!itemStack.isEmpty()) {
+            PlayerInteractItemStartEvent event = new PlayerInteractItemStartEventImpl(
+                    player, player.getEntityWorld(), playerInteractItemC2SPacket.getHand(), player.getStackInHand(playerInteractItemC2SPacket.getHand()));
+            KiloServer.getServer().triggerEvent(event);
+
+            if (event.isCancelled())
+                this.player.inventory.updateItems();
+            else
+                this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
+        }
     }
 
     @Inject(method = "onHandSwing", cancellable = true,

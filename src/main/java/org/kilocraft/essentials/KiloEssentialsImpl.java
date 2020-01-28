@@ -14,7 +14,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
-import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
@@ -23,14 +22,15 @@ import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
-import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -130,22 +130,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
 			new StartupScript();
-
-		try {
-			System.out.println("TEST: OFFLINE USER");
-			User user = getServer().getUserManager().getOffline("CODY_AI").get();
-			System.out.println(user.getUsername());
-			System.out.println(user.getUuid());
-			System.out.println(user.getUpstreamChannelId());
-			System.out.println(user.getNickname().get());
-
-			if (UserHomeHandler.isEnabled() && user.getHomesHandler() != null)
-				System.out.println(Arrays.toString(user.getHomesHandler().getHomes().stream().map(Home::getName).toArray()));
-
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	public static Logger getLogger() {

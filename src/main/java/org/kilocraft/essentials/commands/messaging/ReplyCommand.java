@@ -4,37 +4,44 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.EntitySelector;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
+
+import java.util.UUID;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
-import static net.minecraft.command.arguments.EntityArgumentType.player;
 
-public class MessageCommand extends EssentialCommand {
-    public MessageCommand() {
-        super("message", new String[]{"msg", "tell", "whisper"});
+public class ReplyCommand extends EssentialCommand {
+    public ReplyCommand() {
+        super("reply", new String[]{"r", "respond"});
     }
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("target", player())
-                .suggests(TabCompletions::allPlayers);
-
         RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = argument("message", greedyString())
                 .suggests(TabCompletions::noSuggestions)
                 .executes(this::execute);
 
-        targetArgument.then(messageArgument);
-        commandNode.addChild(targetArgument.build());
+        commandNode.addChild(messageArgument.build());
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return ServerChat.executeSend(ctx.getSource(), getPlayer(ctx, "target"), getString(ctx, "message"));
+        OnlineUser user = KiloServer.getServer().getUserManager().getOnline(ctx.getSource());
+        String message = getString(ctx, "message");
+        UUID lastPMGetter = user.getLastPrivateMessageSender();
+
+        if (lastPMGetter == null)
+            throw NO_MESSAGES_EXCEPTION.create();
+
+        return ServerChat.executeSend(ctx.getSource(), KiloServer.getServer().getPlayer(lastPMGetter), message);
     }
 
+    private static final SimpleCommandExceptionType NO_MESSAGES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You don't have any messages to reply to!"));
 }

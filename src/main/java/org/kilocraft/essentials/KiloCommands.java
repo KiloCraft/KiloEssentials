@@ -38,13 +38,16 @@ import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.inventory.WorkbenchCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
-import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
+import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
-import org.kilocraft.essentials.commands.teleport.*;
+import org.kilocraft.essentials.commands.teleport.BackCommand;
+import org.kilocraft.essentials.commands.teleport.RtpCommand;
+import org.kilocraft.essentials.commands.teleport.TeleportCommands;
+import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -63,7 +66,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -144,6 +146,11 @@ public class KiloCommands {
             add(new CommandspyCommand());
             add(new BackCommand());
             add(new ShootCommand());
+            add(new ModsCommand());
+            add(new TpsCommand());
+            add(new LocateCommand());
+            add(new MessageCommand());
+            add(new ReplyCommand());
         }};
 
         this.commands.addAll(commandsList);
@@ -156,15 +163,11 @@ public class KiloCommands {
 
         registerToast();
         TpaCommand.register(this.dispatcher);
-        WorldLocateCommand.register(this.dispatcher);
         StopCommand.register(this.dispatcher);
         RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
-        SaveCommand.register(this.dispatcher);
-        MessageCommand.register(this.dispatcher);
         //InventoryCommand.register(this.dispatcher);
-        //PlayerParticlesCommand.register(this.dispatcher);
     }
 
     public <C extends EssentialCommand> void register(C c) {
@@ -195,7 +198,7 @@ public class KiloCommands {
     }
 
     private void registerToast() {
-        ArgumentCommandNode<ServerCommandSource, String> toast = argument("label", string())
+        ArgumentCommandNode<ServerCommandSource, String> toast = argument("label", greedyString())
                 .then(argument("args", greedyString())
                         .suggests(TabCompletions::noSuggestions))
                 .build();

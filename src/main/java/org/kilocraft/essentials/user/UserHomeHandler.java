@@ -110,20 +110,11 @@ public class UserHomeHandler implements ConfigurableFeature {
         return bool;
     }
 
-    public static boolean hasHome(UUID uuid, String name) {
-        for (Home loadedHome : loadedHomes) {
-            if (loadedHome.getName().equals(name) && loadedHome.getOwner().equals(uuid))
-                return true;
-        }
-
-        return false;
-    }
-
-    public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException, CommandSyntaxException {
+    public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException {
         teleportToHome(user, getHome(name));
     }
 
-    public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException, CommandSyntaxException {
+    public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
         if (user.isOnline()) {
             ServerWorld world = Objects.requireNonNull(user.getPlayer().getServer()).getWorld(DimensionType.byId(home.getLocation().getDimension()));
 
@@ -164,11 +155,6 @@ public class UserHomeHandler implements ConfigurableFeature {
         return list;
     }
 
-
-    public static List<Home> getLoadedHomes() {
-        return loadedHomes;
-    }
-
     public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         return CommandSource.suggestMatching(KiloServer.getServer().getOnlineUser(
                 context.getSource().getPlayer()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
@@ -177,4 +163,5 @@ public class UserHomeHandler implements ConfigurableFeature {
     public enum Reason {
         UNSAFE_DESTINATION, MISSING_DIMENSION;
     }
+
 }

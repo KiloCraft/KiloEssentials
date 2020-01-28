@@ -66,6 +66,11 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public String getNameTag() {
+        return null;
+    }
+
+    @Override
     public List<String> getSubscriptionChannels() {
         return null;
     }
@@ -236,6 +241,11 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public void sendMessage(String message) {
         KiloServer.getServer().sendMessage(message);
+    }
+
+    @Override
+    public void sendError(String message) {
+        this.source.sendError(new ChatMessage("&c" + message, true).toText());
     }
 
     @Override

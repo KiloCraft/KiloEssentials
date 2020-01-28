@@ -48,6 +48,11 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public String getNameTag() {
+        return null;
+    }
+
+    @Override
     public List<String> getSubscriptionChannels() {
         return null;
     }

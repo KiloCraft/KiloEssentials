@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.chat;
 
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.chat.TextFormat;
 
 public class ChatMessage {
@@ -28,6 +30,10 @@ public class ChatMessage {
         this.formatted = format ?
                 TextFormat.translateAlternateColorCodes('&', string) :
                 TextFormat.removeAlternateColorCodes('&', string);
+    }
+
+    public Text toText() {
+        return new LiteralText(this.formatted);
     }
 
     public boolean isFormattingAllowed() {

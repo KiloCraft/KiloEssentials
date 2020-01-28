@@ -26,7 +26,8 @@ import org.kilocraft.essentials.chat.KiloChat;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static net.minecraft.command.arguments.GameProfileArgumentType.GameProfileArgument;
+import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
 
 public abstract class EssentialCommand implements IEssentialCommand {
     private String label;
@@ -195,11 +196,11 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return server.getOnlineUser(player);
     }
 
-    public CompletableFuture<User> getOfflineUser(GameProfile profile) {
+    public CompletableFuture<User> getUser(GameProfile profile) {
         return server.getUserManager().getOffline(profile);
     }
 
-    public CompletableFuture<User> getOfflineUser(String name) {
+    public CompletableFuture<User> getUser(String name) {
         return server.getUserManager().getOffline(name);
     }
 
@@ -207,8 +208,8 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return server.getUserManager().isOnline(user);
     }
 
-    public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(String label) {
-        return argument(label, string()).suggests(TabCompletions::allPlayers);
+    public RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> getUserArgument(String label) {
+        return argument(label, gameProfile()).suggests(TabCompletions::allPlayers);
     }
 
 }

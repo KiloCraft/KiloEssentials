@@ -7,6 +7,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
@@ -44,6 +45,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public void sendMessage(String message) {
         KiloChat.sendMessageTo(this.getPlayer(), new LiteralText(message));
+    }
+
+    @Override
+    public void sendError(String message) {
+        KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage("&c" + message, true).toText().formatted(Formatting.RED));
     }
 
     @Override
@@ -108,6 +114,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     protected void deserialize(@NotNull CompoundTag tag) {
         // All the other serialization logic is handled.
         super.deserialize(tag);
+    }
+
+    @Override
+    public String getNameTag() {
+        return null;
     }
 
     @Override

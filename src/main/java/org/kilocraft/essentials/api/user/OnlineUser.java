@@ -18,6 +18,8 @@ public interface OnlineUser extends User {
 
     void sendMessage(String message);
 
+    void sendError(String message);
+
     void sendMessage(Text text);
 
     void sendMessage(ChatMessage chatMessage);

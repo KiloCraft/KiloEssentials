@@ -16,6 +16,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -74,11 +75,10 @@ public class ServerUser implements User {
         CompoundTag cacheTag = new CompoundTag();
 
         // Here we store the players current location
-        if (this.location == null)
-            updateLocation();
-
-        mainTag.put("loc", this.location.toTag());
-        this.location.shortDecimals();
+        if (this.location != null) {
+            mainTag.put("loc", this.location.toTag());
+            this.location.shortDecimals();
+        }
 
         if (this.lastLocation != null)
             cacheTag.put("lastLoc", this.lastLocation.toTag());
@@ -258,6 +258,17 @@ public class ServerUser implements User {
     }
 
     @Override
+    public String getNameTag() {
+        String str;
+        if (this.isOnline()) str = KiloConfig.getMessage("general.online-user-tag");
+        else str = KiloConfig.getMessage("general.offline-user-tag");
+
+        return str.replace("{NAME}", this.getUsername())
+                .replace("{DISPLAYNAME}", this.getFormattedDisplayname())
+                .replace("{RANKED_DISPLAYNAME}", this.getRankedDisplayname().asFormattedString());
+    }
+
+    @Override
     public List<String> getSubscriptionChannels() {
         return this.subscriptions;
     }
@@ -284,7 +295,7 @@ public class ServerUser implements User {
 
     @Override
     public Location getLocation() {
-        if (this.location == null)
+        if (this instanceof OnlineUser && this.location == null && ((OnlineUser) this).getPlayer() != null)
             updateLocation();
 
         return this.location;

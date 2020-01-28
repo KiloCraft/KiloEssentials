@@ -27,6 +27,8 @@ public interface User {
 
     Text getRankedDisplayname();
 
+    String getNameTag();
+
     List<String> getSubscriptionChannels();
 
     String getUpstreamChannelId();

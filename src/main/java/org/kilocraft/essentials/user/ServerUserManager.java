@@ -2,12 +2,14 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -226,7 +228,11 @@ public class ServerUserManager implements UserManager {
 
     public void onTick() {
         for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
+            if (playerEntity == null)
+                continue;
+
             ((ServerUser) getOnline(playerEntity)).resetMessageCooldown();
+            ((ServerUser) getOnline(playerEntity)).updateLocation();
         }
     }
 
@@ -238,4 +244,5 @@ public class ServerUserManager implements UserManager {
         return this.punishManager;
     }
 
+    public static SimpleCommandExceptionType TOO_MANY_PROFILES = new SimpleCommandExceptionType(new LiteralText("Only one user is allowed but the provided selector includes more!"));
 }
