@@ -1,6 +1,7 @@
 package org.kilocraft.essentials;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
@@ -13,6 +14,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -23,6 +25,7 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.events.server.ServerReloadEventImpl;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
@@ -66,6 +69,12 @@ public class ServerImpl implements Server {
     }
 
     @Override
+    public void reload() {
+        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl());
+        this.server.reload();
+    }
+
+    @Override
     public UserManager getUserManager() {
         return this.userManager;
     }
@@ -93,6 +102,16 @@ public class ServerImpl implements Server {
     @Override
     public ChatManager getChatManager() {
         return this.chatManager;
+    }
+
+    @Override
+    public Entity getEntity(UUID uuid) {
+        for (ServerWorld world : this.getWorlds()) {
+            if (world.getEntity(uuid) != null)
+                return world.getEntity(uuid);
+        }
+
+        return null;
     }
 
     @Override
@@ -178,7 +197,7 @@ public class ServerImpl implements Server {
 
     @Override
     public void execute(ServerCommandSource source, String command) {
-        KiloEssentials.getInstance().getCommandHandler().execute(server.getCommandSource(), command);
+        KiloEssentials.getInstance().getCommandHandler().execute(source, command);
     }
 
     @Override

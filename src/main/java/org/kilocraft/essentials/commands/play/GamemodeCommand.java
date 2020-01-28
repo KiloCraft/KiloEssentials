@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -17,47 +16,38 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.*;
 
-public class GamemodeCommand {
-    private static Predicate<ServerCommandSource> PERMISSION_CHECK = (src) ->
-            KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_ADVENTURE) ||
-                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SURVIVAL) ||
-                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SPECTATOR) ||
-                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_CREATIVE) ||
-                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_ADVENTURE) ||
-                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SURVIVAL) ||
-                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SPECTATOR) ||
-                    KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_CREATIVE);
-
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> gamemodeCommand = literal("ke_gamemode")
-                .requires(src -> PERMISSION_CHECK.test(src));
-
-        LiteralArgumentBuilder<ServerCommandSource> gmCommand = literal("gm")
-                .requires(src -> PERMISSION_CHECK.test(src));
-
-        build(gamemodeCommand);
-        build(gmCommand);
-        dispatcher.register(gamemodeCommand);
-        dispatcher.register(gmCommand);
+public class GamemodeCommand extends EssentialCommand {
+    public GamemodeCommand() {
+        super("ke_gamemode", (src) ->
+                KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_ADVENTURE) ||
+                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SURVIVAL) ||
+                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SPECTATOR) ||
+                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_CREATIVE) ||
+                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_ADVENTURE) ||
+                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SURVIVAL) ||
+                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SPECTATOR) ||
+                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_CREATIVE),
+                new String[]{"gm"});
     }
 
-    private static void build(LiteralArgumentBuilder<ServerCommandSource> argumentBuilder) {
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> gameTypeArgument = argument("gameType", string())
                 .suggests(GamemodeCommand::suggestGameModes).executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), null,false));
 
@@ -69,10 +59,10 @@ public class GamemodeCommand {
 
 
         gameTypeArgument.then(targetArgument);
-        argumentBuilder.then(gameTypeArgument);
+        commandNode.addChild(gameTypeArgument.build());
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players, @Nullable GameMode cValue, boolean silent) throws CommandSyntaxException {
+    private int execute(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players, @Nullable GameMode cValue, boolean silent) throws CommandSyntaxException {
         ServerCommandSource src = ctx.getSource();
         String arg = cValue == null ? getString(ctx, "gameType") : cValue.getName();
         GameMode selectedMode = getMode(arg);

@@ -9,19 +9,20 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 
-public class SudoCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> rootCommand = literal("sudo")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SUDO_OTHERS, 4))
-                .build();
+public class SudoCommand extends EssentialCommand {
 
+    public SudoCommand() {
+        super("sudo", CommandPermission.SUDO_OTHERS, 4);
+    }
+
+    @Override
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         ArgumentCommandNode<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
                 .suggests(TabCompletions::allPlayers)
                 .redirect(dispatcher.getRoot(), redirectModifier())
@@ -32,9 +33,8 @@ public class SudoCommand {
                 .redirect(dispatcher.getRoot(), serverRedirectModifier())
                 .build();
 
-        rootCommand.addChild(consoleArg);
-        rootCommand.addChild(selectorArg);
-        dispatcher.getRoot().addChild(rootCommand);
+        commandNode.addChild(consoleArg);
+        commandNode.addChild(selectorArg);
     }
 
     private static SingleRedirectModifier<ServerCommandSource> redirectModifier() {

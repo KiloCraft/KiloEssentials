@@ -61,7 +61,7 @@ public class ItemNameCommand {
 		}
 
 		if (item.isEmpty()) {
-			KiloChat.sendLangMessageTo(player, "command.item.invalid_item");
+			KiloChat.sendLangMessageTo(player, "general.no_item");
 			return 0;
 		}
 

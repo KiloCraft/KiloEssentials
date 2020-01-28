@@ -1,6 +1,8 @@
 package org.kilocraft.essentials.util;
 
+import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtIo;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 
 import java.io.FileInputStream;
@@ -34,26 +36,32 @@ public class NBTStorageUtil {
 
     private static void load() throws IOException {
         for (NBTStorage callback : callbacks) {
+            if (SharedConstants.isDevelopment)
+                KiloEssentials.getLogger().info("Loading NBT File: \"" + callback.getSaveFile().getFile().getName() + "\":" + callback.getSaveFile().getFile().getAbsolutePath());
+
             if (!callback.getSaveFile().exists()) {
                 save();
                 continue;
             }
 
-            callback.deserialize(NbtIo.readCompressed(new FileInputStream(callback.getSaveFile())));
+            callback.deserialize(NbtIo.readCompressed(new FileInputStream(callback.getSaveFile().getFile())));
         }
     }
 
     private static void save() throws IOException {
         for (NBTStorage callback : callbacks) {
+            if (SharedConstants.isDevelopment)
+                KiloEssentials.getLogger().info("Saving NBT File: \"" + callback.getSaveFile().getFile().getName() + "\":" + callback.getSaveFile().getFile().getAbsolutePath());
+
             save(callback);
         }
     }
 
     private static void save(NBTStorage nbtStorage) throws IOException {
         if (!nbtStorage.getSaveFile().exists())
-            nbtStorage.getSaveFile().createNewFile();
+            nbtStorage.getSaveFile().createFile();
 
-        NbtIo.writeCompressed(nbtStorage.serialize(), new FileOutputStream(nbtStorage.getSaveFile()));
+        NbtIo.writeCompressed(nbtStorage.serialize(), new FileOutputStream(nbtStorage.getSaveFile().getFile()));
     }
 
 }

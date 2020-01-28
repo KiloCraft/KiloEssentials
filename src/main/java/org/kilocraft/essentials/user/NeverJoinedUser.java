@@ -1,11 +1,10 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.world.location.Location;
 
 import java.util.Date;
 import java.util.List;
@@ -64,6 +63,20 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public Location getLocation() {
+        return null;
+    }
+
+    @Override
+    public @Nullable Location getLastSavedLocation() {
+        return null;
+    }
+
+    @Override
+    public void saveLocation() {
+    }
+
+    @Override
     public void setNickname(String name) {
     }
 
@@ -72,34 +85,8 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    @Nullable
-    public Identifier getBackDimId() {
-        return null;
-    }
+    public void setLastLocation(Location loc) {
 
-    @Override
-    @Nullable
-    public Vec3d getBackPos() {
-        return null;
-    }
-
-    @Override
-    public void setBackPos(Vec3d position) {
-    }
-
-    @Override
-    public void setBackDim(Identifier dim) {
-    }
-
-    @Override
-    public Identifier getPosDim() {
-        return null;
-    }
-
-    @Override
-    @Nullable
-    public Vec3d getPos() {
-        return null;
     }
 
     @Override
@@ -128,7 +115,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public void setCommandSpyOn(boolean on) {
-
     }
 
     @Override
@@ -140,14 +126,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     @Nullable
     public Date getFirstJoin() {
         return null;
-    }
-
-    @Override
-    public void addSubscriptionChannel(String id) {
-    }
-
-    @Override
-    public void removeSubscriptionChannel(String id) {
     }
 
     @Override
@@ -200,6 +178,15 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     @Override
     public UserHomeHandler getHomesHandler() {
         return null;
+    }
+
+    @Override
+    public boolean canSit() {
+        return false;
+    }
+
+    @Override
+    public void setCanSit(boolean set) {
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.server;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
@@ -41,6 +42,11 @@ public interface Server {
     PlayerManager getPlayerManager();
 
     /**
+     * Reloads the Server
+     */
+    void reload();
+
+    /**
      * Gets the KiloServer's UserManager
      *
      * @return instance of UserManager
@@ -61,6 +67,14 @@ public interface Server {
      * @return instance of ChatManager
      */
     ChatManager getChatManager();
+
+    /**
+     * Gets a Entity object by the given UUID
+     *
+     * @param uuid the id of the entity
+     * @return Entity
+     */
+    Entity getEntity(UUID uuid);
 
     /**
      * Gets a player object by the given username.

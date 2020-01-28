@@ -8,7 +8,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.mojang.brigadier.tree.RootCommandNode;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
@@ -18,6 +17,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
@@ -35,19 +35,18 @@ import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 
-public class NicknameCommand {
+public class NicknameCommand extends EssentialCommand {
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> KiloCommands.hasPermission(s, CommandPermission.NICKNAME_SELF);
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER = (s) -> KiloCommands.hasPermission(s, CommandPermission.NICKNAME_OTHERS);
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_EITHER = (s) -> PERMISSION_CHECK_OTHER.test(s) || PERMISSION_CHECK_SELF.test(s);
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RootCommandNode<ServerCommandSource> rootCommandNode = dispatcher.getRoot();
+    public NicknameCommand() {
+        super("nickname", CommandPermission.NICKNAME_SELF, new String[]{"nick"});
+    }
 
-        LiteralCommandNode<ServerCommandSource> nickRootCommand = dispatcher.register(literal("nick").requires(PERMISSION_CHECK_EITHER));
-
+    @Override
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
         LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
         ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("target", player())
@@ -70,17 +69,12 @@ public class NicknameCommand {
 
         other.addChild(target);
 
-        nickRootCommand.addChild(other);
 
+        commandNode.addChild(other);
         setSelf.addChild(nicknameSelf);
 
-        nickRootCommand.addChild(setSelf);
-        nickRootCommand.addChild(resetSelf);
-
-        rootCommandNode.addChild(nickRootCommand);
-
-        LiteralCommandNode<ServerCommandSource> redirect_Nickname = literal("nickname").requires(PERMISSION_CHECK_EITHER).redirect(nickRootCommand).build();
-        rootCommandNode.addChild(redirect_Nickname);
+        commandNode.addChild(setSelf);
+        commandNode.addChild(resetSelf);
     }
 
     private static int setSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

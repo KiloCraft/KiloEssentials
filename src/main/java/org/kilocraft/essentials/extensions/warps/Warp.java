@@ -1,7 +1,8 @@
 package org.kilocraft.essentials.extensions.warps;
 
 import net.minecraft.nbt.CompoundTag;
-import org.kilocraft.essentials.util.Location;
+import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 
 public class Warp {
     private String name;
@@ -44,7 +45,7 @@ public class Warp {
 
     public void fromTag(CompoundTag tag) {
         if (this.location == null)
-            this.location = Location.dummy();
+            this.location = Vec3dLocation.dummy();
 
         this.location.fromTag(tag.getCompound("loc"));
 

@@ -17,6 +17,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -26,15 +27,12 @@ import org.kilocraft.essentials.chat.channels.StaffChat;
 import java.util.UUID;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
-import static org.kilocraft.essentials.KiloCommands.SUCCESS;
 
-public class StaffmsgCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> rootCommand = dispatcher.register(literal("staffmsg")
-            .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_STAFFMSG)));
-
+public class StaffmsgCommand extends EssentialCommand {
+    public StaffmsgCommand() {
+        super("staffmsg", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_STAFFMSG));
+    }
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> listArg = literal("list")
                 .executes(StaffmsgCommand::executeList).build();
 
@@ -51,10 +49,10 @@ public class StaffmsgCommand {
         ArgumentCommandNode<ServerCommandSource, String> sendArg = argument("message", greedyString())
                 .executes(StaffmsgCommand::executeSend).build();
 
-        rootCommand.addChild(listArg);
-        rootCommand.addChild(joinArg);
-        rootCommand.addChild(leaveArg);
-        rootCommand.addChild(sendArg);
+        commandNode.addChild(listArg);
+        commandNode.addChild(joinArg);
+        commandNode.addChild(leaveArg);
+        commandNode.addChild(sendArg);
     }
 
     private static int executeJoin(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
@@ -63,7 +61,7 @@ public class StaffmsgCommand {
         KiloChat.sendLangMessageTo(source, "command.setchannel.set_upstream",
                 user.getUpstreamChannelId(), user.getRankedDisplayname().asFormattedString());
 
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
     private static int executeLeave(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
@@ -72,13 +70,13 @@ public class StaffmsgCommand {
         KiloChat.sendLangMessageTo(source, "command.setchannel.set_upstream",
                 user.getUpstreamChannelId(), user.getRankedDisplayname().asFormattedString());
 
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
     private static int executeSend(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String message = StringArgumentType.getString(ctx, "message");
         KiloServer.getServer().getChatManager().getChannel(StaffChat.getChannelId()).onChatMessage(ctx.getSource().getPlayer(), message);
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
     private static int executeList(CommandContext<ServerCommandSource> ctx) {
@@ -92,7 +90,7 @@ public class StaffmsgCommand {
         }
 
         ctx.getSource().sendFeedback(text, false);
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
 }

@@ -1,40 +1,34 @@
 package org.kilocraft.essentials.commands.server;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.server.command.CommandManager;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static net.minecraft.server.command.CommandManager.literal;
 
-public class BroadcastCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("broadcast")
-                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.BROADCAST))
-                .then(
-                        CommandManager.argument("message", greedyString())
-                                .executes(c -> execute(getString(c, "message")))
-                );
-
-        dispatcher.register(argumentBuilder);
+public class BroadcastCommand extends EssentialCommand {
+    public BroadcastCommand() {
+        super("broadcast", CommandPermission.BROADCAST);
     }
 
-    private static int execute(String message) {
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = argument("message", greedyString())
+                .executes(this::execute);
+
+        commandNode.addChild(messageArgument.build());
+    }
+
+    private int execute(CommandContext<ServerCommandSource> ctx) {
         String format = KiloConfig.getProvider().getMessages().getValue("commands.broadcast_format");
-        System.out.println(format);
-        KiloChat.broadCast(
-                new ChatMessage(
-                        format.replace("%MESSAGE%", message),
-                        true
-                )
-        );
-        return 1;
+        KiloChat.broadCast(new ChatMessage(
+                format.replace("%MESSAGE%", getString(ctx, "message")), true));
+        return SINGLE_SUCCESS;
     }
 }

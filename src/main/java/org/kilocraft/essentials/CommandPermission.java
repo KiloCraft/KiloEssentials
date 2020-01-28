@@ -37,6 +37,8 @@ public enum CommandPermission {
     ITEM_FORMATTING("item.formatting"),
     ITEM_NAME("item.name"),
     ITEM_LORE("item.lore"),
+    ITEM_ENCHANT("item.enchant"),
+    ITEM_COMMANDS("item.commands"),
     LOCATE("locate"),
     LOCATE_BIOME("locate.biome"),
     LOCATE_STRUCTURE("locate.structure"),
@@ -67,6 +69,15 @@ public enum CommandPermission {
     SAYAS_SERVER("sayas.server"),
     VANISH_SELF("vanish.self"),
     VANISH_OTHERS("vanish.others"),
+    SMITE("smite"),
+    SIGNEDIT_TEXT("signedit.text"),
+    SIGNEDIT_GUI_SELF("signedit.gui.self"),
+    SIGNEDIT_GUI_OTHERS("signedit.gui.others"),
+    SIGNEDIT_COMMAND("signedit.command"),
+    SIGNEDIT_COLOR("signedit.color"),
+    HAT_SELF("hat.self"),
+    HAT_OTHERS("hat.others"),
+    SHOOT("shoot"),
     ;
 
     private String node;

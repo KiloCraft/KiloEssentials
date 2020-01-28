@@ -60,7 +60,7 @@ public class TeleportCommands {
     private static int teleportTo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity target = getPlayer(ctx, "target");
 
-        BackCommand.saveLocation(target);
+        KiloServer.getServer().getOnlineUser(target).saveLocation();
         ctx.getSource().getPlayer().teleport(
                 target.getServerWorld(),
                 target.getPos().getX(), target.getPos().getY(), target.getPos().getZ(),
@@ -77,7 +77,7 @@ public class TeleportCommands {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         Vec3d vec = getVec3(ctx, "pos");
 
-        BackCommand.saveLocation(player);
+        KiloServer.getServer().getOnlineUser(player).saveLocation();
         ctx.getSource().getPlayer().teleport(
                 player.getServerWorld(),
                 vec.getX(), vec.getY(), vec.getZ(),
@@ -94,7 +94,7 @@ public class TeleportCommands {
         ServerPlayerEntity target = getPlayer(ctx, "target");
         ServerPlayerEntity sender = ctx.getSource().getPlayer();
 
-        BackCommand.saveLocation(target);
+        KiloServer.getServer().getOnlineUser(target).saveLocation();
         target.teleport(
                 sender.getServerWorld(),
                 sender.getPos().getX(), sender.getPos().getY(), sender.getPos().getZ(),
@@ -111,7 +111,7 @@ public class TeleportCommands {
         ServerWorld targetWorld = KiloServer.getServer().getVanillaServer().getWorld(DimensionArgumentType.getDimensionArgument(ctx, "dimension"));
         Vec3d vec = getVec3(ctx, "pos");
 
-        BackCommand.saveLocation(target);
+        KiloServer.getServer().getOnlineUser(target).saveLocation();
         target.teleport(
                 targetWorld,
                 vec.getX(), vec.getY(), vec.getZ(),

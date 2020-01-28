@@ -10,6 +10,10 @@ public enum ExceptionMessageNode {
     ILLEGA_SUDO_LOOP("illegal_sudo_loop"),
     CONTAINS_ENCHANTMENT_NAME("contains_enchantment_name"),
     INCORRECT_IDENTIFIER("incorrect_identifier"),
+    INVALID_DYE_COLOR("invalid_dye_color"),
+    STRING_TOO_LONG("string_too_long"),
+    INVALID("invalid"),
+    INTERNAL_ERROR("internal_error"),
     ;
 
 

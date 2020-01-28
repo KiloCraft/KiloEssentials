@@ -175,8 +175,8 @@ public class OperatorCommand {
         Iterator<GameProfile> v = gameProfiles.iterator();
         OperatorList operatorList = playerManager.getOpList();
 
-        while(v.hasNext()) {
-            GameProfile gameProfile = (GameProfile) v.next();
+        while (v.hasNext()) {
+            GameProfile gameProfile = v.next();
             ServerPlayerEntity p = playerManager.getPlayer(gameProfile.getId());
             int leastPermLevelReq = 0;
             if (CommandHelper.isConsole(source))

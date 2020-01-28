@@ -28,6 +28,7 @@ import static org.kilocraft.essentials.KiloCommands.executeUsageFor;
 public class MessageCommand {
     private static final SimpleCommandExceptionType NO_MESSAGES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You don't have any messages to reply to!"));
     private static final SimpleCommandExceptionType SAME_TARGETS_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You can't message your self!"));
+    private static final SimpleCommandExceptionType TARGET_OFFLINE_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("The Target player is offline!"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(literal("ke_msg").executes(ctx ->
@@ -68,6 +69,9 @@ public class MessageCommand {
             srcUser.setLastMessageSender(target.getUuid());
             srcUser.setLastPrivateMessage(message);
         }
+
+        if (target == null)
+            throw TARGET_OFFLINE_EXCEPTION.create();
 
         if (CommandHelper.areTheSame(source, target))
             throw SAME_TARGETS_EXCEPTION.create();

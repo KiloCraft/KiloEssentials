@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.CommandManagerMixin;
@@ -22,7 +23,6 @@ public class LiteralCommandModified {
         add("ke_reload");
         add("ke_locate");
         add("ke_op");
-        add("ke_kill");
         add("ke_tp");
         add("ke_msg");
         add("ke_whisper");
@@ -36,7 +36,6 @@ public class LiteralCommandModified {
 
     private static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
         add("gamemode");
-        add("kill");
         add("help");
         add("locate");
         add("op");
@@ -55,6 +54,7 @@ public class LiteralCommandModified {
         add("pardon");
         add("pardon-ip");
         add("save-all");
+        add("enchant");
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
@@ -78,8 +78,12 @@ public class LiteralCommandModified {
     }
 
     public static boolean shouldUse(String name) {
-        return !vanillaCommandsToRename.contains(name.replace(NMSCommandNamePrefix, ""))
-                || isCustomCommand(keCommandPrefix + name);
+        if (isCustomCommand(keCommandPrefix + name) &&
+                isVanillaCommand(name.replace(NMSCommandNamePrefix, "")))
+            return true;
+
+        return isCustomCommand(keCommandPrefix + name) ||
+                !vanillaCommandsToRename.contains(name.replace(NMSCommandNamePrefix, ""));
     }
 
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
@@ -89,7 +93,10 @@ public class LiteralCommandModified {
         if (!sugReqPerm)
             return shouldUse(commandNode.getName());
 
-        return shouldUse(commandNode.getName()) && commandNode.canUse(source);
+        if (commandNode instanceof LiteralCommandNode)
+            return shouldUse(commandNode.getName()) && commandNode.canUse(source);
+
+        return commandNode.canUse(source);
     }
 
 }

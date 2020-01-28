@@ -5,11 +5,11 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "PlayerListHeaderS2CPacketMixin",
-    "ServerWorldAccessor",
     "MinecraftServerAccessor"
   ],
   "server": [
-    "MinecraftServerAccessor"
+    "MinecraftServerAccessor",
+    "EntityRaytraceAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

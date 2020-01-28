@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
@@ -16,13 +15,13 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
-import org.kilocraft.essentials.util.Location;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
@@ -92,7 +91,7 @@ public class WarpCommand {
         if (WarpManager.getWarpsByName().contains(name)) {
             Warp warp = WarpManager.getWarp(name);
 
-            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION.get(warp.getLocation().getDimensionId()));
+            ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION_TYPE.get(warp.getLocation().getDimension()));
 
             KiloChat.sendMessageTo(source, new ChatMessage(
                     KiloConfig.getProvider().getMessages().get(true, "commands.serverWideWarps.teleportTo")
@@ -100,7 +99,7 @@ public class WarpCommand {
                     true
             ));
 
-            BackCommand.setLocation(source.getPlayer(), new Vector3f(source.getPosition()), source.getPlayer().dimension);
+            KiloServer.getServer().getOnlineUser(source.getPlayer()).saveLocation();
             WarpManager.teleport(source, warp);
         } else
             throw WARP_NOT_FOUND_EXCEPTION.create();
@@ -148,7 +147,7 @@ public class WarpCommand {
     }
 
     private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
-        WarpManager.addWarp(new Warp(name, Location.ofDouble(source.getPlayer()).shortDecimalForVector(), addCommand));
+        WarpManager.addWarp(new Warp(name, Vec3dLocation.of(source.getPlayer()).shortDecimals(), addCommand));
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
         registerAliases();

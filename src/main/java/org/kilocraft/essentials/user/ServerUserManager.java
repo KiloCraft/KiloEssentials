@@ -43,15 +43,14 @@ public class ServerUserManager implements UserManager {
     @Override
     public CompletableFuture<User> getOffline(String username) {
         UUID ret = usernameToUUID.get(username);
-        if(ret != null) {
-            return getOffline(ret);
+        if (ret != null) {
+            return getOffline(ret, username);
         }
 
         return this.getUserAsync(username);
     }
 
     private CompletableFuture<User> getUserAsync(String username) {
-
         CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() -> {
             GameProfile profile = KiloServer.getServer().getVanillaServer().getUserCache().findByName(username);
 
@@ -61,13 +60,19 @@ public class ServerUserManager implements UserManager {
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
     }
 
-
     @Override
-    public CompletableFuture<User> getOffline(UUID uuid) {
+    public CompletableFuture<User> getOffline(UUID uuid, String username) {
         OnlineUser online = getOnline(uuid);
-        if(online != null) {
+        if (online != null)
             return CompletableFuture.completedFuture(online);
+
+        if (userHandler.userExists(uuid)) {
+            ServerUser serverUser = new ServerUser(uuid);
+            serverUser.name = username;
+
+            return CompletableFuture.completedFuture(serverUser);
         }
+
         // TODO Impl Async checks later
         return CompletableFuture.completedFuture(new NeverJoinedUser());
     }
@@ -75,7 +80,7 @@ public class ServerUserManager implements UserManager {
     @Override
     public CompletableFuture<User> getOffline(GameProfile profile) {
         profileSanityCheck(profile);
-        return getOffline(profile.getId());
+        return getOffline(profile.getId(), profile.getName());
     }
 
     @Override
@@ -119,8 +124,8 @@ public class ServerUserManager implements UserManager {
     }
 
     @Override
-    public void saveUser(OnlineServerUser user) throws IOException {
-        this.userHandler.saveData(user);
+    public boolean isOnline(User user) {
+        return this.onlineUsers.containsKey(user.getUuid());
     }
 
     @Override
@@ -146,7 +151,7 @@ public class ServerUserManager implements UserManager {
     @Override
     public void onChangeNickname(User user, String oldNick) {
         this.nicknameToUUID.remove(oldNick);
-        if(user.hasNickname()) {
+        if (user.hasNickname()) {
             this.nicknameToUUID.put(user.getNickname().get(), user.getUuid());
         }
     }
@@ -174,7 +179,8 @@ public class ServerUserManager implements UserManager {
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
         KiloServer.getServer().getChatManager().getChannel("global").leave(user);
-        this.nicknameToUUID.remove(user.getNickname());
+        if (user.getNickname().isPresent())
+            this.nicknameToUUID.remove(user.getNickname().get());
         this.usernameToUUID.remove(player.getEntityName());
 
         try {
@@ -184,6 +190,7 @@ public class ServerUserManager implements UserManager {
         }
 
         this.onlineUsers.remove(player.getUuid());
+
         KiloChat.onUserLeave(user);
     }
 

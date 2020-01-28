@@ -126,7 +126,7 @@ public class LocateBiomeProvided implements Command {
     }
 
     public static String getBiomeId(Biome biome) {
-        return Objects.requireNonNull(Registry.BIOME.getId(biome)).toString().replace("minecraft:", "");
+        return Objects.requireNonNull(Registry.BIOME.getId(biome)).getPath();
     }
 
     public static String getBiomeName(Biome biome) {

@@ -18,8 +18,10 @@ public class KiloConfig {
 
     private static List<ConfigIOProvider> callbacks = new ArrayList<>();
     private static String workingDir = System.getProperty("user.dir");
-    private static String configPath = workingDir + "/KiloEssentials/config/";
+    private static String essentialsDir = "/KiloEssentials";
+    private static String configPath = workingDir + essentialsDir + "/config/";
     private static String resourcePath = "assets/configurations/";
+    private static String dataDir = essentialsDir + "/data/";
 
     private static HashMap<String, String> configFiles = new HashMap<String, String>(){{
         put("KiloEssentials.yaml", workingDir + "/");
@@ -95,6 +97,14 @@ public class KiloConfig {
 
     public static String getConfigPath() {
         return configPath;
+    }
+
+    public static String getEssentialsDirectory() {
+        return workingDir + essentialsDir;
+    }
+
+    public static String getDataDirectory() {
+        return workingDir + dataDir;
     }
 
     public static String getMessage(String key, Object... objects) {

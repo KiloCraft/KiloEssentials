@@ -2,6 +2,7 @@ package org.kilocraft.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +14,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
@@ -20,15 +22,15 @@ import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
+import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
+import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +46,6 @@ import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
  * @author MCRafterzz
  * @author GiantNuker
  * @author I509VCB
- * @author DrexHD
  * @since KE 1.6
  */
 
@@ -59,11 +60,12 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 	private ScheduledExecutorService scheduledUpdateExecutorService;
+	private KiloDebugUtils debugUtils;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(KiloEvents events, KiloConfig config ,KiloCommands commands) {
+	public KiloEssentialsImpl(KiloEvents events, KiloConfig config, KiloCommands commands) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
 
@@ -112,6 +114,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		}
 		*/
 
+		if (SharedConstants.isDevelopment)
+			this.debugUtils = new KiloDebugUtils(this);
+
 		getServer().getChatManager().register(new GlobalChat());
 		getServer().getChatManager().register(new StaffChat());
 		getServer().getChatManager().register(new BuilderChat());
@@ -119,11 +124,27 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
+		features.tryToRegister(new PlayerSitManager(), "BetterChairs");
 		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
 		features.tryToRegister(new VoteCommand(), "VoteCommand");
 
 		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
 			new StartupScript();
+
+		try {
+			System.out.println("TEST: OFFLINE USER");
+			User user = getServer().getUserManager().getOffline("CODY_AI").get();
+			System.out.println(user.getUsername());
+			System.out.println(user.getUuid());
+			System.out.println(user.getUpstreamChannelId());
+			System.out.println(user.getNickname().get());
+
+			if (UserHomeHandler.isEnabled() && user.getHomesHandler() != null)
+				System.out.println(Arrays.toString(user.getHomesHandler().getHomes().stream().map(Home::getName).toArray()));
+
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -145,7 +166,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public static KiloEssentialsImpl getInstance() {
-		if(instance==null)
+		if (instance == null)
 			throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
 
 		return instance;
@@ -210,13 +231,19 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 	public void onServerReady() {
 		this.scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
-
 		scheduledUpdateExecutorService.scheduleAtFixedRate(() ->
-				KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 0, 6, TimeUnit.SECONDS);
+				KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 6, 6, TimeUnit.SECONDS);
 	}
 
 	public void onServerStop() {
+		if (PlayerSitManager.enabled)
+			PlayerSitManager.INSTANCE.killAll();
+
 		this.scheduledUpdateExecutorService.shutdown();
+	}
+
+	public KiloDebugUtils getDebugUtils() {
+		return this.debugUtils;
 	}
 
 }

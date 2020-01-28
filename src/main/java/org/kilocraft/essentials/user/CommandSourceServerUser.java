@@ -4,18 +4,19 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 
 import java.util.Date;
 import java.util.List;
@@ -80,6 +81,20 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public Location getLocation() {
+        return null;
+    }
+
+    @Override
+    public @Nullable Location getLastSavedLocation() {
+        return null;
+    }
+
+    @Override
+    public void saveLocation() {
+    }
+
+    @Override
     public void setNickname(String name) {
     }
 
@@ -88,31 +103,8 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public @Nullable Identifier getBackDimId() {
-        return null;
-    }
+    public void setLastLocation(Location loc) {
 
-    @Override
-    public @Nullable Vec3d getBackPos() {
-        return null;
-    }
-
-    @Override
-    public void setBackPos(Vec3d position) {
-    }
-
-    @Override
-    public void setBackDim(Identifier dim) {
-    }
-
-    @Override
-    public Identifier getPosDim() {
-        return null;
-    }
-
-    @Override
-    public @Nullable Vec3d getPos() {
-        return null;
     }
 
     @Override
@@ -150,14 +142,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public @Nullable Date getFirstJoin() {
         return null;
-    }
-
-    @Override
-    public void addSubscriptionChannel(String id) {
-    }
-
-    @Override
-    public void removeSubscriptionChannel(String id) {
     }
 
     @Override
@@ -213,6 +197,15 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public boolean canSit() {
+        return false;
+    }
+
+    @Override
+    public void setCanSit(boolean set) {
+    }
+
+    @Override
     public int getDisplayParticleId() {
         return 0;
     }
@@ -221,12 +214,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     public void setDisplayParticleId(int i) {
     }
 
+    @Nullable
     @Override
     public ServerPlayerEntity getPlayer() {
         try {
             return this.source.getPlayer();
-        } catch (CommandSyntaxException e) {
-            e.printStackTrace();
+        } catch (CommandSyntaxException ignored) {
             return null;
         }
     }
@@ -234,6 +227,10 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public ServerCommandSource getCommandSource() {
         return this.source;
+    }
+
+    @Override
+    public void teleport(Location loc, boolean sendTicket) {
     }
 
     @Override
@@ -260,6 +257,20 @@ public class CommandSourceServerUser implements CommandSourceUser {
     public void sendConfigMessage(String key, Object... objects) {
         String string = KiloConfig.getProvider().getMessages().getMessage(key, objects);
         KiloChat.sendMessageToSource(this.source, new ChatMessage(string, true));
+    }
+
+    @Override
+    public Vec3dLocation getLocationAsVector() {
+        return null;
+    }
+
+    @Override
+    public void setSittingType(PlayerSitManager.SummonType type) {
+    }
+
+    @Override
+    public @Nullable PlayerSitManager.SummonType getSittingType() {
+        return null;
     }
 
     @Override

@@ -43,6 +43,10 @@ public class UserHandler {
         }
     }
 
+    boolean userExists(UUID uuid) {
+        return getUserFile(uuid).exists();
+    }
+
     public File getUserFile(ServerUser serverUser) {
         return getUserFile(serverUser.uuid);
     }

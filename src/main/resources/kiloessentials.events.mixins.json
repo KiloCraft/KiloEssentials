@@ -6,17 +6,16 @@
   "mixins": [
   ],
   "server": [
-    "MixinBlockItem$PlayerEvent$OnPlaceBlock",
     "MixinMinecraftDedicatedServer",
     "MixinMinecraftServer$OnStop",
     "MixinMinecraftServer$OnTick",
     "MixinMinecraftServer$OnSave",
     "MixinPlayerManager$PlayerEvent$OnConnect",
-    "MixinServerPlayerEntity$PlayerEvent$OnDeath",
-    "MixinServerPlayerNetworkHandler$PlayerEvent$OnDisconnect",
-    "MixinServerPlayerNetworkHandler$PlayerEvent$OnBreakingBlock",
+    "MixinServerPlayerEntity$PlayerEvents",
+    "MixinServerPlayNetworkHandler$PlayerEvents",
     "MixinCommandManager$ServerEvent$OnCommandExecuted",
-    "MixinMinecraftServer$OnStart"
+    "MixinMinecraftServer$OnStart",
+    "ServerPlayerInteractionManagerMixin$PlayerEvent$InteractItem",
   ],
   "injectors": {
     "defaultRequire": 1

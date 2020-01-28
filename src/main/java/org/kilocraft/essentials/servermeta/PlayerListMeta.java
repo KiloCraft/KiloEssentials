@@ -4,13 +4,11 @@ import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.provided.localVariables.PlayerConfigVariables;
-import org.kilocraft.essentials.config.provided.localVariables.ServerConfigVariables;
-import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
 import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketMixin;
-import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.util.TPSTracker;
 
 public class PlayerListMeta {
     static String header = "", footer = "";
@@ -21,24 +19,29 @@ public class PlayerListMeta {
     }
 
     static void provideFor(ServerPlayerEntity player) {
-        OnlineUser user = KiloServer.getServer().getOnlineUser(player);
-        String thisHeader = KiloConfig.getProvider().getMain().getLocalReplacer().replace(header,
-                new UserConfigVariables((ServerUser) KiloServer.getServer().getOnlineUser(player)),
-                new ServerConfigVariables(), new PlayerConfigVariables(player))
-                .replaceAll("%USER_DISPLAYNAME%", user.getRankedDisplayname().asFormattedString());
-
-
-        String thisFooter = KiloConfig.getProvider().getMain().getLocalReplacer().replace(footer,
-                new UserConfigVariables((ServerUser) KiloServer.getServer().getOnlineUser(player)),
-                new ServerConfigVariables(), new PlayerConfigVariables(player))
-                .replaceAll("%USER_DISPLAYNAME%", user.getRankedDisplayname().asFormattedString());
+        if (player.networkHandler == null)
+            return;
 
         PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
-        ((PlayerListHeaderS2CPacketMixin) packet).setHeader(TextFormat.translateToLiteralText('&', thisHeader));
-        ((PlayerListHeaderS2CPacketMixin) packet).setFooter(TextFormat.translateToLiteralText('&', thisFooter));
+        ((PlayerListHeaderS2CPacketMixin) packet).setHeader(TextFormat.translateToLiteralText('&', getFormattedStringFor(player, header)));
+        ((PlayerListHeaderS2CPacketMixin) packet).setFooter(TextFormat.translateToLiteralText('&', getFormattedStringFor(player, footer)));
 
-        if (player.networkHandler != null)
-            player.networkHandler.sendPacket(packet);
+        player.networkHandler.sendPacket(packet);
+    }
+
+    private static String getFormattedStringFor(ServerPlayerEntity player, String string) {
+        OnlineUser user = KiloServer.getServer().getOnlineUser(player);
+        Server server = KiloServer.getServer();
+        return string.replaceAll("%PLAYER_NAME%", player.getEntityName())
+                .replaceAll("%PLAYER_DISPLAYNAME%", player.getDisplayName().asFormattedString())
+                .replaceAll("%PLAYER_PING%", String.valueOf(player.pingMilliseconds))
+                .replaceAll("%PLAYER_FORMATTED_PING%", TextFormat.getFormattedPing(player.pingMilliseconds))
+                .replaceAll("%USER_NAME%", user.getUsername())
+                .replaceAll("%USER_DISPLAYNAME%", user.getDisplayname())
+                .replaceAll("%SERVER_NAME%", server.getName())
+                .replaceAll("%SERVER_TPS%", TPSTracker.tps1.getShortAverage())
+                .replaceAll("%SERVER_FORMATTED_TPS%", "&" + TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()) + TPSTracker.tps1.getShortAverage() + "&r")
+                .replaceAll("%SERVER_PLAYER_COUNT%", String.valueOf(server.getPlayerManager().getCurrentPlayerCount()));
     }
 
 }

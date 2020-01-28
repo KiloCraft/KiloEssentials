@@ -70,8 +70,8 @@ events:
 commands:
   # [<greedyString> c]
   context:
-    execution_exception: '&fUnknown command! Please type "/help" for help'
-    permission_exception: "&fInsufficient permission! You can't use that command"
+    execution_exception: '&cUnknown command! Please type "/help" for help'
+    permission_exception: "&cInsufficient permission! You can't use that command"
   # [<greedyString> c]
   broadcast_format: '&f[&cBroadCast&f]&r %MESSAGE%'
   # [TextComponenet]
@@ -83,7 +83,8 @@ commands:
     teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%WARPNAME%&e...'
 
   playerHomes:
-    teleportTo: '&8[ &6i&8 ] &eTeleporting to &6%HOMENAME%&e...'
+    invalid_home: 'Can not find the home specified!'
+    teleportTo: '%GENERAL_PREFIX% Teleporting to %HOME_NAME%'
     set: '&8[ &6i&8 ] &aYou have set the home &6%HOMENAME%&a!'
     remove: '&8[ &6i&8 ] &cYou have removed the home &6%HOMENAME%&c!'
     admin:

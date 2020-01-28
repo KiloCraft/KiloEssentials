@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.commands.server;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -9,9 +8,9 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -20,22 +19,21 @@ import org.kilocraft.essentials.util.monitor.SystemMonitor;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.Objects;
 
-import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.api.chat.TextFormat.getFormattedTPS;
 import static org.kilocraft.essentials.util.TPSTracker.*;
 
-public class StatusCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> rootCommand = literal("status")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.STATUS))
-                .executes(StatusCommand::execute);
+public class StatusCommand extends EssentialCommand {
+    public StatusCommand() {
+        super("status", CommandPermission.STATUS);
+    }
 
-        dispatcher.register(rootCommand);
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        argumentBuilder.executes(this::execute);
     }
 
     private static OperatingSystemMXBean bean = SystemMonitor.getOsSystemMXBean();
 
-    private static int execute(CommandContext<ServerCommandSource> ctx) {
+    private int execute(CommandContext<ServerCommandSource> ctx) {
         try {
             KiloChat.sendMessageToSource(ctx.getSource(), new ChatMessage(getInfo(), true));
         } catch (Exception e) {
@@ -96,7 +94,7 @@ public class StatusCommand {
     }
 
     private static String getWorldName(ServerWorld world) {
-        String s = Objects.requireNonNull(Registry.DIMENSION.getId(world.dimension.getType())).getPath();
+        String s = Objects.requireNonNull(Registry.DIMENSION_TYPE.getId(world.dimension.getType())).getPath();
         return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
     }
 

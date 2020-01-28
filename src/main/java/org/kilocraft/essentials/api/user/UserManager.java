@@ -8,14 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface UserManager {
     /**
-     * @deprecated Not implemented yet
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
      * @param username The UUID of the user.
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
@@ -23,15 +21,14 @@ public interface UserManager {
     CompletableFuture<User> getOffline(String username);
 
     /**
-     * @deprecated Not implemented yet
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
      * @param uuid The UUID of the user.
+     * @param username The name of the user
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
      */
-    CompletableFuture<User> getOffline(UUID uuid);
+    Object getOffline(UUID uuid, String username);
 
     /**
-     * @deprecated Not implemented yet
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
      * @param profile The user's GameProfile
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
@@ -92,9 +89,18 @@ public interface UserManager {
      */
     OnlineUser getOnline(ServerCommandSource source) throws CommandSyntaxException;
 
-    PunishmentManager getPunishmentManager();
+    /**
+     * Checks if a user is currently online
+     * @param user to check
+     * @return is user online
+     */
+    boolean isOnline(User user);
 
-    void saveUser(OnlineServerUser user) throws IOException;
+    /**
+     * Gets the PunishmentManager
+     * @return instance of PunishmentManager
+     */
+    PunishmentManager getPunishmentManager();
 
     void saveAllUsers();
 

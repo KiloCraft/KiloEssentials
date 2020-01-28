@@ -6,14 +6,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 
@@ -25,15 +24,14 @@ import java.util.concurrent.CompletableFuture;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.command.arguments.MessageArgumentType.*;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 
-public class SayasCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> rootCommand = literal("sayas")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SAYAS_OTHERS, 4))
-                .build();
+public class SayasCommand extends EssentialCommand {
+    public SayasCommand() {
+        super("sayas", CommandPermission.SAYAS_OTHERS, 4);
+    }
 
+    @Override
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         ArgumentCommandNode<ServerCommandSource, String> selectorArg = argument("target", word())
                 .suggests(SayasCommand::playerSuggestions)
                 .executes(SayasCommand::execute)
@@ -45,8 +43,7 @@ public class SayasCommand {
                 .build();
 
         selectorArg.addChild(messageArg);
-        rootCommand.addChild(selectorArg);
-        dispatcher.getRoot().addChild(rootCommand);
+        commandNode.addChild(selectorArg);
     }
 
     private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -70,5 +67,4 @@ public class SayasCommand {
         strings.add("-server");
         return CommandSource.suggestMatching(strings, builder);
     }
-
 }
