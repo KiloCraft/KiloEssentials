@@ -144,6 +144,7 @@ public class KiloCommands {
             add(new CommandspyCommand());
             add(new BackCommand());
             add(new ShootCommand());
+            add(new MagicParticlesCommand());
         }};
 
         this.commands.addAll(commandsList);

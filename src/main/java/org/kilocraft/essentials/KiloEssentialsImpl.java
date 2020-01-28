@@ -137,7 +137,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			System.out.println(user.getUsername());
 			System.out.println(user.getUuid());
 			System.out.println(user.getUpstreamChannelId());
-			System.out.println(user.getNickname().get());
+			//System.out.println(user.getNickname().get());
 
 			if (UserHomeHandler.isEnabled() && user.getHomesHandler() != null)
 				System.out.println(Arrays.toString(user.getHomesHandler().getHomes().stream().map(Home::getName).toArray()));
