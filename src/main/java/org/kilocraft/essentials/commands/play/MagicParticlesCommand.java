@@ -30,7 +30,7 @@ public class MagicParticlesCommand extends EssentialCommand {
 
 	public static final Predicate<ServerCommandSource> PERMISSION_USE_SELF = (s) -> KiloEssentials.hasPermissionNode(s, EssentialPermission.MAGIC_PARTICLES_SELF);
 	public static final Predicate<ServerCommandSource> PERMISSION_USE_OTHERS = (s) -> KiloEssentials.hasPermissionNode(s, EssentialPermission.MAGIC_PARTICLES_OTHERS);
-	public static ArrayList<String> particles = new ArrayList<String>();
+	public static ArrayList<String> particles = new ArrayList<String>(){};
 
 	public MagicParticlesCommand() {
 		super("magicparticles", PERMISSION_USE_SELF, new String[]{"mp"});
@@ -38,9 +38,13 @@ public class MagicParticlesCommand extends EssentialCommand {
 
 	@Override
 	public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		// Add particles to list
+		particles.add("flames");
+		particles.add("glass");
+		particles.add("stormcloud");
+
 		LiteralCommandNode<ServerCommandSource> setNode = literal("set").build();
 
-		// Particles
 		ArgumentCommandNode<ServerCommandSource, String> particleNameNode = argument("name", string()).suggests(TabCompletions::allParticles).executes((context) -> {
 			return setParticle(context, context.getSource().getPlayer(), getString(context, "name"));
 		}).build();
@@ -65,7 +69,7 @@ public class MagicParticlesCommand extends EssentialCommand {
 				.executes((context) -> {
 					User serverUser = KiloServer.getServer().getUserManager().getOnline(getPlayer(context, "target"));
 					serverUser.setDisplayParticleId(0);
-					context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.disable.other", getPlayer(context, "target").getName().toString()), false);
+					context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.disable.other", getPlayer(context, "target").getName().asString()), false);
 					return SINGLE_SUCCESS;
 				}).build();
 
@@ -84,7 +88,12 @@ public class MagicParticlesCommand extends EssentialCommand {
 
 		User user = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
 		user.setDisplayParticleId(particles.indexOf(name));
-		context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.particleset", name), false);
+
+		if (player == context.getSource().getPlayer()) {
+			context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.particleset", name), false);
+		} else {
+			context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.particleset.other", name, getPlayer(context, "target").getName().asString()), false);
+		}
 		return SINGLE_SUCCESS;
 	}
 
