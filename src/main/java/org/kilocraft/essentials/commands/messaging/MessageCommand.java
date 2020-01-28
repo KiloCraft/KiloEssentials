@@ -17,7 +17,7 @@ import static net.minecraft.command.arguments.EntityArgumentType.player;
 
 public class MessageCommand extends EssentialCommand {
     public MessageCommand() {
-        super("message", new String[]{"msg", "tell", "whisper"});
+        super("message", new String[]{"ke_msg", "ke_tell", "ke_whisper"});
     }
 
     @Override

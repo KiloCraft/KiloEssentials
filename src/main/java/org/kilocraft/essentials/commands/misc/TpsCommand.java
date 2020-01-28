@@ -15,7 +15,7 @@ public class TpsCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("tps").executes(this::run));
+        argumentBuilder.executes(this::run);
     }
 
     private int run(CommandContext<ServerCommandSource> ctx) {

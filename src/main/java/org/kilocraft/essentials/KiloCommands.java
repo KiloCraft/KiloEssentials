@@ -200,7 +200,7 @@ public class KiloCommands {
     private void registerToast() {
         ArgumentCommandNode<ServerCommandSource, String> toast = argument("label", greedyString())
                 .then(argument("args", greedyString())
-                        .suggests(TabCompletions::noSuggestions))
+                        .suggests(TabCompletions::allPlayerNicks))
                 .build();
 
         getDispatcher().getRoot().addChild(toast);
