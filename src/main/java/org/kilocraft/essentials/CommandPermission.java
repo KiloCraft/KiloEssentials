@@ -78,6 +78,7 @@ public enum CommandPermission {
     HAT_SELF("hat.self"),
     HAT_OTHERS("hat.others"),
     SHOOT("shoot"),
+    GAMERULE("gamerule"),
     ;
 
     private String node;

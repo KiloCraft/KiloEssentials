@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -20,6 +21,7 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.UUID;
 
@@ -44,12 +46,19 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(String message) {
-        KiloChat.sendMessageTo(this.getPlayer(), new LiteralText(message));
+        KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage(message, true));
     }
 
     @Override
-    public void sendError(String message) {
+    public int sendError(String message) {
         KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage("&c" + message, true).toText().formatted(Formatting.RED));
+        return -1;
+    }
+
+    @Override
+    public int sendError(ExceptionMessageNode node) {
+        KiloChat.sendMessageTo(this.getPlayer(), new LiteralText(ModConstants.getMessageUtil().fromExceptionNode(node)).formatted(Formatting.RED));
+        return -1;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.extensions.homes.commands;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -10,7 +9,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
@@ -19,14 +20,13 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static net.minecraft.command.arguments.GameProfileArgumentType.GameProfileArgument;
-import static net.minecraft.command.arguments.GameProfileArgumentType.getProfileArgument;
 
 public class HomeCommand extends EssentialCommand {
     private static final SimpleCommandExceptionType MISSING_DIMENSION = new SimpleCommandExceptionType(new LiteralText("The Dimension this home exists in no longer exists"));
@@ -41,7 +41,7 @@ public class HomeCommand extends EssentialCommand {
                 .suggests(UserHomeHandler::suggestHomes)
                 .executes(this::executeSelf);
 
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> targetArgument = getUserArgument("user")
+        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("user")
                 .requires(src -> hasPermission(src, CommandPermission.HOME_OTHERS_TP))
                 .executes(this::executeOthers);
 
@@ -76,40 +76,48 @@ public class HomeCommand extends EssentialCommand {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         String name = getString(ctx, "name");
         OnlineUser source = getOnlineUser(player);
-        Collection<GameProfile> profiles = getProfileArgument(ctx, "user");
+        String inputName = getString(ctx, "user");
 
-        if (profiles.size() > 1)
-            throw ServerUserManager.TOO_MANY_PROFILES.create();
+        CompletableFuture<Optional<User>> optionalCompletableFuture = getUser(inputName);
+        ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(player);
 
-        CompletableFuture<User> completableFuture = getUser(profiles.iterator().next());
+        optionalCompletableFuture.thenAcceptAsync((optionalUser) -> {
+            if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
+                source.sendError(ExceptionMessageNode.USER_NOT_FOUND);
+                loadingText.stop();
+                return;
+            }
 
-        if (!completableFuture.isCompletedExceptionally()) {
-            player.addChatMessage(new LiteralText("Please wait..."), true);
+            User user = optionalUser.get();
+            KiloServer.getServer().getVanillaServer().execute(() -> {
+                if (!user.getHomesHandler().hasHome(name)) {
+                    source.sendConfigMessage("commands.playerHomes.invalid_home");
+                    return;
+                }
+
+                if (CommandHelper.areTheSame(source, user))
+                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
+                            .replace("{HOME_NAME}", name));
+                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.teleporting")
+                        .replace("{HOME_NAME}", name)
+                        .replace("{TARGET_TAG}", user.getNameTag()));
+
+                try {
+                    user.getHomesHandler().teleportToHome(source, name);
+                } catch (UnsafeHomeException e) {
+                    source.sendError(e.getMessage());
+                }
+            });
+
+            loadingText.stop();
+        }, ctx.getSource().getMinecraftServer());
+
+        if (!optionalCompletableFuture.isCompletedExceptionally()) {
+            loadingText.start();
         }
 
-        completableFuture.thenApply(user -> {
-            if (!user.getHomesHandler().hasHome(name)) {
-                source.sendConfigMessage("commands.playerHomes.invalid_home");
-                return -1;
-            }
-
-            if (CommandHelper.areTheSame(source, user))
-                source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
-                        .replace("{HOME_NAME}", name));
-            else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.teleporting")
-                    .replace("{HOME_NAME}", name)
-                    .replace("{TARGET_TAG}", user.getNameTag()));
-
-            try {
-                user.getHomesHandler().teleportToHome(source, name);
-            } catch (UnsafeHomeException e) {
-                source.sendError(e.getMessage());
-            }
-
-            return user;
-        });
-
-        return SINGLE_SUCCESS;
+        return AWAIT_RESPONSE;
     }
+
 
 }

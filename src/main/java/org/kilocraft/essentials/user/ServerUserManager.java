@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
@@ -23,12 +25,15 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
+import org.kilocraft.essentials.util.AnimatedText;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class ServerUserManager implements UserManager {
     private UserHandler userHandler = new UserHandler();
@@ -43,7 +48,7 @@ public class ServerUserManager implements UserManager {
     }
 
     @Override
-    public CompletableFuture<User> getOffline(String username) {
+    public CompletableFuture<Optional<User>> getOffline(String username) {
         UUID ret = usernameToUUID.get(username);
         if (ret != null) {
             return getOffline(ret, username);
@@ -52,35 +57,35 @@ public class ServerUserManager implements UserManager {
         return this.getUserAsync(username);
     }
 
-    private CompletableFuture<User> getUserAsync(String username) {
+    private CompletableFuture<Optional<User>> getUserAsync(String username) {
         CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() -> {
             GameProfile profile = KiloServer.getServer().getVanillaServer().getUserCache().findByName(username);
 
             return profile;
-        }); // This is hacky and probably doesn't work.
+        }); // This is hacky and probably doesn't work. //CODY_AI: But it works!
 
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
     }
 
     @Override
-    public CompletableFuture<User> getOffline(UUID uuid, String username) {
+    public CompletableFuture<Optional<User>> getOffline(UUID uuid, String username) {
         OnlineUser online = getOnline(uuid);
         if (online != null)
-            return CompletableFuture.completedFuture(online);
+            return CompletableFuture.completedFuture(Optional.of(online));
 
         if (userHandler.userExists(uuid)) {
             ServerUser serverUser = new ServerUser(uuid);
             serverUser.name = username;
 
-            return CompletableFuture.completedFuture(serverUser);
+            return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
         // TODO Impl Async checks later
-        return CompletableFuture.completedFuture(new NeverJoinedUser());
+        return CompletableFuture.completedFuture(Optional.of(new NeverJoinedUser()));
     }
 
     @Override
-    public CompletableFuture<User> getOffline(GameProfile profile) {
+    public CompletableFuture<Optional<User>> getOffline(GameProfile profile) {
         profileSanityCheck(profile);
         return getOffline(profile.getId(), profile.getName());
     }
@@ -245,4 +250,27 @@ public class ServerUserManager implements UserManager {
     }
 
     public static SimpleCommandExceptionType TOO_MANY_PROFILES = new SimpleCommandExceptionType(new LiteralText("Only one user is allowed but the provided selector includes more!"));
+
+
+    public static class UserLoadingText {
+        private AnimatedText animatedText;
+        public UserLoadingText(ServerPlayerEntity player) {
+            this.animatedText = new AnimatedText(0, 650, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+                    .append(LangText.get(true, "general.wait_server.frame1"))
+                    .append(LangText.get(true, "general.wait_server.frame2"))
+                    .append(LangText.get(true, "general.wait_server.frame3"))
+                    .append(LangText.get(true, "general.wait_server.frame4"))
+                    .build();
+        }
+
+        public UserLoadingText start() {
+            this.animatedText.start();
+            return this;
+        }
+
+        public void stop() {
+            this.animatedText.remove();
+            this.animatedText = null;
+        }
+    }
 }

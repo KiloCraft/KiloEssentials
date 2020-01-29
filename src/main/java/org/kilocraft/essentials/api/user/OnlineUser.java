@@ -8,6 +8,7 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public interface OnlineUser extends User {
     ServerPlayerEntity getPlayer();
@@ -18,7 +19,9 @@ public interface OnlineUser extends User {
 
     void sendMessage(String message);
 
-    void sendError(String message);
+    int sendError(String message);
+
+    int sendError(ExceptionMessageNode node);
 
     void sendMessage(Text text);
 

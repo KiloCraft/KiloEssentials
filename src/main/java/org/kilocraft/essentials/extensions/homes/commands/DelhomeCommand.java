@@ -3,7 +3,6 @@ package org.kilocraft.essentials.extensions.homes.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -22,7 +21,7 @@ public class DelhomeCommand extends EssentialCommand {
                 .suggests(UserHomeHandler::suggestHomes)
                 .executes(this::executeSelf);
 
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> targetArgument = getUserArgument("user")
+        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("user")
                 .requires(src -> hasPermission(src, CommandPermission.HOME_OTHERS_TP))
                 .executes(this::executeOthers);
 

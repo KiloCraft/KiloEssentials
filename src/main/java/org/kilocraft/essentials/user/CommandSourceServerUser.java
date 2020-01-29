@@ -3,9 +3,12 @@ package org.kilocraft.essentials.user;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -17,6 +20,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.Date;
 import java.util.List;
@@ -244,8 +248,15 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void sendError(String message) {
+    public int sendError(String message) {
         this.source.sendError(new ChatMessage("&c" + message, true).toText());
+        return -1;
+    }
+
+    @Override
+    public int sendError(ExceptionMessageNode node) {
+        KiloChat.sendMessageTo(this.source, new LiteralText(ModConstants.getMessageUtil().fromExceptionNode(node)).formatted(Formatting.RED));
+        return 1;
     }
 
     @Override

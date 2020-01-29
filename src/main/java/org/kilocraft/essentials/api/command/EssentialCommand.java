@@ -2,6 +2,7 @@ package org.kilocraft.essentials.api.command;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -23,11 +24,9 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-
-import static net.minecraft.command.arguments.GameProfileArgumentType.GameProfileArgument;
-import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
 
 public abstract class EssentialCommand implements IEssentialCommand {
     private String label;
@@ -196,11 +195,11 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return server.getOnlineUser(player);
     }
 
-    public CompletableFuture<User> getUser(GameProfile profile) {
+    public CompletableFuture<Optional<User>> getUser(GameProfile profile) {
         return server.getUserManager().getOffline(profile);
     }
 
-    public CompletableFuture<User> getUser(String name) {
+    public CompletableFuture<Optional<User>> getUser(String name) {
         return server.getUserManager().getOffline(name);
     }
 
@@ -208,8 +207,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return server.getUserManager().isOnline(user);
     }
 
-    public RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> getUserArgument(String label) {
-        return argument(label, gameProfile()).suggests(TabCompletions::allPlayers);
+    public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(String label) {
+        return argument(label, StringArgumentType.string()).suggests(TabCompletions::allPlayers);
     }
-
 }

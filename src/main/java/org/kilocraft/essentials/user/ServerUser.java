@@ -253,8 +253,7 @@ public class ServerUser implements User {
 
     @Override
     public Text getRankedDisplayname() {
-        return Team.modifyText(
-                KiloServer.getServer().getPlayer(this.uuid).getScoreboardTeam(), new LiteralText(getDisplayname()));
+        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(getDisplayname()));
     }
 
     @Override
@@ -264,8 +263,7 @@ public class ServerUser implements User {
         else str = KiloConfig.getMessage("general.offline-user-tag");
 
         return str.replace("{NAME}", this.getUsername())
-                .replace("{DISPLAYNAME}", this.getFormattedDisplayname())
-                .replace("{RANKED_DISPLAYNAME}", this.getRankedDisplayname().asFormattedString());
+                .replace("{DISPLAYNAME}", this.getFormattedDisplayname());
     }
 
     @Override

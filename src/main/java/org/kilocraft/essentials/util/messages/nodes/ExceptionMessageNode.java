@@ -14,6 +14,8 @@ public enum ExceptionMessageNode {
     STRING_TOO_LONG("string_too_long"),
     INVALID("invalid"),
     INTERNAL_ERROR("internal_error"),
+    USER_NOT_FOUND("user_not_found"),
+    USER_NEVER_JOINED("user_never_joined")
     ;
 
 

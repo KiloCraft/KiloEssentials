@@ -59,9 +59,9 @@ general:
   info-prefix: '&7[&6 i &7]&7'
   error-prefix: '&7[&c ! &7]&7'
   # [<greedyString> C]
-  # Values: {NAME}, {DISPLAYNAME}, {RANKED_DISPLAYNAME}
-  online-user-tag: '&6{DISPLAYNAME}'
-  offline-user-tag: '&6{DISPLAYNAME} (&cOffline)'
+  # Values: {NAME}, {DISPLAYNAME}
+  online-user-tag: '{DISPLAYNAME}'
+  offline-user-tag: '{DISPLAYNAME} &7(&cOffline&7)'
 
 events:
   # [<boolean>]

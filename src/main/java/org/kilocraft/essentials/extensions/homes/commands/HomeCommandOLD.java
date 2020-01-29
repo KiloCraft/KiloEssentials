@@ -124,7 +124,7 @@ public class HomeCommandOLD {
             throw TOO_MANY_PROFILES.create();
 
         GameProfile gameProfile = gameProfiles.iterator().next();
-        User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+        User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join().get(); // TODO threading in future
 
         if (serverUser instanceof NeverJoinedUser)
             throw NO_HOMES_EXCEPTION.create();
@@ -188,7 +188,7 @@ public class HomeCommandOLD {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+            User serverUser = KiloServer.getServer().getUserManager().getOffline(gameProfile).join().get(); // TODO threading in future
 
             if(serverUser instanceof NeverJoinedUser)
                 throw NO_HOMES_EXCEPTION.create();
@@ -227,7 +227,7 @@ public class HomeCommandOLD {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            User user = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+            User user = KiloServer.getServer().getUserManager().getOffline(gameProfile).join().get(); // TODO threading in future
 
             if(user instanceof NeverJoinedUser) {
                 throw NO_HOMES_EXCEPTION.create();
@@ -265,7 +265,7 @@ public class HomeCommandOLD {
 
         if (gameProfiles.size() == 1) {
             GameProfile gameProfile = gameProfiles.iterator().next();
-            User user = KiloServer.getServer().getUserManager().getOffline(gameProfile).join(); // TODO threading in future
+            User user = KiloServer.getServer().getUserManager().getOffline(gameProfile).join().get(); // TODO threading in future
 
             if (user instanceof NeverJoinedUser) {
                 throw NO_HOMES_EXCEPTION.create();
