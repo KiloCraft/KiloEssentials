@@ -152,6 +152,7 @@ public class KiloCommands {
             add(new MessageCommand());
             add(new ReplyCommand());
             add(new RelnameCommand());
+            add(new MagicParticlesCommand());
         }};
 
         this.commands.addAll(commandsList);
