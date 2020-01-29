@@ -13,7 +13,7 @@ public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
         if (CommandHelper.isPlayer(event.getExecutor())) {
             String command = event.getCommand().startsWith("/") ? event.getCommand().substring(1) : event.getCommand();
 
-            for (String messageCommand : new String[]{"msg", "tell", "whisper", "r", "reply"}) {
+            for (String messageCommand : new String[]{"msg", "tell", "whisper", "r", "reply", "staffmsg", "buildermsg"}) {
                 if (command.replace("/", "").startsWith(messageCommand))
                     return;
             }

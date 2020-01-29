@@ -151,6 +151,7 @@ public class KiloCommands {
             add(new LocateCommand());
             add(new MessageCommand());
             add(new ReplyCommand());
+            add(new RelnameCommand());
         }};
 
         this.commands.addAll(commandsList);

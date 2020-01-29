@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,6 +43,12 @@ public interface UserManager {
      * @return An Map of online users, with their UUID
      */
     Map<UUID, OnlineServerUser> getOnlineUsers();
+
+    /**
+     * Gets a list of the online users
+     * @return An List of online users
+     */
+    List<OnlineUser> getOnlineUsersAsList();
 
     /**
      * Gets a user who is online based on their GameProfile.

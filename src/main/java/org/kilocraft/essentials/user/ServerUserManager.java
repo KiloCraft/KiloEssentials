@@ -30,15 +30,13 @@ import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.AnimatedText;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class ServerUserManager implements UserManager {
     private UserHandler userHandler = new UserHandler();
+    private List<OnlineUser> users = new ArrayList<>();
     private Map<String, UUID> nicknameToUUID = new HashMap<>();
     private Map<String, UUID> usernameToUUID = new HashMap<>();
     private Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
@@ -95,6 +93,11 @@ public class ServerUserManager implements UserManager {
     @Override
     public Map<UUID, OnlineServerUser> getOnlineUsers() {
         return onlineUsers;
+    }
+
+    @Override
+    public List<OnlineUser> getOnlineUsersAsList() {
+        return users;
     }
 
     @Override
@@ -176,6 +179,7 @@ public class ServerUserManager implements UserManager {
 
         this.onlineUsers.put(playerEntity.getUuid(), serverUser);
         this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUuid());
+        this.users.add(serverUser);
 
         if (serverUser.getNickname().isPresent()) {
            this.nicknameToUUID.put(serverUser.getNickname().get(), playerEntity.getUuid());
@@ -191,6 +195,7 @@ public class ServerUserManager implements UserManager {
         if (user.getNickname().isPresent())
             this.nicknameToUUID.remove(user.getNickname().get());
         this.usernameToUUID.remove(player.getEntityName());
+        this.users.remove(user);
 
         try {
             this.userHandler.saveData(user);

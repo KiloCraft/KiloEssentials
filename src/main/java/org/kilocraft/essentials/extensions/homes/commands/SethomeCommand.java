@@ -104,7 +104,7 @@ public class SethomeCommand extends EssentialCommand {
             KiloServer.getServer().getVanillaServer().execute(() -> {
                 UserHomeHandler homeHandler = user.getHomesHandler();
 
-                if (!CommandHelper.areTheSame(source, user) && !canSetHome(user)) {
+                if (CommandHelper.areTheSame(source, user) && !canSetHome(user)) {
                     source.sendConfigMessage("commands.playerHomes.limit_reached");
                     return;
                 }

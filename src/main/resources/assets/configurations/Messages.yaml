@@ -96,7 +96,7 @@ commands:
     admin:
       teleporting: '%GENERAL_INFO-PREFIX% &eTeleporting to &6{HOME_NAME}&e from &b{TARGET_TAG}&r'
       set: '%GENERAL_INFO-PREFIX% &aSet the Home &6{HOME_NAME}&a for &b{TARGET_TAG}&r'
-      remove: '%GENERAL_INFO-PREFIX% &cRemoved the Home &6{HOME_NAME}&a for &b{TARGET_TAG}&r'
+      remove: '%GENERAL_INFO-PREFIX% &cRemoved the Home &6{HOME_NAME}&c for &b{TARGET_TAG}&r'
       no_homes: "&c{TARGET_TAG}&r&c doesn't have any Homes!"
 
   rtp:

@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
@@ -47,12 +46,9 @@ public class TabCompletions {
 
     public static CompletableFuture<Suggestions> allPlayerNicks(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         List<String> nicks = new ArrayList<>();
-        for (int i = 0; i < playerManager.getCurrentPlayerCount(); i++) {
-            ServerPlayerEntity player = playerManager.getPlayerList().get(i);
-            OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
-
-            if (user.hasNickname())
-                nicks.add(user.getUsername());
+        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+            nicks.add(TextFormat.removeAlternateColorCodes('&', user.getDisplayName()));
+            nicks.add(user.getUsername());
         }
 
         return CommandSource.suggestMatching(nicks, builder);
