@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -12,6 +13,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -97,6 +99,11 @@ public class SethomeCommand extends EssentialCommand {
             KiloServer.getServer().getVanillaServer().execute(() -> {
                 UserHomeHandler homeHandler = user.getHomesHandler();
 
+                if (!canSetHome(user)) {
+                    source.sendConfigMessage("commands.playerHomes.limit_reached");
+                    return;
+                }
+
                 if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
                     KiloChat.sendMessageTo(player, getConfirmationText(name, user.getUsername()));
                     return;
@@ -128,6 +135,19 @@ public class SethomeCommand extends EssentialCommand {
         }
 
         return AWAIT_RESPONSE;
+    }
+
+    private static boolean canSetHome(User user) {
+        for (int i = 1; i < KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
+            String thisPerm = "kiloessentials.command.home.limit." + i;
+            int amount = Integer.parseInt(thisPerm.split("\\.")[4]);
+            if (user.getHomesHandler().getHomes().size() < amount &&
+                    Thimble.hasPermissionOrOp(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
+                return true;
+            }
+        }
+
+        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3);
     }
 
     private Text getConfirmationText(String homeName, String user) {
