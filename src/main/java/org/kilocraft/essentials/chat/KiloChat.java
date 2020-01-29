@@ -143,7 +143,7 @@ public class KiloChat {
 
 		broadCast(new ChatMessage(
 				messages.getLocal(true, "events.userJoin", new UserConfigVariables(user))
-					.replace("%USER_DISPLAYNAME%", user.getDisplayname()),
+					.replace("%USER_DISPLAYNAME%", user.getDisplayName()),
 				true
 		));
 
@@ -155,7 +155,7 @@ public class KiloChat {
 
 		broadCast(new ChatMessage(
 				messages.getLocal(true, "events.userLeave", new UserConfigVariables(user))
-						.replace("%USER_DISPLAYNAME%", user.getDisplayname()),
+						.replace("%USER_DISPLAYNAME%", user.getDisplayName()),
 				true
 		));
 

@@ -103,7 +103,7 @@ public class NicknameCommand extends EssentialCommand {
         User user = KiloServer.getServer().getUserManager().getOnline(self);
 
         KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setSelf")
-                .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayname())
+                .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                 .replace("{NICK_NEW}", nickname)
                 , true));
 
@@ -134,7 +134,7 @@ public class NicknameCommand extends EssentialCommand {
         User user = KiloServer.getServer().getUserManager().getOnline(player);
 
         KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setOthers")
-                        .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayname())
+                        .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                         .replace("{NICK_NEW}", nickname)
                         .replace("{TARGET}", player.getEntityName())
                 , true));

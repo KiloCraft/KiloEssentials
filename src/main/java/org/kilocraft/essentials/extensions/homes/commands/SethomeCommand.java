@@ -15,6 +15,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -43,11 +44,11 @@ public class SethomeCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = argument("name", word())
-                .suggests(UserHomeHandler::suggestHomes)
+                .suggests(TabCompletions::noSuggestions)
                 .executes(this::executeSelf);
 
         RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("user")
-                .requires(src -> hasPermission(src, CommandPermission.HOME_OTHERS_TP))
+                .requires(src -> hasPermission(src, CommandPermission.HOME_OTHERS_SET))
                 .executes(this::executeOthers);
 
         homeArgument.then(targetArgument);

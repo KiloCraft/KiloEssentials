@@ -37,7 +37,7 @@ public class PlayerListMeta {
                 .replaceAll("%PLAYER_PING%", String.valueOf(player.pingMilliseconds))
                 .replaceAll("%PLAYER_FORMATTED_PING%", TextFormat.getFormattedPing(player.pingMilliseconds))
                 .replaceAll("%USER_NAME%", user.getUsername())
-                .replaceAll("%USER_DISPLAYNAME%", user.getDisplayname())
+                .replaceAll("%USER_DISPLAYNAME%", user.getDisplayName())
                 .replaceAll("%SERVER_NAME%", server.getName())
                 .replaceAll("%SERVER_TPS%", TPSTracker.tps1.getShortAverage())
                 .replaceAll("%SERVER_FORMATTED_TPS%", "&" + TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()) + TPSTracker.tps1.getShortAverage() + "&r")

@@ -17,7 +17,7 @@ public abstract class PlayerListS2CPacketMixin {
 	private PacketByteBuf modify(PacketByteBuf packetByteBuf, String string) {
 		boolean useNickname = KiloConfig.getProvider().getMain().getBooleanSafely("server.player_list.use_nicknames", true);
 		OnlineUser user = KiloServer.getServer().getOnlineUser(string);
-		packetByteBuf.writeString(useNickname ? user.getRankedDisplayname().asFormattedString() : user.getPlayer().getDisplayName().asFormattedString());
+		packetByteBuf.writeString(useNickname ? user.getRankedDisplayName().asFormattedString() : user.getPlayer().getDisplayName().asFormattedString());
 		return packetByteBuf;
 	}
 

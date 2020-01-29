@@ -91,7 +91,7 @@ public class BuildermsgCommand extends EssentialCommand {
             OnlineUser user = KiloServer.getServer().getOnlineUser(subscriber);
 
             text.append(new LiteralText("\n- ").formatted(Formatting.GRAY))
-                    .append(user.getRankedDisplayname().asFormattedString());
+                    .append(user.getRankedDisplayName().asFormattedString());
         }
 
         ctx.getSource().sendFeedback(text, false);

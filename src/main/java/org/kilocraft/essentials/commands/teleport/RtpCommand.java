@@ -115,7 +115,7 @@ public class RtpCommand extends EssentialCommand {
 	private static int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("command.rtp.get", user.getDisplayname(), user.getRTPsLeft());
+				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getRTPsLeft());
 
 		return user.getRTPsLeft();
 	}
@@ -125,7 +125,7 @@ public class RtpCommand extends EssentialCommand {
 		int amountToAdd = getInteger(ctx, "amount");
 		user.setRTPsLeft(user.getRTPsLeft() + amountToAdd);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayname());
+				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayName());
 
 		return user.getRTPsLeft();
 	}
@@ -135,7 +135,7 @@ public class RtpCommand extends EssentialCommand {
 		int amountToSet = getInteger(ctx, "amount");
 		user.setRTPsLeft(amountToSet);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayname());
+				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayName());
 
 		return user.getRTPsLeft();
 	}
@@ -143,7 +143,7 @@ public class RtpCommand extends EssentialCommand {
 	private static int executeGet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("command.rtp.get", user.getDisplayname(), user.getRTPsLeft());
+				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getRTPsLeft());
 
 		return user.getRTPsLeft();
 	}
@@ -157,7 +157,7 @@ public class RtpCommand extends EssentialCommand {
 
 		user.setRTPsLeft(user.getRTPsLeft() - amountToRemove);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayname());
+				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayName());
 
 		return user.getRTPsLeft();
 	}

@@ -22,11 +22,11 @@ public interface User {
 
     boolean hasNickname();
 
-    String getDisplayname();
+    String getDisplayName();
 
-    String getFormattedDisplayname();
+    String getFormattedDisplayName();
 
-    Text getRankedDisplayname();
+    Text getRankedDisplayName();
 
     String getNameTag();
 

@@ -34,17 +34,17 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public String getDisplayname() {
+    public String getDisplayName() {
         return null;
     }
 
     @Override
-    public String getFormattedDisplayname() {
+    public String getFormattedDisplayName() {
         return null;
     }
 
     @Override
-    public Text getRankedDisplayname() {
+    public Text getRankedDisplayName() {
         return null;
     }
 

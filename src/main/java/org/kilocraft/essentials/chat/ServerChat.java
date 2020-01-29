@@ -71,7 +71,7 @@ public class ServerChat {
                         String formatOfThisPing = canPing ? displayFormat : not_pinged_displayFormat;
                         message.setMessage(message.getFormattedMessage().replaceAll(format,
                                 formatOfThisPing.replaceAll(
-                                        "%PLAYER_DISPLAYNAME%", target.getDisplayname()) + "&r"), true);
+                                        "%PLAYER_DISPLAYNAME%", target.getDisplayName()) + "&r"), true);
                         if (pingSoundEnabled && canPing) pingPlayer(target.getPlayer());
                     }
                 }
@@ -82,7 +82,7 @@ public class ServerChat {
 
         message.setMessage(config.getLocalReplacer()
                     .replace(template, new UserConfigVariables((ServerUser) sender), KiloConfig.getFileConfigOfMain())
-                .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayname().asFormattedString())
+                .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().asFormattedString())
                 .replace("%MESSAGE%", message.getFormattedMessage()), true);
 
         Text text = new LiteralText(message.getFormattedMessage()).styled((style) -> {
@@ -104,7 +104,7 @@ public class ServerChat {
         text.append(new LiteralText("[").formatted(Formatting.DARK_GRAY))
                 .append(new LiteralText(" i ").formatted(Formatting.GREEN))
         .append(new LiteralText("] ").formatted(Formatting.DARK_GRAY));
-        text.append(new LiteralText("Click here to reply to " + user.getFormattedDisplayname()).formatted(Formatting.GREEN));
+        text.append(new LiteralText("Click here to reply to " + user.getFormattedDisplayName()).formatted(Formatting.GREEN));
         text.append("\n");
         text.append(new LiteralText("Sent at: ").formatted(Formatting.GRAY));
         text.append(new LiteralText(new Date().toGMTString()).formatted(Formatting.YELLOW));

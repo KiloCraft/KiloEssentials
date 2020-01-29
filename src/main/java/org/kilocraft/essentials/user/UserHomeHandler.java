@@ -101,13 +101,12 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public boolean hasHome(String name) {
-        boolean bool = false;
         for (Home userHome : this.userHomes) {
             if (userHome.getName().equals(name))
-                bool = true;
+                return true;
         }
 
-        return bool;
+        return false;
     }
 
     public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException {

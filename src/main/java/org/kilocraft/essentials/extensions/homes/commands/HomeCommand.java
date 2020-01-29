@@ -95,6 +95,9 @@ public class HomeCommand extends EssentialCommand {
                     return;
                 }
 
+                System.out.println(user.getNickname());
+                System.out.println(user.getNameTag());
+
                 if (CommandHelper.areTheSame(source, user))
                     source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
                             .replace("{HOME_NAME}", name));

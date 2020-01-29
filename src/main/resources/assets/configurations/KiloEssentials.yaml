@@ -43,6 +43,10 @@ schema: 1.4
 #Alternate color character
 #Instead of using the special character you can use your own color char
 #for defining the color/formatting codes use the '&' character
+#
+#******* NOTE: Please leave a space after a local object variable! Don't do something like "%GENERAL_PREFIX%&a"
+#              As the formatting code after the percentage character breaks the function!
+
 #Variables ->
 # Player:
 #   NAME, DISPLAYNAME, PING, FORMATTED_PING

@@ -134,7 +134,7 @@ public class HomeCommandOLD {
         if (homesSize == 0)
             throw NO_HOMES_EXCEPTION.create();
 
-        String prefix = CommandHelper.areTheSame(source, serverUser) ? "Homes" : serverUser.getFormattedDisplayname() + "'s Homes";
+        String prefix = CommandHelper.areTheSame(source, serverUser) ? "Homes" : serverUser.getFormattedDisplayName() + "'s Homes";
         Text text = new LiteralText(prefix).formatted(Formatting.GOLD)
                 .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
                 .append(new LiteralText(String.valueOf(homesSize)).formatted(Formatting.LIGHT_PURPLE))

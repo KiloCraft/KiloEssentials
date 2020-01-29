@@ -241,29 +241,25 @@ public class ServerUser implements User {
         return this.getNickname().isPresent();
     }
 
-    @Override
-    public String getDisplayname() {
+    public String getDisplayName() {
         return (hasNickname()) ? this.nickname : this.name;
     }
 
     @Override
-    public String getFormattedDisplayname() {
-        return TextFormat.translate(getDisplayname() + "&r");
+    public String getFormattedDisplayName() {
+        return TextFormat.translate(getDisplayName() + "&r");
     }
 
     @Override
-    public Text getRankedDisplayname() {
-        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(getDisplayname()));
+    public Text getRankedDisplayName() {
+        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(getDisplayName()));
     }
 
     @Override
     public String getNameTag() {
-        String str;
-        if (this.isOnline()) str = KiloConfig.getMessage("general.online-user-tag");
-        else str = KiloConfig.getMessage("general.offline-user-tag");
-
+        String str = KiloConfig.getMessage(this.isOnline() ? "general.online-user-tag" : "general.offline-user-tag");
         return str.replace("{NAME}", this.getUsername())
-                .replace("{DISPLAYNAME}", this.getFormattedDisplayname());
+                .replace("{DISPLAYNAME}", this.getFormattedDisplayName());
     }
 
     @Override
