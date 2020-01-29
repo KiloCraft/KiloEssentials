@@ -64,6 +64,11 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
+        if (!canSetHome(user)) {
+            user.sendConfigMessage("commands.playerHomes.limit_reached");
+            return SINGLE_FAILED;
+        }
+
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
             KiloChat.sendMessageTo(player, getConfirmationText(name, ""));
             return AWAIT_RESPONSE;
@@ -99,7 +104,7 @@ public class SethomeCommand extends EssentialCommand {
             KiloServer.getServer().getVanillaServer().execute(() -> {
                 UserHomeHandler homeHandler = user.getHomesHandler();
 
-                if (!canSetHome(user)) {
+                if (!CommandHelper.areTheSame(source, user) && !canSetHome(user)) {
                     source.sendConfigMessage("commands.playerHomes.limit_reached");
                     return;
                 }
