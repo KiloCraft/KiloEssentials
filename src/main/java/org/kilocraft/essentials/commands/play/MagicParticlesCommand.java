@@ -6,9 +6,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -16,6 +16,8 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.CommandHelper;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
@@ -61,7 +63,7 @@ public class MagicParticlesCommand extends EssentialCommand {
 		LiteralCommandNode<ServerCommandSource> disableNode = literal("disable").executes((context) -> {
 			User serverUser = KiloServer.getServer().getUserManager().getOnline(context.getSource().getPlayer().getUuid());
 			serverUser.setDisplayParticleId(0);
-			context.getSource().sendFeedback(LangText.get(true, "command.playerparticles.disable"), false);
+			KiloChat.sendMessageTo(context.getSource(), LangText.get(true, "command.playerparticles.disable"));
 			return SINGLE_SUCCESS;
 		}).build();
 
@@ -71,7 +73,7 @@ public class MagicParticlesCommand extends EssentialCommand {
 				.executes((context) -> {
 					User serverUser = KiloServer.getServer().getUserManager().getOnline(getPlayer(context, "target"));
 					serverUser.setDisplayParticleId(0);
-					context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.disable.other", getPlayer(context, "target").getName().asString()), false);
+					KiloChat.sendMessageTo(context.getSource(), LangText.getFormatter(true, "command.playerparticles.disable.other", getPlayer(context, "target").getName().asString()));
 					return SINGLE_SUCCESS;
 				}).build();
 
@@ -82,19 +84,19 @@ public class MagicParticlesCommand extends EssentialCommand {
 		commandNode.addChild(setNode);
 	}
 
-	private static int setParticle(CommandContext<ServerCommandSource> context, PlayerEntity player, String name) throws CommandSyntaxException {
+	private static int setParticle(CommandContext<ServerCommandSource> context, ServerPlayerEntity player, String name) throws CommandSyntaxException {
 		if(!particles.contains(name)) {
-			context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.particlenotfound", name), false);
+			KiloChat.sendMessageTo(context.getSource(), (LangText.getFormatter(true, "command.playerparticles.particlenotfound", name)));
 			return SINGLE_FAILED;
 		}
 
 		User user = KiloServer.getServer().getUserManager().getOnline(player.getUuid());
 		user.setDisplayParticleId(particles.indexOf(name) + 1);
 
-		if (player == context.getSource().getPlayer()) {
-			context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.particleset", name), false);
+		if (CommandHelper.areTheSame(context.getSource(), player)) {
+			KiloChat.sendMessageTo(context.getSource(), LangText.getFormatter(true, "command.playerparticles.particleset", name));
 		} else {
-			context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.particleset.other", name, getPlayer(context, "target").getName().asString()), false);
+			KiloChat.sendMessageTo(context.getSource(), LangText.getFormatter(true, "command.playerparticles.particleset.other", name, getPlayer(context, "target").getName().asString()));
 		}
 		return SINGLE_SUCCESS;
 	}
