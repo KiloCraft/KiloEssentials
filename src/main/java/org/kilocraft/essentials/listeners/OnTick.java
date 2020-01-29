@@ -29,14 +29,14 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 		if (processFirstHalf){
 			for (int i = 0; i < KiloServer.getServer().getPlayerManager().getPlayerList().size() / 2; i++) {
 				ServerPlayerEntity player = KiloServer.getServer().getPlayerManager().getPlayerList().get(i);
-				if (KiloServer.getServer().getOnlineUser(player).getDisplayParticleId() != 0) {
+				if (KiloServer.getServer().getOnlineUser(player).getDisplayParticleId() != 0 && !player.isSpectator() && !player.isInvisible()) {
 					processParticles(player);
 				}
 			}
 		} else {
 			for (int i = KiloServer.getServer().getPlayerManager().getPlayerList().size() / 2; i < KiloServer.getServer().getPlayerManager().getPlayerList().size(); i++) {
 				ServerPlayerEntity player = KiloServer.getServer().getPlayerManager().getPlayerList().get(i);
-				if (KiloServer.getServer().getOnlineUser(player).getDisplayParticleId() != 0) {
+				if (KiloServer.getServer().getOnlineUser(player).getDisplayParticleId() != 0 && !player.isSpectator() && !player.isInvisible()) {
 					processParticles(player);
 				}
 			}
