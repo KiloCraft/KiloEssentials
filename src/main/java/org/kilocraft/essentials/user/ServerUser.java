@@ -242,7 +242,7 @@ public class ServerUser implements User {
     }
 
     public String getDisplayName() {
-        return (hasNickname()) ? this.nickname : this.name;
+        return (this.getNickname().isPresent() || this.nickname != null) ? this.nickname : this.name;
     }
 
     @Override
@@ -258,7 +258,7 @@ public class ServerUser implements User {
     @Override
     public String getNameTag() {
         String str = KiloConfig.getMessage(this.isOnline() ? "general.online-user-tag" : "general.offline-user-tag");
-        return str.replace("{NAME}", this.getUsername())
+        return str.replace("{NAME}", this.name)
                 .replace("{DISPLAYNAME}", this.getFormattedDisplayName());
     }
 

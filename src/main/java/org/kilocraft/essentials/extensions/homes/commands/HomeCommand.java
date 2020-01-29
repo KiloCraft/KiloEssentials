@@ -95,8 +95,11 @@ public class HomeCommand extends EssentialCommand {
                     return;
                 }
 
-                System.out.println(user.getNickname());
-                System.out.println(user.getNameTag());
+                try {
+                    user.getHomesHandler().teleportToHome(source, name);
+                } catch (UnsafeHomeException e) {
+                    source.sendError(e.getMessage());
+                }
 
                 if (CommandHelper.areTheSame(source, user))
                     source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
@@ -104,12 +107,6 @@ public class HomeCommand extends EssentialCommand {
                 else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.teleporting")
                         .replace("{HOME_NAME}", name)
                         .replace("{TARGET_TAG}", user.getNameTag()));
-
-                try {
-                    user.getHomesHandler().teleportToHome(source, name);
-                } catch (UnsafeHomeException e) {
-                    source.sendError(e.getMessage());
-                }
             });
 
             loadingText.stop();

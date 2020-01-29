@@ -129,7 +129,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public String getNameTag() {
-        return null;
+        return super.getNameTag();
     }
 
     @Override

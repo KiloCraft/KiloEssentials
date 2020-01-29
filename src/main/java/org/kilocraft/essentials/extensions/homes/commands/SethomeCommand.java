@@ -104,13 +104,6 @@ public class SethomeCommand extends EssentialCommand {
                     homeHandler.removeHome(name);
                 }
 
-                if (CommandHelper.areTheSame(source, user))
-                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.set")
-                            .replace("{HOME_NAME}", name));
-                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.set")
-                        .replace("{HOME_NAME}", name)
-                        .replace("{TARGET_TAG}", user.getNameTag()));
-
                 homeHandler.addHome(new Home(user.getUuid(), name, Vec3dLocation.of(player).shortDecimals()));
 
                 try {
@@ -118,6 +111,13 @@ public class SethomeCommand extends EssentialCommand {
                 } catch (IOException e) {
                     source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
                 }
+
+                if (CommandHelper.areTheSame(source, user))
+                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.set")
+                            .replace("{HOME_NAME}", name));
+                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.set")
+                        .replace("{HOME_NAME}", name)
+                        .replace("{TARGET_TAG}", user.getNameTag()));
             });
 
             loadingText.stop();
@@ -140,7 +140,7 @@ public class SethomeCommand extends EssentialCommand {
                         .styled((style) -> {
                             style.setColor(Formatting.GRAY);
                             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW)));
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome -confirmed-" + homeName + user));
+                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome -confirmed-" + homeName + " " + user));
                         }));
     }
 

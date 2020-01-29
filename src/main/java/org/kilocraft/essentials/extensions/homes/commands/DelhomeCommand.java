@@ -110,18 +110,18 @@ public class DelhomeCommand extends EssentialCommand {
                     homeHandler.removeHome(name);
                 }
 
+                try {
+                    user.saveData();
+                } catch (IOException e) {
+                    source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
+                }
+
                 if (CommandHelper.areTheSame(source, user))
                     source.sendMessage(KiloConfig.getMessage("commands.playerHomes.remove")
                             .replace("{HOME_NAME}", name));
                 else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.remove")
                         .replace("{HOME_NAME}", name)
                         .replace("{TARGET_TAG}", user.getNameTag()));
-
-                try {
-                    user.saveData();
-                } catch (IOException e) {
-                    source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
-                }
             });
 
             loadingText.stop();
@@ -144,7 +144,7 @@ public class DelhomeCommand extends EssentialCommand {
                         .styled((style) -> {
                             style.setColor(Formatting.GRAY);
                             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW)));
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/delhome -confirmed-" + homeName + user));
+                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/delhome -confirmed-" + homeName + " " + user));
                         }));
     }
 }
