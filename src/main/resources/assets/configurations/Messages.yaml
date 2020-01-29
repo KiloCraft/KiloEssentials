@@ -89,13 +89,13 @@ commands:
 
   playerHomes:
     invalid_home: '&cCan not find the home specified!'
-    teleporting: 'Teleporting to {HOME_NAME}'
-    set: 'Set the Home {HOME_NAME}'
-    remove: 'Removed the Home {HOME_NAME}'
+    teleporting: '%GENERAL_INFO-PREFIX% Teleporting to {HOME_NAME}'
+    set: '%GENERAL_INFO-PREFIX% Set the Home {HOME_NAME}'
+    remove: '%GENERAL_INFO-PREFIX% Removed the Home {HOME_NAME}'
     admin:
-      teleporting: 'Teleporting to {HOME_NAME} {TARGET_TAG}'
-      set: 'Set the Home {HOME_NAME} for {TARGET_TAG}'
-      remove: 'Removed the Home {HOME_NAME} for {TARGET_TAG}'
+      teleporting: '%GENERAL_INFO-PREFIX% Teleporting to {HOME_NAME} {TARGET_TAG}'
+      set: '%GENERAL_INFO-PREFIX% Set the Home {HOME_NAME} for {TARGET_TAG}'
+      remove: '%GENERAL_INFO-PREFIX% Removed the Home {HOME_NAME} for {TARGET_TAG}'
 
   rtp:
     start: "%GENERAL_INFO-PREFIX% &ePlease wait..."

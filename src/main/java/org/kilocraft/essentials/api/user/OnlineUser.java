@@ -21,7 +21,7 @@ public interface OnlineUser extends User {
 
     int sendError(String message);
 
-    int sendError(ExceptionMessageNode node);
+    int sendError(ExceptionMessageNode node, Object... objects);
 
     void sendMessage(Text text);
 

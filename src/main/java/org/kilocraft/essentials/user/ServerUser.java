@@ -421,6 +421,11 @@ public class ServerUser implements User {
     	this.displayParticleId = id;
     }
 
+    @Override
+    public void saveData() throws IOException {
+        manager.getHandler().saveData(this);
+    }
+
     public void resetMessageCooldown() {
         if (this.messageCooldown > 0) {
             --this.messageCooldown;

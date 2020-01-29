@@ -15,7 +15,8 @@ public enum ExceptionMessageNode {
     INVALID("invalid"),
     INTERNAL_ERROR("internal_error"),
     USER_NOT_FOUND("user_not_found"),
-    USER_NEVER_JOINED("user_never_joined")
+    USER_NEVER_JOINED("user_never_joined"),
+    USER_CANT_SAVE("user_cant_save"),
     ;
 
 

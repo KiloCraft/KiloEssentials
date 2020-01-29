@@ -7,6 +7,7 @@ import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -106,5 +107,10 @@ public interface User {
      */
     @Deprecated
     void setDisplayParticleId(int i);
+
+    /**
+     * Saves the data if the user if offline
+     */
+    void saveData() throws IOException;
 
 }

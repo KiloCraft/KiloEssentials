@@ -3,7 +3,6 @@ package org.kilocraft.essentials.user;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +21,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -223,6 +223,11 @@ public class CommandSourceServerUser implements CommandSourceUser {
     public void setDisplayParticleId(int i) {
     }
 
+    @Override
+    public void saveData() throws IOException {
+
+    }
+
     @Nullable
     @Override
     public ServerPlayerEntity getPlayer() {
@@ -254,9 +259,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public int sendError(ExceptionMessageNode node) {
-        KiloChat.sendMessageTo(this.source, new LiteralText(ModConstants.getMessageUtil().fromExceptionNode(node)).formatted(Formatting.RED));
-        return 1;
+    public int sendError(ExceptionMessageNode node, Object... objects) {
+        String message = ModConstants.getMessageUtil().fromExceptionNode(node);
+        KiloChat.sendMessageTo(this.source, new ChatMessage(
+                (objects != null) ? String.format(message, objects) : message, true)
+                .toText().formatted(Formatting.RED));
+        return -1;
     }
 
     @Override

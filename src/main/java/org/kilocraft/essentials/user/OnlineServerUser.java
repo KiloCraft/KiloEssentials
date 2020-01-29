@@ -5,7 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
@@ -56,8 +55,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public int sendError(ExceptionMessageNode node) {
-        KiloChat.sendMessageTo(this.getPlayer(), new LiteralText(ModConstants.getMessageUtil().fromExceptionNode(node)).formatted(Formatting.RED));
+    public int sendError(ExceptionMessageNode node, Object... objects) {
+        String message = ModConstants.getMessageUtil().fromExceptionNode(node);
+        KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage(
+                (objects != null) ? String.format(message, objects) : message, true)
+                .toText().formatted(Formatting.RED));
         return -1;
     }
 
@@ -136,6 +138,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         this.getPlayer().abilities.allowFlying = set;
         this.getPlayer().abilities.flying = set;
         this.getPlayer().sendAbilitiesUpdate();
+    }
+
+    @Deprecated
+    @Override
+    public void saveData() {
     }
 
     public void onJoined() {

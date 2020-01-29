@@ -11,7 +11,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
@@ -264,7 +266,7 @@ public class ServerUserManager implements UserManager {
         }
 
         public UserLoadingText start() {
-            this.animatedText.start();
+            this.animatedText.setStyle(new Style().setColor(Formatting.YELLOW)).start();
             return this;
         }
 

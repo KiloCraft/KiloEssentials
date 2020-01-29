@@ -6,6 +6,7 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.world.location.Location;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -201,6 +202,10 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public void setDisplayParticleId(int i) {
+    }
+
+    @Override
+    public void saveData() throws IOException {
     }
 
 }
