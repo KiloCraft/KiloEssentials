@@ -20,8 +20,10 @@ import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
+import org.kilocraft.essentials.extensions.emoticles.MagicalParticlesManager;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.StartupScript;
@@ -65,21 +67,21 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(KiloEvents events, KiloConfig config, KiloCommands commands) {
+	public KiloEssentialsImpl(KiloEvents events, KiloConfigOLD config, KiloCommands commands) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = commands;
 
-		KiloServer.getServer().setName(KiloConfig.getProvider().getMessages().getStringSafely("server.name", "Minecraft Server"));
+		KiloServer.getServer().setName(KiloConfigOLD.getProvider().getMessages().getStringSafely("server.name", "Minecraft Server"));
 
 		permissionWriters.add((map, server) -> {
 			for (EssentialPermission perm : EssentialPermission.values()) {
 				map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
 			}
 
-			for (int i = 1; i <= KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
+			for (int i = 1; i <= KiloConfigOLD.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
 				map.registerPermission(CommandPermission.HOME_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
 			}
 		});
@@ -125,11 +127,35 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");
 		features.tryToRegister(new WarpManager(), "ServerWideWarps");
 		features.tryToRegister(new PlayerSitManager(), "BetterChairs");
+		features.tryToRegister(new MagicalParticlesManager(), "MagicalParticles");
 		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
 		features.tryToRegister(new VoteCommand(), "VoteCommand");
 
-		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
+		if (KiloConfigOLD.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
 			new StartupScript();
+
+		new KiloConfig();
+
+		/*
+		 * Test TODO: REMOVE THIS TEST
+		 */
+
+//		FileConfig fileConfig = FileConfig.of(KiloConfig.getConfigPath() + "particle_types.yml");
+//		fileConfig.load();
+//
+//		System.out.println(String.valueOf(fileConfig.get("types")));
+//		System.out.println(String.valueOf(fileConfig.get("types.emerald")));
+//
+//		List<String> strings = fileConfig.get("types");
+//
+//		for (String string : strings) {
+//			System.out.println(string);
+//		}
+
+		/*
+		 * Test END
+		 */
+
 	}
 
 	public static Logger getLogger() {

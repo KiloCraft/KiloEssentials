@@ -17,7 +17,7 @@ import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -65,7 +65,7 @@ public class HomesCommand extends EssentialCommand {
             User user = optionalUser.get();
 
             if (user.getHomesHandler().getHomes().size() == 0) {
-                source.sendConfigMessage(KiloConfig.getMessage("commands.playerHomes.admin.no_homes")
+                source.sendConfigMessage(KiloConfigOLD.getMessage("commands.playerHomes.admin.no_homes")
                         .replace("{TARGET_TAG}", user.getNameTag()));
                 return;
             }

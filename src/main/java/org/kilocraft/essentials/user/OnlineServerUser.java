@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -80,7 +80,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendConfigMessage(String key, Object... objects) {
-        String message = KiloConfig.getProvider().getMessages().getMessage(key, objects);
+        String message = KiloConfigOLD.getProvider().getMessages().getMessage(key, objects);
         this.sendMessage(new ChatMessage(message, true));
     }
 

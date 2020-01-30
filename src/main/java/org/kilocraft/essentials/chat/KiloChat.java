@@ -11,17 +11,17 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.ConfigCache;
-import org.kilocraft.essentials.config.ConfigValueGetter;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
+import org.kilocraft.essentials.config_old.ConfigCache;
+import org.kilocraft.essentials.config_old.ConfigValueGetter;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config_old.provided.localVariables.UserConfigVariables;
 import org.kilocraft.essentials.user.ServerUser;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class KiloChat {
-	private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
-	private static ConfigValueGetter messages = KiloConfig.getProvider().getMessages();
+	private static ConfigValueGetter config = KiloConfigOLD.getProvider().getMain();
+	private static ConfigValueGetter messages = KiloConfigOLD.getProvider().getMessages();
 
 	public static String getFormattedLang(String key) {
 		return getFormattedString(ModConstants.getLang().getProperty(key), (Object) null);

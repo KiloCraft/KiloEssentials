@@ -1,9 +1,9 @@
-package org.kilocraft.essentials.config.provided.localVariables;
+package org.kilocraft.essentials.config_old.provided.localVariables;
 
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.server.Server;
-import org.kilocraft.essentials.config.variablehelper.LocalConfigVariable;
+import org.kilocraft.essentials.config_old.variablehelper.LocalConfigVariable;
 import org.kilocraft.essentials.util.TPSTracker;
 
 import java.util.HashMap;

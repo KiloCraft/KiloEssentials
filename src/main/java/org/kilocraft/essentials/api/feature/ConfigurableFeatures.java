@@ -2,7 +2,7 @@ package org.kilocraft.essentials.api.feature;
 
 import net.minecraft.SharedConstants;
 import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 
 public class ConfigurableFeatures {
     public ConfigurableFeatures() {
@@ -11,7 +11,7 @@ public class ConfigurableFeatures {
 
     public <F extends ConfigurableFeature> F tryToRegister(F feature, String configID) {
         try {
-            if (KiloConfig.getFileConfigOfMain().getOrElse("features." + configID, false)) {
+            if (KiloConfigOLD.getFileConfigOfMain().getOrElse("extensions." + configID, false)) {
                 if (SharedConstants.isDevelopment)
                     KiloEssentialsImpl.getLogger().info("Initialing \"" + feature.getClass().getName() + "\"");
                 else

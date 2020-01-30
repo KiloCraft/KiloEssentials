@@ -19,10 +19,10 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.ConfigCache;
-import org.kilocraft.essentials.config.ConfigValueGetter;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
+import org.kilocraft.essentials.config_old.ConfigCache;
+import org.kilocraft.essentials.config_old.ConfigValueGetter;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config_old.provided.localVariables.UserConfigVariables;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 
@@ -32,7 +32,7 @@ import java.util.UUID;
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class ServerChat {
-    private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
+    private static ConfigValueGetter config = KiloConfigOLD.getProvider().getMain();
     private static String everyone_template = config.getStringSafely(ConfigCache.CHAT_PING_FORMAT_EVERYONE, "@everyone");
     private static String senderFormat = config.getStringSafely(ConfigCache.CHAT_PING_FORMAT, "%PLAYER_NAME");
     private static String displayFormat = config.getStringSafely(ConfigCache.CHAT_PING_PINGED, "&a%PLAYER_DISPLAYNAME%");
@@ -81,7 +81,7 @@ public class ServerChat {
         }
 
         message.setMessage(config.getLocalReplacer()
-                    .replace(template, new UserConfigVariables((ServerUser) sender), KiloConfig.getFileConfigOfMain())
+                    .replace(template, new UserConfigVariables((ServerUser) sender), KiloConfigOLD.getFileConfigOfMain())
                 .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().asFormattedString())
                 .replace("%MESSAGE%", message.getFormattedMessage()), true);
 

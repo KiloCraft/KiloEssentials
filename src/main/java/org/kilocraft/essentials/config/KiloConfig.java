@@ -1,125 +1,28 @@
 package org.kilocraft.essentials.config;
 
+import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.core.conversion.ObjectConverter;
 import com.electronwill.nightconfig.core.file.FileConfig;
-import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.config.provided.ConfigProvider;
-import org.kilocraft.essentials.provided.KiloFile;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-/**
- * @author  CODY_AI
- * @version 1.3
- */
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 
 public class KiloConfig {
 
-    private static List<ConfigIOProvider> callbacks = new ArrayList<>();
-    private static String workingDir = System.getProperty("user.dir");
-    private static String essentialsDir = "/KiloEssentials";
-    private static String configPath = workingDir + essentialsDir + "/config/";
-    private static String resourcePath = "assets/configurations/";
-    private static String dataDir = essentialsDir + "/data/";
-
-    private static HashMap<String, String> configFiles = new HashMap<String, String>(){{
-        put("KiloEssentials.yaml", workingDir + "/");
-        put("Messages.yaml", configPath);
-        //put("Commands.yaml", configPath);
-        put("HelpMessage.yaml", configPath);
-        put("Rules.yaml", configPath);
-    }};
-
-    private static ConfigProvider provider;
-
     public KiloConfig() {
-        handle();
-        provider = new ConfigProvider();
+        FileConfig config = FileConfig.of(KiloConfigOLD.getConfigPath() + "essentials.yml");
+        config.load();
+        config.set("the.long.path.in.the.config", "ThaValue");
+        config.set("thisIs.a.test", new String[]{"OwO", "UwU"});
+        config.set("thisIs.a.test", 12);
+        config.save();
 
-        KiloEssentialsImpl.getLogger().info("Configurations are now loaded");
-    }
+        ConfigData obj = new ObjectConverter().toObject(config, ConfigData::new);
+        System.out.println("Obj: " + obj);
 
-    static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
-    static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");
-    //static FileConfig COMMANDS = FileConfig.of(configPath + "Commands.yaml");
+        System.out.println(obj.server_name);
 
-    private void handle() {
-        try {
-            configFiles.forEach((name, path) -> {
-                KiloFile file = new KiloFile(name, path);
-                file.tryToLoad(resourcePath + name);
-            });
+        Config confingFromObject = new ObjectConverter().toConfig(obj, Config::inMemory);
 
-            load();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static <C extends ConfigIOProvider> void registerIOCallBaack(C callback) {
-        callbacks.add(callback);
-    }
-
-    public static void triggerCallbacks() {
-        for (ConfigIOProvider callback : callbacks) {
-            callback.fromConfig(provider);
-        }
-    }
-
-    public static void saveCallbacks() {
-        for (ConfigIOProvider callback : callbacks) {
-            callback.toConfig(provider);
-        }
-    }
-
-    public static FileConfig getFileConfigOfMain() {
-        return MAIN;
-    }
-
-    public static FileConfig getFileConfigOfMessages() {
-        return MESSAGES;
-    }
-
-    public static FileConfig getFileConfigOfCommands() {
-        return null;
-        //return COMMANDS;
-    }
-
-    public static ConfigProvider getProvider() {
-        return provider;
-    }
-
-    public static String getWorkingDirectory() {
-        return workingDir;
-    }
-
-    public static String getConfigPath() {
-        return configPath;
-    }
-
-    public static String getEssentialsDirectory() {
-        return workingDir + essentialsDir;
-    }
-
-    public static String getDataDirectory() {
-        return workingDir + dataDir;
-    }
-
-    public static String getMessage(String key, Object... objects) {
-        return provider.getMessages().getMessage(key, objects);
-    }
-
-    public String getMessage(ConfigCache c, Object... objects) {
-        return provider.getMessages().getMessage(c, objects);
-    }
-
-    public static void load() {
-        MAIN.load();
-        MESSAGES.load();
-        //COMMANDS.load();
-        ConfigCache.load();
+        System.out.println("cfg: " + confingFromObject);
     }
 
 }

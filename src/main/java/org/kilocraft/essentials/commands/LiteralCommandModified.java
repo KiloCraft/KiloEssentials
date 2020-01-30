@@ -2,8 +2,8 @@ package org.kilocraft.essentials.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.kilocraft.essentials.config.ConfigCache;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.ConfigCache;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 import org.kilocraft.essentials.mixin.CommandManagerMixin;
 
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class LiteralCommandModified {
     }
 
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
-        boolean sugReqPerm = KiloConfig.getProvider().getMain().getBooleanSafely(
+        boolean sugReqPerm = KiloConfigOLD.getProvider().getMain().getBooleanSafely(
                 ConfigCache.COMMANDS_SUGGESTIONS_REQUIRE_PERMISSION, true);
 
         if (!sugReqPerm)

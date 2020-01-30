@@ -16,7 +16,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -67,7 +67,7 @@ public class HomeCommand extends EssentialCommand {
                 throw MISSING_DIMENSION.create();
         }
 
-        user.sendMessage(new ChatMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
+        user.sendMessage(new ChatMessage(KiloConfigOLD.getMessage("commands.playerHomes.teleporting")
                 .replace("{HOME_NAME}", name), true));
         return SINGLE_SUCCESS;
     }
@@ -102,9 +102,9 @@ public class HomeCommand extends EssentialCommand {
                 }
 
                 if (CommandHelper.areTheSame(source, user))
-                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
+                    source.sendMessage(KiloConfigOLD.getMessage("commands.playerHomes.teleporting")
                             .replace("{HOME_NAME}", name));
-                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.teleporting")
+                else source.sendMessage(KiloConfigOLD.getMessage("commands.playerHomes.admin.teleporting")
                         .replace("{HOME_NAME}", name)
                         .replace("{TARGET_TAG}", user.getNameTag()));
             });

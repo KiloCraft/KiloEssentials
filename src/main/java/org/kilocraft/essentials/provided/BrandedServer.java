@@ -7,7 +7,7 @@ import net.minecraft.util.PacketByteBuf;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 
 public class BrandedServer {
     public static void set() {
@@ -24,7 +24,7 @@ public class BrandedServer {
     }
 
     private static String getFinalBrandName() {
-        String configBrand = KiloConfig.getProvider().getMain().getStringSafely("server.displayBrandName", "default");
+        String configBrand = KiloConfigOLD.getProvider().getMain().getStringSafely("server.displayBrandName", "default");
         boolean useDefault = configBrand.equals("default");
 
         return TextFormat.translate(useDefault ? ModConstants.getProperties().getProperty("server.brand") :

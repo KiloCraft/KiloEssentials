@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.UserPlayer;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +20,7 @@ public class ServerUserPlayer implements UserPlayer {
     }
 
     private ServerUserPlayer(UUID uuid) {
-        File file = new File(KiloConfig.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
+        File file = new File(KiloConfigOLD.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
 
         try {
             this.compoundTag = NbtIo.readCompressed(new FileInputStream(file));

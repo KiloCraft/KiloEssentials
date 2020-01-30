@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.listeners;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -10,21 +9,17 @@ import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.ServerTickEvent;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.user.ServerUserManager;
 
 public class OnTick implements EventHandler<ServerTickEvent> {
-
+	private static Server server = KiloServer.getServer();
 	// Spread particle processing over two frames to increase performance
 	boolean processFirstHalf = true;
 
 	@Override
 	public void handle(ServerTickEvent event) {
 		((ServerUserManager) KiloServer.getServer().getUserManager()).onTick();
-
-		for (ServerPlayerEntity player : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-			processDimension(player);
-		}
 
 		if (processFirstHalf){
 			for (int i = 0; i < KiloServer.getServer().getPlayerManager().getPlayerList().size() / 2; i++) {
@@ -43,18 +38,6 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 		}
 
 		processFirstHalf = !processFirstHalf;
-	}
-
-	private void processDimension(ServerPlayerEntity player) {
-		boolean allowNether = KiloConfig.getProvider().getMain().getBooleanSafely("server.world.allow_nether", false);
-		boolean allowTheEnd = KiloConfig.getProvider().getMain().getBooleanSafely("server.world.allow_the_end", false);
-		boolean kickFromDim = KiloConfig.getProvider().getMain().getBooleanSafely("server.also_kick_from_dim", false);
-
-		if (kickFromDim &&
-				(!allowNether && player.getEntityWorld().getDimension().getType().equals(DimensionType.THE_NETHER)) ||
-				!allowTheEnd && player.getEntityWorld().getDimension().getType().equals(DimensionType.THE_END))
-			player.requestRespawn();
-
 	}
 
 	private void processParticles(ServerPlayerEntity player) {

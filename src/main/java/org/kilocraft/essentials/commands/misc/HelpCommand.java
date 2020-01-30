@@ -7,7 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 
 public class HelpCommand extends EssentialCommand {
     public HelpCommand() {
@@ -19,7 +19,7 @@ public class HelpCommand extends EssentialCommand {
     }
 
     public int execute(CommandContext<ServerCommandSource> context) {
-        FileConfig config = FileConfig.of(KiloConfig.getConfigPath() + "HelpMessage.yaml");
+        FileConfig config = FileConfig.of(KiloConfigOLD.getConfigPath() + "help.yml");
         config.load();
         String message = config.getOrElse("message", "Missing config");
         message = TextFormat.translate(message);

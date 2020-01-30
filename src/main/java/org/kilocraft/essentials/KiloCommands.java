@@ -49,8 +49,8 @@ import org.kilocraft.essentials.commands.teleport.RtpCommand;
 import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
-import org.kilocraft.essentials.config.ConfigCache;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.ConfigCache;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
@@ -294,7 +294,7 @@ public class KiloCommands {
 
     public static void sendPermissionError(ServerCommandSource source) {
         KiloChat.sendMessageToSource(source, new ChatMessage(
-                KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_PERMISSION_EXCEPTION)
+                KiloConfigOLD.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_PERMISSION_EXCEPTION)
                 ,true));
     }
 
@@ -369,7 +369,7 @@ public class KiloCommands {
                         sendPermissionError(executor);
                     else
                         KiloChat.sendMessageToSource(executor, new ChatMessage(
-                                KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_EXECUTION_EXCEPTION)
+                                KiloConfigOLD.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_EXECUTION_EXCEPTION)
                                 , true));
 
                 } else {

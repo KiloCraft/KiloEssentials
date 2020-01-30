@@ -1,0 +1,15 @@
+##> KILO ESSENTIALS MAIN CONFIG
+##Copyright (c) 2019 KiloCraft, All rights reserved.
+##Licensed under the MIT license.
+##Config author: CODY_AI (github: OnBlock)
+#
+types:
+
+  dragon_breath: {
+                   "true, ~ ~ ~, 10.0 0.5 0.0, 0.5, 0"
+  }
+
+  emerald: {
+             "true, ~ ~0.33 ~, 3, 0.4, 0f, 0.4f, 0",
+             "true, ~ ~0.33 ~, 3, 0.4, 0f, 0.4f, 0"
+  }

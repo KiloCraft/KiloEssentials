@@ -21,7 +21,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -71,7 +71,7 @@ public class DelhomeCommand extends EssentialCommand {
             homeHandler.removeHome(name);
         }
 
-        user.sendMessage(new ChatMessage(KiloConfig.getMessage("commands.playerHomes.remove")
+        user.sendMessage(new ChatMessage(KiloConfigOLD.getMessage("commands.playerHomes.remove")
                 .replace("{HOME_NAME}", name), true));
 
         return SINGLE_SUCCESS;
@@ -117,9 +117,9 @@ public class DelhomeCommand extends EssentialCommand {
                 }
 
                 if (CommandHelper.areTheSame(source, user))
-                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.remove")
+                    source.sendMessage(KiloConfigOLD.getMessage("commands.playerHomes.remove")
                             .replace("{HOME_NAME}", name));
-                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.remove")
+                else source.sendMessage(KiloConfigOLD.getMessage("commands.playerHomes.admin.remove")
                         .replace("{HOME_NAME}", name)
                         .replace("{TARGET_TAG}", user.getNameTag()));
             });

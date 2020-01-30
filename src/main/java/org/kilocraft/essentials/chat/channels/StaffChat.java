@@ -7,8 +7,8 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.config.ConfigValueGetter;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.ConfigValueGetter;
+import org.kilocraft.essentials.config_old.KiloConfigOLD;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class StaffChat implements ChatChannel {
-    private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
+    private static ConfigValueGetter config = KiloConfigOLD.getProvider().getMain();
 
     public StaffChat() {
     }
