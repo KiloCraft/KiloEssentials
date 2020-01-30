@@ -17,8 +17,8 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
-import org.kilocraft.essentials.config_old.ConfigCache;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.ConfigCache;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,7 +36,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Inject(method = "onChatMessage", cancellable = true,
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Z)V"))
     private void modify(ChatMessageC2SPacket chatMessageC2SPacket_1, CallbackInfo ci) {
-        if (KiloConfigOLD.getProvider().getMain().getBooleanSafely(ConfigCache.USE_VANILLA_CHAT, false) &&
+        if (KiloConfig.getProvider().getMain().getBooleanSafely(ConfigCache.USE_VANILLA_CHAT, false) &&
                 KiloServer.getServer().getOnlineUser(player).getUpstreamChannelId().equals(GlobalChat.getChannelId())) {
             return;
         }

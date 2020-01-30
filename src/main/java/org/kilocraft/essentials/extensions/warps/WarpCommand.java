@@ -19,7 +19,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 
@@ -94,7 +94,7 @@ public class WarpCommand {
             ServerWorld world = source.getMinecraftServer().getWorld(Registry.DIMENSION_TYPE.get(warp.getLocation().getDimension()));
 
             KiloChat.sendMessageTo(source, new ChatMessage(
-                    KiloConfigOLD.getProvider().getMessages().get(true, "commands.serverWideWarps.teleportTo")
+                    KiloConfig.getProvider().getMessages().get(true, "commands.serverWideWarps.teleportTo")
                             .replace("%WARPNAME%", name),
                     true
             ));

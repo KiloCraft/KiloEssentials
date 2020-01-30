@@ -5,7 +5,7 @@ import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.KiloConfig;
 
 public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
     @Override
@@ -20,7 +20,7 @@ public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
 
             ServerChat.sendCommandSpy(event.getExecutor(), command);
 
-            if (KiloConfigOLD.getProvider().getMain().getBooleanSafely("commandSpy.saveToLog", true))
+            if (KiloConfig.getProvider().getMain().getBooleanSafely("commandSpy.saveToLog", true))
                 KiloServer.getLogger().info("[" + event.getExecutor().getName() + "]: " + command);
         }
     }

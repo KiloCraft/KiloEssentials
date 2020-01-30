@@ -4,7 +4,7 @@ import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +14,7 @@ import java.util.UUID;
 public class NBTUtils {
     @Nullable
     public static CompoundTag getPlayerTag(UUID uuid) {
-        File file = new File(KiloConfigOLD.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
+        File file = new File(KiloConfig.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
         CompoundTag compoundTag = null;
 
         try {

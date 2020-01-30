@@ -23,7 +23,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class NicknameCommand extends EssentialCommand {
         ServerCommandSource source = ctx.getSource();
         ServerPlayerEntity self = source.getPlayer();
 
-        Object unchecked = KiloConfigOLD.getProvider().getMain().getIntegerSafely("nickname-max-length", 35);
+        Object unchecked = KiloConfig.getProvider().getMain().getIntegerSafely("nickname-max-length", 35);
 
         if (unchecked == null) {
             throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();
@@ -102,7 +102,7 @@ public class NicknameCommand extends EssentialCommand {
 
         User user = KiloServer.getServer().getUserManager().getOnline(self);
 
-        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfigOLD.getMessage("commands.nickname.setSelf")
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setSelf")
                 .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                 .replace("{NICK_NEW}", nickname)
                 , true));
@@ -118,7 +118,7 @@ public class NicknameCommand extends EssentialCommand {
         ServerPlayerEntity player = getPlayer(ctx, "target");
         String nickname = getString(ctx, "nickname");
 
-        Object unchecked = KiloConfigOLD.getProvider().getMain().getValue("nickname-max-length");
+        Object unchecked = KiloConfig.getProvider().getMain().getValue("nickname-max-length");
 
         if (unchecked == null) {
             throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();
@@ -133,7 +133,7 @@ public class NicknameCommand extends EssentialCommand {
 
         User user = KiloServer.getServer().getUserManager().getOnline(player);
 
-        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfigOLD.getMessage("commands.nickname.setOthers")
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setOthers")
                         .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                         .replace("{NICK_NEW}", nickname)
                         .replace("{TARGET}", player.getEntityName())
@@ -165,7 +165,7 @@ public class NicknameCommand extends EssentialCommand {
         // This is an Optional.ofNullable, so the DataTracker will just reset the name without any other magic since TrackedData is always and automatically synchronized with the client.
         player.setCustomName(null);
 
-        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new ChatMessage(KiloConfigOLD.getMessage("commands.nickname.resetOthers")
+        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.resetOthers")
                 .replace("{TARGET}", player.getEntityName())
                 , true));        return 1;
     }

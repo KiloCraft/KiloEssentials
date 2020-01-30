@@ -1,8 +1,8 @@
-package org.kilocraft.essentials.config_old.provided.localVariables;
+package org.kilocraft.essentials.config.provided.localVariables;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.config_old.variablehelper.LocalConfigVariable;
+import org.kilocraft.essentials.config.variablehelper.LocalConfigVariable;
 
 import java.util.HashMap;
 

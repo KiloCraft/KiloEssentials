@@ -7,7 +7,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -23,7 +23,7 @@ public class DiscordCommand implements ConfigurableFeature {
     }
 
     public static int execute(CommandContext<ServerCommandSource> context) {
-        String jsonText = KiloConfigOLD.getMessage("commands.discord");
+        String jsonText = KiloConfig.getMessage("commands.discord");
         Text text = TextFormat.translateToNMSText(jsonText);
         KiloChat.sendMessageToSource(context.getSource(), text);
 

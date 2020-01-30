@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.nbt.NbtIo;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,7 +52,7 @@ public class UserHandler {
     }
 
     public File getUserFile(UUID uuid) {
-        return new File( KiloConfigOLD.getWorkingDirectory() + "/KiloEssentials/users/" + uuid.toString() + ".dat");
+        return new File( KiloConfig.getWorkingDirectory() + "/KiloEssentials/users/" + uuid.toString() + ".dat");
     }
 
 }

@@ -82,7 +82,7 @@ commands:
   # [TextComponenet]
   discord: '["",{"text":"Discord","color":"blue"},{"text":" >","color":"dark_gray"},{"text":">","color":"gray"},{"text":" "},{"text":"https://discord.gg/uzuQEe9","color":"white","clickEvent":{"action":"open_url","value":"https://discord.gg/uzuQEe9"},"hoverEvent":{"action":"show_text","value":{"text":"Click Here", "color":"green"}}}]'
   # [TextComponenet]
-  vote: '{"text":"Edit this in KiloEssentials/config/messaes.yml", "color":"green"}'
+  vote: '{"text":"Edit this in KiloEssentials/config/Messages.yaml", "color":"green"}'
 
   serverWideWarps:
     teleportTo: 'Teleporting to %WARPNAME%'

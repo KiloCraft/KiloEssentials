@@ -117,20 +117,14 @@ server:
     footer: |
       &3Discord&8: &7discord.gg/uzuQEe9
       &aStore&8: &7kilocraft.craftingstore.net
-
-extensions:
+features:
   #[<boolean>]
   #A list of the features you want to enable!
   DiscordCommand: true
   VoteCommand: true
-  #Allow players to set home for themselves!
   PlayerHomes: true
-  #Warps! Available to everyone
   ServerWideWarps: true
-  #Sit on stairs and slabs
   BetterChairs: true
-  #Magical Particles
-  MagicalParticles: true
 
 #The Maximum limit of homes a player can set
 #Permission node: 'kiloessentials.command.home.set.limit.<Limit integer>'

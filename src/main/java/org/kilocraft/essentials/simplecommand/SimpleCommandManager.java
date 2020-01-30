@@ -10,8 +10,8 @@ import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config_old.ConfigCache;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.ConfigCache;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class SimpleCommandManager {
                     sendPermissionError(source);
                 else
                     KiloChat.sendMessageToSource(source, new ChatMessage(
-                            KiloConfigOLD.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_EXECUTION_EXCEPTION)
+                            KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_EXECUTION_EXCEPTION)
                             , true));
 
             } else {

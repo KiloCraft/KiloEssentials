@@ -7,8 +7,8 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.config_old.ConfigValueGetter;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.ConfigValueGetter;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class BuilderChat implements ChatChannel {
-    private static ConfigValueGetter config = KiloConfigOLD.getProvider().getMain();
+    private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
     private List<UUID> subscribers;
 
     public BuilderChat() {

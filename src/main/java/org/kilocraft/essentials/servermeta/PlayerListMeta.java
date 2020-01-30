@@ -6,7 +6,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketMixin;
 import org.kilocraft.essentials.util.TPSTracker;
 
@@ -14,8 +14,8 @@ public class PlayerListMeta {
     static String header = "", footer = "";
 
     static void load() {
-        header = KiloConfigOLD.getProvider().getMain().getStringSafely("server.player_list.header", "");
-        footer = KiloConfigOLD.getProvider().getMain().getStringSafely("server.player_list.footer", "");
+        header = KiloConfig.getProvider().getMain().getStringSafely("server.player_list.header", "");
+        footer = KiloConfig.getProvider().getMain().getStringSafely("server.player_list.footer", "");
     }
 
     static void provideFor(ServerPlayerEntity player) {

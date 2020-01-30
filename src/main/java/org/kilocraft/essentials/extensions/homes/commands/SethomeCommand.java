@@ -25,7 +25,7 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -77,7 +77,7 @@ public class SethomeCommand extends EssentialCommand {
         }
 
         homeHandler.addHome(new Home(player.getUuid(), name, Vec3dLocation.of(player).shortDecimals()));
-        user.sendMessage(new ChatMessage(KiloConfigOLD.getMessage("commands.playerHomes.set")
+        user.sendMessage(new ChatMessage(KiloConfig.getMessage("commands.playerHomes.set")
                 .replace("{HOME_NAME}", name), true));
 
         return SINGLE_SUCCESS;
@@ -125,9 +125,9 @@ public class SethomeCommand extends EssentialCommand {
                 }
 
                 if (CommandHelper.areTheSame(source, user))
-                    source.sendMessage(KiloConfigOLD.getMessage("commands.playerHomes.set")
+                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.set")
                             .replace("{HOME_NAME}", name));
-                else source.sendMessage(KiloConfigOLD.getMessage("commands.playerHomes.admin.set")
+                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.set")
                         .replace("{HOME_NAME}", name)
                         .replace("{TARGET_TAG}", user.getNameTag()));
             });
@@ -143,7 +143,7 @@ public class SethomeCommand extends EssentialCommand {
     }
 
     private static boolean canSetHome(User user) {
-        for (int i = 1; i < KiloConfigOLD.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
+        for (int i = 1; i < KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
             String thisPerm = "kiloessentials.command.home.limit." + i;
             int amount = Integer.parseInt(thisPerm.split("\\.")[4]);
             if (user.getHomesHandler().getHomes().size() < amount &&

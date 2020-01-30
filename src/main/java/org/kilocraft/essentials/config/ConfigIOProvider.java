@@ -1,6 +1,6 @@
-package org.kilocraft.essentials.config_old;
+package org.kilocraft.essentials.config;
 
-import org.kilocraft.essentials.config_old.provided.ConfigProvider;
+import org.kilocraft.essentials.config.provided.ConfigProvider;
 
 public interface ConfigIOProvider {
 

@@ -1,9 +1,9 @@
-package org.kilocraft.essentials.config_old;
+package org.kilocraft.essentials.config;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 
-import static org.kilocraft.essentials.config_old.KiloConfigOLD.MAIN;
-import static org.kilocraft.essentials.config_old.KiloConfigOLD.MESSAGES;
+import static org.kilocraft.essentials.config.KiloConfig.MAIN;
+import static org.kilocraft.essentials.config.KiloConfig.MESSAGES;
 
 @SuppressWarnings("")
 public enum  ConfigCache {

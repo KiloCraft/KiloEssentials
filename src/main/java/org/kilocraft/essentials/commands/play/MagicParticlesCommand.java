@@ -8,6 +8,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
+
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -16,18 +17,19 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.User;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
+
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 
 public class MagicParticlesCommand extends EssentialCommand {
 
-	public static final Predicate<ServerCommandSource> PERMISSION_USE_SELF = (s) -> KiloEssentials.hasPermissionNode(s, EssentialPermission.MAGICALPARTICLES_SELF);
-	public static final Predicate<ServerCommandSource> PERMISSION_USE_OTHERS = (s) -> KiloEssentials.hasPermissionNode(s, EssentialPermission.MAGICALPARTICLES_OTHERS);
+	public static final Predicate<ServerCommandSource> PERMISSION_USE_SELF = (s) -> KiloEssentials.hasPermissionNode(s, EssentialPermission.MAGIC_PARTICLES_SELF);
+	public static final Predicate<ServerCommandSource> PERMISSION_USE_OTHERS = (s) -> KiloEssentials.hasPermissionNode(s, EssentialPermission.MAGIC_PARTICLES_OTHERS);
 	public static ArrayList<String> particles = new ArrayList<String>(){};
 
 	public MagicParticlesCommand() {
@@ -81,7 +83,7 @@ public class MagicParticlesCommand extends EssentialCommand {
 	}
 
 	private static int setParticle(CommandContext<ServerCommandSource> context, PlayerEntity player, String name) throws CommandSyntaxException {
-		if (!particles.contains(name)) {
+		if(!particles.contains(name)) {
 			context.getSource().sendFeedback(LangText.getFormatter(true, "command.playerparticles.particlenotfound", name), false);
 			return SINGLE_FAILED;
 		}

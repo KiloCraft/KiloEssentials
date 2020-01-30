@@ -2,8 +2,8 @@ package org.kilocraft.essentials.util;
 
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.config_old.ConfigValueGetter;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.ConfigValueGetter;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import java.io.*;
 
@@ -15,7 +15,7 @@ public class StartupScript {
     private String STARTUP_CODE;
 
     public StartupScript() {
-        ConfigValueGetter config = KiloConfigOLD.getProvider().getMain();
+        ConfigValueGetter config = KiloConfig.getProvider().getMain();
         this.FILE_NAME = config.getStringSafely("startup-script.script-name", "start") + ".sh";
         this.file = new File(System.getProperty("user.dir") + File.separator + FILE_NAME);
 

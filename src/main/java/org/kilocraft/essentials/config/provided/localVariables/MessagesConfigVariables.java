@@ -1,7 +1,7 @@
-package org.kilocraft.essentials.config_old.provided.localVariables;
+package org.kilocraft.essentials.config.provided.localVariables;
 
-import org.kilocraft.essentials.config_old.variablehelper.LocalConfigVariable;
-import org.kilocraft.essentials.config_old.KiloConfigOLD;
+import org.kilocraft.essentials.config.variablehelper.LocalConfigVariable;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.HashMap;
 
@@ -20,6 +20,6 @@ public class MessagesConfigVariables implements LocalConfigVariable {
     }
 
     private static String getValue(String s) {
-        return KiloConfigOLD.getFileConfigOfMessages().getOrElse(s, "NULL");
+        return KiloConfig.getFileConfigOfMessages().getOrElse(s, "NULL");
     }
 }
