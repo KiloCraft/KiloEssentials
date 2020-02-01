@@ -10,12 +10,13 @@ import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.world.Structures;
 import org.kilocraft.essentials.provided.LocateStructureProvided;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -29,7 +30,6 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class LocateStructureCommand {
     public static void registerAsChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
-
         LiteralArgumentBuilder<ServerCommandSource> literalStructure = literal("structure")
                 .requires(s -> KiloCommands.hasPermission(s, CommandPermission.LOCATE_STRUCTURE));
 
@@ -43,22 +43,19 @@ public class LocateStructureCommand {
 
     private static CompletableFuture<Suggestions> structureNames(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         List<String> strings = new ArrayList<>();
-        for (String s : Structures.list) strings.add(s.toLowerCase());
+        for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE) strings.add(structureFeature.getName().toLowerCase());
         return CommandSource.suggestMatching(strings, builder);
     }
 
     private static int execute(ServerCommandSource source, Identifier identifier) throws CommandSyntaxException {
-        String structure = identifier.getPath();
+        StructureFeature<?> structure = Registry.STRUCTURE_FEATURE.get(identifier);
 
-        System.out.println(identifier.toString());
-        System.out.println(identifier.getPath());
-
-        if (!Structures.isValid(structure))
+        if (structure == null)
             throw KiloCommands.getException(ExceptionMessageNode.INCORRECT_IDENTIFIER, "structure").create();
 
-        source.sendFeedback(LangText.getFormatter(true, "command.locate.scanning", LocateStructureProvided.getStructureName(structure)), false);
+        source.sendFeedback(LangText.getFormatter(true, "command.locate.scanning", LocateStructureProvided.getStructureName(structure.getName())), false);
 
-        StructureLocatorThread locatorThread = new StructureLocatorThread(source, structure);
+        StructureLocatorThread locatorThread = new StructureLocatorThread(source, structure.getName());
         Thread thread = new Thread(locatorThread, "Structure locator thread");
         thread.start();
 

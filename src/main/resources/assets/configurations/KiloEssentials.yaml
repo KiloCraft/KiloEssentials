@@ -125,6 +125,7 @@ features:
   PlayerHomes: true
   ServerWideWarps: true
   BetterChairs: true
+  MagicalParticles: true
 
 #The Maximum limit of homes a player can set
 #Permission node: 'kiloessentials.command.home.set.limit.<Limit integer>'
