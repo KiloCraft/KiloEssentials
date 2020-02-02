@@ -27,7 +27,7 @@ public class IpInfoCommand extends EssentialCommand {
 
         essentials.getUserThenAcceptAsync(source.getCommandSource(), getUserArgumentInput(ctx, "user"), (user) -> {
             if (user.getLastSocketAddress() == null) {
-                source.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress", user.getUsername());
+                source.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress");
                 return;
             }
 
