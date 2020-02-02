@@ -12,7 +12,7 @@ public class KiloEssentialsMod implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         File debugFile = new File(KiloConfig.getWorkingDirectory() + "/kiloessentials.debug");
         if (debugFile.exists()) {
-            KiloEssentials.getLogger().warn("**** SERVER IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
+            KiloEssentials.getServer().getLogger().warn("**** SERVER IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
             SharedConstants.isDevelopment = true;
         }
 

@@ -3,9 +3,7 @@ package org.kilocraft.essentials;
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.Message;
@@ -16,8 +14,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
-import org.kilocraft.essentials.api.world.ParticleAnimation;
-import org.kilocraft.essentials.api.world.ParticleFrame;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
@@ -140,23 +136,41 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		/*
 		 * @Test TODO: Remove this Test
 		 */
-		{
-			System.out.println("Registering particle types");
-			ParticleFrame frame = new ParticleFrame(ParticleTypes.DRAGON_BREATH, true,
-					0.5, 0f, 0.5f, 0, 10);
-
-			ParticleAnimation animation = new ParticleAnimation(new Identifier("kiloessentials", "breath_of_dragon"));
-			animation.append(frame);
-			ParticleAnimationManager.registerAnimation(animation);
-		}
-		{
-			ParticleFrame frame = new ParticleFrame(ParticleTypes.CLOUD, true,
-					0.4, 0, 0.4, 0, 3);
-
-			ParticleAnimation animation = new ParticleAnimation(new Identifier("ess", "happy_villager"));
-			animation.append(frame);
-			ParticleAnimationManager.registerAnimation(animation);
-		}
+//		{
+//			FileConfig fileConfig = FileConfig.of(KiloConfig.getConfigPath() + "particle_types.yml");
+//			fileConfig.load();
+//
+////			System.out.println((ArrayList<Object>) fileConfig.get("types"));
+//
+//			ArrayList<Object> objects = fileConfig.get("types");
+//
+//
+//			for (Object object : objects) {
+//				System.out.println("ML: " + object.toString());
+//
+//				List<Object> innerObject = fileConfig.get("types." + object.toString());
+//				System.out.println("IL: " + innerObject);
+//			}
+//
+//			fileConfig.close();
+//		}
+//		{
+//			System.out.println("Registering particle types");
+//			ParticleFrame frame = new ParticleFrame(ParticleTypes.DRAGON_BREATH, true,
+//					0.5, 0f, 0.5f, 0, 10);
+//
+//			ParticleAnimation animation = new ParticleAnimation(new Identifier("kiloessentials", "breath_of_dragon"));
+//			animation.append(frame);
+//			ParticleAnimationManager.registerAnimation(animation);
+//		}
+//		{
+//			ParticleFrame frame = new ParticleFrame(ParticleTypes.CLOUD, true,
+//					0.4, 0, 0.4, 0, 3);
+//
+//			ParticleAnimation animation = new ParticleAnimation(new Identifier("ess", "happy_villager"));
+//			animation.append(frame);
+//			ParticleAnimationManager.registerAnimation(animation);
+//		}
 
 	}
 

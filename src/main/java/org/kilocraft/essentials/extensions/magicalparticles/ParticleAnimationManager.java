@@ -76,7 +76,7 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
 
         //Tick counter logic, only shows the animations once in 3 ticks
         tick.getAndIncrement();
-        if (tick.get() < 3)
+        if (tick.get() < 4)
             return;
 
         uuidIdentifierMap.forEach((uuid, id) -> {
