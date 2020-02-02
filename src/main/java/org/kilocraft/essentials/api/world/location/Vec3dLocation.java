@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.world.location;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -50,6 +51,10 @@ public class Vec3dLocation implements Location {
 
     public static Vec3dLocation of(ServerPlayerEntity player) {
         return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, RegistryUtils.toIdentifier(player.dimension));
+    }
+
+    public static Vec3dLocation of(Entity entity) {
+        return new Vec3dLocation(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch, RegistryUtils.toIdentifier(entity.dimension));
     }
 
     public static Vec3dLocation of(OnlineUser user) {

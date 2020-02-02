@@ -16,9 +16,6 @@ public class KiloEssentialsMod implements DedicatedServerModInitializer {
             SharedConstants.isDevelopment = true;
         }
 
-        new KiloEssentialsImpl(
-                new KiloEvents(),
-                new KiloConfig(),
-                new KiloCommands());
+        new KiloEssentialsImpl(new KiloEvents(), new KiloConfig());
     }
 }

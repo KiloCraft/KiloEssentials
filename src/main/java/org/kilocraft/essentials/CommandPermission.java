@@ -79,6 +79,7 @@ public enum CommandPermission {
     HAT_OTHERS("hat.others"),
     SHOOT("shoot"),
     GAMERULE("gamerule"),
+    IPINFO("ipinfo"),
     ;
 
     private String node;

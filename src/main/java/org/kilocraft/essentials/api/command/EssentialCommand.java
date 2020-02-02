@@ -18,6 +18,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -31,7 +32,7 @@ import java.util.function.Predicate;
 public abstract class EssentialCommand implements IEssentialCommand {
     private String label;
     protected transient String alias[];
-    protected transient KiloEssentials essentials;
+    protected transient KiloEssentials essentials = KiloEssentials.getInstance();
     protected transient LiteralArgumentBuilder<ServerCommandSource> argumentBuilder;
     protected transient LiteralCommandNode<ServerCommandSource> commandNode;
     protected transient Server server;
@@ -39,9 +40,6 @@ public abstract class EssentialCommand implements IEssentialCommand {
     protected transient Predicate<ServerCommandSource> PERMISSION_CHECK_ROOT;
     protected transient CommandPermission PERMISSION;
     protected transient int MIN_OP_LEVEL;
-
-    public EssentialCommand() {
-    }
 
     public EssentialCommand(final String label) {
         this.label = label;
@@ -209,5 +207,9 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(String label) {
         return argument(label, StringArgumentType.string()).suggests(TabCompletions::allPlayers);
+    }
+
+    public String tl(String key, Object... objects) {
+        return ModConstants.translation(key, objects);
     }
 }

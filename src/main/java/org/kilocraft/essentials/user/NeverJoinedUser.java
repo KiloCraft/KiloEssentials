@@ -187,6 +187,11 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public @Nullable String getLastSocketAddress() {
+        return null;
+    }
+
+    @Override
     public boolean canSit() {
         return false;
     }

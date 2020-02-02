@@ -2,11 +2,13 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
@@ -85,8 +87,19 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
+    public ClientConnection getConnection() {
+        return this.getPlayer().networkHandler.client;
+    }
+
+    @Override
     public Vec3dLocation getLocationAsVector() {
         return Vec3dLocation.of(this);
+    }
+
+    @Override
+    public Vec3d getEyeLocation() {
+        Vec3d vec = getPlayer().getPos();
+        return new Vec3d(vec.getX(), getPlayer().getEyeY(), getPlayer().getPos().getZ());
     }
 
     @Override

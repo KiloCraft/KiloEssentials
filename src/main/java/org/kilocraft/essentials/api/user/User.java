@@ -90,6 +90,9 @@ public interface User {
 
     UserHomeHandler getHomesHandler();
 
+    @Nullable
+    String getLastSocketAddress();
+
     boolean canSit();
 
     void setCanSit(boolean set);

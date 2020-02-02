@@ -3,6 +3,7 @@ package org.kilocraft.essentials;
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,9 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.NeverJoinedUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
@@ -24,17 +28,15 @@ import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
@@ -62,16 +64,20 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 	private ScheduledExecutorService scheduledUpdateExecutorService;
 	private KiloDebugUtils debugUtils;
+	private ScheduledThreadPoolExecutor executor;
+	private static MinecraftServer minecraftServer;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(KiloEvents events, KiloConfig config, KiloCommands commands) {
+	public KiloEssentialsImpl(KiloEvents events, KiloConfig config) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
+		this.executor = new ScheduledThreadPoolExecutor(4);
+		minecraftServer = KiloServer.getServer().getVanillaServer();
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
-		this.commands = commands;
+		this.commands = new KiloCommands();
 
 		KiloServer.getServer().setName(KiloConfig.getProvider().getMessages().getStringSafely("server.name", "Minecraft Server"));
 
@@ -136,6 +142,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		/*
 		 * @Test TODO: Remove this Test
 		 */
+
 //		{
 //			FileConfig fileConfig = FileConfig.of(KiloConfig.getConfigPath() + "particle_types.yml");
 //			fileConfig.load();
@@ -214,6 +221,38 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	@Override
 	public KiloCommands getCommandHandler() {
 		return this.commands;
+	}
+
+	@Override
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(OnlineUser requester, String username, Consumer<? super User> action) {
+		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
+		ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer());
+		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
+			if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
+				requester.sendError(ExceptionMessageNode.USER_NOT_FOUND);
+				loadingText.stop();
+			}
+
+			optionalUser.ifPresent(action);
+			loadingText.stop();
+		}, minecraftServer);
+
+		if (!optionalCompletableFuture.isCompletedExceptionally())
+			loadingText.start();
+
+		return optionalCompletableFuture;
+	}
+
+	@Override
+	public CompletableFuture<Void> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action) {
+		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
+		return optionalCompletableFuture.thenAcceptAsync(action, KiloServer.getServer().getVanillaServer());
+	}
+
+	@Override
+	public CompletableFuture<Void> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor) {
+		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
+		return optionalCompletableFuture.thenAcceptAsync(action, KiloServer.getServer().getVanillaServer());
 	}
 
 	public <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType) {

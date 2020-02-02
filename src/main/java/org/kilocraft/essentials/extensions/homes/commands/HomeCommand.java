@@ -9,21 +9,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
-import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
-
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -78,43 +70,65 @@ public class HomeCommand extends EssentialCommand {
         OnlineUser source = getOnlineUser(player);
         String inputName = getString(ctx, "user");
 
-        CompletableFuture<Optional<User>> optionalCompletableFuture = getUser(inputName);
-        ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(player);
-
-        optionalCompletableFuture.thenAcceptAsync((optionalUser) -> {
-            if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
-                source.sendError(ExceptionMessageNode.USER_NOT_FOUND);
-                loadingText.stop();
+        essentials.getUserThenAcceptAsync(source, inputName, (user) -> {
+            if (!user.getHomesHandler().hasHome(name)) {
+                source.sendConfigMessage("commands.playerHomes.invalid_home");
                 return;
             }
 
-            User user = optionalUser.get();
-            KiloServer.getServer().getVanillaServer().execute(() -> {
-                if (!user.getHomesHandler().hasHome(name)) {
-                    source.sendConfigMessage("commands.playerHomes.invalid_home");
-                    return;
-                }
+            try {
+                user.getHomesHandler().teleportToHome(source, name);
+            } catch (UnsafeHomeException e) {
+                source.sendError(e.getMessage());
+            }
 
-                try {
-                    user.getHomesHandler().teleportToHome(source, name);
-                } catch (UnsafeHomeException e) {
-                    source.sendError(e.getMessage());
-                }
+            if (CommandHelper.areTheSame(source, user))
+                source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
+                        .replace("{HOME_NAME}", name));
+            else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.teleporting")
+                    .replace("{HOME_NAME}", name)
+                    .replace("{TARGET_TAG}", user.getNameTag()));
+        });
 
-                if (CommandHelper.areTheSame(source, user))
-                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
-                            .replace("{HOME_NAME}", name));
-                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.teleporting")
-                        .replace("{HOME_NAME}", name)
-                        .replace("{TARGET_TAG}", user.getNameTag()));
-            });
-
-            loadingText.stop();
-        }, ctx.getSource().getMinecraftServer());
-
-        if (!optionalCompletableFuture.isCompletedExceptionally()) {
-            loadingText.start();
-        }
+        //TODO: REMOVE
+//
+//        CompletableFuture<Optional<User>> optionalCompletableFuture = getUser(inputName);
+//        ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(player);
+//
+//        optionalCompletableFuture.thenAcceptAsync((optionalUser) -> {
+//            if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
+//                source.sendError(ExceptionMessageNode.USER_NOT_FOUND);
+//                loadingText.stop();
+//                return;
+//            }
+//
+//            User user = optionalUser.get();
+//            KiloServer.getServer().getVanillaServer().execute(() -> {
+//                if (!user.getHomesHandler().hasHome(name)) {
+//                    source.sendConfigMessage("commands.playerHomes.invalid_home");
+//                    return;
+//                }
+//
+//                try {
+//                    user.getHomesHandler().teleportToHome(source, name);
+//                } catch (UnsafeHomeException e) {
+//                    source.sendError(e.getMessage());
+//                }
+//
+//                if (CommandHelper.areTheSame(source, user))
+//                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
+//                            .replace("{HOME_NAME}", name));
+//                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.teleporting")
+//                        .replace("{HOME_NAME}", name)
+//                        .replace("{TARGET_TAG}", user.getNameTag()));
+//            });
+//
+//            loadingText.stop();
+//        }, ctx.getSource().getMinecraftServer());
+//
+//        if (!optionalCompletableFuture.isCompletedExceptionally()) {
+//            loadingText.start();
+//        }
 
         return AWAIT_RESPONSE;
     }

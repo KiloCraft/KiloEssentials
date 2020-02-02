@@ -42,6 +42,7 @@ import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
+import org.kilocraft.essentials.commands.moderation.IpInfoCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -152,7 +153,7 @@ public class KiloCommands {
             add(new MessageCommand());
             add(new ReplyCommand());
             add(new RelnameCommand());
-            add(new MagicParticlesCommand());
+            add(new IpInfoCommand());
         }};
 
         this.commands.addAll(commandsList);

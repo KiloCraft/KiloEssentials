@@ -55,6 +55,7 @@ public class ServerUser implements User {
     private boolean socialSpy = false;
     private boolean commandSpy = false;
     private boolean canSit = false;
+    private String lastSocketAddress;
     
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -96,9 +97,18 @@ public class ServerUser implements User {
         // Chat channels stuff
         CompoundTag channelsCache = new CompoundTag();
 
-        if (this.upstreamChannelId != null)
+        if (this.upstreamChannelId != null) {
             channelsCache.putString("upstreamChannelId", this.upstreamChannelId);
-        cacheTag.put("channels", channelsCache);
+            cacheTag.put("channels", channelsCache);
+        }
+
+        if (this.isOnline() || this instanceof OnlineUser) {
+            this.lastSocketAddress = ((OnlineUser) this).getConnection().getAddress().toString();
+        }
+
+        if (this.lastSocketAddress != null) {
+            cacheTag.putString("lIP", this.lastSocketAddress);
+        }
 
         // Abilities
         if (this.canFly)
@@ -124,7 +134,7 @@ public class ServerUser implements User {
 
         metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
 
-        if(this.nickname != null) // Nicknames are Optional now.
+        if (this.nickname != null) // Nicknames are Optional now.
             metaTag.putString("nick", this.nickname);
 
         // Home logic, TODO Abstract this with features in future.
@@ -174,6 +184,10 @@ public class ServerUser implements User {
                 this.upstreamChannelId = GlobalChat.getChannelId();
         }
 
+        if (cacheTag.contains("lIP")) {
+            this.lastSocketAddress = cacheTag.getString("lIP");
+        }
+
         if (cacheTag.getBoolean("isFlyEnabled")) {
             this.canFly = true;
         }
@@ -219,6 +233,12 @@ public class ServerUser implements User {
 
     public UserHomeHandler getHomesHandler() {
         return this.homeHandler;
+    }
+
+    @Nullable
+    @Override
+    public String getLastSocketAddress() {
+        return this.lastSocketAddress;
     }
 
     @Override

@@ -1,10 +1,12 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -206,6 +208,11 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public @Nullable String getLastSocketAddress() {
+        return null;
+    }
+
+    @Override
     public boolean canSit() {
         return false;
     }
@@ -288,9 +295,20 @@ public class CommandSourceServerUser implements CommandSourceUser {
         KiloChat.sendMessageToSource(this.source, new ChatMessage(string, true));
     }
 
+    @Nullable
+    @Override
+    public ClientConnection getConnection() {
+        return null;
+    }
+
     @Override
     public Vec3dLocation getLocationAsVector() {
         return null;
+    }
+
+    @Override
+    public Vec3d getEyeLocation() {
+        return new Vec3d(0, 0, 0);
     }
 
     @Override
