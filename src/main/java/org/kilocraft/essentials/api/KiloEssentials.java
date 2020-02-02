@@ -25,6 +25,7 @@
 package org.kilocraft.essentials.api;
 
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -70,11 +71,15 @@ public interface KiloEssentials {
 
     KiloCommands getCommandHandler();
 
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerCommandSource requester, String username, Consumer<? super User> action);
+
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerPlayerEntity requester, String username, Consumer<? super User> action);
+
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(OnlineUser requester, String username, Consumer<? super User> action);
 
-    CompletableFuture<Void> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action);
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action);
 
-    CompletableFuture<Void> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor);
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor);
 
     <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType);
 

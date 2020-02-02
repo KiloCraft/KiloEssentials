@@ -14,11 +14,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -27,13 +25,10 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
-import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -90,54 +85,36 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        CompletableFuture<Optional<User>> optionalCompletableFuture = getUser(inputName);
-        ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(player);
+        essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
+            UserHomeHandler homeHandler = user.getHomesHandler();
 
-        optionalCompletableFuture.thenAcceptAsync((optionalUser) -> {
-            if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
-                source.sendError(ExceptionMessageNode.USER_NOT_FOUND);
-                loadingText.stop();
+            if (CommandHelper.areTheSame(source, user) && !canSetHome(user)) {
+                source.sendConfigMessage("commands.playerHomes.limit_reached");
                 return;
             }
 
-            User user = optionalUser.get();
-            KiloServer.getServer().getVanillaServer().execute(() -> {
-                UserHomeHandler homeHandler = user.getHomesHandler();
+            if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
+                KiloChat.sendMessageTo(player, getConfirmationText(name, user.getUsername()));
+                return;
+            } else {
+                homeHandler.removeHome(name);
+            }
 
-                if (CommandHelper.areTheSame(source, user) && !canSetHome(user)) {
-                    source.sendConfigMessage("commands.playerHomes.limit_reached");
-                    return;
-                }
+            homeHandler.addHome(new Home(user.getUuid(), name, Vec3dLocation.of(player).shortDecimals()));
 
-                if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-                    KiloChat.sendMessageTo(player, getConfirmationText(name, user.getUsername()));
-                    return;
-                } else {
-                    homeHandler.removeHome(name);
-                }
+            try {
+                user.saveData();
+            } catch (IOException e) {
+                source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
+            }
 
-                homeHandler.addHome(new Home(user.getUuid(), name, Vec3dLocation.of(player).shortDecimals()));
-
-                try {
-                    user.saveData();
-                } catch (IOException e) {
-                    source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
-                }
-
-                if (CommandHelper.areTheSame(source, user))
-                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.set")
-                            .replace("{HOME_NAME}", name));
-                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.set")
-                        .replace("{HOME_NAME}", name)
-                        .replace("{TARGET_TAG}", user.getNameTag()));
-            });
-
-            loadingText.stop();
-        }, ctx.getSource().getMinecraftServer());
-
-        if (!optionalCompletableFuture.isCompletedExceptionally()) {
-            loadingText.start();
-        }
+            if (CommandHelper.areTheSame(source, user))
+                source.sendMessage(KiloConfig.getMessage("commands.playerHomes.set")
+                        .replace("{HOME_NAME}", name));
+            else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.set")
+                    .replace("{HOME_NAME}", name)
+                    .replace("{TARGET_TAG}", user.getNameTag()));
+        });
 
         return AWAIT_RESPONSE;
     }

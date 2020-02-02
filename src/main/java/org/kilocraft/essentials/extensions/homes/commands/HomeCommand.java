@@ -90,46 +90,6 @@ public class HomeCommand extends EssentialCommand {
                     .replace("{TARGET_TAG}", user.getNameTag()));
         });
 
-        //TODO: REMOVE
-//
-//        CompletableFuture<Optional<User>> optionalCompletableFuture = getUser(inputName);
-//        ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(player);
-//
-//        optionalCompletableFuture.thenAcceptAsync((optionalUser) -> {
-//            if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
-//                source.sendError(ExceptionMessageNode.USER_NOT_FOUND);
-//                loadingText.stop();
-//                return;
-//            }
-//
-//            User user = optionalUser.get();
-//            KiloServer.getServer().getVanillaServer().execute(() -> {
-//                if (!user.getHomesHandler().hasHome(name)) {
-//                    source.sendConfigMessage("commands.playerHomes.invalid_home");
-//                    return;
-//                }
-//
-//                try {
-//                    user.getHomesHandler().teleportToHome(source, name);
-//                } catch (UnsafeHomeException e) {
-//                    source.sendError(e.getMessage());
-//                }
-//
-//                if (CommandHelper.areTheSame(source, user))
-//                    source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
-//                            .replace("{HOME_NAME}", name));
-//                else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.teleporting")
-//                        .replace("{HOME_NAME}", name)
-//                        .replace("{TARGET_TAG}", user.getNameTag()));
-//            });
-//
-//            loadingText.stop();
-//        }, ctx.getSource().getMinecraftServer());
-//
-//        if (!optionalCompletableFuture.isCompletedExceptionally()) {
-//            loadingText.start();
-//        }
-
         return AWAIT_RESPONSE;
     }
 

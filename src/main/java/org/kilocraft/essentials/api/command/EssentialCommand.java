@@ -21,6 +21,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -191,6 +192,10 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public OnlineUser getOnlineUser(ServerPlayerEntity player) throws CommandSyntaxException {
         return server.getOnlineUser(player);
+    }
+
+    public CommandSourceUser getServerUser(CommandContext<ServerCommandSource> ctx) {
+        return server.getCommandSourceUser(ctx.getSource());
     }
 
     public CompletableFuture<Optional<User>> getUser(GameProfile profile) {

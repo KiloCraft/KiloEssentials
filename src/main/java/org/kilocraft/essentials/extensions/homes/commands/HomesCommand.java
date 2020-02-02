@@ -13,17 +13,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
-import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
-
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 
@@ -52,18 +46,7 @@ public class HomesCommand extends EssentialCommand {
         OnlineUser source = getOnlineUser(player);
         String inputName = getString(ctx, "user");
 
-        CompletableFuture<Optional<User>> optionalCompletableFuture = getUser(inputName);
-        ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(player);
-
-        optionalCompletableFuture.thenAcceptAsync((optionalUser) -> {
-            if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
-                source.sendError(ExceptionMessageNode.USER_NOT_FOUND);
-                loadingText.stop();
-                return;
-            }
-
-            User user = optionalUser.get();
-
+        essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
             if (user.getHomesHandler().getHomes().size() == 0) {
                 source.sendConfigMessage(KiloConfig.getMessage("commands.playerHomes.admin.no_homes")
                         .replace("{TARGET_TAG}", user.getNameTag()));
@@ -71,12 +54,7 @@ public class HomesCommand extends EssentialCommand {
             }
 
             sendInfo(source, user);
-            loadingText.stop();
-        }, ctx.getSource().getMinecraftServer());
-
-        if (!optionalCompletableFuture.isCompletedExceptionally()) {
-            loadingText.start();
-        }
+        });
 
         return AWAIT_RESPONSE;
     }

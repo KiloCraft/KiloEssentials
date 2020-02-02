@@ -5,6 +5,7 @@ import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.Message;
@@ -224,6 +225,25 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	@Override
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerCommandSource requester, String username, Consumer<? super User> action) {
+		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
+		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
+			if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
+				getServer().getCommandSourceUser(requester).sendError(ExceptionMessageNode.USER_NOT_FOUND);
+			}
+
+			optionalUser.ifPresent(action);
+		}, minecraftServer);
+
+		return optionalCompletableFuture;
+	}
+
+	@Override
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerPlayerEntity requester, String username, Consumer<? super User> action) {
+		return getUserThenAcceptAsync(getServer().getOnlineUser(requester), username, action);
+	}
+
+	@Override
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(OnlineUser requester, String username, Consumer<? super User> action) {
 		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
 		ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer());
@@ -244,16 +264,19 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	@Override
-	public CompletableFuture<Void> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action) {
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action) {
 		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
-		return optionalCompletableFuture.thenAcceptAsync(action, KiloServer.getServer().getVanillaServer());
+		optionalCompletableFuture.thenAcceptAsync(action);
+		return optionalCompletableFuture;
 	}
 
 	@Override
-	public CompletableFuture<Void> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor) {
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor) {
 		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
-		return optionalCompletableFuture.thenAcceptAsync(action, KiloServer.getServer().getVanillaServer());
+		optionalCompletableFuture.thenAcceptAsync(action, executor);
+		return optionalCompletableFuture;
 	}
+
 
 	public <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType) {
 		if(featureType.getType().isAssignableFrom(SingleInstanceConfigurableFeature.class)) {
