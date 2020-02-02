@@ -27,6 +27,13 @@ public class ModConstants {
         }
     }
 
+    public static String translation(String key, Object... objects) {
+        if (objects == null)
+            return lang.getProperty(key);
+
+        return String.format(lang.getProperty(key), objects);
+    }
+
     public static InputStream getResourceAsStream(String path) {
         return ModConstants.class.getClassLoader().getResourceAsStream(path);
     }
