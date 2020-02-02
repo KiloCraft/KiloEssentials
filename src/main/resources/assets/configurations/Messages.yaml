@@ -85,7 +85,7 @@ commands:
   vote: '{"text":"Edit this in KiloEssentials/config/Messages.yaml", "color":"green"}'
 
   serverWideWarps:
-    teleportTo: 'Teleporting to %WARPNAME%'
+    teleportTo: '%GENERAL_INFO-PREFIX% &eTeleporting to &6%WARP_NAME%'
 
   playerHomes:
     limit_reached: "You can't set any more Homes! you have reached the limit"
@@ -110,6 +110,6 @@ commands:
     #Values: {NICK_NEW}, {NICK}
     setSelf: "%GENERAL_INFO-PREFIX% &eSet the nickname to &6{NICK_NEW}&e from &6{NICK}&e."
     resetSelf: "%GENERAL_INFO-PREFIX% &eYou have &6reset&e your nickname."
-    #Values: {NICK_NEW}, {NICK}, {TARGET}
-    setOthers: "%GENERAL_INFO-PREFIX% &eSet &6{TARGET}&e's nickname to &6{NICK_NEW}&e from &6{NICK}&e."
-    resetOthers: "%GENERAL_INFO-PREFIX% &eYou have reset &6{TARGET}&e's nickname."
+    #Values: {NICK_NEW}, {NICK}, {TARGET_TAG}
+    setOthers: "%GENERAL_INFO-PREFIX% &eSet &6{TARGET_TAG}&e's nickname to &6{NICK_NEW}&e from &6{NICK}&e."
+    resetOthers: "%GENERAL_INFO-PREFIX% &eYou have reset &6{TARGET_TAG}&e's nickname."
