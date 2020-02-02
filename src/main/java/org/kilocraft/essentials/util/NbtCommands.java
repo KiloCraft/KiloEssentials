@@ -22,7 +22,7 @@ public class NbtCommands {
         if (tag == null || tag.isEmpty() || !tag.contains("NBTCommands") && !player.isSneaking())
             return false;
 
-        if (swingHand && !player.isHandSwinging)
+        if (swingHand)
             player.swingHand(Hand.MAIN_HAND, true);
 
         ListTag listTag = tag.getList("NBTCommands", 8);

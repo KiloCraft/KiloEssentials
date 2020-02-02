@@ -29,6 +29,7 @@ public class KiloConfig {
         //put("Commands.yaml", configPath);
         put("HelpMessage.yaml", configPath);
         put("Rules.yaml", configPath);
+        put("particle_types.yml", configPath);
     }};
 
     private static ConfigProvider provider;

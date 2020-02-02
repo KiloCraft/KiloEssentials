@@ -17,6 +17,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
+import org.kilocraft.essentials.commands.play.MagicParticlesCommand;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -52,6 +53,10 @@ public class TabCompletions {
         }
 
         return CommandSource.suggestMatching(nicks, builder);
+    }
+
+    public static CompletableFuture<Suggestions> allParticles(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(MagicParticlesCommand.particles.stream(), builder);
     }
 
     public static CompletableFuture<Suggestions> dimensions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

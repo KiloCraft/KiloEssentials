@@ -22,6 +22,7 @@ import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
+import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.StartupScript;
@@ -127,9 +128,50 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new PlayerSitManager(), "BetterChairs");
 		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
 		features.tryToRegister(new VoteCommand(), "VoteCommand");
+		features.tryToRegister(new ParticleAnimationManager(), "MagicalParticles");
 
 		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
 			new StartupScript();
+
+		/*
+		 * @Test TODO: Remove this Test
+		 */
+//		{
+//			FileConfig fileConfig = FileConfig.of(KiloConfig.getConfigPath() + "particle_types.yml");
+//			fileConfig.load();
+//
+////			System.out.println((ArrayList<Object>) fileConfig.get("types"));
+//
+//			ArrayList<Object> objects = fileConfig.get("types");
+//
+//
+//			for (Object object : objects) {
+//				System.out.println("ML: " + object.toString());
+//
+//				List<Object> innerObject = fileConfig.get("types." + object.toString());
+//				System.out.println("IL: " + innerObject);
+//			}
+//
+//			fileConfig.close();
+//		}
+//		{
+//			System.out.println("Registering particle types");
+//			ParticleFrame frame = new ParticleFrame(ParticleTypes.DRAGON_BREATH, true,
+//					0.5, 0f, 0.5f, 0, 10);
+//
+//			ParticleAnimation animation = new ParticleAnimation(new Identifier("kiloessentials", "breath_of_dragon"));
+//			animation.append(frame);
+//			ParticleAnimationManager.registerAnimation(animation);
+//		}
+//		{
+//			ParticleFrame frame = new ParticleFrame(ParticleTypes.CLOUD, true,
+//					0.4, 0, 0.4, 0, 3);
+//
+//			ParticleAnimation animation = new ParticleAnimation(new Identifier("ess", "happy_villager"));
+//			animation.append(frame);
+//			ParticleAnimationManager.registerAnimation(animation);
+//		}
+
 	}
 
 	public static Logger getLogger() {
