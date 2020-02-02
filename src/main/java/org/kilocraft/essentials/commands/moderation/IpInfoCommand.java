@@ -3,13 +3,11 @@ package org.kilocraft.essentials.commands.moderation;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public class IpInfoCommand extends EssentialCommand {
     public IpInfoCommand() {
@@ -24,11 +22,16 @@ public class IpInfoCommand extends EssentialCommand {
         commandNode.addChild(targetArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(CommandContext<ServerCommandSource> ctx) {
         CommandSourceUser source = getServerUser(ctx);
 
-        essentials.getUserThenAcceptAsync(source.getCommandSource(), getString(ctx, "user"), (user) -> {
-            source.sendLangMessage("command.ipinfo", user.getNameTag(), user.getLastSocketAddress());
+        essentials.getUserThenAcceptAsync(source.getCommandSource(), getUserArgumentInput(ctx, "user"), (user) -> {
+            if (user.getLastSocketAddress() == null) {
+                source.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress", user.getUsername());
+                return;
+            }
+
+            source.sendLangMessage("command.ipinfo", user.getUsername(), user.getLastSocketAddress());
         });
 
         return SINGLE_SUCCESS;

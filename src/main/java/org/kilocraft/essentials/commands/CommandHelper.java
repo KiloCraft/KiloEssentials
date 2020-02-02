@@ -32,6 +32,16 @@ public class CommandHelper {
         source.getEntityOrThrow();
     }
 
+    public static boolean isOnline(ServerCommandSource source) {
+        try {
+            source.getPlayer();
+            return true;
+        } catch (CommandSyntaxException e) {
+            return false;
+        }
+    }
+
+    @Deprecated
     public static boolean isOnline(ServerPlayerEntity playerEntity) {
         AtomicBoolean bool = new AtomicBoolean(false);
         try {

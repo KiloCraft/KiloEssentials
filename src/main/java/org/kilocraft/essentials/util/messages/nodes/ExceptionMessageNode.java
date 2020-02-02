@@ -18,6 +18,7 @@ public enum ExceptionMessageNode {
     USER_NEVER_JOINED("user_never_joined"),
     USER_CANT_SAVE("user_cant_save"),
     INVALID_ID("invalid_id"),
+    NO_VALUE_SET_USER("no_value_set_user"),
     ;
 
 

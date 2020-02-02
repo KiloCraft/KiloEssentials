@@ -22,6 +22,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
+import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -226,10 +227,14 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 	@Override
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerCommandSource requester, String username, Consumer<? super User> action) {
+		if (CommandHelper.isOnline(requester))
+			return getUserThenAcceptAsync(getServer().getOnlineUser(requester.getName()), username, action);
+
 		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
 			if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
 				getServer().getCommandSourceUser(requester).sendError(ExceptionMessageNode.USER_NOT_FOUND);
+				return;
 			}
 
 			optionalUser.ifPresent(action);

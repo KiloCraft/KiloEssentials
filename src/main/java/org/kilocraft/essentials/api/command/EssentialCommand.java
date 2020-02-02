@@ -2,7 +2,6 @@ package org.kilocraft.essentials.api.command;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -29,6 +28,9 @@ import org.kilocraft.essentials.chat.KiloChat;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
+
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
 public abstract class EssentialCommand implements IEssentialCommand {
     private String label;
@@ -198,6 +200,10 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return server.getCommandSourceUser(ctx.getSource());
     }
 
+    public String getUserArgumentInput(CommandContext<ServerCommandSource> ctx, String label) {
+        return getString(ctx, label);
+    }
+
     public CompletableFuture<Optional<User>> getUser(GameProfile profile) {
         return server.getUserManager().getOffline(profile);
     }
@@ -211,7 +217,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(String label) {
-        return argument(label, StringArgumentType.string()).suggests(TabCompletions::allPlayers);
+        return argument(label, string()).suggests(TabCompletions::allPlayers);
     }
 
     public String tl(String key, Object... objects) {
