@@ -2,8 +2,8 @@ package org.kilocraft.essentials.util;
 
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.config_old.ConfigValueGetter;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfigurate;
+import org.kilocraft.essentials.config.main.sections.StartupScriptConfigSection;
 
 import java.io.*;
 
@@ -15,18 +15,18 @@ public class StartupScript {
     private String STARTUP_CODE;
 
     public StartupScript() {
-        ConfigValueGetter config = KiloConfig.getProvider().getMain();
-        this.FILE_NAME = config.getStringSafely("startup-script.script-name", "start") + ".sh";
+        StartupScriptConfigSection config = KiloConfigurate.main().startupScript();
+        this.FILE_NAME = config.scriptName + ".sh";
         this.file = new File(System.getProperty("user.dir") + File.separator + FILE_NAME);
 
         if (file.exists())
             return;
 
         KiloEssentials.getLogger().info("Generating the start script...");
-        this.MAX_MEMORY = config.getStringSafely("startup-script.maximum-memory-size", "2G");
-        String SCREEN_NAME = config.getStringSafely("startup-script.linux-screen-name", "mc-server");
-        String LOADER_NAME = config.getStringSafely("startup-script.fabric-loader-name", "fabric-server-launch.jar");
-        boolean generateForLinuxScreen = config.getBooleanSafely("startup-script.linux-screen-mode", false);
+        this.MAX_MEMORY = config.maximumRam;
+        String SCREEN_NAME = config.linuxScreenName;
+        String LOADER_NAME = config.fabricLoaderName;
+        boolean generateForLinuxScreen = config.linuxScreen;
 
         this.resourceFile = new File(
                 Thread.currentThread().getContextClassLoader().getResource("assets/start-script.sh").getFile());
@@ -34,8 +34,6 @@ public class StartupScript {
         String normalScript = "java -jar -Xmx" + this.MAX_MEMORY + " " + LOADER_NAME;
         String screenScript = "screen -S " + SCREEN_NAME + " " + normalScript;
         this.STARTUP_CODE = generateForLinuxScreen ? screenScript : normalScript;
-
-        System.out.println(this.FILE_NAME + " " + this.MAX_MEMORY + " " + this.STARTUP_CODE);
 
         generate();
     }
