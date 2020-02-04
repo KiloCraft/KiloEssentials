@@ -22,7 +22,6 @@ import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config_old.ConfigCache;
 import org.kilocraft.essentials.config_old.ConfigValueGetter;
 import org.kilocraft.essentials.config_old.KiloConfig;
-import org.kilocraft.essentials.config_old.provided.localVariables.UserConfigVariables;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 
