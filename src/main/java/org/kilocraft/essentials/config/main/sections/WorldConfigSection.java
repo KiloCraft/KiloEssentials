@@ -12,6 +12,6 @@ public class WorldConfigSection {
     @Setting(value = "allowTheNether", comment = "If set to false no one will be able to go to The Nether")
     public boolean allowTheNether = true;
 
-    @Setting(value = "allowTheEnd", comment = "If set to true and if a player is inside of a disallowed dimension then they'll get kicked back to their spawnpoint")
+    @Setting(value = "kickFromDimensionIfNotAllowed", comment = "If set to true and if a player is inside of a disallowed dimension then they'll get kicked back to their spawnpoint")
     public boolean kickFromDimension = true;
 }

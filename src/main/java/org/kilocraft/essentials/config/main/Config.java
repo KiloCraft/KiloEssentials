@@ -11,8 +11,8 @@ public class Config {
             "Licensed Under the MIT License, Copyright (c) 2020 KiloCraft\n" +
             "KiloEssentials is using HOCON for its configuration files\n learn more about it here:" +
             "https://docs.spongepowered.org/stable/en/server/getting-started/configuration/hocon.html" +
-            "\nYou can use Color Codes in string parameters, the character is \"&\"" +
-            "More info at: https://minecraft.tools/en/color-code.php e.g: \"&eThe Yellow Thing\" will be yellow";
+            "\nYou can use Color Codes in string parameters, the character is \"&\" " +
+            "More info at: https://minecraft.tools/en/color-code.php \ne.g: \"&eThe Yellow Thing\" will be yellow";
 
     @Setting(value = "server")
     private ServerConfigSection serverSection = new ServerConfigSection();
