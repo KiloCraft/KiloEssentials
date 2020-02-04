@@ -1,17 +1,18 @@
-package org.kilocraft.essentials.config;
-
+package org.kilocraft.essentials.config.main;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import org.kilocraft.essentials.config.sections.*;
-import org.kilocraft.essentials.config.sections.chat.ChatConfigSection;
+import org.kilocraft.essentials.config.main.sections.*;
+import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 
 @ConfigSerializable
 public class Config {
     public static final String HEADER = "KiloEssentials! Main Configuration File\n" +
             "Licensed Under the MIT License, Copyright (c) 2020 KiloCraft\n" +
             "KiloEssentials is using HOCON for its configuration files\n learn more about it here:" +
-            "https://docs.spongepowered.org/stable/en/server/getting-started/configuration/hocon.html";
+            "https://docs.spongepowered.org/stable/en/server/getting-started/configuration/hocon.html" +
+            "You can use Color Codes in string parameters, the character is \"&\"" +
+            "More info at: https://minecraft.tools/en/color-code.php e.g: \"&eThe Yellow Thing\" will be yellow";
 
     @Setting(value = "server")
     private ServerConfigSection serverSection = new ServerConfigSection();

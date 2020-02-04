@@ -101,10 +101,6 @@ public interface KiloEssentials {
         return getWorkingDirectory() + "/essentials/";
     }
 
-    static String getConfigDirectory() {
-        return getEssentialsDirectory() + "config/";
-    }
-
     static String getDataDirectory() {
         return getEssentialsDirectory() + "/data/";
     }

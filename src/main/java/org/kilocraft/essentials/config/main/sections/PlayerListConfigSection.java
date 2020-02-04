@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.config.sections;
+package org.kilocraft.essentials.config.main.sections;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
