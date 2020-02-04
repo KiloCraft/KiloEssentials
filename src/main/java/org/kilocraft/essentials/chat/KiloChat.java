@@ -11,10 +11,10 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.ConfigCache;
-import org.kilocraft.essentials.config.ConfigValueGetter;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
+import org.kilocraft.essentials.config_old.ConfigCache;
+import org.kilocraft.essentials.config_old.ConfigValueGetter;
+import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config_old.provided.localVariables.UserConfigVariables;
 import org.kilocraft.essentials.user.ServerUser;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;

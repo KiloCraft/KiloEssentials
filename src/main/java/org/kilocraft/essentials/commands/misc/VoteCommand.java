@@ -7,7 +7,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfig;
 
 import static net.minecraft.server.command.CommandManager.literal;
 

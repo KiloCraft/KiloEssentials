@@ -16,7 +16,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;

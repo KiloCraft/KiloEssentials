@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.nbt.NbtIo;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfig;
 
 import java.io.File;
 import java.io.FileInputStream;

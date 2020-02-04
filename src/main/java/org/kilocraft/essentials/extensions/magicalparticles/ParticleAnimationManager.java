@@ -12,7 +12,7 @@ import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfig;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.NBTStorageUtil;
 

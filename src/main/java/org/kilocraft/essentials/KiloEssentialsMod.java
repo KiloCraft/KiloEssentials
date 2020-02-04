@@ -3,7 +3,8 @@ package org.kilocraft.essentials;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.minecraft.SharedConstants;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfigurate;
+import org.kilocraft.essentials.config_old.KiloConfig;
 
 import java.io.File;
 
@@ -16,6 +17,7 @@ public class KiloEssentialsMod implements DedicatedServerModInitializer {
             SharedConstants.isDevelopment = true;
         }
 
+        new KiloConfigurate();
         new KiloEssentialsImpl(new KiloEvents(), new KiloConfig());
     }
 }

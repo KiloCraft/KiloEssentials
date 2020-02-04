@@ -19,6 +19,12 @@ public class ServerUserInventory {
         );
     }
 
+    public static void openEnderchest(ServerPlayerEntity source, EnderChestInventory inv) {
+        source.openContainer(new SimpleNamedContainerFactory((syncId, pInv, pEntity) ->
+                GenericContainer.createGeneric9x3(syncId, pInv, inv), new TranslatableText("container.enderchest"))
+        );
+    }
+
     private static void open(ServerUser livingUser, InvType type) {
 
     }

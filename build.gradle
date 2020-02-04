@@ -37,6 +37,7 @@ repositories {
 	mavenCentral()
 	maven { url 'https://jitpack.io' }
 	maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
+	maven { url 'https://repo.spongepowered.org/maven'}
 }
 
 shadowJar {
@@ -52,17 +53,21 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation "com.github.voidpointerdev:TinyConfig:${project.tiny_config_version}"
+	//modImplementation "com.github.voidpointerdev:TinyConfig:${project.tiny_config_version}"
 	modImplementation "com.github.voidpointerdev:vanishmode:${project.vanish_version}"
 	modImplementation "com.github.voidpointerdev:Thimble-Permissions:${project.thimble_permissions_version}"
 
-	include "com.github.voidpointerdev:vanishmode:${project.vanish_version}"
-	include "com.github.voidpointerdev:TinyConfig:${project.tiny_config_version}"
+	//include "com.github.voidpointerdev:vanishmode:${project.vanish_version}"
+	//include "com.github.voidpointerdev:TinyConfig:${project.tiny_config_version}"
 
+	compile "org.spongepowered:configurate-hocon:${project.configurate_version}"
+	shadow "org.spongepowered:configurate-hocon:${project.configurate_version}"
 	compile group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
 	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
 	compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
 	shadow group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
+	compile group: 'com.google.inject', name: 'guice', version: '4.0'
+	shadow group: 'com.google.inject', name: 'guice', version: '4.0'
 }
 
 tasks.jar.archiveClassifier = "compile"

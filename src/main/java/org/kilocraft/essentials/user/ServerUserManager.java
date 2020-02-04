@@ -24,8 +24,8 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.ConfigCache;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.ConfigCache;
+import org.kilocraft.essentials.config_old.KiloConfig;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.AnimatedText;
 

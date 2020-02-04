@@ -6,7 +6,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfig;
 import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketMixin;
 import org.kilocraft.essentials.util.TPSTracker;
 

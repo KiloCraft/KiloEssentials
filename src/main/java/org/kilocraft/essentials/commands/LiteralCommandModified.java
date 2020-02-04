@@ -2,8 +2,8 @@ package org.kilocraft.essentials.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.kilocraft.essentials.config.ConfigCache;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.ConfigCache;
+import org.kilocraft.essentials.config_old.KiloConfig;
 import org.kilocraft.essentials.mixin.CommandManagerMixin;
 
 import java.util.ArrayList;

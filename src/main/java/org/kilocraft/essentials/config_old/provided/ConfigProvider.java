@@ -1,7 +1,7 @@
-package org.kilocraft.essentials.config.provided;
+package org.kilocraft.essentials.config_old.provided;
 
-import org.kilocraft.essentials.config.ConfigValueGetter;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.ConfigValueGetter;
+import org.kilocraft.essentials.config_old.KiloConfig;
 
 public class ConfigProvider {
     private ConfigValueGetter main;

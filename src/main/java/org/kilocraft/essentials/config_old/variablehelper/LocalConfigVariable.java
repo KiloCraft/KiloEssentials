@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.config.variablehelper;
+package org.kilocraft.essentials.config_old.variablehelper;
 
 import java.util.HashMap;
 

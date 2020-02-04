@@ -5,7 +5,7 @@ import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfig;
 
 public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
     @Override

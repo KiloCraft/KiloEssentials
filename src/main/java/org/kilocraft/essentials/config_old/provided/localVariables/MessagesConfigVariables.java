@@ -1,7 +1,7 @@
-package org.kilocraft.essentials.config.provided.localVariables;
+package org.kilocraft.essentials.config_old.provided.localVariables;
 
-import org.kilocraft.essentials.config.variablehelper.LocalConfigVariable;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.variablehelper.LocalConfigVariable;
+import org.kilocraft.essentials.config_old.KiloConfig;
 
 import java.util.HashMap;
 

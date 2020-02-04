@@ -25,7 +25,7 @@ import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfig;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
@@ -66,7 +66,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 	private ScheduledExecutorService scheduledUpdateExecutorService;
 	private KiloDebugUtils debugUtils;
-	private ScheduledThreadPoolExecutor executor;
 	private static MinecraftServer minecraftServer;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
@@ -75,7 +74,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public KiloEssentialsImpl(KiloEvents events, KiloConfig config) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
-		this.executor = new ScheduledThreadPoolExecutor(4);
 		minecraftServer = KiloServer.getServer().getVanillaServer();
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
@@ -296,7 +294,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException {
 		F ft = (F) proxySingleInstanceFeatures.get(type);
 
-		if(ft == null) {
+		if (ft == null) {
 			throw new FeatureNotPresentException();
 		}
 
@@ -333,10 +331,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			PlayerSitManager.INSTANCE.killAll();
 
 		this.scheduledUpdateExecutorService.shutdown();
-	}
-
-	public KiloDebugUtils getDebugUtils() {
-		return this.debugUtils;
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.config.datafixer;
+package org.kilocraft.essentials.config_old.datafixer;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;

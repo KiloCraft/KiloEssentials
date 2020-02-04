@@ -1,8 +1,8 @@
-package org.kilocraft.essentials.config;
+package org.kilocraft.essentials.config_old;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.config.provided.ConfigProvider;
+import org.kilocraft.essentials.config_old.provided.ConfigProvider;
 import org.kilocraft.essentials.provided.KiloFile;
 
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import java.util.List;
  * @version 1.3
  */
 
+@Deprecated
 public class KiloConfig {
 
     private static List<ConfigIOProvider> callbacks = new ArrayList<>();

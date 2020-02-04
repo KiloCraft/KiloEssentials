@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.config;
+package org.kilocraft.essentials.config_old;
 
 import org.kilocraft.essentials.api.ModConstants;
 

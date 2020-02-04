@@ -7,7 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.KiloConfig;
 
 public class RulesCommand extends EssentialCommand {
     public RulesCommand() {

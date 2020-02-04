@@ -10,8 +10,8 @@ import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.ConfigCache;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config_old.ConfigCache;
+import org.kilocraft.essentials.config_old.KiloConfig;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 
 import java.util.ArrayList;

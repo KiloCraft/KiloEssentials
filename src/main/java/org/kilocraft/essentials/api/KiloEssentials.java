@@ -92,4 +92,20 @@ public interface KiloEssentials {
      * @throws FeatureNotPresentException If the feature type is disabled, not present or not a SingleInstanceConfigurableFeature.
      */
     <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException;
+
+    static String getWorkingDirectory() {
+        return System.getProperty("user.dir");
+    }
+
+    static String getEssentialsDirectory() {
+        return getWorkingDirectory() + "/essentials/";
+    }
+
+    static String getConfigDirectory() {
+        return getEssentialsDirectory() + "config/";
+    }
+
+    static String getDataDirectory() {
+        return getEssentialsDirectory() + "/data/";
+    }
 }
