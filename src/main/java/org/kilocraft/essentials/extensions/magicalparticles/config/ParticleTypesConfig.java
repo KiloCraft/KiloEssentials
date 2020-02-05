@@ -17,10 +17,6 @@ public class ParticleTypesConfig {
             "BUBBLE_POP, CURRENT_DOWN, BUBBLE_COLUMN_UP, NAUTILUS, DOLPHIN, CAMPFIRE_COSY_SMOKE, CAMPFIRE_SIGNAL_SMOKE\n" +
             "DRIPPING_HONEY, FALLING_HONEY, LANDING_HONEY, FALLING_NECTAR, ENCHANTED_HIT";
 
-//    @Setting public List<ParticleTypeConfigSection> type = new ArrayList<ParticleTypeConfigSection>(){{
-//        add(new ParticleTypeConfigSection());
-//     }};
-
     @Setting
     public Map<String, ParticleTypeConfigSection> types = new HashMap<String, ParticleTypeConfigSection>(){{
         put("default:dragon_breath", new ParticleTypeConfigSection());
