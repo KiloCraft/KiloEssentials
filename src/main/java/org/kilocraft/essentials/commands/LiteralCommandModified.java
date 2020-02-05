@@ -48,13 +48,7 @@ public class LiteralCommandModified {
         add("teammsg");
         add("tm");
         add("time");
-        add("ban");
-        add("kick");
-        add("ban-ip");
-        add("pardon");
-        add("pardon-ip");
         add("enchant");
-        add("gamerule");
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
