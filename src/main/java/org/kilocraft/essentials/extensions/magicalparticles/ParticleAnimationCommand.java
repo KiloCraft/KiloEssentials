@@ -57,9 +57,6 @@ public class ParticleAnimationCommand extends EssentialCommand {
 
         addPlayer(player.getUuid(), identifier);
 
-        System.out.println(getAnimation(identifier).getFrames().get(0).getRelativePosition().getRelativeVector(player.getPos()));
-        System.out.println(getAnimation(identifier).getFrames().get(0).getParticleEffect().asString());
-
         KiloChat.sendMessageTo(ctx.getSource(), new ChatMessage("&c[Test]&r&e Set PAT: " + identifier.toString(), true));
         return SINGLE_SUCCESS;
     }

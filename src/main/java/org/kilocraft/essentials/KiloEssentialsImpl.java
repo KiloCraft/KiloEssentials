@@ -134,6 +134,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		//features.tryToRegister(new VoteCommand(), "VoteCommand");
 		features.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
 
+
 		if (KiloConfig.main().startupScript().enabled)
 			new StartupScript();
 

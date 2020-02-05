@@ -9,7 +9,7 @@ import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 public class Config {
     public static final String HEADER = "KiloEssentials! Main Configuration File\n" +
             "Licensed Under the MIT License, Copyright (c) 2020 KiloCraft\n" +
-            "KiloEssentials is using HOCON for its configuration files\n learn more about it here:" +
+            "KiloEssentials is using HOCON for its configuration files\n learn more about it here: " +
             "https://docs.spongepowered.org/stable/en/server/getting-started/configuration/hocon.html" +
             "\nYou can use Color Codes in string parameters, the character is \"&\" " +
             "More info at: https://minecraft.tools/en/color-code.php \ne.g: \"&eThe Yellow Thing\" will be yellow";

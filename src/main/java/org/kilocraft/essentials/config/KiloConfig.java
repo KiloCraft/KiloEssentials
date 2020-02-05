@@ -15,6 +15,15 @@ import org.kilocraft.essentials.provided.KiloFile;
 
 import java.io.IOException;
 
+/**
+ * KiloConfig - Powered by SpongePowered Configurate
+ *
+ * @version 2.0
+ * @author CODY_AI (OnBlock)
+ * @see Config
+ * @see Messages
+ */
+
 public class KiloConfig {
     private static Config config;
     private static Messages messages;
@@ -44,6 +53,7 @@ public class KiloConfig {
             mainLoader.save(mainNode);
             messagesLoader.save(messagesNode);
         } catch (IOException | ObjectMappingException e) {
+            KiloEssentials.getLogger().error("Exception handling a configuration file! " + KiloConfig.class.getName());
             e.printStackTrace();
         }
 
@@ -74,7 +84,7 @@ public class KiloConfig {
         new KiloConfig();
     }
 
-    private ConfigurationOptions configurationOptions() {
+    public static ConfigurationOptions configurationOptions() {
         return ConfigurationOptions.defaults()
                 .setHeader(Config.HEADER)
                 .setObjectMapperFactory(DefaultObjectMapperFactory.getInstance())

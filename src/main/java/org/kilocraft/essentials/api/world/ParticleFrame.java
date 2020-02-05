@@ -2,7 +2,10 @@ package org.kilocraft.essentials.api.world;
 
 import net.minecraft.client.network.packet.ParticleS2CPacket;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Nullable;
 
 public class ParticleFrame {
     private ParticleEffect effect;
@@ -41,6 +44,16 @@ public class ParticleFrame {
         this.oZ = offsetZ;
         this.speed = speed;
         this.count = count;
+    }
+
+    @Nullable
+    public static ParticleEffect getEffectByName(String name) {
+        for (Identifier id : Registry.PARTICLE_TYPE.getIds()) {
+            if (id.getPath().equals(name))
+                return (ParticleEffect) Registry.PARTICLE_TYPE.get(id);
+        }
+
+        return null;
     }
 
     public ParticleEffect getParticleEffect() {

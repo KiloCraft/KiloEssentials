@@ -1,0 +1,39 @@
+# KiloEssentials! Main Configuration File
+# Licensed Under the MIT License, Copyright (c) 2020 KiloCraft
+# KiloEssentials is using HOCON for its configuration files
+# learn more about it here: https://docs.spongepowered.org/stable/en/server/getting-started/configuration/hocon.html
+# You can use Color Codes in string parameters, the character is "&" More info at: https://minecraft.tools/en/color-code.php
+# e.g: "&eThe Yellow Thing" will be yellow
+#
+# Particle Types:
+# AMBIENT_ENTITY_EFFECT, ANGRY_VILLAGER, BARRIER, BLOCK, BUBBLE, CLOUD, CRIT, DAMAGE_INDICATOR,
+# DRAGON_BREATH, DRIPPING_LAVA, FALLING_LAVA, LANDING_LAVA, DRIPPING_WATER, FALLING_WATER, DUST, EFFECT, ELDER_GUARDIAN,
+# ENCHANT, END_ROD, ENTITY_EFFECT, EXPLOSION_EMITTER, EXPLOSION, FALLING_DUST, FIREWORK, FISHING, FLAME, FLAS
+# HAPPY_VILLAGER, COMPOSTER, HEART, INSTANT_EFFECT, ITEM, ITEM_SLIME, ITEM_SNOWBALL, LARGE_SMOKE, LAVA, MYCELIUM, NOTE
+# POOF, PORTAL, RAIN, SMOKE, SNEEZE, SPIT, SQUID_INK, SWEEP_ATTACK, TOTEM_OF_UNDYING, UNDERWATER, SPLASH, WITCH
+# BUBBLE_POP, CURRENT_DOWN, BUBBLE_COLUMN_UP, NAUTILUS, DOLPHIN, CAMPFIRE_COSY_SMOKE, CAMPFIRE_SIGNAL_SMOKE
+# DRIPPING_HONEY, FALLING_HONEY, LANDING_HONEY, FALLING_NECTAR, ENCHANTED_HIT
+
+# Particle Types
+types {
+  "default:dragon_breath" {
+    frames=[
+      {
+        count=0
+        effect="dragon_breath"
+        longDistance=true
+        offset="10 0.5 0"
+        pos="0 0.5 0"
+        speed=0.5
+      },
+      {
+        count=0
+        effect="dragon_breath"
+        longDistance=true
+        offset="10 0.5 0"
+        pos="0 0 0"
+        speed=0.3
+      }
+    ]
+  }
+}

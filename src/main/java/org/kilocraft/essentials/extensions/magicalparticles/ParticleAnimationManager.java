@@ -1,9 +1,18 @@
 package org.kilocraft.essentials.extensions.magicalparticles;
 
+import com.google.common.reflect.TypeToken;
 import net.minecraft.client.network.packet.ParticleS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -12,9 +21,13 @@ import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
+import org.kilocraft.essentials.api.world.RelativePosition;
+import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleFrameConfigSection;
+import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleTypesConfig;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.NBTStorageUtil;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,12 +37,75 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage {
     static Map<Identifier, ParticleAnimation> map = new HashMap<>();
     private static Map<UUID, Identifier> uuidIdentifierMap = new HashMap<>();
+    private static ConfigurationNode configNode;
+    private static ParticleTypesConfig config;
 
     @Override
     public boolean register() {
         NBTStorageUtil.addCallback(this);
         KiloEssentials.getInstance().getCommandHandler().register(new ParticleAnimationCommand());
+        load();
         return true;
+    }
+
+    public static void load() {
+        loadConfig();
+        createFromConfig();
+    }
+
+    private static void loadConfig() {
+        try {
+            KiloFile CONFIG_FILE = new KiloFile("particleTypes.hocon", KiloEssentials.getEssentialsDirectory());
+            if (!CONFIG_FILE.exists()) {
+                CONFIG_FILE.createFile();
+                CONFIG_FILE.pasteFromResources("assets/config/particleTypes.hocon");
+            }
+
+            ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
+                    .setFile(CONFIG_FILE.getFile()).build();
+
+            configNode = loader.load(ConfigurationOptions.defaults()
+                    .setHeader(ParticleTypesConfig.HEADER)
+                    .setObjectMapperFactory(DefaultObjectMapperFactory.getInstance())
+                    .setShouldCopyDefaults(true));
+
+            config = configNode.getValue(TypeToken.of(ParticleTypesConfig.class), new ParticleTypesConfig());
+
+            loader.save(configNode);
+        } catch (IOException | ObjectMappingException e) {
+            KiloEssentials.getLogger().error("Exception handling a configuration file! " + ParticleAnimationManager.class.getName());
+            e.printStackTrace();
+        }
+    }
+
+    private static void createFromConfig() {
+        map.clear();
+        config.types.forEach((string, innerArray) -> {
+            ParticleAnimation animation = new ParticleAnimation(new Identifier(string));
+            for (ParticleFrameConfigSection frame : innerArray.frames) {
+                ParticleEffect effect = ParticleFrame.getEffectByName(frame.effect);
+
+                if (effect == null) {
+                    KiloEssentials.getLogger().error("Error identifying the Particle type while initializing ParticleTypes!" +
+                            "Entered id \"" + frame.effect + "\" is not a valid ParticleEffect!");
+                    continue;
+                }
+
+                String[] oI = frame.offset.split(" ");
+                String[] pI = frame.pos.split(" ");
+                double offsetX = Double.parseDouble(oI[0]);
+                double offsetY = Double.parseDouble(oI[1]);
+                double offsetZ = Double.parseDouble(oI[2]);
+                double x = Double.parseDouble(pI[0]);
+                double y = Double.parseDouble(pI[1]);
+                double z = Double.parseDouble(pI[2]);
+
+                animation.append(new ParticleFrame(effect, frame.longDistance,
+                        new RelativePosition(x, y, z), offsetX, offsetY, offsetZ, frame.speed, frame.count));
+            }
+
+            registerAnimation(animation);
+        });
     }
 
     public static void registerAnimation(ParticleAnimation animation) {
