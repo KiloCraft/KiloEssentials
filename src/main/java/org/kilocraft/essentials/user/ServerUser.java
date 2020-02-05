@@ -55,7 +55,7 @@ public class ServerUser implements User {
     private boolean socialSpy = false;
     private boolean commandSpy = false;
     private boolean canSit = false;
-    private String lastSocketAddress;
+    String lastSocketAddress;
     
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -100,10 +100,6 @@ public class ServerUser implements User {
         if (this.upstreamChannelId != null) {
             channelsCache.putString("upstreamChannelId", this.upstreamChannelId);
             cacheTag.put("channels", channelsCache);
-        }
-
-        if (this.isOnline() || this instanceof OnlineUser) {
-            this.lastSocketAddress = ((OnlineUser) this).getConnection().getAddress().toString();
         }
 
         if (this.lastSocketAddress != null) {

@@ -11,9 +11,12 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
+import org.kilocraft.essentials.config.ConfigVariableFactory;
+import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
@@ -48,7 +51,7 @@ public class HomeCommand extends EssentialCommand {
         String name = getString(ctx, "name");
 
         if (!homeHandler.hasHome(name)) {
-            user.sendConfigMessage("commands.playerHomes.invalid_home");
+            user.sendConfigMessage("commands.playerHomes.invalidHome");
             return -1;
         }
 
@@ -59,8 +62,8 @@ public class HomeCommand extends EssentialCommand {
                 throw MISSING_DIMENSION.create();
         }
 
-        user.sendMessage(new ChatMessage(KiloConfig.messages().commands().playerHomes().teleporting
-                .replace("{HOME_NAME}", name), true));
+        user.sendMessage(new ChatMessage(HomeCommand.replaceVariables(
+                messages.commands().playerHomes().teleporting, user, user, user.getHomesHandler().getHome(name)), user));
         return SINGLE_SUCCESS;
     }
 
@@ -82,16 +85,26 @@ public class HomeCommand extends EssentialCommand {
                 source.sendError(e.getMessage());
             }
 
-            if (CommandHelper.areTheSame(source, user))
-                source.sendMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
-                        .replace("{HOME_NAME}", name));
-            else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.teleporting")
-                    .replace("{HOME_NAME}", name)
-                    .replace("{TARGET_TAG}", user.getNameTag()));
+            String message = CommandHelper.areTheSame(source, user) ? messages.commands().playerHomes().teleporting :
+                    messages.commands().playerHomes().admin().teleporting;
+
+            source.sendMessage(new ChatMessage(HomeCommand.replaceVariables(
+                    message, source, user, source.getHomesHandler().getHome(name)), user));
         });
 
         return AWAIT_RESPONSE;
     }
 
+    public static String replaceVariables(String str, OnlineUser source, User target, Home home) {
+        String string = ConfigVariableFactory.replaceUserVariables(str, source);
+        string = ConfigVariableFactory.replaceTargetUserVariables(string, target);
+
+        string = new ConfigObjectReplacerUtil("home", string, true)
+                .append("name", home.getName())
+                .append("size", target.getHomesHandler().getHomes().size())
+                .toString();
+
+        return string;
+    }
 
 }

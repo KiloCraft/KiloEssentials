@@ -11,7 +11,7 @@ public class ConfigurableFeatures {
 
     public <F extends ConfigurableFeature> F tryToRegister(F feature, String configID) {
         try {
-            if (KiloConfig.getMainNode().getNode("features." + configID).getBoolean()) {
+            if (KiloConfig.getMainNode().getNode("features").getNode(configID).getBoolean()) {
                 if (SharedConstants.isDevelopment)
                     KiloEssentialsImpl.getLogger().info("Initialing \"" + feature.getClass().getName() + "\"");
 

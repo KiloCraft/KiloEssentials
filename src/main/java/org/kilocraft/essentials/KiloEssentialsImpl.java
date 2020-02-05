@@ -23,8 +23,6 @@ import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.commands.misc.DiscordCommand;
-import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
@@ -71,7 +69,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(KiloEvents events, KiloConfig config) {
+	public KiloEssentialsImpl(final KiloEvents events, final KiloConfig config) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
 		minecraftServer = KiloServer.getServer().getVanillaServer();
@@ -129,12 +127,12 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		getServer().getChatManager().register(new BuilderChat());
 
 		ConfigurableFeatures features = new ConfigurableFeatures();
-		features.tryToRegister(new UserHomeHandler(), "PlayerHomes");
-		features.tryToRegister(new WarpManager(), "ServerWideWarps");
-		features.tryToRegister(new PlayerSitManager(), "BetterChairs");
-		features.tryToRegister(new DiscordCommand(), "DiscordCommand");
-		features.tryToRegister(new VoteCommand(), "VoteCommand");
-		features.tryToRegister(new ParticleAnimationManager(), "MagicalParticles");
+		features.tryToRegister(new UserHomeHandler(), "playerHomes");
+		features.tryToRegister(new WarpManager(), "serverWideWarps");
+		features.tryToRegister(new PlayerSitManager(), "betterChairs");
+		//features.tryToRegister(new DiscordCommand(), "DiscordCommand");
+		//features.tryToRegister(new VoteCommand(), "VoteCommand");
+		features.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
 
 		if (KiloConfig.main().startupScript().enabled)
 			new StartupScript();
@@ -199,10 +197,10 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public static KiloEssentialsImpl getInstance() {
-		if (instance == null)
-			throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
+		if (instance != null)
+			return instance;
 
-		return instance;
+		throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
     }
 
 	private static String featureEntry(String name) {
@@ -212,11 +210,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public Server getServer() {
 	    return KiloServer.getServer();
     }
-
-	@Override
-	public ModConstants getConstants() {
-		return constants;
-	}
 
 	@Override
 	public KiloCommands getCommandHandler() {

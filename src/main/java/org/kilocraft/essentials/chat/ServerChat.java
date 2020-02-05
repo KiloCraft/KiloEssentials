@@ -40,9 +40,6 @@ public class ServerChat {
     private static boolean pingEnabled = config.ping().enabled;
 
     public static void send(OnlineUser sender, String rawMessage, ChatChannel channel) {
-//        String template = config.getStringSafely(ConfigCache.valueOf(
-//                ("chat.channels.formats." + channel.getId()).replaceAll("\\.", "_").toUpperCase()),
-//                "&r[&r%USER_DISPLAYNAME%&r]:&r %MESSAGE%");
         String template = KiloConfig.getMainNode().getNode("chat").getNode("channelsMeta").getNode(channel.getId() + "Chat").getString();
         ServerPlayerEntity player = sender.getPlayer();
 
@@ -79,7 +76,7 @@ public class ServerChat {
             KiloChat.sendMessageTo(sender.getPlayer(), new LiteralText(e.getMessage()));
         }
 
-        message.setMessage(ConfigVariableFactory.replaceUserVariables(message.getFormattedMessage(), sender)
+        message.setMessage(ConfigVariableFactory.replaceUserVariables(template, sender)
                 .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().asFormattedString())
                 .replace("%MESSAGE%", message.getFormattedMessage()), true);
 

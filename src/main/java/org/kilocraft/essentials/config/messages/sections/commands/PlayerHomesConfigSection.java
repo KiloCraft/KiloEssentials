@@ -13,13 +13,13 @@ public class PlayerHomesConfigSection {
     public String invalidHome = "&cCan not find the home specified!";
 
     @Setting(value = "teleporting")
-    public String teleporting = "&eTeleporting to &6%HOME_NAME%";
+    public String teleporting = "&eTeleporting to &6{HOME_NAME}";
 
     @Setting(value = "homeSet")
-    public String homeSet = "&aSet the Home &6%HOME_NAME%";
+    public String homeSet = "&aSet the Home &6{HOME_NAME}";
 
     @Setting(value = "homeRemoved")
-    public String homeRemoved = "&cRemoved the Home &6%HOME_NAME%";
+    public String homeRemoved = "&cRemoved the Home &6{HOME_NAME}";
 
     @Setting(value = "noHome")
     public String noHome = "&cYou don't have any Homes!";

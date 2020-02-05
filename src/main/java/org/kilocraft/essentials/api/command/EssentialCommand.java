@@ -24,6 +24,9 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.Config;
+import org.kilocraft.essentials.config.messages.Messages;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -223,4 +226,8 @@ public abstract class EssentialCommand implements IEssentialCommand {
     public String tl(String key, Object... objects) {
         return ModConstants.translation(key, objects);
     }
+
+    public Config config = KiloConfig.main();
+
+    public Messages messages = KiloConfig.messages();
 }

@@ -195,7 +195,7 @@ public class RtpCommand extends EssentialCommand {
 
 		//Check if the target is in the correct dimension or has permission to perform the command in other dimensions
 		if (!target.dimension.equals(DimensionType.OVERWORLD) && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(source)) {
-			targetUser.sendConfigMessage("commands.rtp.dimension_exception");
+			targetUser.sendConfigMessage("commands.rtp.dimensionException");
 			return;
 		}
 

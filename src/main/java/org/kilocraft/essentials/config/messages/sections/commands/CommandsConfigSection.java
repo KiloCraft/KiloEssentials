@@ -15,13 +15,13 @@ public class CommandsConfigSection {
     @Setting(value = "serverWideWarps")
     private WarpCommandConfigSection warpCommand = new WarpCommandConfigSection();
 
-    @Setting(value = "playerHomes")
+    @Setting(value = "playerHomes", comment = "Local Variables: {HOME_NAME}, {TARGET_TAG}, {HOMES_SIZE}")
     private PlayerHomesConfigSection playerHomesSection = new PlayerHomesConfigSection();
 
     @Setting(value = "rtp")
     private RtpCommandConfigSection rtpSection = new RtpCommandConfigSection();
 
-    @Setting("nickname")
+    @Setting(value = "nickname", comment = "Local Variables: {NICK}, {NICK_NEW}, {TARGET_TAG}")
     private NicknameCommandConfigSection nickname = new NicknameCommandConfigSection();
 
     public CommandsContextConfigSection context() {

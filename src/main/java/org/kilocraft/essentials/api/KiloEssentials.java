@@ -67,8 +67,6 @@ public interface KiloEssentials {
 
     MessageUtil getMessageUtil();
 
-    ModConstants getConstants();
-
     KiloCommands getCommandHandler();
 
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerCommandSource requester, String username, Consumer<? super User> action);
@@ -102,6 +100,6 @@ public interface KiloEssentials {
     }
 
     static String getDataDirectory() {
-        return getEssentialsDirectory() + "/data/";
+        return getEssentialsDirectory() + "data/";
     }
 }

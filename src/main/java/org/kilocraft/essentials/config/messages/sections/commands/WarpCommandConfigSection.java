@@ -6,7 +6,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class WarpCommandConfigSection {
 
-    @Setting(value = "teleportTo")
-    public String teleportTo = "&eTeleporting to &6%WARP_NAME%";
+    @Setting(value = "teleportTo", comment = "Local Variables: {WARP_NAME}")
+    public String teleportTo = "&eTeleporting to &6{WARP_NAME}";
 
 }

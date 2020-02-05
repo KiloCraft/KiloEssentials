@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class UserHandler {
-    private static File saveDir = new File(System.getProperty("user.dir") + "/KiloEssentials/users/");
+    private static File saveDir = new File(KiloEssentials.getDataDirectory() + "users/");
 
     public void handleUser(ServerUser serverUser) throws IOException {
         if (!loadUser(serverUser)) {
@@ -52,7 +52,7 @@ public class UserHandler {
     }
 
     public File getUserFile(UUID uuid) {
-        return new File( KiloEssentials.getDataDirectory() + "users/" + uuid.toString() + ".dat");
+        return new File(KiloEssentials.getDataDirectory() + "users/" + uuid.toString() + ".dat");
     }
 
 }

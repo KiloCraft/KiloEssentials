@@ -72,8 +72,8 @@ public class SethomeCommand extends EssentialCommand {
         }
 
         homeHandler.addHome(new Home(player.getUuid(), name, Vec3dLocation.of(player).shortDecimals()));
-        user.sendMessage(new ChatMessage(KiloConfig.getMessage("commands.playerHomes.set")
-                .replace("{HOME_NAME}", name), true));
+        user.sendMessage(new ChatMessage(HomeCommand.replaceVariables(
+                KiloConfig.messages().commands().playerHomes().homeSet, user, user, homeHandler.getHome(name)), user));
 
         return SINGLE_SUCCESS;
     }

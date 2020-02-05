@@ -7,15 +7,15 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class NicknameCommandConfigSection {
 
     @Setting(value = "setSelf")
-    public String setSelf = "&eSet the nickname to &6%NICK_NEW%&e from &6%NICK%";
+    public String setSelf = "&eSet the nickname to &6{NICK_NEW}&e from &6{NICK}";
 
     @Setting(value = "resetSelf")
     public String resetSelf = "&eYou have &6reset&e your nickname";
 
     @Setting(value = "setOthers")
-    public String setOthers = "&eSet &6%TARGET_TAG%&e's nickname to &6%NICK_NEW%&e from &6%NICK%&e";
+    public String setOthers = "&eSet the nickname to &6{NICK_NEW}&e from &6{NICK}&e for &6{TARGET_TAG}";
 
     @Setting(value = "resetOthers")
-    public String resetOthers = "&eYou have reset &6%TARGET_TAG%&e's nickname";
+    public String resetOthers = "&eYou have reset the nickname for &6{TARGET_TAG}";
 
 }

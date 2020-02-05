@@ -66,9 +66,13 @@ public class KiloConfig {
     }
 
     public static String getMessage(String key, Object... objects) {
-        return objects.length == 0 ? messagesNode.getString(key) : String.format(messagesNode.getString(key), objects);
+        String msg = messagesNode.getNode((Object) key.split(".")).getString();
+        return objects.length == 0 ? msg : msg != null ? String.format(msg, objects) : "Null<" + key + "?>";
     }
 
+    public static void reload() {
+        new KiloConfig();
+    }
 
     private ConfigurationOptions configurationOptions() {
         return ConfigurationOptions.defaults()

@@ -17,7 +17,7 @@ public class ChatConfigSection {
     @Setting(value = "channelsMeta", comment = "Sets format and meta of chat channels")
     private ChannelMetaConfigSection channelMetaSection = new ChannelMetaConfigSection();
 
-    @Setting(value = "privateChat", comment = "Sts the format and meta of private chat channels")
+    @Setting(value = "privateChat", comment = "Sets the format and meta of private chat channels")
     private PrivateChatConfigSection privateChatSection = new PrivateChatConfigSection();
 
     @Setting(value = "ping")

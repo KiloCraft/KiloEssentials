@@ -257,7 +257,6 @@ public class ServerUserManager implements UserManager {
 
     public static SimpleCommandExceptionType TOO_MANY_PROFILES = new SimpleCommandExceptionType(new LiteralText("Only one user is allowed but the provided selector includes more!"));
 
-
     public static class UserLoadingText {
         private AnimatedText animatedText;
         public UserLoadingText(ServerPlayerEntity player) {

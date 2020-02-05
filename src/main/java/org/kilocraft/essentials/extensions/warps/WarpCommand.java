@@ -92,7 +92,7 @@ public class WarpCommand {
 
             KiloChat.sendMessageTo(source, new ChatMessage(
                     KiloConfig.messages().commands().warp().teleportTo
-                            .replace("%WARP_NAME%", name),
+                            .replace("{WARP_NAME}", name),
                     true
             ));
 

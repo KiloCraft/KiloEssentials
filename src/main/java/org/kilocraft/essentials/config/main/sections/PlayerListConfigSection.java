@@ -32,7 +32,7 @@ public class PlayerListConfigSection {
 
     public String getFooter() {
         StringBuilder str = new StringBuilder();
-        for (String s : header) str.append("\n").append(s);
+        for (String s : footer) str.append("\n").append(s);
         return str.toString();
     }
 

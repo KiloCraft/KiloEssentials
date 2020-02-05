@@ -101,7 +101,7 @@ public class NicknameCommand extends EssentialCommand {
 
         User user = KiloServer.getServer().getUserManager().getOnline(self);
 
-        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setSelf")
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(messages.commands().nickname().setSelf
                 .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                 .replace("{NICK_NEW}", nickname)
                 , true));
@@ -129,7 +129,7 @@ public class NicknameCommand extends EssentialCommand {
 
         essentials.getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
             String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
-            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setOthers")
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(messages.commands().nickname().setOthers
                     .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                     .replace("{NICK_NEW}", nickname)
                     .replace("{TARGET_TAG}", user.getNameTag())
@@ -157,11 +157,13 @@ public class NicknameCommand extends EssentialCommand {
     private int resetSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         User user = KiloServer.getServer().getUserManager().getOnline(player);
-        user.clearNickname();
-        // This is an Optional.ofNullable, so the DataTracker will just reset the name without any other magic since TrackedData is always and automatically synchronized with the client.
+        user.clearNickname();   /* This is an Optional.ofNullable, so the DataTracker will
+                                   just reset the name without any other magic since TrackedData
+                                   is always and automatically synchronized with the client. */
+
         player.setCustomName(null);
 
-        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendConfigMessage("commands.nickname.resetSelf");
+        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(messages.commands().nickname().resetSelf);
         return 1;
     }
 
@@ -169,9 +171,10 @@ public class NicknameCommand extends EssentialCommand {
         CommandSourceUser source = getServerUser(ctx);
 
         essentials.getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
-            user.clearNickname();   // This is an Optional.ofNullable, so the DataTracker will
-                                    // just reset the name without any other magic since TrackedData
-                                    // is always and automatically synchronized with the client.
+            user.clearNickname();   /* This is an Optional.ofNullable, so the DataTracker will
+                                   just reset the name without any other magic since TrackedData
+                                   is always and automatically synchronized with the client. */
+
             if (user.isOnline())
                 ((OnlineUser) user).getPlayer().setCustomName(new LiteralText(""));
             else {
@@ -182,7 +185,7 @@ public class NicknameCommand extends EssentialCommand {
                 dataModifier.save();
             }
 
-            KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.resetOthers")
+            KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new ChatMessage(messages.commands().nickname().resetOthers
                     .replace("{TARGET_TAG}", user.getNameTag())
                     , true));
         });
