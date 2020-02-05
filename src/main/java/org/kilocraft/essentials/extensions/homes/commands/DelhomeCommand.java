@@ -82,7 +82,11 @@ public class DelhomeCommand extends EssentialCommand {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
             if (!homeHandler.hasHome(name)) {
-                source.sendConfigMessage("commands.playerHomes.invalid_home");
+                if (CommandHelper.areTheSame(source, user))
+                    source.sendMessage(messages.commands().playerHomes().noHome);
+                else
+                    source.sendMessage(messages.commands().playerHomes().admin().noHome
+                            .replace("{TARGET_TAG}", user.getNameTag()));
                 return;
             }
 
@@ -100,9 +104,9 @@ public class DelhomeCommand extends EssentialCommand {
             }
 
             if (CommandHelper.areTheSame(source, user))
-                source.sendMessage(KiloConfig.getMessage("commands.playerHomes.remove")
+                source.sendMessage(messages.commands().playerHomes().homeRemoved
                         .replace("{HOME_NAME}", name));
-            else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.remove")
+            else source.sendMessage(messages.commands().playerHomes().admin().homeRemoved
                     .replace("{HOME_NAME}", name)
                     .replace("{TARGET_TAG}", user.getNameTag()));
         });

@@ -167,7 +167,7 @@ public class NicknameCommand extends EssentialCommand {
         return 1;
     }
 
-    private int resetOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int resetOther(CommandContext<ServerCommandSource> ctx) {
         CommandSourceUser source = getServerUser(ctx);
 
         essentials.getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
@@ -202,10 +202,10 @@ public class NicknameCommand extends EssentialCommand {
         return CommandSource.suggestMatching(strings, builder);
     }
 
-    private static CompletableFuture<Suggestions> setOthersSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+    private static CompletableFuture<Suggestions> setOthersSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         User user = KiloServer.getServer().getUserManager().getOnline(getString(context, "user"));
         List<String> strings = new ArrayList<>();
-        if (user.getNickname().isPresent())
+        if (user != null && user.getNickname() != null &&  user.getNickname().isPresent())
             strings.add(user.getNickname().get());
 
         return CommandSource.suggestMatching(strings, builder);

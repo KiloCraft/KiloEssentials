@@ -59,7 +59,7 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        if (!canSetHome(user)) {
+        if (shouldNotSet(user)) {
             user.sendConfigMessage("commands.playerHomes.limit_reached");
             return SINGLE_FAILED;
         }
@@ -88,8 +88,9 @@ public class SethomeCommand extends EssentialCommand {
         essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
-            if (CommandHelper.areTheSame(source, user) && !canSetHome(user)) {
-                source.sendConfigMessage("commands.playerHomes.limit_reached");
+            if (CommandHelper.areTheSame(source, user) && shouldNotSet(user)) {
+                source.sendMessage(messages.commands().playerHomes().reachedLimit
+                        .replace("{HOME_SIZE}", String.valueOf(homeHandler.getHomes().size())));
                 return;
             }
 
@@ -109,9 +110,9 @@ public class SethomeCommand extends EssentialCommand {
             }
 
             if (CommandHelper.areTheSame(source, user))
-                source.sendMessage(KiloConfig.messages().commands().playerHomes().homeSet
+                source.sendMessage(messages.commands().playerHomes().homeSet
                         .replace("{HOME_NAME}", name));
-            else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.set")
+            else source.sendMessage(messages.commands().playerHomes().admin().homeSet
                     .replace("{HOME_NAME}", name)
                     .replace("{TARGET_TAG}", user.getNameTag()));
         });
@@ -119,17 +120,17 @@ public class SethomeCommand extends EssentialCommand {
         return AWAIT_RESPONSE;
     }
 
-    private static boolean canSetHome(User user) {
+    private static boolean shouldNotSet(User user) {
         for (int i = 1; i < KiloConfig.main().homesLimit; i++) {
             String thisPerm = "kiloessentials.command.home.limit." + i;
             int amount = Integer.parseInt(thisPerm.split("\\.")[4]);
             if (user.getHomesHandler().getHomes().size() < amount &&
                     Thimble.hasPermissionOrOp(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
-                return true;
+                return false;
             }
         }
 
-        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3);
+        return !KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS, 3);
     }
 
     private Text getConfirmationText(String homeName, String user) {

@@ -48,7 +48,7 @@ public class HomesCommand extends EssentialCommand {
 
         essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
             if (user.getHomesHandler().getHomes().size() == 0) {
-                source.sendConfigMessage(KiloConfig.messages().commands().playerHomes().admin().noHome
+                source.sendMessage(KiloConfig.messages().commands().playerHomes().admin().noHome
                         .replace("{TARGET_TAG}", user.getNameTag()));
                 return;
             }
