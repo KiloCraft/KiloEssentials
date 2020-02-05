@@ -12,7 +12,6 @@ import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
-import org.kilocraft.essentials.config_old.KiloConfig;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.NBTStorageUtil;
 
@@ -108,7 +107,7 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
 
     @Override
     public KiloFile getSaveFile() {
-        return new KiloFile("particle_animation_cache.dat", KiloConfig.getDataDirectory());
+        return new KiloFile("particle_animation_cache.dat", KiloEssentials.getDataDirectory());
     }
 
     @Override

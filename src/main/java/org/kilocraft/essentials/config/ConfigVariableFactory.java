@@ -35,7 +35,7 @@ public class ConfigVariableFactory {
                 .append("formatted_tps", TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()) + TPSTracker.tps1.getShortAverage())
                 .append("playerCount", server.getPlayerManager().getCurrentPlayerCount())
                 .append("maxPlayers", server.getPlayerManager().getMaxPlayerCount())
-                .append("name", KiloConfigurate.main().server().name)
+                .append("name", KiloConfig.main().server().name)
                 .toString();
     }
 

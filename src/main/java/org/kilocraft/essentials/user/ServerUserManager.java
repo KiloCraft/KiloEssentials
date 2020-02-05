@@ -24,8 +24,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config_old.ConfigCache;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.AnimatedText;
 
@@ -216,7 +215,7 @@ public class ServerUserManager implements UserManager {
 
         for(int i = 0; i < string.length(); ++i) {
             if (!SharedConstants.isValidChar(string.charAt(i))) {
-                if (KiloConfig.getProvider().getMain().getBooleanSafely(ConfigCache.KICK_IF_ILLEGAL_CHARACTERS, false))
+                if (KiloConfig.main().chat().kickForUsingIllegalCharacters)
                     player.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
                 else
                     player.getCommandSource().sendError(new TranslatableText("multiplayer.disconnect.illegal_characters"));

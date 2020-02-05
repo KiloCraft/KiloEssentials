@@ -23,7 +23,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.PlayerDataModifier;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -80,7 +80,7 @@ public class NicknameCommand extends EssentialCommand {
         ServerCommandSource source = ctx.getSource();
         ServerPlayerEntity self = source.getPlayer();
 
-        Object unchecked = KiloConfig.getProvider().getMain().getIntegerSafely("nickname-max-length", 35);
+        Object unchecked = KiloConfig.main().nicknameMaxLength;
 
         if (unchecked == null) {
             throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();
@@ -116,7 +116,7 @@ public class NicknameCommand extends EssentialCommand {
         ServerCommandSource source = ctx.getSource();
         String nickname = getString(ctx, "nickname");
 
-        Object unchecked = KiloConfig.getProvider().getMain().getValue("nickname-max-length");
+        Object unchecked = KiloConfig.main().nicknameMaxLength;
 
         if (unchecked == null) {
             throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();

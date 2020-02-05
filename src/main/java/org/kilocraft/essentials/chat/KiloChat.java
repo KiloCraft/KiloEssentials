@@ -11,16 +11,16 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.ConfigCache;
-import org.kilocraft.essentials.config_old.ConfigValueGetter;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
+import org.kilocraft.essentials.config.messages.Messages;
 import org.kilocraft.essentials.user.ServerUser;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class KiloChat {
-	private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
-	private static ConfigValueGetter messages = KiloConfig.getProvider().getMessages();
+	private static ChatConfigSection config = KiloConfig.main().chat();
+	private static Messages messages = KiloConfig.messages();
 
 	public static String getFormattedLang(String key) {
 		return getFormattedString(ModConstants.getLang().getProperty(key), (Object) null);
@@ -140,28 +140,16 @@ public class KiloChat {
 		if (DISABLE_EVENT_MESSAGES)
 			return;
 
-		broadCast(new ChatMessage(
-				messages.getLocal(true, "events.userJoin", new UserConfigVariables(user))
-					.replace("%USER_DISPLAYNAME%", user.getDisplayName()),
-				true
-		));
-
+		broadCast(new ChatMessage(messages.events().userJoin, user));
 	}
 
 	public static void onUserLeave(ServerUser user) {
 		if (DISABLE_EVENT_MESSAGES)
 			return;
 
-		broadCast(new ChatMessage(
-				messages.getLocal(true, "events.userLeave", new UserConfigVariables(user))
-						.replace("%USER_DISPLAYNAME%", user.getDisplayName()),
-				true
-		));
-
+		broadCast(new ChatMessage(messages.events().userLeave, user));
 	}
 
-	public static boolean DISABLE_EVENT_MESSAGES =
-			messages.getBooleanSafely(ConfigCache.DISABLE_EVENT_MESSAGES_ON_BUNGEE_MODE, true) &&
-			config.getBooleanSafely(ConfigCache.BUNGEECORD_MODE, false);
+	public static boolean DISABLE_EVENT_MESSAGES = messages.events().disableOnProxyMode && KiloConfig.main().server().proxyMode;
 
 }

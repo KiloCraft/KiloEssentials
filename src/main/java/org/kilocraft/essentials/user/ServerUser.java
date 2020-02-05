@@ -16,7 +16,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -277,7 +277,8 @@ public class ServerUser implements User {
 
     @Override
     public String getNameTag() {
-        String str = KiloConfig.getMessage(this.isOnline() ? "general.online-user-tag" : "general.offline-user-tag");
+        String str = this.isOnline() ? KiloConfig.messages().general().userTags().online :
+                KiloConfig.messages().general().userTags().offline;
         return str.replace("{NAME}", this.name)
                 .replace("{DISPLAYNAME}", this.getFormattedDisplayName());
     }

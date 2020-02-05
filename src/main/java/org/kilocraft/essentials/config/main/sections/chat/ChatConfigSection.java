@@ -5,6 +5,8 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public class ChatConfigSection {
+    @Setting(value = "commandSpyFormat", comment = "Set the format of command spy messages")
+    public String commandSpyFormat = "&r&7%SOURCE% &3->&r /%MESSAGE%";
 
     @Setting(value = "useVanillaChat", comment = "If set to true the KiloEssentials Chat will be disabled")
     public boolean useVanillaChat = false;

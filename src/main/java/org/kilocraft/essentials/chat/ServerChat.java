@@ -19,11 +19,10 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.ConfigCache;
-import org.kilocraft.essentials.config_old.ConfigValueGetter;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.ConfigVariableFactory;
+import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.user.OnlineServerUser;
-import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.Date;
 import java.util.UUID;
@@ -31,19 +30,20 @@ import java.util.UUID;
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class ServerChat {
-    private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
-    private static String everyone_template = config.getStringSafely(ConfigCache.CHAT_PING_FORMAT_EVERYONE, "@everyone");
-    private static String senderFormat = config.getStringSafely(ConfigCache.CHAT_PING_FORMAT, "%PLAYER_NAME");
-    private static String displayFormat = config.getStringSafely(ConfigCache.CHAT_PING_PINGED, "&a%PLAYER_DISPLAYNAME%");
-    private static String not_pinged_displayFormat = config.getStringSafely(ConfigCache.CHAT_PING_NOT_PINGED, "&a&o&m%PLAYER_DISPLAYNAME%");
-    private static String everyone_displayFormat = config.getStringSafely(ConfigCache.CHAT_PINGED_EVERYONE, "&b&o@everyone");
-    private static boolean pingSoundEnabled = config.getBooleanSafely(ConfigCache.CHAT_PING_SOUND_ENABLED, true);
-    private static boolean pingEnabled = config.getBooleanSafely(ConfigCache.CHAT_PING_ENABLED, true);
+    private static ChatConfigSection config = KiloConfig.main().chat();
+    private static String everyone_template = config.ping().everyoneTypedFormat;
+    private static String senderFormat = config.ping().typedFormat;
+    private static String displayFormat = config.ping().pingedFormat;
+    private static String not_pinged_displayFormat = config.ping().pingedNotPingedFormat;
+    private static String everyone_displayFormat = config.ping().everyonePingedFormat;
+    private static boolean pingSoundEnabled = config.ping().pingSound().enabled;
+    private static boolean pingEnabled = config.ping().enabled;
 
     public static void send(OnlineUser sender, String rawMessage, ChatChannel channel) {
-        String template = config.getStringSafely(ConfigCache.valueOf(
-                ("chat.channels.formats." + channel.getId()).replaceAll("\\.", "_").toUpperCase()),
-                "&r[&r%USER_DISPLAYNAME%&r]:&r %MESSAGE%");
+//        String template = config.getStringSafely(ConfigCache.valueOf(
+//                ("chat.channels.formats." + channel.getId()).replaceAll("\\.", "_").toUpperCase()),
+//                "&r[&r%USER_DISPLAYNAME%&r]:&r %MESSAGE%");
+        String template = KiloConfig.getMainNode().getNode("chat").getNode("channelsMeta").getNode(channel.getId() + "Chat").getString();
         ServerPlayerEntity player = sender.getPlayer();
 
         ChatMessage message = new ChatMessage(rawMessage, KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_COLOR));
@@ -79,8 +79,7 @@ public class ServerChat {
             KiloChat.sendMessageTo(sender.getPlayer(), new LiteralText(e.getMessage()));
         }
 
-        message.setMessage(config.getLocalReplacer()
-                    .replace(template, new UserConfigVariables((ServerUser) sender), KiloConfig.getFileConfigOfMain())
+        message.setMessage(ConfigVariableFactory.replaceUserVariables(message.getFormattedMessage(), sender)
                 .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().asFormattedString())
                 .replace("%MESSAGE%", message.getFormattedMessage()), true);
 
@@ -112,9 +111,9 @@ public class ServerChat {
 
     private static void pingPlayer(ServerPlayerEntity target) {
         Vec3d vec3d = target.getCommandSource().getPosition();
-        String soundId = "minecraft:" + config.getValue("chat.ping.sound.id");
-        float volume = config.getFloatSafely("chat.ping.sound.volume", "1.0");
-        float pitch = config.getFloatSafely("chat.ping.sound.pitch", "1.0");
+        String soundId = "minecraft:" + config.ping().pingSound().id;
+        float volume = (float) config.ping().pingSound().volume;
+        float pitch = (float) config.ping().pingSound().pitch;
 
         target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
     }
@@ -164,8 +163,8 @@ public class ServerChat {
     }
 
     public static void sendPrivateMessage(ServerCommandSource source, OnlineUser target, String message) throws CommandSyntaxException {
-        String format = config.getStringSafely("chat.privateMessages.format", "&r%USER_DISPLAYNAME% &8>>&r %MESSAGE%") + "&r";
-        String me_format = config.getStringSafely("chat.privateMessages.me_format", "&cme") + "&r";
+        String format = config.privateChat().privateChat;
+        String me_format = config.privateChat().privateChatMeFormat;
         String sourceName = source.getName();
 
         String toSource = format.replace("%SOURCE%", me_format)
@@ -194,7 +193,7 @@ public class ServerChat {
     }
 
     public static void sendCommandSpy(ServerCommandSource source, String message) {
-        String format = config.getStringSafely("commandSpy.format", "&r&7%SOURCE% &3->&r /%MESSAGE%") + "&r";
+        String format = config.commandSpyFormat;
         String toSpy = format.replace("%SOURCE%", source.getName())
                 .replace("%MESSAGE%",  message);
 

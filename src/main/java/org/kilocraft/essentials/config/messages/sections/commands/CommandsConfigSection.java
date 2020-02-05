@@ -28,6 +28,10 @@ public class CommandsConfigSection {
         return contextSection;
     }
 
+    public WarpCommandConfigSection warp() {
+        return warpCommand;
+    }
+
     public PlayerHomesConfigSection playerHomes() {
         return playerHomesSection;
     }

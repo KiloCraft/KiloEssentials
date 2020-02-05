@@ -25,7 +25,7 @@ import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
@@ -79,14 +79,14 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = new KiloCommands();
 
-		KiloServer.getServer().setName(KiloConfig.getProvider().getMessages().getStringSafely("server.name", "Minecraft Server"));
+		KiloServer.getServer().setName(KiloConfig.main().server().name);
 
 		permissionWriters.add((map, server) -> {
 			for (EssentialPermission perm : EssentialPermission.values()) {
 				map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
 			}
 
-			for (int i = 1; i <= KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
+			for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
 				map.registerPermission(CommandPermission.HOME_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
 			}
 		});
@@ -136,7 +136,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new VoteCommand(), "VoteCommand");
 		features.tryToRegister(new ParticleAnimationManager(), "MagicalParticles");
 
-		if (KiloConfig.getProvider().getMain().getBooleanSafely("startup-script.auto-generate", true))
+		if (KiloConfig.main().startupScript().enabled)
 			new StartupScript();
 
 		/*

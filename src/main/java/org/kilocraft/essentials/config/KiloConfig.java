@@ -15,12 +15,14 @@ import org.kilocraft.essentials.provided.KiloFile;
 
 import java.io.IOException;
 
-public class KiloConfigurate {
+public class KiloConfig {
     private static Config config;
     private static Messages messages;
     private static String configPath = KiloEssentials.getEssentialsDirectory();
+    private static ConfigurationNode mainNode;
+    private static ConfigurationNode messagesNode;
 
-    public KiloConfigurate() {
+    public KiloConfig() {
         try {
             KiloFile CONFIG_FILE = new KiloFile("config.hocon", configPath);
             KiloFile MESSAGES_FILE = new KiloFile("messages.hocon", configPath);
@@ -33,8 +35,8 @@ public class KiloConfigurate {
             CONFIG_FILE.createFile();
             MESSAGES_FILE.createFile();
 
-            ConfigurationNode mainNode = mainLoader.load(configurationOptions());
-            ConfigurationNode messagesNode = messagesLoader.load(configurationOptions());
+            mainNode = mainLoader.load(configurationOptions());
+            messagesNode = messagesLoader.load(configurationOptions());
 
             config = mainNode.getValue(TypeToken.of(Config.class), new Config());
             messages = messagesNode.getValue(TypeToken.of(Messages.class), new Messages());
@@ -54,6 +56,19 @@ public class KiloConfigurate {
     public static Messages messages() {
         return messages;
     }
+
+    public static ConfigurationNode getMainNode() {
+        return mainNode;
+    }
+
+    public static ConfigurationNode getMessagesNode() {
+        return messagesNode;
+    }
+
+    public static String getMessage(String key, Object... objects) {
+        return objects.length == 0 ? messagesNode.getString(key) : String.format(messagesNode.getString(key), objects);
+    }
+
 
     private ConfigurationOptions configurationOptions() {
         return ConfigurationOptions.defaults()

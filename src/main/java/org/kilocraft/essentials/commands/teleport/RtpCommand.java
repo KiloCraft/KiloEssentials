@@ -31,7 +31,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
@@ -224,7 +224,7 @@ public class RtpCommand extends EssentialCommand {
 				targetUser.setRTPsLeft(targetUser.getRTPsLeft() - 1);
 
 			targetUser.sendMessage(new ChatMessage(
-					KiloConfig.getProvider().getMessages().getMessage("commands.rtp.teleported")
+					KiloConfig.messages().commands().rtp().teleported
 							.replace("{BIOME}", targetBiomeName)
 							.replace("{RTP_LEFT}", String.valueOf(targetUser.getRTPsLeft()))
 							.replace("{cord.X}", String.valueOf(randomX))

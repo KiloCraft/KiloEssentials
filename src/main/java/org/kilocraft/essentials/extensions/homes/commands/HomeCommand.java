@@ -13,7 +13,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
@@ -59,7 +59,7 @@ public class HomeCommand extends EssentialCommand {
                 throw MISSING_DIMENSION.create();
         }
 
-        user.sendMessage(new ChatMessage(KiloConfig.getMessage("commands.playerHomes.teleporting")
+        user.sendMessage(new ChatMessage(KiloConfig.messages().commands().playerHomes().teleporting
                 .replace("{HOME_NAME}", name), true));
         return SINGLE_SUCCESS;
     }

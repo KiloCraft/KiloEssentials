@@ -8,7 +8,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -26,7 +26,7 @@ public class BroadcastCommand extends EssentialCommand {
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
-        String format = KiloConfig.getProvider().getMessages().getValue("commands.broadcast_format");
+        String format = KiloConfig.messages().commands().broadCastFormat;
         KiloChat.broadCast(new ChatMessage(
                 format.replace("%MESSAGE%", getString(ctx, "message")), true));
         return SINGLE_SUCCESS;

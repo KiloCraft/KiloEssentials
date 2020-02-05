@@ -4,7 +4,7 @@ import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.text.Text;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.api.KiloEssentials;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +21,7 @@ public class PlayerDataModifier {
     }
 
     public boolean load() {
-        File file = new File(KiloConfig.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
+        File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
         if (!file.exists())
             return false;
 
@@ -33,7 +33,7 @@ public class PlayerDataModifier {
     }
 
     public boolean save() {
-        File file = new File(KiloConfig.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
+        File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
         if (!file.exists())
             return false;
 

@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -65,7 +65,7 @@ public class DelhomeCommand extends EssentialCommand {
             homeHandler.removeHome(name);
         }
 
-        user.sendMessage(new ChatMessage(KiloConfig.getMessage("commands.playerHomes.remove")
+        user.sendMessage(new ChatMessage(KiloConfig.messages().commands().playerHomes().homeRemoved
                 .replace("{HOME_NAME}", name), true));
 
         return SINGLE_SUCCESS;

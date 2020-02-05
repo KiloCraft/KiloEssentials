@@ -19,7 +19,7 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -291,7 +291,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendConfigMessage(String key, Object... objects) {
-        String string = KiloConfig.getProvider().getMessages().getMessage(key, objects);
+        String string = KiloConfig.getMessage(key, objects);
         KiloChat.sendMessageToSource(this.source, new ChatMessage(string, true));
     }
 

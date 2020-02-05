@@ -23,7 +23,7 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -109,7 +109,7 @@ public class SethomeCommand extends EssentialCommand {
             }
 
             if (CommandHelper.areTheSame(source, user))
-                source.sendMessage(KiloConfig.getMessage("commands.playerHomes.set")
+                source.sendMessage(KiloConfig.messages().commands().playerHomes().homeSet
                         .replace("{HOME_NAME}", name));
             else source.sendMessage(KiloConfig.getMessage("commands.playerHomes.admin.set")
                     .replace("{HOME_NAME}", name)
@@ -120,7 +120,7 @@ public class SethomeCommand extends EssentialCommand {
     }
 
     private static boolean canSetHome(User user) {
-        for (int i = 1; i < KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
+        for (int i = 1; i < KiloConfig.main().homesLimit; i++) {
             String thisPerm = "kiloessentials.command.home.limit." + i;
             int amount = Integer.parseInt(thisPerm.split("\\.")[4]);
             if (user.getHomesHandler().getHomes().size() < amount &&

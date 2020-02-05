@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.config_old.KiloConfig;
+import org.kilocraft.essentials.api.KiloEssentials;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class NBTUtils {
     @Nullable
     public static CompoundTag getPlayerTag(UUID uuid) {
-        File file = new File(KiloConfig.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
+        File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
 
         if (!file.exists())
             return null;
@@ -31,7 +31,7 @@ public class NBTUtils {
     }
 
     public static boolean savePlayerFromTag(UUID uuid, CompoundTag tag) {
-        File file = new File(KiloConfig.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
+        File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
         if (!file.exists())
             return false;
 
