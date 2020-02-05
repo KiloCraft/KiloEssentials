@@ -6,6 +6,12 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class CommandsConfigSection {
 
+    @Setting(value = "helpMessage", comment = "temp, will be removed, requires a TextComponent")
+    public String helpMessage = "[{\"text\":\"Example Help Message!\", \"color\":\"green\"}, {\"text\":\" Edit this in /essentials/help.txt/\", \"color\":\"aqua\"}]";
+
+    @Setting(value = "voteMessage", comment = "temp, will be removed, requires a TextComponent")
+    public String voteMessage = "[{\"text\":\"Example Help Message!\", \"color\":\"green\"}, {\"text\":\" Edit this in /essentials/help.txt/\", \"color\":\"aqua\"}]";
+
     @Setting(value = "broadCastFormat")
     public String broadCastFormat = "&f[&cBroadCast&f]&r %MESSAGE%";
 

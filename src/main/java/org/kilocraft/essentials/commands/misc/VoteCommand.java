@@ -1,31 +1,26 @@
 package org.kilocraft.essentials.commands.misc;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.chat.KiloChat;
-
-import static net.minecraft.server.command.CommandManager.literal;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 
 @Deprecated
-public class VoteCommand implements ConfigurableFeature {
+public class VoteCommand extends EssentialCommand {
+    public VoteCommand() {
+        super("vote");
+    }
 
     @Override
-    public boolean register() {
-        KiloCommands.getDispatcher().register(literal("vote").executes(VoteCommand::execute));
-        return true;
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        argumentBuilder.executes(this::execute);
     }
 
-    public VoteCommand() {
-    }
-
-    public static int execute(CommandContext<ServerCommandSource> context) {
-        String jsonText = "@Deprecated";
-        Text text = TextFormat.translateToNMSText(jsonText);
-        KiloChat.sendMessageToSource(context.getSource(), text);
+    private int execute(CommandContext<ServerCommandSource> context) {
+        Text text = TextFormat.translateToNMSText(messages.commands().voteMessage);
+        context.getSource().sendFeedback(text, false);
 
         return 1;
     }

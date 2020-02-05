@@ -26,7 +26,6 @@ import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
-import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -132,7 +131,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new PlayerSitManager(), "betterChairs");
 		//features.tryToRegister(new DiscordCommand(), "DiscordCommand");
 		//features.tryToRegister(new VoteCommand(), "VoteCommand");
-		features.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
+		//features.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
 
 
 		if (KiloConfig.main().startupScript().enabled)

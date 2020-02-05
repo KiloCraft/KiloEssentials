@@ -50,7 +50,6 @@ import org.kilocraft.essentials.commands.teleport.RtpCommand;
 import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
-
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
@@ -154,6 +153,8 @@ public class KiloCommands {
             add(new ReplyCommand());
             add(new RelnameCommand());
             add(new IpInfoCommand());
+            add(new HelpCommand());
+            add(new VoteCommand());
         }};
 
         this.commands.addAll(commandsList);
@@ -170,6 +171,7 @@ public class KiloCommands {
         RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
+
         //InventoryCommand.register(this.dispatcher);
     }
 

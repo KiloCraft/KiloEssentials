@@ -35,6 +35,8 @@ public class KiloConfig {
         try {
             KiloFile CONFIG_FILE = new KiloFile("config.hocon", configPath);
             KiloFile MESSAGES_FILE = new KiloFile("messages.hocon", configPath);
+            KiloFile HELP_TXT = new KiloFile("help.txt", configPath);
+            KiloFile VOTE_TXT = new KiloFile("vote.txt", configPath);
 
             ConfigurationLoader<CommentedConfigurationNode> mainLoader = HoconConfigurationLoader.builder()
                     .setFile(CONFIG_FILE.getFile()).build();

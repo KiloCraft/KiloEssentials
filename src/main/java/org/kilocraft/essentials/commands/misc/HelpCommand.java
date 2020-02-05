@@ -3,9 +3,9 @@ package org.kilocraft.essentials.commands.misc;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.KiloChat;
 
 @Deprecated
 public class HelpCommand extends EssentialCommand {
@@ -18,9 +18,8 @@ public class HelpCommand extends EssentialCommand {
     }
 
     public int execute(CommandContext<ServerCommandSource> context) {
-        String message = "@Deprecated";
-        message = TextFormat.translate(message);
-        KiloChat.sendMessageToSource(context.getSource(), TextFormat.translateToNMSText(message));
+        Text text = TextFormat.translateToNMSText(messages.commands().helpMessage);
+        context.getSource().sendFeedback(text, false);
 
         return SINGLE_SUCCESS;
     }
