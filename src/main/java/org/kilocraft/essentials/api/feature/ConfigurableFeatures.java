@@ -9,9 +9,9 @@ public class ConfigurableFeatures {
         KiloEssentialsImpl.getLogger().info("Registering the Configurable Features...");
     }
 
-    public <F extends ConfigurableFeature> F tryToRegister(F feature, String configID) {
+    public <F extends ConfigurableFeature> void tryToRegister(F feature, String configKey) {
         try {
-            if (KiloConfig.getMainNode().getNode("features").getNode(configID).getBoolean()) {
+            if (KiloConfig.getMainNode().getNode("features").getNode(configKey).getBoolean()) {
                 if (SharedConstants.isDevelopment)
                     KiloEssentialsImpl.getLogger().info("Initialing \"" + feature.getClass().getName() + "\"");
 
@@ -21,6 +21,5 @@ public class ConfigurableFeatures {
             //Don't enable the feature:: PASS
         }
 
-        return feature;
     }
 }

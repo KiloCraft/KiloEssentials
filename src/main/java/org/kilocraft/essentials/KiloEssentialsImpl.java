@@ -23,6 +23,8 @@ import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
 import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
@@ -133,8 +135,8 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new PlayerSitManager(), "betterChairs");
 		features.tryToRegister(new CustomCommands(), "customCommands");
 		features.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
-		//features.tryToRegister(new DiscordCommand(), "DiscordCommand");
-		//features.tryToRegister(new VoteCommand(), "VoteCommand");
+		features.tryToRegister(new DiscordCommand(), "discordCommand");
+		features.tryToRegister(new VoteCommand(), "voteCommand");
 
 
 		if (KiloConfig.main().startupScript().enabled)
@@ -323,7 +325,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public void onServerStop() {
-		if (PlayerSitManager.enabled)
+		if (PlayerSitManager.INSTANCE != null && PlayerSitManager.enabled)
 			PlayerSitManager.INSTANCE.killAll();
 
 		this.scheduledUpdateExecutorService.shutdown();

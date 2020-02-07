@@ -40,6 +40,11 @@ public class SimpleCommandManager {
         }
     }
 
+    public static void unregister(String id) {
+        if (INSTANCE != null && INSTANCE.commands != null && getCommand(id) != null)
+            INSTANCE.commands.remove(getCommand(id));
+    }
+
     public static void unregister(SimpleCommand command) {
         if (INSTANCE != null && INSTANCE.commands != null)
             INSTANCE.commands.remove(command);

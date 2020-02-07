@@ -5,8 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -16,6 +16,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
@@ -42,11 +43,6 @@ public class CustomCommands implements ConfigurableFeature {
     }
 
     public static void load() {
-        loadConfig();
-        createFromConfig();
-    }
-
-    private static void loadConfig() {
         try {
             KiloFile CONFIG_FILE = new KiloFile("customCommands.hocon", KiloEssentials.getEssentialsDirectory());
             if (!CONFIG_FILE.exists()) {
@@ -69,11 +65,14 @@ public class CustomCommands implements ConfigurableFeature {
             KiloEssentials.getLogger().error("Exception handling a configuration file! " + CustomCommands.class.getName());
             e.printStackTrace();
         }
+
+        createFromConfig();
     }
 
     private static void createFromConfig() {
         map.clear();
         config.commands.forEach((string, cs) -> {
+            SimpleCommandManager.unregister(string);
             SimpleCommand simpleCommand = new SimpleCommand(string, cs.label, (source, args, server) -> runCommand(source, args, server, cs));
 
             simpleCommand.requires(cs.reqSection.op);
@@ -85,28 +84,43 @@ public class CustomCommands implements ConfigurableFeature {
     private static int runCommand(ServerCommandSource src, String[] args, Server server, CustomCommandConfigSection cs) throws CommandSyntaxException {
         int var = 0;
         for (String s : cs.executablesList) {
-            System.out.println(s);
             String cmd = s.replace("${source.name}", src.getName());
 
             //Checks if the command contains an argument object: ${args[<number>]}
+            //\$\{args\[\d+]}
             if (cmd.contains("${args[")) {
-                String[] strings = cmd.split("\\$\\{args\\[\\d+]}");
+                String[] strings = cmd.split(" ");
 
+                int iArgs = 0;
                 for (int i = 0; i < strings.length; i++) {
-                    System.out.println(args.length + " " + i + " b? " + (args.length > i));
-                    if (cmd.contains("${args[" + i + "]") && args.length > i+1) {
-                        throw new SimpleCommandExceptionType(new LiteralText("Error! Incomplete arguments! needed argument number " + i)).create();
-                    }
+                    if (strings[i].startsWith("${args["))
+                        iArgs++;
+                }
+
+                System.out.println(iArgs + " " + strings.length);
+                if (iArgs != args.length) {
+                    throw new SimpleCommandExceptionType(LangText.getFormatter(true, "general.usage", cs.usage)
+                            .formatted(Formatting.RED)).create();
+                }
+
+                for (int i = 0; i <= args.length + 1; i++) {
+                    try {
+                        cmd = cmd.replaceAll("\\$\\{args\\[" + (i + 1) + "]}", args[i]);
+                        System.out.println("Replacing arg " + i + " with: " + args[i]);
+                    } catch (ArrayIndexOutOfBoundsException ignored) { }
                 }
 
             }
 
             if (s.startsWith("!")) {
-                server.execute(operatorSource(src), s.replaceFirst("!", ""));
+                System.out.println(cmd.replace("!", ""));
+                server.execute(operatorSource(src), cmd.replace("!", ""));
             } else if (s.startsWith("?")) {
-                server.execute(s.replaceFirst("\\?", ""));
-            } else
-                server.execute(src, s);
+                server.execute(cmd.replaceFirst("\\?", ""));
+            } else {
+                System.out.println("/");
+                server.execute(src, cmd);
+            }
 
             var = 1;
         }

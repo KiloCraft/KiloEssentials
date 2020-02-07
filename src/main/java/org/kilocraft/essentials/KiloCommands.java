@@ -19,7 +19,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.command.TestCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
@@ -123,8 +122,6 @@ public class KiloCommands {
             add(new SigneditCommand());
             add(new HatCommand());
             add(new VersionCommand());
-            add(new HelpCommand());
-            add(new RulesCommand());
             add(new ReloadCommand());
             add(new TextformatsCommand());
             add(new GamemodeCommand());
@@ -155,7 +152,6 @@ public class KiloCommands {
             add(new RelnameCommand());
             add(new IpInfoCommand());
             add(new HelpCommand());
-            add(new VoteCommand());
         }};
 
         this.commands.addAll(commandsList);
@@ -172,8 +168,6 @@ public class KiloCommands {
         RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
-
-        TestCommand.register(this.dispatcher);
 
         //InventoryCommand.register(this.dispatcher);
     }

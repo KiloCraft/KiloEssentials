@@ -17,7 +17,7 @@ public class CustomCommandConfigSection {
 
     @Setting("runs")
     public List<String> executablesList = new ArrayList<String>(){{
-        add("!tellrw ${source.name} {\"text\":\"Example runnable!\"}");
+        add("!tellraw ${source.name} {\"text\":\"Example runnable!\"}");
     }};
 
     @Setting("requires")

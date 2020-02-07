@@ -22,7 +22,6 @@ public class HelpCommand extends EssentialCommand {
         Text text = TextFormat.translateToNMSText(message);
         context.getSource().sendFeedback(text, false);
 
-
         return SINGLE_SUCCESS;
     }
 

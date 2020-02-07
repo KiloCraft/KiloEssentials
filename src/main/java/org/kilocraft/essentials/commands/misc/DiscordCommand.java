@@ -7,23 +7,23 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-@Deprecated
 public class DiscordCommand implements ConfigurableFeature {
 
     @Override
     public boolean register() {
-        KiloCommands.getDispatcher().register(literal("discord").executes(DiscordCommand::execute));
+        KiloCommands.getDispatcher().register(literal("discord").executes(this::execute));
         return true;
     }
 
     public DiscordCommand() {
     }
 
-    public static int execute(CommandContext<ServerCommandSource> context) {
-        String jsonText = "@Deprecated";
+    public int execute(CommandContext<ServerCommandSource> context) {
+        String jsonText = KiloConfig.messages().commands().discordMessage;
         Text text = TextFormat.translateToNMSText(jsonText);
         KiloChat.sendMessageToSource(context.getSource(), text);
 
