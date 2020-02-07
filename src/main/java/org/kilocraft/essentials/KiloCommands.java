@@ -19,6 +19,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.command.TestCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
@@ -171,6 +172,8 @@ public class KiloCommands {
         RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
+
+        TestCommand.register(this.dispatcher);
 
         //InventoryCommand.register(this.dispatcher);
     }
@@ -364,7 +367,7 @@ public class KiloCommands {
                 var = 0;
                 return var;
             } catch (CommandSyntaxException e) {
-                if (e.getRawMessage().getString().equals("Unknown command")) {
+                if (e.getRawMessage().getString().startsWith("Unknown or incomplete")) {
                     String literalName = cmd.split(" ")[0].replace("/", "");
                     CommandPermission reqPerm = CommandPermission.getByNode(literalName);
 
@@ -372,15 +375,10 @@ public class KiloCommands {
                         sendPermissionError(executor);
                     else
                         KiloChat.sendMessageToSource(executor, new ChatMessage(
-                                KiloConfig.messages().commands().context().executionException
-                                , true));
+                                KiloConfig.messages().commands().context().executionException, true));
 
                 } else {
                     executor.sendError(Texts.toText(e.getRawMessage()));
-
-                    if (e.getRawMessage().getString().equals("Incorrect argument for command"))
-                        KiloChat.sendMessageToSource(executor,
-                                new ChatMessage(messageUtil.fromCommandNode(CommandMessageNode.EXECUTION_EXCEPTION_HELP), true));
 
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         int cursor = Math.min(e.getInput().length(), e.getCursor());

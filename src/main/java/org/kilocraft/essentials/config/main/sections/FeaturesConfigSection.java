@@ -16,4 +16,7 @@ public class FeaturesConfigSection {
 
     @Setting(value = "magicalParticles", comment = "Animated Magical Particles, You can use the \"/mp\" command for more info")
     public boolean magicalParticles = true;
+
+    @Setting(value = "customCommands", comment = "Add custom commands for your server!")
+    public boolean customCommands = true;
 }

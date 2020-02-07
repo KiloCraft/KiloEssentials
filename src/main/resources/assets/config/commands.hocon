@@ -6,32 +6,22 @@
 # e.g: "&eThe Yellow Thing" will be yellow
 
 commands {
-  "default:donate" {
-    usage: "/donate"
+  "default:example" {
+    usage: "/example"
     runs=[
-      "tellraw ${SOURCE_NAME} {\"text\":\"Hello there!\", \"color\":\"light_blue\"}"
+      "!tellraw ${SOURCE_NAME} {\"text\":\"Hello there!\", \"color\":\"light_blue\"}"
     ]
     args=[
       {
-        name: "target"
-        type: EntitySelector_player
-        suggests=[
-          ${suggestions.player_suggestions}
-        ]
+        id: "firstArgument"
+        requires {
+          op: 2
+        }
         runs=[
-          "kick ${args.get(target)}"
+
         ]
         args=[
-          {
-            name: "target_2"
-            type: EntitySelector_player
-            suggests=[
-              ${suggestions.player_suggestions}
-            ]
-            runs=[
-              "kick ${args.get(target)} ${args.get(target_2).asPlayer.getName} said OwO!"
-            ]
-          }
+
         ]
       }
 

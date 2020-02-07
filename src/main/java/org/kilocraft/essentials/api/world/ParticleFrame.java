@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api.world;
 
-import net.minecraft.client.network.packet.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;

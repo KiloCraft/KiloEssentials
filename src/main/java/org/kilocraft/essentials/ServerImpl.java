@@ -70,8 +70,8 @@ public class ServerImpl implements Server {
 
     @Override
     public void reload() {
-        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl());
         this.server.reload();
+        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl());
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.mixin;
 
-import net.minecraft.client.network.packet.PlayerListS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.util.PacketByteBuf;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -13,12 +13,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class PlayerListS2CPacketMixin {
 
 	@Deprecated
-	@Redirect(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/PacketByteBuf;writeString(Ljava/lang/String;)Lnet/minecraft/util/PacketByteBuf;"))
-	private PacketByteBuf modify(PacketByteBuf packetByteBuf, String string) {
+	@Redirect(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/PlayerListS2CPacket;write(Lnet/minecraft/util/PacketByteBuf;)V"))
+	private void modify(PlayerListS2CPacket playerListS2CPacket, PacketByteBuf packetByteBuf) {
 		boolean useNickname = KiloConfig.main().playerList().useNicknames;
-		OnlineUser user = KiloServer.getServer().getOnlineUser(string);
-		packetByteBuf.writeString(useNickname ? user.getRankedDisplayName().asFormattedString() : user.getPlayer().getDisplayName().asFormattedString());
-		return packetByteBuf;
+		for (PlayerListS2CPacket.Entry entry : playerListS2CPacket.getEntries()) {
+			OnlineUser user = KiloServer.getServer().getOnlineUser(entry.getProfile().getName());
+			packetByteBuf.writeString(useNickname ? user.getRankedDisplayName().asFormattedString() : user.getPlayer().getDisplayName().asFormattedString());
+		}
 	}
 
 }

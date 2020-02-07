@@ -18,8 +18,10 @@ public class HelpCommand extends EssentialCommand {
     }
 
     public int execute(CommandContext<ServerCommandSource> context) {
-        Text text = TextFormat.translateToNMSText(messages.commands().helpMessage);
+        String message = messages.commands().helpMessage;
+        Text text = TextFormat.translateToNMSText(message);
         context.getSource().sendFeedback(text, false);
+
 
         return SINGLE_SUCCESS;
     }

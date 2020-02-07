@@ -10,9 +10,7 @@ import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +19,6 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.*;
-import static org.kilocraft.essentials.api.ModConstants.getMessageUtil;
 
 public class SimpleCommandManager {
     private static SimpleCommandManager INSTANCE;
@@ -110,10 +107,6 @@ public class SimpleCommandManager {
 
             } else {
                 source.sendError(Texts.toText(e.getRawMessage()));
-
-                if (e.getRawMessage().getString().equals("Incorrect argument for command"))
-                    KiloChat.sendMessageToSource(source,
-                            new ChatMessage(getMessageUtil().fromCommandNode(CommandMessageNode.EXECUTION_EXCEPTION_HELP), true));
 
                 if (e.getInput() != null && e.getCursor() >= 0) {
                     int cursor = Math.min(e.getInput().length(), e.getCursor());

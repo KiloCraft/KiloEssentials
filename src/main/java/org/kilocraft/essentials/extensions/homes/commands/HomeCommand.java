@@ -51,7 +51,7 @@ public class HomeCommand extends EssentialCommand {
         String name = getString(ctx, "name");
 
         if (!homeHandler.hasHome(name)) {
-            user.sendConfigMessage("commands.playerHomes.invalidHome");
+            user.sendMessage(messages.commands().playerHomes().invalidHome);
             return -1;
         }
 

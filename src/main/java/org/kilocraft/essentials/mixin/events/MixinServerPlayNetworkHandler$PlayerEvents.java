@@ -3,14 +3,14 @@ package org.kilocraft.essentials.mixin.events;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.ClientCommandC2SPacket;
-import net.minecraft.server.network.packet.HandSwingC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -46,7 +46,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     }
 
     @Inject(method = "onPlayerInteractItem", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onPlayerInteractItem(Lnet/minecraft/server/network/packet/PlayerInteractItemC2SPacket;)V"))
+            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onPlayerInteractItem(Lnet/minecraft/network/packet/c2s/play/PlayerInteractItemC2SPacket;)V"))
     private void modifyOnPlayerInteractItem(PlayerInteractItemC2SPacket playerInteractItemC2SPacket, CallbackInfo ci) {
         ci.cancel();
         NetworkThreadUtils.forceMainThread(playerInteractItemC2SPacket, (ServerPlayPacketListener) this, this.player.getServerWorld());
@@ -68,7 +68,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     }
 
     @Inject(method = "onHandSwing", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onHandSwing(Lnet/minecraft/server/network/packet/HandSwingC2SPacket;)V"))
+            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onHandSwing(Lnet/minecraft/network/packet/c2s/play/HandSwingC2SPacket;)V"))
     private void modifyOnHandSwing(HandSwingC2SPacket handSwingC2SPacket, CallbackInfo ci) {
         PlayerOnHandSwingEvent event = new PlayerOnHandSwingEventImpl(player, handSwingC2SPacket.getHand());
         KiloServer.getServer().triggerEvent(event);
@@ -77,7 +77,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     }
 
     @Inject(method = "onPlayerInteractBlock", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onPlayerInteractBlock(Lnet/minecraft/server/network/packet/PlayerInteractBlockC2SPacket;)V"))
+            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onPlayerInteractBlock(Lnet/minecraft/network/packet/c2s/play/PlayerInteractBlockC2SPacket;)V"))
     private void modifyOnIteractBlock(PlayerInteractBlockC2SPacket playerInteractBlockC2SPacket, CallbackInfo ci) {
         PlayerInteractBlockEvent event = new PlayerInteractBlockEventImpl(player, playerInteractBlockC2SPacket.getHitY(), playerInteractBlockC2SPacket.getHand());
         KiloServer.getServer().triggerEvent(event);

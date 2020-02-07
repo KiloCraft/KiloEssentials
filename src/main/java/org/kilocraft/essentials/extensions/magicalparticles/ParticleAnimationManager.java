@@ -1,8 +1,8 @@
 package org.kilocraft.essentials.extensions.magicalparticles;
 
 import com.google.common.reflect.TypeToken;
-import net.minecraft.client.network.packet.ParticleS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;

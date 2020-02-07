@@ -49,6 +49,7 @@ public class LiteralCommandModified {
         add("tm");
         add("time");
         add("enchant");
+        add("locatebiome");
     }};
 
     public static boolean isVanillaCommand(String nodeName) {

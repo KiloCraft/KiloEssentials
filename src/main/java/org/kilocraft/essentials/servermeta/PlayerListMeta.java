@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.servermeta;
 
-import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;

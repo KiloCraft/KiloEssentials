@@ -19,7 +19,8 @@ public class VoteCommand extends EssentialCommand {
     }
 
     private int execute(CommandContext<ServerCommandSource> context) {
-        Text text = TextFormat.translateToNMSText(messages.commands().voteMessage);
+        String message = messages.commands().voteMessage;
+        Text text = TextFormat.translateToNMSText(message);
         context.getSource().sendFeedback(text, false);
 
         return 1;
