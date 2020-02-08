@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage {
@@ -144,22 +143,21 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
     }
 
     private static Server server = KiloServer.getServer();
-    private static AtomicInteger tick = new AtomicInteger(0);
+    private static int tick = 0;
     public static void onTick() {
-        if (uuidIdentifierMap.isEmpty())
+        if (uuidIdentifierMap == null || uuidIdentifierMap.isEmpty())
             return;
 
-        //Tick counter logic, only shows the animations once in 3 ticks
-        tick.getAndIncrement();
-        if (tick.get() < 4)
-            return;
+        //Tick counter logic, only shows the animations once in 4 ticks
+        tick++;
+        if (tick > 4) {
+            uuidIdentifierMap.forEach((uuid, id) -> {
+                if (server.getPlayer(uuid) != null)
+                    runAnimationFrames(server.getPlayer(uuid), id);
+            });
 
-        uuidIdentifierMap.forEach((uuid, id) -> {
-            if (server.getPlayer(uuid) != null)
-                runAnimationFrames(server.getPlayer(uuid), id);
-        });
-
-        tick.set(0);
+            tick = 0;
+        }
     }
 
     public static void runAnimationFrames(ServerPlayerEntity player, Identifier id) {

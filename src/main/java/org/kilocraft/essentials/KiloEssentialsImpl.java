@@ -3,7 +3,6 @@ package org.kilocraft.essentials;
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
@@ -65,7 +64,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private KiloCommands commands;
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
-	private static MinecraftServer minecraftServer;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
@@ -73,7 +71,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public KiloEssentialsImpl(final KiloEvents events, final KiloConfig config) {
 		instance = this;
 		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
-		minecraftServer = KiloServer.getServer().getVanillaServer();
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = new KiloCommands();
@@ -191,7 +188,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			}
 
 			optionalUser.ifPresent(action);
-		}, minecraftServer);
+		}, KiloServer.getServer().getVanillaServer());
 
 		return optionalCompletableFuture;
 	}
@@ -214,7 +211,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 			loadingText.stop();
 			optionalUser.ifPresent(action);
-		}, minecraftServer);
+		}, KiloServer.getServer().getVanillaServer());
 
 		if (!optionalCompletableFuture.isDone())
 			loadingText.start();

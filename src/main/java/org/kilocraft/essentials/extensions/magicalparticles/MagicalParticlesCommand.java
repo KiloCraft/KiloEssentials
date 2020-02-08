@@ -14,15 +14,12 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
 import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
@@ -40,12 +37,6 @@ public class MagicalParticlesCommand extends EssentialCommand {
                 .suggests(this::particleIdSuggestions)
                 .executes(this::setSelf);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = getUserArgument("user")
-                .requires(src -> hasPermission(src, EssentialPermission.MAGIC_PARTICLES_OTHERS))
-                .suggests(TabCompletions::allPlayers)
-                .executes(this::setOthers);
-
-        idArgument.then(userArgument);
         commandNode.addChild(idArgument.build());
     }
 
@@ -69,37 +60,6 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
         KiloChat.sendLangMessageTo(player, "command.magicalparticles.set.self", identifier.getPath());
         return SINGLE_SUCCESS;
-    }
-
-    private int setOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser source = getOnlineUser(ctx);
-        AtomicReference<Identifier> identifier = new AtomicReference<>(getIdentifier(ctx, "animationId"));
-        String targetName = getUserArgumentInput(ctx, "user");
-
-        if (!isValidId(identifier.get()) && !identifier.get().getPath().equals("default"))
-            throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Particle animation").create();
-
-        final Identifier finalIdentifier = identifier.get();
-        essentials.getUserThenAcceptAsync(source, targetName, (user) -> {
-            if (!isValidId(finalIdentifier))
-                identifier.set(getIdFromPath(identifier.get().getPath()));
-
-            if (finalIdentifier.getPath().equals("disable")) {
-                source.sendLangMessage("command.magicalparticles.disabled.others", finalIdentifier.getPath());
-                removePlayer(source.getUuid());
-                return;
-            }
-
-            addPlayer(user.getUuid(), finalIdentifier);
-
-            if (source.getUuid().equals(user.getUuid())) {
-                source.sendLangMessage("command.magicalparticles.set.self", finalIdentifier.getPath());
-            } else {
-                source.sendLangMessage("command.magicalparticles.set.others", finalIdentifier.getPath(), user.getNameTag());
-            }
-        });
-
-        return AWAIT_RESPONSE;
     }
 
     private CompletableFuture<Suggestions> particleIdSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

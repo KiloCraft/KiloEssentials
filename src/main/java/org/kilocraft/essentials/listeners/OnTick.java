@@ -13,13 +13,13 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 	@Override
 	public void handle(ServerTickEvent event) {
 		((ServerUserManager) KiloServer.getServer().getUserManager()).onTick();
-		ParticleAnimationManager.onTick();
 
 		if (tick >= 100) {
 			KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl());
 			tick = 0;
 		}
 
+		ParticleAnimationManager.onTick();
 		tick++;
 	}
 
