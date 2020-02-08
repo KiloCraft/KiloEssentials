@@ -22,6 +22,7 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
 import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
@@ -72,16 +73,17 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
     private int setOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser source = getOnlineUser(ctx);
-        Identifier identifier = getIdentifier(ctx, "animationId");
+        AtomicReference<Identifier> identifier = new AtomicReference<>(getIdentifier(ctx, "animationId"));
         String targetName = getUserArgumentInput(ctx, "user");
-        if (!isValidId(identifier))
-            identifier = getIdFromPath(identifier.getPath());
 
-        if (!isValidId(identifier))
+        if (!isValidId(identifier.get()) && !identifier.get().getPath().equals("default"))
             throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Particle animation").create();
 
-        final Identifier finalIdentifier = identifier;
+        final Identifier finalIdentifier = identifier.get();
         essentials.getUserThenAcceptAsync(source, targetName, (user) -> {
+            if (!isValidId(finalIdentifier))
+                identifier.set(getIdFromPath(identifier.get().getPath()));
+
             if (finalIdentifier.getPath().equals("disable")) {
                 source.sendLangMessage("command.magicalparticles.disabled.others", finalIdentifier.getPath());
                 removePlayer(source.getUuid());
