@@ -41,8 +41,6 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     @Shadow
     public ServerPlayerEntity player;
 
-    @Shadow public abstract void onClientCommand(ClientCommandC2SPacket clientCommandC2SPacket);
-
     @Shadow @Final private MinecraftServer server;
 
     @Shadow private Vec3d requestedTeleportPos;
