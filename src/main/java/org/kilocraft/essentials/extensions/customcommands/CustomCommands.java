@@ -26,7 +26,9 @@ import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CustomCommands implements ConfigurableFeature {
@@ -83,22 +85,21 @@ public class CustomCommands implements ConfigurableFeature {
 
     private static int runCommand(ServerCommandSource src, String[] args, Server server, CustomCommandConfigSection cs) throws CommandSyntaxException {
         int var = 0;
+        int iArgs = 0;
+        List<String> commands = new ArrayList<>();
         for (String s : cs.executablesList) {
             String cmd = s.replace("${source.name}", src.getName());
-
             //Checks if the command contains an argument object: ${args[<number>]}
             //\$\{args\[\d+]}
             if (cmd.contains("${args[")) {
                 String[] strings = cmd.split(" ");
 
-                int iArgs = 0;
                 for (int i = 0; i < strings.length; i++) {
                     if (strings[i].startsWith("${args["))
                         iArgs++;
                 }
 
-                System.out.println(iArgs + " " + args.length);
-                if (iArgs != args.length) {
+                if (iArgs >= args.length) {
                     throw new SimpleCommandExceptionType(LangText.getFormatter(true, "general.usage", cs.usage)
                             .formatted(Formatting.RED)).create();
                 }
@@ -106,23 +107,23 @@ public class CustomCommands implements ConfigurableFeature {
                 for (int i = 0; i <= args.length + 1; i++) {
                     try {
                         cmd = cmd.replaceAll("\\$\\{args\\[" + (i + 1) + "]}", args[i]);
-                        System.out.println("Replacing arg " + i + " with: " + args[i]);
                     } catch (ArrayIndexOutOfBoundsException ignored) { }
                 }
 
             }
 
-            if (s.startsWith("!")) {
-                System.out.println(cmd.replace("!", ""));
-                server.execute(operatorSource(src), cmd.replace("!", ""));
-            } else if (s.startsWith("?")) {
-                server.execute(cmd.replaceFirst("\\?", ""));
-            } else {
-                System.out.println("/");
-                server.execute(src, cmd);
-            }
+            commands.add(cmd);
+        }
 
-            var = 1;
+        for (String s : commands) {
+            if (s.startsWith("!"))
+                server.execute(operatorSource(src), s.replace("!", ""));
+            else if (s.startsWith("?"))
+                    server.execute(s.replaceFirst("\\?", ""));
+            else
+                server.execute(src, s);
+
+            var++;
         }
 
         return var;

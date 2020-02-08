@@ -99,7 +99,7 @@ public class HomeCommand extends EssentialCommand {
             String message = CommandHelper.areTheSame(source, user) ? messages.commands().playerHomes().teleporting :
                     messages.commands().playerHomes().admin().teleporting;
 
-            source.sendMessage(new ChatMessage(HomeCommand.replaceVariables(
+            source.sendMessage(new ChatMessage(replaceVariables(
                     message, source, user, source.getHomesHandler().getHome(name)), user));
         });
 
