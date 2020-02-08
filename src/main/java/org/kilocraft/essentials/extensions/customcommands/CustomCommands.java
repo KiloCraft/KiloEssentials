@@ -97,7 +97,7 @@ public class CustomCommands implements ConfigurableFeature {
                         iArgs++;
                 }
 
-                System.out.println(iArgs + " " + strings.length);
+                System.out.println(iArgs + " " + args.length);
                 if (iArgs != args.length) {
                     throw new SimpleCommandExceptionType(LangText.getFormatter(true, "general.usage", cs.usage)
                             .formatted(Formatting.RED)).create();

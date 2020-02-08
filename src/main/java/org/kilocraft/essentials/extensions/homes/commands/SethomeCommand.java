@@ -60,7 +60,7 @@ public class SethomeCommand extends EssentialCommand {
         String name = input.replaceFirst("-confirmed-", "");
 
         if (shouldNotSet(user)) {
-            user.sendConfigMessage("commands.playerHomes.limit_reached");
+            user.sendMessage(messages.commands().playerHomes().reachedLimit);
             return SINGLE_FAILED;
         }
 

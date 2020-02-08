@@ -1,19 +1,29 @@
 package org.kilocraft.essentials.mixin.events;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.*;
 import org.kilocraft.essentials.events.player.*;
@@ -34,6 +44,8 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     @Shadow public abstract void onClientCommand(ClientCommandC2SPacket clientCommandC2SPacket);
 
     @Shadow @Final private MinecraftServer server;
+
+    @Shadow private Vec3d requestedTeleportPos;
 
     @Inject(at = @At("HEAD"), method = "onDisconnected")
     private void oky$remove(Text text_1, CallbackInfo ci) {
@@ -60,9 +72,10 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
                     player, player.getEntityWorld(), playerInteractItemC2SPacket.getHand(), player.getStackInHand(playerInteractItemC2SPacket.getHand()));
             KiloServer.getServer().triggerEvent(event);
 
-            if (event.isCancelled())
+            if (event.isCancelled()) {
+                this.player.updateLastActionTime();
                 this.player.inventory.updateItems();
-            else
+            } else
                 this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
         }
     }
@@ -79,10 +92,32 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     @Inject(method = "onPlayerInteractBlock", cancellable = true,
             at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onPlayerInteractBlock(Lnet/minecraft/network/packet/c2s/play/PlayerInteractBlockC2SPacket;)V"))
     private void modifyOnIteractBlock(PlayerInteractBlockC2SPacket playerInteractBlockC2SPacket, CallbackInfo ci) {
-        PlayerInteractBlockEvent event = new PlayerInteractBlockEventImpl(player, playerInteractBlockC2SPacket.getHitY(), playerInteractBlockC2SPacket.getHand());
+        ci.cancel();
+        NetworkThreadUtils.forceMainThread(playerInteractBlockC2SPacket, player.networkHandler, this.player.getServerWorld());
+        ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
+        Hand hand = playerInteractBlockC2SPacket.getHand();
+        ItemStack itemStack = this.player.getStackInHand(hand);
+        BlockHitResult blockHitResult = playerInteractBlockC2SPacket.getHitY();
+        BlockPos blockPos = blockHitResult.getBlockPos();
+        Direction direction = blockHitResult.getSide();
+        this.player.updateLastActionTime();
+
+        PlayerInteractBlockEvent event = new PlayerInteractBlockEventImpl(player, playerInteractBlockC2SPacket.getHitY(), hand);
         KiloServer.getServer().triggerEvent(event);
-        if (event.isCancelled())
-            ci.cancel();
+        if (!event.isCancelled()) {
+            if (blockPos.getY() >= this.server.getWorldHeight() - 1 && (direction == Direction.UP || blockPos.getY() >= this.server.getWorldHeight())) {
+                Text text = (new TranslatableText("build.tooHigh", this.server.getWorldHeight())).formatted(Formatting.RED);
+                this.player.networkHandler.sendPacket(new ChatMessageS2CPacket(text, MessageType.GAME_INFO));
+            } else if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D) < 64.0D && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
+                ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
+                if (actionResult.shouldSwingHand()) {
+                    this.player.swingHand(hand, true);
+                }
+            }
+        }
+
+        this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
+        this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos.offset(direction)));
     }
 
     @Inject(method = "onClientCommand", cancellable = true,

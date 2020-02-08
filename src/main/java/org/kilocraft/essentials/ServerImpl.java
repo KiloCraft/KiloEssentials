@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -158,6 +159,11 @@ public class ServerImpl implements Server {
     @Override
     public Iterable<ServerWorld> getWorlds() {
         return server.getWorlds();
+    }
+
+    @Override
+    public ServerWorld getWorld(DimensionType type) {
+        return this.server.getWorld(type);
     }
 
     @Override

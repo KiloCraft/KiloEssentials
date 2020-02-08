@@ -2,7 +2,6 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -10,7 +9,6 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -79,7 +77,6 @@ public class ServerUserManager implements UserManager {
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
-        // TODO Impl Async checks later
         return CompletableFuture.completedFuture(Optional.of(new NeverJoinedUser()));
     }
 
@@ -162,9 +159,7 @@ public class ServerUserManager implements UserManager {
     @Override
     public void onChangeNickname(User user, String oldNick) {
         this.nicknameToUUID.remove(oldNick);
-        if (user.hasNickname()) {
-            this.nicknameToUUID.put(user.getNickname().get(), user.getUuid());
-        }
+        user.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, user.getUuid()));
     }
 
     private void profileSanityCheck(GameProfile profile) {
@@ -180,9 +175,7 @@ public class ServerUserManager implements UserManager {
         this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUuid());
         this.users.add(serverUser);
 
-        if (serverUser.getNickname().isPresent()) {
-           this.nicknameToUUID.put(serverUser.getNickname().get(), playerEntity.getUuid());
-        }
+        serverUser.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, playerEntity.getUuid()));
 
         KiloServer.getServer().getChatManager().getChannel("global").join(serverUser);
         KiloChat.onUserJoin(serverUser);
@@ -213,7 +206,7 @@ public class ServerUserManager implements UserManager {
         player.updateLastActionTime();
         String string = StringUtils.normalizeSpace(packet.getChatMessage());
 
-        for(int i = 0; i < string.length(); ++i) {
+        for (int i = 0; i < string.length(); ++i) {
             if (!SharedConstants.isValidChar(string.charAt(i))) {
                 if (KiloConfig.main().chat().kickForUsingIllegalCharacters)
                     player.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
@@ -238,12 +231,12 @@ public class ServerUserManager implements UserManager {
     }
 
     public void onTick() {
-        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-            if (playerEntity == null)
+        for (OnlineUser user : users) {
+            if (user == null)
                 continue;
 
-            ((ServerUser) getOnline(playerEntity)).resetMessageCooldown();
-            ((ServerUser) getOnline(playerEntity)).updateLocation();
+            ((ServerUser) user).resetMessageCooldown();
+            ((ServerUser) user).updateLocation();
         }
     }
 
@@ -254,8 +247,6 @@ public class ServerUserManager implements UserManager {
     public PunishmentManager getPunishmentManager() {
         return this.punishManager;
     }
-
-    public static SimpleCommandExceptionType TOO_MANY_PROFILES = new SimpleCommandExceptionType(new LiteralText("Only one user is allowed but the provided selector includes more!"));
 
     public static class UserLoadingText {
         private AnimatedText animatedText;

@@ -26,7 +26,6 @@ import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
@@ -38,7 +37,9 @@ import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
@@ -319,16 +320,16 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public void onServerReady() {
-		this.scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
-		scheduledUpdateExecutorService.scheduleAtFixedRate(() ->
-				KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 6, 6, TimeUnit.SECONDS);
+//		this.scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
+//		scheduledUpdateExecutorService.scheduleAtFixedRate(() ->
+//				KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 6, 6, TimeUnit.SECONDS);
 	}
 
 	public void onServerStop() {
 		if (PlayerSitManager.INSTANCE != null && PlayerSitManager.enabled)
 			PlayerSitManager.INSTANCE.killAll();
 
-		this.scheduledUpdateExecutorService.shutdown();
+//		this.scheduledUpdateExecutorService.shutdown();
 	}
 
 }

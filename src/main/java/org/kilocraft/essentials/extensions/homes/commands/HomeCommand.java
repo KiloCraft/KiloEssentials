@@ -52,7 +52,12 @@ public class HomeCommand extends EssentialCommand {
 
         if (!homeHandler.hasHome(name)) {
             user.sendMessage(messages.commands().playerHomes().invalidHome);
-            return -1;
+            return SINGLE_FAILED;
+        }
+
+        if (homeHandler.getHome(name).shouldTeleport()) {
+            user.sendLangMessage("command.home.invalid_dim", homeHandler.getHome(name).getLocation().getDimensionType().toString());
+            return SINGLE_FAILED;
         }
 
         try {
@@ -74,13 +79,19 @@ public class HomeCommand extends EssentialCommand {
         String inputName = getString(ctx, "user");
 
         essentials.getUserThenAcceptAsync(source, inputName, (user) -> {
-            if (!user.getHomesHandler().hasHome(name)) {
+            UserHomeHandler homeHandler = user.getHomesHandler();
+            if (!homeHandler.hasHome(name)) {
                 source.sendConfigMessage("commands.playerHomes.invalid_home");
                 return;
             }
 
+            if (homeHandler.getHome(name).shouldTeleport()) {
+                source.sendLangMessage("command.home.invalid_dim", homeHandler.getHome(name).getLocation().getDimensionType().toString());
+                return;
+            }
+
             try {
-                user.getHomesHandler().teleportToHome(source, name);
+                homeHandler.teleportToHome(source, name);
             } catch (UnsafeHomeException e) {
                 source.sendError(e.getMessage());
             }

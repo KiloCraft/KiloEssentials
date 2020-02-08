@@ -68,10 +68,6 @@ public class StatusCommand extends EssentialCommand {
                 SystemMonitor.getRamUsedPercentage() + "% " +
                 "&8(&e" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&e" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
-                "\n&7- Storage &8(&e" + SystemMonitor.getDiskUsableGB() + " max&8)&7: &6" +
-                SystemMonitor.getDiskUsedPercentage() + "% " +
-                "&8(&e" + SystemMonitor.getDiskUsedGB() + " GB" + "&8/&e" +
-                SystemMonitor.getDiskUsableGB() + " GB" + "&8)" +
                 "\n&7- Worlds&8:&e" +
                 addWorldInfo();
     }

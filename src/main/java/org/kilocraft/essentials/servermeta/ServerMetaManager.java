@@ -28,6 +28,4 @@ public class ServerMetaManager {
         PlayerListMeta.provideFor(player);
     }
 
-
-
 }

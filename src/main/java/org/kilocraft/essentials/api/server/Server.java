@@ -10,6 +10,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.event.Event;
@@ -133,6 +134,14 @@ public interface Server {
      * @return all worlds in this Server
      */
     Iterable<ServerWorld> getWorlds();
+
+    /**
+     * Gets a world
+     *
+     * @param type Dimension
+     * @return ServerWorld
+     */
+    ServerWorld getWorld(DimensionType type);
 
     /**
      * Checks if we are running inside the Server's main thread

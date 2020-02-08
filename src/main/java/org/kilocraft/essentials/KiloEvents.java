@@ -10,7 +10,7 @@ import java.util.List;
 public class KiloEvents {
 
     public KiloEvents() {
-        List<EventHandler> events = new ArrayList<EventHandler>() {{
+        List<EventHandler<?>> events = new ArrayList<EventHandler<?>>() {{
             add(new OnServerReady());
             add(new OnSave());
             add(new OnReload());
@@ -28,8 +28,9 @@ public class KiloEvents {
             add(new OnServerStop());
         }};
 
-        for (EventHandler event : events)
+        for (EventHandler<?> event : events) {
             KiloServer.getServer().registerEvent(event);
+        }
 
     }
 }

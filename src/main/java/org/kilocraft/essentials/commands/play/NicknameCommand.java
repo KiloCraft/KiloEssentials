@@ -3,7 +3,6 @@ package org.kilocraft.essentials.commands.play;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
@@ -22,7 +21,6 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
-import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.PlayerDataModifier;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -79,14 +77,7 @@ public class NicknameCommand extends EssentialCommand {
     private int setSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerCommandSource source = ctx.getSource();
         ServerPlayerEntity self = source.getPlayer();
-
-        Object unchecked = KiloConfig.main().nicknameMaxLength;
-
-        if (unchecked == null) {
-            throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();
-        }
-
-        int maxLength = (int) unchecked;
+        int maxLength = KiloConfig.main().nicknameMaxLength;
         String nickname = getString(ctx, "nickname");
 
         if (nickname.length() > maxLength || nickname.length() < 3)
@@ -115,14 +106,7 @@ public class NicknameCommand extends EssentialCommand {
     private int setOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerCommandSource source = ctx.getSource();
         String nickname = getString(ctx, "nickname");
-
-        Object unchecked = KiloConfig.main().nicknameMaxLength;
-
-        if (unchecked == null) {
-            throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();
-        }
-
-        int maxLength = (int) unchecked;
+        int maxLength = KiloConfig.main().nicknameMaxLength;
 
         if (nickname.length() > maxLength || nickname.length() < 3)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
@@ -146,9 +130,6 @@ public class NicknameCommand extends EssentialCommand {
             }
 
             user.setNickname(nickname);
-
-            if (!CommandHelper.areTheSame(source, user) && user.isOnline())
-                ((OnlineUser) user).sendLangMessage("template.#1.announce", source.getName(), "nickname", formattedNickname);
         });
 
         return SINGLE_SUCCESS;
