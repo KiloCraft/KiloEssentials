@@ -19,20 +19,24 @@ types {
   "default:dragon_breath" {
     frames=[
       {
-        count=0
+        count=9
         effect="dragon_breath"
         longDistance=true
-        offset="10 0.5 0"
-        pos="0 0.5 0"
-        speed=0.5
-      },
-      {
-        count=0
-        effect="dragon_breath"
-        longDistance=true
-        offset="10 0.5 0"
+        offset="0.5 0 0.5"
         pos="0 0 0"
-        speed=0.3
+        speed=0
+      }
+    ]
+  }
+  "default:happy_villager" {
+    frames=[
+      {
+        count=3
+        effect="happy_villager"
+        longDistance=true
+        offset="0.4 0.4 0.4"
+        pos="0 0 0"
+        speed=0
       }
     ]
   }

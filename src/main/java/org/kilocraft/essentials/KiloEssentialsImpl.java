@@ -39,7 +39,6 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
@@ -66,8 +65,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private KiloCommands commands;
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
-	private ScheduledExecutorService scheduledUpdateExecutorService;
-	private KiloDebugUtils debugUtils;
 	private static MinecraftServer minecraftServer;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
@@ -124,7 +121,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		*/
 
 		if (SharedConstants.isDevelopment)
-			this.debugUtils = new KiloDebugUtils(this);
+			new KiloDebugUtils(this);
 
 		getServer().getChatManager().register(new GlobalChat());
 		getServer().getChatManager().register(new StaffChat());
@@ -142,47 +139,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 		if (KiloConfig.main().startupScript().enabled)
 			new StartupScript();
-
-		/*
-		 * @Test TODO: Remove this Test
-		 */
-
-//		{
-//			FileConfig fileConfig = FileConfig.of(KiloConfig.getConfigPath() + "particle_types.yml");
-//			fileConfig.load();
-//
-////			System.out.println((ArrayList<Object>) fileConfig.get("types"));
-//
-//			ArrayList<Object> objects = fileConfig.get("types");
-//
-//
-//			for (Object object : objects) {
-//				System.out.println("ML: " + object.toString());
-//
-//				List<Object> innerObject = fileConfig.get("types." + object.toString());
-//				System.out.println("IL: " + innerObject);
-//			}
-//
-//			fileConfig.close();
-//		}
-//		{
-//			System.out.println("Registering particle types");
-//			ParticleFrame frame = new ParticleFrame(ParticleTypes.DRAGON_BREATH, true,
-//					0.5, 0f, 0.5f, 0, 10);
-//
-//			ParticleAnimation animation = new ParticleAnimation(new Identifier("kiloessentials", "breath_of_dragon"));
-//			animation.append(frame);
-//			ParticleAnimationManager.registerAnimation(animation);
-//		}
-//		{
-//			ParticleFrame frame = new ParticleFrame(ParticleTypes.CLOUD, true,
-//					0.4, 0, 0.4, 0, 3);
-//
-//			ParticleAnimation animation = new ParticleAnimation(new Identifier("ess", "happy_villager"));
-//			animation.append(frame);
-//			ParticleAnimationManager.registerAnimation(animation);
-//		}
-
 	}
 
 	public static Logger getLogger() {
@@ -253,13 +209,14 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
 				requester.sendError(ExceptionMessageNode.USER_NOT_FOUND);
 				loadingText.stop();
+				return;
 			}
 
-			optionalUser.ifPresent(action);
 			loadingText.stop();
+			optionalUser.ifPresent(action);
 		}, minecraftServer);
 
-		if (!optionalCompletableFuture.isCompletedExceptionally())
+		if (!optionalCompletableFuture.isDone())
 			loadingText.start();
 
 		return optionalCompletableFuture;
@@ -319,17 +276,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		};
 	}
 
-	public void onServerReady() {
-//		this.scheduledUpdateExecutorService = Executors.newSingleThreadScheduledExecutor();
-//		scheduledUpdateExecutorService.scheduleAtFixedRate(() ->
-//				KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl()), 6, 6, TimeUnit.SECONDS);
-	}
-
 	public void onServerStop() {
 		if (PlayerSitManager.INSTANCE != null && PlayerSitManager.enabled)
 			PlayerSitManager.INSTANCE.killAll();
-
-//		this.scheduledUpdateExecutorService.shutdown();
 	}
 
 }
