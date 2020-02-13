@@ -40,7 +40,7 @@ public class ConfigVariableFactory {
     }
 
     public static String replacePlayerVariables(String str, @NotNull final ServerPlayerEntity player) {
-        Validate.notNull(player, "Use most not be null!");
+        Validate.notNull(player, "Player most not be null!");
         return new ConfigObjectReplacerUtil("player", str)
                 .append("ping", player.pingMilliseconds)
                 .append("formatted_ping", TextFormat.getFormattedPing(player.pingMilliseconds))
@@ -48,6 +48,7 @@ public class ConfigVariableFactory {
     }
 
     public static String replaceServerVariables(String str) {
+        Validate.notNull(str, "String must not be null!");
         return new ConfigObjectReplacerUtil("server", str)
                 .append("tps", TPSTracker.tps1.getShortAverage())
                 .append("formatted_tps", TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()) + TPSTracker.tps1.getShortAverage())

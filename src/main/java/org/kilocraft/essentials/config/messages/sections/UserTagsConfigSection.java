@@ -7,9 +7,9 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class UserTagsConfigSection {
 
     @Setting(value = "online", comment = "User's name tag when they are online")
-    public String online = "{DISPLAYNAME}";
+    public String online = "{USER_DISPLAYNAME}";
 
     @Setting(value = "offline", comment = "User's name tag when they are offline")
-    public String offline = "{DISPLAYNAME} &7(&cOffline&7)";
+    public String offline = "{USER_DISPLAYNAME} &7(&cOffline&7)";
 
 }

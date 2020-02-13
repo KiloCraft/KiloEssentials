@@ -101,6 +101,10 @@ public class UserHomeHandler implements ConfigurableFeature {
         return this.userHomes;
     }
 
+    public int homes() {
+        return this.userHomes.size();
+    }
+
     public boolean hasHome(String name) {
         for (Home userHome : this.userHomes) {
             if (userHome.getName().equals(name))
@@ -118,7 +122,7 @@ public class UserHomeHandler implements ConfigurableFeature {
         if (user.isOnline()) {
             ServerWorld world = Objects.requireNonNull(user.getPlayer().getServer()).getWorld(DimensionType.byId(home.getLocation().getDimension()));
 
-            if(world == null)
+            if (world == null)
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
 
             Home.teleportTo(user, home);

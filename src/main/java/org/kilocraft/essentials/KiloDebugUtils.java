@@ -45,7 +45,8 @@ public class KiloDebugUtils {
             setDebugMode(true);
         } else {
             setDebugMode(false);
-            INSTANCE.removeBossBar();
+            if (INSTANCE != null)
+                INSTANCE.removeBossBar();
         }
     }
 

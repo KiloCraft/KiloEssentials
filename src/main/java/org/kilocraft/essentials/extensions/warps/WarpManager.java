@@ -84,7 +84,7 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
 
     @Override
     public KiloFile getSaveFile() {
-        return new KiloFile("warps.dat", KiloEssentials.getDataDirectory());
+        return new KiloFile("warps.dat", KiloEssentials.getDataDirPath());
     }
 
     @Override

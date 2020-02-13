@@ -7,7 +7,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class PlayerHomesConfigSection {
 
     @Setting(value = "reachedLimit")
-    public String reachedLimit = "You can't set any more Homes! you have reached the limit";
+    public String reachedLimit = "&cLimit reached! You can't set any more Homes!";
 
     @Setting(value = "invalidHome")
     public String invalidHome = "&cCan not find the home specified!";

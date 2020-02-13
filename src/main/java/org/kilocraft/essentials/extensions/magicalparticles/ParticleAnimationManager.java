@@ -54,7 +54,7 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
 
     private static void loadConfig() {
         try {
-            KiloFile CONFIG_FILE = new KiloFile("particleTypes.hocon", KiloEssentials.getEssentialsDirectory());
+            KiloFile CONFIG_FILE = new KiloFile("particleTypes.hocon", KiloEssentials.getEssentialsPath());
             if (!CONFIG_FILE.exists()) {
                 CONFIG_FILE.createFile();
                 CONFIG_FILE.pasteFromResources("assets/config/particleTypes.hocon");

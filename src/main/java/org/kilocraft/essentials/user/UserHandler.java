@@ -52,7 +52,7 @@ public class UserHandler {
     }
 
     public File getUserFile(UUID uuid) {
-        return new File(KiloEssentials.getDataDirectory() + "users/" + uuid.toString() + ".dat");
+        return KiloEssentials.getDataDirPath().resolve("users").resolve(uuid.toString() + ".dat").toFile();
     }
 
 }

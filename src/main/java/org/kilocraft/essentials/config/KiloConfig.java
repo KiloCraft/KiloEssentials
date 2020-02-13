@@ -13,9 +13,7 @@ import org.kilocraft.essentials.config.main.Config;
 import org.kilocraft.essentials.config.messages.Messages;
 import org.kilocraft.essentials.provided.KiloFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 
 /**
  * KiloConfig - Powered by SpongePowered Configurate
@@ -29,14 +27,13 @@ import java.nio.file.Path;
 public class KiloConfig {
     private static Config config;
     private static Messages messages;
-    private static Path cfgPath = new File(KiloEssentials.getWorkingDirectory()).toPath().resolve("essentials");
     private static ConfigurationNode mainNode;
     private static ConfigurationNode messagesNode;
 
     public KiloConfig() {
         try {
-            KiloFile CONFIG_FILE = new KiloFile("config.hocon", cfgPath.resolve("config.hocon"));
-            KiloFile MESSAGES_FILE = new KiloFile("messages.hocon", cfgPath.resolve("messages.hocon"));
+            KiloFile CONFIG_FILE = new KiloFile("config.hocon", KiloEssentials.getEssentialsPath());
+            KiloFile MESSAGES_FILE = new KiloFile("messages.hocon", KiloEssentials.getEssentialsPath());
 
             ConfigurationLoader<CommentedConfigurationNode> mainLoader = HoconConfigurationLoader.builder()
                     .setFile(CONFIG_FILE.getFile()).build();

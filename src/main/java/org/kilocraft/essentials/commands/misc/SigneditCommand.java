@@ -131,7 +131,7 @@ public class SigneditCommand extends EssentialCommand {
         sign.setTextOnRow(line, new LiteralText(TextFormat.translate(input)));
 
         updateSign(sign, player.getServerWorld(), blockEntity.getPos());
-        KiloChat.sendLangMessageTo(player, "command.signedit.set_text", line + 1, input.substring(17));
+        KiloChat.sendLangMessageTo(player, "command.signedit.set_text", line + 1, input);
         return SINGLE_SUCCESS;
     }
 

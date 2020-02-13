@@ -4,8 +4,10 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.StartupScriptConfigSection;
+import org.kilocraft.essentials.provided.KiloFile;
 
 import java.io.*;
+import java.util.Objects;
 
 public class StartupScript {
     private File resourceFile;
@@ -18,6 +20,7 @@ public class StartupScript {
         StartupScriptConfigSection config = KiloConfig.main().startupScript();
         this.FILE_NAME = config.scriptName + ".sh";
         this.file = new File(System.getProperty("user.dir") + File.separator + FILE_NAME);
+        this.file = new KiloFile(FILE_NAME, KiloEssentials.getWorkingDirectory()).getFile();
 
         if (file.exists())
             return;
@@ -29,7 +32,7 @@ public class StartupScript {
         boolean generateForLinuxScreen = config.linuxScreen;
 
         this.resourceFile = new File(
-                Thread.currentThread().getContextClassLoader().getResource("assets/start-script.sh").getFile());
+                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("assets/start-script.sh")).getFile());
 
         String normalScript = "java -jar -Xmx" + this.MAX_MEMORY + " " + LOADER_NAME;
         String screenScript = "screen -S " + SCREEN_NAME + " " + normalScript;

@@ -94,13 +94,14 @@ public class HomeCommand extends EssentialCommand {
                 homeHandler.teleportToHome(source, name);
             } catch (UnsafeHomeException e) {
                 source.sendError(e.getMessage());
+                return;
             }
 
             String message = CommandHelper.areTheSame(source, user) ? messages.commands().playerHomes().teleporting :
                     messages.commands().playerHomes().admin().teleporting;
 
             source.sendMessage(new ChatMessage(replaceVariables(
-                    message, source, user, source.getHomesHandler().getHome(name)), user));
+                    message, source, user, user.getHomesHandler().getHome(name)), user));
         });
 
         return AWAIT_RESPONSE;

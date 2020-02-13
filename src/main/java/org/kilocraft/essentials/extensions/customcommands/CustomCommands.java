@@ -46,7 +46,7 @@ public class CustomCommands implements ConfigurableFeature {
 
     public static void load() {
         try {
-            KiloFile CONFIG_FILE = new KiloFile("customCommands.hocon", KiloEssentials.getEssentialsDirectory());
+            KiloFile CONFIG_FILE = new KiloFile("customCommands.hocon", KiloEssentials.getEssentialsPath());
             if (!CONFIG_FILE.exists()) {
                 CONFIG_FILE.createFile();
                 CONFIG_FILE.pasteFromResources("assets/config/customCommands.hocon");

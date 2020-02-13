@@ -20,7 +20,7 @@ public class ModConstants {
     public void loadConstants() {
         try {
             properties.load(ModConstants.class.getClassLoader().getResourceAsStream("mod.properties"));
-            lang.load(ModConstants.class.getClassLoader().getResourceAsStream("assets/messages/Lang.properties"));
+            lang.load(ModConstants.class.getClassLoader().getResourceAsStream("assets/messages/lang.properties"));
             messageUtil = new MessageUtil();
         } catch (IOException e) {
             e.printStackTrace();

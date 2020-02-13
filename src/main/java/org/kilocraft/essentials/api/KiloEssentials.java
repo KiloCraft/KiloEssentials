@@ -39,6 +39,8 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -95,11 +97,21 @@ public interface KiloEssentials {
         return System.getProperty("user.dir");
     }
 
+    @Deprecated
     static String getEssentialsDirectory() {
         return getWorkingDirectory() + "/essentials/";
     }
 
+    @Deprecated
     static String getDataDirectory() {
         return getEssentialsDirectory() + "data/";
+    }
+
+    static Path getDataDirPath() {
+        return getEssentialsPath().resolve("data");
+    }
+
+    static Path getEssentialsPath() {
+        return new File(KiloEssentials.getWorkingDirectory()).toPath().resolve("essentials");
     }
 }
