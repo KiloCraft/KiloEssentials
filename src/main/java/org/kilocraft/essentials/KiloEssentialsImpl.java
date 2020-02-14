@@ -64,6 +64,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private KiloCommands commands;
 	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
+	private StartupScript startupScript;
 
 	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
@@ -135,7 +136,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 
 		if (KiloConfig.main().startupScript().enabled)
-			new StartupScript();
+			startupScript = new StartupScript();
 	}
 
 	public static Logger getLogger() {
@@ -173,6 +174,11 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	@Override
 	public KiloCommands getCommandHandler() {
 		return this.commands;
+	}
+
+	@Override
+	public StartupScript getStartupScript() {
+		return startupScript;
 	}
 
 	@Override

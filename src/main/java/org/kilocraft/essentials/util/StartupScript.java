@@ -16,6 +16,13 @@ public class StartupScript {
     private String MAX_MEMORY;
     private String STARTUP_CODE;
 
+    public boolean exists() {
+        if (file != null)
+            return file.exists();
+
+        return false;
+    }
+
     public StartupScript() {
         StartupScriptConfigSection config = KiloConfig.main().startupScript();
         this.FILE_NAME = config.scriptName + ".sh";

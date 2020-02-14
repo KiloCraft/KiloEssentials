@@ -238,6 +238,11 @@ public class Vec3dLocation implements Location {
         return of(x + 0.5D, y, z + 0.5D, rotation.getYaw(), rotation.getPitch(), dimension);
     }
 
+    @Override
+    public String toString() {
+        return "x: " + this.x + " y: " + this.y + " z: " + this.z;
+    }
+
     public boolean isUsingShortDecimals() {
         return useShortDecimals;
     }

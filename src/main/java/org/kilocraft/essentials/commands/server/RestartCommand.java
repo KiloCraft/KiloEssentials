@@ -10,6 +10,7 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 
@@ -32,8 +33,14 @@ public class RestartCommand {
 
     private static int execute(ServerCommandSource source, String args) {
         boolean confirmed = args.contains("-confirmed");
+        boolean scriptPresent = KiloEssentials.getInstance().getStartupScript().exists();
 
         if (!confirmed && !KiloServer.getServer().getCommandSourceUser(source).isConsole()) {
+            if (!scriptPresent) {
+                source.sendFeedback(LangText.getFormatter(true, "command.restart.no_script").formatted(Formatting.RED), false);
+                return 0;
+            }
+
             LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
             literalText.styled((style) -> {
                 style.setColor(Formatting.RED);
@@ -46,7 +53,6 @@ public class RestartCommand {
         }
 
         KiloServer.getServer().restart();
-
         return 0;
     }
 }

@@ -31,6 +31,7 @@ public class NbtCommands {
             KiloEssentials.getServer().execute(player.getCommandSource(), listTag.getString(i));
         }
 
+        player.inventory.updateItems();
         return true;
     }
 

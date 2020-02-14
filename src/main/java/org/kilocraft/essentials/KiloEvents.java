@@ -25,6 +25,7 @@ public class KiloEvents {
             add(new OnInteractItem());
             add(new OnStopRiding());
             add(new OnInteractBlock());
+            add(new OnHandSwing());
             add(new OnServerStop());
         }};
 

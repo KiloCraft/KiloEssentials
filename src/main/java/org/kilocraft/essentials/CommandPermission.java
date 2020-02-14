@@ -80,6 +80,12 @@ public enum CommandPermission {
     SHOOT("shoot"),
     GAMERULE("gamerule"),
     IPINFO("ipinfo"),
+    WHOIS_SELF("whois.self"),
+    WHOIS_OTHERS("whois.others"),
+    PLAYTIME_SELF("playtime.self"),
+    PLAYTIME_OTHERS("playtime.others"),
+    SKIN_SELF("skin.self"),
+    SKIN_OTHERS("skin.others"),
     ;
 
     private String node;

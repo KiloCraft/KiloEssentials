@@ -152,6 +152,8 @@ public class KiloCommands {
             add(new RelnameCommand());
             add(new IpInfoCommand());
             add(new HelpCommand());
+            add(new WhoisCommand());
+            add(new PlaytimeCommand());
         }};
 
         this.commands.addAll(commandsList);

@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -56,7 +57,9 @@ public class ServerUser implements User {
     private boolean commandSpy = false;
     private boolean canSit = false;
     String lastSocketAddress;
-    
+    GameMode gameMode = GameMode.NOT_SET;
+    int minutesPlayed = -1;
+
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
         if (UserHomeHandler.isEnabled()) // TODO Use new feature provider in future
@@ -65,6 +68,7 @@ public class ServerUser implements User {
             manager.getHandler().handleUser(this);
         } catch (IOException e) {
             KiloEssentials.getLogger().error("Failed to Load User Data [" + uuid.toString() + "]");
+            e.printStackTrace();
         }
 
         this.subscriptions = new ArrayList<>();
@@ -104,6 +108,10 @@ public class ServerUser implements User {
 
         if (this.lastSocketAddress != null) {
             cacheTag.putString("lIP", this.lastSocketAddress);
+        }
+
+        if (this.gameMode != GameMode.NOT_SET) {
+            cacheTag.putInt("gameMode", this.gameMode.getId());
         }
 
         // Abilities
@@ -184,6 +192,10 @@ public class ServerUser implements User {
             this.lastSocketAddress = cacheTag.getString("lIP");
         }
 
+        if (cacheTag.contains("gameMode")) {
+            this.gameMode = GameMode.byId(cacheTag.getInt("gameMode"));
+        }
+
         if (cacheTag.getBoolean("isFlyEnabled")) {
             this.canFly = true;
         }
@@ -238,6 +250,16 @@ public class ServerUser implements User {
     }
 
     @Override
+    public GameMode getGameMode() {
+        return this.gameMode;
+    }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+        this.gameMode = mode;
+    }
+
+    @Override
     public boolean canSit() {
         return this.canSit;
     }
@@ -245,6 +267,16 @@ public class ServerUser implements User {
     @Override
     public void setCanSit(boolean set) {
         this.canSit = set;
+    }
+
+    @Override
+    public int getMinutedPlayed() {
+        return 0;
+    }
+
+    @Override
+    public void setMinutesPlayed(int minutes) {
+
     }
 
     @Override
@@ -268,7 +300,12 @@ public class ServerUser implements User {
 
     @Override
     public Text getRankedDisplayName() {
-        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(getDisplayName()));
+        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(getFormattedDisplayName()));
+    }
+
+    @Override
+    public Text getRankedName() {
+        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(this.name));
     }
 
     @Override
@@ -333,6 +370,7 @@ public class ServerUser implements User {
 
     @Override
     public void clearNickname() {
+        KiloServer.getServer().getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
         this.nickname = null;
     }
 

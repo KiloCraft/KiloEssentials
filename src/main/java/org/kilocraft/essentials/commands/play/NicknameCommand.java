@@ -144,8 +144,8 @@ public class NicknameCommand extends EssentialCommand {
 
         player.setCustomName(null);
 
-        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(messages.commands().nickname().resetSelf);
-        return 1;
+        getServerUser(ctx).sendMessage(messages.commands().nickname().resetSelf);
+        return SINGLE_SUCCESS;
     }
 
     private int resetOther(CommandContext<ServerCommandSource> ctx) {

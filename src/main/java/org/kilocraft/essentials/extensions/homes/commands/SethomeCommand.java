@@ -58,7 +58,7 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        if (shouldNotSet(user)) {
+        if (shouldNotSet(user) && !homeHandler.hasHome(name)) {
             user.sendMessage(messages.commands().playerHomes().reachedLimit);
             return SINGLE_FAILED;
         }
@@ -87,7 +87,7 @@ public class SethomeCommand extends EssentialCommand {
         essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
-            if (CommandHelper.areTheSame(source, user) && shouldNotSet(user)) {
+            if (CommandHelper.areTheSame(source, user) && shouldNotSet(user) && !homeHandler.hasHome(name)) {
                 source.sendMessage(messages.commands().playerHomes().reachedLimit
                         .replace("{HOME_SIZE}", String.valueOf(homeHandler.getHomes().size())));
                 return;

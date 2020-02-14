@@ -4,9 +4,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -18,16 +20,14 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class CommandSourceServerUser implements CommandSourceUser {
     private ServerCommandSource source;
@@ -36,19 +36,27 @@ public class CommandSourceServerUser implements CommandSourceUser {
         this.source = source;
     }
 
+    @Nullable
     @Override
     public UUID getUuid() {
+        if (!CommandHelper.isConsole(this.source)) {
+            try {
+                return Objects.requireNonNull(this.getUser()).getUuid();
+            } catch (CommandSyntaxException ignored) {
+            }
+        }
+
         return null;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return this.source.getName();
     }
 
     @Override
     public boolean isOnline() {
-        return false;
+        return true;
     }
 
     @Override
@@ -68,22 +76,30 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public Text getRankedDisplayName() {
-        return null;
+        return new LiteralText(this.getDisplayName());
+    }
+
+    @Override
+    public Text getRankedName() {
+        return new LiteralText(this.getDisplayName());
     }
 
     @Override
     public String getNameTag() {
-        return null;
+        return this.getDisplayName();
     }
 
+    @Nullable
     @Override
     public List<String> getSubscriptionChannels() {
-        return null;
+        return new ArrayList<String>(){{
+            add(GlobalChat.getChannelId());
+        }};
     }
 
     @Override
     public String getUpstreamChannelId() {
-        return null;
+        return GlobalChat.getChannelId();
     }
 
     @Override
@@ -93,12 +109,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public Location getLocation() {
-        return null;
+        return Vec3dLocation.of(this.source.getPosition());
     }
 
     @Override
     public @Nullable Location getLastSavedLocation() {
-        return null;
+        return getLocation();
     }
 
     @Override
@@ -115,7 +131,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void setLastLocation(Location loc) {
-
     }
 
     @Override
@@ -147,7 +162,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public boolean hasJoinedBefore() {
-        return false;
+        return true;
     }
 
     @Override
@@ -189,7 +204,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void setLastMessageSender(UUID uuid) {
-
     }
 
     @Override
@@ -213,12 +227,42 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public GameMode getGameMode() {
+        try {
+            return CommandHelper.isConsole(this.source) ? GameMode.NOT_SET :
+                    Objects.requireNonNull(this.getUser()).getGameMode();
+        } catch (CommandSyntaxException ignored) {
+        }
+
+        return GameMode.NOT_SET;
+    }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+        if (!CommandHelper.isConsole(this.source)) {
+            try {
+                Objects.requireNonNull(this.getUser()).setGameMode(mode);
+            } catch (CommandSyntaxException ignore) {
+            }
+        }
+    }
+
+    @Override
     public boolean canSit() {
         return false;
     }
 
     @Override
     public void setCanSit(boolean set) {
+    }
+
+    @Override
+    public int getMinutedPlayed() {
+        return 0;
+    }
+
+    @Override
+    public void setMinutesPlayed(int minutes) {
     }
 
     @Override
@@ -232,7 +276,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void saveData() throws IOException {
-
     }
 
     @Nullable

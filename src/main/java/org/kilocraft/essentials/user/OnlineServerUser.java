@@ -163,6 +163,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             this.setFlight(true);
 
         super.lastSocketAddress = this.getConnection().getAddress().toString();
+        super.gameMode = this.getGameMode();
+       //this.getPlayer().getStatHandler().getStat(Registry.STAT_TYPE.get(Stats.PLAY_ONE_MINUTE));
     }
 
 }

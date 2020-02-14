@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.text.Text;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
@@ -45,6 +46,11 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public Text getRankedDisplayName() {
+        return null;
+    }
+
+    @Override
+    public Text getRankedName() {
         return null;
     }
 
@@ -192,12 +198,30 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public GameMode getGameMode() {
+        return null;
+    }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+    }
+
+    @Override
     public boolean canSit() {
         return false;
     }
 
     @Override
     public void setCanSit(boolean set) {
+    }
+
+    @Override
+    public int getMinutedPlayed() {
+        return -1;
+    }
+
+    @Override
+    public void setMinutesPlayed(int minutes) {
     }
 
     @Override

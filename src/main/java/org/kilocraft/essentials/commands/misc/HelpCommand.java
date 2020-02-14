@@ -7,7 +7,6 @@ import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 
-@Deprecated
 public class HelpCommand extends EssentialCommand {
     public HelpCommand() {
         super("ke_help");

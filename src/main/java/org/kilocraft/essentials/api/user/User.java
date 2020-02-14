@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.api.user;
 
 import net.minecraft.text.Text;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
@@ -27,6 +28,8 @@ public interface User {
     String getFormattedDisplayName();
 
     Text getRankedDisplayName();
+
+    Text getRankedName();
 
     String getNameTag();
 
@@ -93,9 +96,17 @@ public interface User {
     @Nullable
     String getLastSocketAddress();
 
+    GameMode getGameMode();
+
+    void setGameMode(GameMode mode);
+
     boolean canSit();
 
     void setCanSit(boolean set);
+
+    int getMinutedPlayed();
+
+    void setMinutesPlayed(int minutes);
 
     /**
      * This should be moved to it's own FeatureType

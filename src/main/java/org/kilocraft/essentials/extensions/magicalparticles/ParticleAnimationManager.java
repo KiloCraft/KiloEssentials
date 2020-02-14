@@ -152,7 +152,8 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
         tick++;
         if (tick > 4) {
             uuidIdentifierMap.forEach((uuid, id) -> {
-                if (server.getPlayer(uuid) != null)
+                ServerPlayerEntity player = server.getPlayer(uuid);
+                if (player != null && !player.isSpectator())
                     runAnimationFrames(server.getPlayer(uuid), id);
             });
 

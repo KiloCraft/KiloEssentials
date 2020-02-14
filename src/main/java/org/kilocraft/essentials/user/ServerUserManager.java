@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -158,8 +159,15 @@ public class ServerUserManager implements UserManager {
 
     @Override
     public void onChangeNickname(User user, String oldNick) {
-        this.nicknameToUUID.remove(oldNick);
-        user.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, user.getUuid()));
+        if (oldNick != null) {
+            this.nicknameToUUID.remove(oldNick);
+            user.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, user.getUuid()));
+        }
+
+        if (user.isOnline()) {
+            KiloServer.getServer().getPlayerManager().sendToAll(
+                    new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, ((OnlineUser) user).getPlayer()));
+        }
     }
 
     private void profileSanityCheck(GameProfile profile) {

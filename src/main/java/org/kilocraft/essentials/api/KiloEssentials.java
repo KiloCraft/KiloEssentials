@@ -37,6 +37,7 @@ import org.kilocraft.essentials.api.feature.SingleInstanceConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
 import java.io.File;
@@ -70,6 +71,8 @@ public interface KiloEssentials {
     MessageUtil getMessageUtil();
 
     KiloCommands getCommandHandler();
+
+    StartupScript getStartupScript();
 
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerCommandSource requester, String username, Consumer<? super User> action);
 
