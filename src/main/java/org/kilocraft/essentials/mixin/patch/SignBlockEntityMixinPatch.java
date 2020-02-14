@@ -23,7 +23,7 @@ public abstract class SignBlockEntityMixinPatch {
     @Shadow public abstract ServerCommandSource getCommandSource(ServerPlayerEntity serverPlayerEntity);
 
     //Fixes the activate method so your hand won't swing if the Sign doesn't have any commands
-    @Inject(method = "onActivate", at = @At(value = "HEAD", target = "Lnet/minecraft/block/entity/SignBlockEntity;onActivate(Lnet/minecraft/entity/player/PlayerEntity;)Z"))
+    @Inject(method = "onActivate", at = @At(value = "HEAD", target = "Lnet/minecraft/block/entity/SignBlockEntity;onActivate(Lnet/minecraft/entity/player/PlayerEntity;)Z"), cancellable = true)
     private void patch$SignActivationReturnValue(PlayerEntity playerEntity, CallbackInfoReturnable<Boolean> cir) {
         int cmds = 0;
         for (Text value : text) {
