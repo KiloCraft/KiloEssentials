@@ -19,6 +19,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -234,14 +235,15 @@ public class SigneditCommand extends EssentialCommand {
         SignType type = SignType.getByName(inputType);
         assert type != null;
         Block newBlock = Registry.BLOCK.getId(oldBlock).getPath().contains("wall") ? type.getWallBlock() : type.getBlock();
-        BlockState newState = new BlockState(newBlock, oldState.getEntries());
+        BlockState newState = newBlock.getDefaultState().with(Properties.ROTATION, oldState.get(Properties.ROTATION));
 
         SignBlockEntity newSign = new SignBlockEntity();
         for (int i = 0; i < sign.text.length; i++) {
             newSign.setTextOnRow(i, sign.text[i]);
         }
-        newSign.setTextColor(sign.getTextColor());
         newSign.setLocation(player.getEntityWorld(), sign.getPos());
+        if (sign.getTextColor() != DyeColor.BLACK)
+            newSign.setTextColor(sign.getTextColor());
 
         ServerWorld world = player.getServerWorld();
         world.setBlockState(sign.getPos(), newState);
