@@ -187,14 +187,14 @@ public interface Server {
      *
      * @param command Command to execute
      */
-    void execute(String command);
+    int execute(String command);
 
     /**
      * Execute a command
      * @param source source (usually player) to execute the command
      * @param command the string that contains the command to execute
      */
-    void execute(ServerCommandSource source, String command);
+    int execute(ServerCommandSource source, String command);
 
     /**
      * Sets the brand name of the server

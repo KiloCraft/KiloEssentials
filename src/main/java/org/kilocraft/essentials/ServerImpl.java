@@ -197,13 +197,13 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void execute(String command) {
-        server.getCommandManager().execute(server.getCommandSource(), command);
+    public int execute(String command) {
+        return server.getCommandManager().execute(server.getCommandSource(), command);
     }
 
     @Override
-    public void execute(ServerCommandSource source, String command) {
-        KiloEssentials.getInstance().getCommandHandler().execute(source, command);
+    public int execute(ServerCommandSource source, String command) {
+        return KiloEssentials.getInstance().getCommandHandler().execute(source, command);
     }
 
     @Override

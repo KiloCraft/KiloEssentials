@@ -75,6 +75,7 @@ public enum CommandPermission {
     SIGNEDIT_GUI_OTHERS("signedit.gui.others"),
     SIGNEDIT_COMMAND("signedit.command"),
     SIGNEDIT_COLOR("signedit.color"),
+    SIGNEDIT_TYPE("signedit.type"),
     HAT_SELF("hat.self"),
     HAT_OTHERS("hat.others"),
     SHOOT("shoot"),

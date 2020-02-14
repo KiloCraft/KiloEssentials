@@ -33,9 +33,6 @@ public class Config {
     @Setting(value = "chat", comment = "Configure the appearance of the Chat Channels")
     private ChatConfigSection chatSection = new ChatConfigSection();
 
-    @Setting(value = "Miscellaneous")
-    private MiscellaneousConfigSection miscSection = new MiscellaneousConfigSection();
-
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")
     public int homesLimit = 10;
 
@@ -64,10 +61,6 @@ public class Config {
 
     public ChatConfigSection chat() {
         return chatSection;
-    }
-
-    public MiscellaneousConfigSection misc() {
-        return miscSection;
     }
 
 }

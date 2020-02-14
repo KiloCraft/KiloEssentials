@@ -20,7 +20,8 @@ public class PlaytimeCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> userArgument = getUserArgument("user")
-                .requires(src -> hasPermission(src, CommandPermission.PLAYTIME_OTHERS));
+                .requires(src -> hasPermission(src, CommandPermission.PLAYTIME_OTHERS))
+                .executes(this::executeOther);
 
         argumentBuilder.executes(this::executeSelf);
         commandNode.addChild(userArgument.build());
