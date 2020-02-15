@@ -12,6 +12,7 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -257,12 +258,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public int getMinutedPlayed() {
+    public int getTicksPlayed() {
         return 0;
     }
 
     @Override
-    public void setMinutesPlayed(int minutes) {
+    public void setTicksPlayed(int minutes) {
     }
 
     @Override
@@ -299,7 +300,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendMessage(String message) {
-        KiloServer.getServer().sendMessage(message);
+        KiloChat.sendMessageTo(this.source, new LiteralText(TextFormat.translate(message)));
     }
 
     @Override

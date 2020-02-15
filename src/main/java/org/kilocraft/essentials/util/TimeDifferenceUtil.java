@@ -11,6 +11,20 @@ public class TimeDifferenceUtil {
     private static Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
     private static final int maxYears = 100000;
 
+    public static String convertSecondsToString(int seconds, char numFormat, char typeFormat) {
+        int day = seconds / (24 * 3600);
+        seconds = seconds % (24 * 3600);
+        int hour = seconds / 3600;
+        seconds %= 3600;
+        int min = seconds / 60;
+        seconds %= 60;
+
+        return ((day != 0) ? "&" + numFormat + day + "&" + typeFormat + " Days " : "") +
+                ((hour != 0) ? "&" + numFormat + hour + "&" + typeFormat + " Hours " : "") +
+                ((min != 0) ? "&" + numFormat + min + "&" + typeFormat + " Minutes " : "") +
+                ("&" + numFormat + seconds + "&" + typeFormat + " Seconds");
+    }
+
     public static String removeTimePattern(String input) {
         return timePattern.matcher(input).replaceFirst("").trim();
     }

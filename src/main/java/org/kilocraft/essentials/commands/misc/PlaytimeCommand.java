@@ -9,6 +9,8 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,9 +49,15 @@ public class PlaytimeCommand extends EssentialCommand {
     }
 
     private int execute(CommandSourceUser src, User target) {
+        String pt = TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e');
+        String firstJoin = target.getFirstJoin() != null ? target.getFirstJoin().toString() : "&cNot present";
 
+        if (CommandHelper.areTheSame(src, target))
+            src.sendMessage(tl("command.playtime.query.self", pt, firstJoin));
+        else
+            src.sendMessage(tl("command.playtime.query.others", target.getNameTag(), pt, firstJoin));
 
-        return SINGLE_SUCCESS;
+        return target.getTicksPlayed();
     }
 
 }

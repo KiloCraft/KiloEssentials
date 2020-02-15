@@ -216,12 +216,12 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public int getMinutedPlayed() {
+    public int getTicksPlayed() {
         return -1;
     }
 
     @Override
-    public void setMinutesPlayed(int minutes) {
+    public void setTicksPlayed(int minutes) {
     }
 
     @Override

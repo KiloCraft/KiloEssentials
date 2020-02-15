@@ -104,9 +104,9 @@ public interface User {
 
     void setCanSit(boolean set);
 
-    int getMinutedPlayed();
+    int getTicksPlayed();
 
-    void setMinutesPlayed(int minutes);
+    void setTicksPlayed(int ticks);
 
     /**
      * This should be moved to it's own FeatureType

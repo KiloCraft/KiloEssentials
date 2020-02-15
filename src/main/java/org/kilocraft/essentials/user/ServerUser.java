@@ -58,7 +58,7 @@ public class ServerUser implements User {
     private boolean canSit = false;
     String lastSocketAddress;
     GameMode gameMode = GameMode.NOT_SET;
-    int minutesPlayed = -1;
+    int ticksPlayed = -1;
 
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -135,8 +135,10 @@ public class ServerUser implements User {
             metaTag.putInt("displayParticleId", this.displayParticleId);
 
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
-
         metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
+
+        if (this.ticksPlayed != -1)
+            metaTag.putInt("minutesPlayed", this.ticksPlayed);
 
         if (this.nickname != null) // Nicknames are Optional now.
             metaTag.putString("nick", this.nickname);
@@ -218,6 +220,9 @@ public class ServerUser implements User {
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
 
+        if (metaTag.contains("minutesPlayed"))
+            this.ticksPlayed = metaTag.getInt("minutesPlayed");
+
         if (metaTag.contains("nick")) // Nicknames are an Optional, so we compensate for that.
             this.nickname = metaTag.getString("nick");
 
@@ -270,13 +275,13 @@ public class ServerUser implements User {
     }
 
     @Override
-    public int getMinutedPlayed() {
-        return 0;
+    public int getTicksPlayed() {
+        return this.ticksPlayed;
     }
 
     @Override
-    public void setMinutesPlayed(int minutes) {
-
+    public void setTicksPlayed(int ticks) {
+        this.ticksPlayed = ticks;
     }
 
     @Override

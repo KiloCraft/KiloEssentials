@@ -6,6 +6,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
@@ -164,7 +165,14 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         super.lastSocketAddress = this.getConnection().getAddress().toString();
         super.gameMode = this.getGameMode();
-       //this.getPlayer().getStatHandler().getStat(Registry.STAT_TYPE.get(Stats.PLAY_ONE_MINUTE));
+        if (super.ticksPlayed != -1)
+            super.ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
+    }
+
+    public void onTick() {
+        super.ticksPlayed++;
+        super.resetMessageCooldown();
+        super.updateLocation();
     }
 
 }

@@ -16,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.provided.LocateStructureProvided;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -52,8 +51,6 @@ public class LocateStructureCommand {
 
         if (structure == null)
             throw KiloCommands.getException(ExceptionMessageNode.INCORRECT_IDENTIFIER, "structure").create();
-
-        source.sendFeedback(LangText.getFormatter(true, "command.locate.scanning", LocateStructureProvided.getStructureName(structure.getName())), false);
 
         StructureLocatorThread locatorThread = new StructureLocatorThread(source, structure.getName());
         Thread thread = new Thread(locatorThread, "Structure locator thread");
