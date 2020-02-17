@@ -75,7 +75,6 @@ public enum CommandPermission {
     HAT_SELF("hat.self"),
     HAT_OTHERS("hat.others"),
     SHOOT("shoot"),
-    GAMERULE("gamerule"),
     IPINFO("ipinfo"),
     WHOIS_SELF("whois.self"),
     WHOIS_OTHERS("whois.others"),

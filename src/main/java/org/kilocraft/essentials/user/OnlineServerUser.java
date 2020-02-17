@@ -175,7 +175,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             this.setGameMode(gameMode);
         }
 
-        if (super.ticksPlayed == -1) {
+        if (super.ticksPlayed <= 0) {
             super.ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
         } else  {
             this.getPlayer().getStatHandler().setStat(this.getPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE), super.ticksPlayed);

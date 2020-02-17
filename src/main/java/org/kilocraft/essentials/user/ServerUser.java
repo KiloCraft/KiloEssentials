@@ -65,7 +65,7 @@ public class ServerUser implements User {
     boolean isStaff = false;
     String lastSocketAddress;
     GameMode gameMode = GameMode.NOT_SET;
-    int ticksPlayed = -1;
+    int ticksPlayed = 0;
 
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
