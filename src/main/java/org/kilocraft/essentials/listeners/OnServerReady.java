@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.listeners;
 
-import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.lifecycle.ServerReadyEvent;
@@ -11,7 +10,6 @@ import org.kilocraft.essentials.util.NBTStorageUtil;
 public class OnServerReady implements EventHandler<ServerReadyEvent> {
     @Override
     public void handle(ServerReadyEvent event) {
-        KiloEssentialsImpl.getInstance().onServerReady();
         NBTStorageUtil.onLoad();
 
         BrandedServer.set();

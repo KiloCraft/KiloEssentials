@@ -14,8 +14,10 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
+import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.Objects;
 
@@ -52,27 +54,22 @@ public class StatusCommand extends EssentialCommand {
 
     private static String getInfo() throws Exception {
         return "&eGeneral status:&r\n" +
-                "&7- Platform&8: &6" + bean.getArch() + " &d" + System.getProperty("os.name") +
+                "&7- Platform: &6" + bean.getArch() + " &d" + System.getProperty("os.name") +
+                "\n&7- Server uptime: &6" + TimeDifferenceUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()) +
                 "\n&7- TPS:" +
                 String.format("&%s %s&8,&8(&75m&8/&715m&8/&730m&8&8/&71h&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
                         getFormattedTPS(tps1.getAverage()), tps1.getShortAverage(), getFormattedTPS(tps5.getAverage()), tps5.getShortAverage(),
                         getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(), getFormattedTPS(tps30.getAverage()), tps30.getShortAverage(),
                         getFormattedTPS(tps60.getAverage()), tps60.getShortAverage()) +
                 "\n&7- CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7:" +
-                " &6" + SystemMonitor.getCpuLoadPercentage() + " Usage" +
+                " &6" + SystemMonitor.getCpuLoadPercentage() + "% Usage" +
                 " &e" + Thread.activeCount() + " Running Threads" +
                 "\n&7- Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: &6" +
                 SystemMonitor.getRamUsedPercentage() + "% " +
                 "&8(&e" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&e" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
-                "\n&7- Storage &8(&e" + SystemMonitor.getDiskUsableGB() + " max&8)&7: &6" +
-                SystemMonitor.getDiskUsedPercentage() + "% " +
-                "&8(&e" + SystemMonitor.getDiskUsedGB() + " GB" + "&8/&e" +
-                SystemMonitor.getDiskUsableGB() + " GB" + "&8)" +
                 "\n&7- Worlds&8:&e" +
-                addWorldInfo() +
-                "\n&7- Java version: " + System.getProperty("java.version") +
-                "&8 (&7" + System.getProperty("java.runtime.version") + "&8)";
+                addWorldInfo();
     }
 
     private static String addWorldInfo() {
@@ -94,8 +91,7 @@ public class StatusCommand extends EssentialCommand {
     }
 
     private static String getWorldName(ServerWorld world) {
-        String s = Objects.requireNonNull(Registry.DIMENSION_TYPE.getId(world.dimension.getType())).getPath();
-        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
+        return Objects.requireNonNull(Registry.DIMENSION_TYPE.getId(world.dimension.getType())).getPath();
     }
 
 }

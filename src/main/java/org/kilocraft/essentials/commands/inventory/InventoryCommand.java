@@ -6,20 +6,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.container.Container;
-import net.minecraft.container.ContainerType;
-import net.minecraft.container.GenericContainer;
-import net.minecraft.container.NameableContainerProvider;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 
@@ -33,6 +23,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class InventoryCommand {
     private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.SEEK_INVENTORY);
 
+    @Deprecated
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> rootCommand = literal("inv")
                 .requires(PERMISSION_CHECK)
@@ -69,24 +60,24 @@ public class InventoryCommand {
 //        };
 
         KiloChat.sendLangMessageTo(source, "general.seek_container", target.getEntityName(), "Inventory");
-        source.openContainer(container(source, target));
+//        source.openContainer(container(source, target));
 
         return 1;
     }
 
-    private static NameableContainerProvider container(ServerPlayerEntity player, ServerPlayerEntity target) {
-        return new NameableContainerProvider() {
-            @Override
-            public Text getDisplayName() {
-                String displayName = KiloServer.getServer().getOnlineUser(target).getDisplayname();
-                return new LiteralText(TextFormat.translate(displayName + "&r's Inventory", false));
-            }
-
-            @Override
-            public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                return new GenericContainer(ContainerType.GENERIC_9X4, i, playerInventory, target.inventory, 4);
-            }
-        };
-    }
+//    private static SimpleNamedContainerFactory container(ServerPlayerEntity player, ServerPlayerEntity target) {
+//        return new SimpleNamedContainerFactory() {
+//            @Override
+//            public Text getDisplayName() {
+//                String displayName = KiloServer.getServer().getOnlineUser(target).getDisplayname();
+//                return new LiteralText(TextFormat.translate(displayName + "&r's Inventory", false));
+//            }
+//
+//            @Override
+//            public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+//                return new GenericContainer(ContainerType.GENERIC_9X4, i, playerInventory, target.inventory, 4);
+//            }
+//        };
+//    }
 
 }

@@ -10,9 +10,7 @@ import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +19,6 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.*;
-import static org.kilocraft.essentials.api.ModConstants.getMessageUtil;
 
 public class SimpleCommandManager {
     private static SimpleCommandManager INSTANCE;
@@ -41,6 +38,11 @@ public class SimpleCommandManager {
             getDispatcher().register(literal(command.getLabel())
                     .then(argument("args", greedyString()).suggests(TabCompletions::noSuggestions)));
         }
+    }
+
+    public static void unregister(String id) {
+        if (INSTANCE != null && INSTANCE.commands != null && getCommand(id) != null)
+            INSTANCE.commands.remove(getCommand(id));
     }
 
     public static void unregister(SimpleCommand command) {
@@ -105,15 +107,11 @@ public class SimpleCommandManager {
                     sendPermissionError(source);
                 else
                     KiloChat.sendMessageToSource(source, new ChatMessage(
-                            KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_EXECUTION_EXCEPTION)
+                            KiloConfig.messages().commands().context().executionException
                             , true));
 
             } else {
                 source.sendError(Texts.toText(e.getRawMessage()));
-
-                if (e.getRawMessage().getString().equals("Incorrect argument for command"))
-                    KiloChat.sendMessageToSource(source,
-                            new ChatMessage(getMessageUtil().fromCommandNode(CommandMessageNode.EXECUTION_EXCEPTION_HELP), true));
 
                 if (e.getInput() != null && e.getCursor() >= 0) {
                     int cursor = Math.min(e.getInput().length(), e.getCursor());

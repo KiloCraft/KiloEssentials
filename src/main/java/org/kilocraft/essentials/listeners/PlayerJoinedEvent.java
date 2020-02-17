@@ -15,5 +15,6 @@ public class PlayerJoinedEvent implements EventHandler<PlayerConnectedEvent> {
 
         OnlineUser user = KiloServer.getServer().getOnlineUser(event.getPlayer());
         ((OnlineServerUser) user).onJoined();
+        ((OnlineServerUser) user).updateLocation();
     }
 }

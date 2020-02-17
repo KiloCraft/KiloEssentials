@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.events.player;
 
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.ClientCommandC2SPacket;
 import org.kilocraft.essentials.api.event.player.PlayerClientCommandEvent;
 
 public class PlayerClientCommandEventImpl implements PlayerClientCommandEvent {

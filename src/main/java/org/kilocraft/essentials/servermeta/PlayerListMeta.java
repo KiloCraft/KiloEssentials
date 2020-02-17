@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.servermeta;
 
-import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -14,12 +14,12 @@ public class PlayerListMeta {
     static String header = "", footer = "";
 
     static void load() {
-        header = KiloConfig.getProvider().getMain().getStringSafely("server.player_list.header", "");
-        footer = KiloConfig.getProvider().getMain().getStringSafely("server.player_list.footer", "");
+        header = KiloConfig.main().playerList().getHeader();
+        footer = KiloConfig.main().playerList().getFooter();
     }
 
     static void provideFor(ServerPlayerEntity player) {
-        if (player.networkHandler == null)
+        if (player == null || player.networkHandler == null)
             return;
 
         PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
@@ -37,7 +37,7 @@ public class PlayerListMeta {
                 .replaceAll("%PLAYER_PING%", String.valueOf(player.pingMilliseconds))
                 .replaceAll("%PLAYER_FORMATTED_PING%", TextFormat.getFormattedPing(player.pingMilliseconds))
                 .replaceAll("%USER_NAME%", user.getUsername())
-                .replaceAll("%USER_DISPLAYNAME%", user.getDisplayname())
+                .replaceAll("%USER_DISPLAYNAME%", user.getDisplayName())
                 .replaceAll("%SERVER_NAME%", server.getName())
                 .replaceAll("%SERVER_TPS%", TPSTracker.tps1.getShortAverage())
                 .replaceAll("%SERVER_FORMATTED_TPS%", "&" + TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()) + TPSTracker.tps1.getShortAverage() + "&r")

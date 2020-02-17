@@ -7,6 +7,7 @@ import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 public class OnStopRiding implements EventHandler<PlayerStopRidingEvent> {
     @Override
     public void handle(PlayerStopRidingEvent event) {
-        PlayerSitManager.INSTANCE.onStopRiding(event.getPlayer());
+        if (PlayerSitManager.enabled)
+            PlayerSitManager.INSTANCE.onStopRiding(event.getPlayer());
     }
 }

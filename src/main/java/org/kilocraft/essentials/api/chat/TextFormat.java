@@ -115,7 +115,7 @@ public enum TextFormat {
     }
 
     public static final char COLOR_CHAR = '\u00A7';
-    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf(COLOR_CHAR) + "[0-9A-FK-OR]");
+    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + COLOR_CHAR + "[0-9A-FK-OR]");
 
     private final int intCode;
     private final char code;
@@ -126,7 +126,7 @@ public enum TextFormat {
     private static final Map<Integer, TextFormat> BY_ID = Maps.newHashMap();
     private static final Map<Character, TextFormat> BY_CHAR = Maps.newHashMap();
 
-    private TextFormat(char code, int intCode, Formatting formatting, boolean isFormat, String ansi) {
+    TextFormat(char code, int intCode, Formatting formatting, boolean isFormat, String ansi) {
         this.code = code;
         this.intCode = intCode;
         this.isFormat = isFormat;
@@ -135,15 +135,15 @@ public enum TextFormat {
         this.ansi = ansi;
     }
 
-    private TextFormat(char code, int intCode, Formatting formatting, String ansi) {
+    TextFormat(char code, int intCode, Formatting formatting, String ansi) {
         this(code, intCode, formatting, false, ansi);
     }
 
-    private TextFormat(char code, int intCode, Formatting formatting) {
+    TextFormat(char code, int intCode, Formatting formatting) {
         this(code, intCode, formatting, false);
     }
 
-    private TextFormat(char code, int intCode, Formatting formatting, boolean isFormat) {
+    TextFormat(char code, int intCode, Formatting formatting, boolean isFormat) {
         this(code, intCode, formatting, isFormat, null);
     }
 

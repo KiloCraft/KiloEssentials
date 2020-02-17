@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.api.chat;
 
+import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;

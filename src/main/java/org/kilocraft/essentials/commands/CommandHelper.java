@@ -32,6 +32,16 @@ public class CommandHelper {
         source.getEntityOrThrow();
     }
 
+    public static boolean isOnline(ServerCommandSource source) {
+        try {
+            source.getPlayer();
+            return true;
+        } catch (CommandSyntaxException e) {
+            return false;
+        }
+    }
+
+    @Deprecated
     public static boolean isOnline(ServerPlayerEntity playerEntity) {
         AtomicBoolean bool = new AtomicBoolean(false);
         try {
@@ -62,6 +72,10 @@ public class CommandHelper {
     }
 
     public static boolean areTheSame(OnlineUser user1, OnlineUser user2) {
+        return user1.getUsername().equals(user2.getUsername());
+    }
+
+    public static boolean areTheSame(User user1, User user2) {
         return user1.getUsername().equals(user2.getUsername());
     }
 

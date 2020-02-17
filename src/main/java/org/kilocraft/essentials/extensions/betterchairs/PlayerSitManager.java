@@ -128,7 +128,7 @@ public class PlayerSitManager implements ConfigurableFeature {
                 armorStand.getCustomName().asString().startsWith("KE$SitStand#")
                 && armorStand.getScoreboardTags().contains("KE$SitStand@" + player.getUuid().toString())) {
             sitStands.remove(RegistryUtils.toIdentifier(armorStand.dimension), armorStand.getUuid());
-            armorStand.setPos(armorStand.getX(), armorStand.getY() + 0.85D, armorStand.getZ());
+            armorStand.setPos(armorStand.getX(), armorStand.getY() + 0.55D, armorStand.getZ());
             armorStand.kill();
 
             player.addChatMessage(LangText.get(true, "sit.stop_riding"), true);

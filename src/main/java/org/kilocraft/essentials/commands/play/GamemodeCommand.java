@@ -7,7 +7,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,21 +16,22 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.util.SelectorUtils;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
-import static net.minecraft.command.arguments.EntityArgumentType.players;
-import static org.kilocraft.essentials.KiloCommands.*;
+import static org.kilocraft.essentials.KiloCommands.getPermissionError;
 
 public class GamemodeCommand extends EssentialCommand {
     public GamemodeCommand() {
@@ -48,28 +48,59 @@ public class GamemodeCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> gameTypeArgument = argument("gameType", string())
-                .suggests(GamemodeCommand::suggestGameModes).executes(ctx -> execute(ctx, Collections.singletonList(ctx.getSource().getPlayer()), null,false));
+        RequiredArgumentBuilder<ServerCommandSource, String> gameTypeArgument = argument("mode", string())
+                .suggests(GamemodeCommand::suggestGameModes)
+                .executes(ctx -> execute(ctx, null, ctx.getSource().getName(),false));
 
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("target", players())
-                .suggests(TabCompletions::allPlayers)
-                .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null,false))
-                .then(literal("-silent")
-                        .executes(ctx -> execute(ctx, getPlayers(ctx, "target"), null, true)));
+        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("target")
+                .executes(ctx -> execute(ctx, null, getUserArgumentInput(ctx, "target"),false))
+                .then(
+                        literal("-silent")
+                        .executes(ctx -> execute(ctx, null, getUserArgumentInput(ctx, "target"), true))
+                );
 
 
         gameTypeArgument.then(targetArgument);
         commandNode.addChild(gameTypeArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players, @Nullable GameMode cValue, boolean silent) throws CommandSyntaxException {
+    private int execute(CommandContext<ServerCommandSource> ctx, @Nullable GameMode cValue, String selection, boolean silent) throws CommandSyntaxException {
         ServerCommandSource src = ctx.getSource();
-        String arg = cValue == null ? getString(ctx, "gameType") : cValue.getName();
+        CommandSourceUser sourceUser = getServerUser(ctx);
+        String arg = cValue == null ? getString(ctx, "mode") : cValue.getName();
         GameMode selectedMode = getMode(arg);
 
         if (selectedMode == null)
             throw new SimpleCommandExceptionType(new LiteralText("Please select a valid Game type!")).create();
 
+        if (selection.startsWith("@")) {
+            Collection<ServerPlayerEntity> collection = SelectorUtils.parse(selection, true).getPlayers(src);
+            if (collection.isEmpty())
+                throw KiloCommands.getException(ExceptionMessageNode.INVALID, "selection").create();
+
+            return setPlayers(src, collection, selectedMode, silent);
+        }
+
+        if (!hasPermission(src, getPermission("self", selectedMode)))
+            throw new SimpleCommandExceptionType(getPermissionError(getPermission("self", selectedMode).getNode())).create();
+
+        AtomicInteger atomicInteger = new AtomicInteger(AWAIT_RESPONSE);
+        essentials.getUserThenAcceptAsync(sourceUser, selection, (user) -> {
+            try {
+                user.setGameMode(selectedMode);
+                user.saveData();
+            } catch (IOException e) {
+                sourceUser.sendError(e.getMessage());
+            }
+
+            sourceUser.sendLangMessage("template.#1", "gamemode", selectedMode.getName(), user.getNameTag());
+        });
+
+
+        return atomicInteger.get();
+    }
+
+    private int setPlayers(ServerCommandSource src, Collection<ServerPlayerEntity> players, GameMode selectedMode, boolean silent) throws CommandSyntaxException {
         if (players.size() == 1 && !hasPermission(src, getPermission("self", selectedMode)))
             throw new SimpleCommandExceptionType(getPermissionError(getPermission("self", selectedMode).getNode())).create();
 
@@ -91,7 +122,7 @@ public class GamemodeCommand extends EssentialCommand {
         KiloChat.sendLangMessageTo(src, "template.#1", "gamemode",
                 selectedMode.getName(), (players.size() == 1) ? singletonName : players.size() + " players");
 
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
     private static GameMode getMode(String arg) {

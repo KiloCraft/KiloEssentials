@@ -1,12 +1,15 @@
 package org.kilocraft.essentials.api.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.text.Text;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,11 +24,15 @@ public interface User {
 
     boolean hasNickname();
 
-    String getDisplayname();
+    String getDisplayName();
 
-    String getFormattedDisplayname();
+    String getFormattedDisplayName();
 
-    Text getRankedDisplayname();
+    Text getRankedDisplayName();
+
+    Text getRankedName();
+
+    String getNameTag();
 
     List<String> getSubscriptionChannels();
 
@@ -87,9 +94,20 @@ public interface User {
 
     UserHomeHandler getHomesHandler();
 
+    @Nullable
+    String getLastSocketAddress();
+
+    GameMode getGameMode();
+
+    void setGameMode(GameMode mode);
+
     boolean canSit();
 
     void setCanSit(boolean set);
+
+    int getTicksPlayed();
+
+    void setTicksPlayed(int ticks);
 
     /**
      * This should be moved to it's own FeatureType
@@ -105,4 +123,15 @@ public interface User {
     @Deprecated
     void setDisplayParticleId(int i);
 
+    /**
+     * Saves the data if the user if offline
+     */
+    void saveData() throws IOException;
+
+    /**
+     * Tries to save the user data
+     */
+    void trySave() throws CommandSyntaxException;
+
+    boolean equals(User anotherUser);
 }

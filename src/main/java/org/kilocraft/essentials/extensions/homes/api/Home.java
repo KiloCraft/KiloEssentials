@@ -13,6 +13,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.util.LocationUtil;
 
 import java.util.UUID;
 
@@ -92,4 +93,9 @@ public class Home {
         player.teleport(destinationWorld, home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ(),
                 home.getLocation().getRotation().getYaw(), home.getLocation().getRotation().getPitch());
     }
+
+    public boolean shouldTeleport() {
+        return !LocationUtil.isDimensionValid(this.location.getDimensionType());
+    }
+
 }

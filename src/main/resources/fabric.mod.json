@@ -8,9 +8,8 @@
   "authors": [
     "CODY_AI",
     "MCrafterzz",
-    "Indicode",
-    "DrexHD",
-    "i509VCB"
+    "i509VCB",
+    "Thanks to DrexHD"
   ],
 
   "license": "MIT",
@@ -24,7 +23,8 @@
   "mixins": [
     "kiloessentials.events.mixins.json",
     "kiloessentials.mixins.json",
-    "kiloessentials.accessors.mixins.json"
+    "kiloessentials.accessors.mixins.json",
+    "kiloessentials.patch.mixins.json"
   ],
 
   "depends": {

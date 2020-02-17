@@ -11,9 +11,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.NBTStorageUtil;
 
@@ -84,7 +84,7 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
 
     @Override
     public KiloFile getSaveFile() {
-        return new KiloFile("warps.dat", KiloConfig.getDataDirectory());
+        return new KiloFile("warps.dat", KiloEssentials.getDataDirPath());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.mixin.events;
 
 import net.minecraft.network.ClientConnection;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -22,12 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinPlayerManager$PlayerEvent$OnConnect {
 
     @Shadow @Final private static Logger LOGGER;
-
-    @Shadow @Final private MinecraftServer server;
-
-    @Shadow public abstract int getMaxPlayerCount();
-
-    @Shadow private int viewDistance;
 
     @Inject(at = @At("HEAD"), method = "onPlayerConnect", cancellable = true)
     private void oky$onPlayerConnect(ClientConnection connection, ServerPlayerEntity playerEntity, CallbackInfo ci) {

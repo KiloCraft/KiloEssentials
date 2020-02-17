@@ -15,15 +15,15 @@ public class DiscordCommand implements ConfigurableFeature {
 
     @Override
     public boolean register() {
-        KiloCommands.getDispatcher().register(literal("discord").executes(DiscordCommand::execute));
+        KiloCommands.getDispatcher().register(literal("discord").executes(this::execute));
         return true;
     }
 
     public DiscordCommand() {
     }
 
-    public static int execute(CommandContext<ServerCommandSource> context) {
-        String jsonText = KiloConfig.getMessage("commands.discord");
+    public int execute(CommandContext<ServerCommandSource> context) {
+        String jsonText = KiloConfig.messages().commands().discordMessage;
         Text text = TextFormat.translateToNMSText(jsonText);
         KiloChat.sendMessageToSource(context.getSource(), text);
 

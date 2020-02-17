@@ -1,11 +1,17 @@
 package org.kilocraft.essentials.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -16,6 +22,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -54,7 +61,12 @@ public class ServerUser implements User {
     private boolean socialSpy = false;
     private boolean commandSpy = false;
     private boolean canSit = false;
-    
+    private Map<String, UUID> ignoreList;
+    boolean isStaff = false;
+    String lastSocketAddress;
+    GameMode gameMode = GameMode.NOT_SET;
+    int ticksPlayed = 0;
+
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
         if (UserHomeHandler.isEnabled()) // TODO Use new feature provider in future
@@ -63,6 +75,7 @@ public class ServerUser implements User {
             manager.getHandler().handleUser(this);
         } catch (IOException e) {
             KiloEssentials.getLogger().error("Failed to Load User Data [" + uuid.toString() + "]");
+            e.printStackTrace();
         }
 
         this.subscriptions = new ArrayList<>();
@@ -74,11 +87,10 @@ public class ServerUser implements User {
         CompoundTag cacheTag = new CompoundTag();
 
         // Here we store the players current location
-        if (this.location == null)
-            updateLocation();
-
-        mainTag.put("loc", this.location.toTag());
-        this.location.shortDecimals();
+        if (this.location != null) {
+            mainTag.put("loc", this.location.toTag());
+            this.location.shortDecimals();
+        }
 
         if (this.lastLocation != null)
             cacheTag.put("lastLoc", this.lastLocation.toTag());
@@ -96,9 +108,18 @@ public class ServerUser implements User {
         // Chat channels stuff
         CompoundTag channelsCache = new CompoundTag();
 
-        if (this.upstreamChannelId != null)
+        if (this.upstreamChannelId != null) {
             channelsCache.putString("upstreamChannelId", this.upstreamChannelId);
-        cacheTag.put("channels", channelsCache);
+            cacheTag.put("channels", channelsCache);
+        }
+
+        if (this.lastSocketAddress != null) {
+            cacheTag.putString("lIP", this.lastSocketAddress);
+        }
+
+        if (this.gameMode != GameMode.NOT_SET) {
+            cacheTag.putInt("gameMode", this.gameMode.getId());
+        }
 
         // Abilities
         if (this.canFly)
@@ -116,16 +137,33 @@ public class ServerUser implements User {
         if (this.canSit)
             cacheTag.putBoolean("canSit", true);
 
+        if (this.ignoreList != null) {
+            ListTag listTag = new ListTag();
+            this.ignoreList.forEach((name, uuid) -> {
+                CompoundTag ignoredOne = new CompoundTag();
+                ignoredOne.putUuid("id", uuid);
+                ignoredOne.putString("name", name);
+                listTag.add(ignoredOne);
+            });
+
+            cacheTag.put("ignored", listTag);
+        }
+
         // TODO When possible, move particle logic to a feature.
         if (this.displayParticleId != 0)
             metaTag.putInt("displayParticleId", this.displayParticleId);
 
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
-
         metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
 
-        if(this.nickname != null) // Nicknames are Optional now.
+        if (this.ticksPlayed != -1)
+            metaTag.putInt("ticksPlayed", this.ticksPlayed);
+
+        if (this.nickname != null) // Nicknames are Optional now.
             metaTag.putString("nick", this.nickname);
+
+        if (this.isStaff)
+            metaTag.putBoolean("isStaff", true);
 
         // Home logic, TODO Abstract this with features in future.
         CompoundTag homeTag = new CompoundTag();
@@ -155,12 +193,12 @@ public class ServerUser implements User {
         	this.location.shortDecimals();
         }
 
-        if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
+        if (cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
             CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
-            if(lastMessageTag.contains("destUUID", NBTTypes.STRING))
+            if (lastMessageTag.contains("destUUID", NBTTypes.STRING))
                 this.lastPrivateMessageGetterUUID = UUID.fromString(lastMessageTag.getString("destUUID"));
 
-            if(lastMessageTag.contains("text", NBTTypes.STRING))
+            if (lastMessageTag.contains("text", NBTTypes.STRING))
                 this.lastPrivateMessageText = lastMessageTag.getString("text");
 
         }
@@ -172,6 +210,14 @@ public class ServerUser implements User {
                 this.upstreamChannelId = channelsTag.getString("upstreamChannelId");
             else
                 this.upstreamChannelId = GlobalChat.getChannelId();
+        }
+
+        if (cacheTag.contains("lIP")) {
+            this.lastSocketAddress = cacheTag.getString("lIP");
+        }
+
+        if (cacheTag.contains("gameMode")) {
+            this.gameMode = GameMode.byId(cacheTag.getInt("gameMode"));
         }
 
         if (cacheTag.getBoolean("isFlyEnabled")) {
@@ -190,14 +236,29 @@ public class ServerUser implements User {
         if (cacheTag.contains("canSit"))
             this.canSit = cacheTag.getBoolean("canSit");
 
+        if (cacheTag.contains("ignored")) {
+            ListTag listTag = cacheTag.getList("ignored", 8);
+            this.ignoreList = new HashMap<>();
+            for (int i = 0; i < listTag.size(); i++) {
+                CompoundTag ignoredOne = listTag.getCompound(i);
+                this.ignoreList.put(ignoredOne.getString("name"), ignoredOne.getUuid("id"));
+            }
+        }
+
         if (metaTag.getInt("displayParticleId") != 0)
             this.displayParticleId = metaTag.getInt("displayParticleId");
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
 
+        if (metaTag.contains("ticksPlayed"))
+            this.ticksPlayed = metaTag.getInt("ticksPlayed");
+
         if (metaTag.contains("nick")) // Nicknames are an Optional, so we compensate for that.
             this.nickname = metaTag.getString("nick");
+
+        if (metaTag.contains("isStaff"))
+            this.isStaff = true;
 
         this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         this.randomTeleportsLeft = compoundTag.getInt("rtpLeft");
@@ -221,6 +282,25 @@ public class ServerUser implements User {
         return this.homeHandler;
     }
 
+    @Nullable
+    @Override
+    public String getLastSocketAddress() {
+        return this.lastSocketAddress;
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return this.gameMode;
+    }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+        this.gameMode = mode;
+
+        if (this.isOnline())
+            ((OnlineUser) this).getPlayer().setGameMode(mode);
+    }
+
     @Override
     public boolean canSit() {
         return this.canSit;
@@ -229,6 +309,16 @@ public class ServerUser implements User {
     @Override
     public void setCanSit(boolean set) {
         this.canSit = set;
+    }
+
+    @Override
+    public int getTicksPlayed() {
+        return this.ticksPlayed;
+    }
+
+    @Override
+    public void setTicksPlayed(int ticks) {
+        this.ticksPlayed = ticks;
     }
 
     @Override
@@ -241,20 +331,31 @@ public class ServerUser implements User {
         return this.getNickname().isPresent();
     }
 
-    @Override
-    public String getDisplayname() {
-        return (hasNickname()) ? this.nickname : this.name;
+    public String getDisplayName() {
+        return (this.getNickname().isPresent() || this.nickname != null) ? this.nickname : this.name;
     }
 
     @Override
-    public String getFormattedDisplayname() {
-        return TextFormat.translate(getDisplayname() + "&r");
+    public String getFormattedDisplayName() {
+        return TextFormat.translate(getDisplayName() + "&r");
     }
 
     @Override
-    public Text getRankedDisplayname() {
-        return Team.modifyText(
-                KiloServer.getServer().getPlayer(this.uuid).getScoreboardTeam(), new LiteralText(getDisplayname()));
+    public Text getRankedDisplayName() {
+        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(getFormattedDisplayName()));
+    }
+
+    @Override
+    public Text getRankedName() {
+        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(this.name));
+    }
+
+    @Override
+    public String getNameTag() {
+        String str = this.isOnline() ? KiloConfig.messages().general().userTags().online :
+                KiloConfig.messages().general().userTags().offline;
+        return str.replace("{USER_NAME}", this.name)
+                .replace("{USER_DISPLAYNAME}", this.getFormattedDisplayName());
     }
 
     @Override
@@ -284,7 +385,7 @@ public class ServerUser implements User {
 
     @Override
     public Location getLocation() {
-        if (this.location == null)
+        if (this instanceof OnlineUser && this.location == null && ((OnlineUser) this).getPlayer() != null)
             updateLocation();
 
         return this.location;
@@ -311,6 +412,7 @@ public class ServerUser implements User {
 
     @Override
     public void clearNickname() {
+        KiloServer.getServer().getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
         this.nickname = null;
     }
 
@@ -412,10 +514,62 @@ public class ServerUser implements User {
     	this.displayParticleId = id;
     }
 
-    public void resetMessageCooldown() {
-        if (this.messageCooldown > 0) {
-            --this.messageCooldown;
+    @Override
+    public void saveData() throws IOException {
+        if (!this.isOnline())
+            manager.getHandler().saveData(this);
+    }
+
+    @Override
+    public void trySave() throws CommandSyntaxException {
+        if (this.isOnline())
+            return;
+
+        try {
+            this.saveData();
+        } catch (IOException e) {
+            throw new SimpleCommandExceptionType(new LiteralText(e.getMessage()).formatted(Formatting.RED)).create();
         }
+    }
+
+    public Map<String, UUID> getIgnoreList() {
+        if (this.ignoreList == null)
+            this.ignoreList = new HashMap<>();
+
+        return this.ignoreList;
+    }
+
+    public boolean isStaff() {
+        if (this.isOnline())
+            this.isStaff = KiloEssentials.hasPermissionNode(((OnlineUser) this).getCommandSource(), EssentialPermission.STAFF);
+
+        return this.isStaff;
+    }
+
+    @SuppressWarnings({"untested", "Do Not Run If the User is Online"})
+    public void clear() {
+        if (this.isOnline())
+            return;
+
+        manager = null;
+        dateFormat = null;
+        uuid = null;
+        name = null;
+        homeHandler = null;
+        location = null;
+        lastLocation = null;
+        nickname = null;
+        lastPrivateMessageGetterUUID = null;
+        lastPrivateMessageText = null;
+        firstJoin = null;
+        subscriptions = null;
+        upstreamChannelId = null;
+        ignoreList = null;
+    }
+
+    @Override
+    public boolean equals(User anotherUser) {
+        return anotherUser.getUuid().equals(this.uuid) || anotherUser.getUsername().equals(this.getUsername());
     }
 
 }

@@ -2,10 +2,12 @@ package org.kilocraft.essentials.util;
 
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.config.ConfigValueGetter;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.sections.StartupScriptConfigSection;
+import org.kilocraft.essentials.provided.KiloFile;
 
 import java.io.*;
+import java.util.Objects;
 
 public class StartupScript {
     private File resourceFile;
@@ -14,28 +16,34 @@ public class StartupScript {
     private String MAX_MEMORY;
     private String STARTUP_CODE;
 
+    public boolean exists() {
+        if (file != null)
+            return file.exists();
+
+        return false;
+    }
+
     public StartupScript() {
-        ConfigValueGetter config = KiloConfig.getProvider().getMain();
-        this.FILE_NAME = config.getStringSafely("startup-script.script-name", "start") + ".sh";
+        StartupScriptConfigSection config = KiloConfig.main().startupScript();
+        this.FILE_NAME = config.scriptName + ".sh";
         this.file = new File(System.getProperty("user.dir") + File.separator + FILE_NAME);
+        this.file = new KiloFile(FILE_NAME, KiloEssentials.getWorkingDirectory()).getFile();
 
         if (file.exists())
             return;
 
         KiloEssentials.getLogger().info("Generating the start script...");
-        this.MAX_MEMORY = config.getStringSafely("startup-script.maximum-memory-size", "2G");
-        String SCREEN_NAME = config.getStringSafely("startup-script.linux-screen-name", "mc-server");
-        String LOADER_NAME = config.getStringSafely("startup-script.fabric-loader-name", "fabric-server-launch.jar");
-        boolean generateForLinuxScreen = config.getBooleanSafely("startup-script.linux-screen-mode", false);
+        this.MAX_MEMORY = config.maximumRam;
+        String SCREEN_NAME = config.linuxScreenName;
+        String LOADER_NAME = config.fabricLoaderName;
+        boolean generateForLinuxScreen = config.linuxScreen;
 
         this.resourceFile = new File(
-                Thread.currentThread().getContextClassLoader().getResource("assets/start-script.sh").getFile());
+                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("assets/start-script.sh")).getFile());
 
         String normalScript = "java -jar -Xmx" + this.MAX_MEMORY + " " + LOADER_NAME;
         String screenScript = "screen -S " + SCREEN_NAME + " " + normalScript;
         this.STARTUP_CODE = generateForLinuxScreen ? screenScript : normalScript;
-
-        System.out.println(this.FILE_NAME + " " + this.MAX_MEMORY + " " + this.STARTUP_CODE);
 
         generate();
     }

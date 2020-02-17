@@ -3,12 +3,10 @@ package org.kilocraft.essentials.commands.play;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,11 +17,12 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
-import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.util.PlayerDataModifier;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
@@ -33,8 +32,6 @@ import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
-import static net.minecraft.command.arguments.EntityArgumentType.player;
 
 public class NicknameCommand extends EssentialCommand {
     public static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (s) -> KiloCommands.hasPermission(s, CommandPermission.NICKNAME_SELF);
@@ -49,16 +46,16 @@ public class NicknameCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
         LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
-        ArgumentCommandNode<ServerCommandSource, EntitySelector> target = argument("target", player())
+        ArgumentCommandNode<ServerCommandSource, String> target = getUserArgument("user")
                 .requires(PERMISSION_CHECK_OTHER).suggests(TabCompletions::allPlayers).build();
 
         ArgumentCommandNode<ServerCommandSource, String> nicknameSelf = argument("nickname", greedyString())
-                .suggests(NicknameCommand::setSelfSuggestions).executes(NicknameCommand::setSelf).build();
+                .suggests(NicknameCommand::setSelfSuggestions).executes(this::setSelf).build();
         ArgumentCommandNode<ServerCommandSource, String> nicknameOther = argument("nickname", greedyString())
-                .suggests(NicknameCommand::setOthersSuggestions).executes(NicknameCommand::setOther).build();
+                .suggests(NicknameCommand::setOthersSuggestions).executes(this::setOther).build();
 
-        LiteralCommandNode<ServerCommandSource> resetSelf = literal("reset").requires(PERMISSION_CHECK_SELF).executes(NicknameCommand::resetSelf).build();
-        LiteralCommandNode<ServerCommandSource> resetOther = literal("reset").requires(PERMISSION_CHECK_OTHER).executes(NicknameCommand::resetOther).build();
+        LiteralCommandNode<ServerCommandSource> resetSelf = literal("reset").requires(PERMISSION_CHECK_SELF).executes(this::resetSelf).build();
+        LiteralCommandNode<ServerCommandSource> resetOther = literal("reset").requires(PERMISSION_CHECK_OTHER).executes(this::resetOther).build();
 
         LiteralCommandNode<ServerCommandSource> other = literal("other").requires(PERMISSION_CHECK_OTHER).build();
 
@@ -77,17 +74,10 @@ public class NicknameCommand extends EssentialCommand {
         commandNode.addChild(resetSelf);
     }
 
-    private static int setSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int setSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerCommandSource source = ctx.getSource();
         ServerPlayerEntity self = source.getPlayer();
-
-        Object unchecked = KiloConfig.getProvider().getMain().getIntegerSafely("nickname-max-length", 35);
-
-        if (unchecked == null) {
-            throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();
-        }
-
-        int maxLength = (int) unchecked;
+        int maxLength = KiloConfig.main().nicknameMaxLength;
         String nickname = getString(ctx, "nickname");
 
         if (nickname.length() > maxLength || nickname.length() < 3)
@@ -102,8 +92,8 @@ public class NicknameCommand extends EssentialCommand {
 
         User user = KiloServer.getServer().getUserManager().getOnline(self);
 
-        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setSelf")
-                .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayname())
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(messages.commands().nickname().setSelf
+                .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                 .replace("{NICK_NEW}", nickname)
                 , true));
 
@@ -113,61 +103,75 @@ public class NicknameCommand extends EssentialCommand {
         return 1;
     }
 
-    private static int setOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int setOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerCommandSource source = ctx.getSource();
-        ServerPlayerEntity player = getPlayer(ctx, "target");
         String nickname = getString(ctx, "nickname");
-
-        Object unchecked = KiloConfig.getProvider().getMain().getValue("nickname-max-length");
-
-        if (unchecked == null) {
-            throw new SimpleCommandExceptionType(new LiteralText("Please contact the admins as this has not been configured correctly")).create();
-        }
-
-        int maxLength = (int) unchecked;
+        int maxLength = KiloConfig.main().nicknameMaxLength;
 
         if (nickname.length() > maxLength || nickname.length() < 3)
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
 
-        String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
+        essentials.getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
+            String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(messages.commands().nickname().setOthers
+                    .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
+                    .replace("{NICK_NEW}", nickname)
+                    .replace("{TARGET_TAG}", user.getNameTag())
+                    , true));
 
-        User user = KiloServer.getServer().getUserManager().getOnline(player);
+            if (user.isOnline())
+                ((OnlineUser) user).getPlayer().setCustomName(new LiteralText(formattedNickname));
+            else {
+                PlayerDataModifier dataModifier = new PlayerDataModifier(user.getUuid());
+                if (!dataModifier.load())
+                    return;
+                dataModifier.setCustomName(new LiteralText(formattedNickname));
+                dataModifier.save();
+            }
 
-        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.setOthers")
-                        .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayname())
-                        .replace("{NICK_NEW}", nickname)
-                        .replace("{TARGET}", player.getEntityName())
-                , true));
+            user.setNickname(nickname);
+        });
 
-        player.setCustomName(new LiteralText(formattedNickname));
-        user.setNickname(nickname);
-
-        if (!CommandHelper.areTheSame(source, player))
-            KiloChat.sendLangMessageTo(player, "template.#1.announce", source.getName(), "nickname", formattedNickname);
-
-        return 1;
+        return SINGLE_SUCCESS;
     }
 
-    private static int resetSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int resetSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         User user = KiloServer.getServer().getUserManager().getOnline(player);
-        user.clearNickname();
-        // This is an Optional.ofNullable, so the DataTracker will just reset the name without any other magic since TrackedData is always and automatically synchronized with the client.
+        user.clearNickname();   /* This is an Optional.ofNullable, so the DataTracker will
+                                   just reset the name without any other magic since TrackedData
+                                   is always and automatically synchronized with the client. */
+
         player.setCustomName(null);
-        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendConfigMessage("commands.nickname.resetSelf");
-        return 1;
+
+        getServerUser(ctx).sendMessage(messages.commands().nickname().resetSelf);
+        return SINGLE_SUCCESS;
     }
 
-    private static int resetOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = getPlayer(ctx, "target");
-        User user = KiloServer.getServer().getUserManager().getOnline(player);
-        user.clearNickname();
-        // This is an Optional.ofNullable, so the DataTracker will just reset the name without any other magic since TrackedData is always and automatically synchronized with the client.
-        player.setCustomName(null);
+    private int resetOther(CommandContext<ServerCommandSource> ctx) {
+        CommandSourceUser source = getServerUser(ctx);
 
-        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new ChatMessage(KiloConfig.getMessage("commands.nickname.resetOthers")
-                .replace("{TARGET}", player.getEntityName())
-                , true));        return 1;
+        essentials.getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
+            user.clearNickname();   /* This is an Optional.ofNullable, so the DataTracker will
+                                   just reset the name without any other magic since TrackedData
+                                   is always and automatically synchronized with the client. */
+
+            if (user.isOnline())
+                ((OnlineUser) user).getPlayer().setCustomName(new LiteralText(""));
+            else {
+                PlayerDataModifier dataModifier = new PlayerDataModifier(user.getUuid());
+                if (!dataModifier.load())
+                    return;
+                dataModifier.setCustomName(null);
+                dataModifier.save();
+            }
+
+            KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new ChatMessage(messages.commands().nickname().resetOthers
+                    .replace("{TARGET_TAG}", user.getNameTag())
+                    , true));
+        });
+
+        return SINGLE_SUCCESS;
     }
 
     private static CompletableFuture<Suggestions> setSelfSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
@@ -179,10 +183,10 @@ public class NicknameCommand extends EssentialCommand {
         return CommandSource.suggestMatching(strings, builder);
     }
 
-    private static CompletableFuture<Suggestions> setOthersSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-        User user = KiloServer.getServer().getUserManager().getOnline(getPlayer(context, "target"));
+    private static CompletableFuture<Suggestions> setOthersSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        User user = KiloServer.getServer().getUserManager().getOnline(getString(context, "user"));
         List<String> strings = new ArrayList<>();
-        if (user.getNickname().isPresent())
+        if (user != null && user.getNickname() != null &&  user.getNickname().isPresent())
             strings.add(user.getNickname().get());
 
         return CommandSource.suggestMatching(strings, builder);

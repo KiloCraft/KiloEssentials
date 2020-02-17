@@ -59,7 +59,7 @@ public class StaffmsgCommand extends EssentialCommand {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
         user.setUpstreamChannelId(StaffChat.getChannelId());
         KiloChat.sendLangMessageTo(source, "command.setchannel.set_upstream",
-                user.getUpstreamChannelId(), user.getRankedDisplayname().asFormattedString());
+                user.getUpstreamChannelId(), user.getRankedDisplayName().asFormattedString());
 
         return SINGLE_SUCCESS;
     }
@@ -68,7 +68,7 @@ public class StaffmsgCommand extends EssentialCommand {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
         user.setUpstreamChannelId(GlobalChat.getChannelId());
         KiloChat.sendLangMessageTo(source, "command.setchannel.set_upstream",
-                user.getUpstreamChannelId(), user.getRankedDisplayname().asFormattedString());
+                user.getUpstreamChannelId(), user.getRankedDisplayName().asFormattedString());
 
         return SINGLE_SUCCESS;
     }
@@ -86,7 +86,7 @@ public class StaffmsgCommand extends EssentialCommand {
             OnlineUser user = KiloServer.getServer().getOnlineUser(subscriber);
 
             text.append(new LiteralText("\n- ").formatted(Formatting.GRAY))
-                .append(TextFormat.translate(user.getRankedDisplayname().asFormattedString()));
+                .append(TextFormat.translate(user.getRankedDisplayName().asFormattedString()));
         }
 
         ctx.getSource().sendFeedback(text, false);

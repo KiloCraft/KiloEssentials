@@ -20,11 +20,18 @@ public class ModConstants {
     public void loadConstants() {
         try {
             properties.load(ModConstants.class.getClassLoader().getResourceAsStream("mod.properties"));
-            lang.load(ModConstants.class.getClassLoader().getResourceAsStream("assets/messages/Lang.properties"));
+            lang.load(ModConstants.class.getClassLoader().getResourceAsStream("assets/messages/lang.properties"));
             messageUtil = new MessageUtil();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String translation(String key, Object... objects) {
+        if (objects == null)
+            return lang.getProperty(key);
+
+        return String.format(lang.getProperty(key), objects);
     }
 
     public static InputStream getResourceAsStream(String path) {

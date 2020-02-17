@@ -172,11 +172,6 @@ public class PowertoolsCommand {
         String inputString = getString(ctx, "command").replaceFirst("/", "");
         ItemStack item = player.getMainHandStack();
 
-        if (inputString.length() >= 90) {
-            KiloChat.sendLangMessageTo(player, "command.item.too_long");
-            return -1;
-        }
-
         if (item.isEmpty()) {
             KiloChat.sendLangMessageTo(player, "command.item.invalid_item");
             return -1;

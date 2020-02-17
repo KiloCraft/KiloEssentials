@@ -1,5 +1,6 @@
 package org.kilocraft.essentials;
 
+import net.minecraft.SharedConstants;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.boss.CommandBossBar;
@@ -17,12 +18,15 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.util.TPSTracker;
 
+import java.io.File;
+
 public class KiloDebugUtils {
     public static KiloDebugUtils INSTANCE;
     private KiloEssentials ess;
     private Server server;
     private MinecraftServer minecraftServer;
     private CommandBossBar bossBar;
+    private Identifier DEBUG_BAR = new Identifier("kiloessentials", "debug_bar");
 
     public KiloDebugUtils(KiloEssentials ess) {
         INSTANCE = this;
@@ -33,13 +37,38 @@ public class KiloDebugUtils {
         setupBossBar();
     }
 
+    public static void validateDebugMode() {
+        File debugFile = new File(KiloEssentials.getWorkingDirectory() + "/kiloessentials.debug");
+        if (debugFile.exists()) {
+            KiloEssentials.getServer().getLogger().warn("**** SERVER IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
+            KiloEssentials.getServer().getLogger().warn("To change this simply remove the \"kiloessentials.debug\" file");
+            setDebugMode(true);
+        } else {
+            setDebugMode(false);
+            if (INSTANCE != null)
+                INSTANCE.removeBossBar();
+        }
+    }
+
+    public static void setDebugMode(boolean set) {
+        SharedConstants.isDevelopment = set;
+    }
+
     public void onScheduledUpdate() {
-        updateBossbar();
+        if (SharedConstants.isDevelopment)
+            updateBossbar();
+        else
+            removeBossBar();
+    }
+
+    private void removeBossBar() {
+        BossBarManager manager = minecraftServer.getBossBarManager();
+        manager.remove(bossBar);
     }
 
     private void setupBossBar() {
         BossBarManager manager = minecraftServer.getBossBarManager();
-        bossBar = manager.add(new Identifier("kiloessentials", "debug_bar"), new LiteralText("DebugBar"));
+        bossBar = manager.add(DEBUG_BAR, new LiteralText("DebugBar"));
         bossBar.setMaxValue(20);
         bossBar.setOverlay(BossBar.Style.NOTCHED_20);
     }

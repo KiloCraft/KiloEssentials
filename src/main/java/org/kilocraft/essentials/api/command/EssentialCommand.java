@@ -17,21 +17,28 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.Config;
+import org.kilocraft.essentials.config.messages.Messages;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
 public abstract class EssentialCommand implements IEssentialCommand {
     private String label;
     protected transient String alias[];
-    protected transient KiloEssentials essentials;
+    protected transient KiloEssentials essentials = KiloEssentials.getInstance();
     protected transient LiteralArgumentBuilder<ServerCommandSource> argumentBuilder;
     protected transient LiteralCommandNode<ServerCommandSource> commandNode;
     protected transient Server server;
@@ -39,9 +46,6 @@ public abstract class EssentialCommand implements IEssentialCommand {
     protected transient Predicate<ServerCommandSource> PERMISSION_CHECK_ROOT;
     protected transient CommandPermission PERMISSION;
     protected transient int MIN_OP_LEVEL;
-
-    public EssentialCommand() {
-    }
 
     public EssentialCommand(final String label) {
         this.label = label;
@@ -195,11 +199,19 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return server.getOnlineUser(player);
     }
 
-    public CompletableFuture<User> getOfflineUser(GameProfile profile) {
+    public CommandSourceUser getServerUser(CommandContext<ServerCommandSource> ctx) {
+        return server.getCommandSourceUser(ctx.getSource());
+    }
+
+    public String getUserArgumentInput(CommandContext<ServerCommandSource> ctx, String label) {
+        return getString(ctx, label);
+    }
+
+    public CompletableFuture<Optional<User>> getUser(GameProfile profile) {
         return server.getUserManager().getOffline(profile);
     }
 
-    public CompletableFuture<User> getOfflineUser(String name) {
+    public CompletableFuture<Optional<User>> getUser(String name) {
         return server.getUserManager().getOffline(name);
     }
 
@@ -211,4 +223,11 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return argument(label, string()).suggests(TabCompletions::allPlayers);
     }
 
+    public String tl(String key, Object... objects) {
+        return ModConstants.translation(key, objects);
+    }
+
+    public Config config = KiloConfig.main();
+
+    public Messages messages = KiloConfig.messages();
 }

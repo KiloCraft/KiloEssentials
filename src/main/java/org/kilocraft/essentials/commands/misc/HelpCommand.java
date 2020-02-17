@@ -1,13 +1,11 @@
 package org.kilocraft.essentials.commands.misc;
 
-import com.electronwill.nightconfig.core.file.FileConfig;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.KiloConfig;
 
 public class HelpCommand extends EssentialCommand {
     public HelpCommand() {
@@ -19,12 +17,9 @@ public class HelpCommand extends EssentialCommand {
     }
 
     public int execute(CommandContext<ServerCommandSource> context) {
-        FileConfig config = FileConfig.of(KiloConfig.getConfigPath() + "HelpMessage.yaml");
-        config.load();
-        String message = config.getOrElse("message", "Missing config");
-        message = TextFormat.translate(message);
-        KiloChat.sendMessageToSource(context.getSource(), TextFormat.translateToNMSText(message));
-        config.close();
+        String message = messages.commands().helpMessage;
+        Text text = TextFormat.translateToNMSText(message);
+        context.getSource().sendFeedback(text, false);
 
         return SINGLE_SUCCESS;
     }
