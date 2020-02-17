@@ -16,6 +16,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 public class WhoisCommand extends EssentialCommand {
@@ -66,8 +67,9 @@ public class WhoisCommand extends EssentialCommand {
         }
         text.append(newHead("Invulnerable", String.valueOf(target.isInvulnerable()))).append(" ")
                 .append(newLine("May Fly", String.valueOf(target.canFly()))).append(" ")
-                .append(newLine("May Seat", String.valueOf(target.canSit()))).append(" ")
-                .append(newLine("Online", String.valueOf(target.isOnline())));
+                .append(newLine("May Seat", String.valueOf(target.canSit()))).append("\n")
+                .append(newHead("Online", String.valueOf(target.isOnline())))
+                .append(newLine("isStaff", String.valueOf(((ServerUser) target).isStaff())));
         text.append("\n");
         if (target.getGameMode() != GameMode.NOT_SET) {
             text.append(newHead("Gamemode", target.getGameMode().getName()));
