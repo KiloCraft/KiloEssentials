@@ -28,9 +28,15 @@ public class IgnoreCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = getOnlineUser(ctx);
+        String inputName = getUserArgumentInput(ctx, "user");
 
         AtomicInteger atomicInteger = new AtomicInteger(AWAIT_RESPONSE);
-        essentials.getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
+        essentials.getUserThenAcceptAsync(src, inputName, (user) -> {
+            if (((ServerUser) user).isStaff()) {
+                src.sendLangMessage("command.ignore.error");
+                return;
+            }
+
             Map<String, UUID> ignoreList = ((ServerUser) src).getIgnoreList();
             if (ignoreList.containsValue(user.getUuid())) {
                 ignoreList.remove(user.getUsername(), user.getUuid());

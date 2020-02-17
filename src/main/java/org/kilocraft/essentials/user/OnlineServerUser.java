@@ -164,7 +164,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         if (this.canFly() && KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.FLY_SELF))
             this.setFlight(true);
 
-        super.lastSocketAddress = this.getConnection().getAddress().toString();
+        super.lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
         super.messageCooldown = 0;
 
         if (super.gameMode == GameMode.NOT_SET) {

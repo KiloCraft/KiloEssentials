@@ -61,6 +61,7 @@ public class ServerUser implements User {
     private boolean commandSpy = false;
     private boolean canSit = false;
     private Map<String, UUID> ignoreList;
+    private boolean isStaff = false;
     String lastSocketAddress;
     GameMode gameMode = GameMode.NOT_SET;
     int ticksPlayed = -1;
@@ -160,6 +161,9 @@ public class ServerUser implements User {
         if (this.nickname != null) // Nicknames are Optional now.
             metaTag.putString("nick", this.nickname);
 
+        if (this.isStaff)
+            metaTag.putBoolean("isStaff", true);
+
         // Home logic, TODO Abstract this with features in future.
         CompoundTag homeTag = new CompoundTag();
         this.homeHandler.serialize(homeTag);
@@ -188,12 +192,12 @@ public class ServerUser implements User {
         	this.location.shortDecimals();
         }
 
-        if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
+        if (cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
             CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
-            if(lastMessageTag.contains("destUUID", NBTTypes.STRING))
+            if (lastMessageTag.contains("destUUID", NBTTypes.STRING))
                 this.lastPrivateMessageGetterUUID = UUID.fromString(lastMessageTag.getString("destUUID"));
 
-            if(lastMessageTag.contains("text", NBTTypes.STRING))
+            if (lastMessageTag.contains("text", NBTTypes.STRING))
                 this.lastPrivateMessageText = lastMessageTag.getString("text");
 
         }
@@ -251,6 +255,9 @@ public class ServerUser implements User {
 
         if (metaTag.contains("nick")) // Nicknames are an Optional, so we compensate for that.
             this.nickname = metaTag.getString("nick");
+
+        if (metaTag.contains("isStaff"))
+            this.isStaff = true;
 
         this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         this.randomTeleportsLeft = compoundTag.getInt("rtpLeft");
@@ -528,25 +535,29 @@ public class ServerUser implements User {
         return this.ignoreList;
     }
 
+    public boolean isStaff() {
+        return this.isStaff;
+    }
+
     @SuppressWarnings("Do Not Run If the User is Online")
-    public void remove() {
+    public void clear() {
         if (this.isOnline())
             return;
 
-        ServerUserManager manager = null;
-        SimpleDateFormat dateFormat = null;
-        UUID uuid = null;
-        String name = null;
-        UserHomeHandler homeHandler = null;
-        Vec3dLocation location = null;
-        Vec3dLocation lastLocation = null;
-        String nickname = null;
-        UUID lastPrivateMessageGetterUUID = null;
-        String lastPrivateMessageText = null;
-        Date firstJoin = null;
-        List<String> subscriptions = null;
-        String upstreamChannelId = null;
-        List<UUID> ignoreList = null;
+        manager = null;
+        dateFormat = null;
+        uuid = null;
+        name = null;
+        homeHandler = null;
+        location = null;
+        lastLocation = null;
+        nickname = null;
+        lastPrivateMessageGetterUUID = null;
+        lastPrivateMessageText = null;
+        firstJoin = null;
+        subscriptions = null;
+        upstreamChannelId = null;
+        ignoreList = null;
     }
 
 }
