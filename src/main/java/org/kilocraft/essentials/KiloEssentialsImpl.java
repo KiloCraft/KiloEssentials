@@ -209,13 +209,13 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
 		ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer());
 		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
+			loadingText.stop();
+
 			if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
 				requester.sendError(ExceptionMessageNode.USER_NOT_FOUND);
-				loadingText.stop();
 				return;
 			}
 
-			loadingText.stop();
 			optionalUser.ifPresent(action);
 		}, KiloServer.getServer().getVanillaServer());
 

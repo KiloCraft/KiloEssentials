@@ -11,6 +11,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.util.TextUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.io.IOException;
@@ -98,14 +99,17 @@ public class PlaytimeCommand extends EssentialCommand {
     }
 
     private int execute(CommandSourceUser src, User target) {
-        String pt = TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e');
-        String firstJoin = target.getFirstJoin() != null ? target.getFirstJoin().toString() : "&cNot present";
+        String pt = target.getTicksPlayed() <= 0 ? tl("general.not_present") :
+                TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e');
+        String firstJoin = target.getFirstJoin() != null ? TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()) : tl("general.not_present");
 
-        if (CommandHelper.areTheSame(src, target))
-            src.sendMessage(tl("command.playtime.query.self", pt, firstJoin));
-        else
-            src.sendMessage(tl("command.playtime.query.others", target.getNameTag(), pt, firstJoin));
+        TextUtils.InfoBlockStyle text = TextUtils.InfoBlockStyle.of(
+                tl("command.playtime.title." + (CommandHelper.areTheSame(src, target) ? "self" : "others")));
 
+        text.append(tl("command.playtime.total"), pt)
+                .append(tl("command.playtime.first_join"), firstJoin);
+
+        src.sendMessage(text.get());
         return target.getTicksPlayed();
     }
 

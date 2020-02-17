@@ -19,8 +19,6 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.util.SelectorUtils;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,14 +70,6 @@ public class GamemodeCommand extends EssentialCommand {
 
         if (selectedMode == null)
             throw new SimpleCommandExceptionType(new LiteralText("Please select a valid Game type!")).create();
-
-        if (selection.startsWith("@")) {
-            Collection<ServerPlayerEntity> collection = SelectorUtils.parse(selection, true).getPlayers(src);
-            if (collection.isEmpty())
-                throw KiloCommands.getException(ExceptionMessageNode.INVALID, "selection").create();
-
-            return setPlayers(src, collection, selectedMode, silent);
-        }
 
         if (!hasPermission(src, getPermission("self", selectedMode)))
             throw new SimpleCommandExceptionType(getPermissionError(getPermission("self", selectedMode).getNode())).create();

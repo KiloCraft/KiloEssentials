@@ -330,7 +330,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendMessage(Text text) {
-        KiloChat.sendMessageToSource(this.source, text);
+        this.source.sendFeedback(text, false);
     }
 
     @Override

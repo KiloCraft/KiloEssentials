@@ -6,18 +6,22 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.GameMode;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.util.TextUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class WhoisCommand extends EssentialCommand {
     public WhoisCommand() {
@@ -48,83 +52,80 @@ public class WhoisCommand extends EssentialCommand {
         return AWAIT_RESPONSE;
     }
 
-    private static final String SEPERATOR = "-----------------------------------------------------";
-
     private int execute(CommandSourceUser src, User target) {
-        Text text = new LiteralText("").append(new LiteralText(SEPERATOR).formatted(Formatting.GRAY)).append("\n");
-        text.append(newHead("DisplayName", target.getFormattedDisplayName())
-                .append(new LiteralText(" (").append(target.getUsername()).append(")")).formatted(Formatting.YELLOW));
-        text.append("\n");
-        text.append(newHead("UUID", new LiteralText(target.getUuid().toString()).styled((style) -> {
-            style.setColor(Formatting.YELLOW);
-            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to Copy!")));
-            style.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, target.getUuid().toString()));
-        })));
-        text.append("\n");
-        if (target.getLastSocketAddress() != null) {
-            text.append(newHead("Socket Address (Last Saved)", target.getLastSocketAddress().replaceFirst("/", "")));
-            text.append("\n");
-        }
-        text.append(newHead("Invulnerable", String.valueOf(target.isInvulnerable()))).append(" ")
-                .append(newLine("May Fly", String.valueOf(target.canFly()))).append(" ")
-                .append(newLine("May Seat", String.valueOf(target.canSit()))).append("\n")
-                .append(newHead("Online", String.valueOf(target.isOnline())))
-                .append(newLine("isStaff", String.valueOf(((ServerUser) target).isStaff())));
-        text.append("\n");
-        if (target.getGameMode() != GameMode.NOT_SET) {
-            text.append(newHead("Gamemode", target.getGameMode().getName()));
-            text.append("\n");
+        TextUtils.InfoBlockStyle text = new TextUtils.InfoBlockStyle("Who's " + target.getNameTag(),
+                Formatting.GOLD, Formatting.AQUA, Formatting.GRAY);
+
+        text.append("DisplayName", target.getFormattedDisplayName()).space().append("(").append(target.getUsername()).append(")");
+        text.append("UUID",
+                TextUtils.appendButton(
+                        new LiteralText(target.getUuid().toString()),
+                        new LiteralText(tl("general.click_copy")),
+                        ClickEvent.Action.COPY_TO_CLIPBOARD,
+                        target.getUuid().toString()
+                )
+        );
+        text.append("IP (Last Saved)",
+                TextUtils.appendButton(
+                        new LiteralText(target.getLastSocketAddress()),
+                        new LiteralText(tl("general.click_copy")),
+                        ClickEvent.Action.COPY_TO_CLIPBOARD,
+                        target.getLastSocketAddress()
+                )
+        );
+        text.append("Abilities",
+                new String[]{"Invulnerable", "May Fly", "May Seat", "Online", "isStaff", "GameMode"},
+                target.isInvulnerable(), target.canFly(), target.canSit(), target.isOnline(), ((ServerUser) target).isStaff(), target.getGameMode().getName()
+        );
+
+        if (target.getTicksPlayed() >= 0) {
+            text.append("Playtime", TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e'));
         }
         if (target.getFirstJoin() != null) {
-            text.append(newHead("First Join", TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime())));
-            text.append("\n");
+            text.append("Join Date", target.getFirstJoin().toString());
+            text.append("First joined", TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()));
         }
-        text.append(newHead("Homes", String.valueOf(target.getHomesHandler().homes()))).append(" ")
-                .append(newLine("RTPs Left", String.valueOf(target.getRTPsLeft()))).append(" ")
-                .append(newLine("UpStreamChannelId", target.getUpstreamChannelId()));
-        text.append("\n");
-        text.append(newHead("Spy", newLine("On Commands", String.valueOf(target.isCommandSpyOn())).append(" ")
-                .append(newLine("On Social", String.valueOf(target.isSocialSpyOn())))));
 
-        text.append("\n");
+        text.append("Meta", new String[]{"Homes", "RTPs", "UpStreamChannelId"},
+                target.getHomesHandler().homes(), target.getRTPsLeft(), target.getUpstreamChannelId());
+        text.append("Is Spying", new String[]{"On Commands", "On Social"},
+                target.isCommandSpyOn(), target.isSocialSpyOn());
+
+        Map<String, UUID> ignoreList = ((ServerUser) target).getIgnoreList();
+        if (ignoreList != null && ignoreList.size() > 1) {
+            List<String> ignoreNames = new ArrayList<>();
+            ignoreList.forEach((name, uuid) -> ignoreNames.add(name));
+            text.append("IgnoreList", new String[]{"size", "list"}, ignoreList.size(), ignoreNames);
+        }
+
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
-        text.append(newHead("Location",
-                new LiteralText("").append(new LiteralText(vec.toString()).formatted(Formatting.LIGHT_PURPLE)).append(" ")
-                        .append(newLine("World", vec.getDimension().getPath()).formatted(Formatting.GREEN))).styled((style) -> {
-            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to Teleport!")));
-            style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-                    "/tpin " + vec.getDimension().toString() + " " + vec.getX() + " " + vec.getY() + " " + vec.getZ() + " " + src.getUsername()));
-        }));
-        text.append(new LiteralText(SEPERATOR).formatted(Formatting.GRAY));
+        text.append("Location", new String[]{"x", "y", "z", "World"},
+                vec.getX(), vec.getY(), vec.getZ(),
+                vec.getDimension().getPath(),
+                getButtonForVec(vec)
+        );
 
-        src.sendMessage(text);
+        if (target.getLastSavedLocation() != null) {
+            Vec3dLocation savedVec = ((Vec3dLocation) target.getLastSavedLocation()).shortDecimals();
+            text.append("Saved Loc", new String[]{"x", "y", "z", "World"},
+                    vec.getX(), vec.getY(), vec.getZ(),
+                    vec.getDimension().getPath(),
+                    getButtonForVec(savedVec)
+            );
+        }
+
+        src.sendMessage(text.get());
         return SINGLE_SUCCESS;
     }
 
-    private Text newHead(String title, String value) {
-        return new LiteralText("")
-                .append(new LiteralText("- ").formatted(Formatting.DARK_GRAY))
-                .append(new LiteralText(title).append(": ").formatted(Formatting.GRAY))
-                .append(new LiteralText(value).formatted(Formatting.YELLOW));
-    }
-
-    private Text newHead(String title, Text text) {
-        return new LiteralText("")
-                .append(new LiteralText("- ").formatted(Formatting.DARK_GRAY))
-                .append(new LiteralText(title).append(": ").formatted(Formatting.GRAY))
-                .append(text.formatted(Formatting.YELLOW));
-    }
-
-    private Text newLine(String title, String value) {
-        return new LiteralText("")
-                .append(new LiteralText(title).append(": ").formatted(Formatting.GRAY))
-                .append(new LiteralText(value).formatted(Formatting.YELLOW));
-    }
-
-    private Text newLine(String title, Text text) {
-        return new LiteralText("")
-                .append(new LiteralText(title).append(": ").formatted(Formatting.GRAY))
-                .append(text.formatted(Formatting.YELLOW));
+    private Text getButtonForVec(Vec3dLocation vec) {
+        return TextUtils.appendButton(
+                new LiteralText("Click Here"),
+                new LiteralText(tl("general.click_tp")),
+                ClickEvent.Action.SUGGEST_COMMAND,
+                "/tpin " + vec.getDimension().toString() + " " +
+                        vec.getX() + " " + vec.getY() + " " + vec.getZ() + "  @s"
+        );
     }
 
 }
