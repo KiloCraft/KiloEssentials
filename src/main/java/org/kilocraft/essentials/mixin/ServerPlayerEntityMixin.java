@@ -41,8 +41,9 @@ public abstract class ServerPlayerEntityMixin {
     @Inject(method = "teleport", at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayerEntity;teleport(Lnet/minecraft/server/world/ServerWorld;DDDFF)V"),cancellable = true)
     private void modify$Teleport(ServerWorld serverWorld, double d, double e, double f, float g, float h, CallbackInfo ci) {
         OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) (Object) this);
-        if (user != null)
+        if (user != null) {
             user.saveLocation();
+        }
     }
 
 }

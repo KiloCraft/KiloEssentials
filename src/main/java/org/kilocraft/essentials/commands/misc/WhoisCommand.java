@@ -47,8 +47,10 @@ public class WhoisCommand extends EssentialCommand {
         return AWAIT_RESPONSE;
     }
 
+    private static final String SEPERATOR = "-----------------------------------------------------";
+
     private int execute(CommandSourceUser src, User target) {
-        Text text = new LiteralText("");
+        Text text = new LiteralText("").append(new LiteralText(SEPERATOR).formatted(Formatting.GRAY)).append("\n");
         text.append(newHead("DisplayName", target.getFormattedDisplayName())
                 .append(new LiteralText(" (").append(target.getUsername()).append(")")).formatted(Formatting.YELLOW));
         text.append("\n");
@@ -91,6 +93,7 @@ public class WhoisCommand extends EssentialCommand {
             style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
                     "/tpin " + vec.getDimension().toString() + " " + vec.getX() + " " + vec.getY() + " " + vec.getZ() + " " + src.getUsername()));
         }));
+        text.append(new LiteralText(SEPERATOR).formatted(Formatting.GRAY));
 
         src.sendMessage(text);
         return SINGLE_SUCCESS;
