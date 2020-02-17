@@ -18,7 +18,6 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 			KiloServer.getServer().triggerEvent(new ServerScheduledUpdateEventImpl());
 			tick = 0;
 		}
-		
 
 		ParticleAnimationManager.onTick();
 		tick++;
