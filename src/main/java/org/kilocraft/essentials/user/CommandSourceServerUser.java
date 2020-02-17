@@ -279,6 +279,10 @@ public class CommandSourceServerUser implements CommandSourceUser {
     public void saveData() throws IOException {
     }
 
+    @Override
+    public void trySave() throws CommandSyntaxException {
+    }
+
     @Nullable
     @Override
     public ServerPlayerEntity getPlayer() {

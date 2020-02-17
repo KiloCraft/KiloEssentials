@@ -39,6 +39,9 @@ public class Config {
     @Setting(value = "nicknameMaxLength", comment = "The maximum length for a nickname")
     public int nicknameMaxLength = 35;
 
+    @Setting(value = "useNicknamesEverywhere", comment = "Use Nickname/DisplayName Everywhere!")
+    public boolean useNicknamesEverywhere = true;
+
     public ServerConfigSection server() {
         return serverSection;
     }

@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -126,5 +127,10 @@ public interface User {
      * Saves the data if the user if offline
      */
     void saveData() throws IOException;
+
+    /**
+     * Tries to save the user data
+     */
+    void trySave() throws CommandSyntaxException;
 
 }

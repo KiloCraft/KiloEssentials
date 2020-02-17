@@ -1,9 +1,12 @@
 package org.kilocraft.essentials.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -479,7 +482,20 @@ public class ServerUser implements User {
 
     @Override
     public void saveData() throws IOException {
-        manager.getHandler().saveData(this);
+        if (!this.isOnline())
+            manager.getHandler().saveData(this);
+    }
+
+    @Override
+    public void trySave() throws CommandSyntaxException {
+        if (this.isOnline())
+            return;
+
+        try {
+            this.saveData();
+        } catch (IOException e) {
+            throw new SimpleCommandExceptionType(new LiteralText(e.getMessage()).formatted(Formatting.RED)).create();
+        }
     }
 
 }

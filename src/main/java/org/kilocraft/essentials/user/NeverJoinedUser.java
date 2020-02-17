@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -235,6 +236,10 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public void saveData() throws IOException {
+    }
+
+    @Override
+    public void trySave() throws CommandSyntaxException {
     }
 
 }
