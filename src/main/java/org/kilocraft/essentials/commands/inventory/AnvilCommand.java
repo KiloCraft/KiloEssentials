@@ -3,9 +3,9 @@ package org.kilocraft.essentials.commands.inventory;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.container.Container;
+import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.server.command.ServerCommandSource;
@@ -29,7 +29,7 @@ public class AnvilCommand extends EssentialCommand {
 
         KiloChat.sendLangMessageTo(context.getSource(), "general.open_container", "Anvil");
 
-        player.openContainer(new ClientDummyContainerProvider(this::createMenu, new TranslatableText("container.repair")));
+        player.openContainer(new SimpleNamedContainerFactory(this::createMenu, new TranslatableText("container.repair")));
         return 1;
     }
 

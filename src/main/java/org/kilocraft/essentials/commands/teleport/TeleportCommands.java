@@ -68,7 +68,7 @@ public class TeleportCommands {
         );
 
         KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "position",
-                getFormattedMessage(target), target.getName().asString());
+                getFormattedMessage(target), ctx.getSource().getPlayer().getName().asString());
 
         return SUCCESS();
     }

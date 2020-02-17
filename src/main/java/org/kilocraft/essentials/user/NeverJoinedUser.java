@@ -1,11 +1,15 @@
 package org.kilocraft.essentials.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.text.Text;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Location;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -33,17 +37,27 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public String getDisplayname() {
+    public String getDisplayName() {
         return null;
     }
 
     @Override
-    public String getFormattedDisplayname() {
+    public String getFormattedDisplayName() {
         return null;
     }
 
     @Override
-    public Text getRankedDisplayname() {
+    public Text getRankedDisplayName() {
+        return null;
+    }
+
+    @Override
+    public Text getRankedName() {
+        return null;
+    }
+
+    @Override
+    public String getNameTag() {
         return null;
     }
 
@@ -181,6 +195,20 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public @Nullable String getLastSocketAddress() {
+        return null;
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return null;
+    }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+    }
+
+    @Override
     public boolean canSit() {
         return false;
     }
@@ -190,12 +218,34 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public int getTicksPlayed() {
+        return -1;
+    }
+
+    @Override
+    public void setTicksPlayed(int minutes) {
+    }
+
+    @Override
     public int getDisplayParticleId() {
         return 0;
     }
 
     @Override
     public void setDisplayParticleId(int i) {
+    }
+
+    @Override
+    public void saveData() throws IOException {
+    }
+
+    @Override
+    public void trySave() throws CommandSyntaxException {
+    }
+
+    @Override
+    public boolean equals(User anotherUser) {
+        return false;
     }
 
 }

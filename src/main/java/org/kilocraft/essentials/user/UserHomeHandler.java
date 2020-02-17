@@ -9,7 +9,6 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -17,7 +16,10 @@ import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
-import org.kilocraft.essentials.extensions.homes.commands.*;
+import org.kilocraft.essentials.extensions.homes.commands.DelhomeCommand;
+import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
+import org.kilocraft.essentials.extensions.homes.commands.HomesCommand;
+import org.kilocraft.essentials.extensions.homes.commands.SethomeCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,6 @@ public class UserHomeHandler implements ConfigurableFeature {
     @Override
     public boolean register() {
         isEnabled = true;
-        HomeCommandOLD.register(KiloCommands.getDispatcher());
 
         List<EssentialCommand> commands = new ArrayList<EssentialCommand>(){{
             add(new HomeCommand());
@@ -100,34 +101,28 @@ public class UserHomeHandler implements ConfigurableFeature {
         return this.userHomes;
     }
 
-    public boolean hasHome(String name) {
-        boolean bool = false;
-        for (Home userHome : this.userHomes) {
-            if (userHome.getName().equals(name))
-                bool = true;
-        }
-
-        return bool;
+    public int homes() {
+        return this.userHomes.size();
     }
 
-    public static boolean hasHome(UUID uuid, String name) {
-        for (Home loadedHome : loadedHomes) {
-            if (loadedHome.getName().equals(name) && loadedHome.getOwner().equals(uuid))
+    public boolean hasHome(String name) {
+        for (Home userHome : this.userHomes) {
+            if (userHome.getName().equals(name))
                 return true;
         }
 
         return false;
     }
 
-    public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException, CommandSyntaxException {
+    public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException {
         teleportToHome(user, getHome(name));
     }
 
-    public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException, CommandSyntaxException {
+    public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
         if (user.isOnline()) {
             ServerWorld world = Objects.requireNonNull(user.getPlayer().getServer()).getWorld(DimensionType.byId(home.getLocation().getDimension()));
 
-            if(world == null)
+            if (world == null)
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
 
             Home.teleportTo(user, home);
@@ -164,11 +159,6 @@ public class UserHomeHandler implements ConfigurableFeature {
         return list;
     }
 
-
-    public static List<Home> getLoadedHomes() {
-        return loadedHomes;
-    }
-
     public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         return CommandSource.suggestMatching(KiloServer.getServer().getOnlineUser(
                 context.getSource().getPlayer()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
@@ -177,4 +167,5 @@ public class UserHomeHandler implements ConfigurableFeature {
     public enum Reason {
         UNSAFE_DESTINATION, MISSING_DIMENSION;
     }
+
 }

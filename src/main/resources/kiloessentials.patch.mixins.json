@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.7.11",
+  "package": "org.kilocraft.essentials.mixin.patch",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "server": [
+    "SignBlockEntityMixinPatch"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

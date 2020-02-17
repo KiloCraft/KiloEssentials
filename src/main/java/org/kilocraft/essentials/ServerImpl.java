@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -70,8 +71,8 @@ public class ServerImpl implements Server {
 
     @Override
     public void reload() {
-        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl());
         this.server.reload();
+        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl());
     }
 
     @Override
@@ -161,6 +162,11 @@ public class ServerImpl implements Server {
     }
 
     @Override
+    public ServerWorld getWorld(DimensionType type) {
+        return this.server.getWorld(type);
+    }
+
+    @Override
     public boolean isMainThread() {
         MinecraftServerAccessor accessor = (MinecraftServerAccessor) this.server;
         return Thread.currentThread().equals(accessor.getServerThread());
@@ -191,13 +197,13 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void execute(String command) {
-        server.getCommandManager().execute(server.getCommandSource(), command);
+    public int execute(String command) {
+        return server.getCommandManager().execute(server.getCommandSource(), command);
     }
 
     @Override
-    public void execute(ServerCommandSource source, String command) {
-        KiloEssentials.getInstance().getCommandHandler().execute(source, command);
+    public int execute(ServerCommandSource source, String command) {
+        return KiloEssentials.getInstance().getCommandHandler().execute(source, command);
     }
 
     @Override

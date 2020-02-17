@@ -10,6 +10,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 
 public interface IEssentialCommand {
     int SINGLE_SUCCESS = 1;
+    int AWAIT_RESPONSE = 0;
     int SINGLE_FAILED = -1;
     LiteralArgumentBuilder<ServerCommandSource> literal(String label);
     <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String string, ArgumentType<T> argumentType);

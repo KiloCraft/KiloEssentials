@@ -10,14 +10,13 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.api.command.DateArgument;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.user.punishment.BanEntryType;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
+import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -49,7 +48,7 @@ public class BanCommand {
                     .then(argument("reason", greedyString())
                             .executes(ctx -> executeSet(ctx, false)));
             LiteralArgumentBuilder<ServerCommandSource> temporaryArg = literal("temporary")
-                    .then(argument("time", string()).suggests(DateArgument::suggestions)
+                    .then(argument("time", string()).suggests(TimeDifferenceUtil::listSuggestions)
                             .then(argument("reason", greedyString())
                                     .executes(ctx -> executeSet(ctx, true))));
 
@@ -95,8 +94,8 @@ public class BanCommand {
         String reason = getString(ctx, "reason");
 
         if (isTemporary) {
-            DateArgument dateArgument = DateArgument.complex(getString(ctx, "time")).parse();
-            src.sendFeedback(new LiteralText("TIME: " + dateArgument.getDate()), false);
+//            DateArgument dateArgument = DateArgument.complex(getString(ctx, "time")).parse();
+//            src.sendFeedback(new LiteralText("TIME: " + dateArgument.getDate()), false);
         }
 
         return SUCCESS();

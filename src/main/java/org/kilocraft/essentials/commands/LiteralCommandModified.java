@@ -2,8 +2,7 @@ package org.kilocraft.essentials.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.kilocraft.essentials.config.ConfigCache;
-import org.kilocraft.essentials.config.KiloConfig;
+
 import org.kilocraft.essentials.mixin.CommandManagerMixin;
 
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ public class LiteralCommandModified {
         add("ke_ban");
         add("ke_kick");
         add("ke_help");
+        add("ke_gamerule");
     }};
 
     private static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
@@ -48,13 +48,8 @@ public class LiteralCommandModified {
         add("teammsg");
         add("tm");
         add("time");
-        add("ban");
-        add("kick");
-        add("ban-ip");
-        add("pardon");
-        add("pardon-ip");
-        add("save-all");
         add("enchant");
+        add("locatebiome");
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
@@ -87,12 +82,6 @@ public class LiteralCommandModified {
     }
 
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
-        boolean sugReqPerm = KiloConfig.getProvider().getMain().getBooleanSafely(
-                ConfigCache.COMMANDS_SUGGESTIONS_REQUIRE_PERMISSION, true);
-
-        if (!sugReqPerm)
-            return shouldUse(commandNode.getName());
-
         if (commandNode instanceof LiteralCommandNode)
             return shouldUse(commandNode.getName()) && commandNode.canUse(source);
 

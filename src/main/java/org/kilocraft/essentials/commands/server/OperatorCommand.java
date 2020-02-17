@@ -36,9 +36,9 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class OperatorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = literal("operator")
-                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_OPERATORS));
+                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_OPERATORS, 4));
         LiteralArgumentBuilder<ServerCommandSource> aliasBuilder = literal("ke_op")
-                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_OPERATORS));
+                .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_OPERATORS, 4));
 
         LiteralArgumentBuilder<ServerCommandSource> addLiteral = literal("add");
         LiteralArgumentBuilder<ServerCommandSource> removeLiteral = literal("remove");

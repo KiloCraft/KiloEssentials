@@ -11,8 +11,12 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
+import org.kilocraft.essentials.config.ConfigVariableFactory;
+import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
@@ -47,8 +51,13 @@ public class HomeCommand extends EssentialCommand {
         String name = getString(ctx, "name");
 
         if (!homeHandler.hasHome(name)) {
-            user.sendConfigMessage("commands.playerHomes.invalid_home");
-            return -1;
+            user.sendMessage(messages.commands().playerHomes().invalidHome);
+            return SINGLE_FAILED;
+        }
+
+        if (homeHandler.getHome(name).shouldTeleport()) {
+            user.sendLangMessage("command.home.invalid_dim", homeHandler.getHome(name).getLocation().getDimensionType().toString());
+            return SINGLE_FAILED;
         }
 
         try {
@@ -58,14 +67,56 @@ public class HomeCommand extends EssentialCommand {
                 throw MISSING_DIMENSION.create();
         }
 
-        user.sendMessage(new ChatMessage(KiloConfig.getMessage("commands.playerHomes.teleportTo")
-                .replace("%HOME_NAME%", name), true));
+        user.sendMessage(new ChatMessage(HomeCommand.replaceVariables(
+                messages.commands().playerHomes().teleporting, user, user, user.getHomesHandler().getHome(name)), user));
         return SINGLE_SUCCESS;
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx) {
+    private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        String name = getString(ctx, "name");
+        OnlineUser source = getOnlineUser(player);
+        String inputName = getString(ctx, "user");
 
-        return SINGLE_SUCCESS;
+        essentials.getUserThenAcceptAsync(source, inputName, (user) -> {
+            UserHomeHandler homeHandler = user.getHomesHandler();
+            if (!homeHandler.hasHome(name)) {
+                source.sendConfigMessage("commands.playerHomes.invalid_home");
+                return;
+            }
+
+            if (homeHandler.getHome(name).shouldTeleport()) {
+                source.sendLangMessage("command.home.invalid_dim", homeHandler.getHome(name).getLocation().getDimensionType().toString());
+                return;
+            }
+
+            try {
+                homeHandler.teleportToHome(source, name);
+            } catch (UnsafeHomeException e) {
+                source.sendError(e.getMessage());
+                return;
+            }
+
+            String message = CommandHelper.areTheSame(source, user) ? messages.commands().playerHomes().teleporting :
+                    messages.commands().playerHomes().admin().teleporting;
+
+            source.sendMessage(new ChatMessage(replaceVariables(
+                    message, source, user, user.getHomesHandler().getHome(name)), user));
+        });
+
+        return AWAIT_RESPONSE;
+    }
+
+    public static String replaceVariables(String str, OnlineUser source, User target, Home home) {
+        String string = ConfigVariableFactory.replaceUserVariables(str, source);
+        string = ConfigVariableFactory.replaceTargetUserVariables(string, target);
+
+        string = new ConfigObjectReplacerUtil("home", string, true)
+                .append("name", home.getName())
+                .append("size", target.getHomesHandler().getHomes().size())
+                .toString();
+
+        return string;
     }
 
 }

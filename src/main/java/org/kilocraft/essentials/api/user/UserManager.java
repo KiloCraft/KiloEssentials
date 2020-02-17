@@ -8,7 +8,9 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,7 +20,7 @@ public interface UserManager {
      * @param username The UUID of the user.
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
      */
-    CompletableFuture<User> getOffline(String username);
+    CompletableFuture<Optional<User>> getOffline(String username);
 
     /**
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
@@ -34,13 +36,19 @@ public interface UserManager {
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
      * @throws IllegalArgumentException If the gameprofile is incomplete and no UUID is present.
      */
-    CompletableFuture<User> getOffline(GameProfile profile);
+    CompletableFuture<Optional<User>> getOffline(GameProfile profile);
 
     /**
      * Gets a map of the online server users
      * @return An Map of online users, with their UUID
      */
     Map<UUID, OnlineServerUser> getOnlineUsers();
+
+    /**
+     * Gets a list of the online users
+     * @return An List of online users
+     */
+    List<OnlineUser> getOnlineUsersAsList();
 
     /**
      * Gets a user who is online based on their GameProfile.

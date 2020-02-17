@@ -14,7 +14,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -51,7 +50,6 @@ public class LocateBiomeCommand {
         if (biome == null)
             throw KiloCommands.getException(ExceptionMessageNode.INCORRECT_IDENTIFIER, "biome").create();
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.locate.scanning", LocateBiomeProvided.getBiomeName(biome));
         LocateBiomeProvided locator = new LocateBiomeProvided(biome);
         locator.run(ctx);
 

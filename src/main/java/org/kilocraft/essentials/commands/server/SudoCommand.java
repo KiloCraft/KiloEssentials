@@ -29,7 +29,7 @@ public class SudoCommand extends EssentialCommand {
                 .build();
 
         LiteralCommandNode<ServerCommandSource> consoleArg = literal("-server")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SUDO_CONSOLE, 4))
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SUDO_SERVER, 4))
                 .redirect(dispatcher.getRoot(), serverRedirectModifier())
                 .build();
 

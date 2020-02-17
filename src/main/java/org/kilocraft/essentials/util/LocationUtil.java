@@ -4,13 +4,21 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.config.KiloConfig;
 
 public class LocationUtil {
     public static int MAX_WORLD_HEIGHT = KiloServer.getServer().getVanillaServer().getWorldHeight();
+
+    public static boolean isDimensionValid(DimensionType type) {
+        return type == DimensionType.OVERWORLD ||
+                ((type == DimensionType.THE_NETHER && KiloConfig.main().world().allowTheNether) ||
+                        type == DimensionType.THE_END && KiloConfig.main().world().allowTheEnd);
+    }
 
     public static boolean isBlockSafeFor(OnlineUser user, final Location loc) {
         return user.getPlayer().isCreative() || user.isInvulnerable() || isBlockSafe(loc);

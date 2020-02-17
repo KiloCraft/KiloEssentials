@@ -1,125 +1,93 @@
 package org.kilocraft.essentials.config;
 
-import com.electronwill.nightconfig.core.file.FileConfig;
-import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.config.provided.ConfigProvider;
+import com.google.common.reflect.TypeToken;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.config.main.Config;
+import org.kilocraft.essentials.config.messages.Messages;
 import org.kilocraft.essentials.provided.KiloFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.io.IOException;
 
 /**
- * @author  CODY_AI
- * @version 1.3
+ * KiloConfig - Powered by SpongePowered Configurate
+ *
+ * @version 2.0
+ * @author CODY_AI (OnBlock)
+ * @see Config
+ * @see Messages
  */
 
 public class KiloConfig {
-
-    private static List<ConfigIOProvider> callbacks = new ArrayList<>();
-    private static String workingDir = System.getProperty("user.dir");
-    private static String essentialsDir = "/KiloEssentials";
-    private static String configPath = workingDir + essentialsDir + "/config/";
-    private static String resourcePath = "assets/configurations/";
-    private static String dataDir = essentialsDir + "/data/";
-
-    private static HashMap<String, String> configFiles = new HashMap<String, String>(){{
-        put("KiloEssentials.yaml", workingDir + "/");
-        put("Messages.yaml", configPath);
-        //put("Commands.yaml", configPath);
-        put("HelpMessage.yaml", configPath);
-        put("Rules.yaml", configPath);
-    }};
-
-    private static ConfigProvider provider;
+    private static Config config;
+    private static Messages messages;
+    private static ConfigurationNode mainNode;
+    private static ConfigurationNode messagesNode;
 
     public KiloConfig() {
-        handle();
-        provider = new ConfigProvider();
-
-        KiloEssentialsImpl.getLogger().info("Configurations are now loaded");
-    }
-
-    static FileConfig MAIN = FileConfig.of(workingDir + "/KiloEssentials.yaml");
-    static FileConfig MESSAGES = FileConfig.of(configPath + "/Messages.yaml");
-    //static FileConfig COMMANDS = FileConfig.of(configPath + "Commands.yaml");
-
-    private void handle() {
         try {
-            configFiles.forEach((name, path) -> {
-                KiloFile file = new KiloFile(name, path);
-                file.tryToLoad(resourcePath + name);
-            });
+            KiloFile CONFIG_FILE = new KiloFile("config.hocon", KiloEssentials.getEssentialsPath());
+            KiloFile MESSAGES_FILE = new KiloFile("messages.hocon", KiloEssentials.getEssentialsPath());
 
-            load();
+            ConfigurationLoader<CommentedConfigurationNode> mainLoader = HoconConfigurationLoader.builder()
+                    .setFile(CONFIG_FILE.getFile()).build();
+            ConfigurationLoader<CommentedConfigurationNode> messagesLoader = HoconConfigurationLoader.builder()
+                    .setFile(MESSAGES_FILE.getFile()).build();
 
-        } catch (Exception e) {
+            CONFIG_FILE.createFile();
+            MESSAGES_FILE.createFile();
+
+            mainNode = mainLoader.load(configurationOptions());
+            messagesNode = messagesLoader.load(configurationOptions());
+
+            config = mainNode.getValue(TypeToken.of(Config.class), new Config());
+            messages = messagesNode.getValue(TypeToken.of(Messages.class), new Messages());
+
+            mainLoader.save(mainNode);
+            messagesLoader.save(messagesNode);
+        } catch (IOException | ObjectMappingException e) {
+            KiloEssentials.getLogger().error("Exception handling a configuration file! " + KiloConfig.class.getName());
             e.printStackTrace();
         }
+
     }
 
-    public static <C extends ConfigIOProvider> void registerIOCallBaack(C callback) {
-        callbacks.add(callback);
+    public static Config main() {
+        return config;
     }
 
-    public static void triggerCallbacks() {
-        for (ConfigIOProvider callback : callbacks) {
-            callback.fromConfig(provider);
-        }
+    public static Messages messages() {
+        return messages;
     }
 
-    public static void saveCallbacks() {
-        for (ConfigIOProvider callback : callbacks) {
-            callback.toConfig(provider);
-        }
+    public static ConfigurationNode getMainNode() {
+        return mainNode;
     }
 
-    public static FileConfig getFileConfigOfMain() {
-        return MAIN;
-    }
-
-    public static FileConfig getFileConfigOfMessages() {
-        return MESSAGES;
-    }
-
-    public static FileConfig getFileConfigOfCommands() {
-        return null;
-        //return COMMANDS;
-    }
-
-    public static ConfigProvider getProvider() {
-        return provider;
-    }
-
-    public static String getWorkingDirectory() {
-        return workingDir;
-    }
-
-    public static String getConfigPath() {
-        return configPath;
-    }
-
-    public static String getEssentialsDirectory() {
-        return workingDir + essentialsDir;
-    }
-
-    public static String getDataDirectory() {
-        return workingDir + dataDir;
+    public static ConfigurationNode getMessagesNode() {
+        return messagesNode;
     }
 
     public static String getMessage(String key, Object... objects) {
-        return provider.getMessages().getMessage(key, objects);
+        String msg = messagesNode.getNode((Object) key.split(".")).getString();
+        return objects.length == 0 ? msg : msg != null ? String.format(msg, objects) : "Null<" + key + "?>";
     }
 
-    public String getMessage(ConfigCache c, Object... objects) {
-        return provider.getMessages().getMessage(c, objects);
+    public static void reload() {
+        new KiloConfig();
     }
 
-    public static void load() {
-        MAIN.load();
-        MESSAGES.load();
-        //COMMANDS.load();
-        ConfigCache.load();
+    public static ConfigurationOptions configurationOptions() {
+        return ConfigurationOptions.defaults()
+                .setHeader(Config.HEADER)
+                .setObjectMapperFactory(DefaultObjectMapperFactory.getInstance())
+                .setShouldCopyDefaults(true);
     }
 
 }

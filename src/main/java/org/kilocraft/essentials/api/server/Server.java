@@ -10,6 +10,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.event.Event;
@@ -135,6 +136,14 @@ public interface Server {
     Iterable<ServerWorld> getWorlds();
 
     /**
+     * Gets a world
+     *
+     * @param type Dimension
+     * @return ServerWorld
+     */
+    ServerWorld getWorld(DimensionType type);
+
+    /**
      * Checks if we are running inside the Server's main thread
      *
      * @return are we running inside the main thread
@@ -178,14 +187,14 @@ public interface Server {
      *
      * @param command Command to execute
      */
-    void execute(String command);
+    int execute(String command);
 
     /**
      * Execute a command
      * @param source source (usually player) to execute the command
      * @param command the string that contains the command to execute
      */
-    void execute(ServerCommandSource source, String command);
+    int execute(ServerCommandSource source, String command);
 
     /**
      * Sets the brand name of the server

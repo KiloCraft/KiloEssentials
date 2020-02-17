@@ -1,6 +1,11 @@
 package org.kilocraft.essentials.chat;
 
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.config.ConfigVariableFactory;
 
 public class ChatMessage {
     private String original;
@@ -13,6 +18,18 @@ public class ChatMessage {
         this.formatted = formatText ?
                 TextFormat.translateAlternateColorCodes('&', message) :
                 TextFormat.removeAlternateColorCodes('&', message);
+    }
+
+    public ChatMessage(String message, User user) {
+        this.original = ConfigVariableFactory.replaceUserVariables(message, user);
+        this.formatText = true;
+        this.formatted = TextFormat.translateAlternateColorCodes('&', original);
+    }
+
+    public ChatMessage(String message, OnlineUser user) {
+        this.original = ConfigVariableFactory.replaceOnlineUserVariables(message, user);
+        this.formatText = true;
+        this.formatted = TextFormat.translateAlternateColorCodes('&', message);
     }
 
     public String getFormattedMessage() {
@@ -28,6 +45,10 @@ public class ChatMessage {
         this.formatted = format ?
                 TextFormat.translateAlternateColorCodes('&', string) :
                 TextFormat.removeAlternateColorCodes('&', string);
+    }
+
+    public Text toText() {
+        return new LiteralText(this.formatted);
     }
 
     public boolean isFormattingAllowed() {

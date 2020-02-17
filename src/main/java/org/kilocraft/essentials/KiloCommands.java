@@ -11,7 +11,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
@@ -29,7 +28,6 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -38,15 +36,18 @@ import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.inventory.WorkbenchCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
-import org.kilocraft.essentials.commands.locate.WorldLocateCommand;
+import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
+import org.kilocraft.essentials.commands.moderation.IpInfoCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
-import org.kilocraft.essentials.commands.teleport.*;
+import org.kilocraft.essentials.commands.teleport.BackCommand;
+import org.kilocraft.essentials.commands.teleport.RtpCommand;
+import org.kilocraft.essentials.commands.teleport.TeleportCommands;
+import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
-import org.kilocraft.essentials.config.ConfigCache;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
@@ -62,11 +63,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
-import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 import static org.kilocraft.essentials.api.KiloEssentials.getServer;
@@ -120,10 +118,8 @@ public class KiloCommands {
             add(new SigneditCommand());
             add(new HatCommand());
             add(new VersionCommand());
-            add(new HelpCommand());
-            add(new RulesCommand());
             add(new ReloadCommand());
-            add(new TextformatsCommand());
+            add(new ColorsCommand());
             add(new GamemodeCommand());
             add(new RtpCommand());
             add(new BroadcastCommand());
@@ -144,7 +140,18 @@ public class KiloCommands {
             add(new CommandspyCommand());
             add(new BackCommand());
             add(new ShootCommand());
-            add(new MagicParticlesCommand());
+            add(new ModsCommand());
+            add(new TpsCommand());
+            add(new LocateCommand());
+            add(new MessageCommand());
+            add(new IgnoreCommand());
+            add(new IgnorelistCommand());
+            add(new ReplyCommand());
+            add(new RelnameCommand());
+            add(new IpInfoCommand());
+            add(new HelpCommand());
+            add(new WhoisCommand());
+            add(new PlaytimeCommand());
         }};
 
         this.commands.addAll(commandsList);
@@ -155,17 +162,12 @@ public class KiloCommands {
 
         dispatcher.getRoot().addChild(rootNode);
 
-        registerToast();
         TpaCommand.register(this.dispatcher);
-        WorldLocateCommand.register(this.dispatcher);
         StopCommand.register(this.dispatcher);
         RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
-        SaveCommand.register(this.dispatcher);
-        MessageCommand.register(this.dispatcher);
         //InventoryCommand.register(this.dispatcher);
-        //PlayerParticlesCommand.register(this.dispatcher);
     }
 
     public <C extends EssentialCommand> void register(C c) {
@@ -193,15 +195,6 @@ public class KiloCommands {
 
         dispatcher.getRoot().addChild(command.getCommandNode());
         dispatcher.register(command.getArgumentBuilder());
-    }
-
-    private void registerToast() {
-        ArgumentCommandNode<ServerCommandSource, String> toast = argument("label", string())
-                .then(argument("args", greedyString())
-                        .suggests(TabCompletions::noSuggestions))
-                .build();
-
-        getDispatcher().getRoot().addChild(toast);
     }
 
     public static CompletableFuture<Suggestions> toastSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
@@ -290,7 +283,7 @@ public class KiloCommands {
 
     public static void sendPermissionError(ServerCommandSource source) {
         KiloChat.sendMessageToSource(source, new ChatMessage(
-                KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_PERMISSION_EXCEPTION)
+                KiloConfig.messages().commands().context().permissionException
                 ,true));
     }
 
@@ -357,7 +350,7 @@ public class KiloCommands {
                 var = 0;
                 return var;
             } catch (CommandSyntaxException e) {
-                if (e.getRawMessage().getString().equals("Unknown command")) {
+                if (e.getRawMessage().getString().startsWith("Unknown or incomplete")) {
                     String literalName = cmd.split(" ")[0].replace("/", "");
                     CommandPermission reqPerm = CommandPermission.getByNode(literalName);
 
@@ -365,15 +358,10 @@ public class KiloCommands {
                         sendPermissionError(executor);
                     else
                         KiloChat.sendMessageToSource(executor, new ChatMessage(
-                                KiloConfig.getProvider().getMessages().getMessage(ConfigCache.COMMANDS_CONTEXT_EXECUTION_EXCEPTION)
-                                , true));
+                                KiloConfig.messages().commands().context().executionException, true));
 
                 } else {
                     executor.sendError(Texts.toText(e.getRawMessage()));
-
-                    if (e.getRawMessage().getString().equals("Incorrect argument for command"))
-                        KiloChat.sendMessageToSource(executor,
-                                new ChatMessage(messageUtil.fromCommandNode(CommandMessageNode.EXECUTION_EXCEPTION_HELP), true));
 
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         int cursor = Math.min(e.getInput().length(), e.getCursor());

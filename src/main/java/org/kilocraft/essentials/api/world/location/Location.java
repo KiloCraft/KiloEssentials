@@ -19,6 +19,8 @@ public interface Location {
 
     Identifier getDimension();
 
+    DimensionType getDimensionType();
+
     EntityRotation getRotation();
 
     ServerWorld getWorld();

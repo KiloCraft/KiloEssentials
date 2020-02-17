@@ -12,22 +12,20 @@ import org.kilocraft.essentials.config.KiloConfig;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class VoteCommand implements ConfigurableFeature {
-
     @Override
     public boolean register() {
-        KiloCommands.getDispatcher().register(literal("vote").executes(VoteCommand::execute));
+        KiloCommands.getDispatcher().register(literal("vote").executes(this::execute));
         return true;
     }
 
     public VoteCommand() {
     }
 
-    public static int execute(CommandContext<ServerCommandSource> context) {
-        String jsonText = KiloConfig.getMessage("commands.vote");
+    public int execute(CommandContext<ServerCommandSource> context) {
+        String jsonText = KiloConfig.messages().commands().voteMessage;
         Text text = TextFormat.translateToNMSText(jsonText);
         KiloChat.sendMessageToSource(context.getSource(), text);
 
         return 1;
     }
-
 }

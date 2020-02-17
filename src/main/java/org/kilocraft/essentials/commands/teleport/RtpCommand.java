@@ -75,11 +75,11 @@ public class RtpCommand extends EssentialCommand {
 
 		selectorArg.then(amountArg);
 		actionArg.then(selectorArg);
-		argumentBuilder.executes(RtpCommand::executeSelf);
+		argumentBuilder.executes(this::executeSelf);
 		commandNode.addChild(actionArg.build());
 	}
 
-	private static int execute(CommandContext<ServerCommandSource> ctx, boolean isAction, @Nullable ServerPlayerEntity target) throws CommandSyntaxException {
+	private int execute(CommandContext<ServerCommandSource> ctx, boolean isAction, @Nullable ServerPlayerEntity target) throws CommandSyntaxException {
 		ServerCommandSource src = ctx.getSource();
 		String actionType = getString(ctx, "action");
 
@@ -115,7 +115,7 @@ public class RtpCommand extends EssentialCommand {
 	private static int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("command.rtp.get", user.getDisplayname(), user.getRTPsLeft());
+				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getRTPsLeft());
 
 		return user.getRTPsLeft();
 	}
@@ -125,7 +125,7 @@ public class RtpCommand extends EssentialCommand {
 		int amountToAdd = getInteger(ctx, "amount");
 		user.setRTPsLeft(user.getRTPsLeft() + amountToAdd);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayname());
+				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayName());
 
 		return user.getRTPsLeft();
 	}
@@ -135,7 +135,7 @@ public class RtpCommand extends EssentialCommand {
 		int amountToSet = getInteger(ctx, "amount");
 		user.setRTPsLeft(amountToSet);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayname());
+				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayName());
 
 		return user.getRTPsLeft();
 	}
@@ -143,7 +143,7 @@ public class RtpCommand extends EssentialCommand {
 	private static int executeGet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("command.rtp.get", user.getDisplayname(), user.getRTPsLeft());
+				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getRTPsLeft());
 
 		return user.getRTPsLeft();
 	}
@@ -157,21 +157,21 @@ public class RtpCommand extends EssentialCommand {
 
 		user.setRTPsLeft(user.getRTPsLeft() - amountToRemove);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayname());
+				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayName());
 
 		return user.getRTPsLeft();
 	}
 
-	private static int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+	private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		return execute(ctx.getSource(), ctx.getSource().getPlayer());
 	}
 
-	private static int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+	private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		return execute(ctx.getSource(), getPlayer(ctx, "target"));
 	}
 
-	private static int execute(ServerCommandSource source, ServerPlayerEntity target) {
-		KiloServer.getServer().getOnlineUser(target).sendConfigMessage("commands.rtp.start");
+	private int execute(ServerCommandSource source, ServerPlayerEntity target) {
+		KiloServer.getServer().getOnlineUser(target).sendMessage(messages.commands().rtp().start);
 
 		RandomTeleportThread rtp = new RandomTeleportThread(source, target);
 		Thread rtpThread = new Thread(rtp ,"RTP thread");
@@ -189,13 +189,13 @@ public class RtpCommand extends EssentialCommand {
 
 		//Check if the player has any rtps left or permission to ignore the limit
 		if (CommandHelper.areTheSame(source, target) && targetUser.getRTPsLeft() <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
-			targetUser.sendConfigMessage("commands.rtp.empty");
+			targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
 			return;
 		}
 
 		//Check if the target is in the correct dimension or has permission to perform the command in other dimensions
 		if (!target.dimension.equals(DimensionType.OVERWORLD) && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(source)) {
-			targetUser.sendConfigMessage("commands.rtp.dimension_exception");
+			targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
 			return;
 		}
 
@@ -224,7 +224,7 @@ public class RtpCommand extends EssentialCommand {
 				targetUser.setRTPsLeft(targetUser.getRTPsLeft() - 1);
 
 			targetUser.sendMessage(new ChatMessage(
-					KiloConfig.getProvider().getMessages().getMessage("commands.rtp.teleported")
+					KiloConfig.messages().commands().rtp().teleported
 							.replace("{BIOME}", targetBiomeName)
 							.replace("{RTP_LEFT}", String.valueOf(targetUser.getRTPsLeft()))
 							.replace("{cord.X}", String.valueOf(randomX))
