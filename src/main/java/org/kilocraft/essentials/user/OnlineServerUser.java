@@ -165,7 +165,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         super.lastSocketAddress = this.getConnection().getAddress().toString();
         super.gameMode = this.getGameMode();
-        if (super.ticksPlayed != -1)
+        if (super.ticksPlayed == -1)
             super.ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
     }
 

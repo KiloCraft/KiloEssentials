@@ -27,10 +27,8 @@ public enum CommandPermission {
     GAMEMODE_OTHERS_ADVENTURE("gamemode.others.adventure"),
     GAMEMODE_OTHERS_CREATIVE("gamemode.others.creative"),
     GAMEMODE_OTHERS_SPECTATOR("gamemode.others.spectator"),
-    KILL_SINGLE("kill.single"),
-    KILL_MULTIPLE("kill.multiple"),
     SUDO_OTHERS("sudo.others"),
-    SUDO_CONSOLE("sudo.console"),
+    SUDO_SERVER("sudo.server"),
     BROADCAST("broadcast"),
     ANVIL("anvil"),
     WORKBENCH("workbench"),
@@ -67,8 +65,6 @@ public enum CommandPermission {
     SEEK_INVENTORY("seek_inventory"),
     SAYAS_OTHERS("sayas.others"),
     SAYAS_SERVER("sayas.server"),
-    VANISH_SELF("vanish.self"),
-    VANISH_OTHERS("vanish.others"),
     SMITE("smite"),
     SIGNEDIT_TEXT("signedit.text"),
     SIGNEDIT_GUI_SELF("signedit.gui.self"),
@@ -85,8 +81,8 @@ public enum CommandPermission {
     WHOIS_OTHERS("whois.others"),
     PLAYTIME_SELF("playtime.self"),
     PLAYTIME_OTHERS("playtime.others"),
-    SKIN_SELF("skin.self"),
-    SKIN_OTHERS("skin.others"),
+    PLAYTIME_MODIFY("playtime.modify"),
+    STAT("stat"),
     ;
 
     private String node;

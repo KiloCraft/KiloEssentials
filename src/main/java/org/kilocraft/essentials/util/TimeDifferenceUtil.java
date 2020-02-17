@@ -1,7 +1,18 @@
 package org.kilocraft.essentials.util;
 
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
+
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +40,7 @@ public class TimeDifferenceUtil {
         return timePattern.matcher(input).replaceFirst("").trim();
     }
 
-    public static long parse(String time, boolean future) throws Exception {
+    public static long parse(String time, boolean future) throws CommandSyntaxException {
         Matcher matcher = timePattern.matcher(time);
         int years = 0;
         int months = 0;
@@ -51,7 +62,7 @@ public class TimeDifferenceUtil {
             }
 
             if (!found) {
-                throw new Exception("Invalid time unit");
+                throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_INVALID, time).create();
             }
 
 
@@ -172,4 +183,13 @@ public class TimeDifferenceUtil {
         }
         return sb.toString().trim();
     }
+
+    public static CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return TabCompletions.suggestAtCursor(
+                Arrays.stream(new String[]{"s", "m", "h", "d", "M", "y"}).filter((it) ->
+                        String.valueOf(context.getInput().charAt(TabCompletions.getPendingCursor(context))).matches(RegexLib.START_WITH_DIGITS.get())),
+                context
+        );
+    }
+
 }

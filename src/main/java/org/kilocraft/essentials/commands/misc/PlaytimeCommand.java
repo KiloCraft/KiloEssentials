@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.commands.misc;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -12,9 +13,18 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
 
 public class PlaytimeCommand extends EssentialCommand {
+    private Predicate<ServerCommandSource> PERMISSION_CHECK_MODIFY = src -> hasPermission(src, CommandPermission.PLAYTIME_MODIFY);
+
     public PlaytimeCommand() {
         super("playtime", CommandPermission.PLAYTIME_SELF, new String[]{"pt"});
     }
@@ -25,8 +35,58 @@ public class PlaytimeCommand extends EssentialCommand {
                 .requires(src -> hasPermission(src, CommandPermission.PLAYTIME_OTHERS))
                 .executes(this::executeOther);
 
+        LiteralArgumentBuilder<ServerCommandSource> increaseArg = literal("increase")
+                .requires(PERMISSION_CHECK_MODIFY)
+                .then(argument("time", word())
+                        .suggests(TimeDifferenceUtil::listSuggestions)
+                        .executes(ctx -> set(ctx, "increase")));
+        LiteralArgumentBuilder<ServerCommandSource> decreaseArg = literal("decrease")
+                .requires(PERMISSION_CHECK_MODIFY)
+                .then(argument("time", word())
+                        .suggests(TimeDifferenceUtil::listSuggestions)
+                        .executes(ctx -> set(ctx, "decrease")));
+        LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set")
+                .requires(PERMISSION_CHECK_MODIFY)
+                .then(argument("time", word())
+                        .suggests(TimeDifferenceUtil::listSuggestions)
+                        .executes(ctx -> set(ctx, "set")));
+
+        userArgument.then(increaseArg);
+        userArgument.then(decreaseArg);
+        userArgument.then(setArg);
         argumentBuilder.executes(this::executeSelf);
         commandNode.addChild(userArgument.build());
+    }
+
+    private int set(CommandContext<ServerCommandSource> ctx, String type) throws CommandSyntaxException {
+        CommandSourceUser src = getServerUser(ctx);
+        String inputTime = getString(ctx, "time");
+        final long time = TimeDifferenceUtil.parse(inputTime, true);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(time));
+        int ticks = calendar.get(Calendar.SECOND) * 20;
+
+        AtomicInteger atomicInteger = new AtomicInteger(AWAIT_RESPONSE);
+        essentials.getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
+            user.setTicksPlayed(
+                    type.equals("increase") ? user.getTicksPlayed() + ticks :
+                            type.equals("decrease") ? user.getTicksPlayed() - ticks :
+                                    type.equals("set") ? ticks : ticks
+            );
+
+            try {
+                user.saveData();
+            } catch (IOException e) {
+                src.sendError(e.getMessage());
+            }
+
+            src.sendLangMessage("command.playtime.set", user.getNameTag(),
+                    TimeDifferenceUtil.convertSecondsToString(user.getTicksPlayed() / 20, 'e', '6'));
+            atomicInteger.set(user.getTicksPlayed());
+        });
+
+        return atomicInteger.get();
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
