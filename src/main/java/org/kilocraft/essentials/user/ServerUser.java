@@ -482,10 +482,4 @@ public class ServerUser implements User {
         manager.getHandler().saveData(this);
     }
 
-    public void resetMessageCooldown() {
-        if (this.messageCooldown > 0) {
-            --this.messageCooldown;
-        }
-    }
-
 }

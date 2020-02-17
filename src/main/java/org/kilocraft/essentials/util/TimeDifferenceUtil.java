@@ -11,10 +11,12 @@ import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static org.kilocraft.essentials.api.ModConstants.*;
 
@@ -41,6 +43,7 @@ public class TimeDifferenceUtil {
     }
 
     public static long parse(String time, boolean future) throws CommandSyntaxException {
+        Date date = new Date();
         Matcher matcher = timePattern.matcher(time);
         int years = 0;
         int months = 0;
@@ -64,7 +67,6 @@ public class TimeDifferenceUtil {
             if (!found) {
                 throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_INVALID, time).create();
             }
-
 
             if (matcher.group(1) != null && !matcher.group(1).isEmpty()) {
                 years = Integer.parseInt(matcher.group(1));
@@ -120,6 +122,11 @@ public class TimeDifferenceUtil {
         if (c.after(max)) {
             return max.getTimeInMillis();
         }
+
+        if (date.getTime() == c.getTimeInMillis()) {
+            throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_INVALID, time).create();
+        }
+
         return c.getTimeInMillis();
     }
 
@@ -185,11 +192,25 @@ public class TimeDifferenceUtil {
     }
 
     public static CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        Stream<String> stream = Arrays.stream(VALID_UNITS).filter((it) ->{
+            String inputChar = String.valueOf(context.getInput().charAt(TabCompletions.getPendingCursor(context)));
+            boolean containsValidUnit = it.equals(inputChar);
+
+            return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
+        });
+
+
+
         return TabCompletions.suggestAtCursor(
-                Arrays.stream(new String[]{"s", "m", "h", "d", "M", "y"}).filter((it) ->
-                        String.valueOf(context.getInput().charAt(TabCompletions.getPendingCursor(context))).matches(RegexLib.START_WITH_DIGITS.get())),
+                Arrays.stream(VALID_UNITS).filter((it) ->{
+                    String inputChar = String.valueOf(context.getInput().charAt(TabCompletions.getPendingCursor(context)));
+                    boolean containsValidUnit = it.equals(inputChar);
+
+                    return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
+                }),
                 context
         );
     }
 
+    private static final String[] VALID_UNITS = new String[]{"s", "m", "h", "d", "mo", "y"};
 }

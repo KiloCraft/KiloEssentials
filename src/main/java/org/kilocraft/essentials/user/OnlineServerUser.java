@@ -10,6 +10,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
@@ -164,15 +165,29 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             this.setFlight(true);
 
         super.lastSocketAddress = this.getConnection().getAddress().toString();
-        super.gameMode = this.getGameMode();
-        if (super.ticksPlayed == -1)
+        super.messageCooldown = 0;
+
+        if (super.gameMode == GameMode.NOT_SET) {
+            super.gameMode = this.getPlayer().interactionManager.getGameMode();
+        } else {
+            this.getPlayer().setGameMode(super.gameMode);
+        }
+
+        if (super.ticksPlayed == -1) {
             super.ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
+        } else  {
+            this.getPlayer().getStatHandler().setStat(this.getPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE), super.ticksPlayed);
+        }
     }
 
     public void onTick() {
         super.ticksPlayed++;
-        super.resetMessageCooldown();
         super.updateLocation();
+        super.messageCooldown++;
+
+        if (super.messageCooldown > 0) {
+            --super.messageCooldown;
+        }
     }
 
 }

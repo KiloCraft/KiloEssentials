@@ -119,7 +119,7 @@ public class KiloCommands {
             add(new HatCommand());
             add(new VersionCommand());
             add(new ReloadCommand());
-            add(new TextformatsCommand());
+            add(new ColorsCommand());
             add(new GamemodeCommand());
             add(new RtpCommand());
             add(new BroadcastCommand());

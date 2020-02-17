@@ -225,14 +225,16 @@ public class ServerUserManager implements UserManager {
             }
         }
 
-        if (string.startsWith("/"))
+        if (string.startsWith("/")) {
             KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
-        else
+        } else {
             KiloServer.getServer().getChatManager().onChatMessage(player, packet);
+        }
 
         ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
 
-        if (user.messageCooldown > 1000 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_BYPASS)) {
+        //user.messageCooldown += 20;
+        if (user.messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_BYPASS)) {
             player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
         }
 

@@ -68,7 +68,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             String[] strings = updateSignC2SPacket.getText();
 
             boolean canUseFormats = KiloEssentials.hasPermissionNode(this.player.getCommandSource(), EssentialPermission.SIGN_COLOR);
-            for(int i = 0; i < strings.length; ++i) {
+            for (int i = 0; i < strings.length; ++i) {
                 String str = TextFormat.translate(strings[i], canUseFormats);
                 signBlockEntity.setTextOnRow(i, new LiteralText(str));
             }
