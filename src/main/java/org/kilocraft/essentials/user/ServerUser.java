@@ -3,6 +3,7 @@ package org.kilocraft.essentials.user;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -59,6 +60,7 @@ public class ServerUser implements User {
     private boolean socialSpy = false;
     private boolean commandSpy = false;
     private boolean canSit = false;
+    private Map<String, UUID> ignoreList;
     String lastSocketAddress;
     GameMode gameMode = GameMode.NOT_SET;
     int ticksPlayed = -1;
@@ -133,6 +135,18 @@ public class ServerUser implements User {
         if (this.canSit)
             cacheTag.putBoolean("canSit", true);
 
+        if (this.ignoreList != null) {
+            ListTag listTag = new ListTag();
+            this.ignoreList.forEach((name, uuid) -> {
+                CompoundTag ignoredOne = new CompoundTag();
+                ignoredOne.putUuid("id", uuid);
+                ignoredOne.putString("name", name);
+                listTag.add(ignoredOne);
+            });
+
+            cacheTag.put("ignored", listTag);
+        }
+
         // TODO When possible, move particle logic to a feature.
         if (this.displayParticleId != 0)
             metaTag.putInt("displayParticleId", this.displayParticleId);
@@ -141,7 +155,7 @@ public class ServerUser implements User {
         metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
 
         if (this.ticksPlayed != -1)
-            metaTag.putInt("minutesPlayed", this.ticksPlayed);
+            metaTag.putInt("ticksPlayed", this.ticksPlayed);
 
         if (this.nickname != null) // Nicknames are Optional now.
             metaTag.putString("nick", this.nickname);
@@ -217,14 +231,23 @@ public class ServerUser implements User {
         if (cacheTag.contains("canSit"))
             this.canSit = cacheTag.getBoolean("canSit");
 
+        if (cacheTag.contains("ignored")) {
+            ListTag listTag = cacheTag.getList("ignored", 8);
+            this.ignoreList = new HashMap<>();
+            for (int i = 0; i < listTag.size(); i++) {
+                CompoundTag ignoredOne = listTag.getCompound(i);
+                this.ignoreList.put(ignoredOne.getString("name"), ignoredOne.getUuid("id"));
+            }
+        }
+
         if (metaTag.getInt("displayParticleId") != 0)
             this.displayParticleId = metaTag.getInt("displayParticleId");
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
 
-        if (metaTag.contains("minutesPlayed"))
-            this.ticksPlayed = metaTag.getInt("minutesPlayed");
+        if (metaTag.contains("ticksPlayed"))
+            this.ticksPlayed = metaTag.getInt("ticksPlayed");
 
         if (metaTag.contains("nick")) // Nicknames are an Optional, so we compensate for that.
             this.nickname = metaTag.getString("nick");
@@ -496,6 +519,34 @@ public class ServerUser implements User {
         } catch (IOException e) {
             throw new SimpleCommandExceptionType(new LiteralText(e.getMessage()).formatted(Formatting.RED)).create();
         }
+    }
+
+    public Map<String, UUID> getIgnoreList() {
+        if (this.ignoreList == null)
+            this.ignoreList = new HashMap<>();
+
+        return this.ignoreList;
+    }
+
+    @SuppressWarnings("Do Not Run If the User is Online")
+    public void remove() {
+        if (this.isOnline())
+            return;
+
+        ServerUserManager manager = null;
+        SimpleDateFormat dateFormat = null;
+        UUID uuid = null;
+        String name = null;
+        UserHomeHandler homeHandler = null;
+        Vec3dLocation location = null;
+        Vec3dLocation lastLocation = null;
+        String nickname = null;
+        UUID lastPrivateMessageGetterUUID = null;
+        String lastPrivateMessageText = null;
+        Date firstJoin = null;
+        List<String> subscriptions = null;
+        String upstreamChannelId = null;
+        List<UUID> ignoreList = null;
     }
 
 }

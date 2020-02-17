@@ -17,12 +17,14 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandHelper;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.user.OnlineServerUser;
+import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.Date;
 import java.util.UUID;
@@ -163,6 +165,11 @@ public class ServerChat {
         String format = config.privateChat().privateChat;
         String me_format = config.privateChat().privateChatMeFormat;
         String sourceName = source.getName();
+
+        if (CommandHelper.isPlayer(source) && ((ServerUser) target).getIgnoreList() != null &&
+                ((ServerUser) target).getIgnoreList().containsValue(source.getPlayer().getUuid())) {
+            throw new SimpleCommandExceptionType(LangText.getFormatter(true, "command.message.error")).create();
+        }
 
         String toSource = format.replace("%SOURCE%", me_format)
                 .replace("%TARGET%", "&r" + target.getUsername() + "&r")

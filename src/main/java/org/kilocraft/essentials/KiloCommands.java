@@ -144,6 +144,8 @@ public class KiloCommands {
             add(new TpsCommand());
             add(new LocateCommand());
             add(new MessageCommand());
+            add(new IgnoreCommand());
+            add(new IgnorelistCommand());
             add(new ReplyCommand());
             add(new RelnameCommand());
             add(new IpInfoCommand());
