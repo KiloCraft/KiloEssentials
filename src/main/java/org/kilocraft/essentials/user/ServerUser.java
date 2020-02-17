@@ -11,6 +11,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -61,7 +62,7 @@ public class ServerUser implements User {
     private boolean commandSpy = false;
     private boolean canSit = false;
     private Map<String, UUID> ignoreList;
-    private boolean isStaff = false;
+    boolean isStaff = false;
     String lastSocketAddress;
     GameMode gameMode = GameMode.NOT_SET;
     int ticksPlayed = -1;
@@ -295,6 +296,9 @@ public class ServerUser implements User {
     @Override
     public void setGameMode(GameMode mode) {
         this.gameMode = mode;
+
+        if (this.isOnline())
+            ((OnlineUser) this).getPlayer().setGameMode(mode);
     }
 
     @Override
@@ -536,10 +540,13 @@ public class ServerUser implements User {
     }
 
     public boolean isStaff() {
+        if (this.isOnline())
+            this.isStaff = KiloEssentials.hasPermissionNode(((OnlineUser) this).getCommandSource(), EssentialPermission.STAFF);
+
         return this.isStaff;
     }
 
-    @SuppressWarnings("Do Not Run If the User is Online")
+    @SuppressWarnings({"untested", "Do Not Run If the User is Online"})
     public void clear() {
         if (this.isOnline())
             return;
@@ -558,6 +565,11 @@ public class ServerUser implements User {
         subscriptions = null;
         upstreamChannelId = null;
         ignoreList = null;
+    }
+
+    @Override
+    public boolean equals(User anotherUser) {
+        return anotherUser.getUuid().equals(this.uuid) || anotherUser.getUsername().equals(this.getUsername());
     }
 
 }

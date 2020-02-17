@@ -133,4 +133,5 @@ public interface User {
      */
     void trySave() throws CommandSyntaxException;
 
+    boolean equals(User anotherUser);
 }

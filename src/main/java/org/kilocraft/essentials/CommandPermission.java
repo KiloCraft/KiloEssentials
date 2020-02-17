@@ -82,7 +82,7 @@ public enum CommandPermission {
     PLAYTIME_SELF("playtime.self"),
     PLAYTIME_OTHERS("playtime.others"),
     PLAYTIME_MODIFY("playtime.modify"),
-    STAT("stat"),
+    IGNORELIST_OTHERS("ignorelist.others"),
     ;
 
     private String node;

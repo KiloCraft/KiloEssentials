@@ -14,7 +14,9 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -170,13 +172,17 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         if (super.gameMode == GameMode.NOT_SET) {
             super.gameMode = this.getPlayer().interactionManager.getGameMode();
         } else {
-            this.getPlayer().setGameMode(super.gameMode);
+            this.setGameMode(gameMode);
         }
 
         if (super.ticksPlayed == -1) {
             super.ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
         } else  {
             this.getPlayer().getStatHandler().setStat(this.getPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE), super.ticksPlayed);
+        }
+
+        if (KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF)) {
+            super.isStaff = true;
         }
     }
 

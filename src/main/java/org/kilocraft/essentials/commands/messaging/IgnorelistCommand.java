@@ -10,6 +10,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandHelper;
@@ -26,6 +27,7 @@ public class IgnorelistCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> userArgument = getUserArgument("user")
+                .requires(src -> hasPermission(src, CommandPermission.IGNORELIST_OTHERS))
                 .executes(ctx -> execute(ctx, getUserArgumentInput(ctx, "user")));
 
         commandNode.addChild(userArgument.build());
@@ -34,15 +36,15 @@ public class IgnorelistCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx, String target) throws CommandSyntaxException {
         OnlineUser src = getOnlineUser(ctx);
-        Map<String, UUID> ignoreList = ((ServerUser) src).getIgnoreList();
-
-        if (ignoreList.isEmpty()) {
-            src.sendLangMessage("command.ignorelist.empty");
-            return SINGLE_FAILED;
-        }
-
-        int listSize = ignoreList.size();
         essentials.getUserThenAcceptAsync(src, target, (user) -> {
+            Map<String, UUID> ignoreList = ((ServerUser) user).getIgnoreList();
+
+            if (ignoreList.isEmpty()) {
+                src.sendLangMessage("command.ignorelist.empty");
+                return;
+            }
+
+            int listSize = ignoreList.size();
             String prefix = CommandHelper.areTheSame(src, user) ? "Ignore list" : user.getFormattedDisplayName() + "'s Ignore list";
             Text text = new LiteralText(prefix).formatted(Formatting.GOLD)
                     .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))

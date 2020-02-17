@@ -29,7 +29,6 @@ import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
 import org.kilocraft.essentials.extensions.warps.WarpManager;
-import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.StartupScript;
@@ -195,7 +194,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			}
 
 			optionalUser.ifPresent(action);
-			optionalUser.ifPresent(user -> ((ServerUser) user).clear());
 		}, KiloServer.getServer().getVanillaServer());
 
 		return optionalCompletableFuture;
@@ -219,7 +217,6 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 			loadingText.stop();
 			optionalUser.ifPresent(action);
-			optionalUser.ifPresent(user -> ((ServerUser) user).clear());
 		}, KiloServer.getServer().getVanillaServer());
 
 		if (!optionalCompletableFuture.isDone())

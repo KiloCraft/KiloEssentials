@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.ServerUser;
 
@@ -21,6 +22,7 @@ public class IgnoreCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> userArgument = getUserArgument("user")
+                .suggests(TabCompletions::allPlayersExceptSource)
                 .executes(this::execute);
 
         commandNode.addChild(userArgument.build());
@@ -32,7 +34,7 @@ public class IgnoreCommand extends EssentialCommand {
 
         AtomicInteger atomicInteger = new AtomicInteger(AWAIT_RESPONSE);
         essentials.getUserThenAcceptAsync(src, inputName, (user) -> {
-            if (((ServerUser) user).isStaff()) {
+            if (((ServerUser) user).isStaff() || user.equals(src)) {
                 src.sendLangMessage("command.ignore.error");
                 return;
             }

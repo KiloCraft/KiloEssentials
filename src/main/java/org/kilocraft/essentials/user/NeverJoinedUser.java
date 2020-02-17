@@ -6,6 +6,7 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Location;
 
 import java.io.IOException;
@@ -240,6 +241,11 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public void trySave() throws CommandSyntaxException {
+    }
+
+    @Override
+    public boolean equals(User anotherUser) {
+        return false;
     }
 
 }
