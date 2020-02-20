@@ -34,8 +34,12 @@ public class TextUtils {
     }
 
     public static class Events {
-        public static ClickEvent onClick(String command) {
+        public static ClickEvent onClickRun(String command) {
             return new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
+        }
+
+        public static ClickEvent onClickOpen(String url) {
+            return new ClickEvent(ClickEvent.Action.OPEN_URL, url);
         }
 
         public static HoverEvent onHover(String text) {
@@ -115,7 +119,7 @@ public class TextUtils {
                     .append(" ")
                     .append(new LiteralText("[").formatted(borders))
                     .append(new LiteralText(String.valueOf(this.size)).formatted(Formatting.LIGHT_PURPLE))
-                    .append(new LiteralText("]: ")).formatted(borders)
+                    .append(new LiteralText("]:")).formatted(borders)
                     .append(" ");
 
             if (!this.list.isEmpty()) {

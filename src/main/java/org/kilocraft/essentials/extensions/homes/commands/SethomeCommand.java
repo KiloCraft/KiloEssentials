@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -58,7 +59,7 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        if (shouldNotSet(user) && !homeHandler.hasHome(name)) {
+        if (!validateCanSet(user) && !homeHandler.hasHome(name)) {
             user.sendMessage(messages.commands().playerHomes().reachedLimit);
             return SINGLE_FAILED;
         }
@@ -87,7 +88,7 @@ public class SethomeCommand extends EssentialCommand {
         essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
-            if (CmdUtils.areTheSame(source, user) && shouldNotSet(user) && !homeHandler.hasHome(name)) {
+            if (CmdUtils.areTheSame(source, user) && validateCanSet(user) && !homeHandler.hasHome(name)) {
                 source.sendMessage(messages.commands().playerHomes().reachedLimit
                         .replace("{HOME_SIZE}", String.valueOf(homeHandler.getHomes().size())));
                 return;
@@ -118,17 +119,19 @@ public class SethomeCommand extends EssentialCommand {
 
         return AWAIT_RESPONSE;
     }
-
-    private static boolean shouldNotSet(User user) {
-        for (int i = 1; i < KiloConfig.main().homesLimit; i++) {
+    
+    private static boolean validateCanSet(User user) {
+        for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
             String thisPerm = "kiloessentials.command.home.limit." + i;
-            int amount = Integer.parseInt(thisPerm.split("\\.")[4]);
-            if (user.getHomesHandler().homes() <= amount) {
-                return false;
+            int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
+
+            if (user.getHomesHandler().homes() + 1 <= allowed &&
+                    Thimble.hasPermissionOrOp(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
+                return true;
             }
         }
 
-        return !KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS);
+        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS);
     }
 
     private Text getConfirmationText(String homeName, String user) {

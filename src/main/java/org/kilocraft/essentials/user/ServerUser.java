@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -54,7 +55,6 @@ public class ServerUser implements User {
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
     private int randomTeleportsLeft = 3;
-    private int displayParticleId = 0;
     public int messageCooldown;
     private List<String> subscriptions;
     private String upstreamChannelId;
@@ -149,10 +149,6 @@ public class ServerUser implements User {
             cacheTag.put("ignored", listTag);
         }
 
-        // TODO When possible, move particle logic to a feature.
-        if (this.displayParticleId != 0)
-            metaTag.putInt("displayParticleId", this.displayParticleId);
-
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
         metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
 
@@ -244,9 +240,6 @@ public class ServerUser implements User {
                 this.ignoreList.put(ignoredOne.getString("name"), ignoredOne.getUuid("uuid"));
             }
         }
-
-        if (metaTag.getInt("displayParticleId") != 0)
-            this.displayParticleId = metaTag.getInt("displayParticleId");
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
@@ -485,10 +478,6 @@ public class ServerUser implements User {
     public void setRTPsLeft(int amount) {
         this.randomTeleportsLeft = amount;
     }
-    
-    public int getDisplayParticleId () {
-    	return this.displayParticleId;
-    }
 
     public void setFlight(boolean set) {
         canFly = set;
@@ -510,10 +499,6 @@ public class ServerUser implements User {
     @Override
     public <F extends UserProvidedFeature> F feature(FeatureType<F> type) {
         return null; // TODO Impl
-    }
-
-    public void setDisplayParticleId (int id) {
-    	this.displayParticleId = id;
     }
 
     @Override
@@ -572,6 +557,14 @@ public class ServerUser implements User {
     @Override
     public boolean equals(User anotherUser) {
         return anotherUser.getUuid().equals(this.uuid) || anotherUser.getUsername().equals(this.getUsername());
+    }
+
+    public static void saveLocationOf(ServerPlayerEntity player) {
+        OnlineUser user = KiloServer.getServer().getOnlineUser(player);
+
+        if (user != null) {
+            user.saveLocation();
+        }
     }
 
 }

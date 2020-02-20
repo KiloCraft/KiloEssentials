@@ -55,7 +55,7 @@ public class HomesCommand extends EssentialCommand {
 
     private int sendInfo(OnlineUser source, User user) {
         boolean areTheSame = CmdUtils.areTheSame(source, user);
-        if (user.getHomesHandler().homes() > 0) {
+        if (user.getHomesHandler().homes() <= 0) {
              source.sendMessage(areTheSame ? KiloConfig.messages().commands().playerHomes().noHome :
                     KiloConfig.messages().commands().playerHomes().admin().noHome.replace("{TARGET_TAG}", user.getNameTag()));
 
@@ -71,15 +71,15 @@ public class HomesCommand extends EssentialCommand {
             Vec3dLocation loc = (Vec3dLocation) home.getLocation();
             text.append(home.getName(),
                     TextUtils.Events.onHover(new LiteralText("")
+                            .append(new LiteralText(tl("general.click_teleport")).formatted(Formatting.YELLOW))
+                            .append("\n")
                             .append(new LiteralText("Location: ").formatted(Formatting.GRAY))
                             .append(TextUtils.toText(String.format("&7x: &a%s &7y: &a%s &7z: &a%s", loc.getX(), loc.getY(), loc.getZ())))
-                            .append(new LiteralText("(").formatted(Formatting.DARK_GRAY))
+                            .append(new LiteralText(" (").formatted(Formatting.DARK_GRAY))
                             .append(RegistryUtils.dimensionToName(loc.getDimensionType())).formatted(Formatting.YELLOW)
                             .append(new LiteralText(")").formatted(Formatting.DARK_GRAY))
-                            .append("\n\n")
-                            .append(new LiteralText(tl("general.click_teleport")).formatted(Formatting.YELLOW))
                     ),
-                    TextUtils.Events.onClick("/home " + home.getName() + (areTheSame ? "" : " " + user.getUsername())));
+                    TextUtils.Events.onClickRun("/home " + home.getName() + (areTheSame ? "" : " " + user.getUsername())));
         }
 
         source.sendMessage(text.build());

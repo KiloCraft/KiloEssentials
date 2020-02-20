@@ -110,20 +110,6 @@ public interface User {
     void setTicksPlayed(int ticks);
 
     /**
-     * This should be moved to it's own FeatureType
-     * @return
-     */
-    @Deprecated
-    int getDisplayParticleId();
-
-    /**
-     * This should be moved to it's own FeatureType
-     * @return
-     */
-    @Deprecated
-    void setDisplayParticleId(int i);
-
-    /**
      * Saves the data if the user if offline
      */
     void saveData() throws IOException;

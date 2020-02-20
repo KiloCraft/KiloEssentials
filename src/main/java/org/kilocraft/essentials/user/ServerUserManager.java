@@ -257,6 +257,27 @@ public class ServerUserManager implements UserManager {
         return this.punishManager;
     }
 
+    public static class Watchdog {
+        public static void validate(OnlineServerUser user) {
+            validateHomes(user);
+        }
+
+        private static void validateHomes(OnlineServerUser user) {
+
+        }
+
+        public static void report(String key, Object... objects) {
+            String prefix = KiloChat.getFormattedLang("watchdog.prefix");
+            String message = KiloChat.getFormattedLang(key, objects);
+
+            for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+                if (((OnlineServerUser) user).isStaff) {
+                    user.sendError(prefix + " " + message);
+                }
+            }
+        }
+    }
+
     public static class UserLoadingText {
         private AnimatedText animatedText;
         public UserLoadingText(ServerPlayerEntity player) {

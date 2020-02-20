@@ -72,7 +72,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
         text.append("&cdisable",
                 TextUtils.Events.onHover(new LiteralText("Click Here to Disable").formatted(Formatting.GOLD)
                 ),
-                TextUtils.Events.onClick("/mp disable")
+                TextUtils.Events.onClickRun("/mp disable")
         );
 
         map.forEach((id, animation) -> text.append(id.getPath(),
@@ -83,7 +83,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
                         .append("\n")
                         .append(new LiteralText(tl("general.click_apply")).formatted(Formatting.YELLOW))
                 ),
-                TextUtils.Events.onClick("/mp set " + id.toString())
+                TextUtils.Events.onClickRun("/mp set " + id.toString())
         ));
 
         KiloChat.sendMessageTo(player, text.setSize(map.size()).build());

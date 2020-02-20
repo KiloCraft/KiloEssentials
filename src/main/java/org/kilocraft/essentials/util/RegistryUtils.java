@@ -18,7 +18,7 @@ public class RegistryUtils {
     }
 
     public static String dimensionToName(DimensionType type) {
-        return type == DimensionType.OVERWORLD ? "Overworld" : type == DimensionType.THE_NETHER ? "The Nehter" : "The End";
+        return type == DimensionType.OVERWORLD ? "Overworld" : type == DimensionType.THE_NETHER ? "The Nether" : "The End";
     }
 
 }

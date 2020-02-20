@@ -52,6 +52,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
+import org.kilocraft.essentials.util.TextUtils;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
@@ -269,7 +270,16 @@ public class KiloCommands {
     private int sendInfo(CommandContext<ServerCommandSource> ctx) {
         ctx.getSource().sendFeedback(
                 LangText.getFormatter(true, "command.info", ModConstants.getMinecraftVersion())
-                        .formatted(Formatting.GRAY), false);
+                        .formatted(Formatting.GRAY)
+                        .append("\n")
+                        .append(new LiteralText("GitHub: ").formatted(Formatting.GRAY))
+                        .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/").styled((style) -> {
+                            style.setColor(Formatting.GOLD);
+                            style.setClickEvent(TextUtils.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"));
+                            style.setHoverEvent(TextUtils.Events.onHover("&eClick to open"));
+                        })))
+                , false);
+
         return 1;
     }
 

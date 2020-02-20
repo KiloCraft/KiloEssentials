@@ -227,15 +227,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public int getDisplayParticleId() {
-        return 0;
-    }
-
-    @Override
-    public void setDisplayParticleId(int i) {
-    }
-
-    @Override
     public void saveData() throws IOException {
     }
 

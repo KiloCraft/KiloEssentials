@@ -165,7 +165,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public enum Reason {
-        UNSAFE_DESTINATION, MISSING_DIMENSION;
+        UNSAFE_DESTINATION, MISSING_DIMENSION, NO_PERMISSION;
     }
 
 }

@@ -4,10 +4,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.util.RegistryUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,14 +28,13 @@ public abstract class ServerPlayerEntityMixin {
             KiloChat.sendLangMessageTo((ServerPlayerEntity) (Object) this, "general.dimension_not_allowed",
                     RegistryUtils.toIdentifier(dimensionType_1).getPath());
         }
+
+        ServerUser.saveLocationOf((ServerPlayerEntity) (Object) this);
     }
 
     @Inject(method = "teleport", at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayerEntity;teleport(Lnet/minecraft/server/world/ServerWorld;DDDFF)V"),cancellable = true)
     private void modify$Teleport(ServerWorld serverWorld, double d, double e, double f, float g, float h, CallbackInfo ci) {
-        OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) (Object) this);
-        if (user != null) {
-            user.saveLocation();
-        }
+        ServerUser.saveLocationOf((ServerPlayerEntity) (Object) this);
     }
 
 }

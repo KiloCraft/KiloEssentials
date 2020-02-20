@@ -54,8 +54,8 @@ public class DelhomeCommand extends EssentialCommand {
         String name = input.replaceFirst("-confirmed-", "");
 
         if (!homeHandler.hasHome(name)) {
-            user.sendConfigMessage("commands.playerHomes.invalid_home");
-            return -1;
+            user.sendMessage(KiloConfig.messages().commands().playerHomes().invalidHome);
+            return SINGLE_FAILED;
         }
 
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {

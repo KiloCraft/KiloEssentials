@@ -10,6 +10,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.TextFormat;
@@ -268,15 +270,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public int getDisplayParticleId() {
-        return 0;
-    }
-
-    @Override
-    public void setDisplayParticleId(int i) {
-    }
-
-    @Override
     public void saveData() throws IOException {
     }
 
@@ -372,6 +365,32 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public @Nullable PlayerSitManager.SummonType getSittingType() {
         return null;
+    }
+
+    @Override
+    public boolean hasPermission(CommandPermission perm) {
+        if (this.isOnline() && !this.isConsole()) {
+            try {
+                return Objects.requireNonNull(this.getUser()).hasPermission(perm);
+            } catch (CommandSyntaxException e) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean hasPermission(EssentialPermission perm) {
+        if (this.isOnline() && !this.isConsole()) {
+            try {
+                return Objects.requireNonNull(this.getUser()).hasPermission(perm);
+            } catch (CommandSyntaxException e) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     @Override

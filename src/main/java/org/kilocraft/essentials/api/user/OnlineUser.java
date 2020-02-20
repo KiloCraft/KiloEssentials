@@ -6,6 +6,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
@@ -43,4 +45,9 @@ public interface OnlineUser extends User {
 
     @Nullable
     PlayerSitManager.SummonType getSittingType();
+
+    boolean hasPermission(CommandPermission perm);
+
+    boolean hasPermission(EssentialPermission perm);
+
 }

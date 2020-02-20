@@ -13,7 +13,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -155,13 +157,23 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         this.getPlayer().sendAbilitiesUpdate();
     }
 
+    @Override
+    public boolean hasPermission(CommandPermission perm) {
+        return KiloCommands.hasPermission(this.getCommandSource(), perm);
+    }
+
+    @Override
+    public boolean hasPermission(EssentialPermission perm) {
+        return KiloEssentials.hasPermissionNode(this.getCommandSource(), perm);
+    }
+
     @Deprecated
     @Override
     public void saveData() {
     }
 
     public void onJoined() {
-        super.setFlight(super.canFly());
+        this.setFlight(canFly());
 
         super.lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
         super.messageCooldown = 0;
