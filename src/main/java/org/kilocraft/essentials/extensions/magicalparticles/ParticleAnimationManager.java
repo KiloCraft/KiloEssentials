@@ -1,11 +1,13 @@
 package org.kilocraft.essentials.extensions.magicalparticles;
 
 import com.google.common.reflect.TypeToken;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -23,6 +25,7 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
 import org.kilocraft.essentials.api.world.RelativePosition;
+import org.kilocraft.essentials.extensions.magicalparticles.config.BlockStateParticleEffectConfigSection;
 import org.kilocraft.essentials.extensions.magicalparticles.config.DustParticleEffectConfigSection;
 import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleFrameConfigSection;
 import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleTypesConfig;
@@ -90,7 +93,7 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
 
                 if (effect == null) {
                     KiloEssentials.getLogger().error("Error identifying the Particle type while loading ParticleTypes!" +
-                            "Entered id \"" + frame.effect + "\" is not a valid ParticleEffect!");
+                            " Entered id \"" + frame.effect + "\" is not a valid ParticleEffect!");
                     continue;
                 }
 
@@ -106,15 +109,39 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
                 ParticleEffect particleEffect = null;
 
                 if (frame.getBlockStateSection().isPresent() && !frame.getDustParticleSection().isPresent()) {
+                    BlockStateParticleEffectConfigSection section = frame.getBlockStateSection().get();
+                    Block block = Registry.BLOCK.get(new Identifier(section.blockId.toLowerCase()));
+
+                    if (block == Blocks.AIR && Registry.BLOCK.getDefaultId().getPath().equalsIgnoreCase(section.blockId)) {
+                        KiloEssentials.getLogger().warn("Error when initializing a ParticleFrame! Id: " + string +
+                                " Frame: " + i + ". Default block id \"air\" found! The entered block id " + section.blockId +
+                                "  is wrong!");
+                    }
+
                     particleEffect = new BlockStateParticleEffect(
                             ParticleTypes.BLOCK,
                             Registry.BLOCK.get(new Identifier(frame.getBlockStateSection().get().blockId)).getDefaultState()
                     );
+
                 } else if (frame.getDustParticleSection().isPresent() && !frame.getBlockStateSection().isPresent()) {
                     DustParticleEffectConfigSection section = frame.getDustParticleSection().get();
-                    particleEffect = new DustParticleEffect(
-                            section.rgb.get(0), section.rgb.get(1), section.rgb.get(2), section.scale
-                    );
+
+                    boolean shouldContinue = true;
+                    for (int i1 = 0; i1 < section.rgb.size(); i1++) {
+                        int color = section.rgb.get(i1);
+                        if (color > 255 || color < 0) {
+                            KiloEssentials.getLogger().warn("Error when initializing a ParticleFrame! Id: " + string +
+                                    " Frame: " + i + "RGB: " + i1 + " Invalid RGB Color value! a RGB Color value must be between 0 and 255");
+                            shouldContinue = false;
+                        }
+                    }
+
+                    if (shouldContinue)
+                        particleEffect = new DustParticleEffect(
+                                section.rgb.get(0), section.rgb.get(1), section.rgb.get(2), section.scale
+                        );
+                } else {
+                    particleEffect = (DefaultParticleType) effect;
                 }
 
                 if (particleEffect != null) {
@@ -196,17 +223,17 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
             if (frame == null)
                 continue;
 
-            Vec3d vec3d = frame.getRelativePosition().getRelativeVector(player.getPos());
-            player.getServerWorld().spawnParticles(player, frame.getParticleType(),
-                    frame.isLongDistance(),
-                    vec3d.x, vec3d.y, vec3d.z,
-                    frame.getCount(),
-                    (float) frame.getOffsetX(), (float) frame.getOffsetY(), (float) frame.getOffsetZ(),
-                    (float) frame.getSpeed());
+//            Vec3d vec3d = frame.getRelativePosition().getRelativeVector(player.getPos());
+//            player.getServerWorld().spawnParticles(player, frame.getParticleType(),
+//                    frame.isLongDistance(),
+//                    vec3d.x, vec3d.y, vec3d.z,
+//                    frame.getCount(),
+//                    (float) frame.getOffsetX(), (float) frame.getOffsetY(), (float) frame.getOffsetZ(),
+//                    (float) frame.getSpeed());
 
-//            Packet<?> packet = frame.toPacket(player.getPos());
-//            if (packet != null)
-//                player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
+            Packet<?> packet = frame.toPacket(player.getPos());
+            if (packet != null)
+                player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
         }
 
         animation.frames();

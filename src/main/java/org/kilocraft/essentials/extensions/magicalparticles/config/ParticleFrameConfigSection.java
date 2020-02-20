@@ -13,7 +13,7 @@ import java.util.Optional;
 public class ParticleFrameConfigSection {
 
     @Setting("count")
-    public int count = 0;
+    public int count = 9;
 
     @Setting("effect")
     public String effect = "dragon_breath";
@@ -31,10 +31,10 @@ public class ParticleFrameConfigSection {
     public String pos = "0 0 0";
 
     @Setting("offset")
-    public String offset = "10 0.5 0";
+    public String offset = "0 0.5 0";
 
     @Setting("speed")
-    public double speed = 0.3D;
+    public double speed = 0.0D;
 
     public Optional<BlockStateParticleEffectConfigSection> getBlockStateSection() {
         return Optional.ofNullable(blockStateSection);

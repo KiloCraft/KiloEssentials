@@ -1,15 +1,11 @@
 package org.kilocraft.essentials.util;
 
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.chat.TextFormat;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TextUtils {
     private static final String SEPARATOR = "-----------------------------------------------------";
@@ -24,6 +20,103 @@ public class TextUtils {
             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
             style.setClickEvent(new ClickEvent(action, actionValue));
         });
+    }
+
+    public static Text getButton(String title, String command, Text hoverText) {
+        return new LiteralText(title).styled((style) -> {
+           style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
+           style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+        });
+    }
+
+    public static class Events {
+        public static ClickEvent onClick(String command) {
+            return new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
+        }
+
+        public static HoverEvent onHover(String text) {
+            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(TextFormat.translate(text)));
+        }
+
+        public static HoverEvent onHover(Text text) {
+            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
+        }
+    }
+
+    public static class ListStyle {
+        private Text title;
+        private Text text;
+        private Formatting primary;
+        private Formatting aFormat;
+        private Formatting bFormat;
+        private Formatting borders;
+        private List<Object> list;
+        private int size;
+        private boolean nextColor = false;
+
+        public static ListStyle of(String title, Formatting primary, Formatting borders, Formatting aFormat, Formatting bFormat) {
+            return new ListStyle(title, primary, borders, aFormat, bFormat, null);
+        }
+
+        public ListStyle(String title, Formatting primary, Formatting borders, Formatting aFormat, Formatting bFormat, @Nullable List<Object> list) {
+            this.title = new LiteralText(title);
+            this.text = new LiteralText("");
+            this.primary = primary;
+            this.aFormat = aFormat;
+            this.bFormat = bFormat;
+            this.borders = borders;
+            this.list = list == null ? new ArrayList<>() : list;
+        }
+
+        public ListStyle append(Object... objects) {
+            for (Object object : objects) {
+                this.append(object, null, null);
+            }
+
+            return this;
+        }
+
+        public ListStyle append(@Nullable HoverEvent hoverEvent, @Nullable ClickEvent clickEvent, Object... objects) {
+            for (Object object : objects) {
+                this.append(object, hoverEvent, clickEvent);
+            }
+
+            return this;
+        }
+
+        public ListStyle append(Object obj, @Nullable HoverEvent hoverEvent, @Nullable ClickEvent clickEvent) {
+            Formatting formatting = nextColor ? bFormat : aFormat;
+            Text text = obj instanceof Text ? ((Text) obj).formatted(formatting) : new LiteralText(String.valueOf(obj)).formatted(formatting);
+            if (hoverEvent != null)
+                text.getStyle().setHoverEvent(hoverEvent);
+            if (clickEvent != null) {
+                text.getStyle().setClickEvent(clickEvent);
+            }
+
+            this.size++;
+            nextColor = !nextColor;
+            this.text.append(text).append(" ");
+            return this;
+        }
+
+        public Text build() {
+            this.title = new LiteralText("")
+                    .append(new LiteralText(this.title.getString()).formatted(primary))
+                    .append(" ")
+                    .append(new LiteralText("[").formatted(borders))
+                    .append(new LiteralText(String.valueOf(this.size)).formatted(Formatting.LIGHT_PURPLE))
+                    .append(new LiteralText("]: ")).formatted(borders)
+                    .append(" ");
+
+            if (!this.list.isEmpty()) {
+                for (Object o : this.list) {
+                    this.append(o);
+                }
+            }
+
+            return this.title.append(this.text);
+        }
+
     }
 
     public static class InfoBlockStyle {

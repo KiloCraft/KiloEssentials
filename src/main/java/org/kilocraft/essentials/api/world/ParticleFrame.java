@@ -1,7 +1,8 @@
 package org.kilocraft.essentials.api.world;
 
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.particle.*;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -36,7 +37,7 @@ public class ParticleFrame<P extends ParticleEffect> {
     @Nullable
     public static ParticleType<?> getEffectByName(String name) {
         for (Identifier id : Registry.PARTICLE_TYPE.getIds()) {
-            if (id.getPath().equalsIgnoreCase(name))
+            if (id.getPath().equals(name.toLowerCase()))
                 return Registry.PARTICLE_TYPE.get(id);
         }
 
