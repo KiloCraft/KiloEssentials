@@ -9,7 +9,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -313,7 +313,7 @@ public enum TextFormat {
 
     public static void sendToUniversalSource(ServerCommandSource source, String text, boolean log) {
         LiteralText literalText;
-        if (CommandHelper.isConsole(source)) {
+        if (CmdUtils.isConsole(source)) {
             literalText = new LiteralText(removeAlternateColorCodes('&', text));
         } else {
             literalText = new LiteralText(translateAlternateColorCodes('&', text));
@@ -324,7 +324,7 @@ public enum TextFormat {
 
     public static void sendToUniversalSource(char altColorChar, ServerCommandSource source, String text, boolean log) {
         LiteralText literalText;
-        if (CommandHelper.isConsole(source)) {
+        if (CmdUtils.isConsole(source)) {
             literalText = new LiteralText(removeAlternateColorCodes(altColorChar, text));
         } else {
             literalText = new LiteralText(translateAlternateColorCodes(altColorChar, text));

@@ -10,6 +10,10 @@ import java.util.*;
 public class TextUtils {
     private static final String SEPARATOR = "-----------------------------------------------------";
 
+    public static Text toText(String str) {
+        return new LiteralText(TextFormat.translate(str));
+    }
+
     public static Text blockStyle(Text text) {
         Text separator = new LiteralText(SEPARATOR).formatted(Formatting.GRAY);
         return new LiteralText("").append(separator).append(text).append(separator);
@@ -86,7 +90,8 @@ public class TextUtils {
 
         public ListStyle append(Object obj, @Nullable HoverEvent hoverEvent, @Nullable ClickEvent clickEvent) {
             Formatting formatting = nextColor ? bFormat : aFormat;
-            Text text = obj instanceof Text ? ((Text) obj).formatted(formatting) : new LiteralText(String.valueOf(obj)).formatted(formatting);
+            Text text = obj instanceof Text ? ((Text) obj).formatted(formatting) :
+                    new LiteralText(TextFormat.translate(String.valueOf(obj))).formatted(formatting);
             if (hoverEvent != null)
                 text.getStyle().setHoverEvent(hoverEvent);
             if (clickEvent != null) {
@@ -96,6 +101,11 @@ public class TextUtils {
             this.size++;
             nextColor = !nextColor;
             this.text.append(text).append(" ");
+            return this;
+        }
+
+        public ListStyle setSize(int size) {
+            this.size = size;
             return this;
         }
 

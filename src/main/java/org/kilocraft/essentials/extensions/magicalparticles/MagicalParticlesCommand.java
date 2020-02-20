@@ -86,7 +86,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
                 TextUtils.Events.onClick("/mp set " + id.toString())
         ));
 
-        KiloChat.sendMessageTo(player, text.build());
+        KiloChat.sendMessageTo(player, text.setSize(map.size()).build());
         return SINGLE_SUCCESS;
     }
 

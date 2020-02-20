@@ -9,7 +9,7 @@ import org.kilocraft.essentials.api.user.User;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class CommandHelper {
+public class CmdUtils {
     public static boolean isConsole(ServerCommandSource source) {
         try {
             source.getEntityOrThrow();

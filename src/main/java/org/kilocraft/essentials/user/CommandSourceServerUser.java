@@ -23,7 +23,7 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -41,7 +41,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Nullable
     @Override
     public UUID getUuid() {
-        if (!CommandHelper.isConsole(this.source)) {
+        if (!CmdUtils.isConsole(this.source)) {
             try {
                 return Objects.requireNonNull(this.getUser()).getUuid();
             } catch (CommandSyntaxException ignored) {
@@ -231,7 +231,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public GameMode getGameMode() {
         try {
-            return CommandHelper.isConsole(this.source) ? GameMode.NOT_SET :
+            return CmdUtils.isConsole(this.source) ? GameMode.NOT_SET :
                     Objects.requireNonNull(this.getUser()).getGameMode();
         } catch (CommandSyntaxException ignored) {
         }
@@ -241,7 +241,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void setGameMode(GameMode mode) {
-        if (!CommandHelper.isConsole(this.source)) {
+        if (!CmdUtils.isConsole(this.source)) {
             try {
                 Objects.requireNonNull(this.getUser()).setGameMode(mode);
             } catch (CommandSyntaxException ignore) {
@@ -376,7 +376,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public boolean isConsole() {
-        return CommandHelper.isConsole(this.source);
+        return CmdUtils.isConsole(this.source);
     }
 
     @Override

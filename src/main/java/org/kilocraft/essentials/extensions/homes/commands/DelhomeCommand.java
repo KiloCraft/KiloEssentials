@@ -17,7 +17,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -82,7 +82,7 @@ public class DelhomeCommand extends EssentialCommand {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
             if (!homeHandler.hasHome(name)) {
-                if (CommandHelper.areTheSame(source, user))
+                if (CmdUtils.areTheSame(source, user))
                     source.sendMessage(messages.commands().playerHomes().noHome);
                 else
                     source.sendMessage(messages.commands().playerHomes().admin().noHome
@@ -103,7 +103,7 @@ public class DelhomeCommand extends EssentialCommand {
                 source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
             }
 
-            if (CommandHelper.areTheSame(source, user))
+            if (CmdUtils.areTheSame(source, user))
                 source.sendMessage(messages.commands().playerHomes().homeRemoved
                         .replace("{HOME_NAME}", name));
             else source.sendMessage(messages.commands().playerHomes().admin().homeRemoved
