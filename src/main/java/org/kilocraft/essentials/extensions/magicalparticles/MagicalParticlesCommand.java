@@ -28,12 +28,12 @@ import static org.kilocraft.essentials.extensions.magicalparticles.ParticleAnima
 public class MagicalParticlesCommand extends EssentialCommand {
     public MagicalParticlesCommand(){
         super("magicalparticles",
-                src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.MAGIC_PARTICLES_SELF), new String[]{"mp"});
+                src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.MAGIC_PARTICLES_SELF), new String[]{"mp", "particleanimation", "pa"});
     }
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, Identifier> idArgument = argument("animationId", identifier())
+        RequiredArgumentBuilder<ServerCommandSource, Identifier> idArgument = argument("identifier", identifier())
                 .suggests(this::particleIdSuggestions)
                 .executes(this::setSelf);
 
@@ -42,7 +42,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
     private int setSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        Identifier identifier = getIdentifier(ctx, "animationId");
+        Identifier identifier = getIdentifier(ctx, "identifier");
 
         if (identifier.getPath().equals("disable")) {
             KiloChat.sendLangMessageTo(player, "command.magicalparticles.disabled.self", identifier.getPath());
@@ -58,7 +58,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
         addPlayer(player.getUuid(), identifier);
 
-        KiloChat.sendLangMessageTo(player, "command.magicalparticles.set.self", identifier.getPath());
+        KiloChat.sendLangMessageTo(player, "command.magicalparticles.set.self", getAnimationName(identifier));
         return SINGLE_SUCCESS;
     }
 

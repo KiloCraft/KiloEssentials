@@ -8,9 +8,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
+import org.kilocraft.essentials.chat.KiloChat;
 
 public class SmiteCommand extends EssentialCommand {
     public SmiteCommand() {
@@ -28,7 +28,7 @@ public class SmiteCommand extends EssentialCommand {
         LightningEntity lightning = new LightningEntity(player.getServerWorld(), vec3d.x, vec3d.y, vec3d.z, false);
         player.getServerWorld().addLightning(lightning);
 
-        player.addChatMessage(LangText.get(true, "command.smite"), true);
+        KiloChat.sendLangMessageTo(player, "command.smite");
         return SINGLE_SUCCESS;
     }
 

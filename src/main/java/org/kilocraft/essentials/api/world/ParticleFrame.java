@@ -1,25 +1,26 @@
 package org.kilocraft.essentials.api.world;
 
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-public class ParticleFrame {
-    private ParticleEffect effect;
+public class ParticleFrame<P extends ParticleEffect> {
+    private P effect;
     private boolean longDistance;
     private RelativePosition relativePosition;
     private double oX, oY, oZ;
     private double speed;
     private int count;
+    private Type type;
 
-    public <P extends ParticleEffect> ParticleFrame(P effect,
-                                                  boolean longDistance,
-                                                  RelativePosition relPos,
-                                                  double offsetX, double offsetY, double offsetZ,
-                                                  double speed, int count) {
+    public ParticleFrame(P effect,
+                         boolean longDistance,
+                         RelativePosition relPos,
+                         double offsetX, double offsetY, double offsetZ,
+                         double speed, int count) {
 
         this.effect = effect;
         this.longDistance = longDistance;
@@ -29,28 +30,14 @@ public class ParticleFrame {
         this.oZ = offsetZ;
         this.speed = speed;
         this.count = count;
-    }
-
-    public <P extends ParticleEffect> ParticleFrame(P effect,
-                                                    boolean longDistance,
-                                                    double offsetX, double offsetY, double offsetZ,
-                                                    double speed, int count) {
-
-        this.effect = effect;
-        this.longDistance = longDistance;
-        this.relativePosition = new RelativePosition(0, 0, 0);
-        this.oX = offsetX;
-        this.oY = offsetY;
-        this.oZ = offsetZ;
-        this.speed = speed;
-        this.count = count;
+        this.type = Type.NORMAL;
     }
 
     @Nullable
-    public static ParticleEffect getEffectByName(String name) {
+    public static ParticleType<?> getEffectByName(String name) {
         for (Identifier id : Registry.PARTICLE_TYPE.getIds()) {
-            if (id.getPath().equals(name))
-                return (ParticleEffect) Registry.PARTICLE_TYPE.get(id);
+            if (id.getPath().equalsIgnoreCase(name))
+                return Registry.PARTICLE_TYPE.get(id);
         }
 
         return null;
@@ -88,8 +75,32 @@ public class ParticleFrame {
         return count;
     }
 
+    public ParticleFrame.Type getType() {
+        return type;
+    }
+
+    public P getParticleType() {
+        return effect;
+    }
+
+    @Nullable
     public ParticleS2CPacket toPacket(Vec3d vec3d) {
         Vec3d vec = relativePosition.getRelativeVector(vec3d);
-        return new ParticleS2CPacket(effect, longDistance, vec.getX(), vec.getY(), vec.getZ(), (float) oX, (float) oY, (float) oZ, (float) speed, count);
+
+        return new ParticleS2CPacket(
+                this.effect,
+                longDistance,
+                vec.getX(), vec.getY(), vec.getZ(),
+                (float) oX, (float) oY, (float) oZ,
+                (float) speed, count
+        );
     }
+
+    public enum Type {
+        NORMAL, // Normal Particle Effect
+        BLOCK,  // BlockStateParticleEffect
+        DUST,   // DustParticleEffect
+        ITEM,   // ItemStackParticleEffect
+    }
+
 }

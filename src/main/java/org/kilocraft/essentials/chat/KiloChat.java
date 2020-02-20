@@ -43,7 +43,7 @@ public class KiloChat {
 	}
 
 	public static void sendMessageTo(ServerPlayerEntity player, Text text) {
-		player.addChatMessage(text, false);
+		player.addMessage(text, false);
 	}
 
 	public static void sendMessageTo(ServerCommandSource source, Text text) {
@@ -95,7 +95,7 @@ public class KiloChat {
 
 	public static void broadCastExceptConsole(ChatMessage chatMessage) {
 		for (PlayerEntity entity : getServer().getPlayerList()) {
-			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
+			entity.addMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
 		}
 	}
 
@@ -114,7 +114,7 @@ public class KiloChat {
 
 	public static void broadCast(ChatMessage chatMessage) {
 		for (PlayerEntity entity : getServer().getPlayerList()) {
-			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
+			entity.addMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
 		}
 
 		getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));

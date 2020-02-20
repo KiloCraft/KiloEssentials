@@ -54,7 +54,7 @@ public class BackCommand extends EssentialCommand {
         user.teleport(loc, true);
 
         if (CommandHelper.areTheSame(ctx.getSource(), target))
-            ctx.getSource().getPlayer().addChatMessage(getLang("command.back.self"), true);
+            ctx.getSource().getPlayer().addMessage(getLang("command.back.self"), true);
         else
             sendMessage(ctx, "command.back.others", user.getUsername());
 

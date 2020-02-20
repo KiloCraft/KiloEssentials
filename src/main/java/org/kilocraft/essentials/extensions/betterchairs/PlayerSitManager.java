@@ -131,7 +131,7 @@ public class PlayerSitManager implements ConfigurableFeature {
             armorStand.setPos(armorStand.getX(), armorStand.getY() + 0.55D, armorStand.getZ());
             armorStand.kill();
 
-            player.addChatMessage(LangText.get(true, "sit.stop_riding"), true);
+            player.addMessage(LangText.get(true, "sit.stop_riding"), true);
         }
 
     }

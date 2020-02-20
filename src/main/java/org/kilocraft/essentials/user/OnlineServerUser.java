@@ -13,9 +13,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -92,7 +90,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public ClientConnection getConnection() {
-        return this.getPlayer().networkHandler.client;
+        return this.getPlayer().networkHandler.connection;
     }
 
     @Override
@@ -163,21 +161,20 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public void onJoined() {
-        if (this.canFly() && KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.FLY_SELF))
-            this.setFlight(true);
+        super.setFlight(super.canFly());
 
         super.lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
         super.messageCooldown = 0;
 
         if (super.gameMode == GameMode.NOT_SET) {
             super.gameMode = this.getPlayer().interactionManager.getGameMode();
-        } else {
-            this.setGameMode(gameMode);
         }
+
+        this.setGameMode(gameMode);
 
         if (super.ticksPlayed <= 0) {
             super.ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
-        } else  {
+        } else {
             this.getPlayer().getStatHandler().setStat(this.getPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE), super.ticksPlayed);
         }
 

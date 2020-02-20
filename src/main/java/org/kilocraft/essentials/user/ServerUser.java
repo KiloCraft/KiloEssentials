@@ -265,7 +265,9 @@ public class ServerUser implements User {
     }
 
     public void updateLocation() {
-        if (this instanceof OnlineUser) this.location = Vec3dLocation.of((OnlineUser) this).shortDecimals();
+        if (this instanceof OnlineUser && ((OnlineUser) this).getPlayer().getPos() != null) {
+            this.location = Vec3dLocation.of((OnlineUser) this).shortDecimals();
+        }
     }
 
     private Date getUserFirstJoinDate(String stringToParse) {

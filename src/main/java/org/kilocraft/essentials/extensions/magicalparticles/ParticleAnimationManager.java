@@ -2,10 +2,11 @@ package org.kilocraft.essentials.extensions.magicalparticles;
 
 import com.google.common.reflect.TypeToken;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -22,6 +23,7 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
 import org.kilocraft.essentials.api.world.RelativePosition;
+import org.kilocraft.essentials.extensions.magicalparticles.config.DustParticleEffectConfigSection;
 import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleFrameConfigSection;
 import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleTypesConfig;
 import org.kilocraft.essentials.provided.KiloFile;
@@ -80,12 +82,14 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
     private static void createFromConfig() {
         map.clear();
         config.types.forEach((string, innerArray) -> {
-            ParticleAnimation animation = new ParticleAnimation(new Identifier(string));
-            for (ParticleFrameConfigSection frame : innerArray.frames) {
-                ParticleEffect effect = ParticleFrame.getEffectByName(frame.effect);
+            ParticleAnimation animation = new ParticleAnimation(new Identifier(string.toLowerCase()), innerArray.name);
+
+            for (int i = 0; i < innerArray.frames.size(); i++) {
+                ParticleFrameConfigSection frame = innerArray.frames.get(i);
+                ParticleType<?> effect = ParticleFrame.getEffectByName(frame.effect);
 
                 if (effect == null) {
-                    KiloEssentials.getLogger().error("Error identifying the Particle type while initializing ParticleTypes!" +
+                    KiloEssentials.getLogger().error("Error identifying the Particle type while loading ParticleTypes!" +
                             "Entered id \"" + frame.effect + "\" is not a valid ParticleEffect!");
                     continue;
                 }
@@ -99,20 +103,35 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
                 double y = Double.parseDouble(pI[1]);
                 double z = Double.parseDouble(pI[2]);
 
-                animation.append(new ParticleFrame(effect, frame.longDistance,
-                        new RelativePosition(x, y, z), offsetX, offsetY, offsetZ, frame.speed, frame.count));
+                ParticleEffect particleEffect = null;
+
+                if (frame.getBlockStateSection().isPresent() && !frame.getDustParticleSection().isPresent()) {
+                    particleEffect = new BlockStateParticleEffect(
+                            ParticleTypes.BLOCK,
+                            Registry.BLOCK.get(new Identifier(frame.getBlockStateSection().get().blockId)).getDefaultState()
+                    );
+                } else if (frame.getDustParticleSection().isPresent() && !frame.getBlockStateSection().isPresent()) {
+                    DustParticleEffectConfigSection section = frame.getDustParticleSection().get();
+                    particleEffect = new DustParticleEffect(
+                            section.rgb.get(0), section.rgb.get(1), section.rgb.get(2), section.scale
+                    );
+                }
+
+                if (particleEffect != null) {
+                    animation.append(new ParticleFrame<>(
+                            particleEffect,
+                            frame.longDistance,
+                            new RelativePosition(x, y, z),
+                            offsetX, offsetY, offsetZ,
+                            frame.speed, frame.count)
+                    );
+                } else {
+                    KiloEssentials.getLogger().error("Error when initializing a ParticleFrame! Id: " + string +
+                            " Frame: " + i);
+                }
             }
-
-            registerAnimation(animation);
+            map.put(animation.getId(), animation);
         });
-    }
-
-    public static void registerAnimation(ParticleAnimation animation) {
-        map.put(animation.getId(), animation);
-    }
-
-    public static ParticleAnimation getAnimation(Identifier id) {
-        return map.get(id);
     }
 
     public static void addPlayer(UUID player, Identifier identifier) {
@@ -161,6 +180,10 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
         }
     }
 
+    public static String getAnimationName(Identifier id) {
+        return map.get(id).getName();
+    }
+
     public static void runAnimationFrames(ServerPlayerEntity player, Identifier id) {
         ParticleAnimation animation = map.get(id);
 
@@ -173,8 +196,17 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
             if (frame == null)
                 continue;
 
-            ParticleS2CPacket packet = frame.toPacket(player.getPos());
-            player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
+            Vec3d vec3d = frame.getRelativePosition().getRelativeVector(player.getPos());
+            player.getServerWorld().spawnParticles(player, frame.getParticleType(),
+                    frame.isLongDistance(),
+                    vec3d.x, vec3d.y, vec3d.z,
+                    frame.getCount(),
+                    (float) frame.getOffsetX(), (float) frame.getOffsetY(), (float) frame.getOffsetZ(),
+                    (float) frame.getSpeed());
+
+//            Packet<?> packet = frame.toPacket(player.getPos());
+//            if (packet != null)
+//                player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
         }
 
         animation.frames();

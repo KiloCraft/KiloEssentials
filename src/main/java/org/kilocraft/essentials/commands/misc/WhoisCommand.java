@@ -18,11 +18,6 @@ import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.util.TextUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 public class WhoisCommand extends EssentialCommand {
     public WhoisCommand() {
         super("whois", CommandPermission.WHOIS_SELF, new String[]{"info"});
@@ -90,13 +85,6 @@ public class WhoisCommand extends EssentialCommand {
                 target.getHomesHandler().homes(), target.getRTPsLeft(), target.getUpstreamChannelId());
         text.append("Is Spying", new String[]{"On Commands", "On Social"},
                 target.isCommandSpyOn(), target.isSocialSpyOn());
-
-        Map<String, UUID> ignoreList = ((ServerUser) target).getIgnoreList();
-        if (ignoreList != null && ignoreList.size() > 1) {
-            List<String> ignoreNames = new ArrayList<>();
-            ignoreList.forEach((name, uuid) -> ignoreNames.add(name));
-            text.append("IgnoreList", new String[]{"size", "list"}, ignoreList.size(), ignoreNames);
-        }
 
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         text.append("Location", new String[]{"x", "y", "z", "World"},

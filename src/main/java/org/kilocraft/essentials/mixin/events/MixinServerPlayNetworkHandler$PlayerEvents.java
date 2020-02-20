@@ -9,7 +9,7 @@ import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -105,7 +105,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         if (!event.isCancelled()) {
             if (blockPos.getY() >= this.server.getWorldHeight() - 1 && (direction == Direction.UP || blockPos.getY() >= this.server.getWorldHeight())) {
                 Text text = (new TranslatableText("build.tooHigh", this.server.getWorldHeight())).formatted(Formatting.RED);
-                this.player.networkHandler.sendPacket(new ChatMessageS2CPacket(text, MessageType.GAME_INFO));
+                this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO));
             } else if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D) < 64.0D && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
                 ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
                 if (actionResult.shouldSwingHand()) {

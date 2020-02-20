@@ -8,7 +8,12 @@ import java.util.List;
 
 @ConfigSerializable
 public class ParticleTypeConfigSection {
-    @Setting public List<ParticleFrameConfigSection> frames = new ArrayList<ParticleFrameConfigSection>(){{
+
+    @Setting("name")
+    public String name = "Breath of the Dragon";
+
+    @Setting("frames")
+    public List<ParticleFrameConfigSection> frames = new ArrayList<ParticleFrameConfigSection>(){{
         add(new ParticleFrameConfigSection());
     }};
 }
