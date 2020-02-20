@@ -41,7 +41,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage {
     static Map<Identifier, ParticleAnimation> map = new HashMap<>();
     private static Map<UUID, Identifier> uuidIdentifierMap = new HashMap<>();
-    private static ConfigurationNode configNode;
     private static ParticleTypesConfig config;
 
     @Override
@@ -68,7 +67,7 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
             ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
                     .setFile(CONFIG_FILE.getFile()).build();
 
-            configNode = loader.load(ConfigurationOptions.defaults()
+            ConfigurationNode configNode = loader.load(ConfigurationOptions.defaults()
                     .setHeader(ParticleTypesConfig.HEADER)
                     .setObjectMapperFactory(DefaultObjectMapperFactory.getInstance())
                     .setShouldCopyDefaults(true));
@@ -157,12 +156,13 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
                             " Frame: " + i);
                 }
             }
+
             map.put(animation.getId(), animation);
         });
     }
 
     public static void addPlayer(UUID player, Identifier identifier) {
-        uuidIdentifierMap.remove(player);
+//        uuidIdentifierMap.remove(player, identifier);
         uuidIdentifierMap.put(player, identifier);
     }
 
@@ -191,12 +191,9 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
     private static Server server = KiloServer.getServer();
     private static int tick = 0;
     public static void onTick() {
-        if (uuidIdentifierMap == null || uuidIdentifierMap.isEmpty())
-            return;
-
         //Tick counter logic, only shows the animations once in 4 ticks
         tick++;
-        if (tick > 4) {
+        if (tick > 4 && uuidIdentifierMap != null && !uuidIdentifierMap.isEmpty()) {
             uuidIdentifierMap.forEach((uuid, id) -> {
                 ServerPlayerEntity player = server.getPlayer(uuid);
                 if (player != null && !player.isSpectator())

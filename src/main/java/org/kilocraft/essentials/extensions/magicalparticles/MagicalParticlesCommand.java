@@ -16,6 +16,7 @@ import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.TextUtils;
@@ -56,10 +57,16 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
     private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        Identifier identifier = validateAndGetId(ctx);
+        boolean silent = false;
+        Identifier identifier = getIdentifier(ctx, "animation");
+        if (identifier.getPath().endsWith("--s"))
+            silent = true;
+
+        identifier = new Identifier(identifier.toString().replaceFirst("--s", ""));
+        validateAndGetId(identifier.toString());
 
         addPlayer(player.getUuid(), identifier);
-        KiloChat.sendLangMessageTo(player, "command.magicalparticles.set", getAnimationName(identifier));
+        player.addMessage(LangText.getFormatter(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
         return SINGLE_SUCCESS;
     }
 
@@ -83,7 +90,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
                         .append("\n")
                         .append(new LiteralText(tl("general.click_apply")).formatted(Formatting.YELLOW))
                 ),
-                TextUtils.Events.onClickRun("/mp set " + id.toString())
+                TextUtils.Events.onClickRun("/mp set " + id.toString() + "--s")
         ));
 
         KiloChat.sendMessageTo(player, text.setSize(map.size()).build());
@@ -103,8 +110,8 @@ public class MagicalParticlesCommand extends EssentialCommand {
         return CommandSource.suggestMatching(strings, builder);
     }
 
-    private Identifier validateAndGetId(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        Identifier identifier = getIdentifier(ctx, "animation");
+    private Identifier validateAndGetId(String input) throws CommandSyntaxException {
+        Identifier identifier = new Identifier(input);
         if (!isValidId(identifier))
             identifier = getIdFromPath(identifier.getPath());
 
