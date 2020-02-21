@@ -259,23 +259,52 @@ public class ServerUserManager implements UserManager {
 
     public static class Watchdog {
         public static void validate(OnlineServerUser user) {
-            validateHomes(user);
+            if (user.getPlayer() == null || user.getCommandSource() == null)
+                return;
+
+            Validations.validateConnection(user);
+
+            if (UserHomeHandler.isEnabled())
+                Validations.validateHomes(user);
         }
 
-        private static void validateHomes(OnlineServerUser user) {
+        static class Validations {
+            private static void validateHomes(OnlineServerUser user) {
+                int allowed = UserHomeHandler.allowedHomes(user);
+                if (user.getHomesHandler().homes() > allowed && shouldReport(user)) {
+                    report("watchdog.warn.too_many_homes", user.getUsername(), user.getHomesHandler().homes(), allowed);
+                }
+            }
 
+            private static void validateConnection(OnlineServerUser user) {
+                for (OnlineUser onlineUser : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+                    if (shouldReport(user) && onlineUser.getLastSocketAddress() != null && user.getLastSocketAddress() != null) {
+                        if (onlineUser.getLastSocketAddress().equals(user.getLastSocketAddress())) {
+                            report("watchdog.warn.same_ip", user.getUsername(), onlineUser.getUsername());
+                        }
+                    }
+                }
+            }
+
+        }
+
+        private static boolean shouldReport(OnlineServerUser user) {
+            return !user.isStaff();
         }
 
         public static void report(String key, Object... objects) {
-            String prefix = KiloChat.getFormattedLang("watchdog.prefix");
-            String message = KiloChat.getFormattedLang(key, objects);
-
             for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
                 if (((OnlineServerUser) user).isStaff) {
-                    user.sendError(prefix + " " + message);
+                    user.sendError(getReportMessage(key, objects));
                 }
             }
         }
+
+        private static String getReportMessage(String key, Object... objects) {
+            String prefix = KiloChat.getFormattedLang("watchdog.prefix");
+            return prefix + " " + KiloChat.getFormattedLang(key, objects);
+        }
+
     }
 
     public static class UserLoadingText {

@@ -167,6 +167,15 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         return KiloEssentials.hasPermissionNode(this.getCommandSource(), perm);
     }
 
+    @Override
+    public String getLastSocketAddress() {
+        if (this.getConnection() != null) {
+            super.lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
+        }
+
+        return super.getLastSocketAddress();
+    }
+
     @Deprecated
     @Override
     public void saveData() {
@@ -193,7 +202,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         if (KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF)) {
             super.isStaff = true;
         }
+
+        ServerUserManager.Watchdog.validate(this);
     }
+
+    private static int tick = 0;
 
     public void onTick() {
         super.ticksPlayed++;
@@ -203,6 +216,13 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         if (super.messageCooldown > 0) {
             --super.messageCooldown;
         }
+
+        if (tick >= 36000) {
+            ServerUserManager.Watchdog.validate(this);
+            tick = 0;
+        }
+
+        tick++;
     }
 
 }

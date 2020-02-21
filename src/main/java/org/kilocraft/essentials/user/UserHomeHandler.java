@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
@@ -14,6 +15,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.extensions.homes.commands.DelhomeCommand;
@@ -162,6 +164,18 @@ public class UserHomeHandler implements ConfigurableFeature {
     public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         return CommandSource.suggestMatching(KiloServer.getServer().getOnlineUser(
                 context.getSource().getPlayer()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
+    }
+
+    public static int allowedHomes(OnlineServerUser user) {
+        int allowed = 0;
+        for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
+            String thisPerm = "kiloessentials.command.home.limit." + i;
+            if (Thimble.hasPermissionOrOp(((OnlineUser) user).getCommandSource(), thisPerm, 5)) {
+                allowed++;
+            }
+        }
+
+        return allowed;
     }
 
     public enum Reason {
