@@ -143,6 +143,9 @@ public class ServerUser implements User {
                 CompoundTag ignoredOne = new CompoundTag();
                 ignoredOne.putUuid("uuid", uuid);
                 ignoredOne.putString("name", name);
+
+                System.out.println("Saving ignored: " + name);
+
                 listTag.add(ignoredOne);
             });
 
@@ -232,11 +235,11 @@ public class ServerUser implements User {
         if (cacheTag.contains("canSit"))
             this.canSit = cacheTag.getBoolean("canSit");
 
-        if (cacheTag.contains("ignored")) {
-            ListTag listTag = cacheTag.getList("ignored", 8);
+        ListTag ignoreList = cacheTag.getList("ignored", 10);
+        if (ignoreList != null && !ignoreList.isEmpty()) {
             this.ignoreList = new HashMap<>();
-            for (int i = 0; i < listTag.size(); i++) {
-                CompoundTag ignoredOne = listTag.getCompound(i);
+            for (int i = 0; i < ignoreList.size(); i++) {
+                CompoundTag ignoredOne = ignoreList.getCompound(i);
                 this.ignoreList.put(ignoredOne.getString("name"), ignoredOne.getUuid("uuid"));
             }
         }

@@ -59,11 +59,17 @@ public class MagicalParticlesCommand extends EssentialCommand {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         boolean silent = false;
         Identifier identifier = getIdentifier(ctx, "animation");
-        if (identifier.getPath().endsWith("--s"))
-            silent = true;
 
-        identifier = new Identifier(identifier.toString().replaceFirst("--s", ""));
-        validateAndGetId(identifier.toString());
+        if (identifier.getPath().endsWith("--s")) {
+            silent = true;
+            identifier = new Identifier(identifier.toString().replaceFirst("--s", ""));
+        }
+
+        if (!isValidId(identifier))
+            identifier = getIdFromPath(identifier.getPath());
+
+        if (!isValidId(identifier))
+            throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Particle animation").create();
 
         addPlayer(player.getUuid(), identifier);
         player.addMessage(LangText.getFormatter(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
@@ -80,7 +86,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
                 TextUtils.Events.onHover(new LiteralText("Click Here to Disable").formatted(Formatting.GOLD)
                 ),
                 TextUtils.Events.onClickRun("/mp disable")
-        );
+        ).append("&7|&r");
 
         map.forEach((id, animation) -> text.append(id.getPath(),
                 TextUtils.Events.onHover(new LiteralText("")
@@ -108,17 +114,6 @@ public class MagicalParticlesCommand extends EssentialCommand {
         List<String> strings = new ArrayList<>();
         map.forEach((id, animation) -> strings.add(id.getPath()));
         return CommandSource.suggestMatching(strings, builder);
-    }
-
-    private Identifier validateAndGetId(String input) throws CommandSyntaxException {
-        Identifier identifier = new Identifier(input);
-        if (!isValidId(identifier))
-            identifier = getIdFromPath(identifier.getPath());
-
-        if (!isValidId(identifier))
-            throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Particle animation").create();
-
-        return identifier;
     }
 
 }

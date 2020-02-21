@@ -21,7 +21,6 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
 import org.kilocraft.essentials.api.world.RelativePosition;
@@ -162,7 +161,7 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
     }
 
     public static void addPlayer(UUID player, Identifier identifier) {
-//        uuidIdentifierMap.remove(player, identifier);
+        uuidIdentifierMap.remove(player, identifier);
         uuidIdentifierMap.put(player, identifier);
     }
 
@@ -188,17 +187,22 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
         return identifier.get();
     }
 
-    private static Server server = KiloServer.getServer();
     private static int tick = 0;
     public static void onTick() {
         //Tick counter logic, only shows the animations once in 4 ticks
         tick++;
-        if (tick > 4 && uuidIdentifierMap != null && !uuidIdentifierMap.isEmpty()) {
-            uuidIdentifierMap.forEach((uuid, id) -> {
-                ServerPlayerEntity player = server.getPlayer(uuid);
-                if (player != null && !player.isSpectator())
-                    runAnimationFrames(server.getPlayer(uuid), id);
-            });
+        if (tick > config.getPps() && uuidIdentifierMap != null && !uuidIdentifierMap.isEmpty()) {
+            try {
+                uuidIdentifierMap.forEach((uuid, id) -> {
+                    final ServerPlayerEntity player = KiloServer.getServer().getPlayer(uuid);
+
+                    if (player != null && !player.isSpectator())
+                        runAnimationFrames(KiloServer.getServer().getPlayer(uuid), id);
+                });
+            } catch (Exception e) {
+                KiloEssentials.getLogger().error("Exception while processing Magical Particles");
+                KiloEssentials.getLogger().error(e.getMessage());
+            }
 
             tick = 0;
         }
@@ -208,7 +212,7 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
         return map.get(id).getName();
     }
 
-    public static void runAnimationFrames(ServerPlayerEntity player, Identifier id) {
+    public static void runAnimationFrames(final ServerPlayerEntity player, Identifier id) {
         ParticleAnimation animation = map.get(id);
 
         if (animation == null) {
@@ -216,17 +220,9 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
             return;
         }
 
-        for (ParticleFrame frame : animation.getFrames()) {
+        for (ParticleFrame<?> frame : animation.getFrames()) {
             if (frame == null)
                 continue;
-
-//            Vec3d vec3d = frame.getRelativePosition().getRelativeVector(player.getPos());
-//            player.getServerWorld().spawnParticles(player, frame.getParticleType(),
-//                    frame.isLongDistance(),
-//                    vec3d.x, vec3d.y, vec3d.z,
-//                    frame.getCount(),
-//                    (float) frame.getOffsetX(), (float) frame.getOffsetY(), (float) frame.getOffsetZ(),
-//                    (float) frame.getSpeed());
 
             Packet<?> packet = frame.toPacket(player.getPos());
             if (packet != null)
