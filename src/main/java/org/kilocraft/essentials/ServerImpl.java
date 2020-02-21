@@ -289,6 +289,16 @@ public class ServerImpl implements Server {
     }
 
     @Override
+    public void sendWarning(String message) {
+        String[] lines = message.split("\n");
+
+        for (String line : lines) {
+            String str = TextFormat.removeAlternateColorCodes('&', line);
+            getLogger().warn(TextFormat.removeAlternateColorCodes(TextFormat.COLOR_CHAR, str));
+        }
+    }
+
+    @Override
     public OperatorList getOperatorList() {
         return server.getPlayerManager().getOpList();
     }

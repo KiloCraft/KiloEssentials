@@ -24,6 +24,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.AnimatedText;
@@ -258,6 +259,8 @@ public class ServerUserManager implements UserManager {
     }
 
     public static class Watchdog {
+        static final String PREFIX = KiloChat.getFormattedLang("watchdog.prefix");
+
         public static void validate(OnlineServerUser user) {
             if (user.getPlayer() == null || user.getCommandSource() == null)
                 return;
@@ -278,10 +281,13 @@ public class ServerUserManager implements UserManager {
 
             private static void validateConnection(OnlineServerUser user) {
                 for (OnlineUser onlineUser : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-                    if (shouldReport(user) && onlineUser.getLastSocketAddress() != null && user.getLastSocketAddress() != null) {
-                        if (onlineUser.getLastSocketAddress().equals(user.getLastSocketAddress())) {
-                            report("watchdog.warn.same_ip", user.getUsername(), onlineUser.getUsername());
-                        }
+                    if (
+                            !CmdUtils.areTheSame(user, onlineUser) &&
+                            shouldReport(user) && onlineUser.getLastSocketAddress() != null &&
+                            user.getLastSocketAddress() != null &&
+                            onlineUser.getLastSocketAddress().equals(user.getLastSocketAddress())
+                    ) {
+                        report("watchdog.warn.same_ip", user.getUsername(), onlineUser.getUsername());
                     }
                 }
             }
@@ -293,17 +299,20 @@ public class ServerUserManager implements UserManager {
         }
 
         public static void report(String key, Object... objects) {
+            String message = getReportMessage(key, objects);
+            KiloServer.getServer().sendWarning(message);
+
             for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
                 if (((OnlineServerUser) user).isStaff) {
-                    user.sendError(getReportMessage(key, objects));
+                    user.sendError(message);
                 }
             }
         }
 
         private static String getReportMessage(String key, Object... objects) {
-            String prefix = KiloChat.getFormattedLang("watchdog.prefix");
-            return prefix + " " + KiloChat.getFormattedLang(key, objects);
+            return PREFIX + " " + KiloChat.getFormattedLang(key, objects);
         }
+
 
     }
 

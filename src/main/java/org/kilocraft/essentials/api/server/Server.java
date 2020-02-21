@@ -265,6 +265,13 @@ public interface Server {
     void sendMessage(String message);
 
     /**
+     * Sends a warning message to console
+     *
+     * @param message you want to send
+     */
+    void sendWarning(String message);
+
+    /**
      * Gets the OperatorList
      * @return a instance of OperatorList
      */
