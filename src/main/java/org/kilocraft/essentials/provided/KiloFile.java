@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.provided;
 
+import org.kilocraft.essentials.api.KiloEssentials;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,58 +11,37 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class KiloFile {
-    private File dir;
     private File file;
-    private String name, path;
+    private File dir;
+    private String name;
 
     public KiloFile(String name, String path) {
-        this.path = path;
-        this.dir = new File(path);
-        this.file = new File(path + name);
-    }
-
-    public KiloFile(String name, File file) {
         this.name = name;
-        this.file = file;
+        this.dir = new File(path);
+        this.file = new File(name);
     }
 
     public KiloFile(String name, Path path) {
         this.name = name;
-        this.file = new File( path.toFile().getAbsolutePath());
-    }
-
-
-    public boolean tryToLoad() {
-        if (this.file.exists()) return true;
-        else return createFile();
-    }
-
-    public boolean tryToLoad(String resourcesFilePath) {
-        if (this.file.exists()) return true;
-        else if (createFile()) pasteFromResources(resourcesFilePath);
-
-        return this.file.exists();
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+        this.dir = path.toFile();
+        this.file = path.resolve(name).toFile();
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public boolean createFile() {
-        if (!this.file.exists()) {
-            try {
-                this.dir.mkdirs();
-                this.file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public void createFile() {
+        if (this.file.exists())
+            return;
 
-        return this.file.exists();
+        try {
+            this.dir.mkdirs();
+            this.file.createNewFile();
+        } catch (IOException e) {
+            KiloEssentials.getLogger().error("Exception while creating the file " + this.file.getName() + ": " + this.file.getPath());
+            e.printStackTrace();
+        }
     }
 
     public boolean exists() {
@@ -78,10 +59,6 @@ public class KiloFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getWorkingDirectory() {
-        return System.getProperty("user.dir");
     }
 
 }

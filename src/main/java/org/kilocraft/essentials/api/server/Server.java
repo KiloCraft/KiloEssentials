@@ -1,6 +1,8 @@
 package org.kilocraft.essentials.api.server;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -8,6 +10,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.event.Event;
@@ -40,6 +43,11 @@ public interface Server {
     PlayerManager getPlayerManager();
 
     /**
+     * Reloads the Server
+     */
+    void reload();
+
+    /**
      * Gets the KiloServer's UserManager
      *
      * @return instance of UserManager
@@ -60,6 +68,14 @@ public interface Server {
      * @return instance of ChatManager
      */
     ChatManager getChatManager();
+
+    /**
+     * Gets a Entity object by the given UUID
+     *
+     * @param uuid the id of the entity
+     * @return Entity
+     */
+    Entity getEntity(UUID uuid);
 
     /**
      * Gets a player object by the given username.
@@ -120,6 +136,14 @@ public interface Server {
     Iterable<ServerWorld> getWorlds();
 
     /**
+     * Gets a world
+     *
+     * @param type Dimension
+     * @return ServerWorld
+     */
+    ServerWorld getWorld(DimensionType type);
+
+    /**
      * Checks if we are running inside the Server's main thread
      *
      * @return are we running inside the main thread
@@ -163,14 +187,14 @@ public interface Server {
      *
      * @param command Command to execute
      */
-    void execute(String command);
+    int execute(String command);
 
     /**
      * Execute a command
      * @param source source (usually player) to execute the command
      * @param command the string that contains the command to execute
      */
-    void execute(ServerCommandSource source, String command);
+    int execute(ServerCommandSource source, String command);
 
     /**
      * Sets the brand name of the server
@@ -195,9 +219,19 @@ public interface Server {
     String getDisplayBrandName();
 
     /**
+     * Sends a packet to all the Online users
+     */
+    void sendGlobalPacket(Packet<?> packet);
+
+    /**
      * Stops the server
      */
     void shutdown();
+
+    /**
+     * Restarts the server
+     */
+    void restart();
 
     /**
      * Stops the server
@@ -206,6 +240,14 @@ public interface Server {
     void shutdown(String reason);
 
     void shutdown(Text reason);
+
+    /**
+     * Restarts the server
+     * @param reason is used for kicking the player
+     */
+    void restart(String reason);
+
+    void restart(Text reason);
 
     /**
      * Kicks all the players on the server
@@ -223,6 +265,13 @@ public interface Server {
     void sendMessage(String message);
 
     /**
+     * Sends a warning message to console
+     *
+     * @param message you want to send
+     */
+    void sendWarning(String message);
+
+    /**
      * Gets the OperatorList
      * @return a instance of OperatorList
      */
@@ -234,5 +283,12 @@ public interface Server {
      * @return a instance of ServerMetaManager
      */
     ServerMetaManager getMetaManager();
+
+    /**
+     * Checks if the console supports ANSI formatting codes
+     *
+     * @return does console support ANSI formatting codes
+     */
+    boolean supportsANSICodes();
 
 }

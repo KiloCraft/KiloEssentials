@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api;
 
-import org.kilocraft.essentials.KiloEssentialsImpl;
+import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.server.Server;
 
 public class KiloServer {
@@ -27,10 +27,12 @@ public class KiloServer {
     public static void setServer(Server server) {
         if (KiloServer.server != null)
             throw new RuntimeException("Server is already set!");
-        else KiloServer.server = server;
 
-        KiloAPICommands.register(KiloEssentialsImpl.commandDispatcher);
+        KiloServer.server = server;
     }
 
+    public static Logger getLogger() {
+        return server.getLogger();
+    }
 
 }

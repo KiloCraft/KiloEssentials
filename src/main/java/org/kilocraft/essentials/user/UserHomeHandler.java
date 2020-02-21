@@ -4,21 +4,24 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.client.util.math.Vector3f;
+import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
+import org.kilocraft.essentials.extensions.homes.commands.DelhomeCommand;
 import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
+import org.kilocraft.essentials.extensions.homes.commands.HomesCommand;
+import org.kilocraft.essentials.extensions.homes.commands.SethomeCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,14 +47,17 @@ public class UserHomeHandler implements ConfigurableFeature {
     @Override
     public boolean register() {
         isEnabled = true;
-        HomeCommand.register(KiloCommands.getDispatcher());
 
-        for (int i = 0; i == KiloConfig.getProvider().getMain().getIntegerSafely("homes.limit", 20); i++) {
-            KiloEssentials.registerPermission("home.set.limit." + i);
-        }
+        List<EssentialCommand> commands = new ArrayList<EssentialCommand>(){{
+            add(new HomeCommand());
+            add(new HomesCommand());
+            add(new SethomeCommand());
+            add(new DelhomeCommand());
+        }};
 
+        for (EssentialCommand command : commands)
+            KiloEssentials.getInstance().getCommandHandler().register(command);
 
-        //KiloEssentials.registerPermissions();
         return true;
     }
 
@@ -97,37 +103,30 @@ public class UserHomeHandler implements ConfigurableFeature {
         return this.userHomes;
     }
 
+    public int homes() {
+        return this.userHomes.size();
+    }
+
     public boolean hasHome(String name) {
-        boolean bool = false;
         for (Home userHome : this.userHomes) {
             if (userHome.getName().equals(name))
-                bool = true;
+                return true;
         }
 
-        return bool;
+        return false;
     }
 
-    public static boolean hasHome(UUID uuid, String name) {
-        boolean bool = false;
-        for (Home loadedHome : loadedHomes) {
-            if (loadedHome.getName().equals(name) && loadedHome.getOwner().equals(uuid))
-                bool = true;
-        }
-
-        return bool;
-    }
-
-    public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException, CommandSyntaxException {
+    public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException {
         teleportToHome(user, getHome(name));
     }
 
-    public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException, CommandSyntaxException {
+    public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
         if (user.isOnline()) {
-            ServerWorld world = Objects.requireNonNull(user.getPlayer().getServer()).getWorld(DimensionType.byId(home.getDimId()));
-            if(world == null) {
+            ServerWorld world = Objects.requireNonNull(user.getPlayer().getServer()).getWorld(DimensionType.byId(home.getLocation().getDimension()));
+
+            if (world == null)
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
-            }
-            BackCommand.setLocation(user.getPlayer(), new Vector3f(user.getPlayer().getPos()), user.getPlayer().getServerWorld().getDimension().getType());
+
             Home.teleportTo(user, home);
         }
 
@@ -152,6 +151,7 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     }
 
+    @Deprecated
     public static List<Home> getHomesOf(UUID uuid) {
         List<Home> list = new ArrayList<>();
         for (Home home : loadedHomes) {
@@ -161,15 +161,25 @@ public class UserHomeHandler implements ConfigurableFeature {
         return list;
     }
 
-    public static List<Home> getLoadedHomes() {
-        return loadedHomes;
+    public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+        return CommandSource.suggestMatching(KiloServer.getServer().getOnlineUser(
+                context.getSource().getPlayer()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
     }
 
-    public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-        return CommandSource.suggestMatching(getHomesOf(context.getSource().getPlayer().getUuid()).stream().map(Home::getName), builder);
+    public static int allowedHomes(OnlineServerUser user) {
+        int allowed = 0;
+        for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
+            String thisPerm = "kiloessentials.command.home.limit." + i;
+            if (Thimble.hasPermissionOrOp(((OnlineUser) user).getCommandSource(), thisPerm, 5)) {
+                allowed++;
+            }
+        }
+
+        return allowed;
     }
 
     public enum Reason {
-        UNSAFE_DESTINATION, MISSING_DIMENSION;
+        UNSAFE_DESTINATION, MISSING_DIMENSION, NO_PERMISSION;
     }
+
 }

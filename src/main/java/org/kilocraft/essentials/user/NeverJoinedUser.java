@@ -1,12 +1,15 @@
 package org.kilocraft.essentials.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.world.location.Location;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -34,12 +37,27 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public String getDisplayname() {
+    public String getDisplayName() {
         return null;
     }
 
     @Override
-    public Text getRankedDisplayname() {
+    public String getFormattedDisplayName() {
+        return null;
+    }
+
+    @Override
+    public Text getRankedDisplayName() {
+        return null;
+    }
+
+    @Override
+    public Text getRankedName() {
+        return null;
+    }
+
+    @Override
+    public String getNameTag() {
         return null;
     }
 
@@ -59,6 +77,20 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public Location getLocation() {
+        return null;
+    }
+
+    @Override
+    public @Nullable Location getLastSavedLocation() {
+        return null;
+    }
+
+    @Override
+    public void saveLocation() {
+    }
+
+    @Override
     public void setNickname(String name) {
     }
 
@@ -67,34 +99,8 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    @Nullable
-    public Identifier getBackDimId() {
-        return null;
-    }
+    public void setLastLocation(Location loc) {
 
-    @Override
-    @Nullable
-    public Vec3d getBackPos() {
-        return null;
-    }
-
-    @Override
-    public void setBackPos(Vec3d position) {
-    }
-
-    @Override
-    public void setBackDim(Identifier dim) {
-    }
-
-    @Override
-    public Identifier getPosDim() {
-        return null;
-    }
-
-    @Override
-    @Nullable
-    public Vec3d getPos() {
-        return null;
     }
 
     @Override
@@ -123,7 +129,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public void setCommandSpyOn(boolean on) {
-
     }
 
     @Override
@@ -135,14 +140,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     @Nullable
     public Date getFirstJoin() {
         return null;
-    }
-
-    @Override
-    public void addSubscriptionChannel(String id) {
-    }
-
-    @Override
-    public void removeSubscriptionChannel(String id) {
     }
 
     @Override
@@ -198,11 +195,48 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public int getDisplayParticleId() {
-        return 0;
+    public @Nullable String getLastSocketAddress() {
+        return null;
     }
 
     @Override
-    public void setDisplayParticleId(int i) {
+    public GameMode getGameMode() {
+        return null;
     }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+    }
+
+    @Override
+    public boolean canSit() {
+        return false;
+    }
+
+    @Override
+    public void setCanSit(boolean set) {
+    }
+
+    @Override
+    public int getTicksPlayed() {
+        return -1;
+    }
+
+    @Override
+    public void setTicksPlayed(int minutes) {
+    }
+
+    @Override
+    public void saveData() throws IOException {
+    }
+
+    @Override
+    public void trySave() throws CommandSyntaxException {
+    }
+
+    @Override
+    public boolean equals(User anotherUser) {
+        return false;
+    }
+
 }

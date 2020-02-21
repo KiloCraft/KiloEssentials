@@ -4,27 +4,24 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.Iterator;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static net.minecraft.command.arguments.TimeArgumentType.time;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 
-public class TimeCommand {
+public class TimeCommand extends EssentialCommand {
+    public TimeCommand() {
+        super("ke_time", CommandPermission.TIME);
+    }
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher){
-
-        LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("ke_time")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("time"),2));
-
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher){
         LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add")
                 .then(argument("time", time()).executes(context -> executeAdd(context, getInteger(context, "time"))));
 
@@ -52,24 +49,21 @@ public class TimeCommand {
                         literal("timedate").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay()),"time"))
                 );
 
-        argumentBuilder.then(addArg);
-        argumentBuilder.then(setArg);
-        argumentBuilder.then(queryArg);
-        dispatcher.register(argumentBuilder);
+        commandNode.addChild(setArg.build());
+        commandNode.addChild(queryArg.build());
+        commandNode.addChild(addArg.build());
     }
     private static String getFormattedTime(ServerWorld world){return String.format("%02d:%02d", (int)(world.getTimeOfDay() %24000 / 1000)+6, (int)(world.getTimeOfDay() %1000 / 16.6));}
 
 //    private static int getMinute(ServerWorld world){return (int)(world.getTimeOfDay() %1000 / 16.6);}
 //    private static int getHour(ServerWorld world){return (int)world.getTimeOfDay() %24000 / 1000;}
-    private static int getDay(ServerWorld world){return (int)world.getTimeOfDay() / 24000;}
-
-
+    private static int getDay(ServerWorld world) {
+        return (int)world.getTimeOfDay() / 24000;
+    }
 
     private static int getDayTime(ServerWorld serverWorld) {
         return (int)(serverWorld.getTimeOfDay() % 24000L);
     }
-
-
 
     private static int executeQuery(CommandContext<ServerCommandSource> context, int time, String query) {
         ServerWorld w = context.getSource().getWorld();
@@ -79,6 +73,7 @@ public class TimeCommand {
             case "day": KiloChat.sendLangMessageTo(context.getSource(), "command.time.query.day", time);break;
             case "time": KiloChat.sendLangMessageTo(context.getSource(), "command.time.query.time", getDay(w), getFormattedTime(w));break;
         }
+
         return time;
     }
 
@@ -92,7 +87,7 @@ public class TimeCommand {
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", timeName + " &8(&d" + time + "&8)&r");
 
-        return 1;
+        return SINGLE_SUCCESS;
     }
 
     public static int executeAdd(CommandContext<ServerCommandSource> context, int timeToAdd) {
@@ -104,7 +99,7 @@ public class TimeCommand {
         }
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", context.getSource().getWorld().getTimeOfDay());
-        return 1;
+        return SINGLE_SUCCESS;
     }
 
     public static int executeGet(CommandContext<ServerCommandSource> context, int time) throws CommandSyntaxException {

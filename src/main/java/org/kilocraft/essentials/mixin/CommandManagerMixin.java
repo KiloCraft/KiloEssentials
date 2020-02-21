@@ -5,12 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
-import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,10 +20,6 @@ import static org.kilocraft.essentials.commands.LiteralCommandModified.*;
 
 @Mixin(CommandManager.class)
 public abstract class CommandManagerMixin {
-    @Shadow
-    @Final
-    private static Logger LOGGER;
-
     @Shadow
     @Final
     private CommandDispatcher<ServerCommandSource> dispatcher;
@@ -53,9 +45,7 @@ public abstract class CommandManagerMixin {
     @Inject(method = "<init>", at = {@At("RETURN")})
     private void CommandManager(boolean boolean_1, CallbackInfo ci) {
         KiloEssentialsImpl.commandDispatcher = this.dispatcher;
-        LOGGER.debug("Set the CommandDispatcher (of ServerCommandSource) to: " + this.dispatcher);
     }
-
 
     @Redirect(method = "makeTreeForSource", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/tree/CommandNode;canUse(Ljava/lang/Object;)Z"))
     private <S> boolean modifySuggestions(CommandNode<S> commandNode, S source) {
@@ -65,11 +55,7 @@ public abstract class CommandManagerMixin {
     @Inject(method = "execute", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))
     private void modifyExecute(ServerCommandSource serverCommandSource_1, String string_1, CallbackInfoReturnable<Integer> cir) {
         cir.cancel();
-        OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(serverCommandSource_1, string_1);
-        KiloServer.getServer().triggerEvent(new OnCommandExecutionEventImpl(serverCommandSource_1, string_1));
-
-        if (!event.isCancelled())
-            KiloEssentials.getInstance().getCommandHandler().execute(serverCommandSource_1, string_1);
+        KiloEssentials.getInstance().getCommandHandler().execute(serverCommandSource_1, string_1);
     }
 
 }

@@ -1,14 +1,15 @@
 package org.kilocraft.essentials.api.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,9 +24,15 @@ public interface User {
 
     boolean hasNickname();
 
-    String getDisplayname();
+    String getDisplayName();
 
-    Text getRankedDisplayname();
+    String getFormattedDisplayName();
+
+    Text getRankedDisplayName();
+
+    Text getRankedName();
+
+    String getNameTag();
 
     List<String> getSubscriptionChannels();
 
@@ -33,32 +40,18 @@ public interface User {
 
     Optional<String> getNickname();
 
+    Location getLocation();
+
+    @Nullable
+    Location getLastSavedLocation();
+
+    void saveLocation();
+
     void setNickname(String name);
 
     void clearNickname();
 
-    @Nullable
-    Identifier getBackDimId();
-
-    @Nullable
-    Vec3d getBackPos();
-
-    void setBackPos(Vec3d position);
-
-    default void setBackPos(BlockPos blockPos) {
-        setBackPos(new Vec3d(blockPos));
-    }
-
-    default void setBackPos(double x, double y, double z) {
-        setBackPos(new Vec3d(x, y, z));
-    }
-
-    void setBackDim(Identifier dim);
-
-    Identifier getPosDim();
-
-    @Nullable
-    Vec3d getPos();
+    void setLastLocation(Location loc);
 
     boolean canFly();
 
@@ -76,10 +69,6 @@ public interface User {
 
     @Nullable
     Date getFirstJoin();
-
-    void addSubscriptionChannel(String id);
-
-    void removeSubscriptionChannel(String id);
 
     void setUpstreamChannelId(String id);
 
@@ -103,20 +92,32 @@ public interface User {
 
     <F extends UserProvidedFeature> F feature(FeatureType<F> type);
 
-    @Deprecated
     UserHomeHandler getHomesHandler();
 
-    /**
-     * This should be moved to it's own FeatureType
-     * @return
-     */
-    @Deprecated
-    int getDisplayParticleId();
+    @Nullable
+    String getLastSocketAddress();
+
+    GameMode getGameMode();
+
+    void setGameMode(GameMode mode);
+
+    boolean canSit();
+
+    void setCanSit(boolean set);
+
+    int getTicksPlayed();
+
+    void setTicksPlayed(int ticks);
 
     /**
-     * This should be moved to it's own FeatureType
-     * @return
+     * Saves the data if the user if offline
      */
-    @Deprecated
-    void setDisplayParticleId(int i);
+    void saveData() throws IOException;
+
+    /**
+     * Tries to save the user data
+     */
+    void trySave() throws CommandSyntaxException;
+
+    boolean equals(User anotherUser);
 }

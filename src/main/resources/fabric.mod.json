@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "id": "kee",
+  "id": "kilo_essentials",
   "version": "${version}",
 
-  "name": "Essentials for Fabric",
+  "name": "KiloEssentials",
   "description": "Server management made easy with this mod",
   "authors": [
     "CODY_AI",
     "MCrafterzz",
-    "Indicode",
-    "DrexHD",
-    "i509VCB"
+    "GiantNuker",
+    "i509VCB",
+    "Thanks to DrexHD"
   ],
 
   "license": "MIT",
@@ -24,7 +24,8 @@
   "mixins": [
     "kiloessentials.events.mixins.json",
     "kiloessentials.mixins.json",
-    "kiloessentials.accessors.mixins.json"
+    "kiloessentials.accessors.mixins.json",
+    "kiloessentials.patch.mixins.json"
   ],
 
   "depends": {

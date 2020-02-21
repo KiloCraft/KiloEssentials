@@ -1,7 +1,8 @@
 package org.kilocraft.essentials.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
-import org.kilocraft.essentials.config.KiloConfig;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import org.kilocraft.essentials.mixin.CommandManagerMixin;
 
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ public class LiteralCommandModified {
         add("ke_reload");
         add("ke_locate");
         add("ke_op");
-        add("ke_kill");
         add("ke_tp");
         add("ke_msg");
         add("ke_whisper");
@@ -31,11 +31,11 @@ public class LiteralCommandModified {
         add("ke_ban");
         add("ke_kick");
         add("ke_help");
+        add("ke_gamerule");
     }};
 
     private static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
         add("gamemode");
-        add("kill");
         add("help");
         add("locate");
         add("op");
@@ -48,16 +48,12 @@ public class LiteralCommandModified {
         add("teammsg");
         add("tm");
         add("time");
-        add("ban");
-        add("kick");
-        add("ban-ip");
-        add("pardon");
-        add("pardon-ip");
-        add("save-all");
+        add("enchant");
+        add("locatebiome");
     }};
 
     public static boolean isVanillaCommand(String nodeName) {
-        return LiteralCommandModified.vanillaCommandsToRename.contains(nodeName);
+        return vanillaCommandsToRename.contains(nodeName);
     }
 
     public static boolean isCustomCommand(String nodeName) {
@@ -76,18 +72,20 @@ public class LiteralCommandModified {
         return NMSCommandNamePrefix;
     }
 
+    public static boolean shouldUse(String name) {
+        if (isCustomCommand(keCommandPrefix + name) &&
+                isVanillaCommand(name.replace(NMSCommandNamePrefix, "")))
+            return true;
+
+        return isCustomCommand(keCommandPrefix + name) ||
+                !vanillaCommandsToRename.contains(name.replace(NMSCommandNamePrefix, ""));
+    }
 
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
-        if (!KiloConfig.getProvider().getMain().getBooleanSafely("commands.suggestions.require_permission", false)) {
-            if (commandNode.canUse(source)) {
-                if (isCustomCommand(commandNode.getName()))
-                    return true;
-            } else
-                return false;
-        }
+        if (commandNode instanceof LiteralCommandNode)
+            return shouldUse(commandNode.getName()) && commandNode.canUse(source);
 
-        return !isVanillaCommand(commandNode.getName().replace(NMSCommandNamePrefix, ""))
-                || isCustomCommand(keCommandPrefix + commandNode.getName());
+        return commandNode.canUse(source);
     }
 
 }

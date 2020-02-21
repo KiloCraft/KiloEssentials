@@ -41,6 +41,8 @@ public abstract class MinecraftServerMixin implements Brandable {
             TPSTracker.tps1.add(currentTps, diff);
             TPSTracker.tps5.add(currentTps, diff);
             TPSTracker.tps15.add(currentTps, diff);
+            TPSTracker.tps30.add(currentTps, diff);
+            TPSTracker.tps60.add(currentTps, diff);
             tickSection = curTime;
         }
     }

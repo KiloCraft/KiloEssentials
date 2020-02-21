@@ -7,13 +7,15 @@
   ],
   "server": [
     "CommandManagerMixin",
-    "CreeperEntityMixin",
-    "EntityRaytraceMixin",
+    "AnvilContainerMixin",
     "MinecraftServerMixin",
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
+    "PlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
-    "PlayerListHeaderS2CPacketMixin"
+    "ServerWorldMixin",
+    "CraftingTableContainerMixin",
+    "PlayerListS2CPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1

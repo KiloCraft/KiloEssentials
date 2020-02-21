@@ -1,38 +1,26 @@
 package org.kilocraft.essentials.commands.server;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.github.indicode.fabric.permissions.Thimble;
+import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.provided.BrandedServer;
 
-import static net.minecraft.server.command.CommandManager.literal;
-
-public class ReloadCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> reload = dispatcher.register(literal("ke_reload")
-            .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.server.manage.reload", 2))
-            .executes(context -> execute(context.getSource()))
-        );
-
-        dispatcher.register(literal("rl")
-                .requires(s -> Thimble.hasPermissionOrOp(s, "kiloessentials.server.manage.reload", 2))
-                .executes(context -> execute(context.getSource()))
-        );
-        dispatcher.getRoot().addChild(reload);
+public class ReloadCommand extends EssentialCommand {
+    public ReloadCommand() {
+        super("reload", CommandPermission.RELOAD, new String[]{"rl"});
     }
 
-    private static int execute(ServerCommandSource source) {
-        KiloChat.sendLangMessageTo(source, "command.reload.start");
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        argumentBuilder.executes(this::execute);
+    }
 
-        KiloConfig.load();
-        source.getMinecraftServer().reload();
-        BrandedServer.provide();
+    private int execute(CommandContext<ServerCommandSource> ctx) {
+        KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.start");
 
-        KiloChat.sendLangMessageTo(source, "command.reload.end");
-
-        return 1;
+        server.reload();
+        KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.end");
+        return SINGLE_SUCCESS;
     }
 }

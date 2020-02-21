@@ -1,44 +1,38 @@
 package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 
-public class HealCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> heal = literal("heal")
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
+public class HealCommand extends EssentialCommand {
+    public HealCommand() {
+        super("heal", CommandPermission.HEAL_SELF);
+    }
+
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
-                .requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.others"), 2))
-                .suggests(TabCompletions::allPlayers);
+                .requires(s -> KiloCommands.hasPermission(s, CommandPermission.HEAL_OTHERS))
+                .suggests(TabCompletions::allPlayers)
+                .executes(context -> execute(context.getSource(), getPlayer(context, "target")));
 
-        heal.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.self"), 2));
-        target.requires(s -> Thimble.hasPermissionOrOp(s, KiloCommands.getCommandPermission("heal.other"), 2));
-
-        heal.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
-        target.executes(context -> execute(context.getSource(), getPlayer(context, "target")));
-
-        heal.then(target);
-        dispatcher.register(heal);
+        argumentBuilder.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
+        commandNode.addChild(target.build());
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
-
-        if (CommandHelper.areTheSame(source, player)) {
+        if (CmdUtils.areTheSame(source, player)) {
             if (player.getHealth() == player.getMaximumHealth()) {
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.exception.self"));
             } else {

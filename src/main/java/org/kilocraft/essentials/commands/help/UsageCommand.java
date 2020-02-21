@@ -1,38 +1,40 @@
 package org.kilocraft.essentials.commands.help;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
 
-public class UsageCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> usageCommand = dispatcher.register(literal("usage").then(
-                        argument("command", word())
-                                .suggests(TabCompletions::usableCommands)
-                                .executes(context -> execute(context.getSource(), getString(context, "command")))
-                )
-        );
-
-        dispatcher.getRoot().addChild(usageCommand);
+public class UsageCommand extends EssentialCommand {
+    public UsageCommand() {
+        super("usage");
     }
 
-    private static int execute(ServerCommandSource source, String command) throws CommandSyntaxException {
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = argument("command", greedyString())
+                .suggests(TabCompletions::usableCommands)
+                .executes(this::execute);
+
+        commandNode.addChild(stringArgument.build());
+    }
+
+    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        String command = getString(ctx, "command");
         String fromLang = ModConstants.getLang().getProperty("command." + command + ".usage");
 
         if (fromLang != null)
-            KiloCommands.executeUsageFor("command." + command + ".usage", source);
+            KiloCommands.executeUsageFor("command." + command + ".usage", ctx.getSource());
         else
-            KiloCommands.executeSmartUsageFor(command, source);
+            KiloCommands.executeSmartUsageFor(command, ctx.getSource());
 
         return KiloCommands.SUCCESS();
     }

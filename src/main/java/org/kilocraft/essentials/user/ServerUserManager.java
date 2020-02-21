@@ -4,30 +4,39 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.ChatMessageC2SPacket;
+import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.EssentialPermissions;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
+import org.kilocraft.essentials.util.AnimatedText;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class ServerUserManager implements UserManager {
     private UserHandler userHandler = new UserHandler();
+    private List<OnlineUser> users = new ArrayList<>();
     private Map<String, UUID> nicknameToUUID = new HashMap<>();
     private Map<String, UUID> usernameToUUID = new HashMap<>();
     private Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
@@ -39,46 +48,55 @@ public class ServerUserManager implements UserManager {
     }
 
     @Override
-    public CompletableFuture<User> getOffline(String username) {
+    public CompletableFuture<Optional<User>> getOffline(String username) {
         UUID ret = usernameToUUID.get(username);
-        if(ret != null) {
-            return getOffline(ret);
+        if (ret != null) {
+            return getOffline(ret, username);
         }
 
         return this.getUserAsync(username);
     }
 
-    private CompletableFuture<User> getUserAsync(String username) {
-
+    private CompletableFuture<Optional<User>> getUserAsync(String username) {
         CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() -> {
             GameProfile profile = KiloServer.getServer().getVanillaServer().getUserCache().findByName(username);
 
             return profile;
-        }); // This is hacky and probably doesn't work.
+        }); // This is hacky and probably doesn't work. //CODY_AI: But it works!
 
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
     }
 
-
     @Override
-    public CompletableFuture<User> getOffline(UUID uuid) {
+    public CompletableFuture<Optional<User>> getOffline(UUID uuid, String username) {
         OnlineUser online = getOnline(uuid);
-        if(online != null) {
-            return CompletableFuture.completedFuture(online);
+        if (online != null)
+            return CompletableFuture.completedFuture(Optional.of(online));
+
+        if (userHandler.userExists(uuid)) {
+            ServerUser serverUser = new ServerUser(uuid);
+            serverUser.name = username;
+
+            return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
-        // TODO Impl Async checks later
-        return CompletableFuture.completedFuture(new NeverJoinedUser());
+
+        return CompletableFuture.completedFuture(Optional.of(new NeverJoinedUser()));
     }
 
     @Override
-    public CompletableFuture<User> getOffline(GameProfile profile) {
+    public CompletableFuture<Optional<User>> getOffline(GameProfile profile) {
         profileSanityCheck(profile);
-        return getOffline(profile.getId());
+        return getOffline(profile.getId(), profile.getName());
     }
 
     @Override
     public Map<UUID, OnlineServerUser> getOnlineUsers() {
         return onlineUsers;
+    }
+
+    @Override
+    public List<OnlineUser> getOnlineUsersAsList() {
+        return users;
     }
 
     @Override
@@ -117,8 +135,8 @@ public class ServerUserManager implements UserManager {
     }
 
     @Override
-    public void saveUser(OnlineServerUser user) throws IOException {
-        this.userHandler.saveData(user);
+    public boolean isOnline(User user) {
+        return this.onlineUsers.containsKey(user.getUuid());
     }
 
     @Override
@@ -143,14 +161,19 @@ public class ServerUserManager implements UserManager {
 
     @Override
     public void onChangeNickname(User user, String oldNick) {
-        this.nicknameToUUID.remove(oldNick);
-        if(user.hasNickname()) {
-            this.nicknameToUUID.put(user.getNickname().get(), user.getUuid());
+        if (oldNick != null) {
+            this.nicknameToUUID.remove(oldNick);
+            user.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, user.getUuid()));
+        }
+
+        if (user.isOnline()) {
+            KiloServer.getServer().getPlayerManager().sendToAll(
+                    new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, ((OnlineUser) user).getPlayer()));
         }
     }
 
     private void profileSanityCheck(GameProfile profile) {
-        if(!profile.isComplete() && profile.getId() == null) {
+        if (!profile.isComplete() && profile.getId() == null) {
             throw new IllegalArgumentException("Cannot use GameProfile with missing username to get an OfflineUser");
         }
     }
@@ -160,10 +183,9 @@ public class ServerUserManager implements UserManager {
 
         this.onlineUsers.put(playerEntity.getUuid(), serverUser);
         this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUuid());
+        this.users.add(serverUser);
 
-        if (serverUser.getNickname().isPresent()) {
-           this.nicknameToUUID.put(serverUser.getNickname().get(), playerEntity.getUuid());
-        }
+        serverUser.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, playerEntity.getUuid()));
 
         KiloServer.getServer().getChatManager().getChannel("global").join(serverUser);
         KiloChat.onUserJoin(serverUser);
@@ -171,9 +193,11 @@ public class ServerUserManager implements UserManager {
 
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
-        KiloServer.getServer().getChatManager().getChannel("global").leave(user);
-        this.nicknameToUUID.remove(user.getNickname());
+        KiloServer.getServer().getChatManager().getChannel(GlobalChat.getChannelId()).leave(user);
+        if (user.getNickname().isPresent())
+            this.nicknameToUUID.remove(user.getNickname().get());
         this.usernameToUUID.remove(player.getEntityName());
+        this.users.remove(user);
 
         try {
             this.userHandler.saveData(user);
@@ -191,30 +215,38 @@ public class ServerUserManager implements UserManager {
         player.updateLastActionTime();
         String string = StringUtils.normalizeSpace(packet.getChatMessage());
 
-        for(int i = 0; i < string.length(); ++i) {
+        for (int i = 0; i < string.length(); ++i) {
             if (!SharedConstants.isValidChar(string.charAt(i))) {
-                player.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+                if (KiloConfig.main().chat().kickForUsingIllegalCharacters)
+                    player.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+                else
+                    player.getCommandSource().sendError(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+
                 return;
             }
         }
 
-        if (string.startsWith("/"))
+        if (string.startsWith("/")) {
             KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
-        else
+        } else {
             KiloServer.getServer().getChatManager().onChatMessage(player, packet);
+        }
 
         ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
 
-        if (user.messageCooldown > 1000 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermissions.CHAT_BYPASS.getNode())) {
+        //user.messageCooldown += 20;
+        if (user.messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_BYPASS)) {
             player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
         }
 
     }
 
     public void onTick() {
-        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-            ((ServerUser) getOnline(playerEntity)).resetMessageCooldown();
+        for (OnlineUser user : users) {
+            if (user == null)
+                continue;
 
+            ((OnlineServerUser) user).onTick();
         }
     }
 
@@ -226,4 +258,83 @@ public class ServerUserManager implements UserManager {
         return this.punishManager;
     }
 
+    public static class Watchdog {
+        static final String PREFIX = KiloChat.getFormattedLang("watchdog.prefix");
+
+        public static void validate(OnlineServerUser user) {
+            if (user.getPlayer() == null || user.getCommandSource() == null)
+                return;
+
+            Validations.validateConnection(user);
+
+            if (UserHomeHandler.isEnabled())
+                Validations.validateHomes(user);
+        }
+
+        static class Validations {
+            private static void validateHomes(OnlineServerUser user) {
+                int allowed = UserHomeHandler.allowedHomes(user);
+                if (user.getHomesHandler().homes() > allowed && shouldReport(user)) {
+                    report("watchdog.warn.too_many_homes", user.getUsername(), user.getHomesHandler().homes(), allowed);
+                }
+            }
+
+            private static void validateConnection(OnlineServerUser user) {
+                for (OnlineUser onlineUser : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+                    if (
+                            !CmdUtils.areTheSame(user, onlineUser) &&
+                            shouldReport(user) && onlineUser.getLastSocketAddress() != null &&
+                            user.getLastSocketAddress() != null &&
+                            onlineUser.getLastSocketAddress().equals(user.getLastSocketAddress())
+                    ) {
+                        report("watchdog.warn.same_ip", user.getUsername(), onlineUser.getUsername());
+                    }
+                }
+            }
+
+        }
+
+        private static boolean shouldReport(OnlineServerUser user) {
+            return !user.isStaff();
+        }
+
+        public static void report(String key, Object... objects) {
+            String message = getReportMessage(key, objects);
+            KiloServer.getServer().sendWarning(message);
+
+            for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+                if (((OnlineServerUser) user).isStaff) {
+                    user.sendError(message);
+                }
+            }
+        }
+
+        private static String getReportMessage(String key, Object... objects) {
+            return PREFIX + " " + KiloChat.getFormattedLang(key, objects);
+        }
+
+
+    }
+
+    public static class UserLoadingText {
+        private AnimatedText animatedText;
+        public UserLoadingText(ServerPlayerEntity player) {
+            this.animatedText = new AnimatedText(0, 650, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+                    .append(LangText.get(true, "general.wait_server.frame1"))
+                    .append(LangText.get(true, "general.wait_server.frame2"))
+                    .append(LangText.get(true, "general.wait_server.frame3"))
+                    .append(LangText.get(true, "general.wait_server.frame4"))
+                    .build();
+        }
+
+        public UserLoadingText start() {
+            this.animatedText.setStyle(new Style().setColor(Formatting.YELLOW)).start();
+            return this;
+        }
+
+        public void stop() {
+            this.animatedText.remove();
+            this.animatedText = null;
+        }
+    }
 }

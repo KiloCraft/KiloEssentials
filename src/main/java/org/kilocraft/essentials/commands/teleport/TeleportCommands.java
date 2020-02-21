@@ -9,11 +9,12 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
+import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
 import static net.minecraft.command.arguments.DimensionArgumentType.dimension;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -22,27 +23,26 @@ import static net.minecraft.command.arguments.Vec3ArgumentType.vec3;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.SUCCESS;
-import static org.kilocraft.essentials.KiloCommands.getCommandPermission;
 
 public class TeleportCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> tptoCommand = dispatcher.register(literal("teleportto")
-            .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportto"), 2))
+            .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO))
             .then(argument("target", player()).suggests(TabCompletions::allPlayersExceptSource).executes(TeleportCommands::teleportTo))
         );
 
         LiteralCommandNode<ServerCommandSource> tpposCommand = dispatcher.register(literal("teleportpos")
-                .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportpos"), 2))
+                .requires(src -> KiloCommands.hasPermission(src , CommandPermission.TELEPORTPOS))
                 .then(argument("pos", vec3()).executes(TeleportCommands::teleportPos))
         );
 
         LiteralCommandNode<ServerCommandSource> tphereCommand = dispatcher.register(literal("teleporthere")
-                .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleporthere"), 2))
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTHERE))
                 .then(argument("target", player()).suggests(TabCompletions::allPlayersExceptSource).executes(TeleportCommands::teleportHere))
         );
 
         LiteralCommandNode<ServerCommandSource> tpinCommand = dispatcher.register(literal("teleportin")
-                .requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportin"), 2))
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN))
                 .then(argument("dimension", dimension()).suggests(TabCompletions::dimensions).then(argument("pos", vec3())
                         .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
                             .then(argument("target", player()).suggests(TabCompletions::allPlayersExceptSource)
@@ -51,16 +51,16 @@ public class TeleportCommands {
                 )
         );
 
-        dispatcher.register(literal("tpto").requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportto"), 2)).redirect(tptoCommand));
-        dispatcher.register(literal("tppos").requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportpos"), 2)).redirect(tpposCommand));
-        dispatcher.register(literal("tphere").requires(src -> hasPermissionOrOp(src, getCommandPermission("teleporthere"), 2)).redirect(tphereCommand));
-        dispatcher.register(literal("tpin").requires(src -> hasPermissionOrOp(src, getCommandPermission("teleportin"), 2)).redirect(tpinCommand));
+        dispatcher.register(literal("tpto").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO)).redirect(tptoCommand));
+        dispatcher.register(literal("tppos").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTPOS)).redirect(tpposCommand));
+        dispatcher.register(literal("tphere").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTHERE)).redirect(tphereCommand));
+        dispatcher.register(literal("tpin").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN)).redirect(tpinCommand));
     }
 
     private static int teleportTo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity target = getPlayer(ctx, "target");
 
-        BackCommand.saveLocation(target);
+        KiloServer.getServer().getOnlineUser(target).saveLocation();
         ctx.getSource().getPlayer().teleport(
                 target.getServerWorld(),
                 target.getPos().getX(), target.getPos().getY(), target.getPos().getZ(),
@@ -68,7 +68,7 @@ public class TeleportCommands {
         );
 
         KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "position",
-                getFormattedMessage(target), target.getName().asString());
+                getFormattedMessage(target), ctx.getSource().getPlayer().getName().asString());
 
         return SUCCESS();
     }
@@ -77,7 +77,7 @@ public class TeleportCommands {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         Vec3d vec = getVec3(ctx, "pos");
 
-        BackCommand.saveLocation(player);
+        KiloServer.getServer().getOnlineUser(player).saveLocation();
         ctx.getSource().getPlayer().teleport(
                 player.getServerWorld(),
                 vec.getX(), vec.getY(), vec.getZ(),
@@ -94,7 +94,7 @@ public class TeleportCommands {
         ServerPlayerEntity target = getPlayer(ctx, "target");
         ServerPlayerEntity sender = ctx.getSource().getPlayer();
 
-        BackCommand.saveLocation(target);
+        KiloServer.getServer().getOnlineUser(target).saveLocation();
         target.teleport(
                 sender.getServerWorld(),
                 sender.getPos().getX(), sender.getPos().getY(), sender.getPos().getZ(),
@@ -111,7 +111,7 @@ public class TeleportCommands {
         ServerWorld targetWorld = KiloServer.getServer().getVanillaServer().getWorld(DimensionArgumentType.getDimensionArgument(ctx, "dimension"));
         Vec3d vec = getVec3(ctx, "pos");
 
-        BackCommand.saveLocation(target);
+        KiloServer.getServer().getOnlineUser(target).saveLocation();
         target.teleport(
                 targetWorld,
                 vec.getX(), vec.getY(), vec.getZ(),

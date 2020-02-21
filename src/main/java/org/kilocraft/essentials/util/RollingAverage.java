@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 
 public class RollingAverage {
     public static final int SAMPLE_INTERVAL = 20;
-    public static final java.math.BigDecimal TPS_BASE = new java.math.BigDecimal(1E9).multiply(new java.math.BigDecimal(SAMPLE_INTERVAL));
+    public static final java.math.BigDecimal TPS_BASE = new java.math.BigDecimal("1E9").multiply(new java.math.BigDecimal(SAMPLE_INTERVAL));
     private static final int TPS = 20;
     public static final int TICK_TIME = 1000000000 / TPS;
     private static final long SEC_IN_NANO = 1000000000;

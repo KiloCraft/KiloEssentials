@@ -13,8 +13,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -25,16 +28,13 @@ import org.kilocraft.essentials.user.ServerUser;
 import java.util.UUID;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
-import static org.kilocraft.essentials.KiloCommands.SUCCESS;
-import static org.kilocraft.essentials.KiloCommands.hasPermission;
 
-public class BuildermsgCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> rootCommand = dispatcher.register(literal("buildermsg")
-                .requires(src -> hasPermission(src, "buildermsg", 2)));
+public class BuildermsgCommand extends EssentialCommand {
+    public BuildermsgCommand() {
+        super("buildermsg", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_BUILDERMSG));
+    }
 
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> listArg = literal("list")
                 .executes(BuildermsgCommand::executeList).build();
 
@@ -56,11 +56,11 @@ public class BuildermsgCommand {
         ArgumentCommandNode<ServerCommandSource, String> sendArg = argument("message", greedyString())
                 .executes(BuildermsgCommand::executeSend).build();
 
-        rootCommand.addChild(receiveArg);
-        rootCommand.addChild(listArg);
-        rootCommand.addChild(joinArg);
-        rootCommand.addChild(leaveArg);
-        rootCommand.addChild(sendArg);
+        commandNode.addChild(receiveArg);
+        commandNode.addChild(joinArg);
+        commandNode.addChild(listArg);
+        commandNode.addChild(leaveArg);
+        commandNode.addChild(sendArg);
     }
 
     private static int executeJoin(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
@@ -68,20 +68,20 @@ public class BuildermsgCommand {
         KiloServer.getServer().getChatManager().getChannel(BuilderChat.getChannelId()).join((ServerUser) user);
         user.setUpstreamChannelId(BuilderChat.getChannelId());
 
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
     private static int executeLeave(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
         KiloServer.getServer().getChatManager().getChannel(BuilderChat.getChannelId()).leave((ServerUser) user);
         user.setUpstreamChannelId(GlobalChat.getChannelId());
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
     private static int executeSend(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String message = StringArgumentType.getString(ctx, "message");
         KiloServer.getServer().getChatManager().getChannel(BuilderChat.getChannelId()).onChatMessage(ctx.getSource().getPlayer(), message);
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
     private static int executeList(CommandContext<ServerCommandSource> ctx) {
@@ -91,18 +91,18 @@ public class BuildermsgCommand {
             OnlineUser user = KiloServer.getServer().getOnlineUser(subscriber);
 
             text.append(new LiteralText("\n- ").formatted(Formatting.GRAY))
-                    .append(user.getRankedDisplayname());
+                    .append(user.getRankedDisplayName().asFormattedString());
         }
 
         ctx.getSource().sendFeedback(text, false);
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
     private static int executeToggleReceive(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
         executeSetReceive(ctx, !KiloServer.getServer().getChatManager().getChannel(BuilderChat.getChannelId()).isSubscribed(user));
 
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
     private static int executeSetReceive(CommandContext<ServerCommandSource> ctx, boolean bool) throws CommandSyntaxException {
@@ -111,13 +111,13 @@ public class BuildermsgCommand {
         if (!bool) {
             KiloServer.getServer().getChatManager().getChannel(BuilderChat.getChannelId()).leave((ServerUser) user);
             KiloChat.sendLangMessageTo(ctx.getSource(), "command.setchannel.unsubscribed", BuilderChat.getChannelId());
-            return SUCCESS();
+            return SINGLE_SUCCESS;
         }
 
         KiloServer.getServer().getChatManager().getChannel(BuilderChat.getChannelId()).join((ServerUser) user);
         KiloChat.sendLangMessageTo(ctx.getSource(), "command.setchannel.subscribed", BuilderChat.getChannelId());
 
-        return SUCCESS();
+        return SINGLE_SUCCESS;
     }
 
 

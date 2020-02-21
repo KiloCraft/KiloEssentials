@@ -7,8 +7,6 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.config.ConfigValueGetter;
-import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.ArrayList;
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class BuilderChat implements ChatChannel {
-    private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
     private List<UUID> subscribers;
 
     public BuilderChat() {
@@ -64,11 +61,6 @@ public class BuilderChat implements ChatChannel {
             return;
 
         this.subscribers.add(user.getUuid());
-        sendToSubscribers(new ChatMessage(
-                config.getFormatter(true, "chat.channels.meta.builder_prefix") +
-                        config.getFormatter(true, "chat.channels.messages.join",
-                                user.getUsername() + "&r", getChannelId()),
-                true));
     }
 
     @Override
@@ -76,11 +68,6 @@ public class BuilderChat implements ChatChannel {
         if (!isSubscribed((OnlineUser) user))
             return;
 
-        sendToSubscribers(new ChatMessage(
-                config.getFormatter(true, "chat.channels.meta.builder_prefix") +
-                        config.getFormatter(true, "chat.channels.messages.leave",
-                                user.getUsername() + "&r", getChannelId()),
-                true));
         this.subscribers.remove(user.getUuid());
     }
 

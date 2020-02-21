@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.nbt.NbtIo;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.api.KiloEssentials;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,12 +10,10 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class UserHandler {
-    private static File saveDir = new File(System.getProperty("user.dir") + "/KiloEssentials/users/");
+    private static File saveDir = new File(KiloEssentials.getDataDirectory() + "users/");
 
     public void handleUser(ServerUser serverUser) throws IOException {
-        if (getUserFile(serverUser).exists())
-            serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(serverUser))));
-        else {
+        if (!loadUser(serverUser)) {
             saveDir.mkdirs();
             getUserFile(serverUser).createNewFile();
             saveData(serverUser);
@@ -24,10 +22,12 @@ public class UserHandler {
 
     }
 
-    public void loadUser(ServerUser serverUser) throws IOException {
-        if (getUserFile(serverUser).exists())
+    public boolean loadUser(ServerUser serverUser) throws IOException {
+        if (getUserFile(serverUser).exists()) {
             serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(serverUser))));
-
+            return true;
+        }
+        return false;
     }
 
     void saveData(ServerUser serverUser) throws IOException {
@@ -43,12 +43,16 @@ public class UserHandler {
         }
     }
 
+    boolean userExists(UUID uuid) {
+        return getUserFile(uuid).exists();
+    }
+
     public File getUserFile(ServerUser serverUser) {
-        return new File( KiloConfig.getWorkingDirectory() + "/KiloEssentials/users/" + serverUser.getUuid().toString() + ".dat");
+        return getUserFile(serverUser.uuid);
     }
 
     public File getUserFile(UUID uuid) {
-        return new File( KiloConfig.getWorkingDirectory() + "/KiloEssentials/users/" + uuid.toString() + ".dat");
+        return KiloEssentials.getDataDirPath().resolve("users").resolve(uuid.toString() + ".dat").toFile();
     }
 
 }

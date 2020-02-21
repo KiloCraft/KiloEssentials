@@ -1,21 +1,12 @@
 package org.kilocraft.essentials;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
+import org.kilocraft.essentials.config.KiloConfig;
 
 public class KiloEssentialsMod implements DedicatedServerModInitializer {
-
 	@Override
     public void onInitializeServer() {
-        new KiloEssentialsImpl(
-                new KiloEvents(),
-                new KiloCommands()
-        );
-
-        //TODO: Clean this up
-//        ModConstants.getLogger().info("Initializing KiloEssentials...");
-//        ThreadManager.setMainName("KiloEssentials");
-//        ThreadManager mainThread = new ThreadManager(new ThreadedKiloEssentialsMod());
-//        mainThread.setMainThread(true);
-//        mainThread.start();
+	    KiloDebugUtils.validateDebugMode();
+        new KiloEssentialsImpl(new KiloEvents(), new KiloConfig());
     }
 }

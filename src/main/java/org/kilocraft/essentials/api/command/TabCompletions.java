@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
@@ -19,10 +18,7 @@ import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -30,46 +26,42 @@ public class TabCompletions {
 
     private static PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 
+    public static CompletableFuture<Suggestions> noSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return new CompletableFuture<>();
+    }
+
     public static CompletableFuture<Suggestions> allPlayers(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(playerManager.getPlayerNames(), builder);
+        return CommandSource.suggestMatching(playerManager.getPlayerList().stream()
+                .map(PlayerEntity::getEntityName), builder);
     }
 
     public static CompletableFuture<Suggestions> allPlayersExceptSource(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter((p) -> {
             try {
                 return !p.equals(context.getSource().getPlayer());
-            } catch (CommandSyntaxException e) {
-                e.printStackTrace();
-            }
+            } catch (CommandSyntaxException ignored) {}
             return false;
         }).map(PlayerEntity::getEntityName), builder);
     }
-    
+
     public static CompletableFuture<Suggestions> allPlayerNicks(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        ArrayList<String> nicks = new ArrayList<String>();
-        for (int i = 0; i < playerManager.getCurrentPlayerCount(); i++) {
-        	ServerPlayerEntity player = playerManager.getPlayerList().get(i);
-            OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
-        	if (user.hasNickname()) {
-        		nicks.add(user.getUsername());
-        	}
+        List<String> nicks = new ArrayList<>();
+        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+            nicks.add(TextFormat.removeAlternateColorCodes('&', user.getDisplayName()));
+            nicks.add(user.getUsername());
         }
-        
+
         return CommandSource.suggestMatching(nicks, builder);
     }
-    
 
     public static CompletableFuture<Suggestions> dimensions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         List<String> dims = new ArrayList<>();
-        Registry.DIMENSION.forEach(dimType -> dims.add(DimensionType.getId(dimType).toString()));
+        Registry.DIMENSION_TYPE.forEach(dimType -> dims.add(Objects.requireNonNull(DimensionType.getId(dimType)).getPath()));
         return CommandSource.suggestMatching(dims.stream(), builder);
     }
 
     public static CompletableFuture<Suggestions> usableCommands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter((child) -> LiteralCommandModified.canSourceUse(child, context.getSource())).map(CommandNode::getName),
-                builder
-        );
+        return KiloCommands.toastSuggestions(context, builder);
     }
 
     public static CompletableFuture<Suggestions> commands(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
@@ -106,6 +98,14 @@ public class TabCompletions {
         }
 
         return null;
+    }
+
+    public static CompletableFuture<Suggestions> boolStyle(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(new String[]{"on", "off"}, builder);
+    }
+
+    public static CompletableFuture<Suggestions> stateSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(new String[]{"on", "off", "toggle"}, builder);
     }
 
     public static CompletableFuture<Suggestions> suggestAtArg(int arg, String[] strings, CommandContext<ServerCommandSource> context) {
@@ -153,7 +153,6 @@ public class TabCompletions {
     }
 
     private static int getCursorAtArg(int pos, CommandContext<ServerCommandSource> context) {
-
         return getInput(context).split(" ").length;
     }
 

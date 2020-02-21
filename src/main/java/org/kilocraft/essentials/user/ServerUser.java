@@ -1,19 +1,29 @@
 package org.kilocraft.essentials.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.Formatting;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -35,10 +45,8 @@ public class ServerUser implements User {
     UUID uuid;
     String name = "";
     private UserHomeHandler homeHandler;
-    private Vec3d backPos = Vec3d.ZERO;
-    private Vec3d pos = Vec3d.ZERO;
-    private Identifier lastPosDim;
-    private Identifier posDim;
+    private Vec3dLocation location;
+    private Vec3dLocation lastLocation;
     private String nickname;
     private boolean canFly = false;
     private boolean invulnerable = false;
@@ -47,13 +55,18 @@ public class ServerUser implements User {
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
     private int randomTeleportsLeft = 3;
-    private int displayParticleId = 0;
     public int messageCooldown;
     private List<String> subscriptions;
     private String upstreamChannelId;
     private boolean socialSpy = false;
     private boolean commandSpy = false;
-    
+    private boolean canSit = false;
+    private Map<String, UUID> ignoreList;
+    boolean isStaff = false;
+    String lastSocketAddress;
+    GameMode gameMode = GameMode.NOT_SET;
+    int ticksPlayed = 0;
+
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
         if (UserHomeHandler.isEnabled()) // TODO Use new feature provider in future
@@ -61,7 +74,8 @@ public class ServerUser implements User {
         try {
             manager.getHandler().handleUser(this);
         } catch (IOException e) {
-            KiloEssentials.getLogger().error("Failed to Load User for [" + uuid.toString() + "]");
+            KiloEssentials.getLogger().error("Failed to Load User Data [" + uuid.toString() + "]");
+            e.printStackTrace();
         }
 
         this.subscriptions = new ArrayList<>();
@@ -72,35 +86,20 @@ public class ServerUser implements User {
         CompoundTag metaTag = new CompoundTag();
         CompoundTag cacheTag = new CompoundTag();
 
-        // Here we store the players previous position that is refered to with /back.
-        if(this.getBackPos() != null && this.getBackDimId() != null) { // Well this crashes without a safety check.
-            CompoundTag lastPosTag = new CompoundTag();
-            lastPosTag.putDouble("x", this.backPos.getX());
-            lastPosTag.putDouble("y", this.backPos.getY());
-            lastPosTag.putDouble("z", this.backPos.getZ());
-            lastPosTag.putString("dim", this.lastPosDim.toString());
-            cacheTag.put("lastPos", lastPosTag);
+        // Here we store the players current location
+        if (this.location != null) {
+            mainTag.put("loc", this.location.toTag());
+            this.location.shortDecimals();
         }
 
-        // Now the User's real position.
-        CompoundTag posTag = new CompoundTag();
-        posTag.putDouble("x", this.pos.getX());
-        posTag.putDouble("y", this.pos.getY());
-        posTag.putDouble("z", this.pos.getZ());
-
-        if(this.posDim == null) { // This should be impossible
-            // TODO Notify admins and throw a giant error log into Console to reflect error. Set it to a temp value
-            this.posDim = new Identifier("minecraft", "overworld");
-        }
-
-        posTag.putString("dim", this.posDim.toString());
-        mainTag.put("pos", posTag);
+        if (this.lastLocation != null)
+            cacheTag.put("lastLoc", this.lastLocation.toTag());
 
         // Private messaging stuff
-        if(this.getLastPrivateMessageSender() != null) {
+        if (this.getLastPrivateMessageSender() != null) {
             CompoundTag lastMessageTag = new CompoundTag();
             lastMessageTag.putString("destUUID", this.getLastPrivateMessageSender().toString());
-            if(this.getLastPrivateMessage() != null) {
+            if (this.getLastPrivateMessage() != null) {
                 lastMessageTag.putString("text", this.getLastPrivateMessage());
             }
             cacheTag.put("lastMessage", lastMessageTag);
@@ -108,11 +107,19 @@ public class ServerUser implements User {
 
         // Chat channels stuff
         CompoundTag channelsCache = new CompoundTag();
-        CompoundTag subscriptionsTag = new CompoundTag();
 
-        if (this.upstreamChannelId != null)
+        if (this.upstreamChannelId != null) {
             channelsCache.putString("upstreamChannelId", this.upstreamChannelId);
-        cacheTag.put("channels", channelsCache);
+            cacheTag.put("channels", channelsCache);
+        }
+
+        if (this.lastSocketAddress != null) {
+            cacheTag.putString("lIP", this.lastSocketAddress);
+        }
+
+        if (this.gameMode != GameMode.NOT_SET) {
+            cacheTag.putInt("gameMode", this.gameMode.getId());
+        }
 
         // Abilities
         if (this.canFly)
@@ -127,16 +134,35 @@ public class ServerUser implements User {
         if (this.socialSpy)
             cacheTag.putBoolean("commandSpy", true);
 
-        // TODO When possible, move particle logic to a feature.
-        if (this.displayParticleId != 0)
-            metaTag.putInt("displayParticleId", this.displayParticleId);
+        if (this.canSit)
+            cacheTag.putBoolean("canSit", true);
+
+        if (this.ignoreList != null) {
+            ListTag listTag = new ListTag();
+            this.ignoreList.forEach((name, uuid) -> {
+                CompoundTag ignoredOne = new CompoundTag();
+                ignoredOne.putUuid("uuid", uuid);
+                ignoredOne.putString("name", name);
+
+                System.out.println("Saving ignored: " + name);
+
+                listTag.add(ignoredOne);
+            });
+
+            cacheTag.put("ignored", listTag);
+        }
 
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
-
         metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
 
-        if(this.nickname != null) // Nicknames are Optional now.
+        if (this.ticksPlayed != -1)
+            metaTag.putInt("ticksPlayed", this.ticksPlayed);
+
+        if (this.nickname != null) // Nicknames are Optional now.
             metaTag.putString("nick", this.nickname);
+
+        if (this.isStaff)
+            metaTag.putBoolean("isStaff", true);
 
         // Home logic, TODO Abstract this with features in future.
         CompoundTag homeTag = new CompoundTag();
@@ -155,30 +181,23 @@ public class ServerUser implements User {
     	CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
-        if (cacheTag.contains("lastPos")) {
-        	CompoundTag lastPosTag = cacheTag.getCompound("lastPos");
-        	this.backPos = new Vec3d(
-        		lastPosTag.getDouble("x"),
-                lastPosTag.getDouble("y"),
-                lastPosTag.getDouble("z")
-        	);
-        	this.lastPosDim = new Identifier(lastPosTag.getString("dim"));
+        if (cacheTag.contains("lastLoc")) {
+            this.lastLocation = Vec3dLocation.dummy();
+            this.lastLocation.fromTag(cacheTag.getCompound("lastLoc"));
         }
 
-        CompoundTag posTag = cacheTag.getCompound("pos");
-        this.pos = new Vec3d(
-                posTag.getDouble("x"),
-                posTag.getDouble("y"),
-                posTag.getDouble("z")
-        );
-        this.posDim = new Identifier(posTag.getString("dim"));
+        if (compoundTag.contains("loc")) {
+        	this.location = Vec3dLocation.dummy();
+        	this.location.fromTag(compoundTag.getCompound("loc"));
+        	this.location.shortDecimals();
+        }
 
-        if(cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
+        if (cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
             CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
-            if(lastMessageTag.contains("destUUID", NBTTypes.STRING))
+            if (lastMessageTag.contains("destUUID", NBTTypes.STRING))
                 this.lastPrivateMessageGetterUUID = UUID.fromString(lastMessageTag.getString("destUUID"));
 
-            if(lastMessageTag.contains("text", NBTTypes.STRING))
+            if (lastMessageTag.contains("text", NBTTypes.STRING))
                 this.lastPrivateMessageText = lastMessageTag.getString("text");
 
         }
@@ -192,6 +211,14 @@ public class ServerUser implements User {
                 this.upstreamChannelId = GlobalChat.getChannelId();
         }
 
+        if (cacheTag.contains("lIP")) {
+            this.lastSocketAddress = cacheTag.getString("lIP");
+        }
+
+        if (cacheTag.contains("gameMode")) {
+            this.gameMode = GameMode.byId(cacheTag.getInt("gameMode"));
+        }
+
         if (cacheTag.getBoolean("isFlyEnabled")) {
             this.canFly = true;
         }
@@ -200,26 +227,43 @@ public class ServerUser implements User {
             this.invulnerable = true;
         }
 
+        if (cacheTag.contains("socialSpy"))
+            this.socialSpy = cacheTag.getBoolean("socialSpy");
+        if (cacheTag.contains("commandSpy"))
+            this.commandSpy = cacheTag.getBoolean("commandSpy");
 
-        this.socialSpy = cacheTag.getBoolean("socialSpy");
-        this.commandSpy = cacheTag.getBoolean("socialSpy");
+        if (cacheTag.contains("canSit"))
+            this.canSit = cacheTag.getBoolean("canSit");
 
-        if (metaTag.getInt("displayParticleId") != 0)
-            this.displayParticleId = metaTag.getInt("displayParticleId");
+        ListTag ignoreList = cacheTag.getList("ignored", 10);
+        if (ignoreList != null && !ignoreList.isEmpty()) {
+            this.ignoreList = new HashMap<>();
+            for (int i = 0; i < ignoreList.size(); i++) {
+                CompoundTag ignoredOne = ignoreList.getCompound(i);
+                this.ignoreList.put(ignoredOne.getString("name"), ignoredOne.getUuid("uuid"));
+            }
+        }
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
 
+        if (metaTag.contains("ticksPlayed"))
+            this.ticksPlayed = metaTag.getInt("ticksPlayed");
+
         if (metaTag.contains("nick")) // Nicknames are an Optional, so we compensate for that.
             this.nickname = metaTag.getString("nick");
+
+        if (metaTag.contains("isStaff"))
+            this.isStaff = true;
 
         this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         this.randomTeleportsLeft = compoundTag.getInt("rtpLeft");
     }
 
-    public void updatePos() {
-        this.pos = KiloServer.getServer().getPlayer(this.uuid).getPos();
-        this.posDim = Registry.DIMENSION.getId(KiloServer.getServer().getPlayer(this.uuid).getServerWorld().getDimension().getType());
+    public void updateLocation() {
+        if (this instanceof OnlineUser && ((OnlineUser) this).getPlayer().getPos() != null) {
+            this.location = Vec3dLocation.of((OnlineUser) this).shortDecimals();
+        }
     }
 
     private Date getUserFirstJoinDate(String stringToParse) {
@@ -236,9 +280,48 @@ public class ServerUser implements User {
         return this.homeHandler;
     }
 
+    @Nullable
+    @Override
+    public String getLastSocketAddress() {
+        return this.lastSocketAddress;
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return this.gameMode;
+    }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+        this.gameMode = mode;
+
+        if (this.isOnline())
+            ((OnlineUser) this).getPlayer().setGameMode(mode);
+    }
+
+    @Override
+    public boolean canSit() {
+        return this.canSit;
+    }
+
+    @Override
+    public void setCanSit(boolean set) {
+        this.canSit = set;
+    }
+
+    @Override
+    public int getTicksPlayed() {
+        return this.ticksPlayed;
+    }
+
+    @Override
+    public void setTicksPlayed(int ticks) {
+        this.ticksPlayed = ticks;
+    }
+
     @Override
     public boolean isOnline() {
-        return KiloServer.getServer().getPlayerManager().getPlayer(this.uuid) != null;
+        return this instanceof OnlineUser || KiloServer.getServer().getUserManager().isOnline(this);
     }
 
     @Override
@@ -246,15 +329,31 @@ public class ServerUser implements User {
         return this.getNickname().isPresent();
     }
 
-    @Override
-    public String getDisplayname() {
-        return (hasNickname()) ? this.nickname : this.name;
+    public String getDisplayName() {
+        return (this.getNickname().isPresent() || this.nickname != null) ? this.nickname : this.name;
     }
 
     @Override
-    public Text getRankedDisplayname() {
-        return Team.modifyText(
-                KiloServer.getServer().getPlayer(this.uuid).getScoreboardTeam(), new LiteralText(getDisplayname()));
+    public String getFormattedDisplayName() {
+        return TextFormat.translate(getDisplayName() + "&r");
+    }
+
+    @Override
+    public Text getRankedDisplayName() {
+        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(getFormattedDisplayName()));
+    }
+
+    @Override
+    public Text getRankedName() {
+        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(this.name));
+    }
+
+    @Override
+    public String getNameTag() {
+        String str = this.isOnline() ? KiloConfig.messages().general().userTags().online :
+                KiloConfig.messages().general().userTags().offline;
+        return str.replace("{USER_NAME}", this.name)
+                .replace("{USER_DISPLAYNAME}", this.getFormattedDisplayName());
     }
 
     @Override
@@ -283,6 +382,26 @@ public class ServerUser implements User {
     }
 
     @Override
+    public Location getLocation() {
+        if (this instanceof OnlineUser && this.location == null && ((OnlineUser) this).getPlayer() != null)
+            updateLocation();
+
+        return this.location;
+    }
+
+    @Nullable
+    @Override
+    public Location getLastSavedLocation() {
+        return this.lastLocation;
+    }
+
+    @Override
+    public void saveLocation() {
+        if (this instanceof OnlineUser)
+            this.lastLocation = Vec3dLocation.of((OnlineUser) this).shortDecimals();
+    }
+
+    @Override
     public void setNickname(String name) {
         String oldNick = this.nickname;
         this.nickname = name;
@@ -291,37 +410,13 @@ public class ServerUser implements User {
 
     @Override
     public void clearNickname() {
+        KiloServer.getServer().getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
         this.nickname = null;
     }
 
     @Override
-    public Vec3d getBackPos() {
-        return this.backPos;
-    }
-
-    @Override
-    public Vec3d getPos() {
-        return this.pos;
-    }
-
-    @Override
-    public Identifier getPosDim() {
-        return this.posDim;
-    }
-
-    @Override
-    public Identifier getBackDimId() {
-        return this.lastPosDim;
-    }
-
-    @Override
-    public void setBackPos(Vec3d pos) {
-        this.backPos = pos;
-    }
-
-    @Override
-    public void setBackDim(Identifier dimId) {
-        this.lastPosDim = dimId;
+    public void setLastLocation(Location loc) {
+        this.lastLocation = (Vec3dLocation) loc;
     }
 
     @Override
@@ -370,16 +465,6 @@ public class ServerUser implements User {
     }
 
     @Override
-    public void addSubscriptionChannel(String id) {
-        this.subscriptions.add(id);
-    }
-
-    @Override
-    public void removeSubscriptionChannel(String id) {
-        this.subscriptions.remove(id);
-    }
-
-    @Override
     public void setUpstreamChannelId(String id) {
         this.upstreamChannelId = id;
     }
@@ -395,10 +480,6 @@ public class ServerUser implements User {
 
     public void setRTPsLeft(int amount) {
         this.randomTeleportsLeft = amount;
-    }
-    
-    public int getDisplayParticleId () {
-    	return this.displayParticleId;
     }
 
     public void setFlight(boolean set) {
@@ -423,13 +504,69 @@ public class ServerUser implements User {
         return null; // TODO Impl
     }
 
-    public void setDisplayParticleId (int id) {
-    	this.displayParticleId = id;
+    @Override
+    public void saveData() throws IOException {
+        if (!this.isOnline())
+            manager.getHandler().saveData(this);
     }
 
-    public void resetMessageCooldown() {
-        if (this.messageCooldown > 0) {
-            --this.messageCooldown;
+    @Override
+    public void trySave() throws CommandSyntaxException {
+        if (this.isOnline())
+            return;
+
+        try {
+            this.saveData();
+        } catch (IOException e) {
+            throw new SimpleCommandExceptionType(new LiteralText(e.getMessage()).formatted(Formatting.RED)).create();
+        }
+    }
+
+    public Map<String, UUID> getIgnoreList() {
+        if (this.ignoreList == null)
+            this.ignoreList = new HashMap<>();
+
+        return this.ignoreList;
+    }
+
+    public boolean isStaff() {
+        if (this.isOnline())
+            this.isStaff = KiloEssentials.hasPermissionNode(((OnlineUser) this).getCommandSource(), EssentialPermission.STAFF);
+
+        return this.isStaff;
+    }
+
+    @SuppressWarnings({"untested", "Do Not Run If the User is Online"})
+    public void clear() {
+        if (this.isOnline())
+            return;
+
+        manager = null;
+        dateFormat = null;
+        uuid = null;
+        name = null;
+        homeHandler = null;
+        location = null;
+        lastLocation = null;
+        nickname = null;
+        lastPrivateMessageGetterUUID = null;
+        lastPrivateMessageText = null;
+        firstJoin = null;
+        subscriptions = null;
+        upstreamChannelId = null;
+        ignoreList = null;
+    }
+
+    @Override
+    public boolean equals(User anotherUser) {
+        return anotherUser.getUuid().equals(this.uuid) || anotherUser.getUsername().equals(this.getUsername());
+    }
+
+    public static void saveLocationOf(ServerPlayerEntity player) {
+        OnlineUser user = KiloServer.getServer().getOnlineUser(player);
+
+        if (user != null) {
+            user.saveLocation();
         }
     }
 

@@ -3,7 +3,7 @@ package org.kilocraft.essentials.api.chat;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 
 public class LangText {
 
@@ -48,7 +48,7 @@ public class LangText {
             result = String.format(lang, objects);
         }
         LiteralText literalText;
-        if (CommandHelper.isConsole(source)) {
+        if (CmdUtils.isConsole(source)) {
             literalText = new LiteralText(TextFormat.removeAlternateColorCodes('&', result));
         } else {
             literalText = new LiteralText(TextFormat.translateAlternateColorCodes('&', result));

@@ -10,17 +10,17 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
-import org.kilocraft.essentials.commands.CommandHelper;
-import org.kilocraft.essentials.config.ConfigValueGetter;
+import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.provided.localVariables.UserConfigVariables;
+import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
+import org.kilocraft.essentials.config.messages.Messages;
 import org.kilocraft.essentials.user.ServerUser;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class KiloChat {
-	private static ConfigValueGetter config = KiloConfig.getProvider().getMain();
-	private static ConfigValueGetter messages = KiloConfig.getProvider().getMessages();
+	private static ChatConfigSection config = KiloConfig.main().chat();
+	private static Messages messages = KiloConfig.messages();
 
 	public static String getFormattedLang(String key) {
 		return getFormattedString(ModConstants.getLang().getProperty(key), (Object) null);
@@ -43,7 +43,7 @@ public class KiloChat {
 	}
 
 	public static void sendMessageTo(ServerPlayerEntity player, Text text) {
-		player.addChatMessage(text, false);
+		player.addMessage(text, false);
 	}
 
 	public static void sendMessageTo(ServerCommandSource source, Text text) {
@@ -51,24 +51,31 @@ public class KiloChat {
 	}
 
 	public static void sendMessageToSource(ServerCommandSource source, ChatMessage message) {
-		if (CommandHelper.isConsole(source))
+		if (CmdUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(message.getOriginal());
 		else
 			source.sendFeedback(new LiteralText(message.getFormattedMessage()), false);
 	}
 
 	public static void sendMessageToSource(ServerCommandSource source, Text text) {
-		if (CommandHelper.isConsole(source))
+		if (CmdUtils.isConsole(source))
 			getServer().sendMessage(text.asString());
 		else
 			source.sendFeedback(text, false);
 	}
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key) {
-		if (CommandHelper.isConsole(source))
+		if (CmdUtils.isConsole(source))
 			getServer().sendMessage(getFormattedLang(key));
 		else
 			source.sendFeedback(LangText.get(true, key), false);
+	}
+
+	public static void sendLangCommandFeedback(ServerCommandSource source, String key, boolean sendToOPs, Object... objects) {
+		if (CmdUtils.isConsole(source))
+			getServer().sendMessage(getFormattedLang(key, objects));
+		else
+			source.sendFeedback(LangText.getFormatter(true, key, objects), sendToOPs);
 	}
 
 	public static void sendLangMessageTo(ServerPlayerEntity player, String key) {
@@ -80,7 +87,7 @@ public class KiloChat {
 	}
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key, Object... objects) {
-		if (CommandHelper.isConsole(source))
+		if (CmdUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(getFormattedLang(key, objects));
 		else
 			source.sendFeedback(LangText.getFormatter(true, key, objects), false);
@@ -88,7 +95,7 @@ public class KiloChat {
 
 	public static void broadCastExceptConsole(ChatMessage chatMessage) {
 		for (PlayerEntity entity : getServer().getPlayerList()) {
-			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
+			entity.addMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
 		}
 	}
 
@@ -107,7 +114,7 @@ public class KiloChat {
 
 	public static void broadCast(ChatMessage chatMessage) {
 		for (PlayerEntity entity : getServer().getPlayerList()) {
-			entity.addChatMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
+			entity.addMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
 		}
 
 		getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));
@@ -130,22 +137,19 @@ public class KiloChat {
 	}
 
 	public static void onUserJoin(ServerUser user) {
-		broadCast(new ChatMessage(
-				messages.getLocal(true, "events.userJoin", new UserConfigVariables(user))
-					.replace("%USER_DISPLAYNAME%", user.getDisplayname()),
-				true
-		));
+		if (DISABLE_EVENT_MESSAGES)
+			return;
 
+		broadCast(new ChatMessage(messages.events().userJoin, user));
 	}
 
 	public static void onUserLeave(ServerUser user) {
-		broadCast(new ChatMessage(
-				messages.getLocal(true, "events.userLeave", new UserConfigVariables(user))
-						.replace("%USER_DISPLAYNAME%", user.getDisplayname()),
-				true
-		));
+		if (DISABLE_EVENT_MESSAGES)
+			return;
 
+		broadCast(new ChatMessage(messages.events().userLeave, user));
 	}
 
+	public static boolean DISABLE_EVENT_MESSAGES = messages.events().disableOnProxyMode && KiloConfig.main().server().proxyMode;
 
 }

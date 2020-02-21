@@ -25,7 +25,9 @@
 package org.kilocraft.essentials.api;
 
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
@@ -33,8 +35,17 @@ import org.kilocraft.essentials.api.feature.FeatureNotPresentException;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.SingleInstanceConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 public interface KiloEssentials {
     static KiloEssentials getInstance() {
@@ -45,31 +56,33 @@ public interface KiloEssentials {
         return KiloEssentialsImpl.getLogger();
     }
 
-    static void registerPermission(String node) {
-        KiloEssentialsImpl.registerPermission(node);
-    }
-
-    static String getPermissionFor(String node) {
-        return KiloEssentialsImpl.getPermissionFor(node);
-    }
-
     static Server getServer() {
         return KiloServer.getServer();
     }
 
-    static boolean hasPermissionNode(ServerCommandSource source, String fullNode) {
-        return KiloEssentialsImpl.hasPermissionNode(source, fullNode);
+    static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm) {
+        return KiloEssentialsImpl.hasPermissionNode(source, perm);
     }
 
-    static boolean hasPermissionNode(ServerCommandSource source, String fullNode, int opLevel) {
-        return KiloEssentialsImpl.hasPermissionNode(source, fullNode, opLevel);
+    static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm, int minOpLevel) {
+        return KiloEssentialsImpl.hasPermissionNode(source, perm, minOpLevel);
     }
 
     MessageUtil getMessageUtil();
 
-    ModConstants getConstants();
-
     KiloCommands getCommandHandler();
+
+    StartupScript getStartupScript();
+
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerCommandSource requester, String username, Consumer<? super User> action);
+
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerPlayerEntity requester, String username, Consumer<? super User> action);
+
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(OnlineUser requester, String username, Consumer<? super User> action);
+
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action);
+
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor);
 
     <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType);
 
@@ -82,4 +95,26 @@ public interface KiloEssentials {
      * @throws FeatureNotPresentException If the feature type is disabled, not present or not a SingleInstanceConfigurableFeature.
      */
     <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException;
+
+    static String getWorkingDirectory() {
+        return System.getProperty("user.dir");
+    }
+
+    @Deprecated
+    static String getEssentialsDirectory() {
+        return getWorkingDirectory() + "/essentials/";
+    }
+
+    @Deprecated
+    static String getDataDirectory() {
+        return getEssentialsDirectory() + "data/";
+    }
+
+    static Path getDataDirPath() {
+        return getEssentialsPath().resolve("data");
+    }
+
+    static Path getEssentialsPath() {
+        return new File(KiloEssentials.getWorkingDirectory()).toPath().resolve("essentials");
+    }
 }
