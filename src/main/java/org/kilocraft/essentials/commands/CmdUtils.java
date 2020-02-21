@@ -76,7 +76,7 @@ public class CmdUtils {
     }
 
     public static boolean areTheSame(User user1, User user2) {
-        return user1.getUsername().equals(user2.getUsername());
+        return user1.getUuid().equals(user2.getUuid());
     }
 
     public static boolean areTheSame(ServerCommandSource source, User user) {

@@ -156,8 +156,10 @@ public class TextUtils {
         public InfoBlockStyle(String title, Formatting primary, Formatting secondary, Formatting borders) {
             this.header = new LiteralText("")
                     .append(new LiteralText("- [ ").formatted(borders))
-                    .append(new LiteralText(title).formatted(primary))
-                    .append(" ] " + SEPARATOR.substring(title.length() + 4)).formatted(borders);
+                    .append(toText(title).formatted(primary))
+                    .append(" ] ")
+                    .append(SEPARATOR.substring(TextFormat.removeAlternateColorCodes('&', title).length() + 4))
+                    .formatted(borders);
             this.text = new LiteralText("");
             this.primary = primary;
             this.secondary = secondary;

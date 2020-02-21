@@ -215,7 +215,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 				return;
 			}
 
-			optionalUser.ifPresent(action);
+			action.accept(optionalUser.get());
 		}, KiloServer.getServer().getVanillaServer());
 
 		if (!optionalCompletableFuture.isDone())

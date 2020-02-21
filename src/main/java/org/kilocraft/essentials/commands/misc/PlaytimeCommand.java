@@ -87,15 +87,14 @@ public class PlaytimeCommand extends EssentialCommand {
         CommandSourceUser src = getServerUser(ctx);
         String inputName = getUserArgumentInput(ctx, "user");
 
-        if (server.getOnlineUser(inputName) != null)
-            return execute(src, server.getOnlineUser(inputName));
+        if (getOnlineUser(inputName) != null)
+            return execute(src, getOnlineUser(inputName));
 
-        AtomicInteger var = new AtomicInteger(AWAIT_RESPONSE);
         essentials.getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
-            var.set(execute(src, user));
+            execute(src, user);
         });
 
-        return var.get();
+        return AWAIT_RESPONSE;
     }
 
     private int execute(CommandSourceUser src, User target) {
@@ -103,13 +102,18 @@ public class PlaytimeCommand extends EssentialCommand {
                 TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e');
         String firstJoin = target.getFirstJoin() != null ? TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()) : tl("general.not_present");
 
-        TextUtils.InfoBlockStyle text = TextUtils.InfoBlockStyle.of(
-                tl("command.playtime.title." + (CmdUtils.areTheSame(src, target) ? "self" : "others")));
+        String title = CmdUtils.areTheSame(src, target) ? tl("command.playtime.title.self") : tl("command.playtime.title.others", target.getNameTag());
+        TextUtils.InfoBlockStyle text = TextUtils.InfoBlockStyle.of(title);
 
         text.append(tl("command.playtime.total"), pt)
                 .append(tl("command.playtime.first_join"), firstJoin);
 
+        System.out.println("OK 3");
+
         src.sendMessage(text.get());
+
+        System.out.println("OK 2");
+
         return target.getTicksPlayed();
     }
 

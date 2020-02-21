@@ -112,7 +112,7 @@ public class WhoisCommand extends EssentialCommand {
                 new LiteralText(tl("general.click_tp")),
                 ClickEvent.Action.SUGGEST_COMMAND,
                 "/tpin " + vec.getDimension().toString() + " " +
-                        vec.getX() + " " + vec.getY() + " " + vec.getZ() + "  @s"
+                        vec.getX() + " " + vec.getY() + " " + vec.getZ() + " @s"
         );
     }
 
