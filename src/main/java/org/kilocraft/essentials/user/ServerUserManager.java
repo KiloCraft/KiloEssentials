@@ -35,11 +35,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class ServerUserManager implements UserManager {
-    private UserHandler userHandler = new UserHandler();
-    private List<OnlineUser> users = new ArrayList<>();
-    private Map<String, UUID> nicknameToUUID = new HashMap<>();
-    private Map<String, UUID> usernameToUUID = new HashMap<>();
-    private Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
+    private final UserHandler userHandler = new UserHandler();
+    private final List<OnlineUser> users = new ArrayList<>();
+    private final Map<String, UUID> nicknameToUUID = new HashMap<>();
+    private final Map<String, UUID> usernameToUUID = new HashMap<>();
+    private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
 
     private PunishmentManager punishManager;
 
@@ -266,18 +266,9 @@ public class ServerUserManager implements UserManager {
                 return;
 
             Validations.validateConnection(user);
-
-            if (UserHomeHandler.isEnabled())
-                Validations.validateHomes(user);
         }
 
         static class Validations {
-            private static void validateHomes(OnlineServerUser user) {
-                int allowed = UserHomeHandler.allowedHomes(user);
-                if (user.getHomesHandler().homes() > allowed && shouldReport(user)) {
-                    report("watchdog.warn.too_many_homes", user.getUsername(), user.getHomesHandler().homes(), allowed);
-                }
-            }
 
             private static void validateConnection(OnlineServerUser user) {
                 for (OnlineUser onlineUser : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {

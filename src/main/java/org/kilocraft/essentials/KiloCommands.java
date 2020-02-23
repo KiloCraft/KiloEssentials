@@ -31,6 +31,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
@@ -153,6 +154,7 @@ public class KiloCommands {
             add(new HelpCommand());
             add(new WhoisCommand());
             add(new PlaytimeCommand());
+            add(new HelpMeCommand());
         }};
 
         this.commands.addAll(commandsList);
