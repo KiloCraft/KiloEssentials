@@ -15,6 +15,7 @@ import org.kilocraft.essentials.chat.ServerChat;
 public class MessageCommand extends EssentialCommand {
     public MessageCommand() {
         super("message", new String[]{"ke_msg", "ke_tell", "ke_whisper"});
+        this.withUsage("command.message.usage", "target", "message");
     }
 
     @Override

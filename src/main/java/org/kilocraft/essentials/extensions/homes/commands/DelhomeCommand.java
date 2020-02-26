@@ -30,6 +30,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 public class DelhomeCommand extends EssentialCommand {
     public DelhomeCommand() {
         super("delhome", CommandPermission.HOME_SELF_REMOVE);
+        this.withUsage("command.delhome.usage", "name");
     }
 
     @Override
@@ -44,7 +45,6 @@ public class DelhomeCommand extends EssentialCommand {
 
         homeArgument.then(targetArgument);
         commandNode.addChild(homeArgument.build());
-        this.withUsage("command.delhome.usage", "name");
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

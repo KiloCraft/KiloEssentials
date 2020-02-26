@@ -30,6 +30,7 @@ public class MotdCommand extends EssentialCommand {
 
     public MotdCommand() {
         super("motd", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SERVER_MANAGE_MOTD));
+        this.withUsage("command.motd.usage", "line", "text");
     }
 
     @Override
@@ -41,7 +42,6 @@ public class MotdCommand extends EssentialCommand {
 
         line.then(text);
         this.commandNode.addChild(line.build());
-        this.withUsage("command.motd.usage", "line", "text");
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx) {

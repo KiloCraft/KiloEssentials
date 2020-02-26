@@ -46,8 +46,8 @@ public abstract class EssentialCommand implements IEssentialCommand {
     protected transient Predicate<ServerCommandSource> PERMISSION_CHECK_ROOT;
     protected transient CommandPermission PERMISSION;
     protected transient int MIN_OP_LEVEL;
-    protected transient String descriptionId = null;
-    protected transient String[] usageArguments = null;
+    private transient String descriptionId = null;
+    private transient String[] usageArguments = null;
 
     public EssentialCommand(final String label) {
         this.label = label;
@@ -145,25 +145,21 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.PERMISSION_CHECK_ROOT;
     }
 
-    public void withArgUsage(final String... arguments) {
-        this.usageArguments = arguments.clone();
-    }
-
-    public void withUsage(final String identifier, final String... arguments) {
+    public final void withUsage(final String identifier, final String... arguments) {
         this.usageArguments = arguments.clone();
         this.descriptionId = identifier;
     }
 
-    public String[] getUsageArguments() {
+    public final String[] getUsageArguments() {
         return this.usageArguments.clone();
     }
 
-    public String getDescriptionId() {
+    public final String getDescriptionId() {
         return this.descriptionId;
     }
 
-    public boolean hasUsage() {
-        return this.usageArguments != null || this.descriptionId != null;
+    public final boolean hasUsage() {
+        return this.getUsageArguments() != null || this.getDescriptionId() != null;
     }
 
     public boolean hasPermission(final ServerCommandSource src, final CommandPermission cmdPerm) {
@@ -253,4 +249,5 @@ public abstract class EssentialCommand implements IEssentialCommand {
     public Config config = KiloConfig.main();
 
     public Messages messages = KiloConfig.messages();
+
 }

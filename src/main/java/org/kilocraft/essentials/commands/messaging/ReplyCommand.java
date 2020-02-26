@@ -21,24 +21,25 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 public class ReplyCommand extends EssentialCommand {
     public ReplyCommand() {
         super("reply", new String[]{"r", "respond"});
+        this.withUsage("command.message.reply.usage", "message");
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = argument("message", greedyString())
+    public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
+        final RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = this.argument("message", greedyString())
                 .suggests(TabCompletions::noSuggestions)
                 .executes(this::execute);
 
-        commandNode.addChild(messageArgument.build());
+        this.commandNode.addChild(messageArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = KiloServer.getServer().getUserManager().getOnline(ctx.getSource());
-        String message = getString(ctx, "message");
-        UUID lastPMGetter = user.getLastPrivateMessageSender();
+    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        final OnlineUser user = KiloServer.getServer().getUserManager().getOnline(ctx.getSource());
+        final String message = getString(ctx, "message");
+        final UUID lastPMGetter = user.getLastPrivateMessageSender();
 
         if (lastPMGetter == null)
-            throw NO_MESSAGES_EXCEPTION.create();
+            throw ReplyCommand.NO_MESSAGES_EXCEPTION.create();
 
         return ServerChat.executeSend(ctx.getSource(), KiloServer.getServer().getPlayer(lastPMGetter), message);
     }

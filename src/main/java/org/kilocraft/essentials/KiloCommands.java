@@ -29,6 +29,7 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.chat.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -55,7 +56,6 @@ import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.util.TextUtils;
-import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -75,11 +75,10 @@ import static org.kilocraft.essentials.commands.LiteralCommandModified.*;
 
 public class KiloCommands {
     private static final List<String> initializedPerms = new ArrayList<>();
-    private final List<EssentialCommand> commands;
+    private final List<IEssentialCommand> commands;
     private final CommandDispatcher<ServerCommandSource> dispatcher;
     private final SimpleCommandManager simpleCommandManager;
-    private static final MessageUtil messageUtil = ModConstants.getMessageUtil();
-    public static String PERMISSION_PREFIX = "kiloessentials.command.";
+    public static final String PERMISSION_PREFIX = "kiloessentials.command.";
     private static LiteralCommandNode<ServerCommandSource> rootNode;
 
     public KiloCommands() {
@@ -110,7 +109,7 @@ public class KiloCommands {
             }
         });
 
-        final List<EssentialCommand> commandsList = new ArrayList<EssentialCommand>() {{
+        final List<IEssentialCommand> commandsList = new ArrayList<IEssentialCommand>() {{
             this.add(new SmiteCommand());
             this.add(new NicknameCommand());
             this.add(new SayasCommand());
@@ -155,14 +154,14 @@ public class KiloCommands {
             this.add(new HelpCommand());
             this.add(new WhoisCommand());
             this.add(new PlaytimeCommand());
-            this.add(new HelpMeCommand());
             this.add(new MotdCommand());
+            this.add(new HelpMeCommand());
         }};
 
         this.commands.addAll(commandsList);
 
-        for (final EssentialCommand command : this.commands) {
-            this.registerCommand(command);
+        for (final IEssentialCommand command : this.commands) {
+            this.registerCommand(command, true);
         }
 
         this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
@@ -176,10 +175,15 @@ public class KiloCommands {
     }
 
     public <C extends EssentialCommand> void register(final C c) {
-        this.registerCommand(c);
+        this.registerCommand(c, false);
     }
 
-    private <C extends EssentialCommand> void registerCommand(final C command) {
+    private <C extends IEssentialCommand> void registerCommand(final C c, boolean alreadyRegistered) {
+        if (!alreadyRegistered) {
+            this.commands.add(c);
+        }
+
+        EssentialCommand command = (EssentialCommand) c;
         command.register(this.dispatcher);
         KiloCommands.rootNode.addChild(command.getArgumentBuilder().build());
         KiloCommands.rootNode.addChild(command.getCommandNode());
@@ -335,14 +339,26 @@ public class KiloCommands {
     }
 
     @Nullable
-    public final EssentialCommand getEssentialCommand(final String label) {
-        for (EssentialCommand command : this.commands) {
-            if (command.getLabel().equals(label)) {
-                return command;
+    public final IEssentialCommand getEssentialCommand(final String label) {
+        IEssentialCommand esscommand = null;
+
+        for (final IEssentialCommand command : this.commands) {
+
+            if (command.getLabel().contains(label)) {
+                esscommand = command;
             }
+
+            if (esscommand == null && esscommand.getAlias() != null) {
+                for (String alias : command.getAlias()) {
+                    if (alias.equalsIgnoreCase(label)) {
+                        esscommand = command;
+                    }
+                }
+            }
+
         }
 
-        return null;
+        return esscommand;
     }
 
     public final void sendUsage(final ServerCommandSource source, final EssentialCommand essentialcommand) {
@@ -362,7 +378,7 @@ public class KiloCommands {
         }
 
         if (essentialcommand.getAlias() != null && essentialcommand.getAlias().length > 0) {
-            builder.append(ModConstants.translation("command.usage.aliases")).append(' ');
+            builder.append('\n').append(ModConstants.translation("command.usage.aliases")).append(' ');
 
             for (int i = 0; i < essentialcommand.getAlias().length; i++) {
                 builder.append(ModConstants.translation("command.usage.alias", essentialcommand.getAlias()[i]));
@@ -411,7 +427,7 @@ public class KiloCommands {
                 var = (byte) 0;
                 return var;
             } catch (final CommandSyntaxException e) {
-                final EssentialCommand essentialcommand = this.getEssentialCommand(cmd.replaceFirst("/", "").split(" ")[0]);
+                final EssentialCommand essentialcommand = (EssentialCommand) this.getEssentialCommand(cmd.replaceFirst("/", "").split(" ")[0]);
 
                 if (essentialcommand != null && essentialcommand.hasUsage()) {
                     this.sendUsage(executor, essentialcommand);
@@ -489,7 +505,7 @@ public class KiloCommands {
         return this.dispatcher.getRoot().getChild(literal) != null;
     }
 
-    public List<EssentialCommand> getCommands() {
+    public List<IEssentialCommand> getCommands() {
         return this.commands;
     }
 

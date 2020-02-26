@@ -36,6 +36,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 public class SethomeCommand extends EssentialCommand {
     public SethomeCommand() {
         super("sethome", CommandPermission.HOME_SELF_SET);
+        this.withUsage("command.sethome.usage", "name");
     }
 
     @Override
@@ -50,7 +51,6 @@ public class SethomeCommand extends EssentialCommand {
 
         homeArgument.then(targetArgument);
         commandNode.addChild(homeArgument.build());
-        this.withUsage("command.sethome.usage", "name");
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

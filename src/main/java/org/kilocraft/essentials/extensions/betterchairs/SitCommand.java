@@ -12,6 +12,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.mixin.accessor.EntityAccessor;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -59,7 +60,7 @@ public class SitCommand extends EssentialCommand {
             return -1;
         }
 
-        if (!user.getPlayer().onGround) {
+        if (!((EntityAccessor) user.getPlayer()).isOnGround()) {
             user.sendLangMessage("general.on_ground");
             return -1;
         }

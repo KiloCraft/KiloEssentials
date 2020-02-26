@@ -27,6 +27,7 @@ public class HomeCommand extends EssentialCommand {
 
     public HomeCommand() {
         super("home", CommandPermission.HOME_SELF_TP);
+        this.withUsage("command.home.usage", "name");
     }
 
     @Override
@@ -41,7 +42,6 @@ public class HomeCommand extends EssentialCommand {
 
         homeArgument.then(targetArgument);
         this.commandNode.addChild(homeArgument.build());
-        this.withUsage("command.home.usage", "name");
     }
 
     private int executeSelf(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
