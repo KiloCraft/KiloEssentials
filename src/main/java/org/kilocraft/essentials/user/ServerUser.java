@@ -143,9 +143,6 @@ public class ServerUser implements User {
                 CompoundTag ignoredOne = new CompoundTag();
                 ignoredOne.putUuid("uuid", uuid);
                 ignoredOne.putString("name", name);
-
-                System.out.println("Saving ignored: " + name);
-
                 listTag.add(ignoredOne);
             });
 

@@ -117,4 +117,9 @@ public interface KiloEssentials {
     static Path getEssentialsPath() {
         return new File(KiloEssentials.getWorkingDirectory()).toPath().resolve("essentials");
     }
+
+    static Path getServerProperties() {
+        return new File(KiloEssentials.getWorkingDirectory()).toPath().resolve("server.properties");
+    }
+
 }
