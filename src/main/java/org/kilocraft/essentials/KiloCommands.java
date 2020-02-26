@@ -161,7 +161,7 @@ public class KiloCommands {
         this.commands.addAll(commandsList);
 
         for (final IEssentialCommand command : this.commands) {
-            this.registerCommand(command, true);
+            this.registerCommand(command);
         }
 
         this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
@@ -174,15 +174,11 @@ public class KiloCommands {
         //InventoryCommand.register(this.dispatcher);
     }
 
-    public <C extends EssentialCommand> void register(final C c) {
-        this.registerCommand(c, false);
+    public <C extends IEssentialCommand> void register(final C c) {
+        this.registerCommand(c);
     }
 
-    private <C extends IEssentialCommand> void registerCommand(final C c, boolean alreadyRegistered) {
-        if (!alreadyRegistered) {
-            this.commands.add(c);
-        }
-
+    private <C extends IEssentialCommand> void registerCommand(final C c) {
         EssentialCommand command = (EssentialCommand) c;
         command.register(this.dispatcher);
         KiloCommands.rootNode.addChild(command.getArgumentBuilder().build());
@@ -344,11 +340,11 @@ public class KiloCommands {
 
         for (final IEssentialCommand command : this.commands) {
 
-            if (command.getLabel().contains(label)) {
+            if (command.getLabel().startsWith(label) || command.getLabel().startsWith("ke_" + label)) {
                 esscommand = command;
             }
 
-            if (esscommand == null && esscommand.getAlias() != null) {
+            if (esscommand == null && command.getAlias() != null) {
                 for (String alias : command.getAlias()) {
                     if (alias.equalsIgnoreCase(label)) {
                         esscommand = command;
@@ -367,7 +363,7 @@ public class KiloCommands {
             return;
         }
 
-        final StringBuilder builder = new StringBuilder(ModConstants.translation("command.usage", essentialcommand.getLabel())).append(' ');
+        final StringBuilder builder = new StringBuilder(ModConstants.translation("command.usage", essentialcommand.getLabel().replaceFirst("ke_", ""))).append(' ');
 
         for (final String arg : essentialcommand.getUsageArguments()) {
             builder.append(ModConstants.translation("command.usage.arg", arg)).append(' ');

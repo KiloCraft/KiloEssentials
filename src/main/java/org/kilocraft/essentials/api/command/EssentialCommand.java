@@ -151,7 +151,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public final String[] getUsageArguments() {
-        return this.usageArguments.clone();
+        return this.usageArguments;
     }
 
     public final String getDescriptionId() {

@@ -56,7 +56,7 @@ import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 public class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 	private static String KE_PREFIX = "[KiloEssentials] ";
-	private static final Logger logger = LogManager.getLogger("KiloEssentials", massageFactory());
+	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials", KiloEssentialsImpl.massageFactory());
 	private static KiloEssentialsImpl instance;
 	private static ModConstants constants = new ModConstants();
 	public static String PERMISSION_PREFIX = "kiloessentials.";
@@ -70,7 +70,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 	public KiloEssentialsImpl(final KiloEvents events, final KiloConfig config) {
 		instance = this;
-		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
+		LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		this.commands = new KiloCommands();
@@ -87,7 +87,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 			}
 		});
 
-		logger.info("Registered " + (CommandPermission.values().length + EssentialPermission.values().length) + " permission nodes.");
+		LOGGER.info("Registered " + (CommandPermission.values().length + EssentialPermission.values().length) + " permission nodes.");
 
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
@@ -139,7 +139,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public static Logger getLogger() {
-		return logger;
+		return LOGGER;
 	}
 
 	public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm) {
@@ -262,17 +262,17 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	private static MessageFactory massageFactory() {
 		return new MessageFactory() {
 			@Override
-			public Message newMessage(Object message) {
+			public Message newMessage(final Object message) {
 				return new SimpleMessage(KE_PREFIX + message);
 			}
 
 			@Override
-			public Message newMessage(String message) {
+			public Message newMessage(final String message) {
 				return new SimpleMessage(KE_PREFIX + message);
 			}
 
 			@Override
-			public Message newMessage(String message, Object... params) {
+			public Message newMessage(final String message, final Object... params) {
 				return new SimpleMessage(message);
 			}
 		};
