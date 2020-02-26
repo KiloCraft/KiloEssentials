@@ -44,6 +44,7 @@ public class DelhomeCommand extends EssentialCommand {
 
         homeArgument.then(targetArgument);
         commandNode.addChild(homeArgument.build());
+        this.withUsage("command.delhome.usage", "name");
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

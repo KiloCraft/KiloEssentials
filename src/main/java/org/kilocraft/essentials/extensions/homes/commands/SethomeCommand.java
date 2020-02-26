@@ -50,6 +50,7 @@ public class SethomeCommand extends EssentialCommand {
 
         homeArgument.then(targetArgument);
         commandNode.addChild(homeArgument.build());
+        this.withUsage("command.sethome.usage", "name");
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

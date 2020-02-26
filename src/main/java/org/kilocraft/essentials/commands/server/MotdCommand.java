@@ -33,7 +33,7 @@ public class MotdCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
+    public final void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, Integer> line = this.argument("line", IntegerArgumentType.integer(1, 2));
         final RequiredArgumentBuilder<ServerCommandSource, String> text = this.argument("text", StringArgumentType.string())
                 .suggests(this::suggestions)
@@ -41,6 +41,7 @@ public class MotdCommand extends EssentialCommand {
 
         line.then(text);
         this.commandNode.addChild(line.build());
+        this.withUsage("command.motd.usage", "line", "text");
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx) {
@@ -61,8 +62,7 @@ public class MotdCommand extends EssentialCommand {
         try {
             this.server.getMetaManager().setDescription(TextUtils.toText(finalmotd));
         } catch (final IOException e) {
-            @NonNls String message = "Can not save the value \"motd\" in server.properties\n" + e.getMessage();
-            this.getServerUser(ctx).sendError(message);
+            this.getServerUser(ctx).sendError("Can not save the value \"motd\" in server.properties\n" + e.getMessage());
 
             KiloEssentials.getLogger().error("Can not save the value \"motd\" in server.properties");
             e.printStackTrace();

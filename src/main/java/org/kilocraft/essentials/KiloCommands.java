@@ -22,6 +22,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -333,36 +334,90 @@ public class KiloCommands {
         }
     }
 
-    public int execute(final ServerCommandSource executor, final String commandToExecute) {
-        final OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(executor, commandToExecute);
-        String cmd = commandToExecute;
+    @Nullable
+    public final EssentialCommand getEssentialCommand(final String label) {
+        for (EssentialCommand command : this.commands) {
+            if (command.getLabel().equals(label)) {
+                return command;
+            }
+        }
 
-        if (!commandToExecute.endsWith("--push") && !executor.hasPermissionLevel(4))
+        return null;
+    }
+
+    public final void sendUsage(final ServerCommandSource source, final EssentialCommand essentialcommand) {
+        if (!essentialcommand.hasUsage()) {
+            source.sendError(new LiteralText("No Usage!"));
+            return;
+        }
+
+        final StringBuilder builder = new StringBuilder(ModConstants.translation("command.usage", essentialcommand.getLabel())).append(' ');
+
+        for (final String arg : essentialcommand.getUsageArguments()) {
+            builder.append(ModConstants.translation("command.usage.arg", arg)).append(' ');
+        }
+
+        if (essentialcommand.getDescriptionId() != null) {
+            builder.append('\n').append(ModConstants.translation("command.usage.desc", ModConstants.translation(essentialcommand.getDescriptionId())));
+        }
+
+        if (essentialcommand.getAlias() != null && essentialcommand.getAlias().length > 0) {
+            builder.append(ModConstants.translation("command.usage.aliases")).append(' ');
+
+            for (int i = 0; i < essentialcommand.getAlias().length; i++) {
+                builder.append(ModConstants.translation("command.usage.alias", essentialcommand.getAlias()[i]));
+
+                if (i < essentialcommand.getAlias().length) {
+                    builder.append(ModConstants.translation("command.usage.separator")).append(' ');
+                }
+            }
+        }
+
+        source.sendFeedback(TextUtils.toText(builder.toString()), false);
+    }
+
+    public int execute(final ServerCommandSource executor, final String command) {
+        final OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(executor, command);
+        String cmd = command;
+
+        if (!command.endsWith("--push") && !executor.hasPermissionLevel(4)) {
             KiloServer.getServer().triggerEvent(event);
-        else
-            cmd = commandToExecute.replace(" --push", "");
+        } else {
+            cmd = command.replace(" --push", "");
+        }
 
-        if (event.isCancelled()) return 0;
+        if (event.isCancelled()) {
+            return 0;
+        }
 
-        if (this.simpleCommandManager.canExecute(cmd))
+        if (this.simpleCommandManager.canExecute(cmd)) {
             return this.simpleCommandManager.execute(cmd, executor);
+        }
 
-        final StringReader stringReader = new StringReader(cmd);
+        final StringReader reader = new StringReader(cmd);
 
-        if (stringReader.canRead() && stringReader.peek() == '/')
-            stringReader.skip();
+        if (reader.canRead() && reader.peek() == '/') {
+            reader.skip();
+        }
 
         getServer().getVanillaServer().getProfiler().push(cmd);
 
         byte var = 0;
         try {
             try {
-                return this.dispatcher.execute(stringReader, executor);
+                return this.dispatcher.execute(reader, executor);
             } catch (final CommandException e) {
                 executor.sendError(e.getTextMessage());
-                var = 0;
+                var = (byte) 0;
                 return var;
             } catch (final CommandSyntaxException e) {
+                final EssentialCommand essentialcommand = this.getEssentialCommand(cmd.replaceFirst("/", "").split(" ")[0]);
+
+                if (essentialcommand != null && essentialcommand.hasUsage()) {
+                    this.sendUsage(executor, essentialcommand);
+                    return var;
+                }
+
                 if (e.getRawMessage().getString().startsWith("Unknown or incomplete")) {
                     final String literalName = cmd.split(" ")[0].replace("/", "");
                     final CommandPermission reqPerm = CommandPermission.getByNode(literalName);
@@ -379,8 +434,8 @@ public class KiloCommands {
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         final int cursor = Math.min(e.getInput().length(), e.getCursor());
                         final Text text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> {
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandToExecute));
-                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(commandToExecute).formatted(Formatting.YELLOW)));
+                            style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
+                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(command).formatted(Formatting.YELLOW)));
                         });
 
                         if (cursor > 10) text.append("...");
@@ -400,7 +455,7 @@ public class KiloCommands {
         } catch (final Exception e) {
             final Text text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
             if (SharedConstants.isDevelopment) {
-                getLogger().error("Command exception: {}", commandToExecute, e);
+                getLogger().error("Command exception: {}", command, e);
                 final StackTraceElement[] stackTraceElements = e.getStackTrace();
 
                 for(int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
@@ -414,7 +469,7 @@ public class KiloCommands {
 
             if (SharedConstants.isDevelopment) {
                 executor.sendError(new LiteralText(Util.getInnermostMessage(e)));
-                getLogger().error("'" + commandToExecute + "' threw an exception", e);
+                getLogger().error("'" + command + "' threw an exception", e);
             }
 
             return (byte) 0;
