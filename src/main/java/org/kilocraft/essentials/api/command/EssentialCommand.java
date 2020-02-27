@@ -159,7 +159,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public final boolean hasUsage() {
-        return this.getUsageArguments() != null || this.getDescriptionId() != null;
+        return this.usageArguments != null || this.descriptionId != null;
     }
 
     public boolean hasPermission(final ServerCommandSource src, final CommandPermission cmdPerm) {

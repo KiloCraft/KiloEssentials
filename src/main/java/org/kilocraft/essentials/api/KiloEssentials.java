@@ -42,6 +42,7 @@ import org.kilocraft.essentials.util.messages.MessageUtil;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -73,6 +74,8 @@ public interface KiloEssentials {
     KiloCommands getCommandHandler();
 
     StartupScript getStartupScript();
+
+    CompletableFuture<List<User>> getAllUsersThenAcceptAsync(OnlineUser requester, String loadingTitle, Consumer<? super List<User>> action);
 
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerCommandSource requester, String username, Consumer<? super User> action);
 

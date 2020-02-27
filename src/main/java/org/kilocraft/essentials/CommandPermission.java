@@ -81,6 +81,7 @@ public enum CommandPermission {
     PLAYTIME_SELF("playtime.self"),
     PLAYTIME_OTHERS("playtime.others"),
     PLAYTIME_MODIFY("playtime.modify"),
+    PLAYTIMETOP("playtimetop"),
     IGNORELIST_OTHERS("ignorelist.others"),
     ;
 

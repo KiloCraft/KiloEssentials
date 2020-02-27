@@ -20,8 +20,7 @@ public class MessageCommand extends EssentialCommand {
 
     @Override
     public final void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = this.argument("target", EntityArgumentType.player())
-                .suggests(TabCompletions::allPlayers);
+        final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = this.argument("target", EntityArgumentType.player());
 
         final RequiredArgumentBuilder<ServerCommandSource, String> message = this.argument("message", StringArgumentType.greedyString())
                 .suggests(TabCompletions::noSuggestions)

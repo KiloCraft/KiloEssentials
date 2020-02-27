@@ -19,17 +19,18 @@ public class UsageCommand extends EssentialCommand {
         super("usage");
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = argument("command", greedyString())
+    @Override
+    public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
+        final RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("command", greedyString())
                 .suggests(TabCompletions::usableCommands)
                 .executes(this::execute);
 
-        commandNode.addChild(stringArgument.build());
+        this.commandNode.addChild(stringArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        String command = getString(ctx, "command");
-        String fromLang = ModConstants.getLang().getProperty("command." + command + ".usage");
+    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        final String command = getString(ctx, "command");
+        final String fromLang = ModConstants.getLang().getProperty("command." + command + ".usage");
 
         if (fromLang != null)
             KiloCommands.executeUsageFor("command." + command + ".usage", ctx.getSource());

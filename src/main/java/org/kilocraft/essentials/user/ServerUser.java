@@ -62,10 +62,12 @@ public class ServerUser implements User {
     private boolean commandSpy = false;
     private boolean canSit = false;
     private Map<String, UUID> ignoreList;
+    private boolean acceptsMessages = true;
     boolean isStaff = false;
     String lastSocketAddress;
     GameMode gameMode = GameMode.NOT_SET;
     int ticksPlayed = 0;
+
 
     public ServerUser(UUID uuid) {
         this.uuid = uuid;
@@ -147,6 +149,10 @@ public class ServerUser implements User {
             });
 
             cacheTag.put("ignored", listTag);
+        }
+
+        if (!this.acceptsMessages) {
+            cacheTag.putBoolean("acceptsMessages", false);
         }
 
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
@@ -239,6 +245,10 @@ public class ServerUser implements User {
                 CompoundTag ignoredOne = ignoreList.getCompound(i);
                 this.ignoreList.put(ignoredOne.getString("name"), ignoredOne.getUuid("uuid"));
             }
+        }
+
+        if (cacheTag.contains("acceptMessages")) {
+            this.acceptsMessages = cacheTag.getBoolean("acceptsMessages");
         }
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
@@ -531,6 +541,14 @@ public class ServerUser implements User {
             this.isStaff = KiloEssentials.hasPermissionNode(((OnlineUser) this).getCommandSource(), EssentialPermission.STAFF);
 
         return this.isStaff;
+    }
+
+    public final boolean acceptsMessages() {
+        return this.acceptsMessages;
+    }
+
+    public final void setAcceptsMessages(final boolean set) {
+        this.acceptsMessages = set;
     }
 
     @SuppressWarnings({"untested", "Do Not Run If the User is Online"})

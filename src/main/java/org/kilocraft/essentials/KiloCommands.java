@@ -146,6 +146,7 @@ public class KiloCommands {
             this.add(new TpsCommand());
             this.add(new LocateCommand());
             this.add(new MessageCommand());
+            this.add(new MessageToggleCommand());
             this.add(new IgnoreCommand());
             this.add(new IgnorelistCommand());
             this.add(new ReplyCommand());
@@ -156,6 +157,7 @@ public class KiloCommands {
             this.add(new PlaytimeCommand());
             this.add(new MotdCommand());
             this.add(new HelpMeCommand());
+            this.add(new PlaytimetopCommand());
         }};
 
         this.commands.addAll(commandsList);
@@ -179,7 +181,7 @@ public class KiloCommands {
     }
 
     private <C extends IEssentialCommand> void registerCommand(final C c) {
-        EssentialCommand command = (EssentialCommand) c;
+        final EssentialCommand command = (EssentialCommand) c;
         command.register(this.dispatcher);
         KiloCommands.rootNode.addChild(command.getArgumentBuilder().build());
         KiloCommands.rootNode.addChild(command.getCommandNode());
@@ -345,7 +347,7 @@ public class KiloCommands {
             }
 
             if (esscommand == null && command.getAlias() != null) {
-                for (String alias : command.getAlias()) {
+                for (final String alias : command.getAlias()) {
                     if (alias.equalsIgnoreCase(label)) {
                         esscommand = command;
                     }

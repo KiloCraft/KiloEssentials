@@ -29,13 +29,16 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.AnimatedText;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class ServerUserManager implements UserManager {
-    private final UserHandler userHandler = new UserHandler();
+    private static final Pattern COMPILE = Pattern.compile(".dat");
+    private final UserHandler handler = new UserHandler();
     private final List<OnlineUser> users = new ArrayList<>();
     private final Map<String, UUID> nicknameToUUID = new HashMap<>();
     private final Map<String, UUID> usernameToUUID = new HashMap<>();
@@ -45,6 +48,31 @@ public class ServerUserManager implements UserManager {
 
     public ServerUserManager(PlayerManager manager) {
         this.punishManager = new PunishmentManager(manager);
+    }
+
+    @Override
+    public CompletableFuture<List<User>> getAll() {
+        final List<User> users = new ArrayList<>();
+
+        for (final File file : this.handler.getUserFiles()) {
+            if (!file.exists()) {
+                continue;
+            }
+
+            ServerUser serverUser = new ServerUser(UUID.fromString(COMPILE.matcher(file.getName()).replaceFirst("")));
+
+            try {
+                this.handler.loadUserAndResolveName(serverUser);
+
+                if (serverUser.getUsername() != null) {
+                    users.add(serverUser);
+                }
+
+            } catch (final IOException ignored) {
+            }
+        }
+
+        return CompletableFuture.completedFuture(users);
     }
 
     @Override
@@ -73,7 +101,7 @@ public class ServerUserManager implements UserManager {
         if (online != null)
             return CompletableFuture.completedFuture(Optional.of(online));
 
-        if (userHandler.userExists(uuid)) {
+        if (handler.userExists(uuid)) {
             ServerUser serverUser = new ServerUser(uuid);
             serverUser.name = username;
 
@@ -148,7 +176,7 @@ public class ServerUserManager implements UserManager {
             try {
                 if (SharedConstants.isDevelopment)
                     KiloEssentials.getLogger().debug("Saving user \"" + serverUser.getUsername() + "\"");
-                this.userHandler.saveData(serverUser);
+                this.handler.saveData(serverUser);
             } catch (IOException e) {
                 KiloEssentials.getLogger().error("An unexpected exception occurred when saving a user's data!");
                 e.printStackTrace();
@@ -200,7 +228,7 @@ public class ServerUserManager implements UserManager {
         this.users.remove(user);
 
         try {
-            this.userHandler.saveData(user);
+            this.handler.saveData(user);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -251,7 +279,7 @@ public class ServerUserManager implements UserManager {
     }
 
     public UserHandler getHandler() {
-        return this.userHandler;
+        return this.handler;
     }
 
     public PunishmentManager getPunishmentManager() {
@@ -315,6 +343,15 @@ public class ServerUserManager implements UserManager {
                     .append(LangText.get(true, "general.wait_server.frame2"))
                     .append(LangText.get(true, "general.wait_server.frame3"))
                     .append(LangText.get(true, "general.wait_server.frame4"))
+                    .build();
+        }
+
+        public UserLoadingText(ServerPlayerEntity player, String key) {
+            this.animatedText = new AnimatedText(0, 650, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+                    .append(LangText.get(true, key + ".frame1"))
+                    .append(LangText.get(true, key + ".frame2"))
+                    .append(LangText.get(true, key + ".frame3"))
+                    .append(LangText.get(true, key + ".frame4"))
                     .build();
         }
 
