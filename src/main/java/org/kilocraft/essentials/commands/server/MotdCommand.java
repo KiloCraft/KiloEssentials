@@ -7,20 +7,19 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NonNls;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.util.TextUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
@@ -38,13 +37,22 @@ public class MotdCommand extends EssentialCommand {
         final RequiredArgumentBuilder<ServerCommandSource, Integer> line = this.argument("line", IntegerArgumentType.integer(1, 2));
         final RequiredArgumentBuilder<ServerCommandSource, String> text = this.argument("text", StringArgumentType.string())
                 .suggests(this::suggestions)
-                .executes(this::execute);
+                .executes(this::setMotd);
 
         line.then(text);
         this.commandNode.addChild(line.build());
+        this.argumentBuilder.executes(this::execute);
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx) {
+        final Text description = this.server.getMetaManager().getDescription();
+        final String[] lines = description.asFormattedString().split("\n");
+
+        this.getServerUser(ctx).sendLangMessage("command.motd", (lines.length >= 0) ? lines[0] : "", lines.length >= 1 ? lines[1] : "");
+        return SINGLE_SUCCESS;
+    }
+
+    private int setMotd(final CommandContext<ServerCommandSource> ctx) {
         final int line = IntegerArgumentType.getInteger(ctx, "line");
         final Text description = this.server.getMetaManager().getDescription();
         final String input = MotdCommand.COMPILE.matcher(TextFormat.translate(StringArgumentType.getString(ctx, "text"))).replaceAll("");
@@ -75,16 +83,26 @@ public class MotdCommand extends EssentialCommand {
     }
 
     private CompletableFuture<Suggestions> suggestions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        final Collection<String> strings = new ArrayList<>();
         final int line = IntegerArgumentType.getInteger(context, "line");
 
-        try {
-            @NonNls final String desc = TextFormat.reverseTranslate(
-                    this.server.getMetaManager().getDescription().asFormattedString().split(MotdCommand.COMPILE.pattern())[line - 1], '&');
-            strings.add('"' + desc + '"');
-        } catch (final ArrayIndexOutOfBoundsException ignored) {}
+        if (builder.getRemaining().isEmpty()) {
+            builder.suggest("\"");
 
-        return CommandSource.suggestMatching(strings, builder);
+            try {
+                @NonNls final String desc = TextFormat.reverseTranslate(
+                        this.server.getMetaManager().getDescription().asFormattedString().split(MotdCommand.COMPILE.pattern())[line - 1], '&');
+                builder.suggest('"' + desc + '"');
+            } catch (final ArrayIndexOutOfBoundsException ignored) {}
+
+        } else if (context.getInput().charAt(TabCompletions.getPendingCursor(context)) == '&') {
+            return TabCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()), context);
+        } else if (!builder.getRemaining().endsWith("\"")) {
+            return TabCompletions.suggestAtCursor("\"", context);
+        } else if (builder.getRemaining().endsWith("\"")) {
+            return TabCompletions.suggestAtCursor("&", context);
+        }
+
+        return builder.buildFuture();
     }
 
 }

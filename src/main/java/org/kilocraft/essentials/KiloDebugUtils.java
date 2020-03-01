@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.util.TPSTracker;

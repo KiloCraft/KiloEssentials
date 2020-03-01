@@ -1,9 +1,12 @@
 package org.kilocraft.essentials.util;
 
-import net.minecraft.text.*;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.*;
 
@@ -294,10 +297,6 @@ public class TextUtils {
         public Text get() {
             return new LiteralText("").append(header).append(this.text).append(new LiteralText(SEPARATOR).formatted(borders));
         }
-    }
-
-    public static class PagedStyle {
-
     }
 
     public enum TypeFormat {

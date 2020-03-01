@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -53,13 +54,13 @@ import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
  * @since KE 1.6
  */
 
-public class KiloEssentialsImpl implements KiloEssentials {
+public final class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 	private static final String KE_PREFIX = "[KiloEssentials] ";
 	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials", KiloEssentialsImpl.massageFactory());
 	private static KiloEssentialsImpl instance;
 	private static final ModConstants constants = new ModConstants();
-	public static String PERMISSION_PREFIX = "kiloessentials.";
+	public static final String PERMISSION_PREFIX = "kiloessentials.";
 	private final KiloCommands commands;
 	private final List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private final Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
@@ -120,9 +121,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		if (SharedConstants.isDevelopment)
 			new KiloDebugUtils(this);
 
-		this.getServer().getChatManager().register(new GlobalChat());
-		this.getServer().getChatManager().register(new StaffChat());
-		this.getServer().getChatManager().register(new BuilderChat());
+		KiloEssentialsImpl.getServer().getChatManager().register(new GlobalChat());
+		KiloEssentialsImpl.getServer().getChatManager().register(new StaffChat());
+		KiloEssentialsImpl.getServer().getChatManager().register(new BuilderChat());
 
 		final ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new UserHomeHandler(), "playerHomes");
@@ -134,8 +135,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new VoteCommand(), "voteCommand");
 
 
-		if (KiloConfig.main().startupScript().enabled)
+		if (KiloConfig.main().startupScript().enabled) {
 			this.startupScript = new StartupScript();
+		}
 	}
 
 	public static Logger getLogger() {
@@ -156,8 +158,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public static KiloEssentialsImpl getInstance() {
-		if (KiloEssentialsImpl.instance != null)
+		if (KiloEssentialsImpl.instance != null) {
 			return KiloEssentialsImpl.instance;
+		}
 
 		throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
     }
@@ -166,7 +169,7 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		return "kiloess:" + name;
 	}
 
-	public Server getServer() {
+	public static Server getServer() {
 	    return KiloServer.getServer();
     }
 
@@ -184,13 +187,19 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public final CompletableFuture<List<User>> getAllUsersThenAcceptAsync(final OnlineUser requester,
 																		  final String loadingTitle,
 																		  final Consumer<? super List<User>> action) {
+		CommandSourceUser src = (CommandSourceUser) requester;
+		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer(), loadingTitle);
 
-		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer(), loadingTitle)
-				.start();
+		if (!src.isConsole()) {
+			loadingText.start();
+		}
 
-		final CompletableFuture<List<User>> future = this.getServer().getUserManager().getAll();
+		final CompletableFuture<List<User>> future = KiloEssentialsImpl.getServer().getUserManager().getAll();
 		future.thenAcceptAsync(list -> {
-			loadingText.stop();
+			if (!src.isConsole()) {
+				loadingText.stop();
+			}
+
 			action.accept(list);
 		});
 
@@ -202,12 +211,12 @@ public class KiloEssentialsImpl implements KiloEssentials {
 																	final String username,
 																	final Consumer<? super User> action) {
 		if (CmdUtils.isOnline(requester))
-			return this.getUserThenAcceptAsync(this.getServer().getOnlineUser(requester.getName()), username, action);
+			return this.getUserThenAcceptAsync(KiloEssentialsImpl.getServer().getOnlineUser(requester.getName()), username, action);
 
-		final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getServer().getUserManager().getOffline(username);
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
 			if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
-				this.getServer().getCommandSourceUser(requester).sendError(ExceptionMessageNode.USER_NOT_FOUND);
+				KiloEssentialsImpl.getServer().getCommandSourceUser(requester).sendError(ExceptionMessageNode.USER_NOT_FOUND);
 				return;
 			}
 
@@ -221,14 +230,14 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final ServerPlayerEntity requester,
 																	final String username,
 																	final Consumer<? super User> action) {
-		return this.getUserThenAcceptAsync(this.getServer().getOnlineUser(requester), username, action);
+		return this.getUserThenAcceptAsync(KiloEssentialsImpl.getServer().getOnlineUser(requester), username, action);
 	}
 
 	@Override
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final OnlineUser requester,
 																	final String username,
 																	final Consumer<? super User> action) {
-		final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getServer().getUserManager().getOffline(username);
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer());
 		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
 			loadingText.stop();
@@ -250,14 +259,14 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	@Override
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final String username,
 																	final Consumer<? super Optional<User>> action) {
-		final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getServer().getUserManager().getOffline(username);
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(action);
 		return optionalCompletableFuture;
 	}
 
 	@Override
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final String username, final Consumer<? super Optional<User>> action, final Executor executor) {
-		final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getServer().getUserManager().getOffline(username);
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(action, executor);
 		return optionalCompletableFuture;
 	}
@@ -305,8 +314,9 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public void onServerStop() {
-		if (PlayerSitManager.INSTANCE != null && PlayerSitManager.enabled)
+		if (PlayerSitManager.INSTANCE != null && PlayerSitManager.enabled) {
 			PlayerSitManager.INSTANCE.killAll();
+		}
 	}
 
 }

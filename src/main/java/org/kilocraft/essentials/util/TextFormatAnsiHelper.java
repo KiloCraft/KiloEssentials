@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.util;
 
 import org.fusesource.jansi.Ansi;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.EnumMap;
 import java.util.Map;

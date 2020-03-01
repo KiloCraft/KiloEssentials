@@ -21,7 +21,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.Objects;
 
-import static org.kilocraft.essentials.api.chat.TextFormat.getFormattedTPS;
+import static org.kilocraft.essentials.api.text.TextFormat.getFormattedTPS;
 import static org.kilocraft.essentials.util.TPSTracker.*;
 
 public class StatusCommand extends EssentialCommand {

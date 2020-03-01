@@ -27,7 +27,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
@@ -78,7 +78,7 @@ public class KiloCommands {
     private final List<IEssentialCommand> commands;
     private final CommandDispatcher<ServerCommandSource> dispatcher;
     private final SimpleCommandManager simpleCommandManager;
-    public static final String PERMISSION_PREFIX = "kiloessentials.command.";
+    static final String PERMISSION_PREFIX = "kiloessentials.command.";
     private static LiteralCommandNode<ServerCommandSource> rootNode;
 
     public KiloCommands() {

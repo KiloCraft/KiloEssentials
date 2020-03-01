@@ -66,6 +66,8 @@ dependencies {
 	shadow group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
 	compile group: 'com.google.inject', name: 'guice', version: '4.0'
 	shadow group: 'com.google.inject', name: 'guice', version: '4.0'
+	compile "net.luckperms:api:${project.luckperms_version}"
+	shadow "net.luckperms:api:${project.luckperms_version}"
 }
 
 tasks.jar.archiveClassifier = "compile"

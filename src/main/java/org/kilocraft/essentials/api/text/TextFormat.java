@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.chat;
+package org.kilocraft.essentials.api.text;
 
 import com.google.common.collect.Maps;
 import net.minecraft.server.command.ServerCommandSource;
@@ -158,7 +158,7 @@ public enum TextFormat {
     }
 
     public static String[] getList() {
-        return list();
+        return TextFormat.list();
     }
 
     public Formatting getFormattingByChar(char code) {

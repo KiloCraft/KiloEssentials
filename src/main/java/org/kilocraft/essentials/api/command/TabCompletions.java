@@ -14,7 +14,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 
@@ -97,10 +97,6 @@ public class TabCompletions {
         }
 
         return null;
-    }
-
-    public static CompletableFuture<Suggestions> boolStyle(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(new String[]{"on", "off"}, builder);
     }
 
     public static CompletableFuture<Suggestions> stateSuggestions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {

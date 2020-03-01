@@ -2,7 +2,7 @@ package org.kilocraft.essentials.chat;
 
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
