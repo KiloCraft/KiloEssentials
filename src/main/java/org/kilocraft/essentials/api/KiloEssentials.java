@@ -37,6 +37,7 @@ import org.kilocraft.essentials.api.feature.SingleInstanceConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
@@ -99,18 +100,10 @@ public interface KiloEssentials {
      */
     <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException;
 
+    PermissionUtil getPermissionUtil();
+
     static String getWorkingDirectory() {
         return System.getProperty("user.dir");
-    }
-
-    @Deprecated
-    static String getEssentialsDirectory() {
-        return getWorkingDirectory() + "/essentials/";
-    }
-
-    @Deprecated
-    static String getDataDirectory() {
-        return getEssentialsDirectory() + "data/";
     }
 
     static Path getDataDirPath() {

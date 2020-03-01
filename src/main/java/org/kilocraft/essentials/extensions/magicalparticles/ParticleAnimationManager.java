@@ -234,7 +234,7 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
 
     @Override
     public KiloFile getSaveFile() {
-        return new KiloFile("particle_animation_cache.dat", KiloEssentials.getDataDirectory());
+        return new KiloFile("particle_animation_cache.dat", KiloEssentials.getDataDirPath());
     }
 
     @Override

@@ -24,7 +24,6 @@ import java.util.Map;
 
 public class PlaytimetopCommand extends EssentialCommand {
     private static long cacheTime = 0L;
-    private static TextUtils.Input cachedInput = null;
 
     public PlaytimetopCommand() {
         super("playtimetop", CommandPermission.PLAYTIMETOP, new String[]{"pttop", "topplaytimes"});
@@ -75,14 +74,14 @@ public class PlaytimetopCommand extends EssentialCommand {
                 input.add(String.format(LINE_FORMAT, i + 1, entry.getKey(), pt));
             }
 
-            PagedText paged = new PagedText();
-
-            System.out.println("OK4");
-            try {
-                paged.showPage("Top Play times", "/playtimetop %s", page, src.getCommandSource());
-            } catch (final CommandSyntaxException e) {
-                src.sendError(e.getMessage());
-            }
+//            PagedText paged = new PagedText();
+//
+//            System.out.println("OK4");
+//            try {
+//                //paged.showPage("Top Play times", "/playtimetop %s", page, src.getCommandSource());
+//            } catch (final CommandSyntaxException e) {
+//                src.sendError(e.getMessage());
+//            }
 
             System.out.println("OK5");
         });

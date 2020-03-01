@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.indicode.fabric.permissions.Thimble;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -127,7 +126,7 @@ public class SethomeCommand extends EssentialCommand {
             int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
 
             if (user.getHomesHandler().homes() + 1 <= allowed &&
-                    Thimble.hasPermissionOrOp(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
+                    KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
                 return true;
             }
         }

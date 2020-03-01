@@ -32,7 +32,7 @@ public class PagedText {
                     return;
                 }
                 
-                user.sendMessage(tl("infoChapter"));
+                //user.sendMessage(tl("infoChapter"));
                 final StringBuilder sb = new StringBuilder();
                 boolean first = true;
                 for (final String string : chapters) {
@@ -66,7 +66,7 @@ public class PagedText {
 
                 final int pages = end / 9 + (end % 9 > 0 ? 1 : 0);
                 if (page > pages) {
-                    user.sendMessage(tl("infoUnknownChapter"));
+                    //user.sendMessage(tl("infoUnknownChapter"));
                     return;
                 }
                 if (!this.onePage && commandName != null) {
@@ -74,18 +74,18 @@ public class PagedText {
                     final StringBuilder content = new StringBuilder();
                     final String[] title = commandName.split(" ", 2);
                     if (title.length > 1) {
-                        content.append(I18n.capitalCase(title[0])).append(": ");
+                        //content.append(I18n.capitalCase(title[0])).append(": ");
                         content.append(title[1]);
                     } else {
-                        content.append(I18n.capitalCase(commandName));
+                        //content.append(I18n.capitalCase(commandName));
                     }
-                    user.sendMessage(tl("infoPages", page, pages, content));
+                    //user.sendMessage(tl("infoPages", page, pages, content));
                 }
                 for (int i = start; i < end && i < start + (this.onePage ? 20 : 9); i++) {
                     user.sendMessage("§r" + lines.get(i));
                 }
                 if (!this.onePage && page < pages && commandName != null) {
-                    user.sendMessage(tl("readNextPage", commandName, page + 1));
+                    //user.sendMessage(tl("readNextPage", commandName, page + 1));
                 }
                 return;
             }
@@ -103,39 +103,39 @@ public class PagedText {
                 chapterpage = 0;
             }
         }
-
-        //This checks to see if we have the chapter in the index
-        if (!bookmarks.containsKey(pageStr.toLowerCase(Locale.ENGLISH))) {
-            user.sendMessage(tl("infoUnknownChapter"));
-            return;
-        }
-
-        //Since we have a valid chapter, count the number of lines in the chapter
-        final int chapterstart = bookmarks.get(pageStr.toLowerCase(Locale.ENGLISH)) + 1;
-        int chapterend;
-        for (chapterend = chapterstart; chapterend < lines.size(); chapterend++) {
-            final String line = lines.get(chapterend);
-            if (line.length() > 0 && line.charAt(0) == '#') {
-                break;
-            }
-        }
-
-        //Display the chapter from the starting position
-        final int start = chapterstart + (this.onePage ? 0 : chapterpage * 9);
-        final int page = chapterpage + 1;
-        final int pages = (chapterend - chapterstart) / 9 + ((chapterend - chapterstart) % 9 > 0 ? 1 : 0);
-        if (!this.onePage && commandName != null) {
-            final StringBuilder content = new StringBuilder();
-            content.append(I18n.capitalCase(commandName)).append(": ");
-            content.append(pageStr);
-            user.sendMessage(tl("infoChapterPages", content, page, pages));
-        }
-        for (int i = start; i < chapterend && i < start + (this.onePage ? 20 : 9); i++) {
-            user.sendMessage("§r" + lines.get(i));
-        }
-        if (!this.onePage && page < pages && commandName != null) {
-            user.sendMessage(tl("readNextPage", commandName, pageStr + " " + (page + 1)));
-        }
+//
+//        //This checks to see if we have the chapter in the index
+//        if (!bookmarks.containsKey(pageStr.toLowerCase(Locale.ENGLISH))) {
+//            user.sendMessage(tl("infoUnknownChapter"));
+//            return;
+//        }
+//
+//        //Since we have a valid chapter, count the number of lines in the chapter
+//        final int chapterstart = bookmarks.get(pageStr.toLowerCase(Locale.ENGLISH)) + 1;
+//        int chapterend;
+//        for (chapterend = chapterstart; chapterend < lines.size(); chapterend++) {
+//            final String line = lines.get(chapterend);
+//            if (line.length() > 0 && line.charAt(0) == '#') {
+//                break;
+//            }
+//        }
+//
+//        //Display the chapter from the starting position
+//        final int start = chapterstart + (this.onePage ? 0 : chapterpage * 9);
+//        final int page = chapterpage + 1;
+//        final int pages = (chapterend - chapterstart) / 9 + ((chapterend - chapterstart) % 9 > 0 ? 1 : 0);
+//        if (!this.onePage && commandName != null) {
+//            final StringBuilder content = new StringBuilder();
+//            content.append(I18n.capitalCase(commandName)).append(": ");
+//            content.append(pageStr);
+//            user.sendMessage(tl("infoChapterPages", content, page, pages));
+//        }
+//        for (int i = start; i < chapterend && i < start + (this.onePage ? 20 : 9); i++) {
+//            user.sendMessage("§r" + lines.get(i));
+//        }
+//        if (!this.onePage && page < pages && commandName != null) {
+//            user.sendMessage(tl("readNextPage", commandName, pageStr + " " + (page + 1)));
+//        }
     }
 
 }

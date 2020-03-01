@@ -1,7 +1,6 @@
 package org.kilocraft.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
-import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -32,6 +31,7 @@ import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationMan
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -40,10 +40,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
-
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
-import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
-
 /**
  * Main Implementation
  *
@@ -59,6 +55,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	private static final String KE_PREFIX = "[KiloEssentials] ";
 	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials", KiloEssentialsImpl.massageFactory());
 	private static KiloEssentialsImpl instance;
+	private PermissionUtil permUtil;
 	private static final ModConstants constants = new ModConstants();
 	public static final String PERMISSION_PREFIX = "kiloessentials.";
 	private final KiloCommands commands;
@@ -69,26 +66,16 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	private final List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private final Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(final KiloEvents events, final KiloConfig config) {
+	KiloEssentialsImpl(final KiloEvents events, final KiloConfig config) {
 		KiloEssentialsImpl.instance = this;
 		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
+		this.permUtil = new PermissionUtil();
 		this.commands = new KiloCommands();
 
 		KiloServer.getServer().setName(KiloConfig.main().server().name);
-
-		permissionWriters.add((map, server) -> {
-			for (final EssentialPermission perm : EssentialPermission.values()) {
-				map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
-			}
-
-			for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
-				map.registerPermission(CommandPermission.HOME_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
-			}
-		});
-
-		KiloEssentialsImpl.LOGGER.info("Registered " + (CommandPermission.values().length + EssentialPermission.values().length) + " permission nodes.");
+		LOGGER.info("Registered " + (CommandPermission.values().length + EssentialPermission.values().length) + " permission nodes.");
 
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
@@ -145,11 +132,11 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public static boolean hasPermissionNode(final ServerCommandSource source, final EssentialPermission perm) {
-		return hasPermissionOrOp(source, perm.getNode(), 2);
+		return instance.permUtil.hasPermission(source, perm.getNode(), 2);
 	}
 
 	public static boolean hasPermissionNode(final ServerCommandSource source, final EssentialPermission perm, final int minOpLevel) {
-		return hasPermissionOrOp(source, perm.getNode(), minOpLevel);
+		return instance.permUtil.hasPermission(source, perm.getNode(), minOpLevel);
 	}
 
 	@Override
@@ -292,6 +279,11 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		}
 
 		return ft;
+	}
+
+	@Override
+	public PermissionUtil getPermissionUtil() {
+		return this.permUtil;
 	}
 
 	private static MessageFactory massageFactory() {

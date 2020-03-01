@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class UserHandler {
-    private static final File saveDir = new File(KiloEssentials.getDataDirectory() + "users/");
+    private static final File saveDir = KiloEssentials.getDataDirPath().resolve("users").toFile();
 
-    public void handleUser(final ServerUser serverUser) throws IOException {
+    void handleUser(final ServerUser serverUser) throws IOException {
         if (!this.loadUser(serverUser)) {
             UserHandler.saveDir.mkdirs();
             this.getUserFile(serverUser).createNewFile();
@@ -23,7 +23,7 @@ public class UserHandler {
 
     }
 
-    public boolean loadUserAndResolveName(final ServerUser user) throws IOException {
+    boolean loadUserAndResolveName(final ServerUser user) throws IOException {
         if (this.getUserFile(user).exists()) {
             CompoundTag tag = NbtIo.readCompressed(new FileInputStream(this.getUserFile(user)));
             user.deserialize(tag);
@@ -33,7 +33,7 @@ public class UserHandler {
         return false;
     }
 
-    public boolean loadUser(final ServerUser serverUser) throws IOException {
+    private boolean loadUser(final ServerUser serverUser) throws IOException {
         if (this.getUserFile(serverUser).exists()) {
             serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(this.getUserFile(serverUser))));
             return true;
@@ -58,15 +58,15 @@ public class UserHandler {
         return this.getUserFile(uuid).exists();
     }
 
-    public File getUserFile(final ServerUser serverUser) {
+    private File getUserFile(final ServerUser serverUser) {
         return this.getUserFile(serverUser.uuid);
     }
 
-    public File getUserFile(final UUID uuid) {
+    private File getUserFile(final UUID uuid) {
         return KiloEssentials.getDataDirPath().resolve("users").resolve(uuid.toString() + ".dat").toFile();
     }
 
-    public File[] getUserFiles() {
+    File[] getUserFiles() {
         return KiloEssentials.getDataDirPath().resolve("users").toFile().listFiles();
     }
 

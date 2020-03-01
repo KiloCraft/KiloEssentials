@@ -13,7 +13,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.CommandSource;
@@ -66,8 +65,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
-import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 import static org.kilocraft.essentials.api.KiloEssentials.getServer;
@@ -90,25 +87,18 @@ public class KiloCommands {
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {
-        return hasPermissionOrOp(src, perm.getNode(), 2);
+        return KiloEssentials.getInstance().getPermissionUtil().hasPermission(src, perm.getNode(), 2);
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm, final int minOpLevel) {
-        return hasPermissionOrOp(src, perm.getNode(), minOpLevel);
+        return KiloEssentials.getInstance().getPermissionUtil().hasPermission(src, perm.getNode(), minOpLevel);
     }
 
-    @Deprecated
     public static boolean hasPermission(final ServerCommandSource src, final String cmdPerm, final int minOpLevel) {
-        return hasPermissionOrOp(src, cmdPerm, minOpLevel);
+        return KiloEssentials.getInstance().getPermissionUtil().hasPermission(src, cmdPerm, 2);
     }
 
     private void register() {
-        permissionWriters.add((map, server) -> {
-            for (final CommandPermission perm : CommandPermission.values()) {
-                map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
-            }
-        });
-
         final List<IEssentialCommand> commandsList = new ArrayList<IEssentialCommand>() {{
             this.add(new SmiteCommand());
             this.add(new NicknameCommand());
