@@ -18,14 +18,17 @@ import org.kilocraft.essentials.config.KiloConfig;
 
 public class PermissionUtil {
     private final Manager manager;
+    private final boolean present;
 
     public PermissionUtil() {
         Logger logger = (Logger) KiloEssentials.getLogger();
         logger.info("Setting up Permissions...");
         this.manager = Manager.fromString(KiloConfig.main().permissionManager());
+        this.present = checkPresent(manager);
 
-        if (!checkPresent(manager)) {
-            logger.error("**** Permission Manager is not Present! Switching to vanilla operator system");
+        if (!present) {
+            logger.warn("**** Permission Manager is not Present! Switching to vanilla operator system" +
+                    "You can install either LuckPerms for Fabric Or Thimble to manage the permissions");
             return;
         }
 
@@ -49,12 +52,14 @@ public class PermissionUtil {
     }
 
     public boolean hasPermission(ServerCommandSource src, String permission, int opLevel) {
-        if (manager == Manager.LUCKPERMS) {
-            return fromLuckPerms(src, permission, opLevel);
-        }
+        if (present) {
+            if (manager == Manager.LUCKPERMS) {
+                return fromLuckPerms(src, permission, opLevel);
+            }
 
-        if (manager == Manager.THIMBLE) {
-            return fromThimble(src, permission, opLevel);
+            if (manager == Manager.THIMBLE) {
+                return fromThimble(src, permission, opLevel);
+            }
         }
 
         return src.hasPermissionLevel(opLevel);
