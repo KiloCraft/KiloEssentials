@@ -75,7 +75,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		this.commands = new KiloCommands();
 
 		KiloServer.getServer().setName(KiloConfig.main().server().name);
-		LOGGER.info("Registered " + (CommandPermission.values().length + EssentialPermission.values().length) + " permission nodes.");
 
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
@@ -105,8 +104,9 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		}
 		*/
 
-		if (SharedConstants.isDevelopment)
+		if (SharedConstants.isDevelopment) {
 			new KiloDebugUtils(this);
+		}
 
 		KiloEssentialsImpl.getServer().getChatManager().register(new GlobalChat());
 		KiloEssentialsImpl.getServer().getChatManager().register(new StaffChat());
@@ -120,7 +120,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
 		features.tryToRegister(new DiscordCommand(), "discordCommand");
 		features.tryToRegister(new VoteCommand(), "voteCommand");
-
 
 		if (KiloConfig.main().startupScript().enabled) {
 			this.startupScript = new StartupScript();

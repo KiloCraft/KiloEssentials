@@ -66,17 +66,21 @@ public class ThrowableEntities {
     }
 
     public static ThrownItemEntity completeThrownEntity(ThrownItemEntity entity, PlayerEntity player, float yaw, float pitch, float motionX, float motionY, float motionZ) {
-        entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        //Yarn (19.w.09.a): entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        entity.setOwner(player);
+        entity.setVelocity(motionX, motionY, motionZ, yaw, pitch);
         return entity;
     }
 
     public static ProjectileEntity completeProjectile(ProjectileEntity entity, PlayerEntity player, float yaw, float pitch, float motionX, float motionY, float motionZ) {
-        entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        //Yarn (19.w.09.a): entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        entity.setOwner(player);
+        entity.setVelocity(motionX, motionY, motionZ, yaw, pitch);
         return entity;
     }
 
     public static ThrownEntity completeThrown(ThrownEntity entity, PlayerEntity player, float yaw, float pitch, float motionX, float motionY, float motionZ) {
-        entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        //Yarn (19.w.09.a): entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
         return entity;
     }
 
