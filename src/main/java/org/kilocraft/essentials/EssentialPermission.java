@@ -24,7 +24,7 @@ public enum EssentialPermission {
     RTP_MANAGE("rtp.manage"),
     MAGIC_PARTICLES_SELF("magicparticles"),
     SIT_SELF("sit.self"),
-    SIT_OTHERS("sit.others"),
+    SIT_OTHERS("sit.others")
     ;
 
     private String node;

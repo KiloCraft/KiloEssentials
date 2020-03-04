@@ -38,6 +38,10 @@ public class TextUtils {
             return new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
         }
 
+        public static ClickEvent onClickSuggest(String command) {
+            return new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command);
+        }
+
         public static ClickEvent onClickOpen(String url) {
             return new ClickEvent(ClickEvent.Action.OPEN_URL, url);
         }
