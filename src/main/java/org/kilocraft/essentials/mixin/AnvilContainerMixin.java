@@ -30,24 +30,6 @@ public abstract class AnvilContainerMixin extends class_4861 {
         super(ContainerType.ANVIL, i, playerInventory, blockContext);
     }
 
-//    @Shadow
-//    public void updateResult(){};
-//    @Final
-//    @Shadow private PlayerEntity player;
-//
-//    @Shadow @Final private BlockContext context;
-//
-//    @Shadow @Final private Inventory inventory;
-
-//    @Inject(method = "close", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/container/AnvilContainer;close(Lnet/minecraft/entity/player/PlayerEntity;)V"))
-//    public void modifyClose(PlayerEntity playerEntity, CallbackInfo ci) {
-//        if (this.context == BlockContext.EMPTY) {
-//            super.close(playerEntity);
-//            this.dropInventory(playerEntity, playerEntity.getEntityWorld(), this.inventory);
-//            ci.cancel();
-//        }
-//    }
-
     @Inject(method = "setNewItemName", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/container/AnvilContainer;setNewItemName(Ljava/lang/String;)V\n"))
     public void modifySetNewItemName(String string, CallbackInfo ci) {
         ci.cancel();
