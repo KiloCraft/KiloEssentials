@@ -32,6 +32,7 @@ public enum CommandPermission {
     BROADCAST("broadcast"),
     ANVIL("anvil"),
     WORKBENCH("workbench"),
+    SMITH("smith"),
     ITEM_FORMATTING("item.formatting"),
     ITEM_NAME("item.name"),
     ITEM_LORE("item.lore"),

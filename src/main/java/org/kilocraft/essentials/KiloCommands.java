@@ -36,6 +36,7 @@ import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
+import org.kilocraft.essentials.commands.inventory.SmithCommand;
 import org.kilocraft.essentials.commands.inventory.WorkbenchCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.LocateCommand;
@@ -106,6 +107,7 @@ public class KiloCommands {
             this.add(new SudoCommand());
             this.add(new ItemCommand());
             this.add(new WorkbenchCommand());
+            this.add(new SmithCommand());
             this.add(new AnvilCommand());
             this.add(new SigneditCommand());
             this.add(new HatCommand());

@@ -26,7 +26,8 @@ public abstract class WorkbenchContainerMixin extends Container {
 
     @Inject(
             method = "close",
-            at = @At(value = "HEAD", target = "Lnet/minecraft/class_4861;close(Lnet/minecraft/entity/player/PlayerEntity;)V")
+            at = @At(value = "HEAD", target = "Lnet/minecraft/class_4861;close(Lnet/minecraft/entity/player/PlayerEntity;)V"),
+            cancellable = true
     )
     private void modify$close(PlayerEntity playerEntity, CallbackInfo ci) {
         if (this.field_22481 == BlockContext.EMPTY) {
