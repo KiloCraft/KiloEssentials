@@ -119,7 +119,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     }
 
     @Inject(method = "onClientCommand", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onClientCommand(Lnet/minecraft/server/network/packet/ClientCommandC2SPacket;)V"))
+            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V"))
     private void modifyOnClientCommand(ClientCommandC2SPacket clientCommandC2SPacket, CallbackInfo ci) {
         PlayerClientCommandEvent event = new PlayerClientCommandEventImpl(player, clientCommandC2SPacket.getMode());
         KiloServer.getServer().triggerEvent(event);
