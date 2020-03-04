@@ -17,6 +17,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 public class RelnameCommand extends EssentialCommand {
 	public RelnameCommand() {
 		super("realname", CommandPermission.REALNAME);
+		this.withUsage("command.realname.usage", "nickname");
 	}
 
 	public void register(CommandDispatcher<ServerCommandSource> dispatcher) {

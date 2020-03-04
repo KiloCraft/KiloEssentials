@@ -147,7 +147,7 @@ public class KiloCommands {
             this.add(new PlaytimeCommand());
             this.add(new MotdCommand());
             this.add(new HelpMeCommand());
-            this.add(new PlaytimetopCommand());
+            //this.add(new PlaytimetopCommand());
         }};
 
         this.commands.addAll(commandsList);

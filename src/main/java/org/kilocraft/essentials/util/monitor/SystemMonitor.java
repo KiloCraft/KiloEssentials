@@ -12,10 +12,8 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
 import java.text.DecimalFormat;
 
-@SuppressWarnings("not tested")
 public class SystemMonitor {
     public static OperatingSystemMXBean systemMXBean = ManagementFactoryHelper.getOperatingSystemMXBean();
-    public static ThreadMXBean threadMXBean = ManagementFactoryHelper.getThreadMXBean();
 
     private static Runtime runTime = Runtime.getRuntime();
     private static DecimalFormat decimalFormat = new DecimalFormat("##.##");

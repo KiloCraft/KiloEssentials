@@ -208,11 +208,11 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
         }
     }
 
-    public static String getAnimationName(Identifier id) {
+    static String getAnimationName(Identifier id) {
         return map.get(id).getName();
     }
 
-    public static void runAnimationFrames(final ServerPlayerEntity player, Identifier id) {
+    private static void runAnimationFrames(final ServerPlayerEntity player, Identifier id) {
         ParticleAnimation animation = map.get(id);
 
         if (animation == null) {
