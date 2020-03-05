@@ -33,7 +33,7 @@ public class SmithCommand extends EssentialCommand {
         ServerPlayerEntity player = context.getSource().getPlayer();
         KiloChat.sendLangMessageTo(context.getSource(), "general.open_container", "SmithingTable");
 
-        player.openContainer(new SimpleNamedContainerFactory(this::createContainer, new TranslatableText("container.crafting")));
+        player.openContainer(new SimpleNamedContainerFactory(this::createContainer, new TranslatableText("container.upgrade")));
         player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 
         return 1;

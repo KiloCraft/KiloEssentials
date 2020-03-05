@@ -109,7 +109,15 @@ public class PermissionUtil {
         }
     }
 
-    private enum Manager {
+    public boolean managerPresent() {
+        return this.present;
+    }
+
+    public Manager getManager() {
+        return this.manager;
+    }
+
+    public enum Manager {
         NONE("none", ""),
         LUCKPERMS("LuckPerms", "net.luckperms.api.LuckPerms"),
         THIMBLE("Thimble", "io.github.indicode.fabric.permissions.Thimble");
@@ -122,7 +130,7 @@ public class PermissionUtil {
             this.classPath = classPath;
         }
 
-        public final String getName() {
+        public String getName() {
             return this.name;
         }
 
