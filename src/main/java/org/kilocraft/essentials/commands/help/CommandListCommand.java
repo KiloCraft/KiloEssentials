@@ -18,25 +18,21 @@ import org.kilocraft.essentials.util.TextUtils;
 import java.util.Collection;
 
 public class CommandListCommand extends EssentialCommand {
-
-    static Collection<CommandNode<ServerCommandSource>> commands;
-
     public CommandListCommand() {
         super("commandlist");
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::list);
-        commands = dispatcher.getRoot().getChildren();
+        argumentBuilder.executes(this::execute);
     }
 
-    private int list (CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         TextUtils.ListStyle text = TextUtils.ListStyle.of(
                 "Commands", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY
         );
 
-        for (CommandNode node : commands) {
+        for (CommandNode node : dispatcher.getRoot().getChildren()) {
             text.append(node.getName(), null, TextUtils.Events.onClickSuggest("/" + node.getName()));
         }
 
