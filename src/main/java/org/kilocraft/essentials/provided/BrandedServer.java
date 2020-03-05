@@ -6,7 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.PacketByteBuf;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.config.KiloConfig;
 
 public class BrandedServer {

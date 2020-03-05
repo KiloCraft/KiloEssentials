@@ -30,7 +30,7 @@ import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
@@ -91,7 +91,7 @@ public class RtpCommand extends EssentialCommand {
 		}
 
 		if (actionType.equalsIgnoreCase("send") && target != null) {
-			if (CommandHelper.areTheSame(src, target))
+			if (CmdUtils.areTheSame(src, target))
 				return executeSelf(ctx);
 
 			return executeOthers(ctx);
@@ -188,7 +188,7 @@ public class RtpCommand extends EssentialCommand {
 			targetUser.setRTPsLeft(0);
 
 		//Check if the player has any rtps left or permission to ignore the limit
-		if (CommandHelper.areTheSame(source, target) && targetUser.getRTPsLeft() <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
+		if (CmdUtils.areTheSame(source, target) && targetUser.getRTPsLeft() <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
 			targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
 			return;
 		}
@@ -217,9 +217,9 @@ public class RtpCommand extends EssentialCommand {
 		targetUser.saveLocation();
 		target.teleport(target.getServerWorld(), randomX, 255, randomZ, 0, 0);
 
-		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
+		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getSenseCenterPos()));
 
-		if (CommandHelper.areTheSame(source, target)) {
+		if (CmdUtils.areTheSame(source, target)) {
 			if (!PERMISSION_CHECK_IGNORE_LIMIT.test(source))
 				targetUser.setRTPsLeft(targetUser.getRTPsLeft() - 1);
 
@@ -228,7 +228,7 @@ public class RtpCommand extends EssentialCommand {
 							.replace("{BIOME}", targetBiomeName)
 							.replace("{RTP_LEFT}", String.valueOf(targetUser.getRTPsLeft()))
 							.replace("{cord.X}", String.valueOf(randomX))
-							.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
+							.replace("{cord.Y}", String.valueOf(target.getSenseCenterPos().getY()))
 							.replace("{cord.Z}", String.valueOf(randomZ))
 					, true));
 		} else

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.chat;
+package org.kilocraft.essentials.api.text;
 
 import com.google.common.collect.Maps;
 import net.minecraft.server.command.ServerCommandSource;
@@ -9,7 +9,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -158,7 +158,7 @@ public enum TextFormat {
     }
 
     public static String[] getList() {
-        return list();
+        return TextFormat.list();
     }
 
     public Formatting getFormattingByChar(char code) {
@@ -297,6 +297,19 @@ public enum TextFormat {
         return new LiteralText(translateAlternateColorCodes(altColorChar, textToTranslate));
     }
 
+    public static String removeAlternateColorCodes(@NotNull String textToTranslate, char... chars) {
+        Validate.notNull(textToTranslate, "Cannot translate null text");
+        String string = "";
+        for (char aChar : chars) {
+            string = removeAlternateColorCodes(aChar, string);
+        }
+
+        for (LoggerFormats s : LoggerFormats.values()) {
+            string = string.replace(s.getCode(), "");
+        }
+
+        return string;
+    }
 
     public static String removeAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
@@ -313,7 +326,7 @@ public enum TextFormat {
 
     public static void sendToUniversalSource(ServerCommandSource source, String text, boolean log) {
         LiteralText literalText;
-        if (CommandHelper.isConsole(source)) {
+        if (CmdUtils.isConsole(source)) {
             literalText = new LiteralText(removeAlternateColorCodes('&', text));
         } else {
             literalText = new LiteralText(translateAlternateColorCodes('&', text));
@@ -324,7 +337,7 @@ public enum TextFormat {
 
     public static void sendToUniversalSource(char altColorChar, ServerCommandSource source, String text, boolean log) {
         LiteralText literalText;
-        if (CommandHelper.isConsole(source)) {
+        if (CmdUtils.isConsole(source)) {
             literalText = new LiteralText(removeAlternateColorCodes(altColorChar, text));
         } else {
             literalText = new LiteralText(translateAlternateColorCodes(altColorChar, text));

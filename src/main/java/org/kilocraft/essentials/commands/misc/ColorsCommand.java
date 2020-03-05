@@ -3,7 +3,7 @@ package org.kilocraft.essentials.commands.misc;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 
 public class ColorsCommand extends EssentialCommand {

@@ -33,66 +33,68 @@ import java.util.UUID;
 public class OnlineServerUser extends ServerUser implements OnlineUser {
     private PlayerSitManager.SummonType sitState;
 
+    @Override
     public ServerPlayerEntity getPlayer() {
         return KiloServer.getServer().getPlayer(this.uuid);
     }
 
+    @Override
     public ServerCommandSource getCommandSource() {
         return this.getPlayer().getCommandSource();
     }
 
     @Override
-    public void teleport(Location loc, boolean sendTicket) {
+    public void teleport(final Location loc, final boolean sendTicket) {
         if (sendTicket)
-            loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 1, getPlayer().getEntityId());
+            loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 1, this.getPlayer().getEntityId());
 
-        getPlayer().teleport(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getRotation().getYaw(), loc.getRotation().getPitch());
+        this.getPlayer().teleport(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getRotation().getYaw(), loc.getRotation().getPitch());
     }
 
     @Override
-    public void sendMessage(String message) {
+    public void sendMessage(final String message) {
         KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage(message, true));
     }
 
     @Override
-    public int sendError(String message) {
+    public int sendError(final String message) {
         KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage("&c" + message, true).toText().formatted(Formatting.RED));
         return -1;
     }
 
     @Override
-    public int sendError(ExceptionMessageNode node, Object... objects) {
-        String message = ModConstants.getMessageUtil().fromExceptionNode(node);
+    public int sendError(final ExceptionMessageNode node, final Object... objects) {
+        final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
         KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage(
-                (objects != null) ? String.format(message, objects) : message, true)
+                objects != null ? String.format(message, objects) : message, true)
                 .toText().formatted(Formatting.RED));
         return -1;
     }
 
     @Override
-    public void sendMessage(Text text) {
+    public void sendMessage(final Text text) {
         KiloChat.sendMessageTo(this.getPlayer(), text);
     }
 
     @Override
-    public void sendMessage(ChatMessage chatMessage) {
+    public void sendMessage(final ChatMessage chatMessage) {
         KiloChat.sendMessageTo(this.getPlayer(), chatMessage);
     }
 
     @Override
-    public void sendLangMessage(String key, Object... objects) {
+    public void sendLangMessage(final String key, final Object... objects) {
         KiloChat.sendLangMessageTo(this.getPlayer(), key, objects);
     }
 
     @Override
-    public void sendConfigMessage(String key, Object... objects) {
-        String message = KiloConfig.getMessage(key, objects);
+    public void sendConfigMessage(final String key, final Object... objects) {
+        final String message = KiloConfig.getMessage(key, objects);
         this.sendMessage(new ChatMessage(message, true));
     }
 
     @Override
     public ClientConnection getConnection() {
-        return this.getPlayer().networkHandler.client;
+        return this.getPlayer().networkHandler.connection;
     }
 
     @Override
@@ -102,12 +104,12 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public Vec3d getEyeLocation() {
-        Vec3d vec = getPlayer().getPos();
-        return new Vec3d(vec.getX(), getPlayer().getEyeY(), getPlayer().getPos().getZ());
+        final Vec3d vec = this.getPlayer().getPos();
+        return new Vec3d(vec.getX(), this.getPlayer().getEyeY(), this.getPlayer().getPos().getZ());
     }
 
     @Override
-    public void setSittingType(PlayerSitManager.SummonType type) {
+    public void setSittingType(final PlayerSitManager.SummonType type) {
         this.sitState = type;
     }
 
@@ -117,29 +119,29 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         return this.sitState;
     }
 
-    public static OnlineServerUser of(UUID uuid) {
-        return (OnlineServerUser) manager.getOnline(uuid);
+    public static OnlineServerUser of(final UUID uuid) {
+        return (OnlineServerUser) ServerUser.manager.getOnline(uuid);
     }
 
-    public static OnlineServerUser of(String name) {
-        return (OnlineServerUser) manager.getOnline(name);
+    public static OnlineServerUser of(final String name) {
+        return (OnlineServerUser) ServerUser.manager.getOnline(name);
     }
 
-    public static OnlineServerUser of(GameProfile profile) {
-        return of(profile.getId());
+    public static OnlineServerUser of(final GameProfile profile) {
+        return OnlineServerUser.of(profile.getId());
     }
 
-    public static OnlineServerUser of(ServerPlayerEntity player) {
-        return of(player.getUuid());
+    public static OnlineServerUser of(final ServerPlayerEntity player) {
+        return OnlineServerUser.of(player.getUuid());
     }
 
-    public OnlineServerUser(ServerPlayerEntity player) {
+    public OnlineServerUser(final ServerPlayerEntity player) {
         super(player.getUuid());
         this.name = player.getEntityName();
     }
 
     @Override
-    protected void deserialize(@NotNull CompoundTag tag) {
+    protected void deserialize(@NotNull final CompoundTag tag) {
         // All the other serialization logic is handled.
         super.deserialize(tag);
     }
@@ -150,11 +152,30 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public void setFlight(boolean set) {
+    public void setFlight(final boolean set) {
         super.setFlight(true);
         this.getPlayer().abilities.allowFlying = set;
         this.getPlayer().abilities.flying = set;
         this.getPlayer().sendAbilitiesUpdate();
+    }
+
+    @Override
+    public boolean hasPermission(final CommandPermission perm) {
+        return KiloCommands.hasPermission(this.getCommandSource(), perm);
+    }
+
+    @Override
+    public boolean hasPermission(final EssentialPermission perm) {
+        return KiloEssentials.hasPermissionNode(this.getCommandSource(), perm);
+    }
+
+    @Override
+    public String getLastSocketAddress() {
+        if (this.getConnection() != null) {
+            lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
+        }
+
+        return super.getLastSocketAddress();
     }
 
     @Deprecated
@@ -163,37 +184,47 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public void onJoined() {
-        if (this.canFly() && KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.FLY_SELF))
-            this.setFlight(true);
+        this.setFlight(this.canFly());
 
-        super.lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
-        super.messageCooldown = 0;
+        lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
+        messageCooldown = 0;
 
-        if (super.gameMode == GameMode.NOT_SET) {
-            super.gameMode = this.getPlayer().interactionManager.getGameMode();
-        } else {
-            this.setGameMode(gameMode);
+        if (gameMode == GameMode.NOT_SET) {
+            gameMode = this.getPlayer().interactionManager.getGameMode();
         }
 
-        if (super.ticksPlayed <= 0) {
-            super.ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
-        } else  {
-            this.getPlayer().getStatHandler().setStat(this.getPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE), super.ticksPlayed);
+        this.setGameMode(this.gameMode);
+
+        if (ticksPlayed <= 0) {
+            ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
+        } else {
+            this.getPlayer().getStatHandler().setStat(this.getPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE), ticksPlayed);
         }
 
         if (KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF)) {
-            super.isStaff = true;
+            isStaff = true;
         }
+
+        ServerUserManager.Watchdog.validate(this);
     }
 
-    public void onTick() {
-        super.ticksPlayed++;
-        super.updateLocation();
-        super.messageCooldown++;
+    private static int tick;
 
-        if (super.messageCooldown > 0) {
-            --super.messageCooldown;
+    public void onTick() {
+        ticksPlayed++;
+        updateLocation();
+        messageCooldown++;
+
+        if (messageCooldown > 0) {
+            --messageCooldown;
         }
+
+        if (OnlineServerUser.tick >= 72000) {
+            ServerUserManager.Watchdog.validate(this);
+            tick = 0;
+        }
+
+        OnlineServerUser.tick++;
     }
 
 }

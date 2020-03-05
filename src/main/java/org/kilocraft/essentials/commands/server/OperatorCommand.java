@@ -18,9 +18,9 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 
 import java.util.*;
 
@@ -179,16 +179,16 @@ public class OperatorCommand {
             GameProfile gameProfile = v.next();
             ServerPlayerEntity p = playerManager.getPlayer(gameProfile.getId());
             int leastPermLevelReq = 0;
-            if (CommandHelper.isConsole(source))
+            if (CmdUtils.isConsole(source))
                 leastPermLevelReq = 5;
-            else if (!CommandHelper.isConsole(source)) leastPermLevelReq = operatorList.get(source.getPlayer().getGameProfile()).getPermissionLevel();
+            else if (!CmdUtils.isConsole(source)) leastPermLevelReq = operatorList.get(source.getPlayer().getGameProfile()).getPermissionLevel();
 
             if (set) {
                 if (level > leastPermLevelReq) source.sendError(KiloCommands.getPermissionError("Operator permission level " + (leastPermLevelReq + 1)));
                 else if (!source.getName().equals(gameProfile.getName())){
                     if (!playerManager.isOperator(gameProfile)) {
                         LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
-                        if (CommandHelper.isOnline(p)) p.addChatMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
+                        if (CmdUtils.isOnline(p)) p.addMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
                         addOperator(gameProfile, level, byPass);
                     }
                     else if (playerManager.isOperator(gameProfile) && operatorList.get(gameProfile).getPermissionLevel() < level) {
@@ -207,7 +207,7 @@ public class OperatorCommand {
             }
             else if (!set && playerManager.isOperator(gameProfile) && !source.getName().equals(gameProfile.getName())){
                 removeOperator(gameProfile);
-                if (CommandHelper.isOnline(p)) p.addChatMessage(LangText.get(true, "command.operator.announce.removed"), false);
+                if (CmdUtils.isOnline(p)) p.addMessage(LangText.get(true, "command.operator.announce.removed"), false);
                 LangText.sendToUniversalSource(source, "command.operator.removed", false, gameProfile.getName());
             }
             else if (!set && !playerManager.isOperator(gameProfile) && !source.getName().equals(gameProfile.getName())) {
@@ -216,7 +216,7 @@ public class OperatorCommand {
             else if (source.getName().equals(gameProfile.getName()))
                 source.sendError(LangText.get(false, "command.operator.exception"));
 
-            if (CommandHelper.isOnline(p)) playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
+            if (CmdUtils.isOnline(p)) playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
         }
 
         return level;

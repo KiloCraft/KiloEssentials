@@ -17,6 +17,9 @@ public class Config {
     @Setting(value = "server")
     private ServerConfigSection serverSection = new ServerConfigSection();
 
+    @Setting(value = "permissionManager", comment = "Select the PermissionManager to use! Options: luckperms, thimble")
+    private String permissionManager = "luckperms";
+
     @Setting(value = "startupScript", comment = "Automatically creates the script to startup the server\n" +
             "Its recommended to start the server with this script so that you can restart it using the restart command later in game")
     private StartupScriptConfigSection startupScriptSection = new StartupScriptConfigSection();
@@ -64,6 +67,10 @@ public class Config {
 
     public ChatConfigSection chat() {
         return chatSection;
+    }
+
+    public String permissionManager() {
+        return permissionManager;
     }
 
 }

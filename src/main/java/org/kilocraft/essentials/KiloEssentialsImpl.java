@@ -1,7 +1,6 @@
 package org.kilocraft.essentials;
 
 import com.mojang.brigadier.CommandDispatcher;
-import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -15,13 +14,14 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -31,6 +31,7 @@ import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationMan
 import org.kilocraft.essentials.extensions.warps.WarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -39,56 +40,41 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
-
-import static io.github.indicode.fabric.permissions.Thimble.hasPermissionOrOp;
-import static io.github.indicode.fabric.permissions.Thimble.permissionWriters;
-
 /**
  * Main Implementation
  *
- * @see org.kilocraft.essentials.api.KiloEssentials
+ * @see KiloEssentials
  * @author CODY_AI
  * @author MCRafterzz
- * @author GiantNuker
  * @author I509VCB
  * @since KE 1.6
  */
 
-public class KiloEssentialsImpl implements KiloEssentials {
+public final class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
-	private static String KE_PREFIX = "[KiloEssentials] ";
-	private static final Logger logger = LogManager.getLogger("KiloEssentials", massageFactory());
+	private static final String KE_PREFIX = "[KiloEssentials] ";
+	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials", KiloEssentialsImpl.massageFactory());
 	private static KiloEssentialsImpl instance;
-	private static ModConstants constants = new ModConstants();
-	public static String PERMISSION_PREFIX = "kiloessentials.";
-	private KiloCommands commands;
-	private List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
-	private Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
+	private PermissionUtil permUtil;
+	private static final ModConstants constants = new ModConstants();
+	public static final String PERMISSION_PREFIX = "kiloessentials.";
+	private final KiloCommands commands;
+	private final List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
+	private final Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 	private StartupScript startupScript;
 
-	private List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
-	private Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
+	private final List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
+	private final Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(final KiloEvents events, final KiloConfig config) {
-		instance = this;
-		logger.info("Running KiloEssentials version " + ModConstants.getVersion());
+	KiloEssentialsImpl(final KiloEvents events, final KiloConfig config) {
+		KiloEssentialsImpl.instance = this;
+		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
+		this.permUtil = new PermissionUtil();
 		this.commands = new KiloCommands();
 
 		KiloServer.getServer().setName(KiloConfig.main().server().name);
-
-		permissionWriters.add((map, server) -> {
-			for (EssentialPermission perm : EssentialPermission.values()) {
-				map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
-			}
-
-			for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
-				map.registerPermission(CommandPermission.HOME_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
-			}
-		});
-
-		logger.info("Registered " + (CommandPermission.values().length + EssentialPermission.values().length) + " permission nodes.");
 
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
@@ -118,14 +104,15 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		}
 		*/
 
-		if (SharedConstants.isDevelopment)
+		if (SharedConstants.isDevelopment) {
 			new KiloDebugUtils(this);
+		}
 
-		getServer().getChatManager().register(new GlobalChat());
-		getServer().getChatManager().register(new StaffChat());
-		getServer().getChatManager().register(new BuilderChat());
+		KiloEssentialsImpl.getServer().getChatManager().register(new GlobalChat());
+		KiloEssentialsImpl.getServer().getChatManager().register(new StaffChat());
+		KiloEssentialsImpl.getServer().getChatManager().register(new BuilderChat());
 
-		ConfigurableFeatures features = new ConfigurableFeatures();
+		final ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new UserHomeHandler(), "playerHomes");
 		features.tryToRegister(new WarpManager(), "serverWideWarps");
 		features.tryToRegister(new PlayerSitManager(), "betterChairs");
@@ -134,21 +121,21 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		features.tryToRegister(new DiscordCommand(), "discordCommand");
 		features.tryToRegister(new VoteCommand(), "voteCommand");
 
-
-		if (KiloConfig.main().startupScript().enabled)
-			startupScript = new StartupScript();
+		if (KiloConfig.main().startupScript().enabled) {
+			this.startupScript = new StartupScript();
+		}
 	}
 
 	public static Logger getLogger() {
-		return logger;
+		return KiloEssentialsImpl.LOGGER;
 	}
 
-	public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm) {
-		return hasPermissionOrOp(source, perm.getNode(), 2);
+	public static boolean hasPermissionNode(final ServerCommandSource source, final EssentialPermission perm) {
+		return instance.permUtil.hasPermission(source, perm.getNode(), 2);
 	}
 
-	public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm, int minOpLevel) {
-		return hasPermissionOrOp(source, perm.getNode(), minOpLevel);
+	public static boolean hasPermissionNode(final ServerCommandSource source, final EssentialPermission perm, final int minOpLevel) {
+		return instance.permUtil.hasPermission(source, perm.getNode(), minOpLevel);
 	}
 
 	@Override
@@ -157,17 +144,18 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public static KiloEssentialsImpl getInstance() {
-		if (instance != null)
-			return instance;
+		if (KiloEssentialsImpl.instance != null) {
+			return KiloEssentialsImpl.instance;
+		}
 
 		throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
     }
 
-	private static String featureEntry(String name) {
+	private static String featureEntry(final String name) {
 		return "kiloess:" + name;
 	}
 
-	public Server getServer() {
+	public static Server getServer() {
 	    return KiloServer.getServer();
     }
 
@@ -178,18 +166,43 @@ public class KiloEssentialsImpl implements KiloEssentials {
 
 	@Override
 	public StartupScript getStartupScript() {
-		return startupScript;
+		return this.startupScript;
 	}
 
 	@Override
-	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerCommandSource requester, String username, Consumer<? super User> action) {
-		if (CommandHelper.isOnline(requester))
-			return getUserThenAcceptAsync(getServer().getOnlineUser(requester.getName()), username, action);
+	public final CompletableFuture<List<User>> getAllUsersThenAcceptAsync(final OnlineUser requester,
+																		  final String loadingTitle,
+																		  final Consumer<? super List<User>> action) {
+		CommandSourceUser src = (CommandSourceUser) requester;
+		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer(), loadingTitle);
 
-		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
+		if (!src.isConsole()) {
+			loadingText.start();
+		}
+
+		final CompletableFuture<List<User>> future = KiloEssentialsImpl.getServer().getUserManager().getAll();
+		future.thenAcceptAsync(list -> {
+			if (!src.isConsole()) {
+				loadingText.stop();
+			}
+
+			action.accept(list);
+		});
+
+		return future;
+	}
+
+	@Override
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final ServerCommandSource requester,
+																	final String username,
+																	final Consumer<? super User> action) {
+		if (CmdUtils.isOnline(requester))
+			return this.getUserThenAcceptAsync(KiloEssentialsImpl.getServer().getOnlineUser(requester.getName()), username, action);
+
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
 			if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
-				getServer().getCommandSourceUser(requester).sendError(ExceptionMessageNode.USER_NOT_FOUND);
+				KiloEssentialsImpl.getServer().getCommandSourceUser(requester).sendError(ExceptionMessageNode.USER_NOT_FOUND);
 				return;
 			}
 
@@ -200,23 +213,27 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	@Override
-	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerPlayerEntity requester, String username, Consumer<? super User> action) {
-		return getUserThenAcceptAsync(getServer().getOnlineUser(requester), username, action);
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final ServerPlayerEntity requester,
+																	final String username,
+																	final Consumer<? super User> action) {
+		return this.getUserThenAcceptAsync(KiloEssentialsImpl.getServer().getOnlineUser(requester), username, action);
 	}
 
 	@Override
-	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(OnlineUser requester, String username, Consumer<? super User> action) {
-		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
-		ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer());
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final OnlineUser requester,
+																	final String username,
+																	final Consumer<? super User> action) {
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
+		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer());
 		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
+			loadingText.stop();
+
 			if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
 				requester.sendError(ExceptionMessageNode.USER_NOT_FOUND);
-				loadingText.stop();
 				return;
 			}
 
-			loadingText.stop();
-			optionalUser.ifPresent(action);
+			action.accept(optionalUser.get());
 		}, KiloServer.getServer().getVanillaServer());
 
 		if (!optionalCompletableFuture.isDone())
@@ -226,32 +243,35 @@ public class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	@Override
-	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action) {
-		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final String username,
+																	final Consumer<? super Optional<User>> action) {
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(action);
 		return optionalCompletableFuture;
 	}
 
 	@Override
-	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor) {
-		CompletableFuture<Optional<User>> optionalCompletableFuture = getServer().getUserManager().getOffline(username);
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final String username, final Consumer<? super Optional<User>> action, final Executor executor) {
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(action, executor);
 		return optionalCompletableFuture;
 	}
 
 
-	public <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType) {
+	@Override
+	public <F extends ConfigurableFeature> FeatureType<F> registerFeature(final FeatureType<F> featureType) {
 		if(featureType.getType().isAssignableFrom(SingleInstanceConfigurableFeature.class)) {
-			singleInstanceConfigurationRegistry.add((FeatureType<SingleInstanceConfigurableFeature>) featureType);
+			this.singleInstanceConfigurationRegistry.add((FeatureType<SingleInstanceConfigurableFeature>) featureType);
 			return featureType;
 		}
 
-		configurableFeatureRegistry.add(featureType);
+		this.configurableFeatureRegistry.add(featureType);
 		return featureType;
 	}
 
-	public <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException {
-		F ft = (F) proxySingleInstanceFeatures.get(type);
+	@Override
+	public <F extends SingleInstanceConfigurableFeature> F getFeature(final FeatureType<F> type) throws FeatureNotPresentException {
+		final F ft = (F) this.proxySingleInstanceFeatures.get(type);
 
 		if (ft == null) {
 			throw new FeatureNotPresentException();
@@ -260,28 +280,34 @@ public class KiloEssentialsImpl implements KiloEssentials {
 		return ft;
 	}
 
+	@Override
+	public PermissionUtil getPermissionUtil() {
+		return this.permUtil;
+	}
+
 	private static MessageFactory massageFactory() {
 		return new MessageFactory() {
 			@Override
-			public Message newMessage(Object message) {
-				return new SimpleMessage(KE_PREFIX + message);
+			public Message newMessage(final Object message) {
+				return new SimpleMessage(KiloEssentialsImpl.KE_PREFIX + message);
 			}
 
 			@Override
-			public Message newMessage(String message) {
-				return new SimpleMessage(KE_PREFIX + message);
+			public Message newMessage(final String message) {
+				return new SimpleMessage(KiloEssentialsImpl.KE_PREFIX + message);
 			}
 
 			@Override
-			public Message newMessage(String message, Object... params) {
+			public Message newMessage(final String message, final Object... params) {
 				return new SimpleMessage(message);
 			}
 		};
 	}
 
 	public void onServerStop() {
-		if (PlayerSitManager.INSTANCE != null && PlayerSitManager.enabled)
+		if (PlayerSitManager.INSTANCE != null && PlayerSitManager.enabled) {
 			PlayerSitManager.INSTANCE.killAll();
+		}
 	}
 
 }

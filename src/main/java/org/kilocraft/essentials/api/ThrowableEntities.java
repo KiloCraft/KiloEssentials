@@ -66,22 +66,28 @@ public class ThrowableEntities {
     }
 
     public static ThrownItemEntity completeThrownEntity(ThrownItemEntity entity, PlayerEntity player, float yaw, float pitch, float motionX, float motionY, float motionZ) {
-        entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        //Yarn (19.w.09.a): entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        entity.setOwner(player);
+        entity.setVelocity(motionX, motionY, motionZ, yaw, pitch);
         return entity;
     }
 
     public static ProjectileEntity completeProjectile(ProjectileEntity entity, PlayerEntity player, float yaw, float pitch, float motionX, float motionY, float motionZ) {
-        entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        //Yarn (19.w.09.a): entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        entity.setOwner(player);
+        entity.setVelocity(motionX, motionY, motionZ, yaw, pitch);
         return entity;
     }
 
     public static ThrownEntity completeThrown(ThrownEntity entity, PlayerEntity player, float yaw, float pitch, float motionX, float motionY, float motionZ) {
-        entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        //Yarn (19.w.09.a): entity.setProperties(player, pitch, yaw, motionX, motionY, motionZ);
+        entity.setOwner(player);
+        entity.setVelocity(motionX, motionY, motionZ, yaw, pitch);
         return entity;
     }
 
     public static Entity completeAbstracted(EntityType<?> type, World world, PlayerEntity player) {
-        Entity entity = type.create(world, null, null, player, player.getBlockPos(), SpawnType.COMMAND, true, false);
+        Entity entity = type.create(world, null, null, player, player.getSenseCenterPos(), SpawnType.COMMAND, true, false);
         if (entity == null)
             return null;
 

@@ -9,7 +9,7 @@ public enum RegexLib {
 
     private String regex;
 
-    private RegexLib(String regex) {
+    RegexLib(String regex) {
         this.regex = regex;
     }
 

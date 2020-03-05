@@ -13,7 +13,7 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.Map;
@@ -45,7 +45,7 @@ public class IgnorelistCommand extends EssentialCommand {
             }
 
             int listSize = ignoreList.size();
-            String prefix = CommandHelper.areTheSame(src, user) ? "Ignore list" : user.getFormattedDisplayName() + "'s Ignore list";
+            String prefix = CmdUtils.areTheSame(src, user) ? "Ignore list" : user.getFormattedDisplayName() + "'s Ignore list";
             Text text = new LiteralText(prefix).formatted(Formatting.GOLD)
                     .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
                     .append(new LiteralText(String.valueOf(listSize)).formatted(Formatting.LIGHT_PURPLE))

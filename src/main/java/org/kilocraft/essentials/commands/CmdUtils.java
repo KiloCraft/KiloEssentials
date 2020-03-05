@@ -9,7 +9,7 @@ import org.kilocraft.essentials.api.user.User;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class CommandHelper {
+public class CmdUtils {
     public static boolean isConsole(ServerCommandSource source) {
         try {
             source.getEntityOrThrow();
@@ -76,7 +76,7 @@ public class CommandHelper {
     }
 
     public static boolean areTheSame(User user1, User user2) {
-        return user1.getUsername().equals(user2.getUsername());
+        return user1.getUuid().equals(user2.getUuid());
     }
 
     public static boolean areTheSame(ServerCommandSource source, User user) {

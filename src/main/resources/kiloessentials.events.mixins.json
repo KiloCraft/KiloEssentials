@@ -14,7 +14,6 @@
     "MixinServerPlayerEntity$PlayerEvents",
     "MixinServerPlayNetworkHandler$PlayerEvents",
     "MixinCommandManager$ServerEvent$OnCommandExecuted",
-    "MixinMinecraftServer$OnStart",
     "ServerPlayerInteractionManagerMixin$PlayerEvent$InteractItem",
   ],
   "injectors": {

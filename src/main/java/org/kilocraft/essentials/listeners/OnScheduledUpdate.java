@@ -29,6 +29,7 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
         for (ServerPlayerEntity player : KiloServer.getServer().getPlayerManager().getPlayerList()) {
             processDimension(player);
         }
+
     }
 
     private void processDimension(ServerPlayerEntity player) {

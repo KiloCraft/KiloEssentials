@@ -19,6 +19,7 @@ public enum ExceptionMessageNode {
     USER_CANT_SAVE("user_cant_save"),
     INVALID_ID("invalid_id"),
     NO_VALUE_SET_USER("no_value_set_user"),
+    INVALID_PAGE("invalid_page"),
     ;
 
 

@@ -75,10 +75,13 @@ public class SimpleCommandManager {
     }
 
     public boolean canExecute(String input) {
-        for (SimpleCommand command : commands) {
-            if (command.label.equals(input.split(" ")[0].replaceFirst("/", "")))
-                return true;
-        }
+        try {
+            for (SimpleCommand command : commands) {
+                if (command.label.equals(input.split(" ")[0].replaceFirst("/", ""))) {
+                    return true;
+                }
+            }
+        } catch (final ArrayIndexOutOfBoundsException ignored) {}
 
         return false;
     }

@@ -16,7 +16,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -66,7 +66,7 @@ public class HatCommand extends EssentialCommand {
         target.setStackInHand(Hand.MAIN_HAND, head);
         inventory.armor.set(EquipmentSlot.HEAD.getEntitySlotId(), hand);
 
-        if (CommandHelper.areTheSame(player, target))
+        if (CmdUtils.areTheSame(player, target))
             KiloChat.sendLangMessageTo(player, "command.hat");
         else {
             KiloChat.sendLangMessageTo(player, "command.hat.others", target.getEntityName());

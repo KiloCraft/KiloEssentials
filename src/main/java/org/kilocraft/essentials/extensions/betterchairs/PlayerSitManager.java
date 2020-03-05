@@ -131,7 +131,7 @@ public class PlayerSitManager implements ConfigurableFeature {
             armorStand.setPos(armorStand.getX(), armorStand.getY() + 0.55D, armorStand.getZ());
             armorStand.kill();
 
-            player.addChatMessage(LangText.get(true, "sit.stop_riding"), true);
+            player.addMessage(LangText.get(true, "sit.stop_riding"), true);
         }
 
     }
@@ -148,7 +148,7 @@ public class PlayerSitManager implements ConfigurableFeature {
                 if (!armorStand.hasPlayerRider() && armorStand.getCustomName() != null && armorStand.getCustomName().asString().startsWith("KE$SitStand#"))
                     armorStand.kill();
 
-                if (world.getBlockState(armorStand.getBlockPos().up().up()).getBlock() == Blocks.AIR &&
+                if (world.getBlockState(armorStand.getSenseCenterPos().up().up()).getBlock() == Blocks.AIR &&
                         armorStand.hasPassengers() && armorStand.getPassengerList().get(0) instanceof PlayerEntity) {
 
                     OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) armorStand.getPassengerList().get(0));

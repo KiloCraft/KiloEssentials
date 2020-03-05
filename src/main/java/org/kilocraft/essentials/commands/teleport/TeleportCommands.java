@@ -28,7 +28,7 @@ public class TeleportCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> tptoCommand = dispatcher.register(literal("teleportto")
             .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO))
-            .then(argument("target", player()).suggests(TabCompletions::allPlayersExceptSource).executes(TeleportCommands::teleportTo))
+            .then(argument("target", player()).executes(TeleportCommands::teleportTo))
         );
 
         LiteralCommandNode<ServerCommandSource> tpposCommand = dispatcher.register(literal("teleportpos")
@@ -38,14 +38,14 @@ public class TeleportCommands {
 
         LiteralCommandNode<ServerCommandSource> tphereCommand = dispatcher.register(literal("teleporthere")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTHERE))
-                .then(argument("target", player()).suggests(TabCompletions::allPlayersExceptSource).executes(TeleportCommands::teleportHere))
+                .then(argument("target", player()).executes(TeleportCommands::teleportHere))
         );
 
         LiteralCommandNode<ServerCommandSource> tpinCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN))
                 .then(argument("dimension", dimension()).suggests(TabCompletions::dimensions).then(argument("pos", vec3())
                         .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
-                            .then(argument("target", player()).suggests(TabCompletions::allPlayersExceptSource)
+                            .then(argument("target", player())
                                     .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
                     )
                 )

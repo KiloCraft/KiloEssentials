@@ -14,7 +14,7 @@ public enum EssentialPermission {
     SERVER_MANAGE_STOP("server.manage.stop"),
     SERVER_MANAGE_RESTART("server.manage.restart"),
     SERVER_MANAGE_OPERATORS("server.manage.operators"),
-    SERVER_MANAGE_SAVE("server.manage.save"),
+    SERVER_MANAGE_MOTD("server.manage.motd"),
     CHAT_CHANNEL_STAFFMSG("chat.channel.staff"),
     CHAT_CHANNEL_BUILDERMSG("chat.channel.builder"),
     RTP_SELF("rtp.self"),
@@ -22,8 +22,7 @@ public enum EssentialPermission {
     RTP_BYPASS("rtp.bypass"),
     RTP_OTHERDIMENSIONS("rtp.otherdimensions"),
     RTP_MANAGE("rtp.manage"),
-    MAGIC_PARTICLES_SELF("magicparticles.use.self"),
-    MAGIC_PARTICLES_OTHERS("magicparticles.use.others"),
+    MAGIC_PARTICLES_SELF("magicparticles"),
     SIT_SELF("sit.self"),
     SIT_OTHERS("sit.others"),
     ;

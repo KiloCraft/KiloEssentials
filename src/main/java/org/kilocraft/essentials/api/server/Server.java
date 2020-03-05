@@ -265,6 +265,13 @@ public interface Server {
     void sendMessage(String message);
 
     /**
+     * Sends a warning message to console
+     *
+     * @param message you want to send
+     */
+    void sendWarning(String message);
+
+    /**
      * Gets the OperatorList
      * @return a instance of OperatorList
      */
@@ -276,12 +283,5 @@ public interface Server {
      * @return a instance of ServerMetaManager
      */
     ServerMetaManager getMetaManager();
-
-    /**
-     * Checks if the console supports ANSI formatting codes
-     *
-     * @return does console support ANSI formatting codes
-     */
-    boolean supportsANSICodes();
 
 }

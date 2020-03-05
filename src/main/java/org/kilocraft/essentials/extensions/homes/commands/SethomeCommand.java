@@ -21,7 +21,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CommandHelper;
+import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -35,6 +35,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 public class SethomeCommand extends EssentialCommand {
     public SethomeCommand() {
         super("sethome", CommandPermission.HOME_SELF_SET);
+        this.withUsage("command.sethome.usage", "name");
     }
 
     @Override
@@ -58,7 +59,7 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        if (shouldNotSet(user) && !homeHandler.hasHome(name)) {
+        if (!validateCanSet(user) && !homeHandler.hasHome(name)) {
             user.sendMessage(messages.commands().playerHomes().reachedLimit);
             return SINGLE_FAILED;
         }
@@ -87,7 +88,7 @@ public class SethomeCommand extends EssentialCommand {
         essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
-            if (CommandHelper.areTheSame(source, user) && shouldNotSet(user) && !homeHandler.hasHome(name)) {
+            if (CmdUtils.areTheSame(source, user) && validateCanSet(user) && !homeHandler.hasHome(name)) {
                 source.sendMessage(messages.commands().playerHomes().reachedLimit
                         .replace("{HOME_SIZE}", String.valueOf(homeHandler.getHomes().size())));
                 return;
@@ -108,7 +109,7 @@ public class SethomeCommand extends EssentialCommand {
                 source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
             }
 
-            if (CommandHelper.areTheSame(source, user))
+            if (CmdUtils.areTheSame(source, user))
                 source.sendMessage(messages.commands().playerHomes().homeSet
                         .replace("{HOME_NAME}", name));
             else source.sendMessage(messages.commands().playerHomes().admin().homeSet
@@ -118,17 +119,19 @@ public class SethomeCommand extends EssentialCommand {
 
         return AWAIT_RESPONSE;
     }
-
-    private static boolean shouldNotSet(User user) {
-        for (int i = 1; i < KiloConfig.main().homesLimit; i++) {
+    
+    private static boolean validateCanSet(User user) {
+        for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
             String thisPerm = "kiloessentials.command.home.limit." + i;
-            int amount = Integer.parseInt(thisPerm.split("\\.")[4]);
-            if (user.getHomesHandler().homes() <= amount) {
-                return false;
+            int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
+
+            if (user.getHomesHandler().homes() + 1 <= allowed &&
+                    KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
+                return true;
             }
         }
 
-        return !KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS);
+        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS);
     }
 
     private Text getConfirmationText(String homeName, String user) {

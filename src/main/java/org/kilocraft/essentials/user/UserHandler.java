@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.kilocraft.essentials.api.KiloEssentials;
 
@@ -10,49 +11,63 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class UserHandler {
-    private static File saveDir = new File(KiloEssentials.getDataDirectory() + "users/");
+    private static final File saveDir = KiloEssentials.getDataDirPath().resolve("users").toFile();
 
-    public void handleUser(ServerUser serverUser) throws IOException {
-        if (!loadUser(serverUser)) {
-            saveDir.mkdirs();
-            getUserFile(serverUser).createNewFile();
-            saveData(serverUser);
-            handleUser(serverUser);
+    void handleUser(final ServerUser serverUser) throws IOException {
+        if (!this.loadUser(serverUser)) {
+            UserHandler.saveDir.mkdirs();
+            this.getUserFile(serverUser).createNewFile();
+            this.saveData(serverUser);
+            this.handleUser(serverUser);
         }
 
     }
 
-    public boolean loadUser(ServerUser serverUser) throws IOException {
-        if (getUserFile(serverUser).exists()) {
-            serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(getUserFile(serverUser))));
+    boolean loadUserAndResolveName(final ServerUser user) throws IOException {
+        if (this.getUserFile(user).exists()) {
+            CompoundTag tag = NbtIo.readCompressed(new FileInputStream(this.getUserFile(user)));
+            user.deserialize(tag);
+            user.name = tag.getString("name");
             return true;
         }
         return false;
     }
 
-    void saveData(ServerUser serverUser) throws IOException {
-        if (getUserFile(serverUser).exists())
+    private boolean loadUser(final ServerUser serverUser) throws IOException {
+        if (this.getUserFile(serverUser).exists()) {
+            serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(this.getUserFile(serverUser))));
+            return true;
+        }
+        return false;
+    }
+
+    void saveData(final ServerUser serverUser) throws IOException {
+        if (this.getUserFile(serverUser).exists())
             NbtIo.writeCompressed(
                     serverUser.serialize(),
-                    new FileOutputStream(getUserFile(serverUser))
+                    new FileOutputStream(this.getUserFile(serverUser))
             );
         else {
-            saveDir.mkdirs();
-            getUserFile(serverUser).createNewFile();
-            saveData(serverUser);
+            UserHandler.saveDir.mkdirs();
+            this.getUserFile(serverUser).createNewFile();
+            this.saveData(serverUser);
         }
     }
 
-    boolean userExists(UUID uuid) {
-        return getUserFile(uuid).exists();
+    boolean userExists(final UUID uuid) {
+        return this.getUserFile(uuid).exists();
     }
 
-    public File getUserFile(ServerUser serverUser) {
-        return getUserFile(serverUser.uuid);
+    private File getUserFile(final ServerUser serverUser) {
+        return this.getUserFile(serverUser.uuid);
     }
 
-    public File getUserFile(UUID uuid) {
+    private File getUserFile(final UUID uuid) {
         return KiloEssentials.getDataDirPath().resolve("users").resolve(uuid.toString() + ".dat").toFile();
+    }
+
+    File[] getUserFiles() {
+        return KiloEssentials.getDataDirPath().resolve("users").toFile().listFiles();
     }
 
 }

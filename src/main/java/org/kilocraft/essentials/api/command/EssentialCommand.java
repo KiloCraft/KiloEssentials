@@ -36,85 +36,87 @@ import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
 public abstract class EssentialCommand implements IEssentialCommand {
-    private String label;
-    protected transient String alias[];
+    private final String label;
+    protected transient String[] alias;
     protected transient KiloEssentials essentials = KiloEssentials.getInstance();
     protected transient LiteralArgumentBuilder<ServerCommandSource> argumentBuilder;
     protected transient LiteralCommandNode<ServerCommandSource> commandNode;
     protected transient Server server;
-    protected transient static final Logger logger = LogManager.getLogger();
+    protected static final transient Logger logger = LogManager.getLogger();
     protected transient Predicate<ServerCommandSource> PERMISSION_CHECK_ROOT;
     protected transient CommandPermission PERMISSION;
     protected transient int MIN_OP_LEVEL;
+    private transient String descriptionId = null;
+    private transient String[] usageArguments = null;
 
     public EssentialCommand(final String label) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = src -> true;
-        this.argumentBuilder = literal(label).requires(PERMISSION_CHECK_ROOT);
+        this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
     }
 
-    public EssentialCommand(final String label, String[] alias) {
+    public EssentialCommand(final String label, final String[] alias) {
         this.label = label;
         this.alias = alias;
         this.PERMISSION_CHECK_ROOT = src -> true;
-        this.argumentBuilder = literal(label).requires(PERMISSION_CHECK_ROOT);
+        this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
     }
 
-    public EssentialCommand(final String label, Predicate<ServerCommandSource> predicate) {
+    public EssentialCommand(final String label, final Predicate<ServerCommandSource> predicate) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = predicate;
-        this.argumentBuilder = literal(label).requires(PERMISSION_CHECK_ROOT);
+        this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
     }
 
-    public EssentialCommand(final String label, Predicate<ServerCommandSource> predicate, String[] alias) {
+    public EssentialCommand(final String label, final Predicate<ServerCommandSource> predicate, final String[] alias) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = predicate;
         this.alias = alias;
-        this.argumentBuilder = literal(label).requires(PERMISSION_CHECK_ROOT);
+        this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
     }
 
-    public EssentialCommand(final String label, CommandPermission PERMISSION) {
+    public EssentialCommand(final String label, final CommandPermission PERMISSION) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = src -> KiloCommands.hasPermission(src, PERMISSION);
-        this.argumentBuilder = literal(label).requires(this.PERMISSION_CHECK_ROOT);
+        this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
         this.PERMISSION = PERMISSION;
     }
 
-    public EssentialCommand(final String label, CommandPermission PERMISSION, int minOpLevel) {
+    public EssentialCommand(final String label, final CommandPermission PERMISSION, final int minOpLevel) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = src -> KiloCommands.hasPermission(src, PERMISSION, minOpLevel);
-        this.argumentBuilder = literal(label).requires(this.PERMISSION_CHECK_ROOT);
+        this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
         this.PERMISSION = PERMISSION;
         this.MIN_OP_LEVEL = minOpLevel;
     }
 
-    public EssentialCommand(final String label, CommandPermission PERMISSION, String[] alias) {
+    public EssentialCommand(final String label, final CommandPermission PERMISSION, final String[] alias) {
         this.label = label;
         this.alias = alias;
         this.PERMISSION_CHECK_ROOT = src -> KiloCommands.hasPermission(src, PERMISSION);
-        this.argumentBuilder = literal(label).requires(this.PERMISSION_CHECK_ROOT);
+        this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
         this.PERMISSION = PERMISSION;
     }
 
-    public EssentialCommand(final String label, CommandPermission PERMISSION, int minOpLevel, String[] alias) {
+    public EssentialCommand(final String label, final CommandPermission PERMISSION, final int minOpLevel, final String[] alias) {
         this.label = label;
         this.alias = alias;
         this.PERMISSION_CHECK_ROOT = src -> KiloCommands.hasPermission(src, PERMISSION, minOpLevel);
-        this.argumentBuilder = literal(label).requires(this.PERMISSION_CHECK_ROOT);
+        this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
         this.server = KiloEssentials.getServer();
         this.PERMISSION = PERMISSION;
@@ -123,7 +125,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     @Override
     public String getLabel() {
-        return label;
+        return this.label;
     }
 
     @Override
@@ -143,91 +145,109 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.PERMISSION_CHECK_ROOT;
     }
 
-    public boolean hasPermission(ServerCommandSource src, CommandPermission cmdPerm) {
+    public final void withUsage(final String identifier, final String... arguments) {
+        this.usageArguments = arguments.clone();
+        this.descriptionId = identifier;
+    }
+
+    public final String[] getUsageArguments() {
+        return this.usageArguments;
+    }
+
+    public final String getDescriptionId() {
+        return this.descriptionId;
+    }
+
+    public final boolean hasUsage() {
+        return this.usageArguments != null || this.descriptionId != null;
+    }
+
+    public boolean hasPermission(final ServerCommandSource src, final CommandPermission cmdPerm) {
         return KiloCommands.hasPermission(src, cmdPerm);
     }
 
-    public boolean hasPermission(ServerCommandSource src, CommandPermission cmdPerm, int minOpLevel) {
+    public boolean hasPermission(final ServerCommandSource src, final CommandPermission cmdPerm, final int minOpLevel) {
         return KiloCommands.hasPermission(src, cmdPerm, minOpLevel);
     }
 
-    public boolean hasPermission(ServerCommandSource src, EssentialPermission essPerm) {
+    public boolean hasPermission(final ServerCommandSource src, final EssentialPermission essPerm) {
         return KiloEssentials.hasPermissionNode(src, essPerm);
     }
 
-    public boolean hasPermission(ServerCommandSource src, EssentialPermission essPerm, int minOpLevel) {
+    public boolean hasPermission(final ServerCommandSource src, final EssentialPermission essPerm, final int minOpLevel) {
         return KiloEssentials.hasPermissionNode(src, essPerm, minOpLevel);
     }
 
-    public void sendMessage(CommandContext<ServerCommandSource> ctx, String key, Object... objects) {
+    public void sendMessage(final CommandContext<ServerCommandSource> ctx, final String key, final Object... objects) {
         KiloChat.sendLangMessageTo(ctx.getSource(), key, objects);
     }
 
-    public void sendMessage(ServerCommandSource src, String key, Object... objects) {
+    public void sendMessage(final ServerCommandSource src, final String key, final Object... objects) {
         KiloChat.sendLangMessageTo(src, key, objects);
     }
 
-    public Text getLang(String key, Object... objects) {
+    public Text getLang(final String key, final Object... objects) {
         return LangText.getFormatter(true, key, objects);
     }
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> literal(String label) {
+    public LiteralArgumentBuilder<ServerCommandSource> literal(final String label) {
         return CommandManager.literal(label);
     }
 
     @Override
-    public <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String string, ArgumentType<T> argumentType) {
+    public <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(final String string, final ArgumentType<T> argumentType) {
         return CommandManager.argument(string, argumentType);
     }
 
     @Override
-    public OnlineUser getOnlineUser(String name) {
-        return server.getOnlineUser(name);
+    public OnlineUser getOnlineUser(final String name) {
+        return this.server.getOnlineUser(name);
     }
 
     @Override
-    public OnlineUser getOnlineUser(ServerCommandSource source) throws CommandSyntaxException {
-        return server.getOnlineUser(source.getPlayer());
+    public OnlineUser getOnlineUser(final ServerCommandSource source) throws CommandSyntaxException {
+        return this.server.getOnlineUser(source.getPlayer());
     }
 
-    public OnlineUser getOnlineUser(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return getOnlineUser(ctx.getSource());
+    public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        return this.getOnlineUser(ctx.getSource());
     }
 
-    public OnlineUser getOnlineUser(ServerPlayerEntity player) throws CommandSyntaxException {
-        return server.getOnlineUser(player);
+    public OnlineUser getOnlineUser(final ServerPlayerEntity player) {
+        return this.server.getOnlineUser(player);
     }
 
-    public CommandSourceUser getServerUser(CommandContext<ServerCommandSource> ctx) {
-        return server.getCommandSourceUser(ctx.getSource());
+    public CommandSourceUser getServerUser(final CommandContext<ServerCommandSource> ctx) {
+        return this.server.getCommandSourceUser(ctx.getSource());
     }
 
-    public String getUserArgumentInput(CommandContext<ServerCommandSource> ctx, String label) {
+    public String getUserArgumentInput(final CommandContext<ServerCommandSource> ctx, final String label) {
         return getString(ctx, label);
     }
 
-    public CompletableFuture<Optional<User>> getUser(GameProfile profile) {
-        return server.getUserManager().getOffline(profile);
+    public CompletableFuture<Optional<User>> getUser(final GameProfile profile) {
+        return this.server.getUserManager().getOffline(profile);
     }
 
-    public CompletableFuture<Optional<User>> getUser(String name) {
-        return server.getUserManager().getOffline(name);
+    public CompletableFuture<Optional<User>> getUser(final String name) {
+        return this.server.getUserManager().getOffline(name);
     }
 
-    public boolean isOnline(User user) {
-        return server.getUserManager().isOnline(user);
+    public boolean isOnline(final User user) {
+        return this.server.getUserManager().isOnline(user);
     }
 
-    public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(String label) {
-        return argument(label, string()).suggests(TabCompletions::allPlayers);
+    public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(final String label) {
+        return this.argument(label, string()).suggests(TabCompletions::allPlayers);
     }
 
-    public String tl(String key, Object... objects) {
+    public String tl(final String key, final Object... objects) {
         return ModConstants.translation(key, objects);
     }
 
     public Config config = KiloConfig.main();
 
     public Messages messages = KiloConfig.messages();
+
 }

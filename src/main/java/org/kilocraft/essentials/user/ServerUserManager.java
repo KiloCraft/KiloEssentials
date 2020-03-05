@@ -24,26 +24,55 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.punishment.PunishmentManager;
 import org.kilocraft.essentials.util.AnimatedText;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class ServerUserManager implements UserManager {
-    private UserHandler userHandler = new UserHandler();
-    private List<OnlineUser> users = new ArrayList<>();
-    private Map<String, UUID> nicknameToUUID = new HashMap<>();
-    private Map<String, UUID> usernameToUUID = new HashMap<>();
-    private Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
+    private static final Pattern COMPILE = Pattern.compile(".dat");
+    private final UserHandler handler = new UserHandler();
+    private final List<OnlineUser> users = new ArrayList<>();
+    private final Map<String, UUID> nicknameToUUID = new HashMap<>();
+    private final Map<String, UUID> usernameToUUID = new HashMap<>();
+    private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
 
     private PunishmentManager punishManager;
 
     public ServerUserManager(PlayerManager manager) {
         this.punishManager = new PunishmentManager(manager);
+    }
+
+    @Override
+    public CompletableFuture<List<User>> getAll() {
+        final List<User> users = new ArrayList<>();
+
+        for (final File file : this.handler.getUserFiles()) {
+            if (!file.exists()) {
+                continue;
+            }
+
+            ServerUser serverUser = new ServerUser(UUID.fromString(COMPILE.matcher(file.getName()).replaceFirst("")));
+
+            try {
+                this.handler.loadUserAndResolveName(serverUser);
+
+                if (serverUser.getUsername() != null) {
+                    users.add(serverUser);
+                }
+
+            } catch (final IOException ignored) {
+            }
+        }
+
+        return CompletableFuture.completedFuture(users);
     }
 
     @Override
@@ -72,7 +101,7 @@ public class ServerUserManager implements UserManager {
         if (online != null)
             return CompletableFuture.completedFuture(Optional.of(online));
 
-        if (userHandler.userExists(uuid)) {
+        if (handler.userExists(uuid)) {
             ServerUser serverUser = new ServerUser(uuid);
             serverUser.name = username;
 
@@ -147,7 +176,7 @@ public class ServerUserManager implements UserManager {
             try {
                 if (SharedConstants.isDevelopment)
                     KiloEssentials.getLogger().debug("Saving user \"" + serverUser.getUsername() + "\"");
-                this.userHandler.saveData(serverUser);
+                this.handler.saveData(serverUser);
             } catch (IOException e) {
                 KiloEssentials.getLogger().error("An unexpected exception occurred when saving a user's data!");
                 e.printStackTrace();
@@ -199,7 +228,7 @@ public class ServerUserManager implements UserManager {
         this.users.remove(user);
 
         try {
-            this.userHandler.saveData(user);
+            this.handler.saveData(user);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -250,11 +279,60 @@ public class ServerUserManager implements UserManager {
     }
 
     public UserHandler getHandler() {
-        return this.userHandler;
+        return this.handler;
     }
 
     public PunishmentManager getPunishmentManager() {
         return this.punishManager;
+    }
+
+    public static class Watchdog {
+        static final String PREFIX = KiloChat.getFormattedLang("watchdog.prefix");
+
+        public static void validate(OnlineServerUser user) {
+            if (user.getPlayer() == null || user.getCommandSource() == null)
+                return;
+
+            Validations.validateConnection(user);
+        }
+
+        static class Validations {
+
+            private static void validateConnection(OnlineServerUser user) {
+                for (OnlineUser onlineUser : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+                    if (
+                            !CmdUtils.areTheSame(user, onlineUser) &&
+                            shouldReport(user) && onlineUser.getLastSocketAddress() != null &&
+                            user.getLastSocketAddress() != null &&
+                            onlineUser.getLastSocketAddress().equals(user.getLastSocketAddress())
+                    ) {
+                        report("watchdog.warn.same_ip", user.getUsername(), onlineUser.getUsername());
+                    }
+                }
+            }
+
+        }
+
+        private static boolean shouldReport(OnlineServerUser user) {
+            return !user.isStaff();
+        }
+
+        public static void report(String key, Object... objects) {
+            String message = getReportMessage(key, objects);
+            KiloServer.getServer().sendWarning(message);
+
+            for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+                if (((OnlineServerUser) user).isStaff) {
+                    user.sendError(message);
+                }
+            }
+        }
+
+        private static String getReportMessage(String key, Object... objects) {
+            return PREFIX + " " + KiloChat.getFormattedLang(key, objects);
+        }
+
+
     }
 
     public static class UserLoadingText {
@@ -265,6 +343,15 @@ public class ServerUserManager implements UserManager {
                     .append(LangText.get(true, "general.wait_server.frame2"))
                     .append(LangText.get(true, "general.wait_server.frame3"))
                     .append(LangText.get(true, "general.wait_server.frame4"))
+                    .build();
+        }
+
+        public UserLoadingText(ServerPlayerEntity player, String key) {
+            this.animatedText = new AnimatedText(0, 650, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+                    .append(LangText.get(true, key + ".frame1"))
+                    .append(LangText.get(true, key + ".frame2"))
+                    .append(LangText.get(true, key + ".frame3"))
+                    .append(LangText.get(true, key + ".frame4"))
                     .build();
         }
 

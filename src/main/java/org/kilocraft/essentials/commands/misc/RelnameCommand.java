@@ -6,7 +6,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -17,6 +17,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 public class RelnameCommand extends EssentialCommand {
 	public RelnameCommand() {
 		super("realname", CommandPermission.REALNAME);
+		this.withUsage("command.realname.usage", "nickname");
 	}
 
 	public void register(CommandDispatcher<ServerCommandSource> dispatcher) {

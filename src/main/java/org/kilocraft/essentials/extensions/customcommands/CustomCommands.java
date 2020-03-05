@@ -94,8 +94,8 @@ public class CustomCommands implements ConfigurableFeature {
             if (cmd.contains("${args[")) {
                 String[] strings = cmd.split(" ");
 
-                for (int i = 0; i < strings.length; i++) {
-                    if (strings[i].startsWith("${args["))
+                for (String string : strings) {
+                    if (string.startsWith("${args["))
                         iArgs++;
                 }
 

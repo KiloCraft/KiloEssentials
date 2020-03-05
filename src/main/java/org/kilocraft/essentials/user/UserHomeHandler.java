@@ -35,7 +35,6 @@ import java.util.concurrent.CompletableFuture;
  * @see ServerUserManager
  */
 
-
 public class UserHomeHandler implements ConfigurableFeature {
     private static boolean isEnabled = false;
     private static List<Home> loadedHomes = new ArrayList<>();
@@ -53,8 +52,9 @@ public class UserHomeHandler implements ConfigurableFeature {
             add(new DelhomeCommand());
         }};
 
-        for (EssentialCommand command : commands)
+        for (final EssentialCommand command : commands) {
             KiloEssentials.getInstance().getCommandHandler().register(command);
+        }
 
         return true;
     }
@@ -165,7 +165,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public enum Reason {
-        UNSAFE_DESTINATION, MISSING_DIMENSION;
+        UNSAFE_DESTINATION, MISSING_DIMENSION, NO_PERMISSION;
     }
 
 }

@@ -32,6 +32,7 @@ public enum CommandPermission {
     BROADCAST("broadcast"),
     ANVIL("anvil"),
     WORKBENCH("workbench"),
+    SMITH("smith"),
     ITEM_FORMATTING("item.formatting"),
     ITEM_NAME("item.name"),
     ITEM_LORE("item.lore"),
@@ -81,6 +82,7 @@ public enum CommandPermission {
     PLAYTIME_SELF("playtime.self"),
     PLAYTIME_OTHERS("playtime.others"),
     PLAYTIME_MODIFY("playtime.modify"),
+    PLAYTIMETOP("playtimetop"),
     IGNORELIST_OTHERS("ignorelist.others"),
     ;
 

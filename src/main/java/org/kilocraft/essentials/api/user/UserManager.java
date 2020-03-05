@@ -15,6 +15,13 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface UserManager {
+
+    /**
+     * Returns a list of all the Users
+     * @return a List of all the Users that joined the server at least once
+     */
+    CompletableFuture<List<User>> getAll();
+
     /**
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
      * @param username The UUID of the user.

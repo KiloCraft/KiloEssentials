@@ -56,7 +56,7 @@ public class ShootCommand extends EssentialCommand {
 
         world.spawnEntity(entity);
 
-        player.addChatMessage(new LiteralText("You have thrown a ").append(new TranslatableText(entity.getType().getTranslationKey())), true);
+        player.addMessage(new LiteralText("You have thrown a ").append(new TranslatableText(entity.getType().getTranslationKey())), true);
         return SINGLE_SUCCESS;
     }
 

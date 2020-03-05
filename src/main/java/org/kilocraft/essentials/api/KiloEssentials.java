@@ -37,11 +37,13 @@ import org.kilocraft.essentials.api.feature.SingleInstanceConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -74,6 +76,8 @@ public interface KiloEssentials {
 
     StartupScript getStartupScript();
 
+    CompletableFuture<List<User>> getAllUsersThenAcceptAsync(OnlineUser requester, String loadingTitle, Consumer<? super List<User>> action);
+
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerCommandSource requester, String username, Consumer<? super User> action);
 
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(ServerPlayerEntity requester, String username, Consumer<? super User> action);
@@ -96,18 +100,10 @@ public interface KiloEssentials {
      */
     <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException;
 
+    PermissionUtil getPermissionUtil();
+
     static String getWorkingDirectory() {
         return System.getProperty("user.dir");
-    }
-
-    @Deprecated
-    static String getEssentialsDirectory() {
-        return getWorkingDirectory() + "/essentials/";
-    }
-
-    @Deprecated
-    static String getDataDirectory() {
-        return getEssentialsDirectory() + "data/";
     }
 
     static Path getDataDirPath() {
@@ -117,4 +113,9 @@ public interface KiloEssentials {
     static Path getEssentialsPath() {
         return new File(KiloEssentials.getWorkingDirectory()).toPath().resolve("essentials");
     }
+
+    static Path getServerProperties() {
+        return new File(KiloEssentials.getWorkingDirectory()).toPath().resolve("server.properties");
+    }
+
 }

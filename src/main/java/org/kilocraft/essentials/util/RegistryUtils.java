@@ -13,4 +13,12 @@ public class RegistryUtils {
         return Registry.DIMENSION_TYPE.get(identifier);
     }
 
+    public static String dimensionToName(Identifier identifier) {
+        return dimensionToName(toDimension(identifier));
+    }
+
+    public static String dimensionToName(DimensionType type) {
+        return type == DimensionType.OVERWORLD ? "Overworld" : type == DimensionType.THE_NETHER ? "The Nether" : "The End";
+    }
+
 }

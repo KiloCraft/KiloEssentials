@@ -20,7 +20,6 @@ public class KiloEvents {
             add(new OnCommand());
             add(new OnDeath());
             add(new OnTick());
-            add(new OnStart());
             add(new OnScheduledUpdate());
             add(new OnInteractItem());
             add(new OnStopRiding());

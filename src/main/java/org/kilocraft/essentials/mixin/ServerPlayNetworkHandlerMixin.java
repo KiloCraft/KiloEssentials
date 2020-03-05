@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.chat.TextFormat;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUserManager;
@@ -32,8 +32,8 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Shadow @Final private MinecraftServer server;
 
-    @Inject(method = "onChatMessage", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onChatMessage(Lnet/minecraft/network/packet/c2s/play/ChatMessageC2SPacket;)V"))
+    @Inject(method = "onGameMessage", cancellable = true,
+            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onGameMessage(Lnet/minecraft/network/packet/c2s/play/ChatMessageC2SPacket;)V"))
     private void modify(ChatMessageC2SPacket chatMessageC2SPacket, CallbackInfo ci) {
         if (KiloConfig.main().chat().useVanillaChat &&
                         KiloServer.getServer().getOnlineUser(player).getUpstreamChannelId().equals(GlobalChat.getChannelId())) {
