@@ -3,6 +3,7 @@ package org.kilocraft.essentials.util;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
+import net.fabricmc.loader.api.FabricLoader;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -31,6 +32,8 @@ public class PermissionUtil {
             logger.warn("     You can install either LuckPerms for Fabric Or Thimble to manage the permissions");
             return;
         }
+
+        logger.info("Using " + manager.getName() + " as the Permission Manager");
 
         if (manager == Manager.THIMBLE) {
             Thimble.permissionWriters.add((map, server) -> {
@@ -99,14 +102,11 @@ public class PermissionUtil {
 
             Class.forName(manager.getClassPath());
             ClassLoader.getSystemClassLoader().loadClass(manager.getClassPath());
-            return true;
+
+            return FabricLoader.getInstance().getModContainer(manager.getName().toLowerCase()).isPresent();
         } catch (Exception ignored) {
             return false;
         }
-    }
-
-    public Manager getManager() {
-        return this.manager;
     }
 
     private enum Manager {
@@ -122,11 +122,11 @@ public class PermissionUtil {
             this.classPath = classPath;
         }
 
-        public String getName() {
+        public final String getName() {
             return this.name;
         }
 
-        public String getClassPath() {
+        public final String getClassPath() {
             return this.classPath;
         }
 

@@ -297,6 +297,19 @@ public enum TextFormat {
         return new LiteralText(translateAlternateColorCodes(altColorChar, textToTranslate));
     }
 
+    public static String removeAlternateColorCodes(@NotNull String textToTranslate, char... chars) {
+        Validate.notNull(textToTranslate, "Cannot translate null text");
+        String string = "";
+        for (char aChar : chars) {
+            string = removeAlternateColorCodes(aChar, string);
+        }
+
+        for (LoggerFormats s : LoggerFormats.values()) {
+            string = string.replace(s.getCode(), "");
+        }
+
+        return string;
+    }
 
     public static String removeAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");

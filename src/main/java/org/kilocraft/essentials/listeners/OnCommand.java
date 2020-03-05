@@ -20,8 +20,9 @@ public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
 
             ServerChat.sendCommandSpy(event.getExecutor(), command);
 
-            if (KiloConfig.main().server().logCommands)
+            if (KiloConfig.main().server().logCommands) {
                 KiloServer.getLogger().info("[" + event.getExecutor().getName() + "]: " + command);
+            }
         }
     }
 }

@@ -284,11 +284,4 @@ public interface Server {
      */
     ServerMetaManager getMetaManager();
 
-    /**
-     * Checks if the console supports ANSI formatting codes
-     *
-     * @return does console support ANSI formatting codes
-     */
-    boolean supportsANSICodes();
-
 }

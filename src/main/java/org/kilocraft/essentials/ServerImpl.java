@@ -18,6 +18,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.ChatManager;
+import org.kilocraft.essentials.api.text.LoggerFormats;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
@@ -31,7 +32,7 @@ import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.util.TextFormatAnsiHelper;
+import org.kilocraft.essentials.util.ANSIHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class ServerImpl implements Server {
     private UserManager userManager;
     private ChatManager chatManager;
     private ServerMetaManager metaManager;
-    private TextFormatAnsiHelper ansiHelper;
+    private boolean supportsANSI;
 
     public ServerImpl(MinecraftServer minecraftServer, EventRegistry eventManager, ServerUserManager serverUserManager, String serverBrand) {
         this.server = minecraftServer;
@@ -56,7 +57,7 @@ public class ServerImpl implements Server {
         this.eventRegistry = eventManager;
         this.chatManager = new ChatManager();
         this.metaManager = new ServerMetaManager(server.getServerMetadata());
-        this.ansiHelper = new TextFormatAnsiHelper();
+        this.supportsANSI = System.console() != null && System.getenv().get("TERM") != null;
     }
 
     @Override
@@ -279,22 +280,15 @@ public class ServerImpl implements Server {
 
     @Override
     public void sendMessage(String message) {
-        String[] lines = message.split("\n");
-
-        for (String line : lines) {
-            String str = TextFormat.removeAlternateColorCodes('&', line);
-            getLogger().info(TextFormat.removeAlternateColorCodes(TextFormat.COLOR_CHAR, str));
+        for (String s : message.split("\n")) {
+            getLogger().info(s);
         }
-
     }
 
     @Override
     public void sendWarning(String message) {
-        String[] lines = message.split("\n");
-
-        for (String line : lines) {
-            String str = TextFormat.removeAlternateColorCodes('&', line);
-            getLogger().warn(TextFormat.removeAlternateColorCodes(TextFormat.COLOR_CHAR, str));
+        for (String s : message.split("\n")) {
+            getLogger().warn(s);
         }
     }
 
@@ -308,19 +302,8 @@ public class ServerImpl implements Server {
         return this.metaManager;
     }
 
-    @SuppressWarnings("untested")
-    @Override
-    public boolean supportsANSICodes() {
-        //return System.console() != null && System.getenv().get("TERM") != null;
-        return false;
-    }
-
     public String getBrandName() {
         return serverBrand;
-    }
-
-    public TextFormatAnsiHelper getAnsiHelper() {
-        return this.ansiHelper;
     }
 
 }
