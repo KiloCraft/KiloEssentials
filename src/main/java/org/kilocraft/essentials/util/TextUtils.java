@@ -37,6 +37,10 @@ public class TextUtils {
     }
 
     public static class Events {
+        public static ClickEvent onClickSuggest(String command) {
+            return new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command);
+        }
+
         public static ClickEvent onClickRun(String command) {
             return new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
         }
