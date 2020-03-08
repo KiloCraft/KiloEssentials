@@ -26,7 +26,6 @@ public class StartupScript {
     public StartupScript() {
         StartupScriptConfigSection config = KiloConfig.main().startupScript();
         this.FILE_NAME = config.scriptName + ".sh";
-        this.file = new File(System.getProperty("user.dir") + File.separator + FILE_NAME);
         this.file = new KiloFile(FILE_NAME, KiloEssentials.getWorkingDirectory()).getFile();
 
         if (file.exists())
@@ -38,8 +37,7 @@ public class StartupScript {
         String LOADER_NAME = config.fabricLoaderName;
         boolean generateForLinuxScreen = config.linuxScreen;
 
-        this.resourceFile = new File(
-                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("assets/start-script.sh")).getFile());
+        this.resourceFile = new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("assets/start-script.sh")).getFile());
 
         String normalScript = "java -jar -Xmx" + this.MAX_MEMORY + " " + LOADER_NAME;
         String screenScript = "screen -S " + SCREEN_NAME + " " + normalScript;

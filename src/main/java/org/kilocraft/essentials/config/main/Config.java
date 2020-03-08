@@ -36,6 +36,9 @@ public class Config {
     @Setting(value = "chat", comment = "Configure the appearance of the Chat Channels")
     private ChatConfigSection chatSection = new ChatConfigSection();
 
+    @Setting(value = "cachedInventories", comment = "Caches the User inventories, mostly used by the '/invsee' and '/invload' commands")
+    private CachedInventoriesConfigSection cachedInventoriesSection = new CachedInventoriesConfigSection();
+
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")
     public int homesLimit = 10;
 
@@ -67,6 +70,10 @@ public class Config {
 
     public ChatConfigSection chat() {
         return chatSection;
+    }
+
+    public CachedInventoriesConfigSection cachedInventoriesSection() {
+        return cachedInventoriesSection;
     }
 
     public String permissionManager() {

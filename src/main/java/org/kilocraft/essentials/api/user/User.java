@@ -8,6 +8,7 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.user.ServerUserInventory;
 
 import java.io.IOException;
 import java.util.Date;
@@ -120,4 +121,7 @@ public interface User {
     void trySave() throws CommandSyntaxException;
 
     boolean equals(User anotherUser);
+
+    @Nullable
+    UserInventory getInventory();
 }

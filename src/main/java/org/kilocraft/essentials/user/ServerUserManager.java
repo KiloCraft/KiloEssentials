@@ -286,55 +286,6 @@ public class ServerUserManager implements UserManager {
         return this.punishManager;
     }
 
-    public static class Watchdog {
-        static final String PREFIX = KiloChat.getFormattedLang("watchdog.prefix");
-
-        public static void validate(OnlineServerUser user) {
-            if (user.getPlayer() == null || user.getCommandSource() == null)
-                return;
-
-            Validations.validateConnection(user);
-        }
-
-        static class Validations {
-
-            private static void validateConnection(OnlineServerUser user) {
-                for (OnlineUser onlineUser : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-                    if (
-                            !CmdUtils.areTheSame(user, onlineUser) &&
-                            shouldReport(user) && onlineUser.getLastSocketAddress() != null &&
-                            user.getLastSocketAddress() != null &&
-                            onlineUser.getLastSocketAddress().equals(user.getLastSocketAddress())
-                    ) {
-                        report("watchdog.warn.same_ip", user.getUsername(), onlineUser.getUsername());
-                    }
-                }
-            }
-
-        }
-
-        private static boolean shouldReport(OnlineServerUser user) {
-            return !user.isStaff();
-        }
-
-        public static void report(String key, Object... objects) {
-            String message = getReportMessage(key, objects);
-            KiloServer.getServer().sendWarning(message);
-
-            for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-                if (((OnlineServerUser) user).isStaff) {
-                    user.sendError(message);
-                }
-            }
-        }
-
-        private static String getReportMessage(String key, Object... objects) {
-            return PREFIX + " " + KiloChat.getFormattedLang(key, objects);
-        }
-
-
-    }
-
     public static class UserLoadingText {
         private AnimatedText animatedText;
         public UserLoadingText(ServerPlayerEntity player) {

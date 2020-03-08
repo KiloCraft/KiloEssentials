@@ -20,6 +20,7 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.user.UserInventory;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
@@ -45,6 +46,7 @@ public class ServerUser implements User {
     UUID uuid;
     String name = "";
     private UserHomeHandler homeHandler;
+    private UserInventory inventory;
     private Vec3dLocation location;
     private Vec3dLocation lastLocation;
     private String nickname;
@@ -68,11 +70,17 @@ public class ServerUser implements User {
     GameMode gameMode = GameMode.NOT_SET;
     int ticksPlayed = 0;
 
-
     public ServerUser(UUID uuid) {
+        this(uuid, null);
+    }
+
+    public ServerUser(final UUID uuid, final @Nullable ServerPlayerEntity player) {
         this.uuid = uuid;
-        if (UserHomeHandler.isEnabled()) // TODO Use new feature provider in future
+        if (UserHomeHandler.isEnabled())
             this.homeHandler = new UserHomeHandler(this);
+
+        this.inventory = new ServerUserInventory(this, player);
+
         try {
             manager.getHandler().handleUser(this);
         } catch (IOException e) {
@@ -167,10 +175,11 @@ public class ServerUser implements User {
         if (this.isStaff)
             metaTag.putBoolean("isStaff", true);
 
-        // Home logic, TODO Abstract this with features in future.
-        CompoundTag homeTag = new CompoundTag();
-        this.homeHandler.serialize(homeTag);
-        mainTag.put("homes", homeTag);
+        if (UserHomeHandler.isEnabled()) {
+            CompoundTag homeTag = new CompoundTag();
+            this.homeHandler.serialize(homeTag);
+            mainTag.put("homes", homeTag);
+        }
 
         // Misc stuff now.
         mainTag.putInt("rtpLeft", this.randomTeleportsLeft);
@@ -263,7 +272,10 @@ public class ServerUser implements User {
         if (metaTag.contains("isStaff"))
             this.isStaff = true;
 
-        this.homeHandler.deserialize(compoundTag.getCompound("homes"));
+        if (UserHomeHandler.isEnabled()) {
+            this.homeHandler.deserialize(compoundTag.getCompound("homes"));
+        }
+
         this.randomTeleportsLeft = compoundTag.getInt("rtpLeft");
     }
 
@@ -575,6 +587,12 @@ public class ServerUser implements User {
     @Override
     public boolean equals(User anotherUser) {
         return anotherUser.getUuid().equals(this.uuid) || anotherUser.getUsername().equals(this.getUsername());
+    }
+
+    @Nullable
+    @Override
+    public UserInventory getInventory() {
+        return this.inventory;
     }
 
     public static void saveLocationOf(ServerPlayerEntity player) {

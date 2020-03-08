@@ -35,10 +35,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.CommandListCommand;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
-import org.kilocraft.essentials.commands.inventory.AnvilCommand;
-import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
-import org.kilocraft.essentials.commands.inventory.SmithCommand;
-import org.kilocraft.essentials.commands.inventory.WorkbenchCommand;
+import org.kilocraft.essentials.commands.inventory.*;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
@@ -152,6 +149,7 @@ public class KiloCommands {
             this.add(new HelpMeCommand());
             this.add(new CommandListCommand());
             //this.add(new PlaytimetopCommand());
+            this.add(new InventoryCommand());
         }};
 
         this.commands.addAll(commandsList);
@@ -167,7 +165,6 @@ public class KiloCommands {
         RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
         TeleportCommands.register(this.dispatcher);
-        //InventoryCommand.register(this.dispatcher);
     }
 
     public <C extends IEssentialCommand> void register(final C c) {
@@ -307,11 +304,6 @@ public class KiloCommands {
         final String message = ModConstants.getMessageUtil().fromCommandNode(node);
         return KiloCommands.commandException(
                 new LiteralText(objects != null ? String.format(message, objects) : message).formatted(Formatting.RED));
-    }
-
-    public static SimpleCommandExceptionType commandException(final String message) {
-        return new SimpleCommandExceptionType(
-                new LiteralText(TextFormat.translateAlternateColorCodes('&', message)));
     }
 
     public static SimpleCommandExceptionType commandException(final Text text) {

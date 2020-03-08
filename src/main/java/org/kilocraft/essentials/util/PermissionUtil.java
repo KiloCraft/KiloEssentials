@@ -17,6 +17,8 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
+import java.util.Locale;
+
 public class PermissionUtil {
     private final Manager manager;
     private final boolean present;
@@ -27,9 +29,11 @@ public class PermissionUtil {
         this.manager = Manager.fromString(KiloConfig.main().permissionManager());
         this.present = checkPresent(manager);
 
+        logger.info("Checking " + manager.getName() +" for Availability");
+
         if (!present) {
-            logger.warn("**** Permission Manager is not Present! Switching to vanilla operator system");
-            logger.warn("     You can install either LuckPerms for Fabric Or Thimble to manage the permissions");
+            logger.warn("**** " + manager.getName() + " is not Present! Switching to vanilla operator system");
+            logger.warn("     You need to install either LuckPerms for Fabric Or Thimble to manage the permissions");
             return;
         }
 
@@ -100,10 +104,7 @@ public class PermissionUtil {
                 LuckPermsProvider.get();
             }
 
-            Class.forName(manager.getClassPath());
-            ClassLoader.getSystemClassLoader().loadClass(manager.getClassPath());
-
-            return FabricLoader.getInstance().getModContainer(manager.getName().toLowerCase()).isPresent();
+            return FabricLoader.getInstance().getModContainer(manager.getName().toLowerCase(Locale.ROOT)).isPresent();
         } catch (Exception ignored) {
             return false;
         }

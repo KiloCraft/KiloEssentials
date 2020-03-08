@@ -136,8 +136,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public OnlineServerUser(final ServerPlayerEntity player) {
-        super(player.getUuid());
-        this.name = player.getEntityName();
+        super(player.getUuid(), player);
+        super.name = player.getEntityName();
     }
 
     @Override
@@ -172,10 +172,10 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public String getLastSocketAddress() {
         if (this.getConnection() != null) {
-            lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
+            super.lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
         }
 
-        return super.getLastSocketAddress();
+        return super.lastSocketAddress;
     }
 
     @Deprecated
@@ -186,7 +186,9 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     public void onJoined() {
         this.setFlight(this.canFly());
 
-        lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
+        if (this.getConnection() != null) {
+            lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
+        }
         messageCooldown = 0;
 
         if (gameMode == GameMode.NOT_SET) {
@@ -205,10 +207,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             isStaff = true;
         }
 
-        ServerUserManager.Watchdog.validate(this);
     }
-
-    private static int tick;
 
     public void onTick() {
         ticksPlayed++;
@@ -218,13 +217,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         if (messageCooldown > 0) {
             --messageCooldown;
         }
-
-        if (OnlineServerUser.tick >= 72000) {
-            ServerUserManager.Watchdog.validate(this);
-            tick = 0;
-        }
-
-        OnlineServerUser.tick++;
     }
 
 }
