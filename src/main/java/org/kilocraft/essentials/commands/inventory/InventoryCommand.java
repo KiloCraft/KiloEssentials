@@ -1,40 +1,21 @@
 package org.kilocraft.essentials.commands.inventory;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.EntitySelector;
 import net.minecraft.container.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
-import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 
 public class InventoryCommand extends EssentialCommand {
 
@@ -59,7 +40,7 @@ public class InventoryCommand extends EssentialCommand {
         }
 
         if (this.server.getOnlineUser(inputName) == null && !KiloConfig.main().cachedInventoriesSection().enabled) {
-            sender.sendError(tl("command.inventory.no_cache"));
+            sender.sendError(tl("command.inventory.not_enabled"));
             return SINGLE_FAILED;
         }
 
@@ -67,8 +48,13 @@ public class InventoryCommand extends EssentialCommand {
         super.essentials.getUserThenAcceptAsync(sender, inputName, (user) -> {
             ServerPlayerEntity player = sender.getPlayer();
 
+            if (user.getInventory() == null || user.getInventory().getMain() == null) {
+                sender.sendError(tl("command.inventory.no_cache"));
+                return;
+            }
+
             player.openContainer(
-                    create(player, player.inventory, new LiteralText(tl("command.inventory.info", "")))
+                    create(player, user.getInventory().getMain(), new LiteralText(tl("command.inventory.info", "")))
             );
 
             integer.set(this.SINGLE_SUCCESS);
