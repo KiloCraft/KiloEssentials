@@ -26,13 +26,11 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.help.CommandListCommand;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.*;
@@ -147,9 +145,8 @@ public class KiloCommands {
             this.add(new PlaytimeCommand());
             this.add(new MotdCommand());
             this.add(new HelpMeCommand());
-            this.add(new CommandListCommand());
-            //this.add(new PlaytimetopCommand());
-            this.add(new InventoryCommand());
+            this.add(new PlaytimetopCommand());
+            //this.add(new InventoryCommand());
         }};
 
         this.commands.addAll(commandsList);

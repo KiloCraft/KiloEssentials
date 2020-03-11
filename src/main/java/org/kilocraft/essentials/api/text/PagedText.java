@@ -1,141 +1,143 @@
 package org.kilocraft.essentials.api.text;
 
-import org.kilocraft.essentials.api.user.OnlineUser;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class PagedText {
-    private final transient IText text;
-    private final transient boolean onePage;
+    private static final Map<String, PagedText> cached = new HashMap<>();
+    private String id;
+    private List<String> lines;
+    private int timeToLive;
+    private TimeUnit unit;
+    private Formatting main, primary, borders;
+    private List<String> pages;
 
-    public PagedText(final IText text) {
-        this(text, false);
+    public PagedText(String id) {
+        this(id, 30, TimeUnit.MINUTES);
     }
 
-    public PagedText(final IText text, final boolean onePage) {
-        this.text = text;
-        this.onePage = onePage;
+    public PagedText(final String id, final int timeToLive, final TimeUnit unit) {
+        this.id = id;
+        this.timeToLive = timeToLive;
+        this.unit = unit;
+        this.lines = new ArrayList<>();
     }
 
-    public void send(final OnlineUser user, final String pageStr, final String chapterPageStr, final String commandName) {
-        final List<String> lines = this.text.getLines();
-        final List<String> chapters = this.text.getChapters();
-        final Map<String, Integer> bookmarks = this.text.getBookmarks();
+    public PagedText append(final String string) {
+        this.lines.add(string);
+        return this;
+    }
 
+    public PagedText withFormatting(final Formatting main, final Formatting primary, final Formatting borders) {
+        this.main = main;
+        this.primary = primary;
+        this.borders = borders;
+        return this;
+    }
 
-        if (pageStr == null || pageStr.isEmpty() || pageStr.matches("[0-9]+")) {
-            //If an info file starts with a chapter title, list the chapters
-            //If not display the text up until the first chapter.
-            if (!lines.isEmpty() && lines.get(0).startsWith("#")) {
-                if (this.onePage) {
-                    return;
-                }
-                
-                //user.sendMessage(tl("infoChapter"));
-                final StringBuilder sb = new StringBuilder();
-                boolean first = true;
-                for (final String string : chapters) {
-                    if (!first) {
-                        sb.append(", ");
-                    }
-                    first = false;
-                    sb.append(string);
-                }
-                user.sendMessage(sb.toString());
-                return;
-            } else {
-                int page = 1;
-                try {
-                    page = Integer.parseInt(pageStr);
-                } catch (final NumberFormatException ex) {
-                    page = 1;
-                }
-                if (page < 1) {
-                    page = 1;
-                }
+    public PagedText build() {
+        cached.put(id, this);
+        return this;
+    }
 
-                final int start = this.onePage ? 0 : (page - 1) * 9;
-                int end;
-                for (end = 0; end < lines.size(); end++) {
-                    final String line = lines.get(end);
-                    if (line.startsWith("#")) {
-                        break;
-                    }
-                }
+    public void sendPage(final ServerCommandSource source, final int page, final int linesInPage, final String title, final String command, boolean force) {
+        if (!force && cached.containsKey(id)) {
+            PagedText paged = cached.get(id);
 
-                final int pages = end / 9 + (end % 9 > 0 ? 1 : 0);
-                if (page > pages) {
-                    //user.sendMessage(tl("infoUnknownChapter"));
-                    return;
-                }
-                if (!this.onePage && commandName != null) {
+            if (paged.pages != null) {
+                Date lastsUntil = new Date(paged.unit.toMillis(paged.timeToLive));
 
-                    final StringBuilder content = new StringBuilder();
-                    final String[] title = commandName.split(" ", 2);
-                    if (title.length > 1) {
-                        //content.append(I18n.capitalCase(title[0])).append(": ");
-                        content.append(title[1]);
-                    } else {
-                        //content.append(I18n.capitalCase(commandName));
-                    }
-                    //user.sendMessage(tl("infoPages", page, pages, content));
+                System.out.println(lastsUntil);
+                System.out.println(new Date());
+
+                if (lastsUntil.getTime() >= new Date().getTime()) {
+                    this.pages = paged.pages;
                 }
-                for (int i = start; i < end && i < start + (this.onePage ? 20 : 9); i++) {
-                    user.sendMessage("§r" + lines.get(i));
-                }
-                if (!this.onePage && page < pages && commandName != null) {
-                    //user.sendMessage(tl("readNextPage", commandName, page + 1));
-                }
-                return;
             }
+        } else {
+            this.pages = this.getPages(linesInPage);
         }
 
-        //If we have a chapter, check to see if we have a page number
-        int chapterpage = 0;
-        if (chapterPageStr != null) {
-            try {
-                chapterpage = Integer.parseInt(chapterPageStr) - 1;
-            } catch (final NumberFormatException ex) {
-                chapterpage = 0;
+        Formatting f1 = main == null ? Formatting.GOLD : main;
+        Formatting f2 = primary == null ? Formatting.YELLOW : main;
+        Formatting f3 = borders == null ? Formatting.GRAY : main;
+        int prevPage = page - 2;
+        int thisPage = page - 1;
+        int nextPage = page + 1;
+        final String SEPARATOR = "-----------------------------------------------------";
+        Text header =  new LiteralText("")
+                .append(new LiteralText("- [ ").formatted(f3))
+                .append(new LiteralText(title).formatted(f1))
+                .append(" ] ")
+                .append(SEPARATOR.substring(TextFormat.removeAlternateColorCodes('&', title).length() + 4))
+                .formatted(f3);
+
+        Text button_prev = new LiteralText("")
+                .append(new LiteralText("<-").formatted(Formatting.WHITE, Formatting.BOLD))
+                .append(" ").append(new LiteralText("Prev").formatted(f1))
+                .styled((style) -> {
+                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((prevPage >= 0) ? "<<<" : "|<").formatted(f3)));
+                    if (prevPage >= 0)
+                        style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(page - 1))));
+                });
+
+        Text button_next = new LiteralText("")
+                .append(new LiteralText("Next").formatted(f1))
+                .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
+                .styled((style) -> {
+                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((nextPage <= pages.size()) ? ">>>" : ">|").formatted(f3)));
+                    if (nextPage <= pages.size())
+                        style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(nextPage))));
+                });
+
+        Text buttons = new LiteralText("")
+                .append(new LiteralText("[ ").formatted(Formatting.GRAY))
+                .append(button_prev)
+                .append(" ")
+                .append(
+                        new LiteralText(String.valueOf(page)).formatted(Formatting.GREEN)
+                                .append(new LiteralText("/").formatted(f3))
+                                .append(new LiteralText(String.valueOf(pages.size())).formatted(Formatting.GREEN))
+                )
+                .append(" ")
+                .append(button_next)
+                .append(new LiteralText("] ").formatted(f3));
+
+        Text footer = new LiteralText("- ")
+                .formatted(Formatting.GRAY)
+                .append(buttons).append(new LiteralText(" ------------------------------").formatted(Formatting.GRAY));
+
+        header.append("\n").append(new LiteralText(TextFormat.translate(pages.get(thisPage)))).append("\n").append(footer);
+        source.sendFeedback(header, false);
+    }
+
+    private List<String> getPages(final int limit) {
+        final List<String> pages = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        int i = 0;
+
+        for (String line : this.lines) {
+            if (i == limit) {
+                i = 0;
+                pages.add(builder.toString());
+
+                System.out.println("Page Added: \n " + builder.toString());
+
+                builder = new StringBuilder();
+                continue;
             }
-            if (chapterpage < 0) {
-                chapterpage = 0;
-            }
+
+            builder.append(line);
         }
-//
-//        //This checks to see if we have the chapter in the index
-//        if (!bookmarks.containsKey(pageStr.toLowerCase(Locale.ENGLISH))) {
-//            user.sendMessage(tl("infoUnknownChapter"));
-//            return;
-//        }
-//
-//        //Since we have a valid chapter, count the number of lines in the chapter
-//        final int chapterstart = bookmarks.get(pageStr.toLowerCase(Locale.ENGLISH)) + 1;
-//        int chapterend;
-//        for (chapterend = chapterstart; chapterend < lines.size(); chapterend++) {
-//            final String line = lines.get(chapterend);
-//            if (line.length() > 0 && line.charAt(0) == '#') {
-//                break;
-//            }
-//        }
-//
-//        //Display the chapter from the starting position
-//        final int start = chapterstart + (this.onePage ? 0 : chapterpage * 9);
-//        final int page = chapterpage + 1;
-//        final int pages = (chapterend - chapterstart) / 9 + ((chapterend - chapterstart) % 9 > 0 ? 1 : 0);
-//        if (!this.onePage && commandName != null) {
-//            final StringBuilder content = new StringBuilder();
-//            content.append(I18n.capitalCase(commandName)).append(": ");
-//            content.append(pageStr);
-//            user.sendMessage(tl("infoChapterPages", content, page, pages));
-//        }
-//        for (int i = start; i < chapterend && i < start + (this.onePage ? 20 : 9); i++) {
-//            user.sendMessage("§r" + lines.get(i));
-//        }
-//        if (!this.onePage && page < pages && commandName != null) {
-//            user.sendMessage(tl("readNextPage", commandName, pageStr + " " + (page + 1)));
-//        }
+
+        return pages;
     }
 
 }

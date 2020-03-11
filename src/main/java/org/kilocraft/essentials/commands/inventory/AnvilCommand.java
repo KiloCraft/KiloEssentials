@@ -17,7 +17,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 
 public class AnvilCommand extends EssentialCommand {
     public AnvilCommand() {
-        super("anvil", CommandPermission.ANVIL);
+        super("anvil", CommandPermission.ANVIL, new String[]{"repair"});
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.user;
+package org.kilocraft.essentials.api.user.inventory;
 
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
@@ -7,16 +7,16 @@ import org.jetbrains.annotations.Nullable;
 public interface UserInventory {
 
     @Nullable
-    PlayerInventory getMain();
+    CachedInventory getMain();
 
     void load(PlayerInventory inventory);
 
     void clearCache();
 
-    void cache(PlayerInventory inventory);
+    void cache(CachedInventory cached);
 
     @Nullable
-    PlayerInventory getCached(int i);
+    CachedInventory getCached(int i);
 
     CompoundTag serialize(CompoundTag tag);
 

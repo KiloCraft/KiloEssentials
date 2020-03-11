@@ -1,10 +1,14 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerManager;
+import net.minecraft.server.ServerNetworkIo;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Brandable;
 import org.kilocraft.essentials.util.RollingAverage;
 import org.kilocraft.essentials.util.TPSTracker;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,6 +26,12 @@ public abstract class MinecraftServerMixin implements Brandable {
 
     @Shadow
     private long timeReference;
+
+    @Shadow @Final private ServerNetworkIo networkIo;
+
+    @Shadow public abstract PlayerManager getPlayerManager();
+
+    @Shadow private PlayerManager playerManager;
 
     @Inject(at = @At(value = "HEAD"), method = "run")
     private void kilo$run(CallbackInfo ci) {
@@ -45,6 +55,7 @@ public abstract class MinecraftServerMixin implements Brandable {
             TPSTracker.tps60.add(currentTps, diff);
             tickSection = curTime;
         }
+
     }
 
     @Override

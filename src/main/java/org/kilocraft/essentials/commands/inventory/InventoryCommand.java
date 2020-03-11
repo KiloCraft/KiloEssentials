@@ -54,7 +54,7 @@ public class InventoryCommand extends EssentialCommand {
             }
 
             player.openContainer(
-                    create(player, user.getInventory().getMain(), new LiteralText(tl("command.inventory.info", "")))
+                    create(player, user.getInventory().getMain().get(), new LiteralText(tl("command.inventory.info", "")))
             );
 
             integer.set(this.SINGLE_SUCCESS);

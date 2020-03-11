@@ -20,11 +20,12 @@ import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.UserInventory;
+import org.kilocraft.essentials.api.user.inventory.UserInventory;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.user.inventory.ServerUserInventory;
 import org.kilocraft.essentials.util.NBTTypes;
 
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class ServerUser implements User {
         if (UserHomeHandler.isEnabled())
             this.homeHandler = new UserHomeHandler(this);
 
-        this.inventory = new ServerUserInventory(this, player);
+        this.inventory = player == null ? new ServerUserInventory(this) : new ServerUserInventory(this, player);
 
         try {
             manager.getHandler().handleUser(this);

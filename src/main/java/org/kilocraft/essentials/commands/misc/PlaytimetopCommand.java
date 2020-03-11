@@ -10,10 +10,8 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.PagedText;
-import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.util.TextUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.io.IOException;
@@ -21,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class PlaytimetopCommand extends EssentialCommand {
     private static long cacheTime = 0L;
@@ -38,7 +37,7 @@ public class PlaytimetopCommand extends EssentialCommand {
         this.commandNode.addChild(page.build());
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(final CommandContext<ServerCommandSource> ctx) {
         return this.send(ctx, 1);
     }
 
@@ -58,32 +57,18 @@ public class PlaytimetopCommand extends EssentialCommand {
             final List<Map.Entry<String, Integer>> sorted = new ArrayList<>(map.entrySet());
             sorted.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 
-            TextInput input = null;
-            try {
-                input = new TextInput(src, "pttop", true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            PagedText paged = new PagedText("pttop");
 
-            input.add(ModConstants.translation("command.playtimetop.total", TimeDifferenceUtil.convertSecondsToString((int) (totalTicks / 20L), 'e', '6')));
-
+            paged.append(ModConstants.translation("command.playtimetop.total", TimeDifferenceUtil.convertSecondsToString((int) (totalTicks / 20L), 'e', '6')));
             for (int i = 0; i < sorted.size(); i++) {
                 Map.Entry<String, Integer> entry = sorted.get(i);
 
                 String pt = TimeDifferenceUtil.convertSecondsToString(entry.getValue() / 20, 'e', '6');
-                input.add(String.format(LINE_FORMAT, i + 1, entry.getKey(), pt));
+                paged.append(String.format(LINE_FORMAT, i + 1, entry.getKey(), pt));
             }
 
-//            PagedText paged = new PagedText();
-//
-//            System.out.println("OK4");
-//            try {
-//                //paged.showPage("Top Play times", "/playtimetop %s", page, src.getCommandSource());
-//            } catch (final CommandSyntaxException e) {
-//                src.sendError(e.getMessage());
-//            }
 
-            System.out.println("OK5");
+            paged.sendPage(src.getCommandSource(), page, 9, "Top Play Times", "/playtimetop %page%", false);
         });
 
         return SINGLE_SUCCESS;

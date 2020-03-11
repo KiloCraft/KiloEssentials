@@ -6,9 +6,9 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.user.inventory.UserInventory;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.user.ServerUserInventory;
 
 import java.io.IOException;
 import java.util.Date;
