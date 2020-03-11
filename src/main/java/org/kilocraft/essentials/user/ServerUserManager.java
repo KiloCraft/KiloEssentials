@@ -298,7 +298,7 @@ public class ServerUserManager implements UserManager {
         }
 
         public UserLoadingText(ServerPlayerEntity player, String key) {
-            this.animatedText = new AnimatedText(0, 360, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+            this.animatedText = new AnimatedText(0, 220, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
                     .append(LangText.get(true, key + ".frame1"))
                     .append(LangText.get(true, key + ".frame2"))
                     .append(LangText.get(true, key + ".frame3"))
