@@ -4,6 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.Message;
@@ -173,7 +176,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	public final CompletableFuture<List<User>> getAllUsersThenAcceptAsync(final OnlineUser requester,
 																		  final String loadingTitle,
 																		  final Consumer<? super List<User>> action) {
-		CommandSourceUser src = (CommandSourceUser) requester;
+		CommandSourceUser src = getServer().getCommandSourceUser(requester.getCommandSource());
 		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer(), loadingTitle);
 
 		if (!src.isConsole()) {
@@ -186,7 +189,11 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 				loadingText.stop();
 			}
 
-			action.accept(list);
+			try {
+				action.accept(list);
+			} catch (Exception e) {
+				requester.sendError(e.getMessage());
+			}
 		});
 
 		return future;
@@ -206,7 +213,11 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 				return;
 			}
 
-			optionalUser.ifPresent(action);
+			try {
+				optionalUser.ifPresent(action);
+			} catch (Exception e) {
+				requester.sendError(new LiteralText(e.getMessage()).formatted(Formatting.RED));
+			}
 		}, KiloServer.getServer().getVanillaServer());
 
 		return optionalCompletableFuture;
@@ -233,7 +244,11 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 				return;
 			}
 
-			action.accept(optionalUser.get());
+			try {
+				action.accept(optionalUser.get());
+			} catch (Exception e) {
+				requester.sendError(e.getMessage());
+			}
 		}, KiloServer.getServer().getVanillaServer());
 
 		if (!optionalCompletableFuture.isDone())

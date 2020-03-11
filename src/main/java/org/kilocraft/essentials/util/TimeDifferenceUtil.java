@@ -35,7 +35,7 @@ public class TimeDifferenceUtil {
         return ((day != 0) ? "&" + numFormat + day + "&" + typeFormat + " Days " : "") +
                 ((hour != 0) ? "&" + numFormat + hour + "&" + typeFormat + " Hours " : "") +
                 ((min != 0) ? "&" + numFormat + min + "&" + typeFormat + " Minutes " : "") +
-                ("&" + numFormat + seconds + "&" + typeFormat + " Seconds");
+                ("&" + numFormat + seconds + "&" + typeFormat + " Sec");
     }
 
     public static String removeTimePattern(String input) {
