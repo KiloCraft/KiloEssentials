@@ -1,11 +1,12 @@
 package org.kilocraft.essentials.mixin;
 
-import net.minecraft.class_4861;
-import net.minecraft.container.*;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.AnvilScreenHandler;
+import net.minecraft.screen.BlockContext;
+import net.minecraft.screen.ForgingScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.LiteralText;
 import org.apache.commons.lang3.StringUtils;
 import org.kilocraft.essentials.CommandPermission;
@@ -18,26 +19,27 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AnvilContainer.class)
-public abstract class AnvilContainerMixin extends class_4861 {
+@Mixin(AnvilScreenHandler.class)
+public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     @Shadow
     private String newItemName;
 
-    @Shadow public abstract void method_24928();
+    @Shadow public abstract void updateResult();
 
-    public AnvilContainerMixin(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-        super(ContainerType.ANVIL, i, playerInventory, blockContext);
+    public AnvilScreenHandlerMixin(ScreenHandlerType<?> screenHandlerType, int i, PlayerInventory playerInventory, BlockContext blockContext) {
+        super(screenHandlerType, i, playerInventory, blockContext);
     }
+
 
     @Inject(method = "setNewItemName", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/container/AnvilContainer;setNewItemName(Ljava/lang/String;)V\n"))
     public void modifySetNewItemName(String string, CallbackInfo ci) {
         ci.cancel();
         newItemName = TextFormat.translate(string,
-                KiloCommands.hasPermission(super.field_22482.getCommandSource(), CommandPermission.ITEM_NAME));
+                KiloCommands.hasPermission(super.player.getCommandSource(), CommandPermission.ITEM_NAME));
 
-        if (((AnvilContainer)(Object)this).getSlot(2).hasStack()) {
-            ItemStack itemStack = ((AnvilContainer)(Object)this).getSlot(2).getStack();
+        if (((AnvilScreenHandler)(Object)this).getSlot(2).hasStack()) {
+            ItemStack itemStack = ((AnvilScreenHandler)(Object)this).getSlot(2).getStack();
             if (StringUtils.isBlank(string)) {
                 itemStack.removeCustomName();
             } else {
@@ -45,6 +47,6 @@ public abstract class AnvilContainerMixin extends class_4861 {
             }
         }
 
-        method_24928();
+        this.updateResult();
     }
 }

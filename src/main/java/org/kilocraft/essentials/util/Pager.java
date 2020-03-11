@@ -596,6 +596,11 @@ public class Pager {
             Formatting f3 = Formatting.GRAY;
             int prevPage = pageIndex - 1;
             int nextPage = pageIndex + 1;
+
+            System.out.println(pageIndex);
+            System.out.println(prevPage);
+            System.out.println(nextPage);
+
             final String SEPARATOR = "-----------------------------------------------------";
             Text header =  new LiteralText("")
                     .append(new LiteralText("- [ ").formatted(f3))
@@ -612,17 +617,17 @@ public class Pager {
                     .append(new LiteralText("<-").formatted(Formatting.WHITE, Formatting.BOLD))
                     .append(" ").append(new LiteralText("Prev").formatted(f1))
                     .styled((style) -> {
-                        style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((prevPage >= 0) ? "<<<" : "|<").formatted(f3)));
-                        if (prevPage >= 0)
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(pageIndex - 1))));
+                        style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)));
+                        if (prevPage > 0)
+                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(prevPage))));
                     });
 
             Text button_next = new LiteralText("")
                     .append(new LiteralText("Next").formatted(f1))
                     .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
                     .styled((style) -> {
-                        style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((nextPage <= maxPages) ? ">>>" : ">|").formatted(f3)));
-                        if (nextPage <= maxPages)
+                        style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((nextPage < maxPages) ? ">>>" : ">|").formatted(f3)));
+                        if (nextPage < maxPages)
                             style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(nextPage))));
                     });
 

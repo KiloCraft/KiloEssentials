@@ -1,13 +1,13 @@
 package org.kilocraft.essentials.mixin;
 
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.ContainerType;
-import net.minecraft.container.CraftingContainer;
-import net.minecraft.container.CraftingTableContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.screen.BlockContext;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.CraftingTableScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,13 +16,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(CraftingTableContainer.class)
-public abstract class CraftingTableContainerMixin extends CraftingContainer<CraftingInventory> {
+@Mixin(CraftingTableScreenHandler.class)
+public abstract class CraftingTableScreenHandlerMixin extends CraftingScreenHandler<CraftingInventory> {
 
-    @Shadow @Final private BlockContext context;
 
-    public CraftingTableContainerMixin(ContainerType<?> containerType, int i) {
-        super(containerType, i);
+    public CraftingTableScreenHandlerMixin(ScreenHandlerType<?> screenHandlerType, int i) {
+        super(screenHandlerType, i);
     }
 
     @Shadow
@@ -34,6 +33,8 @@ public abstract class CraftingTableContainerMixin extends CraftingContainer<Craf
     @Shadow @Final private CraftingInventory craftingInv;
 
     @Shadow @Final private CraftingResultInventory resultInv;
+
+    @Shadow @Final private BlockContext context;
 
     @Inject(method = "onContentChanged", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/container/CraftingTableContainer;onContentChanged(Lnet/minecraft/inventory/Inventory;)V"))
     public void modifyOnContentChanged(Inventory inventory, CallbackInfo ci) {

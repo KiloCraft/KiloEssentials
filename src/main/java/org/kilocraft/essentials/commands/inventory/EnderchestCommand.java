@@ -56,9 +56,9 @@ public class EnderchestCommand extends EssentialCommand {
     private int execute(ServerPlayerEntity sender, ServerPlayerEntity target) {
         ServerUserInventory.openEnderchest(sender, target);
         if (CmdUtils.areTheSame(sender, target))
-            KiloChat.sendLangMessageTo(sender, "general.open_container", "Ender chest");
+            KiloChat.sendLangMessageTo(sender, "general.open_screen", "Ender chest");
         else
-            KiloChat.sendLangMessageTo(sender, "general.seek_container", target.getEntityName(), "Ender chest");
+            KiloChat.sendLangMessageTo(sender, "general.seek_screen", target.getEntityName(), "Ender chest");
 
         return SINGLE_SUCCESS;
     }

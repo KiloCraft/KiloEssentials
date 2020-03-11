@@ -7,15 +7,15 @@
   ],
   "server": [
     "CommandManagerMixin",
-    "WorkbenchContainerMixin",
-    "AnvilContainerMixin",
+    "ForgingScreenHandlerMixin",
+    "AnvilScreenHandlerMixin",
     "MinecraftServerMixin",
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "PlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
-    "CraftingTableContainerMixin",
+    "CraftingTableScreenHandlerMixin",
     "PlayerListS2CPacketMixin"
   ],
   "injectors": {

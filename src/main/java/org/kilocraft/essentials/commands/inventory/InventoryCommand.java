@@ -4,8 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.container.*;
+import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -53,7 +56,7 @@ public class InventoryCommand extends EssentialCommand {
                 return;
             }
 
-            player.openContainer(
+            player.openHandledScreen(
                     create(player, user.getInventory().getMain().get(), new LiteralText(tl("command.inventory.info", "")))
             );
 
@@ -63,10 +66,11 @@ public class InventoryCommand extends EssentialCommand {
         return integer.get();
     }
 
-    private SimpleNamedContainerFactory create(final ServerPlayerEntity src, final Inventory inv, Text text) {
-        return new SimpleNamedContainerFactory((syncId, playerInv, player) ->
-                new GenericContainer(ContainerType.GENERIC_9X4, syncId, player.inventory, inv, 4),
-                text);
+    private SimpleNamedScreenHandlerFactory create(final ServerPlayerEntity src, final Inventory inv, Text text) {
+//        return new SimpleNamedScreenHandlerFactory((syncId, playerInv, player) ->
+//                new GenericContainerScreen(GenericContainerScreenHandler, player.inventory, text),
+//                text);
+        return null;
     }
 
 }
