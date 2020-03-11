@@ -594,12 +594,8 @@ public class Pager {
             Formatting f1 = Formatting.GOLD;
             Formatting f2 = Formatting.YELLOW;
             Formatting f3 = Formatting.GRAY;
-            int prevPage = pageIndex - 1;
-            int nextPage = pageIndex + 1;
-
-            System.out.println(pageIndex);
-            System.out.println(prevPage);
-            System.out.println(nextPage);
+            int prevPage = pageIndex;
+            int nextPage = pageIndex + 2;
 
             final String SEPARATOR = "-----------------------------------------------------";
             Text header =  new LiteralText("")

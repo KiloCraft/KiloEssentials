@@ -152,7 +152,7 @@ public class ServerUser implements User {
             ListTag listTag = new ListTag();
             this.ignoreList.forEach((name, uuid) -> {
                 CompoundTag ignoredOne = new CompoundTag();
-                ignoredOne.putUuidNew("uuid", uuid);
+                ignoredOne.putUuidOld("uuid", uuid);
                 ignoredOne.putString("name", name);
                 listTag.add(ignoredOne);
             });
@@ -253,7 +253,7 @@ public class ServerUser implements User {
             this.ignoreList = new HashMap<>();
             for (int i = 0; i < ignoreList.size(); i++) {
                 CompoundTag ignoredOne = ignoreList.getCompound(i);
-                this.ignoreList.put(ignoredOne.getString("name"), ignoredOne.getUuidNew("uuid"));
+                this.ignoreList.put(ignoredOne.getString("name"), ignoredOne.getUuidOld("uuid"));
             }
         }
 
