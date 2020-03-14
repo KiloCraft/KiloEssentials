@@ -152,18 +152,37 @@ public class ArgumentCompletions {
     }
 
     public static class Factory {
-
         private String[] args;
         private Map<Integer, String[]> map;
+        private SuggestionsBuilder builder;
 
-        public Factory(String[] args) {
-            this.args = args;
+        public Factory(SuggestionsBuilder builder) {
+            this.args = builder.getInput().split(" ");
+            this.builder = builder;
             this.map = new HashMap<>();
         }
 
         public Factory suggest(int arg, String... strings) {
             this.map.put(arg, strings);
             return this;
+        }
+
+        public CompletableFuture<Suggestions> completeFuture() {
+            if (args.length > this.map.size() || this.map.isEmpty() || this.args.length == 0) {
+                return this.builder.buildFuture();
+            }
+
+            String[] strings = this.map.get(this.args.length - 1);
+            if (strings != null) {
+
+                for (String string : strings) {
+                    if (string.toLowerCase(Locale.ROOT).startsWith(this.args[this.args.length - 1].toLowerCase(Locale.ROOT))) {
+                        this.builder.suggest(string);
+                    }
+                }
+            }
+
+            return this.builder.buildFuture();
         }
 
         public Iterable<String> complete() {
