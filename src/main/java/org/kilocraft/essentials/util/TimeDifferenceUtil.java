@@ -6,7 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
 import java.util.Arrays;
@@ -193,7 +193,7 @@ public class TimeDifferenceUtil {
 
     public static CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         Stream<String> stream = Arrays.stream(VALID_UNITS).filter((it) ->{
-            String inputChar = String.valueOf(context.getInput().charAt(TabCompletions.getPendingCursor(context)));
+            String inputChar = String.valueOf(context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)));
             boolean containsValidUnit = it.equals(inputChar);
 
             return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
@@ -201,9 +201,9 @@ public class TimeDifferenceUtil {
 
 
 
-        return TabCompletions.suggestAtCursor(
+        return ArgumentCompletions.suggestAtCursor(
                 Arrays.stream(VALID_UNITS).filter((it) ->{
-                    String inputChar = String.valueOf(context.getInput().charAt(TabCompletions.getPendingCursor(context)));
+                    String inputChar = String.valueOf(context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)));
                     boolean containsValidUnit = it.equals(inputChar);
 
                     return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;

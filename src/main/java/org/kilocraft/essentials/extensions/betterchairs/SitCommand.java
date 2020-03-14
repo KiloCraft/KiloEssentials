@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.mixin.accessor.EntityAccessor;
@@ -27,12 +27,12 @@ public class SitCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> boolArgument =  argument("set", word())
-                .suggests(TabCompletions::stateSuggestions)
+                .suggests(ArgumentCompletions::stateSuggestions)
                 .executes(this::set);
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
                 .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
-                .suggests(TabCompletions::allPlayers)
+                .suggests(ArgumentCompletions::allPlayers)
                 .executes(this::setOthers);
 
         argumentBuilder.executes(this::seat);

@@ -1,32 +1,29 @@
 package org.kilocraft.essentials.api.util;
 
-import com.google.common.cache.Cache;
-import com.google.common.collect.Lists;
-
-import java.util.*;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class Cached {
+public class Cached<T> {
     private final String id;
     private final int livesFor;
     private final TimeUnit unit;
     private Date date;
-    private Object object;
+    private T value;
 
-    public Cached(final String id, final Object objectToCache) {
-        this(id, 30, TimeUnit.MINUTES, objectToCache);
+    public Cached(final String id, final T valueToCache) {
+        this(id, 30, TimeUnit.MINUTES, valueToCache);
     }
 
-    public Cached(final String id, final int livesFor, final TimeUnit unit, final Object objectToCache) {
+    public Cached(final String id, final int livesFor, final TimeUnit unit, final T valueToCache) {
         this.id = id;
         this.livesFor = livesFor;
         this.unit = unit;
         this.date = new Date(new Date().getTime() + this.unit.toMillis(this.livesFor));
-        this.object = objectToCache;
+        this.value = valueToCache;
     }
 
-    public void set(Object object) {
-        this.object = object;
+    public void set(T value) {
+        this.value = value;
         this.date = new Date(new Date().getTime() + this.unit.toMillis(this.livesFor));
     }
 
@@ -38,8 +35,8 @@ public class Cached {
         return this.id;
     }
 
-    public Object get() {
-        return this.object;
+    public T get() {
+        return this.value;
     }
 
 }

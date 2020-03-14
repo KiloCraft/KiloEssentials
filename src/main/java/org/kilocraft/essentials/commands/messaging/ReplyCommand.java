@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 
@@ -27,7 +27,7 @@ public class ReplyCommand extends EssentialCommand {
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = this.argument("message", greedyString())
-                .suggests(TabCompletions::noSuggestions)
+                .suggests(ArgumentCompletions::noSuggestions)
                 .executes(this::execute);
 
         this.commandNode.addChild(messageArgument.build());

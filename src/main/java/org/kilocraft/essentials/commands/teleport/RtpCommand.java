@@ -26,7 +26,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
@@ -66,7 +66,7 @@ public class RtpCommand extends EssentialCommand {
 
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
 				.requires(PERMISSION_CHECK_OTHERS)
-				.suggests(TabCompletions::allPlayers)
+				.suggests(ArgumentCompletions::allPlayers)
 				.executes(ctx -> execute(ctx, false, getPlayer(ctx, "target")));
 
 		RequiredArgumentBuilder<ServerCommandSource, Integer> amountArg = argument("amount", integer(0))

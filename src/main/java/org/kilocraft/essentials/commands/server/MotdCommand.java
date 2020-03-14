@@ -15,7 +15,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.util.TextUtils;
 
 import java.io.IOException;
@@ -94,12 +94,12 @@ public class MotdCommand extends EssentialCommand {
                 builder.suggest('"' + desc + '"');
             } catch (final ArrayIndexOutOfBoundsException ignored) {}
 
-        } else if (context.getInput().charAt(TabCompletions.getPendingCursor(context)) == '&') {
-            return TabCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()), context);
+        } else if (context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)) == '&') {
+            return ArgumentCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()), context);
         } else if (!builder.getRemaining().endsWith("\"")) {
-            return TabCompletions.suggestAtCursor("\"", context);
+            return ArgumentCompletions.suggestAtCursor("\"", context);
         } else if (builder.getRemaining().endsWith("\"")) {
-            return TabCompletions.suggestAtCursor("&", context);
+            return ArgumentCompletions.suggestAtCursor("&", context);
         }
 
         return builder.buildFuture();

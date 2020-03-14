@@ -20,7 +20,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.Objects;
@@ -48,13 +48,13 @@ public class PowertoolsCommand {
 
         LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove");
         RequiredArgumentBuilder<ServerCommandSource, Integer> removeLineArgument = argument("line", integer(1, 10))
-                .suggests(TabCompletions::noSuggestions)
+                .suggests(ArgumentCompletions::noSuggestions)
                 .executes(PowertoolsCommand::executeRemove);
 
         LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
 
         RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 10))
-                .suggests(TabCompletions::noSuggestions);
+                .suggests(ArgumentCompletions::noSuggestions);
 
         RequiredArgumentBuilder<ServerCommandSource, String> textArgument = argument("command", greedyString())
                 .suggests(PowertoolsCommand::commandSuggestions)
@@ -74,7 +74,7 @@ public class PowertoolsCommand {
         ItemStack item = context.getSource().getPlayer().getMainHandStack();
 
         if (item.isEmpty() || !item.hasTag() || item.getTag() == null || !item.getTag().contains("NBTCommands"))
-            return TabCompletions.noSuggestions(context, builder);
+            return ArgumentCompletions.noSuggestions(context, builder);
 
         int inputLine = 0;
 

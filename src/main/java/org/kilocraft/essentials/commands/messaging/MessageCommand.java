@@ -9,7 +9,7 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.ServerChat;
 
 public class MessageCommand extends EssentialCommand {
@@ -23,7 +23,7 @@ public class MessageCommand extends EssentialCommand {
         final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = this.argument("target", EntityArgumentType.player());
 
         final RequiredArgumentBuilder<ServerCommandSource, String> message = this.argument("message", StringArgumentType.greedyString())
-                .suggests(TabCompletions::noSuggestions)
+                .suggests(ArgumentCompletions::noSuggestions)
                 .executes(MessageCommand::execute);
 
         target.then(message);

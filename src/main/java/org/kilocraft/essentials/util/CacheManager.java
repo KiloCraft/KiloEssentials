@@ -8,17 +8,17 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class CacheManager {
-    private static final Map<String, Cached> map = new HashMap<>();
+    private static final Map<String, Cached<?>> map = new HashMap<>();
 
-    public static void cache(Cached... cached) {
+    public static void cache(Cached<?>... cached) {
         Objects.requireNonNull(cached, "Cache entry must not be null!");
 
-        for (Cached c : cached) {
+        for (Cached<?> c : cached) {
             map.put(c.getId(), c);
         }
     }
 
-    public static Cached get(String id) {
+    public static Cached<?> get(String id) {
         return map.get(id);
     }
 
@@ -30,8 +30,8 @@ public class CacheManager {
         return isCached(id) && get(id).isValid();
     }
 
-    public static void getAndRun(String id, Consumer<Cached> consumer) {
-        Cached cached = get(id);
+    public static void getAndRun(String id, Consumer<Cached<?>> consumer) {
+        Cached<?> cached = get(id);
         consumer.accept(cached);
     }
 

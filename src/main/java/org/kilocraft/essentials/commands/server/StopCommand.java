@@ -10,7 +10,7 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CmdUtils;
 
@@ -23,7 +23,7 @@ public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = literal("stop")
                 .then(argument("args", greedyString())
-                        .suggests(TabCompletions::noSuggestions)
+                        .suggests(ArgumentCompletions::noSuggestions)
                         .executes(c -> execute(c.getSource(), getString(c, "args"))))
                 .requires(s -> KiloEssentials.hasPermissionNode(s, EssentialPermission.SERVER_MANAGE_STOP, 4))
                 .executes(c -> execute(c.getSource(), ""));

@@ -12,7 +12,7 @@ import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import static net.minecraft.command.arguments.DimensionArgumentType.dimension;
@@ -43,7 +43,7 @@ public class TeleportCommands {
 
         LiteralCommandNode<ServerCommandSource> tpinCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN))
-                .then(argument("dimension", dimension()).suggests(TabCompletions::dimensions).then(argument("pos", vec3())
+                .then(argument("dimension", dimension()).suggests(ArgumentCompletions::dimensions).then(argument("pos", vec3())
                         .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
                             .then(argument("target", player())
                                     .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))

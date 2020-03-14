@@ -19,7 +19,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.commands.CmdUtils;
 
 import java.util.*;
@@ -64,7 +64,7 @@ public class OperatorCommand {
 
         getLiteral.then(
                 argument("gameProfile", gameProfile())
-                        .suggests(TabCompletions::allOperators)
+                        .suggests(ArgumentCompletions::allOperators)
                         .executes(
                             c -> executeGet(
                                     c.getSource(),
@@ -85,7 +85,7 @@ public class OperatorCommand {
 
         addLiteral.then(
                 argument("gameProfile", gameProfile())
-                        .suggests(TabCompletions::allNonOperators)
+                        .suggests(ArgumentCompletions::allNonOperators)
                         .then(
                                 argument("level", integer(0, 4))
                                         .then(
@@ -105,7 +105,7 @@ public class OperatorCommand {
 
         removeLiteral.then(
                 argument("gameProfile", gameProfile())
-                        .suggests(TabCompletions::allOperators)
+                        .suggests(ArgumentCompletions::allOperators)
                         .executes(
                             c -> execute(
                                     c.getSource(),

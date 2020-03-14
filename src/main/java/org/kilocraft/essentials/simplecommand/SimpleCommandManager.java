@@ -6,7 +6,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -36,7 +36,7 @@ public class SimpleCommandManager {
             INSTANCE.commands.add(command);
 
             getDispatcher().register(literal(command.getLabel())
-                    .then(argument("args", greedyString()).suggests(TabCompletions::noSuggestions)));
+                    .then(argument("args", greedyString()).suggests(ArgumentCompletions::noSuggestions)));
         }
     }
 

@@ -239,7 +239,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(final String label) {
-        return this.argument(label, string()).suggests(TabCompletions::allPlayers);
+        return this.argument(label, string()).suggests(ArgumentCompletions::allPlayers);
     }
 
     public String tl(final String key, final Object... objects) {

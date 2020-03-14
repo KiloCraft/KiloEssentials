@@ -7,7 +7,7 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -22,7 +22,7 @@ public class MuteCommand {
                 .executes(KiloCommands::executeSmartUsage);
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", EntityArgumentType.player())
-                .suggests(TabCompletions::allPlayers)
+                .suggests(ArgumentCompletions::allPlayers)
                 .executes(ctx -> execute(ctx.getSource(), null));
 
         RequiredArgumentBuilder<ServerCommandSource, String> reasonArg = argument("reason", greedyString())

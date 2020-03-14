@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-public class TabCompletions {
+public class ArgumentCompletions {
 
     private static final PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 
@@ -31,12 +31,12 @@ public class TabCompletions {
     }
 
     public static CompletableFuture<Suggestions> allPlayers(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(TabCompletions.playerManager.getPlayerList().stream()
+        return CommandSource.suggestMatching(ArgumentCompletions.playerManager.getPlayerList().stream()
                 .map(PlayerEntity::getEntityName), builder);
     }
 
     public static CompletableFuture<Suggestions> allPlayersExceptSource(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(TabCompletions.playerManager.getPlayerList().stream().filter(p -> {
+        return CommandSource.suggestMatching(ArgumentCompletions.playerManager.getPlayerList().stream().filter(p -> {
             try {
                 return !p.equals(context.getSource().getPlayer());
             } catch (CommandSyntaxException ignored) {}
@@ -72,16 +72,16 @@ public class TabCompletions {
     }
 
     public static CompletableFuture<Suggestions> textformatChars(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return TabCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()).filter(it -> context.getInput().charAt(TabCompletions.getPendingCursor(context)) == '&'), context);
+        return ArgumentCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()).filter(it -> context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)) == '&'), context);
     }
 
 
     public static CompletableFuture<Suggestions> allNonOperators(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(TabCompletions.playerManager.getPlayerList().stream().filter(p -> !TabCompletions.playerManager.isOperator(p.getGameProfile())).map(PlayerEntity::getEntityName), builder);
+        return CommandSource.suggestMatching(ArgumentCompletions.playerManager.getPlayerList().stream().filter(p -> !ArgumentCompletions.playerManager.isOperator(p.getGameProfile())).map(PlayerEntity::getEntityName), builder);
     }
 
     public static CompletableFuture<Suggestions> allOperators(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(TabCompletions.playerManager.getOpNames(), builder);
+        return CommandSource.suggestMatching(ArgumentCompletions.playerManager.getOpNames(), builder);
     }
 
     public static SuggestionProvider<ServerCommandSource> getDateArguments = (context, builder) ->
@@ -104,23 +104,23 @@ public class TabCompletions {
     }
 
     public static CompletableFuture<Suggestions> suggestAtArg(final int arg, final String[] strings, final CommandContext<ServerCommandSource> context) {
-        return TabCompletions.suggestAt(TabCompletions.getCursorAtArg(arg, context), strings, context);
+        return ArgumentCompletions.suggestAt(ArgumentCompletions.getCursorAtArg(arg, context), strings, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAtCursor(final Stream<String> stream, final CommandContext<ServerCommandSource> context) {
-        return TabCompletions.suggestAt(context.getInput().length(), stream, context);
+        return ArgumentCompletions.suggestAt(context.getInput().length(), stream, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAtCursor(final String string, final CommandContext<ServerCommandSource> context) {
-        return TabCompletions.suggestAt(context.getInput().length(), new String[]{string}, context);
+        return ArgumentCompletions.suggestAt(context.getInput().length(), new String[]{string}, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAtCursor(final String[] strings, final CommandContext<ServerCommandSource> context) {
-        return TabCompletions.suggestAt(context.getInput().length(), strings, context);
+        return ArgumentCompletions.suggestAt(context.getInput().length(), strings, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAtCursor(final Iterable<String> iterable, final CommandContext<ServerCommandSource> context) {
-        return TabCompletions.suggestAt(context.getInput().length(), iterable, context);
+        return ArgumentCompletions.suggestAt(context.getInput().length(), iterable, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAt(final int position, final Stream<String> stream, final CommandContext<ServerCommandSource> context) {
@@ -148,7 +148,44 @@ public class TabCompletions {
     }
 
     private static int getCursorAtArg(final int pos, final CommandContext<ServerCommandSource> context) {
-        return TabCompletions.getInput(context).split(" ").length;
+        return ArgumentCompletions.getInput(context).split(" ").length;
     }
 
+    public static class Factory {
+
+        private String[] args;
+        private Map<Integer, String[]> map;
+
+        public Factory(String[] args) {
+            this.args = args;
+            this.map = new HashMap<>();
+        }
+
+        public Factory suggest(int arg, String... strings) {
+            this.map.put(arg, strings);
+            return this;
+        }
+
+        public Iterable<String> complete() {
+            if (args.length > this.map.size() || this.map.isEmpty() || this.args.length == 0) {
+                return Collections.emptyList();
+            }
+
+            String[] strings = this.map.get(this.args.length - 1);
+            if (strings != null) {
+                final List<String> suggestions = new ArrayList<>();
+
+                for (String string : strings) {
+                    if (string.toLowerCase(Locale.ROOT).startsWith(this.args[this.args.length - 1].toLowerCase(Locale.ROOT))) {
+                        suggestions.add(string);
+                    }
+                }
+
+                return suggestions.isEmpty() ? Collections.emptyList() : suggestions;
+            }
+
+            return Collections.emptyList();
+        }
+
+    }
 }

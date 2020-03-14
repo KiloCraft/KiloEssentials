@@ -77,8 +77,8 @@ public class PlaytimetopCommand extends EssentialCommand {
             final List<Map.Entry<String, Integer>> sorted = new ArrayList<>(map.entrySet());
             sorted.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 
-            Cached listCached = new Cached(CACHE_ID, sorted);
-            Cached ticksCached = new Cached(TICKS_CACHE__ID, totalTicks);
+            Cached<List<Map.Entry<String, Integer>>> listCached = new Cached<>(CACHE_ID, sorted);
+            Cached<Long> ticksCached = new Cached<>(TICKS_CACHE__ID, totalTicks);
             CacheManager.cache(listCached, ticksCached);
 
             send(src, page, sorted, totalTicks);

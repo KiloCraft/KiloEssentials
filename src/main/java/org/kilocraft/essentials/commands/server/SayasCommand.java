@@ -13,7 +13,7 @@ import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class SayasCommand extends EssentialCommand {
                 .build();
 
         ArgumentCommandNode<ServerCommandSource, MessageFormat> messageArg = argument("message", message())
-                .suggests(TabCompletions::noSuggestions)
+                .suggests(ArgumentCompletions::noSuggestions)
                 .executes(SayasCommand::execute)
                 .build();
 

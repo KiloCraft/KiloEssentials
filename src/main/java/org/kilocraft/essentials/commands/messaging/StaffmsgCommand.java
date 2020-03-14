@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
@@ -38,12 +38,12 @@ public class StaffmsgCommand extends EssentialCommand {
 
         LiteralCommandNode<ServerCommandSource> joinArg = literal("on")
                 .executes(ctx -> executeJoin(ctx.getSource(), ctx.getSource().getPlayer()))
-                .then(argument("player", EntityArgumentType.player()).suggests(TabCompletions::allPlayers)
+                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentCompletions::allPlayers)
                         .executes(ctx -> executeJoin(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
         LiteralCommandNode<ServerCommandSource> leaveArg = literal("off")
                 .executes(ctx -> executeLeave(ctx.getSource(), ctx.getSource().getPlayer()))
-                .then(argument("player", EntityArgumentType.player()).suggests(TabCompletions::allPlayers)
+                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentCompletions::allPlayers)
                         .executes(ctx -> executeLeave(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
         ArgumentCommandNode<ServerCommandSource, String> sendArg = argument("message", greedyString())

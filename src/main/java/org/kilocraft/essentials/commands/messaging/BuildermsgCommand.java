@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
@@ -40,12 +40,12 @@ public class BuildermsgCommand extends EssentialCommand {
 
         LiteralCommandNode<ServerCommandSource> joinArg = literal("join")
                 .executes(ctx -> executeJoin(ctx.getSource(), ctx.getSource().getPlayer()))
-                .then(argument("player", EntityArgumentType.player()).suggests(TabCompletions::allPlayers)
+                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentCompletions::allPlayers)
                         .executes(ctx -> executeJoin(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
         LiteralCommandNode<ServerCommandSource> leaveArg = literal("leave")
                 .executes(ctx -> executeLeave(ctx.getSource(), ctx.getSource().getPlayer()))
-                .then(argument("player", EntityArgumentType.player()).suggests(TabCompletions::allPlayers)
+                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentCompletions::allPlayers)
                         .executes(ctx -> executeLeave(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
         LiteralCommandNode<ServerCommandSource> receiveArg = literal("receive")
