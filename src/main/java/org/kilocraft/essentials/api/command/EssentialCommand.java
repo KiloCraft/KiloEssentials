@@ -179,7 +179,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public void sendMessage(final CommandContext<ServerCommandSource> ctx, final String key, final Object... objects) {
-        KiloChat.sendLangMessageTo(ctx.getSource(), key, objects);
+        sendMessage(ctx.getSource(), key, objects);
     }
 
     public void sendMessage(final ServerCommandSource src, final String key, final Object... objects) {

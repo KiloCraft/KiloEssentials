@@ -325,7 +325,7 @@ public class KiloCommands {
 
         for (final IEssentialCommand command : this.commands) {
 
-            if (command.getLabel().startsWith(label) || command.getLabel().startsWith("ke_" + label)) {
+            if (command.getLabel().equalsIgnoreCase(label) || command.getLabel().equalsIgnoreCase("ke_" + label)) {
                 esscommand = command;
             }
 
@@ -364,7 +364,7 @@ public class KiloCommands {
             for (int i = 0; i < essentialcommand.getAlias().length; i++) {
                 builder.append(ModConstants.translation("command.usage.alias", essentialcommand.getAlias()[i]));
 
-                if (i < essentialcommand.getAlias().length) {
+                if (i + 1 != essentialcommand.getAlias().length) {
                     builder.append(ModConstants.translation("command.usage.separator")).append(' ');
                 }
             }
@@ -410,7 +410,7 @@ public class KiloCommands {
             } catch (final CommandSyntaxException e) {
                 final EssentialCommand essentialcommand = (EssentialCommand) this.getEssentialCommand(cmd.replaceFirst("/", "").split(" ")[0]);
 
-                if (essentialcommand != null && essentialcommand.hasUsage()) {
+                if (essentialcommand != null && essentialcommand.hasUsage() && essentialcommand.getRootPermissionPredicate().test(executor)) {
                     this.sendUsage(executor, essentialcommand);
                     return var;
                 }
