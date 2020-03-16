@@ -30,13 +30,11 @@ public class LiteralCommandModified {
         add("ke_ban");
         add("ke_ban");
         add("ke_kick");
-        add("ke_help");
         add("ke_gamerule");
     }};
 
     private static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
         add("gamemode");
-        add("help");
         add("locate");
         add("op");
         add("deop");

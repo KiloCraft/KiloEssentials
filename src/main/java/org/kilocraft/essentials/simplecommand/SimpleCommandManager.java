@@ -1,11 +1,16 @@
 package org.kilocraft.essentials.simplecommand;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.ChatMessage;
@@ -15,10 +20,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
-import static org.kilocraft.essentials.KiloCommands.*;
+
 
 public class SimpleCommandManager {
     private static SimpleCommandManager INSTANCE;
@@ -35,8 +37,12 @@ public class SimpleCommandManager {
         if (INSTANCE != null && INSTANCE.commands != null) {
             INSTANCE.commands.add(command);
 
-            getDispatcher().register(literal(command.getLabel())
-                    .then(argument("args", greedyString()).suggests(ArgumentCompletions::noSuggestions)));
+            KiloCommands.getDispatcher().register(CommandManager.literal(command.getLabel())
+                    .then(
+                            CommandManager.argument("args", StringArgumentType.greedyString())
+                                    .suggests(ArgumentCompletions::noSuggestions)
+                    )
+            );
         }
     }
 
@@ -96,7 +102,7 @@ public class SimpleCommandManager {
         try {
             if (command != null) {
                 if (command.opReq >= 1 && !source.hasPermissionLevel(command.opReq)) {
-                    sendPermissionError(source);
+                    KiloCommands.sendPermissionError(source);
                     return 0;
                 }
 
@@ -106,8 +112,8 @@ public class SimpleCommandManager {
             if (e.getRawMessage().getString().equals("Unknown command")) {
                 CommandPermission reqPerm = CommandPermission.getByNode(label);
 
-                if (isCommand(label) && (reqPerm != null && !hasPermission(source, reqPerm)))
-                    sendPermissionError(source);
+                if (isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
+                    KiloCommands.sendPermissionError(source);
                 else
                     KiloChat.sendMessageToSource(source, new ChatMessage(
                             KiloConfig.messages().commands().context().executionException

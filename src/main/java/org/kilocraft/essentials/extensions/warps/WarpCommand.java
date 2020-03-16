@@ -53,12 +53,14 @@ public class WarpCommand {
 
     public static void registerAliases() {
         for (Warp warp : WarpManager.getWarps()) {
-            if (warp.getAddCommand()) {
+            if (warp.addCommand()) {
                 SimpleCommandManager.register(
                         new SimpleCommand(
                                 "warp." + warp.getName().toLowerCase(),
                                 warp.getName().toLowerCase(),
-                                (source, args, server) -> executeTeleport(source, warp.getName())));
+                                (source, args, server) -> executeTeleport(source, warp.getName())
+                        )
+                );
             }
         }
     }

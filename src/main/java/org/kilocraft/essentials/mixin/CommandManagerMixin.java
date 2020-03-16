@@ -3,6 +3,7 @@ package org.kilocraft.essentials.mixin;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloEssentialsImpl;
@@ -49,13 +50,12 @@ public abstract class CommandManagerMixin {
 
     @Redirect(method = "makeTreeForSource", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/tree/CommandNode;canUse(Ljava/lang/Object;)Z"))
     private <S> boolean modifySuggestions(CommandNode<S> commandNode, S source) {
-        return canSourceUse(commandNode, source);
+        return commandNode instanceof LiteralCommandNode && canSourceUse(commandNode, source);
     }
 
     @Inject(method = "execute", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))
     private void modifyExecute(ServerCommandSource serverCommandSource_1, String string_1, CallbackInfoReturnable<Integer> cir) {
-        cir.cancel();
-        KiloEssentials.getInstance().getCommandHandler().execute(serverCommandSource_1, string_1);
+        cir.setReturnValue(KiloEssentials.getInstance().getCommandHandler().execute(serverCommandSource_1, string_1));
     }
 
 }

@@ -9,7 +9,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 
 public class HelpCommand extends EssentialCommand {
     public HelpCommand() {
-        super("ke_help");
+        super("help");
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {

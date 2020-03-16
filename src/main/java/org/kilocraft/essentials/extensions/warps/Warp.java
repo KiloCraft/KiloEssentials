@@ -28,7 +28,7 @@ public class Warp {
         return this.location;
     }
 
-    public boolean getAddCommand() {
+    public boolean addCommand() {
         return this.addCommand;
     }
 
