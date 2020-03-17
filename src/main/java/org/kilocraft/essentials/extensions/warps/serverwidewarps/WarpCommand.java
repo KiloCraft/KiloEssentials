@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.extensions.warps;
+package org.kilocraft.essentials.extensions.warps.serverwidewarps;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -41,7 +41,7 @@ public class WarpCommand {
         warpArg.executes(c -> executeTeleport(c.getSource(), getString(c, "warp")));
         listLiteral.executes(c -> executeList(c.getSource()));
 
-        warpArg.suggests(WarpManager::suggestions);
+        warpArg.suggests(ServerWarpManager::suggestions);
 
         builder.then(warpArg);
         registerAdmin(builder, dispatcher);
@@ -52,7 +52,7 @@ public class WarpCommand {
     }
 
     public static void registerAliases() {
-        for (Warp warp : WarpManager.getWarps()) {
+        for (ServerWarp warp : ServerWarpManager.getWarps()) {
             if (warp.addCommand()) {
                 SimpleCommandManager.register(
                         new SimpleCommand(
@@ -78,7 +78,7 @@ public class WarpCommand {
         addArg.then(argument("registerCommand", bool())
                 .executes(c -> executeAdd(c.getSource(), getString(c, "name"), getBool(c, "registerCommand"))));
 
-        removeArg.suggests(WarpManager::suggestions);
+        removeArg.suggests(ServerWarpManager::suggestions);
 
         aliasAdd.then(addArg);
         aliasRemove.then(removeArg);
@@ -88,9 +88,9 @@ public class WarpCommand {
     }
 
     private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
-        if (!WarpManager.getWarpsByName().contains(name))
+        if (!ServerWarpManager.getWarpsByName().contains(name))
             throw WARP_NOT_FOUND_EXCEPTION.create();
-            Warp warp = WarpManager.getWarp(name);
+            ServerWarp warp = ServerWarpManager.getWarp(name);
 
             KiloChat.sendMessageTo(source, new ChatMessage(
                     KiloConfig.messages().commands().warp().teleportTo
@@ -99,13 +99,13 @@ public class WarpCommand {
             ));
 
             KiloServer.getServer().getOnlineUser(source.getPlayer()).saveLocation();
-            WarpManager.teleport(source, warp);
+            ServerWarpManager.teleport(source, warp);
 
         return 1;
     }
 
     private static int executeList(ServerCommandSource source) throws CommandSyntaxException {
-        int warpsSize = WarpManager.getWarps().size();
+        int warpsSize = ServerWarpManager.getWarps().size();
 
         if (warpsSize == 0)
             throw NO_WARPS.create();
@@ -117,7 +117,7 @@ public class WarpCommand {
 
         int i = 0;
         boolean nextColor = false;
-        for (Warp warp : WarpManager.getWarps()) {
+        for (ServerWarp warp : ServerWarpManager.getWarps()) {
             LiteralText thisHome = new LiteralText("");
             i++;
 
@@ -145,7 +145,7 @@ public class WarpCommand {
     }
 
     private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
-        WarpManager.addWarp(new Warp(name, Vec3dLocation.of(source.getPlayer()).shortDecimals(), addCommand));
+        ServerWarpManager.addWarp(new ServerWarp(name, Vec3dLocation.of(source.getPlayer()).shortDecimals(), addCommand));
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
         registerAliases();
@@ -155,8 +155,8 @@ public class WarpCommand {
     }
 
     private static int executeRemove(ServerCommandSource source, String warp) throws CommandSyntaxException {
-        if (WarpManager.getWarpsByName().contains(warp)) {
-            WarpManager.removeWarp(warp);
+        if (ServerWarpManager.getWarpsByName().contains(warp)) {
+            ServerWarpManager.removeWarp(warp);
             KiloChat.sendLangMessageTo(source, "command.warp.remove", warp);
             registerAliases();
         }

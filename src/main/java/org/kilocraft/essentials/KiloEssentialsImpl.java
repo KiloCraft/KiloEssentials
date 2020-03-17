@@ -5,7 +5,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +30,8 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
-import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
+import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.PermissionUtil;
@@ -117,7 +117,8 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 		final ConfigurableFeatures features = new ConfigurableFeatures();
 		features.tryToRegister(new UserHomeHandler(), "playerHomes");
-		features.tryToRegister(new WarpManager(), "serverWideWarps");
+		features.tryToRegister(new ServerWarpManager(), "serverWideWarps");
+		features.tryToRegister(new PlayerWarpsManager(), "playerWarps");
 		features.tryToRegister(new PlayerSitManager(), "betterChairs");
 		features.tryToRegister(new CustomCommands(), "customCommands");
 		features.tryToRegister(new ParticleAnimationManager(), "magicalParticles");

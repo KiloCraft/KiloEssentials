@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.extensions.warps;
+package org.kilocraft.essentials.extensions.warps.serverwidewarps;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.provided.KiloFile;
@@ -25,9 +24,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
-public class WarpManager implements ConfigurableFeature, NBTStorage {
+public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
     private static ArrayList<String> byName = new ArrayList<>();
-    private static List<Warp> warps = new ArrayList<>();
+    private static List<ServerWarp> warps = new ArrayList<>();
 
     @Override
     public boolean register() {
@@ -40,7 +39,7 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
         WarpCommand.registerAliases();
     }
 
-    public static List<Warp> getWarps() { // TODO Move all access to Feature Types in future.
+    public static List<ServerWarp> getWarps() { // TODO Move all access to Feature Types in future.
         return warps;
     }
 
@@ -48,12 +47,12 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
         return byName;
     }
 
-    public static void addWarp(Warp warp) {
+    public static void addWarp(ServerWarp warp) {
         warps.add(warp);
         byName.add(warp.getName());
     }
 
-    public static void removeWarp(Warp warp) {
+    public static void removeWarp(ServerWarp warp) {
         warps.remove(warp);
         byName.remove(warp.getName());
 
@@ -63,15 +62,16 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
     }
 
     public static void removeWarp(String name) {
-        Warp warp = getWarp(name);
+        ServerWarp warp = getWarp(name);
 
         if (warp != null) {
             removeWarp(warp);
         }
     }
 
-    public static Warp getWarp(String warp) {
-        for (Warp w : warps) {
+    @Nullable
+    public static ServerWarp getWarp(String warp) {
+        for (ServerWarp w : warps) {
             if (w.getName().toLowerCase(Locale.ROOT).equals(warp.toLowerCase(Locale.ROOT))) {
                 return w;
             }
@@ -80,7 +80,7 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
         return null;
     }
 
-    public static int teleport(ServerCommandSource source, Warp warp) throws CommandSyntaxException {
+    public static int teleport(ServerCommandSource source, ServerWarp warp) throws CommandSyntaxException {
         ServerWorld world = source.getMinecraftServer().getWorld(DimensionType.byId(warp.getLocation().getDimension()));
         source.getPlayer().teleport(world, warp.getLocation().getX(), warp.getLocation().getY(), warp.getLocation().getZ(),
                 warp.getLocation().getRotation().getYaw(), warp.getLocation().getRotation().getPitch());
@@ -89,7 +89,7 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
     }
 
     public static CompletableFuture<Suggestions> suggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(warps.stream().map(Warp::getName), builder);
+        return CommandSource.suggestMatching(warps.stream().map(ServerWarp::getName), builder);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
     @Override
     public CompoundTag serialize() {
         CompoundTag tag = new CompoundTag();
-        for (Warp warp : warps) {
+        for (ServerWarp warp : warps) {
             tag.put(warp.getName(), warp.toTag());
         }
 
@@ -112,7 +112,7 @@ public class WarpManager implements ConfigurableFeature, NBTStorage {
         warps.clear();
         byName.clear();
         compoundTag.getKeys().forEach((key) -> {
-            warps.add(new Warp(key, compoundTag.getCompound(key)));
+            warps.add(new ServerWarp(key, compoundTag.getCompound(key)));
             byName.add(key);
         });
     }

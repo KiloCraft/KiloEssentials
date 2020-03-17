@@ -71,7 +71,6 @@ public class UserHomeHandler implements ConfigurableFeature {
             this.serverUser = serverUser;
             this.userHomes = new ArrayList<>();
         }
-
     }
 
     public void addHome(Home home) {

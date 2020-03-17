@@ -42,6 +42,9 @@ public class Config {
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")
     public int homesLimit = 10;
 
+    @Setting(value = "playerWarpsLimit", comment = "The maximum amount of warps a player can set")
+    public int playerWarpsLimit = 10;
+
     @Setting(value = "nicknameMaxLength", comment = "The maximum length for a nickname")
     public int nicknameMaxLength = 35;
 

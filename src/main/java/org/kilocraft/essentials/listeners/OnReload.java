@@ -8,7 +8,7 @@ import org.kilocraft.essentials.api.event.server.lifecycle.ServerReloadEvent;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
-import org.kilocraft.essentials.extensions.warps.WarpManager;
+import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.provided.BrandedServer;
 import org.kilocraft.essentials.util.NBTStorageUtil;
 
@@ -19,7 +19,7 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
 
         KiloConfig.reload();
         KiloCommands.updateCommandTreeForEveryone();
-        WarpManager.load();
+        ServerWarpManager.load();
         BrandedServer.load();
         KiloServer.getServer().getMetaManager().load();
         KiloServer.getServer().getMetaManager().updateAll();
