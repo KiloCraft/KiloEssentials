@@ -59,7 +59,7 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        if (!validateCanSet(user) && !homeHandler.hasHome(name)) {
+        if (!canSet(user) && !homeHandler.hasHome(name)) {
             user.sendMessage(messages.commands().playerHomes().reachedLimit);
             return SINGLE_FAILED;
         }
@@ -88,7 +88,7 @@ public class SethomeCommand extends EssentialCommand {
         essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
-            if (CmdUtils.areTheSame(source, user) && validateCanSet(user) && !homeHandler.hasHome(name)) {
+            if (CmdUtils.areTheSame(source, user) && canSet(user) && !homeHandler.hasHome(name)) {
                 source.sendMessage(messages.commands().playerHomes().reachedLimit
                         .replace("{HOME_SIZE}", String.valueOf(homeHandler.getHomes().size())));
                 return;
@@ -120,7 +120,7 @@ public class SethomeCommand extends EssentialCommand {
         return AWAIT_RESPONSE;
     }
     
-    private static boolean validateCanSet(User user) {
+    private static boolean canSet(User user) {
         for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
             String thisPerm = "kiloessentials.command.home.limit." + i;
             int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);

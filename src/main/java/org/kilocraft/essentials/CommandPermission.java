@@ -18,6 +18,7 @@ public enum CommandPermission {
     HOME_OTHERS_REMOVE("home.others.remove"),
     HOME_LIMIT("home.limit"),
     HOME_SET_LIMIT_BYPASS("home.limit.bypass"),
+    WARP_LIMIT("warp.limit"),
     RELOAD("reload"),
     GAMEMODE_SELF_SURVIVAL("gamemode.self.survival"),
     GAMEMODE_SELF_ADVENTURE("gamemode.self.adventure"),
