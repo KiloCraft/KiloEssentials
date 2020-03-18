@@ -23,7 +23,6 @@ public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTSto
     private static ArrayList<String> byName = new ArrayList<>();
     private static List<PlayerWarp> warps = new ArrayList<>();
 
-
     @Override
     public boolean register() {
         enabled = true;

@@ -62,7 +62,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         String type = StringArgumentType.getString(ctx, "type");
 
         if (!PlayerWarp.Type.isValid(type)) {
-            user.sendConfigMessage("command.playerwarps.invalid_type", type);
+            user.sendLangMessage("command.playerwarps.invalid_type", type);
             return SINGLE_FAILED;
         }
 
@@ -70,7 +70,8 @@ public class PlayerWarpCommand extends EssentialCommand {
                 new PlayerWarp(
                         name,
                         user.getLocation(),
-                        user.getUuid()
+                        user.getUuid(),
+                        type
                 )
         );
 
@@ -108,7 +109,7 @@ public class PlayerWarpCommand extends EssentialCommand {
     }
 
     private CompletableFuture<Suggestions> typeSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return new ArgumentCompletions.Factory(builder).suggest(3, PlayerWarp.Type.getTypes()).completeFuture();
+        return new ArgumentCompletions.Factory(builder).suggest(2, PlayerWarp.Type.getTypes()).completeFuture();
     }
 
 }

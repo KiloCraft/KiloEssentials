@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -77,7 +78,7 @@ public class PlaytimetopCommand extends EssentialCommand {
             final List<Map.Entry<String, Integer>> sorted = new ArrayList<>(map.entrySet());
             sorted.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 
-            Cached<List<Map.Entry<String, Integer>>> listCached = new Cached<>(CACHE_ID, sorted);
+            Cached<List<Map.Entry<String, Integer>>> listCached = new Cached<>(CACHE_ID, 60, TimeUnit.MINUTES, sorted);
             Cached<Long> ticksCached = new Cached<>(TICKS_CACHE__ID, totalTicks);
             CacheManager.cache(listCached, ticksCached);
 

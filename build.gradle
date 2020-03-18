@@ -56,6 +56,7 @@ dependencies {
 
 	modImplementation "com.github.OnBlock:Thimble-Permissions:${project.thimble_permissions_version}"
 	//modImplementation "com.github.voidpointerdev:Thimble-Permissions:${project.thimble_permissions_version}"
+	implementation "com.github.KiloCraft:KiloEssentialsBungee:${project.ke_bungee_version}"
 
 	compile "org.spongepowered:configurate-hocon:${project.configurate_version}"
 	shadow "org.spongepowered:configurate-hocon:${project.configurate_version}"

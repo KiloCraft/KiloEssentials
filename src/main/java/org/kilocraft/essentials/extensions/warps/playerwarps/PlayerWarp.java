@@ -15,9 +15,10 @@ public class PlayerWarp extends Warp implements NBTSerializable {
     private UUID owner;
     private String type;
 
-    public PlayerWarp(String name, Location location, UUID owner) {
+    public PlayerWarp(String name, Location location, UUID owner, String type) {
         super(name, location);
         this.owner = owner;
+        this.type = type;
     }
 
     public PlayerWarp(String name, CompoundTag tag) {

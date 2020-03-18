@@ -27,6 +27,7 @@ import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.inventory.ServerUserInventory;
 import org.kilocraft.essentials.util.NBTTypes;
+import org.kilocraft.essentials.util.NBTUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -152,7 +153,7 @@ public class ServerUser implements User {
             ListTag listTag = new ListTag();
             this.ignoreList.forEach((name, uuid) -> {
                 CompoundTag ignoredOne = new CompoundTag();
-                ignoredOne.putUuidOld("uuid", uuid);
+                NBTUtils.putUUID(ignoredOne, "uuid", uuid);
                 ignoredOne.putString("name", name);
                 listTag.add(ignoredOne);
             });
@@ -253,7 +254,7 @@ public class ServerUser implements User {
             this.ignoreList = new HashMap<>();
             for (int i = 0; i < ignoreList.size(); i++) {
                 CompoundTag ignoredOne = ignoreList.getCompound(i);
-                this.ignoreList.put(ignoredOne.getString("name"), ignoredOne.getUuidOld("uuid"));
+                this.ignoreList.put(ignoredOne.getString("name"), NBTUtils.getUUID(ignoredOne, "uuid"));
             }
         }
 

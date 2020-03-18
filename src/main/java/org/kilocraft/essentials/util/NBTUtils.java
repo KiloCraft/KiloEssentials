@@ -20,9 +20,9 @@ public class NBTUtils {
     public static UUID getUUID(CompoundTag tag, String key) {
         UUID uuid;
         if (tag.get(key) instanceof IntArrayTag) {
-            uuid = tag.getUuidNew(key);
-        } else {
             uuid = NbtHelper.toUuidNew(tag);
+        } else {
+            uuid = tag.getUuidNew(key);
         }
 
         return uuid;
