@@ -3,31 +3,49 @@ package org.kilocraft.essentials.extensions.warps.playerwarps;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
+import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.extensions.warps.playerwarps.commands.PlayerWarpCommand;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.NBTStorageUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
-public class PlayerWarpsManager implements ConfigurableFeature, NBTStorage {
+public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTStorage {
     private static boolean enabled = false;
     private static ArrayList<String> byName = new ArrayList<>();
     private static List<PlayerWarp> warps = new ArrayList<>();
+
 
     @Override
     public boolean register() {
         enabled = true;
         NBTStorageUtil.addCallback(this);
-        //TODO: Add the Commands
+
+        List<EssentialCommand> commands = new ArrayList<EssentialCommand>(){{
+            this.add(new PlayerWarpCommand("playerwarp", CommandPermission.PLAYER_WARP, new String[]{"pwarp"}));
+        }};
+
+        for (EssentialCommand command : commands) {
+            KiloEssentials.getInstance().getCommandHandler().register(command);
+        }
+
+        load();
         return true;
     }
 
-    public static void load() {
-        //TODO: Add the Commands
+    @Override
+    public void load() {
+        for (String type : KiloConfig.main().playerWarpTypes) {
+            PlayerWarp.Type.add(type);
+        }
     }
 
     public static List<PlayerWarp> getWarps() { // TODO Move all access to Feature Types in future.
@@ -67,6 +85,17 @@ public class PlayerWarpsManager implements ConfigurableFeature, NBTStorage {
         return null;
     }
 
+    public static List<PlayerWarp> getWarps(UUID owner) {
+        final List<PlayerWarp> list = new ArrayList<>();
+        for (PlayerWarp warp : warps) {
+            if (warp.getOwner().equals(owner)) {
+                list.add(warp);
+            }
+        }
+
+        return list;
+    }
+
     public static boolean isEnabled() {
         return enabled;
     }
@@ -76,13 +105,24 @@ public class PlayerWarpsManager implements ConfigurableFeature, NBTStorage {
         return new KiloFile("player_warps.dat", KiloEssentials.getDataDirPath());
     }
 
+
     @Override
     public CompoundTag serialize() {
-        return null;
+        CompoundTag tag = new CompoundTag();
+        for (PlayerWarp warp : warps) {
+            tag.put(warp.getName(), warp.toTag());
+        }
+
+        return tag;
     }
 
     @Override
     public void deserialize(@NotNull CompoundTag compoundTag) {
-
+        warps.clear();
+        byName.clear();
+        compoundTag.getKeys().forEach((key) -> {
+            warps.add(new PlayerWarp(key, compoundTag.getCompound(key)));
+            byName.add(key);
+        });
     }
 }

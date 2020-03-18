@@ -61,6 +61,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	private PermissionUtil permUtil;
 	private static final ModConstants constants = new ModConstants();
 	public static final String PERMISSION_PREFIX = "kiloessentials.";
+	private final ConfigurableFeatures FEATURES;
 	private final KiloCommands commands;
 	private final List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private final Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
@@ -115,15 +116,15 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		KiloEssentialsImpl.getServer().getChatManager().register(new StaffChat());
 		KiloEssentialsImpl.getServer().getChatManager().register(new BuilderChat());
 
-		final ConfigurableFeatures features = new ConfigurableFeatures();
-		features.tryToRegister(new UserHomeHandler(), "playerHomes");
-		features.tryToRegister(new ServerWarpManager(), "serverWideWarps");
-		features.tryToRegister(new PlayerWarpsManager(), "playerWarps");
-		features.tryToRegister(new PlayerSitManager(), "betterChairs");
-		features.tryToRegister(new CustomCommands(), "customCommands");
-		features.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
-		features.tryToRegister(new DiscordCommand(), "discordCommand");
-		features.tryToRegister(new VoteCommand(), "voteCommand");
+		FEATURES = new ConfigurableFeatures();
+		FEATURES.tryToRegister(new UserHomeHandler(), "playerHomes");
+		FEATURES.tryToRegister(new ServerWarpManager(), "serverWideWarps");
+		FEATURES.tryToRegister(new PlayerWarpsManager(), "playerWarps");
+		FEATURES.tryToRegister(new PlayerSitManager(), "betterChairs");
+		FEATURES.tryToRegister(new CustomCommands(), "customCommands");
+		FEATURES.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
+		FEATURES.tryToRegister(new DiscordCommand(), "discordCommand");
+		FEATURES.tryToRegister(new VoteCommand(), "voteCommand");
 
 		if (KiloConfig.main().startupScript().enabled) {
 			this.startupScript = new StartupScript();
@@ -294,6 +295,11 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		}
 
 		return ft;
+	}
+
+	@Override
+	public ConfigurableFeatures getFeatures() {
+		return this.FEATURES;
 	}
 
 	@Override

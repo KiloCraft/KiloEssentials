@@ -47,6 +47,7 @@ public class PlayerSitManager implements ConfigurableFeature {
         return true;
     }
 
+
     public PlayerSitManager() {
     }
 

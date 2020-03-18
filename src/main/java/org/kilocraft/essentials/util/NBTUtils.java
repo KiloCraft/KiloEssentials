@@ -1,8 +1,7 @@
 package org.kilocraft.essentials.util;
 
 import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.*;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -14,6 +13,21 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class NBTUtils {
+    public static void putUUID(CompoundTag tag, String key, UUID uuid) {
+        tag.putUuidNew(key, uuid);
+    }
+
+    public static UUID getUUID(CompoundTag tag, String key) {
+        UUID uuid;
+        if (tag.get(key) instanceof IntArrayTag) {
+            uuid = tag.getUuidNew(key);
+        } else {
+            uuid = NbtHelper.toUuidNew(tag);
+        }
+
+        return uuid;
+    }
+
     @Nullable
     public static CompoundTag getPlayerTag(UUID uuid) {
         File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");

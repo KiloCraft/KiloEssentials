@@ -153,26 +153,35 @@ public class ArgumentCompletions {
 
     public static class Factory {
         private String[] args;
-        private Map<Integer, String[]> map;
+        private Map<Integer, String[]> suggestions;
         private SuggestionsBuilder builder;
 
         public Factory(SuggestionsBuilder builder) {
             this.args = builder.getInput().split(" ");
             this.builder = builder;
-            this.map = new HashMap<>();
+            this.suggestions = new HashMap<>();
         }
 
         public Factory suggest(int arg, String... strings) {
-            this.map.put(arg, strings);
+            this.suggestions.put(arg, strings);
             return this;
         }
 
+        public <E> Factory suggest(int arg, List<E> list) {
+            String[] strings = new String[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                strings[i] = String.valueOf(list.get(i));
+            }
+
+            return this.suggest(arg, strings);
+        }
+
         public CompletableFuture<Suggestions> completeFuture() {
-            if (args.length > this.map.size() || this.map.isEmpty() || this.args.length == 0) {
+            if (args.length > this.suggestions.size() || this.suggestions.isEmpty() || this.args.length == 0) {
                 return this.builder.buildFuture();
             }
 
-            String[] strings = this.map.get(this.args.length - 1);
+            String[] strings = this.suggestions.get(this.args.length - 1);
             if (strings != null) {
 
                 for (String string : strings) {
@@ -186,11 +195,11 @@ public class ArgumentCompletions {
         }
 
         public Iterable<String> complete() {
-            if (args.length > this.map.size() || this.map.isEmpty() || this.args.length == 0) {
+            if (args.length > this.suggestions.size() || this.suggestions.isEmpty() || this.args.length == 0) {
                 return Collections.emptyList();
             }
 
-            String[] strings = this.map.get(this.args.length - 1);
+            String[] strings = this.suggestions.get(this.args.length - 1);
             if (strings != null) {
                 final List<String> suggestions = new ArrayList<>();
 

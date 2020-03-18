@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.util;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.indicode.fabric.permissions.Config;
 import io.github.indicode.fabric.permissions.PermChangeBehavior;
 import io.github.indicode.fabric.permissions.Thimble;
 import net.fabricmc.loader.api.FabricLoader;
@@ -58,7 +57,7 @@ public class PermissionUtil {
 
                 if (KiloConfig.main().features().playerWarps) {
                     for (int i = 1; i <= KiloConfig.main().playerWarpsLimit; i++) {
-                        map.registerPermission(CommandPermission.WARP_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                        map.registerPermission(CommandPermission.PLAYER_WARP_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
                     }
                 }
             });

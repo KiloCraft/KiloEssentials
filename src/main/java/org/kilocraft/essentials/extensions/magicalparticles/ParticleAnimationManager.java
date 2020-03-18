@@ -21,6 +21,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
 import org.kilocraft.essentials.api.world.RelativePosition;
@@ -37,7 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage {
+public class ParticleAnimationManager implements ReloadableConfigurableFeature, NBTStorage {
     static Map<Identifier, ParticleAnimation> map = new HashMap<>();
     private static Map<UUID, Identifier> uuidIdentifierMap = new HashMap<>();
     private static ParticleTypesConfig config;
@@ -50,7 +51,8 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
         return true;
     }
 
-    public static void load() {
+    @Override
+    public void load() {
         loadConfig();
         createFromConfig();
     }

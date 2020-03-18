@@ -1,11 +1,12 @@
 package org.kilocraft.essentials.extensions.warps.serverwidewarps;
 
 import net.minecraft.nbt.CompoundTag;
+import org.kilocraft.essentials.api.NBTSerializable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.extensions.warps.Warp;
 
-public class ServerWarp extends Warp {
+public class ServerWarp extends Warp implements NBTSerializable {
     private boolean addCommand;
 
     public ServerWarp(String name, Location location, boolean addCommand) {
@@ -22,24 +23,28 @@ public class ServerWarp extends Warp {
         return this.addCommand;
     }
 
+    @Override
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.put("loc", super.getLocation().toTag());
 
-        if (this.addCommand)
+        if (this.addCommand) {
             compoundTag.putBoolean("addCmd", true);
+        }
 
         return compoundTag;
     }
 
+    @Override
     public void fromTag(CompoundTag tag) {
-        if (super.getLocation() == null)
+        if (super.getLocation() == null) {
             super.setLocation(Vec3dLocation.dummy());
+        }
 
         super.getLocation().fromTag(tag.getCompound("loc"));
 
-        if (tag.contains("addCmd"))
+        if (tag.contains("addCmd")) {
             this.addCommand = true;
-
+        }
     }
 }

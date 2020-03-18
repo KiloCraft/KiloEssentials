@@ -18,7 +18,10 @@ public enum CommandPermission {
     HOME_OTHERS_REMOVE("home.others.remove"),
     HOME_LIMIT("home.limit"),
     HOME_SET_LIMIT_BYPASS("home.limit.bypass"),
-    WARP_LIMIT("warp.limit"),
+    PLAYER_WARP_SELF("player_warp.self"),
+    PLAYER_WARP_OTHERS("player_warp.others"),
+    PLAYER_WARP("player_warp"),
+    PLAYER_WARP_LIMIT("player_warp.limit"),
     RELOAD("reload"),
     GAMEMODE_SELF_SURVIVAL("gamemode.self.survival"),
     GAMEMODE_SELF_ADVENTURE("gamemode.self.adventure"),
@@ -84,7 +87,7 @@ public enum CommandPermission {
     PLAYTIME_OTHERS("playtime.others"),
     PLAYTIME_MODIFY("playtime.modify"),
     PLAYTIMETOP("playtimetop"),
-    IGNORELIST_OTHERS("ignorelist.others")
+    IGNORELIST_OTHERS("ignorelist.others"),
     ;
 
     private String node;

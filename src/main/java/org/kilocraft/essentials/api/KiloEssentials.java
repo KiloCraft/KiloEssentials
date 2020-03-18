@@ -30,10 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.api.feature.FeatureNotPresentException;
-import org.kilocraft.essentials.api.feature.FeatureType;
-import org.kilocraft.essentials.api.feature.SingleInstanceConfigurableFeature;
+import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -99,6 +96,8 @@ public interface KiloEssentials {
      * @throws FeatureNotPresentException If the feature type is disabled, not present or not a SingleInstanceConfigurableFeature.
      */
     <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException;
+
+    ConfigurableFeatures getFeatures();
 
     PermissionUtil getPermissionUtil();
 

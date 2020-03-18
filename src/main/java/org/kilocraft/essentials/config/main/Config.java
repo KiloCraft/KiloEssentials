@@ -5,6 +5,9 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.kilocraft.essentials.config.main.sections.*;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ConfigSerializable
 public class Config {
     public static final String HEADER = "KiloEssentials! Main Configuration File\n" +
@@ -44,6 +47,16 @@ public class Config {
 
     @Setting(value = "playerWarpsLimit", comment = "The maximum amount of warps a player can set")
     public int playerWarpsLimit = 10;
+
+    @Setting(value = "playerWarpTypes", comment = "The Types that you can select for making a player warp")
+    public List<String> playerWarpTypes = new ArrayList<String>(){{
+        this.add("shop");
+        this.add("farm");
+        this.add("build");
+        this.add("biome");
+        this.add("misc");
+        this.add("others");
+    }};
 
     @Setting(value = "nicknameMaxLength", comment = "The maximum length for a nickname")
     public int nicknameMaxLength = 35;

@@ -4,6 +4,5 @@ public interface ConfigurableFeature {
     /**
      * Starts the registry to construct the configurable feature
      */
-
     boolean register();
 }

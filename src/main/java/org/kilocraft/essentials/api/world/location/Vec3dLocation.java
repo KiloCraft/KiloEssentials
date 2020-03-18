@@ -20,11 +20,11 @@ import org.kilocraft.essentials.util.RegistryUtils;
 import java.text.DecimalFormat;
 
 public class Vec3dLocation implements Location {
+    private static DecimalFormat decimalFormat = new DecimalFormat("##.##");
     private double x, y, z;
     private EntityRotation rotation;
     private Identifier dimension;
     private boolean useShortDecimals = false;
-    private DecimalFormat decimalFormat = new DecimalFormat("##.##");
 
     private Vec3dLocation(double x, double y, double z, float yaw, float pitch, Identifier dimension) {
         this.x = x;
