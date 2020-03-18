@@ -26,8 +26,10 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
+import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
+import java.net.SocketAddress;
 import java.util.UUID;
 
 public class OnlineServerUser extends ServerUser implements OnlineUser {
@@ -186,9 +188,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     public void onJoined() {
         this.setFlight(this.canFly());
 
-        if (this.getConnection() != null) {
-            lastSocketAddress = this.getConnection().getAddress().toString().replaceFirst("/", "");
+        SocketAddress socketAddress = GlobalUtils.getSocketAddress(super.uuid);
+        if (socketAddress != null) {
+            lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
         }
+
         messageCooldown = 0;
 
         if (gameMode == GameMode.NOT_SET) {

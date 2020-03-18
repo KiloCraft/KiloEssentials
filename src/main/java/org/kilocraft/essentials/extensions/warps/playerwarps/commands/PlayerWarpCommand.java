@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.bungee.KiloEssentialsBungee;
 import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
