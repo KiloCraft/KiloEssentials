@@ -110,7 +110,7 @@ public class PlayerWarpCommand extends EssentialCommand {
     }
 
     private CompletableFuture<Suggestions> typeSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return new ArgumentCompletions.Factory(builder).suggest(2, PlayerWarp.Type.getTypes()).completeFuture();
+        return CommandSource.suggestMatching(new ArrayList<>(PlayerWarp.Type.getTypes()), builder);
     }
 
 }
