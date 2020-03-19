@@ -2,132 +2,70 @@ package org.kilocraft.essentials.commands.moderation;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
+import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
-import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.PunishmentManager;
-import org.kilocraft.essentials.util.TimeDifferenceUtil;
-import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.*;
-import static net.minecraft.command.arguments.GameProfileArgumentType.*;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
-import static org.kilocraft.essentials.KiloCommands.*;
-import static org.kilocraft.essentials.user.punishment.BanEntryType.IP;
-import static org.kilocraft.essentials.user.punishment.BanEntryType.PROFILE;
+public class BanCommand extends EssentialCommand {
+    public BanCommand() {
+        super(
+                "ke_ban",
+                src ->
+                        src.getMinecraftServer().getPlayerManager().getUserBanList().isEnabled() &&
+                                (
+                                        KiloCommands.hasPermission(src, CommandPermission.BAN_IP) ||
+                                        KiloCommands.hasPermission(src, CommandPermission.BAN_PROFILE)
+                                )
+        );
 
-public class BanCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> rootCommand = literal("ke_ban")
-                .requires(src -> hasPermission(src, "ban", 3))
-                .executes(KiloCommands::executeSmartUsage);
+        this.withUsage("command.ban.usage", "profile/username", "reason");
+    }
 
-        LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set");
-        {
-            RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> profileArg = argument("profile", gameProfile())
-                    .suggests(ArgumentCompletions::allPlayers);
-            RequiredArgumentBuilder<ServerCommandSource, String> typeArg = argument("type", string())
-                    .suggests(BanCommand::ENTRY_TYPE_SUGGESTIONS);
+    @Override
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        final RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> profileArgument = argument("profile", GameProfileArgumentType.gameProfile())
+                .executes((ctx) -> this.ban(ctx, null));
+        final RequiredArgumentBuilder<ServerCommandSource, String> reasonArgument = argument("reason", StringArgumentType.greedyString())
+                .executes((ctx) -> this.ban(ctx, StringArgumentType.getString(ctx, "reason")));
 
-            LiteralArgumentBuilder<ServerCommandSource> permanentArg = literal("permanent")
-                    .then(argument("reason", greedyString())
-                            .executes(ctx -> executeSet(ctx, false)));
-            LiteralArgumentBuilder<ServerCommandSource> temporaryArg = literal("temporary")
-                    .then(argument("time", string()).suggests(TimeDifferenceUtil::listSuggestions)
-                            .then(argument("reason", greedyString())
-                                    .executes(ctx -> executeSet(ctx, true))));
+        profileArgument.then(reasonArgument);
+        commandNode.addChild(profileArgument.build());
+    }
 
-            typeArg.then(permanentArg);
-            typeArg.then(temporaryArg);
-            profileArg.then(typeArg);
-            setArg.then(profileArg);
+    private int ban(CommandContext<ServerCommandSource> ctx, @Nullable String reason) throws CommandSyntaxException {
+        final CommandSourceUser src = this.getServerUser(ctx);
+        final Collection<GameProfile> collection = GameProfileArgumentType.getProfileArgument(ctx, "profile");
+        if (collection.size() > 1) {
+            throw KiloCommands.getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
         }
 
-        LiteralArgumentBuilder<ServerCommandSource> clearArg = literal("clear");
-        {
-            RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> profileArg = argument("profile", gameProfile())
-                    .suggests(ArgumentCompletions::allPlayers);
-            RequiredArgumentBuilder<ServerCommandSource, String> typeArg = argument("type", string())
-                    .suggests(BanCommand::ENTRY_TYPE_SUGGESTIONS)
-                    .executes(BanCommand::executeClear);
+        final GameProfile target = collection.iterator().next();
+        final PunishmentManager manager = KiloServer.getServer().getUserManager().getPunishmentManager();
 
-            clearArg.then(profileArg);
+        if (!manager.shouldBan(target, reason)) {
+            src.sendError(tl("command.ban.failed", target.getName()));
+            return SINGLE_FAILED;
         }
 
-        LiteralArgumentBuilder<ServerCommandSource> checkArg = literal("check");
-        {
-            RequiredArgumentBuilder<ServerCommandSource, GameProfileArgument> profileArg = argument("profile", gameProfile())
-                    .suggests(ArgumentCompletions::allPlayers);
+        manager.ban(target, src.getUsername(), reason);
 
-            checkArg.then(profileArg);
-        }
-
-        LiteralArgumentBuilder<ServerCommandSource> listArg = literal("list");
-
-
-        rootCommand.then(setArg);
-        rootCommand.then(clearArg);
-        rootCommand.then(checkArg);
-        rootCommand.then(listArg);
-        dispatcher.register(rootCommand);
+        src.sendLangMessage("command.ban.banned", target.getName(), reason);
+        return SINGLE_SUCCESS;
     }
-
-    private static PunishmentManager punishmentManager = KiloServer.getServer().getUserManager().getPunishmentManager();
-
-    private static int executeSet(CommandContext<ServerCommandSource> ctx, boolean isTemporary) throws CommandSyntaxException {
-        ServerCommandSource src = ctx.getSource();
-        String reason = getString(ctx, "reason");
-
-        if (isTemporary) {
-//            DateArgument dateArgument = DateArgument.complex(getString(ctx, "time")).parse();
-//            src.sendFeedback(new LiteralText("TIME: " + dateArgument.getDate()), false);
-        }
-
-        return SUCCESS();
-    }
-
-    private static int executeClear(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerCommandSource src = ctx.getSource();
-        Collection<GameProfile> gameProfiles = getProfileArgument(ctx, "profile");
-
-        if (gameProfiles.size() > 1)
-            throw getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
-
-        GameProfile targetProfile = gameProfiles.iterator().next();
-
-        BanEntryType entryType = getEntryType(ctx);
-
-        if (entryType.equals(PROFILE) && !punishmentManager.isProfileBanned(targetProfile))
-            throw getException(CommandMessageNode.BAN_NOT_BANNED, targetProfile.getName(), getEntryType(ctx).name().toLowerCase()).create();
-
-        punishmentManager.pardon(targetProfile, getEntryType(ctx));
-
-        KiloChat.sendLangMessageTo(src, "command.ban.remove", targetProfile.getName(), getEntryType(ctx).name().toLowerCase());
-        return SUCCESS();
-    }
-
-
-    private static BanEntryType getEntryType(CommandContext<ServerCommandSource> ctx) {
-        String input = getString(ctx, "type");
-        return input.equals("profile") ? PROFILE : IP;
-    }
-
-    private static CompletableFuture<Suggestions> ENTRY_TYPE_SUGGESTIONS(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(new String[]{"ip", "profile"}, builder);
-    }
-
 }

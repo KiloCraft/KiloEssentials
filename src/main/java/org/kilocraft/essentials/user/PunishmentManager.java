@@ -9,6 +9,9 @@ import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.util.Texter;
 
 import java.net.SocketAddress;
 import java.util.Date;
@@ -28,8 +31,9 @@ public class PunishmentManager {
         return playerManager.getIpBanList();
     }
 
-    public void kick(ServerPlayerEntity player, Text reason) {
-        player.networkHandler.disconnect(reason);
+    public void kick(ServerPlayerEntity player, String reason) {
+        final String finalReason = reason == null ? KiloConfig.main().moderation().defaults().kick : reason;
+        player.networkHandler.disconnect(Texter.toText(reason));
     }
 
     public void ban(GameProfile profile, String source, String reason) {
@@ -37,7 +41,8 @@ public class PunishmentManager {
     }
 
     public void ban(GameProfile profile, String source, String reason, Date expireDate) {
-    	BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(profile, new Date(), source, expireDate, reason);
+        final String finalReason = reason == null ? KiloConfig.main().moderation().defaults().ban : reason;
+    	final BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(profile, new Date(), source, expireDate, TextFormat.translate(reason));
     	getProfileBanList().add(bannedPlayerEntry);
     }
 
@@ -54,6 +59,11 @@ public class PunishmentManager {
         if (getProfileBanList().contains(profile)) {
             getProfileBanList().remove(profile);
         }
+    }
+
+    public boolean shouldBan(GameProfile profile, String reason) {
+        BannedPlayerEntry entry = getProfileBanList().get(profile);
+        return isProfileBanned(profile) && entry != null && !entry.getReason().equals(TextFormat.translate(reason));
     }
 
     public boolean isProfileBanned(GameProfile profile) {

@@ -42,6 +42,9 @@ public class Config {
     @Setting(value = "cachedInventories", comment = "Caches the User inventories, mostly used by the '/invsee' and '/invload' commands")
     private CachedInventoriesConfigSection cachedInventoriesSection = new CachedInventoriesConfigSection();
 
+    @Setting("moderation")
+    private ModerationConfigSection moderationSection = new ModerationConfigSection();
+
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")
     public int homesLimit = 10;
 
@@ -94,6 +97,10 @@ public class Config {
 
     public String permissionManager() {
         return permissionManager;
+    }
+
+    public ModerationConfigSection moderation() {
+        return moderationSection;
     }
 
 }

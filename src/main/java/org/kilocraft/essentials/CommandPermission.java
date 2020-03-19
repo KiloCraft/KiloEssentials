@@ -88,6 +88,9 @@ public enum CommandPermission {
     PLAYTIME_MODIFY("playtime.modify"),
     PLAYTIMETOP("playtimetop"),
     IGNORELIST_OTHERS("ignorelist.others"),
+    BAN_IP("ban.ip"),
+    BAN_PROFILE("ban.profile"),
+    KICK("kick"),
     ;
 
     private String node;

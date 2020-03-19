@@ -38,8 +38,10 @@ import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
+import org.kilocraft.essentials.commands.moderation.BanCommand;
 import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
 import org.kilocraft.essentials.commands.moderation.IpInfoCommand;
+import org.kilocraft.essentials.commands.moderation.KickCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -146,6 +148,8 @@ public class KiloCommands {
             this.add(new MotdCommand());
             this.add(new HelpMeCommand());
             this.add(new PlaytimetopCommand());
+            this.add(new BanCommand());
+            this.add(new KickCommand());
             //this.add(new InventoryCommand());
         }};
 
