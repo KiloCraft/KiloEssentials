@@ -35,7 +35,7 @@ public class SmithCommand extends EssentialCommand {
     }
 
     public ForgingScreenHandler createContainer(int syncId, PlayerInventory inventory, PlayerEntity player) {
-        return new SmithingScreenHandler(syncId, inventory, BlockContext.EMPTY);
+        return new SmithingScreenHandler(syncId, inventory, ScreenHandlerContext.EMPTY);
     }
 
 }

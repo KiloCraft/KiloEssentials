@@ -4,9 +4,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.BlockContext;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.CraftingTableScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
@@ -16,11 +16,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(CraftingTableScreenHandler.class)
-public abstract class CraftingTableScreenHandlerMixin extends CraftingScreenHandler<CraftingInventory> {
+@Mixin(CraftingScreenHandler.class)
+public abstract class CraftingScreenHandlerMixin extends AbstractRecipeScreenHandler<CraftingInventory> {
 
-
-    public CraftingTableScreenHandlerMixin(ScreenHandlerType<?> screenHandlerType, int i) {
+    public CraftingScreenHandlerMixin(ScreenHandlerType<?> screenHandlerType, int i) {
         super(screenHandlerType, i);
     }
 
@@ -30,25 +29,25 @@ public abstract class CraftingTableScreenHandlerMixin extends CraftingScreenHand
 
     @Shadow @Final private PlayerEntity player;
 
-    @Shadow @Final private CraftingInventory craftingInv;
+    @Shadow @Final private CraftingInventory input;
 
-    @Shadow @Final private CraftingResultInventory resultInv;
+    @Shadow @Final private CraftingResultInventory result;
 
-    @Shadow @Final private BlockContext context;
+    @Shadow @Final private ScreenHandlerContext context;
 
-    @Inject(method = "onContentChanged", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/container/CraftingTableContainer;onContentChanged(Lnet/minecraft/inventory/Inventory;)V"))
+    @Inject(method = "onContentChanged", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/screen/CraftingScreenHandler;onContentChanged(Lnet/minecraft/inventory/Inventory;)V"))
     public void modifyOnContentChanged(Inventory inventory, CallbackInfo ci) {
-        if (this.context == BlockContext.EMPTY) {
-            updateResult(this.syncId, this.player.getEntityWorld(), this.player, this.craftingInv, this.resultInv);
+        if (this.context == ScreenHandlerContext.EMPTY) {
+            updateResult(this.syncId, this.player.getEntityWorld(), this.player, this.input, this.result);
             ci.cancel();
         }
     }
 
-    @Inject(method = "close", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/container/CraftingTableContainer;close(Lnet/minecraft/entity/player/PlayerEntity;)V"))
+    @Inject(method = "close", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/screen/CraftingScreenHandler;close(Lnet/minecraft/entity/player/PlayerEntity;)V"))
     public void modifyClose(PlayerEntity playerEntity, CallbackInfo ci) {
-        if (this.context == BlockContext.EMPTY) {
+        if (this.context == ScreenHandlerContext.EMPTY) {
             super.close(playerEntity);
-            this.dropInventory(playerEntity, playerEntity.getEntityWorld(), this.craftingInv);
+            this.dropInventory(playerEntity, playerEntity.getEntityWorld(), this.input);
             ci.cancel();
         }
     }

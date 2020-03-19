@@ -5,10 +5,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.screen.BlockContext;
 import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.CraftingTableScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,8 +36,8 @@ public class WorkbenchCommand extends EssentialCommand {
         return 1;
     }
 
-    public static CraftingScreenHandler<CraftingInventory> createContainer(int syncId, PlayerInventory inventory, PlayerEntity player) {
-        return new CraftingTableScreenHandler(syncId, inventory, BlockContext.EMPTY);
+    public static CraftingScreenHandler createContainer(int syncId, PlayerInventory inventory, PlayerEntity player) {
+        return new CraftingScreenHandler(syncId, inventory, ScreenHandlerContext.EMPTY);
     }
 
 }

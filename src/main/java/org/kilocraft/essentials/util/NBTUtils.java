@@ -22,11 +22,7 @@ public class NBTUtils {
         try {
             uuid = NbtHelper.toUuidNew(tag.getCompound(key));
         } catch (Exception ignored) {
-            try {
-                uuid = tag.getUuidNew(key);
-            } catch (Exception ignored1) {
-                uuid = tag.getUuidOld(key);
-            }
+            uuid = tag.getUuidNew(key);
         }
         return uuid;
     }

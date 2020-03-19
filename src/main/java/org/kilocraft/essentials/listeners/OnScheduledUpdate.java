@@ -16,6 +16,8 @@ import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.LocationUtil;
 
+import java.awt.*;
+
 public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEvent> {
     @Override
     public void handle(ServerScheduledUpdateEvent event) {
@@ -36,7 +38,9 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
         boolean kickFromDim = KiloConfig.main().world().kickFromDimension;
 
         if (kickFromDim && !LocationUtil.isDimensionValid(player.dimension) && player.getServer() != null) {
-            BlockPos pos = player.getSpawnPosition();
+            BlockPos pos = player.getSpawnPointPosition();
+            DimensionType dim = player.getSpawnPointDimension();
+
             if (pos == null) {
                 OnlineUser user = KiloServer.getServer().getOnlineUser(player);
                 if (user.getLastSavedLocation() != null) {
@@ -51,7 +55,7 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
             }
 
             if (pos != null) {
-                player.teleport(player.getServer().getWorld(DimensionType.OVERWORLD), pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch);
+                player.teleport(player.getServer().getWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch);
                 KiloChat.sendMessageTo(player, new ChatMessage(String.format(KiloConfig.main().world().kickOutMessage, player.dimension.toString()), true));
             }
         }

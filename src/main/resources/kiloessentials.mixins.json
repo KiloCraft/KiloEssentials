@@ -15,7 +15,7 @@
     "PlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
-    "CraftingTableScreenHandlerMixin",
+    "CraftingScreenHandlerMixin",
     "PlayerListS2CPacketMixin"
   ],
   "injectors": {

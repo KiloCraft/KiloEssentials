@@ -217,7 +217,7 @@ public class RtpCommand extends EssentialCommand {
 		targetUser.saveLocation();
 		target.teleport(target.getServerWorld(), randomX, 255, randomZ, 0, 0);
 
-		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getSenseCenterPos()));
+		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
 		if (CmdUtils.areTheSame(source, target)) {
 			if (!PERMISSION_CHECK_IGNORE_LIMIT.test(source))
@@ -228,7 +228,7 @@ public class RtpCommand extends EssentialCommand {
 							.replace("{BIOME}", targetBiomeName)
 							.replace("{RTP_LEFT}", String.valueOf(targetUser.getRTPsLeft()))
 							.replace("{cord.X}", String.valueOf(randomX))
-							.replace("{cord.Y}", String.valueOf(target.getSenseCenterPos().getY()))
+							.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
 							.replace("{cord.Z}", String.valueOf(randomZ))
 					, true));
 		} else
