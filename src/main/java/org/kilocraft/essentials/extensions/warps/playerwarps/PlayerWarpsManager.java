@@ -42,6 +42,8 @@ public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTSto
 
     @Override
     public void load() {
+        PlayerWarp.Type.getTypes().clear();
+
         for (String type : KiloConfig.main().playerWarpTypes) {
             PlayerWarp.Type.add(type);
         }

@@ -6,11 +6,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.*;
 
-public class TextUtils {
+public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
 
     public static Text toText(String str) {
@@ -34,6 +35,13 @@ public class TextUtils {
            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
         });
+    }
+
+    public static Text confirmationMessage(String langKey, Text button) {
+        return new LiteralText("")
+                .append(LangText.getFormatter(true, langKey))
+                .append(" ")
+                .append(button);
     }
 
     public static class Events {
@@ -334,7 +342,7 @@ public class TextUtils {
         }
 
         @Nullable
-        public static TextUtils.TypeFormat getByName(String name) {
+        public static Texter.TypeFormat getByName(String name) {
             for (TypeFormat value : values()) {
                 if (value.name.equals(name))
                     return value;
@@ -344,7 +352,7 @@ public class TextUtils {
         }
 
         @Nullable
-        public static TextUtils.TypeFormat getByClazz(Class<?> clazz) {
+        public static Texter.TypeFormat getByClazz(Class<?> clazz) {
             for (TypeFormat value : values()) {
                 if (value.clazz.equals(clazz))
                     return value;

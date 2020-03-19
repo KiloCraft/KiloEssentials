@@ -11,7 +11,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
-import org.kilocraft.essentials.user.punishment.PunishmentManager;
+import org.kilocraft.essentials.user.PunishmentManager;
 
 import java.util.Collection;
 

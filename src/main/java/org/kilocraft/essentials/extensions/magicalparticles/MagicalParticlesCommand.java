@@ -19,7 +19,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
@@ -78,25 +78,25 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
     private int list(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        TextUtils.ListStyle text = TextUtils.ListStyle.of(
+        Texter.ListStyle text = Texter.ListStyle.of(
                 "Particle Animations", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY
         );
 
         text.append("&cdisable",
-                TextUtils.Events.onHover(new LiteralText("Click Here to Disable").formatted(Formatting.GOLD)
+                Texter.Events.onHover(new LiteralText("Click Here to Disable").formatted(Formatting.GOLD)
                 ),
-                TextUtils.Events.onClickRun("/mp disable")
+                Texter.Events.onClickRun("/mp disable")
         ).append("&7|&r");
 
         map.forEach((id, animation) -> text.append(id.getPath(),
-                TextUtils.Events.onHover(new LiteralText("")
+                Texter.Events.onHover(new LiteralText("")
                         .append(new LiteralText(animation.getName()).formatted(Formatting.GOLD))
                         .append("\n")
                         .append(new LiteralText(animation.getId().toString()).formatted(Formatting.DARK_GRAY))
                         .append("\n")
                         .append(new LiteralText(tl("general.click_apply")).formatted(Formatting.YELLOW))
                 ),
-                TextUtils.Events.onClickRun("/mp set " + id.toString() + "--s")
+                Texter.Events.onClickRun("/mp set " + id.toString() + "--s")
         ));
 
         KiloChat.sendMessageTo(player, text.setSize(map.size()).build());

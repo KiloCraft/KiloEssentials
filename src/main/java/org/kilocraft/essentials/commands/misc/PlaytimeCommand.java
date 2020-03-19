@@ -11,7 +11,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.CmdUtils;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.io.IOException;
@@ -103,7 +103,7 @@ public class PlaytimeCommand extends EssentialCommand {
         String firstJoin = target.getFirstJoin() != null ? TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()) : tl("general.not_present");
 
         String title = CmdUtils.areTheSame(src, target) ? tl("command.playtime.title.self") : tl("command.playtime.title.others", target.getNameTag());
-        TextUtils.InfoBlockStyle text = TextUtils.InfoBlockStyle.of(title);
+        Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(title);
 
         text.append(tl("command.playtime.total"), pt)
                 .append(tl("command.playtime.first_join"), firstJoin);

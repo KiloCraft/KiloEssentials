@@ -6,7 +6,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.user.OnlineServerUser;
-import org.kilocraft.essentials.user.punishment.PunishmentManager;
+import org.kilocraft.essentials.user.PunishmentManager;
 
 import java.util.List;
 import java.util.Map;

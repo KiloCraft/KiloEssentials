@@ -36,7 +36,7 @@ public class PlaytimetopCommand extends EssentialCommand {
 
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, Integer> page = argument("page", IntegerArgumentType.integer(0))
+        final RequiredArgumentBuilder<ServerCommandSource, Integer> page = argument("page", IntegerArgumentType.integer(1))
                 .executes(ctx -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), false));
 
         final LiteralArgumentBuilder<ServerCommandSource> force = literal("force")

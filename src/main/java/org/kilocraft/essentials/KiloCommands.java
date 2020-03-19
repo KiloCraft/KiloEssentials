@@ -51,7 +51,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -269,8 +269,8 @@ public class KiloCommands {
                         .append(new LiteralText("GitHub: ").formatted(Formatting.GRAY))
                         .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/").styled(style -> {
                             style.setColor(Formatting.GOLD);
-                            style.setClickEvent(TextUtils.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"));
-                            style.setHoverEvent(TextUtils.Events.onHover("&eClick to open"));
+                            style.setClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"));
+                            style.setHoverEvent(Texter.Events.onHover("&eClick to open"));
                         })))
                 , false);
 
@@ -370,7 +370,7 @@ public class KiloCommands {
             }
         }
 
-        source.sendFeedback(TextUtils.toText(builder.toString()), false);
+        source.sendFeedback(Texter.toText(builder.toString()), false);
     }
 
     public int execute(final ServerCommandSource executor, final String command) {

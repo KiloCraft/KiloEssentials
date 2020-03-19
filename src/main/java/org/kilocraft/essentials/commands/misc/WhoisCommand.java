@@ -15,7 +15,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.ServerUser;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 public class WhoisCommand extends EssentialCommand {
@@ -48,12 +48,12 @@ public class WhoisCommand extends EssentialCommand {
     }
 
     private int execute(CommandSourceUser src, User target) {
-        TextUtils.InfoBlockStyle text = new TextUtils.InfoBlockStyle("Who's " + target.getNameTag(),
+        Texter.InfoBlockStyle text = new Texter.InfoBlockStyle("Who's " + target.getNameTag(),
                 Formatting.GOLD, Formatting.AQUA, Formatting.GRAY);
 
         text.append("DisplayName", target.getFormattedDisplayName()).space().append("(").append(target.getUsername()).append(")");
         text.append("UUID",
-                TextUtils.appendButton(
+                Texter.appendButton(
                         new LiteralText(target.getUuid().toString()),
                         new LiteralText(tl("general.click_copy")),
                         ClickEvent.Action.COPY_TO_CLIPBOARD,
@@ -61,7 +61,7 @@ public class WhoisCommand extends EssentialCommand {
                 )
         );
         text.append("IP (Last Saved)",
-                TextUtils.appendButton(
+                Texter.appendButton(
                         new LiteralText(target.getLastSocketAddress()),
                         new LiteralText(tl("general.click_copy")),
                         ClickEvent.Action.COPY_TO_CLIPBOARD,
@@ -107,7 +107,7 @@ public class WhoisCommand extends EssentialCommand {
     }
 
     private Text getButtonForVec(Vec3dLocation vec) {
-        return TextUtils.appendButton(
+        return Texter.appendButton(
                 new LiteralText("Click Here"),
                 new LiteralText(tl("general.click_tp")),
                 ClickEvent.Action.SUGGEST_COMMAND,

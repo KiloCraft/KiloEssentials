@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.user.punishment;
+package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 
@@ -10,9 +10,8 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import java.net.SocketAddress;
 import java.util.Date;
-
-import static org.kilocraft.essentials.user.punishment.BanEntryType.*;
 
 public class PunishmentManager {
     PlayerManager playerManager;
@@ -33,37 +32,39 @@ public class PunishmentManager {
         player.networkHandler.disconnect(reason);
     }
 
-    public void ban(GameProfile profile, String reason) {
-    	ban (profile, reason, null);
+    public void ban(GameProfile profile, String source, String reason) {
+    	ban(profile, source, reason, null);
     }
 
-    public void ban(GameProfile profile, String reason, Date expireDate) {
-    	BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(profile, new Date(), null, expireDate, reason);
+    public void ban(GameProfile profile, String source, String reason, Date expireDate) {
+    	BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(profile, new Date(), source, expireDate, reason);
     	getProfileBanList().add(bannedPlayerEntry);
     }
-    
-    public void ipBan (String ip, String reason) {
-    	ipBan(ip, reason);
+
+    public void ban(String source, String ip, String reason) {
+    	ban(source, ip, reason, null);
     }
     
-    public void ipBan (String ip, String reason, Date expireDate) {
-    	BannedIpEntry bannedPlayerEntry = new BannedIpEntry(ip, new Date(), null, expireDate, reason);
-		getIpBanList().add(bannedPlayerEntry);
+    public void ban(String source, String ip, String reason, Date expireDate) {
+    	BannedIpEntry entry = new BannedIpEntry(ip, new Date(), source, expireDate, reason);
+		getIpBanList().add(entry);
     }
 
-    public void pardon(GameProfile profile, BanEntryType type) {
-        if (type.equals(PROFILE))
+    public void pardon(GameProfile profile) {
+        if (getProfileBanList().contains(profile)) {
             getProfileBanList().remove(profile);
-        else
-            getIpBanList().remove(profile.getName());
+        }
     }
 
     public boolean isProfileBanned(GameProfile profile) {
         return getProfileBanList().contains(profile);
     }
 
-    public boolean isIpBanned(String banress) {
-        return getIpBanList().isBanned(banress);
+    public boolean isIpBanned(String ip) {
+        return getIpBanList().isBanned(ip);
     }
 
+    public boolean isIpBanned(SocketAddress address) {
+        return getIpBanList().isBanned(address);
+    }
 }

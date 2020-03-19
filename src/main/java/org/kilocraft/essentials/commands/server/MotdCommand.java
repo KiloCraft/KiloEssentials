@@ -16,7 +16,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.util.Texter;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -68,7 +68,7 @@ public class MotdCommand extends EssentialCommand {
         }
 
         try {
-            this.server.getMetaManager().setDescription(TextUtils.toText(finalmotd));
+            this.server.getMetaManager().setDescription(Texter.toText(finalmotd));
         } catch (final IOException e) {
             this.getServerUser(ctx).sendError("Can not save the value \"motd\" in server.properties\n" + e.getMessage());
 

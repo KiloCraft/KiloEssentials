@@ -8,17 +8,26 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.bungee.KiloEssentialsBungee;
+import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
+import org.kilocraft.essentials.util.Texter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,22 +68,37 @@ public class PlayerWarpCommand extends EssentialCommand {
 
     private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx);
-        String name = StringArgumentType.getString(ctx, "name");
+        String input = StringArgumentType.getString(ctx, "name");
+        String name = input.replaceFirst("-confirmed-", "");
         String type = StringArgumentType.getString(ctx, "type");
+
+        for (PlayerWarp warp : PlayerWarpsManager.getWarps()) {
+            if (warp.getName().equalsIgnoreCase(name) && warp.getOwner() != user.getUuid()) {
+                user.sendLangMessage("command.playerwarps.already_set");
+                return SINGLE_FAILED;
+            }
+        }
 
         if (!PlayerWarp.Type.isValid(type)) {
             user.sendLangMessage("command.playerwarps.invalid_type", type);
             return SINGLE_FAILED;
         }
 
-        PlayerWarpsManager.addWarp(
-                new PlayerWarp(
-                        name,
-                        user.getLocation(),
-                        user.getUuid(),
-                        type
-                )
-        );
+        if (PlayerWarpsManager.getWarpsByName().contains(name) && !input.startsWith("-confirmed-")) {
+            user.sendMessage(getConfirmationText(name, ""));
+            return AWAIT_RESPONSE;
+        } else {
+            PlayerWarpsManager.addWarp(
+                    new PlayerWarp(
+                            name,
+                            user.getLocation(),
+                            user.getUuid(),
+                            type
+                    )
+            );
+
+        }
+
 
         user.sendLangMessage("command.playerwarps.set", name);
         return SINGLE_SUCCESS;
@@ -111,6 +135,13 @@ public class PlayerWarpCommand extends EssentialCommand {
 
     private CompletableFuture<Suggestions> typeSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(new ArrayList<>(PlayerWarp.Type.getTypes()), builder);
+    }
+
+    private Text getConfirmationText(String warpName, String user) {
+        return Texter.confirmationMessage(
+                "command.playerwarps.set.confirmation_message",
+                Texter.getButton("Confirm", "/pwarp set " + warpName, Texter.toText("Click").formatted(Formatting.GREEN))
+        );
     }
 
 }
