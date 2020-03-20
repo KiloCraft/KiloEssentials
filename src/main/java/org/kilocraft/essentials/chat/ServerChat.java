@@ -20,7 +20,7 @@ import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
@@ -153,7 +153,7 @@ public final class ServerChat {
             }
         }
 
-        if  (!CmdUtils.isConsole(source)) {
+        if  (!CommandUtils.isConsole(source)) {
             final OnlineUser online = KiloServer.getServer().getOnlineUser(source.getPlayer());
             user.setLastMessageSender(source.getPlayer().getUuid());
             online.setLastMessageSender(target.getUuid());
@@ -164,7 +164,7 @@ public final class ServerChat {
             throw ServerChat.TARGET_OFFLINE_EXCEPTION.create();
         }
 
-        if (CmdUtils.areTheSame(source, target)) {
+        if (CommandUtils.areTheSame(source, target)) {
             throw ServerChat.SAME_TARGETS_EXCEPTION.create();
         }
 
@@ -177,7 +177,7 @@ public final class ServerChat {
         final String me_format = ServerChat.config.privateChat().privateChatMeFormat;
         final String sourceName = source.getName();
 
-        if (CmdUtils.isPlayer(source) && ((ServerUser) target).getIgnoreList() != null &&
+        if (CommandUtils.isPlayer(source) && ((ServerUser) target).getIgnoreList() != null &&
                 ((ServerUser) target).getIgnoreList().containsValue(source.getPlayer().getUuid())) {
             throw ServerChat.CANT_MESSAGE_EXCEPTION.create();
         }
@@ -199,7 +199,7 @@ public final class ServerChat {
                 new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.WHITE));
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isSocialSpyOn() && !CmdUtils.areTheSame(source, user) && !CmdUtils.areTheSame(target, user))
+            if (user.isSocialSpyOn() && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user))
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                     new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
         }
@@ -213,7 +213,7 @@ public final class ServerChat {
                 .replace("%MESSAGE%",  message);
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isCommandSpyOn() && !CmdUtils.areTheSame(source, user))
+            if (user.isCommandSpyOn() && !CommandUtils.areTheSame(source, user))
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                         new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }

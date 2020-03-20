@@ -30,7 +30,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
 public class StaffmsgCommand extends EssentialCommand {
     public StaffmsgCommand() {
-        super("staffmsg", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_STAFFMSG));
+        super("staffmsg", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_STAFFMSG), new String[]{"sm"});
     }
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> listArg = literal("list")

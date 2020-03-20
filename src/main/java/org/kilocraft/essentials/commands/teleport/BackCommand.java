@@ -12,7 +12,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -53,7 +53,7 @@ public class BackCommand extends EssentialCommand {
         user.saveLocation();
         user.teleport(loc, true);
 
-        if (CmdUtils.areTheSame(ctx.getSource(), target))
+        if (CommandUtils.areTheSame(ctx.getSource(), target))
             ctx.getSource().getPlayer().addMessage(getLang("command.back.self"), true);
         else
             sendMessage(ctx, "command.back.others", user.getUsername());

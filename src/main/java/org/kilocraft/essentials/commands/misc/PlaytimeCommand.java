@@ -10,7 +10,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
@@ -102,7 +102,7 @@ public class PlaytimeCommand extends EssentialCommand {
                 TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e');
         String firstJoin = target.getFirstJoin() != null ? TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()) : tl("general.not_present");
 
-        String title = CmdUtils.areTheSame(src, target) ? tl("command.playtime.title.self") : tl("command.playtime.title.others", target.getNameTag());
+        String title = CommandUtils.areTheSame(src, target) ? tl("command.playtime.title.self") : tl("command.playtime.title.others", target.getNameTag());
         Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(title);
 
         text.append(tl("command.playtime.total"), pt)

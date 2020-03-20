@@ -21,7 +21,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -88,7 +88,7 @@ public class SethomeCommand extends EssentialCommand {
         essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
-            if (CmdUtils.areTheSame(source, user) && canSet(user) && !homeHandler.hasHome(name)) {
+            if (CommandUtils.areTheSame(source, user) && canSet(user) && !homeHandler.hasHome(name)) {
                 source.sendMessage(messages.commands().playerHomes().reachedLimit
                         .replace("{HOME_SIZE}", String.valueOf(homeHandler.getHomes().size())));
                 return;
@@ -109,7 +109,7 @@ public class SethomeCommand extends EssentialCommand {
                 source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
             }
 
-            if (CmdUtils.areTheSame(source, user))
+            if (CommandUtils.areTheSame(source, user))
                 source.sendMessage(messages.commands().playerHomes().homeSet
                         .replace("{HOME_NAME}", name));
             else source.sendMessage(messages.commands().playerHomes().admin().homeSet

@@ -110,6 +110,7 @@ public class PermissionUtil {
         try {
             if (manager == Manager.LUCKPERMS) {
                 LuckPermsProvider.get();
+                return true;
             }
 
             return FabricLoader.getInstance().getModContainer(manager.getName().toLowerCase(Locale.ROOT)).isPresent();

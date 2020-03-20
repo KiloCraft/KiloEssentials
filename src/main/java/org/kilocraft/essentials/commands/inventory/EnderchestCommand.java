@@ -10,7 +10,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.inventory.ServerUserInventory;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
@@ -55,7 +55,7 @@ public class EnderchestCommand extends EssentialCommand {
 
     private int execute(ServerPlayerEntity sender, ServerPlayerEntity target) {
         ServerUserInventory.openEnderchest(sender, target);
-        if (CmdUtils.areTheSame(sender, target))
+        if (CommandUtils.areTheSame(sender, target))
             KiloChat.sendLangMessageTo(sender, "general.open_screen", "Ender chest");
         else
             KiloChat.sendLangMessageTo(sender, "general.seek_screen", target.getEntityName(), "Ender chest");

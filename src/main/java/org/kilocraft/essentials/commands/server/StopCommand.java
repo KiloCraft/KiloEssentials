@@ -12,7 +12,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -34,7 +34,7 @@ public class StopCommand {
     private static int execute(ServerCommandSource source, String args) {
         boolean confirmed = args.contains("-confirmed");
 
-        if (!confirmed && !CmdUtils.isConsole(source)) {
+        if (!confirmed && !CommandUtils.isConsole(source)) {
             LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
             literalText.styled((style) -> {
                 style.setColor(Formatting.RED);

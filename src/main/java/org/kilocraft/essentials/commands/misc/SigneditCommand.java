@@ -36,7 +36,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
@@ -209,7 +209,7 @@ public class SigneditCommand extends EssentialCommand {
         SignEditorOpenS2CPacket packet = new SignEditorOpenS2CPacket(sign.getPos());
         target.networkHandler.sendPacket(packet);
 
-        if (CmdUtils.areTheSame(ctx.getSource(), target))
+        if (CommandUtils.areTheSame(ctx.getSource(), target))
             KiloChat.sendLangMessageTo(target, "general.open_gui", "Sign");
         else
             KiloChat.sendLangMessageTo(ctx.getSource(), "general.open_gui.others", "Sign", target.getEntityName());

@@ -11,7 +11,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -32,7 +32,7 @@ public class HealCommand extends EssentialCommand {
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
-        if (CmdUtils.areTheSame(source, player)) {
+        if (CommandUtils.areTheSame(source, player)) {
             if (player.getHealth() == player.getMaximumHealth()) {
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.exception.self"));
             } else {

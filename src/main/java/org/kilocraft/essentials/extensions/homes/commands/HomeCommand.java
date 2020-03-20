@@ -15,7 +15,7 @@ import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ChatMessage;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.extensions.homes.api.Home;
@@ -97,7 +97,7 @@ public class HomeCommand extends EssentialCommand {
                 return;
             }
 
-            final String message = CmdUtils.areTheSame(source, user) ? this.messages.commands().playerHomes().teleporting :
+            final String message = CommandUtils.areTheSame(source, user) ? this.messages.commands().playerHomes().teleporting :
                     this.messages.commands().playerHomes().admin().teleporting;
 
             source.sendMessage(new ChatMessage(HomeCommand.replaceVariables(

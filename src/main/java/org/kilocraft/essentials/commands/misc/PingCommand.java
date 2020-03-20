@@ -11,7 +11,7 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -33,7 +33,7 @@ public class PingCommand extends EssentialCommand {
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity target) {
-        if (CmdUtils.areTheSame(source, target)) {
+        if (CommandUtils.areTheSame(source, target)) {
             KiloChat.sendLangMessageTo(source, "command.ping.self",
                     TextFormat.getFormattedPing(target.pingMilliseconds), getStringForPing(target.pingMilliseconds));
             return 1;

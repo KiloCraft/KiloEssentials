@@ -19,11 +19,13 @@ public class NBTUtils {
 
     public static UUID getUUID(CompoundTag tag, String key) {
         UUID uuid;
-        try {
-            uuid = NbtHelper.toUuidNew(tag.getCompound(key));
-        } catch (Exception ignored) {
+        //Get the UUID even if its the old format
+        if (tag.contains(key + "Most") && tag.contains(key + "Least")) {
+            uuid = new UUID(tag.getLong(key + "Most"), tag.getLong(key + "Least"));
+        } else {
             uuid = tag.getUuidNew(key);
         }
+
         return uuid;
     }
 

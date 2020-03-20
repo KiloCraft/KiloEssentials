@@ -13,7 +13,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.util.RegistryUtils;
@@ -54,7 +54,7 @@ public class HomesCommand extends EssentialCommand {
     }
 
     private int sendInfo(OnlineUser source, User user) {
-        boolean areTheSame = CmdUtils.areTheSame(source, user);
+        boolean areTheSame = CommandUtils.areTheSame(source, user);
         if (user.getHomesHandler().homes() <= 0) {
              source.sendMessage(areTheSame ? KiloConfig.messages().commands().playerHomes().noHome :
                     KiloConfig.messages().commands().playerHomes().admin().noHome.replace("{TARGET_TAG}", user.getNameTag()));

@@ -4,7 +4,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 public class LangText {
 
@@ -49,7 +49,7 @@ public class LangText {
             result = String.format(lang, objects);
         }
         LiteralText literalText;
-        if (CmdUtils.isConsole(source)) {
+        if (CommandUtils.isConsole(source)) {
             literalText = new LiteralText(TextFormat.removeAlternateColorCodes('&', result));
         } else {
             literalText = new LiteralText(TextFormat.translateAlternateColorCodes('&', result));

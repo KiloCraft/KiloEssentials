@@ -10,7 +10,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.config.messages.Messages;
@@ -51,28 +51,28 @@ public class KiloChat {
 	}
 
 	public static void sendMessageToSource(ServerCommandSource source, ChatMessage message) {
-		if (CmdUtils.isConsole(source))
+		if (CommandUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(message.getOriginal());
 		else
 			source.sendFeedback(new LiteralText(message.getFormattedMessage()), false);
 	}
 
 	public static void sendMessageToSource(ServerCommandSource source, Text text) {
-		if (CmdUtils.isConsole(source))
+		if (CommandUtils.isConsole(source))
 			getServer().sendMessage(text.asString());
 		else
 			source.sendFeedback(text, false);
 	}
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key) {
-		if (CmdUtils.isConsole(source))
+		if (CommandUtils.isConsole(source))
 			getServer().sendMessage(getFormattedLang(key));
 		else
 			source.sendFeedback(LangText.get(true, key), false);
 	}
 
 	public static void sendLangCommandFeedback(ServerCommandSource source, String key, boolean sendToOPs, Object... objects) {
-		if (CmdUtils.isConsole(source))
+		if (CommandUtils.isConsole(source))
 			getServer().sendMessage(getFormattedLang(key, objects));
 		else
 			source.sendFeedback(LangText.getFormatter(true, key, objects), sendToOPs);
@@ -87,7 +87,7 @@ public class KiloChat {
 	}
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key, Object... objects) {
-		if (CmdUtils.isConsole(source))
+		if (CommandUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(getFormattedLang(key, objects));
 		else
 			source.sendFeedback(LangText.getFormatter(true, key, objects), false);

@@ -48,4 +48,8 @@ public interface Location {
 
     Vec3i toVec3i();
 
+    Location up();
+
+    Location down();
+
 }

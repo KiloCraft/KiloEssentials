@@ -19,7 +19,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class GamemodeCommand extends EssentialCommand {
 
         String singletonName = null;
         for (final ServerPlayerEntity player : players) {
-            if (!silent && !CmdUtils.areTheSame(src, player))
+            if (!silent && !CommandUtils.areTheSame(src, player))
                 KiloChat.sendLangMessageTo(player, "template.#1.announce", src.getName(), "gamemode", selectedMode.getName());
             player.setGameMode(selectedMode);
             if (players.size() == 1)
