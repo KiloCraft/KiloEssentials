@@ -9,6 +9,8 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.EntitySelector;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -221,12 +223,15 @@ public class RtpCommand extends EssentialCommand {
 			loc.setY(target.dimension == DimensionType.THE_NETHER ? 110.0D : 250.0D);
 			loc.setZ(randomZ + 0.5D);
 			loc = ((Vec3dLocation) loc).center();
-			loc = LocationUtil.posOnGround(loc, false);
+//			loc = LocationUtil.posOnGround(loc, false);
 
 			if (loc == null || LocationUtil.isBlockLiquid(loc) || !loc.isSafeFor(targetUser)) {
 				teleportRandomly(source, target);
 				return;
 			}
+
+			target.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 600, 255, false, false, false));
+			target.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 600, 255, false, false, false));
 
 			targetUser.saveLocation();
 			targetUser.teleport(loc.up(), true);
