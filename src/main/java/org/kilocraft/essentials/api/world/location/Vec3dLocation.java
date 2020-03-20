@@ -14,6 +14,7 @@ import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.PlayerRotation;
 import org.kilocraft.essentials.util.RegistryUtils;
 
@@ -104,12 +105,12 @@ public class Vec3dLocation implements Location {
 
     @Override
     public boolean isSafeFor(OnlineUser user) {
-        return false;
+        return LocationUtil.isBlockSafeFor(user, this);
     }
 
     @Override
     public boolean isSafeFor(ServerPlayerEntity player) {
-        return false;
+        return LocationUtil.isBlockSafeFor(KiloServer.getServer().getOnlineUser(player), this);
     }
 
     @Override

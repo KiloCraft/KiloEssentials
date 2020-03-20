@@ -45,7 +45,7 @@ import org.kilocraft.essentials.commands.moderation.KickCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
-import org.kilocraft.essentials.commands.teleport.RtpCommand;
+import org.kilocraft.essentials.commands.teleport.RtpCommandOLD;
 import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
@@ -113,7 +113,7 @@ public class KiloCommands {
             this.add(new ReloadCommand());
             this.add(new ColorsCommand());
             this.add(new GamemodeCommand());
-            this.add(new RtpCommand());
+            this.add(new RtpCommandOLD());
             this.add(new BroadcastCommand());
             this.add(new UsageCommand());
             this.add(new HealCommand());

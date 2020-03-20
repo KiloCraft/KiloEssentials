@@ -15,8 +15,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
@@ -26,17 +25,14 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.world.location.Location;
-import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CmdUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
-import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
 import java.util.ArrayList;
@@ -52,20 +48,20 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 
-public class RtpCommand extends EssentialCommand {
+public class RtpCommandOLD extends EssentialCommand {
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_SELF);
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_OTHERS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERS);
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_IGNORE_LIMIT = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_BYPASS);
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER_DIMENSIONS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERDIMENSIONS);
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_MANAGE = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_MANAGE);
 
-	public RtpCommand() {
+	public RtpCommandOLD() {
 		super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
 	}
 
 	public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		RequiredArgumentBuilder<ServerCommandSource, String> actionArg = argument("action", word())
-				.suggests(RtpCommand::actionSuggestions)
+				.suggests(RtpCommandOLD::actionSuggestions)
 				.executes(ctx -> execute(ctx, false, null));
 
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
@@ -207,13 +203,16 @@ public class RtpCommand extends EssentialCommand {
 		Random random = new Random();
 		int randomX = random.nextInt(30000) - 15000; // -15000 to +15000
 		int randomZ = random.nextInt(30000) - 15000; // -15000 to  +15000
-		Location loc = Vec3dLocation.of(randomX, 256.0D, randomZ);
-		loc = LocationUtil.getPosOnGround(loc);
 
-		if (LocationUtil.isBlockLiquid(loc) || !loc.isSafeFor(targetUser)) {
+		Biome.Category biomeCategory = target.world.getBiomeAccess().getBiome(new BlockPos(randomX, 65, randomZ)).getCategory();
+
+		if (biomeCategory == Category.OCEAN || biomeCategory == Category.RIVER) {
 			teleportRandomly(source, target);
 			return;
 		}
+
+		target.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 600, 255, false, false, false));
+		target.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 600, 255, false, false, false));
 
 		targetUser.saveLocation();
 		target.teleport(target.getServerWorld(), randomX, 255, randomZ, 0, 0);
@@ -221,9 +220,8 @@ public class RtpCommand extends EssentialCommand {
 		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
 		if (CmdUtils.areTheSame(source, target)) {
-			if (!PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
+			if (!PERMISSION_CHECK_IGNORE_LIMIT.test(source))
 				targetUser.setRTPsLeft(targetUser.getRTPsLeft() - 1);
-			}
 
 			targetUser.sendMessage(new ChatMessage(
 					KiloConfig.messages().commands().rtp().teleported
@@ -233,9 +231,8 @@ public class RtpCommand extends EssentialCommand {
 							.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
 							.replace("{cord.Z}", String.valueOf(randomZ))
 					, true));
-		} else {
+		} else
 			sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
-		}
 
 		Thread.currentThread().interrupt();
 	}
@@ -267,7 +264,7 @@ public class RtpCommand extends EssentialCommand {
 		@Override
 		public void run() {
 			logger.info("Randomly teleporting " + target.getEntityName() + ". executed by " + source.getName());
-			RtpCommand.teleportRandomly(this.source, this.target);
+			RtpCommandOLD.teleportRandomly(this.source, this.target);
 		}
 	}
 
