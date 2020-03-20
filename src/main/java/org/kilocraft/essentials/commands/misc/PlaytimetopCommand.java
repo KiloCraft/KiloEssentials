@@ -71,6 +71,10 @@ public class PlaytimetopCommand extends EssentialCommand {
             long totalTicks = 0L;
 
             for (User user : list) {
+                if (user.getTicksPlayed() == 0) {
+                    continue;
+                }
+
                 map.put(user.getFormattedDisplayName(), user.getTicksPlayed());
                 totalTicks += user.getTicksPlayed();
             }
