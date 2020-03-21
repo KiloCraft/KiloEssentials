@@ -75,7 +75,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
-		this.permUtil = new PermissionUtil();
 		this.commands = new KiloCommands();
 
 		KiloServer.getServer().setName(KiloConfig.main().server().name);
@@ -129,6 +128,8 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		if (KiloConfig.main().startupScript().enabled) {
 			this.startupScript = new StartupScript();
 		}
+
+		this.permUtil = new PermissionUtil();
 	}
 
 	public static Logger getLogger() {
@@ -330,6 +331,10 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		if (PlayerSitManager.INSTANCE != null && PlayerSitManager.enabled) {
 			PlayerSitManager.INSTANCE.killAll();
 		}
+	}
+
+	public void onServerLoad() {
+		this.permUtil = new PermissionUtil();
 	}
 
 }

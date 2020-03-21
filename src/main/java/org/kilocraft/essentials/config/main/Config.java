@@ -20,7 +20,7 @@ public class Config {
     @Setting(value = "server")
     private ServerConfigSection serverSection = new ServerConfigSection();
 
-    @Setting(value = "permissionManager", comment = "Select the PermissionManager to use! Options: luckperms, thimble")
+    @Setting(value = "permissionManager", comment = "Select the PermissionManager to use! Options: vanilla, luckperms, thimble")
     private String permissionManager = "luckperms";
 
     @Setting(value = "startupScript", comment = "Automatically creates the script to startup the server\n" +

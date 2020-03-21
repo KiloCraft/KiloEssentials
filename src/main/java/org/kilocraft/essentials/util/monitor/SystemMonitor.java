@@ -9,7 +9,6 @@ import javax.management.ObjectName;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
-import java.lang.management.ThreadMXBean;
 import java.text.DecimalFormat;
 
 public class SystemMonitor {

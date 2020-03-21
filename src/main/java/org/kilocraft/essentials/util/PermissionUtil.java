@@ -20,20 +20,27 @@ import org.kilocraft.essentials.config.KiloConfig;
 import java.util.Locale;
 
 public class PermissionUtil {
-    private final Manager manager;
-    private final boolean present;
+    private boolean present;
+    private Manager manager;
 
     public PermissionUtil() {
         Logger logger = (Logger) KiloEssentials.getLogger();
         logger.info("Setting up Permissions...");
         this.manager = Manager.fromString(KiloConfig.main().permissionManager());
-        this.present = checkPresent(manager);
 
-        logger.info("Checking " + manager.getName() +" for Availability");
+        if (manager == Manager.VANILLA) {
+            this.present = false;
+            return;
+        }
 
-        if (!present) {
-            logger.warn("**** " + manager.getName() + " is not Present! Switching to vanilla operator system");
+        logger.info("Checking " + manager.getName() + " for Availability");
+
+        this.present = this.checkPresent();
+
+        if (!this.present) {
+            logger.warn("**** " + manager.getName() + " is not this.present! Switching to vanilla operator system");
             logger.warn("     You need to install either LuckPerms for Fabric Or Thimble to manage the permissions");
+            this.manager = Manager.NONE;
             return;
         }
 
@@ -67,7 +74,7 @@ public class PermissionUtil {
     }
 
     public boolean hasPermission(ServerCommandSource src, String permission, int opLevel) {
-        if (present) {
+        if (this.present) {
             if (manager == Manager.LUCKPERMS) {
                 return fromLuckPerms(src, permission, opLevel);
             }
@@ -102,15 +109,22 @@ public class PermissionUtil {
         return Thimble.hasPermissionOrOp(src, perm, op);
     }
 
-    private boolean checkPresent(Manager manager) {
+    private boolean checkPresent() {
         if (manager == Manager.NONE) {
             return false;
         }
 
         try {
             if (manager == Manager.LUCKPERMS) {
-                LuckPermsProvider.get();
-                return true;
+                try {
+                    LuckPermsProvider.get();
+                    return true;
+                } catch (Throwable ignored) {
+                }
+            }
+
+            if (manager == Manager.THIMBLE) {
+                Thimble.permissionWriters.get(0);
             }
 
             return FabricLoader.getInstance().getModContainer(manager.getName().toLowerCase(Locale.ROOT)).isPresent();
@@ -129,6 +143,7 @@ public class PermissionUtil {
 
     public enum Manager {
         NONE("none", ""),
+        VANILLA("Vanilla", ""),
         LUCKPERMS("LuckPerms", "net.luckperms.api.LuckPerms"),
         THIMBLE("Thimble", "io.github.indicode.fabric.permissions.Thimble");
 
@@ -144,12 +159,8 @@ public class PermissionUtil {
             return this.name;
         }
 
-        public final String getClassPath() {
-            return this.classPath;
-        }
-
         @NotNull
-        public static Manager fromString(String str) {
+        public static Manager fromString(@NotNull final String str) {
             for (Manager value : Manager.values()) {
                 if (value.name.equalsIgnoreCase(str)) {
                     return value;
