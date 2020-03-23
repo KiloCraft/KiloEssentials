@@ -57,7 +57,7 @@ public class Settings {
             }
     );
     public static final Setting<String> UP_STREAM_CHANNEL = new Setting<>("up_stream_channel", GlobalChat.getChannelId());
-    public static final Setting<Integer> RANDOM_TELEPORTS_LEFT = new Setting<>("rtps_left", 0);
+    public static final Setting<Integer> RANDOM_TELEPORTS_LEFT = new Setting<>("rtps_left", 3);
     public static final Setting<Boolean> DON_NOT_DISTURB = new Setting<>("do_not_disturb", false);
 
     @Nullable

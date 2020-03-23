@@ -3,7 +3,6 @@ package org.kilocraft.essentials.user;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -26,6 +25,7 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.inventory.ServerUserInventory;
 import org.kilocraft.essentials.user.setting.ServerUserSettings;
+import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.NBTTypes;
 import org.kilocraft.essentials.util.UserUtils;
 
@@ -55,7 +55,6 @@ public class ServerUser implements User {
     private UserInventory inventory;
     private Vec3dLocation location;
     private Vec3dLocation lastLocation;
-    private String nickname;
     private UUID lastPrivateMessageGetterUUID;
     private String lastPrivateMessageText = "";
     private boolean hasJoinedBefore = true;
@@ -121,9 +120,6 @@ public class ServerUser implements User {
         if (this.ticksPlayed != -1)
             metaTag.putInt("ticksPlayed", this.ticksPlayed);
 
-        if (this.nickname != null) // Nicknames are Optional now.
-            metaTag.putString("nick", this.nickname);
-
         if (this.isStaff)
             metaTag.putBoolean("isStaff", true);
 
@@ -180,9 +176,6 @@ public class ServerUser implements User {
 
         if (metaTag.contains("ticksPlayed"))
             this.ticksPlayed = metaTag.getInt("ticksPlayed");
-
-        if (metaTag.contains("nick")) // Nicknames are an Optional, so we compensate for that.
-            this.nickname = metaTag.getString("nick");
 
         if (metaTag.contains("isStaff"))
             this.isStaff = true;
@@ -245,7 +238,8 @@ public class ServerUser implements User {
     }
 
     public String getDisplayName() {
-        return this.nickname != null ? this.nickname : this.name;
+        Optional<String> nickname = this.getSetting(Settings.NICKNAME);
+        return nickname.orElseGet(() -> this.name);
     }
 
     @Override
@@ -293,7 +287,7 @@ public class ServerUser implements User {
 
     @Override
     public Optional<String> getNickname() {
-        return Optional.ofNullable(this.nickname);
+        return this.getSetting(Settings.NICKNAME);
     }
 
     @Override
@@ -318,15 +312,14 @@ public class ServerUser implements User {
 
     @Override
     public void setNickname(String name) {
-        String oldNick = this.nickname;
-        this.nickname = name;
-        KiloServer.getServer().getUserManager().onChangeNickname(this, oldNick); // This is to update the entries in UserManager.
+        this.getSettings().set(Settings.NICKNAME, Optional.of(name));
+        KiloServer.getServer().getUserManager().onChangeNickname(this, this.getNickname().isPresent() ? this.getNickname().get() : ""); // This is to update the entries in UserManager.
     }
 
     @Override
     public void clearNickname() {
         KiloServer.getServer().getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
-        this.nickname = null;
+        this.getSettings().set(Settings.NICKNAME, Optional.empty());
     }
 
     @Override
@@ -406,7 +399,6 @@ public class ServerUser implements User {
         homeHandler = null;
         location = null;
         lastLocation = null;
-        nickname = null;
         lastPrivateMessageGetterUUID = null;
         lastPrivateMessageText = null;
         firstJoin = null;

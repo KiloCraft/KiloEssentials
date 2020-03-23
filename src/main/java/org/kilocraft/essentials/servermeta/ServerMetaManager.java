@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.servermeta;
 
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -25,10 +26,20 @@ public class ServerMetaManager {
 
     public void updateAll() {
         for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-            if (playerEntity.networkHandler == null)
+            if (playerEntity.networkHandler == null) {
                 continue;
+            }
 
             PlayerListMeta.provideFor(playerEntity);
+        }
+    }
+
+    public void updateDisplayName(String name) {
+        ServerPlayerEntity player = KiloServer.getServer().getPlayer(name);
+        PlayerListS2CPacket playerListPacket = new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player);
+
+        if (player != null) {
+            KiloServer.getServer().getPlayerManager().sendToAll(playerListPacket);
         }
     }
 
