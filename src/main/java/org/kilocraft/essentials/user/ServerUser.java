@@ -3,21 +3,19 @@ package org.kilocraft.essentials.user;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.inventory.UserInventory;
@@ -25,18 +23,17 @@ import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.inventory.ServerUserInventory;
 import org.kilocraft.essentials.user.setting.ServerUserSettings;
-import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.NBTTypes;
-import org.kilocraft.essentials.util.NBTUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author CODY_AI
@@ -141,6 +138,7 @@ public class ServerUser implements User {
         // Misc stuff now.
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
+        mainTag.put("settings", this.settings.toTag());
         mainTag.putString("name", this.name);
         return mainTag;
     }
@@ -189,6 +187,8 @@ public class ServerUser implements User {
         if (UserHomeHandler.isEnabled()) {
             this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         }
+
+        this.settings.fromTag(compoundTag.getCompound("settings"));
     }
 
     public void updateLocation() {

@@ -119,5 +119,8 @@ public class Setting<T> {
             return this.setting;
         }
 
+        public void set(T value) {
+            this.value = value;
+        }
     }
 }
