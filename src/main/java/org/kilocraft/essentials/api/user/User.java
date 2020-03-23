@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.inventory.UserInventory;
+import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
@@ -21,6 +22,8 @@ public interface User {
 
     String getUsername();
 
+    UserSettings getSettings();
+
     boolean isOnline();
 
     boolean hasNickname();
@@ -34,8 +37,6 @@ public interface User {
     Text getRankedName();
 
     String getNameTag();
-
-    List<String> getSubscriptionChannels();
 
     String getUpstreamChannelId();
 

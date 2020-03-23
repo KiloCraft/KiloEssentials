@@ -21,11 +21,14 @@ import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.inventory.UserInventory;
+import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.inventory.ServerUserInventory;
+import org.kilocraft.essentials.user.setting.ServerUserSettings;
+import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.NBTTypes;
 import org.kilocraft.essentials.util.NBTUtils;
 
@@ -47,29 +50,20 @@ public class ServerUser implements User {
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     UUID uuid;
     String name = "";
+    private ServerUserSettings settings;
     private UserHomeHandler homeHandler;
     private UserInventory inventory;
     private Vec3dLocation location;
     private Vec3dLocation lastLocation;
     private String nickname;
-    private boolean canFly = false;
-    private boolean invulnerable = false;
     private UUID lastPrivateMessageGetterUUID;
     private String lastPrivateMessageText = "";
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
     private int randomTeleportsLeft = 3;
     public int messageCooldown;
-    private List<String> subscriptions;
-    private String upstreamChannelId;
-    private boolean socialSpy = false;
-    private boolean commandSpy = false;
-    private boolean canSit = false;
-    private Map<String, UUID> ignoreList;
-    private boolean acceptsMessages = true;
     boolean isStaff = false;
     String lastSocketAddress;
-    GameMode gameMode = GameMode.NOT_SET;
     int ticksPlayed = 0;
 
     public ServerUser(UUID uuid) {
@@ -78,8 +72,11 @@ public class ServerUser implements User {
 
     public ServerUser(final UUID uuid, final @Nullable ServerPlayerEntity player) {
         this.uuid = uuid;
-        if (UserHomeHandler.isEnabled())
+        this.settings = new ServerUserSettings(this);
+
+        if (UserHomeHandler.isEnabled()) {
             this.homeHandler = new UserHomeHandler(this);
+        }
 
         this.inventory = player == null ? new ServerUserInventory(this) : new ServerUserInventory(this, player);
 
@@ -90,7 +87,6 @@ public class ServerUser implements User {
             e.printStackTrace();
         }
 
-        this.subscriptions = new ArrayList<>();
     }
 
     protected CompoundTag serialize() {
@@ -378,11 +374,6 @@ public class ServerUser implements User {
     }
 
     @Override
-    public List<String> getSubscriptionChannels() {
-        return this.subscriptions;
-    }
-
-    @Override
     public String getUpstreamChannelId() {
         return (this.upstreamChannelId != null) ? this.upstreamChannelId : GlobalChat.getChannelId();
     }
@@ -395,6 +386,11 @@ public class ServerUser implements User {
     @Override
     public String getUsername() {
         return this.name;
+    }
+
+    @Override
+    public UserSettings getSettings() {
+        return this.settings;
     }
 
     @Override
@@ -581,7 +577,6 @@ public class ServerUser implements User {
         lastPrivateMessageGetterUUID = null;
         lastPrivateMessageText = null;
         firstJoin = null;
-        subscriptions = null;
         upstreamChannelId = null;
         ignoreList = null;
     }
