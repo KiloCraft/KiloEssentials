@@ -27,6 +27,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.inventory.ServerUserInventory;
 import org.kilocraft.essentials.user.setting.ServerUserSettings;
 import org.kilocraft.essentials.util.NBTTypes;
+import org.kilocraft.essentials.util.UserUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -244,7 +245,7 @@ public class ServerUser implements User {
     }
 
     public String getDisplayName() {
-        return (this.getNickname().isPresent() || this.nickname != null) ? this.nickname : this.name;
+        return this.nickname != null ? this.nickname : this.name;
     }
 
     @Override
@@ -254,12 +255,12 @@ public class ServerUser implements User {
 
     @Override
     public Text getRankedDisplayName() {
-        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(getFormattedDisplayName()));
+        return UserUtils.getDisplayNameWithMeta(this, true);
     }
 
     @Override
     public Text getRankedName() {
-        return Team.modifyText(((OnlineUser) this).getPlayer().getScoreboardTeam(), new LiteralText(this.name));
+        return UserUtils.getDisplayNameWithMeta(this, false);
     }
 
     @Override
