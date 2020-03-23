@@ -27,11 +27,7 @@ public abstract class MinecraftServerMixin implements Brandable {
     @Shadow
     private long timeReference;
 
-    @Shadow @Final private ServerNetworkIo networkIo;
-
     @Shadow public abstract PlayerManager getPlayerManager();
-
-    @Shadow private PlayerManager playerManager;
 
     @Inject(at = @At(value = "HEAD"), method = "run")
     private void kilo$run(CallbackInfo ci) {

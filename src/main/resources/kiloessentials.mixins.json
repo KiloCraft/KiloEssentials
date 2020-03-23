@@ -16,8 +16,7 @@
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
     "CraftingScreenHandlerMixin",
-    "PlayerListS2CPacketMixin",
-    "ScoreboardMixin"
+    "PlayerListS2CPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1
