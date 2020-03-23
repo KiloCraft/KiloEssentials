@@ -17,6 +17,9 @@ public class Config {
             "\nYou can use Color Codes in string parameters, the character is \"&\" " +
             "More info at: https://minecraft.tools/en/color-code.php \ne.g: \"&eThe Yellow Thing\" will be yellow";
 
+    @Setting(value = "autoUserUpgrade", comment = "Automatically update the user data on the startup")
+    public boolean autoUserUpgrade = true;
+
     @Setting(value = "server")
     private ServerConfigSection serverSection = new ServerConfigSection();
 

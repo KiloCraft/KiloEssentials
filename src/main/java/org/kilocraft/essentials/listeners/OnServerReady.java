@@ -15,6 +15,6 @@ public class OnServerReady implements EventHandler<ServerReadyEvent> {
         BrandedServer.set();
         KiloServer.getServer().getMetaManager().load();
         WarpCommand.registerAliases();
-        //((ServerUserManager) KiloServer.getServer().getUserManager()).onServerReady();
+        ((ServerUserManager) KiloServer.getServer().getUserManager()).onServerReady();
     }
 }

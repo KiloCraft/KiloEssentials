@@ -82,7 +82,6 @@ public class ServerUser implements User {
             manager.getHandler().handleUser(this);
         } catch (IOException e) {
             KiloEssentials.getLogger().error("Failed to Load User Data [" + uuid.toString() + "]");
-            e.printStackTrace();
         }
 
     }

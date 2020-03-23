@@ -316,9 +316,9 @@ public class ServerUserManager implements UserManager {
     }
 
     public void onServerReady() {
-//        if (KiloConfig.main().autoUserUpgrade) {
-//            this.handler.upgrade();
-//        }
+        if (KiloConfig.main().autoUserUpgrade) {
+            this.handler.upgrade();
+        }
     }
 
 }
