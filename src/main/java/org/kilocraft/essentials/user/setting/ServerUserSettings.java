@@ -33,11 +33,21 @@ public class ServerUserSettings implements UserSettings {
 
     @Override
     public CompoundTag toTag() {
-        return null;
+        CompoundTag tag = new CompoundTag();
+        this.map.forEach((setting, value) -> {
+            tag.put(setting.getId(), setting.serialize(value));
+        });
+
+        return tag;
     }
 
     @Override
     public void fromTag(CompoundTag tag) {
-
+        this.map.forEach((setting, value) -> {
+            if (tag.contains(setting.getId())) {
+                this.map.remove(setting);
+                this.map.put(setting, setting.deserialize(tag));
+            }
+        });
     }
 }

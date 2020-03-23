@@ -1,10 +1,12 @@
 package org.kilocraft.essentials.api.user;
 
 import net.minecraft.network.ClientConnection;
+import net.minecraft.server.command.GameModeCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
@@ -49,5 +51,9 @@ public interface OnlineUser extends User {
     boolean hasPermission(CommandPermission perm);
 
     boolean hasPermission(EssentialPermission perm);
+
+    void setFlight(boolean set);
+
+    void setGameMode(GameMode mode);
 
 }

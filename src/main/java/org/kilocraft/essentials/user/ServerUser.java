@@ -21,6 +21,7 @@ import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.inventory.UserInventory;
+import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -60,7 +61,6 @@ public class ServerUser implements User {
     private String lastPrivateMessageText = "";
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
-    private int randomTeleportsLeft = 3;
     public int messageCooldown;
     boolean isStaff = false;
     String lastSocketAddress;
@@ -116,49 +116,8 @@ public class ServerUser implements User {
         // Chat channels stuff
         CompoundTag channelsCache = new CompoundTag();
 
-        if (this.upstreamChannelId != null) {
-            channelsCache.putString("upstreamChannelId", this.upstreamChannelId);
-            cacheTag.put("channels", channelsCache);
-        }
-
         if (this.lastSocketAddress != null) {
             cacheTag.putString("lIP", this.lastSocketAddress);
-        }
-
-        if (this.gameMode != GameMode.NOT_SET) {
-            cacheTag.putInt("gameMode", this.gameMode.getId());
-        }
-
-        // Abilities
-        if (this.canFly)
-            cacheTag.putBoolean("isFlyEnabled", true);
-
-        if (this.invulnerable)
-            cacheTag.putBoolean("isInvulnerable", true);
-
-        if (this.socialSpy)
-            cacheTag.putBoolean("socialSpy", true);
-
-        if (this.socialSpy)
-            cacheTag.putBoolean("commandSpy", true);
-
-        if (this.canSit)
-            cacheTag.putBoolean("canSit", true);
-
-        if (this.ignoreList != null) {
-            ListTag listTag = new ListTag();
-            this.ignoreList.forEach((name, uuid) -> {
-                CompoundTag ignoredOne = new CompoundTag();
-                NBTUtils.putUUID(ignoredOne, "uuid", uuid);
-                ignoredOne.putString("name", name);
-                listTag.add(ignoredOne);
-            });
-
-            cacheTag.put("ignored", listTag);
-        }
-
-        if (!this.acceptsMessages) {
-            cacheTag.putBoolean("acceptsMessages", false);
         }
 
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
@@ -180,7 +139,6 @@ public class ServerUser implements User {
         }
 
         // Misc stuff now.
-        mainTag.putInt("rtpLeft", this.randomTeleportsLeft);
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
         mainTag.putString("name", this.name);
@@ -212,50 +170,8 @@ public class ServerUser implements User {
 
         }
 
-        if (cacheTag.contains("channels", NBTTypes.COMPOUND)) {
-            CompoundTag channelsTag = cacheTag.getCompound("channels");
-
-            if (channelsTag.contains("upstreamChannelId", NBTTypes.STRING))
-                this.upstreamChannelId = channelsTag.getString("upstreamChannelId");
-            else
-                this.upstreamChannelId = GlobalChat.getChannelId();
-        }
-
         if (cacheTag.contains("lIP")) {
             this.lastSocketAddress = cacheTag.getString("lIP");
-        }
-
-        if (cacheTag.contains("gameMode")) {
-            this.gameMode = GameMode.byId(cacheTag.getInt("gameMode"));
-        }
-
-        if (cacheTag.getBoolean("isFlyEnabled")) {
-            this.canFly = true;
-        }
-        
-        if (cacheTag.getBoolean("isInvulnerable")) {
-            this.invulnerable = true;
-        }
-
-        if (cacheTag.contains("socialSpy"))
-            this.socialSpy = cacheTag.getBoolean("socialSpy");
-        if (cacheTag.contains("commandSpy"))
-            this.commandSpy = cacheTag.getBoolean("commandSpy");
-
-        if (cacheTag.contains("canSit"))
-            this.canSit = cacheTag.getBoolean("canSit");
-
-        ListTag ignoreList = cacheTag.getList("ignored", 10);
-        if (ignoreList != null && !ignoreList.isEmpty()) {
-            this.ignoreList = new HashMap<>();
-            for (int i = 0; i < ignoreList.size(); i++) {
-                CompoundTag ignoredOne = ignoreList.getCompound(i);
-                this.ignoreList.put(ignoredOne.getString("name"), NBTUtils.getUUID(ignoredOne, "uuid"));
-            }
-        }
-
-        if (cacheTag.contains("acceptMessages")) {
-            this.acceptsMessages = cacheTag.getBoolean("acceptsMessages");
         }
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
@@ -273,8 +189,6 @@ public class ServerUser implements User {
         if (UserHomeHandler.isEnabled()) {
             this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         }
-
-        this.randomTeleportsLeft = compoundTag.getInt("rtpLeft");
     }
 
     public void updateLocation() {
@@ -301,29 +215,6 @@ public class ServerUser implements User {
     @Override
     public String getLastSocketAddress() {
         return this.lastSocketAddress;
-    }
-
-    @Override
-    public GameMode getGameMode() {
-        return this.gameMode;
-    }
-
-    @Override
-    public void setGameMode(GameMode mode) {
-        this.gameMode = mode;
-
-        if (this.isOnline())
-            ((OnlineUser) this).getPlayer().setGameMode(mode);
-    }
-
-    @Override
-    public boolean canSit() {
-        return this.canSit;
-    }
-
-    @Override
-    public void setCanSit(boolean set) {
-        this.canSit = set;
     }
 
     @Override
@@ -374,11 +265,6 @@ public class ServerUser implements User {
     }
 
     @Override
-    public String getUpstreamChannelId() {
-        return (this.upstreamChannelId != null) ? this.upstreamChannelId : GlobalChat.getChannelId();
-    }
-
-    @Override
     public UUID getUuid() {
         return this.uuid;
     }
@@ -391,6 +277,11 @@ public class ServerUser implements User {
     @Override
     public UserSettings getSettings() {
         return this.settings;
+    }
+
+    @Override
+    public <T> T getSetting(Setting<T> setting) {
+        return this.settings.get(setting);
     }
 
     @Override
@@ -437,31 +328,6 @@ public class ServerUser implements User {
     }
 
     @Override
-    public boolean canFly() {
-        return this.canFly;
-    }
-
-    @Override
-    public boolean isSocialSpyOn() {
-        return this.socialSpy;
-    }
-
-    @Override
-    public void setSocialSpyOn(boolean on) {
-        this.socialSpy = on;
-    }
-
-    @Override
-    public boolean isCommandSpyOn() {
-        return this.commandSpy;
-    }
-
-    @Override
-    public void setCommandSpyOn(boolean on) {
-        this.commandSpy = on;
-    }
-
-    @Override
     public UUID getLastPrivateMessageSender() {
         return this.lastPrivateMessageGetterUUID;
     }
@@ -482,31 +348,6 @@ public class ServerUser implements User {
     }
 
     @Override
-    public void setUpstreamChannelId(String id) {
-        this.upstreamChannelId = id;
-    }
-
-    @Override
-    public boolean isInvulnerable() {
-        return this.invulnerable;
-    }
-
-    public int getRTPsLeft() {
-    	return this.randomTeleportsLeft;
-    }
-
-    public void setRTPsLeft(int amount) {
-        this.randomTeleportsLeft = amount;
-    }
-
-    public void setFlight(boolean set) {
-        canFly = set;
-    }
-
-    public void setInvulnerable(boolean set) {
-        this.invulnerable = set;
-    }
-
     public void setLastMessageSender(UUID uuid) {
         this.lastPrivateMessageGetterUUID = uuid;
     }
@@ -539,26 +380,11 @@ public class ServerUser implements User {
         }
     }
 
-    public Map<String, UUID> getIgnoreList() {
-        if (this.ignoreList == null)
-            this.ignoreList = new HashMap<>();
-
-        return this.ignoreList;
-    }
-
     public boolean isStaff() {
         if (this.isOnline())
             this.isStaff = KiloEssentials.hasPermissionNode(((OnlineUser) this).getCommandSource(), EssentialPermission.STAFF);
 
         return this.isStaff;
-    }
-
-    public final boolean acceptsMessages() {
-        return this.acceptsMessages;
-    }
-
-    public final void setAcceptsMessages(final boolean set) {
-        this.acceptsMessages = set;
     }
 
     @SuppressWarnings({"untested", "Do Not Run If the User is Online"})
@@ -577,8 +403,7 @@ public class ServerUser implements User {
         lastPrivateMessageGetterUUID = null;
         lastPrivateMessageText = null;
         firstJoin = null;
-        upstreamChannelId = null;
-        ignoreList = null;
+        settings = null;
     }
 
     @Override

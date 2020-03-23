@@ -26,6 +26,7 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
+import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -155,10 +156,19 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void setFlight(final boolean set) {
-        super.setFlight(true);
+        super.getSettings().set(Settings.CAN_FLY, true);
         this.getPlayer().abilities.allowFlying = set;
         this.getPlayer().abilities.flying = set;
         this.getPlayer().sendAbilitiesUpdate();
+    }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+        super.getSettings().set(Settings.GAME_MODE, mode);
+
+        if (this.isOnline()) {
+            ((OnlineUser) this).getPlayer().setGameMode(mode);
+        }
     }
 
     @Override
@@ -186,7 +196,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public void onJoined() {
-        this.setFlight(this.canFly());
+        this.setFlight(super.getSetting(Settings.CAN_FLY));
 
         SocketAddress socketAddress = GlobalUtils.getSocketAddress(super.uuid);
         if (socketAddress != null) {
@@ -195,11 +205,12 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         messageCooldown = 0;
 
+        GameMode gameMode = super.getSetting(Settings.GAME_MODE);
         if (gameMode == GameMode.NOT_SET) {
             gameMode = this.getPlayer().interactionManager.getGameMode();
         }
 
-        this.setGameMode(this.gameMode);
+        this.setGameMode(gameMode);
 
         if (ticksPlayed <= 0) {
             ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));

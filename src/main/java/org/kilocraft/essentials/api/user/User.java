@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.inventory.UserInventory;
+import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -24,6 +25,8 @@ public interface User {
 
     UserSettings getSettings();
 
+    <T> T getSetting(Setting<T> setting);
+
     boolean isOnline();
 
     boolean hasNickname();
@@ -37,8 +40,6 @@ public interface User {
     Text getRankedName();
 
     String getNameTag();
-
-    String getUpstreamChannelId();
 
     Optional<String> getNickname();
 
@@ -55,32 +56,10 @@ public interface User {
 
     void setLastLocation(Location loc);
 
-    boolean canFly();
-
-    void setFlight(boolean set);
-
-    boolean isSocialSpyOn();
-
-    void setSocialSpyOn(boolean on);
-
-    boolean isCommandSpyOn();
-
-    void setCommandSpyOn(boolean on);
-
     boolean hasJoinedBefore();
 
     @Nullable
     Date getFirstJoin();
-
-    void setUpstreamChannelId(String id);
-
-    boolean isInvulnerable();
-
-    void setInvulnerable(boolean set);
-
-    int getRTPsLeft();
-
-    void setRTPsLeft(int amount);
 
     @Nullable
     UUID getLastPrivateMessageSender();
@@ -98,14 +77,6 @@ public interface User {
 
     @Nullable
     String getLastSocketAddress();
-
-    GameMode getGameMode();
-
-    void setGameMode(GameMode mode);
-
-    boolean canSit();
-
-    void setCanSit(boolean set);
 
     int getTicksPlayed();
 

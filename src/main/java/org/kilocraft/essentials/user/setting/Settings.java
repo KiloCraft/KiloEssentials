@@ -1,9 +1,11 @@
 package org.kilocraft.essentials.user.setting;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.world.GameMode;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.util.NBTUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,20 +18,25 @@ public class Settings {
     public static final Setting<Boolean> COMMAND_SPY = new Setting<>("command_spy", false);
     public static final Setting<Boolean> CAN_SEAT = new Setting<>("can_sit", false);
     public static final Setting<GameMode> GAME_MODE = new Setting<>("gamemode", GameMode.NOT_SET);
-    public static final Setting<Map<String, UUID>> IGNORE_LIST = new Setting<>("ignore_list", new HashMap<>());
+    public static final Setting<Map<String, UUID>> IGNORE_LIST = new Setting<Map<String, UUID>>(
+            "ignore_list", new HashMap<>(),
+            (fun) -> {
+                ListTag listTag = new ListTag();
+                fun.value().forEach((name, uuid) -> {
+                    CompoundTag ignoredOne = new CompoundTag();
+                    NBTUtils.putUUID(ignoredOne, "uuid", uuid);
+                    ignoredOne.putString("name", name);
+                    listTag.add(ignoredOne);
+                });
+
+                fun.tag().put(fun.setting().getId(), listTag);
+            }, (fun) -> {
+                ListTag listTag = fun.tag().getList(fun.setting().getId(), 10);
+                for (int i = 0; i < listTag.size(); i++) {
+                    CompoundTag ignoredOne = listTag.getCompound(i);
+                    fun.value().put(ignoredOne.getString("name"), NBTUtils.getUUID(ignoredOne, "uuid"));
+            }
+    });
     public static final Setting<String> UP_STREAM_CHANNEL = new Setting<>("up_stream_channel", GlobalChat.getChannelId());
-
-    public static <T> CompoundTag toTag(Setting<T> setting, T value) {
-        CompoundTag tag = new CompoundTag();
-
-        if (value instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) value;
-            map.forEach((k, v) -> {
-
-            });
-        }
-
-        return tag;
-    }
-
+    public static final Setting<Integer> RANDOM_TELEPORTS_LEFT = new Setting<>("rtps_left", 0);
 }

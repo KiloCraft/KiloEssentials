@@ -34,7 +34,7 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.io.IOException;
 import java.util.*;
 
-public class CommandSourceServerUser implements CommandSourceUser {
+public abstract class CommandSourceServerUser implements CommandSourceUser {
     private ServerCommandSource source;
 
     public CommandSourceServerUser(ServerCommandSource source) {
@@ -94,19 +94,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
         return this.getDisplayName();
     }
 
-    @Nullable
-    @Override
-    public List<String> getSubscriptionChannels() {
-        return new ArrayList<String>(){{
-            add(GlobalChat.getChannelId());
-        }};
-    }
-
-    @Override
-    public String getUpstreamChannelId() {
-        return GlobalChat.getChannelId();
-    }
-
     @Override
     public Optional<String> getNickname() {
         return Optional.empty();
@@ -123,169 +110,8 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void saveLocation() {
-    }
-
-    @Override
-    public void setNickname(String name) {
-    }
-
-    @Override
-    public void clearNickname() {
-    }
-
-    @Override
-    public void setLastLocation(Location loc) {
-    }
-
-    @Override
-    public boolean canFly() {
-        return false;
-    }
-
-    @Override
-    public void setFlight(boolean set) {
-    }
-
-    @Override
-    public boolean isSocialSpyOn() {
-        return false;
-    }
-
-    @Override
-    public void setSocialSpyOn(boolean on) {
-    }
-
-    @Override
-    public boolean isCommandSpyOn() {
-        return false;
-    }
-
-    @Override
-    public void setCommandSpyOn(boolean on) {
-    }
-
-    @Override
-    public boolean hasJoinedBefore() {
-        return true;
-    }
-
-    @Override
-    public @Nullable Date getFirstJoin() {
-        return null;
-    }
-
-    @Override
-    public void setUpstreamChannelId(String id) {
-    }
-
-    @Override
-    public boolean isInvulnerable() {
-        return false;
-    }
-
-    @Override
-    public void setInvulnerable(boolean set) {
-    }
-
-    @Override
-    public int getRTPsLeft() {
-        return 0;
-    }
-
-    @Override
-    public void setRTPsLeft(int amount) {
-    }
-
-    @Override
-    public @Nullable UUID getLastPrivateMessageSender() {
-        return null;
-    }
-
-    @Override
-    public @Nullable String getLastPrivateMessage() {
-        return null;
-    }
-
-    @Override
-    public void setLastMessageSender(UUID uuid) {
-    }
-
-    @Override
-    public void setLastPrivateMessage(String message) {
-
-    }
-
-    @Override
-    public <F extends UserProvidedFeature> F feature(FeatureType<F> type) {
-        return null;
-    }
-
-    @Override
-    public UserHomeHandler getHomesHandler() {
-        return null;
-    }
-
-    @Override
-    public @Nullable String getLastSocketAddress() {
-        return null;
-    }
-
-    @Override
-    public GameMode getGameMode() {
-        try {
-            return CommandUtils.isConsole(this.source) ? GameMode.NOT_SET :
-                    Objects.requireNonNull(this.getUser()).getGameMode();
-        } catch (CommandSyntaxException ignored) {
-        }
-
-        return GameMode.NOT_SET;
-    }
-
-    @Override
-    public void setGameMode(GameMode mode) {
-        if (!CommandUtils.isConsole(this.source)) {
-            try {
-                Objects.requireNonNull(this.getUser()).setGameMode(mode);
-            } catch (CommandSyntaxException ignore) {
-            }
-        }
-    }
-
-    @Override
-    public boolean canSit() {
-        return false;
-    }
-
-    @Override
-    public void setCanSit(boolean set) {
-    }
-
-    @Override
-    public int getTicksPlayed() {
-        return 0;
-    }
-
-    @Override
-    public void setTicksPlayed(int minutes) {
-    }
-
-    @Override
-    public void saveData() throws IOException {
-    }
-
-    @Override
-    public void trySave() throws CommandSyntaxException {
-    }
-
-    @Override
     public boolean equals(User anotherUser) {
         return this.source.getName().equals(anotherUser.getUsername());
-    }
-
-    @Override
-    public @Nullable UserInventory getInventory() {
-        return null;
     }
 
     @Nullable
@@ -301,10 +127,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public ServerCommandSource getCommandSource() {
         return this.source;
-    }
-
-    @Override
-    public void teleport(Location loc, boolean sendTicket) {
     }
 
     @Override
@@ -346,31 +168,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
     public void sendConfigMessage(String key, Object... objects) {
         String string = KiloConfig.getMessage(key, objects);
         KiloChat.sendMessageToSource(this.source, new ChatMessage(string, true));
-    }
-
-    @Nullable
-    @Override
-    public ClientConnection getConnection() {
-        return null;
-    }
-
-    @Override
-    public Vec3dLocation getLocationAsVector() {
-        return null;
-    }
-
-    @Override
-    public Vec3d getEyeLocation() {
-        return new Vec3d(0, 0, 0);
-    }
-
-    @Override
-    public void setSittingType(PlayerSitManager.SummonType type) {
-    }
-
-    @Override
-    public @Nullable PlayerSitManager.SummonType getSittingType() {
-        return null;
     }
 
     @Override
