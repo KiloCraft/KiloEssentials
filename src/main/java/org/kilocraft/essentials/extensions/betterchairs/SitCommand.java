@@ -13,6 +13,7 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.mixin.accessor.EntityAccessor;
+import org.kilocraft.essentials.user.setting.Settings;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -43,9 +44,9 @@ public class SitCommand extends EssentialCommand {
     private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
         String input = getString(ctx, "set");
-        user.setCanSit(input.equalsIgnoreCase("toggle") ? !user.canSit() : input.equals("on"));
+        user.getSettings().set(Settings.CAN_SEAT, input.equalsIgnoreCase("toggle") ? !user.getSetting(Settings.CAN_SEAT) : input.equals("on"));
 
-        if (user.canSit())
+        if (user.getSetting(Settings.CAN_SEAT))
             user.sendLangMessage("command.sit.enabled");
         else
             user.sendLangMessage("command.sit.disabled");
@@ -74,7 +75,7 @@ public class SitCommand extends EssentialCommand {
         String input = getString(ctx, "set");
         boolean bool = input.equals("on");
 
-        target.setCanSit(bool);
+        target.getSettings().set(Settings.CAN_SEAT, bool);
         KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "canSit", bool, target.getUsername());
         return SINGLE_SUCCESS;
     }

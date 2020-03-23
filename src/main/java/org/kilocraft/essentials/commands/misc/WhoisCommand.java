@@ -13,8 +13,10 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
@@ -68,9 +70,11 @@ public class WhoisCommand extends EssentialCommand {
                         target.getLastSocketAddress()
                 )
         );
+
+        UserSettings settings = target.getSettings();
         text.append("Abilities",
                 new String[]{"Invulnerable", "May Fly", "May Seat", "Online", "isStaff", "GameMode"},
-                target.isInvulnerable(), target.canFly(), target.canSit(), target.isOnline(), ((ServerUser) target).isStaff(), target.getGameMode().getName()
+                settings.get(Settings.INVULNERABLE), settings.get(Settings.CAN_FLY), settings.get(Settings.CAN_SEAT), target.isOnline(), ((ServerUser) target).isStaff(), settings.get(Settings.GAME_MODE).getName()
         );
 
         if (target.getTicksPlayed() >= 0) {
@@ -82,9 +86,9 @@ public class WhoisCommand extends EssentialCommand {
         }
 
         text.append("Meta", new String[]{"Homes", "RTPs", "UpStreamChannelId"},
-                target.getHomesHandler().homes(), target.getRTPsLeft(), target.getUpstreamChannelId());
+                target.getHomesHandler().homes(), target.getSetting(Settings.RANDOM_TELEPORTS_LEFT), target.getSetting(Settings.UP_STREAM_CHANNEL));
         text.append("Is Spying", new String[]{"On Commands", "On Social"},
-                target.isCommandSpyOn(), target.isSocialSpyOn());
+                target.getSetting(Settings.COMMAND_SPY), target.getSetting(Settings.SOCIAL_SPY));
 
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         text.append("Location", new String[]{"x", "y", "z", "World"},

@@ -23,6 +23,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.chat.channels.StaffChat;
+import org.kilocraft.essentials.user.setting.Settings;
 
 import java.util.UUID;
 
@@ -57,18 +58,18 @@ public class StaffmsgCommand extends EssentialCommand {
 
     private static int executeJoin(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
-        user.setUpstreamChannelId(StaffChat.getChannelId());
+        user.getSettings().set(Settings.UP_STREAM_CHANNEL, StaffChat.getChannelId());
         KiloChat.sendLangMessageTo(source, "command.setchannel.set_upstream",
-                user.getUpstreamChannelId(), user.getRankedDisplayName().asFormattedString());
+                user.getSetting(Settings.UP_STREAM_CHANNEL), user.getRankedDisplayName().asFormattedString());
 
         return SINGLE_SUCCESS;
     }
 
     private static int executeLeave(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
-        user.setUpstreamChannelId(GlobalChat.getChannelId());
+        user.getSettings().set(Settings.UP_STREAM_CHANNEL, GlobalChat.getChannelId());
         KiloChat.sendLangMessageTo(source, "command.setchannel.set_upstream",
-                user.getUpstreamChannelId(), user.getRankedDisplayName().asFormattedString());
+                user.getSetting(Settings.UP_STREAM_CHANNEL), user.getRankedDisplayName().asFormattedString());
 
         return SINGLE_SUCCESS;
     }

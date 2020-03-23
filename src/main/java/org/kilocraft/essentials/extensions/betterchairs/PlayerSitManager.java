@@ -27,6 +27,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.RegistryUtils;
 
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class PlayerSitManager implements ConfigurableFeature {
         if (hitResult.getSide() == Direction.DOWN)
             return false;
 
-        if (!KiloServer.getServer().getOnlineUser(player).canSit())
+        if (!KiloServer.getServer().getOnlineUser(player).getSetting(Settings.CAN_SEAT))
             return false;
 
         BlockPos targetBlock = hitResult.getBlockPos();
@@ -93,7 +94,7 @@ public class PlayerSitManager implements ConfigurableFeature {
     }
 
     public boolean sitOn(ServerPlayerEntity player, Vec3dLocation loc, SummonType type, boolean swingHand) {
-        if (player.isSpectator() || !KiloServer.getServer().getOnlineUser(player).canSit())
+        if (player.isSpectator() || !KiloServer.getServer().getOnlineUser(player).getSetting(Settings.CAN_SEAT))
             return false;
 
         ArmorStandEntity armorStand = EntityType.ARMOR_STAND.create(loc.getWorld(), null,

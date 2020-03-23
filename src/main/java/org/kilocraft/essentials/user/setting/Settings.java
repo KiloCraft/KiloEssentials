@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user.setting;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.GameMode;
@@ -39,4 +40,5 @@ public class Settings {
     });
     public static final Setting<String> UP_STREAM_CHANNEL = new Setting<>("up_stream_channel", GlobalChat.getChannelId());
     public static final Setting<Integer> RANDOM_TELEPORTS_LEFT = new Setting<>("rtps_left", 0);
+    public static final Setting<Boolean> DON_NOT_DISTURB = new Setting<>("do_not_disturb", false);
 }

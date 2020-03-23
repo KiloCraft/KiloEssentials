@@ -425,4 +425,8 @@ public class ServerUser implements User {
         }
     }
 
+    public boolean shouldMessage() {
+        return true;
+    }
+
 }

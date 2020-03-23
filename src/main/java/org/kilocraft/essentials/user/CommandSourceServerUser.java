@@ -21,6 +21,8 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.inventory.UserInventory;
+import org.kilocraft.essentials.api.user.settting.Setting;
+import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
@@ -34,7 +36,7 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.io.IOException;
 import java.util.*;
 
-public abstract class CommandSourceServerUser implements CommandSourceUser {
+public class CommandSourceServerUser implements CommandSourceUser {
     private ServerCommandSource source;
 
     public CommandSourceServerUser(ServerCommandSource source) {
@@ -57,6 +59,16 @@ public abstract class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public String getUsername() {
         return this.source.getName();
+    }
+
+    @Override
+    public UserSettings getSettings() {
+        return null;
+    }
+
+    @Override
+    public <T> T getSetting(Setting<T> setting) {
+        return null;
     }
 
     @Override
@@ -110,8 +122,98 @@ public abstract class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public void saveLocation() {
+
+    }
+
+    @Override
+    public void setNickname(String name) {
+
+    }
+
+    @Override
+    public void clearNickname() {
+
+    }
+
+    @Override
+    public void setLastLocation(Location loc) {
+
+    }
+
+    @Override
+    public boolean hasJoinedBefore() {
+        return false;
+    }
+
+    @Override
+    public @Nullable Date getFirstJoin() {
+        return null;
+    }
+
+    @Override
+    public @Nullable UUID getLastPrivateMessageSender() {
+        return null;
+    }
+
+    @Override
+    public @Nullable String getLastPrivateMessage() {
+        return null;
+    }
+
+    @Override
+    public void setLastMessageSender(UUID uuid) {
+
+    }
+
+    @Override
+    public void setLastPrivateMessage(String message) {
+
+    }
+
+    @Override
+    public <F extends UserProvidedFeature> F feature(FeatureType<F> type) {
+        return null;
+    }
+
+    @Override
+    public UserHomeHandler getHomesHandler() {
+        return null;
+    }
+
+    @Override
+    public @Nullable String getLastSocketAddress() {
+        return null;
+    }
+
+    @Override
+    public int getTicksPlayed() {
+        return 0;
+    }
+
+    @Override
+    public void setTicksPlayed(int ticks) {
+
+    }
+
+    @Override
+    public void saveData() throws IOException {
+
+    }
+
+    @Override
+    public void trySave() throws CommandSyntaxException {
+
+    }
+
+    @Override
     public boolean equals(User anotherUser) {
         return this.source.getName().equals(anotherUser.getUsername());
+    }
+
+    @Override
+    public @Nullable UserInventory getInventory() {
+        return null;
     }
 
     @Nullable
@@ -127,6 +229,11 @@ public abstract class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public ServerCommandSource getCommandSource() {
         return this.source;
+    }
+
+    @Override
+    public void teleport(Location loc, boolean sendTicket) {
+
     }
 
     @Override
@@ -171,6 +278,31 @@ public abstract class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public ClientConnection getConnection() {
+        return null;
+    }
+
+    @Override
+    public Vec3dLocation getLocationAsVector() {
+        return null;
+    }
+
+    @Override
+    public Vec3d getEyeLocation() {
+        return null;
+    }
+
+    @Override
+    public void setSittingType(PlayerSitManager.SummonType type) {
+
+    }
+
+    @Override
+    public @Nullable PlayerSitManager.SummonType getSittingType() {
+        return null;
+    }
+
+    @Override
     public boolean hasPermission(CommandPermission perm) {
         if (this.isOnline() && !this.isConsole()) {
             try {
@@ -194,6 +326,16 @@ public abstract class CommandSourceServerUser implements CommandSourceUser {
         }
 
         return false;
+    }
+
+    @Override
+    public void setFlight(boolean set) {
+
+    }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+
     }
 
     @Override

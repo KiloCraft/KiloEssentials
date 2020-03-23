@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.user.setting.Settings;
 
 import java.util.Map;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public class IgnorelistCommand extends EssentialCommand {
     private int execute(CommandContext<ServerCommandSource> ctx, String target) throws CommandSyntaxException {
         OnlineUser src = getOnlineUser(ctx);
         essentials.getUserThenAcceptAsync(src, target, (user) -> {
-            Map<String, UUID> ignoreList = ((ServerUser) user).getIgnoreList();
+            Map<String, UUID> ignoreList = user.getSetting(Settings.IGNORE_LIST);
 
             if (ignoreList.isEmpty()) {
                 src.sendLangMessage("command.ignorelist.empty");

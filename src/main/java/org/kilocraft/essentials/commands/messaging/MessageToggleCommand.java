@@ -6,11 +6,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.user.setting.Settings;
 
 public class MessageToggleCommand extends EssentialCommand {
     public MessageToggleCommand() {
-        super("messagetoggle", new String[]{"msgtoggle", "togglemessages", "togglemsg"});
+        super("messagetoggle", new String[]{"msgtoggle", "togglemessages", "togglemsg", "dontdisturb"});
         this.withUsage("command.messagetoggle.usage");
     }
 
@@ -22,9 +24,9 @@ public class MessageToggleCommand extends EssentialCommand {
     private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final ServerUser user = (ServerUser) this.getOnlineUser(ctx);
 
-        user.setAcceptsMessages(!user.acceptsMessages());
+        user.getSettings().set(Settings.DON_NOT_DISTURB, !user.getSetting(Settings.DON_NOT_DISTURB));
 
-        if (user.acceptsMessages()) {
+        if (user.getSetting(Settings.DON_NOT_DISTURB)) {
             ((OnlineUser) user).sendLangMessage("command.messagetoggle.on");
         } else {
             ((OnlineUser) user).sendLangMessage("command.messagetoggle.off");

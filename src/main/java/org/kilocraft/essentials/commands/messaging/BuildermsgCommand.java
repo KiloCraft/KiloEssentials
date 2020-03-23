@@ -24,6 +24,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.channels.BuilderChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.user.setting.Settings;
 
 import java.util.UUID;
 
@@ -66,7 +67,7 @@ public class BuildermsgCommand extends EssentialCommand {
     private static int executeJoin(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
         KiloServer.getServer().getChatManager().getChannel(BuilderChat.getChannelId()).join((ServerUser) user);
-        user.setUpstreamChannelId(BuilderChat.getChannelId());
+        user.getSettings().set(Settings.UP_STREAM_CHANNEL, BuilderChat.getChannelId());
 
         return SINGLE_SUCCESS;
     }
@@ -74,7 +75,7 @@ public class BuildermsgCommand extends EssentialCommand {
     private static int executeLeave(ServerCommandSource source, ServerPlayerEntity player) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
         KiloServer.getServer().getChatManager().getChannel(BuilderChat.getChannelId()).leave((ServerUser) user);
-        user.setUpstreamChannelId(GlobalChat.getChannelId());
+        user.getSettings().set(Settings.UP_STREAM_CHANNEL, GlobalChat.getChannelId());
         return SINGLE_SUCCESS;
     }
 

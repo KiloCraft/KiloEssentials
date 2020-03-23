@@ -26,8 +26,10 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.user.setting.Settings;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 public final class ServerChat {
@@ -120,34 +122,34 @@ public final class ServerChat {
     }
 
     public static void addSocialSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).setSocialSpyOn(true);
+        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.SOCIAL_SPY, true);
     }
 
     public static void removeSocialSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).setSocialSpyOn(false);
+        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.SOCIAL_SPY, false);
     }
 
     public static boolean isSocialSpy(final ServerPlayerEntity player) {
-        return KiloServer.getServer().getOnlineUser(player).isSocialSpyOn();
+        return KiloServer.getServer().getOnlineUser(player).getSetting(Settings.SOCIAL_SPY);
     }
 
     public static void addCommandSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).setCommandSpyOn(true);
+        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.COMMAND_SPY, true);
     }
 
     public static void removeCommandSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).setCommandSpyOn(false);
+        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.COMMAND_SPY, false);
     }
 
     public static boolean isCommandSpy(final ServerPlayerEntity player) {
-        return KiloServer.getServer().getOnlineUser(player).isCommandSpyOn();
+        return KiloServer.getServer().getOnlineUser(player).getSetting(Settings.COMMAND_SPY);
     }
 
     public static int executeSend(final ServerCommandSource source, final ServerPlayerEntity target, final String message) throws CommandSyntaxException {
         final OnlineUser user = KiloServer.getServer().getOnlineUser(target);
         final CommandSourceUser src = KiloServer.getServer().getCommandSourceUser(source);
 
-        if (!((ServerUser) user).acceptsMessages() && src.getUser() != null) {
+        if (!((ServerUser) user).shouldMessage() && src.getUser() != null) {
             if (!src.isConsole() && src.isOnline() &&  !((ServerUser) src.getUser()).isStaff()) {
                 throw ServerChat.CANT_MESSAGE_EXCEPTION.create();
             }
@@ -177,8 +179,8 @@ public final class ServerChat {
         final String me_format = ServerChat.config.privateChat().privateChatMeFormat;
         final String sourceName = source.getName();
 
-        if (CommandUtils.isPlayer(source) && ((ServerUser) target).getIgnoreList() != null &&
-                ((ServerUser) target).getIgnoreList().containsValue(source.getPlayer().getUuid())) {
+        Map<String, UUID> ignoreList =  target.getSetting(Settings.IGNORE_LIST);
+        if (CommandUtils.isPlayer(source) && ignoreList.containsValue(source.getPlayer().getUuid())) {
             throw ServerChat.CANT_MESSAGE_EXCEPTION.create();
         }
 
@@ -199,7 +201,7 @@ public final class ServerChat {
                 new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.WHITE));
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isSocialSpyOn() && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user))
+            if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user))
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                     new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
         }
@@ -213,7 +215,7 @@ public final class ServerChat {
                 .replace("%MESSAGE%",  message);
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.isCommandSpyOn() && !CommandUtils.areTheSame(source, user))
+            if (user.getSetting(Settings.COMMAND_SPY) && !CommandUtils.areTheSame(source, user))
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                         new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
         }

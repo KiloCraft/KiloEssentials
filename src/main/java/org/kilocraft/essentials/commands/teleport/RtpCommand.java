@@ -34,6 +34,7 @@ import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
+import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
@@ -115,51 +116,51 @@ public class RtpCommand extends EssentialCommand {
 	private static int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getRTPsLeft());
+				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getSetting(Settings.RANDOM_TELEPORTS_LEFT));
 
-		return user.getRTPsLeft();
+		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
 	}
 
 	private static int executeAdd(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		int amountToAdd = getInteger(ctx, "amount");
-		user.setRTPsLeft(user.getRTPsLeft() + amountToAdd);
+		user.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, user.getSetting(Settings.RANDOM_TELEPORTS_LEFT) + amountToAdd);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayName());
+				.sendLangMessage("template.#1", "RTPs left", user.getSetting(Settings.RANDOM_TELEPORTS_LEFT), user.getDisplayName());
 
-		return user.getRTPsLeft();
+		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
 	}
 
 	private static int executeSet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		int amountToSet = getInteger(ctx, "amount");
-		user.setRTPsLeft(amountToSet);
+		user.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, amountToSet);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayName());
+				.sendLangMessage("template.#1", "RTPs left", user.getSetting(Settings.RANDOM_TELEPORTS_LEFT), user.getDisplayName());
 
-		return user.getRTPsLeft();
+		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
 	}
 
 	private static int executeGet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getRTPsLeft());
+				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getSetting(Settings.RANDOM_TELEPORTS_LEFT));
 
-		return user.getRTPsLeft();
+		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
 	}
 
 	private static int executeRemove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		int amountToRemove = getInteger(ctx, "amount");
 
-		if ((user.getRTPsLeft() - amountToRemove) < 0)
+		if ((user.getSetting(Settings.RANDOM_TELEPORTS_LEFT) - amountToRemove) < 0)
 			throw KiloCommands.getArgException(ArgExceptionMessageNode.NO_NEGATIVE_VALUES).create();
 
-		user.setRTPsLeft(user.getRTPsLeft() - amountToRemove);
+		user.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, user.getSetting(Settings.RANDOM_TELEPORTS_LEFT) - amountToRemove);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getRTPsLeft(), user.getDisplayName());
+				.sendLangMessage("template.#1", "RTPs left", user.getSetting(Settings.RANDOM_TELEPORTS_LEFT), user.getDisplayName());
 
-		return user.getRTPsLeft();
+		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
 	}
 
 	private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -199,11 +200,11 @@ public class RtpCommand extends EssentialCommand {
 			OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
 			CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
 
-			if (targetUser.getRTPsLeft() < 0)
-				targetUser.setRTPsLeft(0);
+			if (targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT) < 0)
+				targetUser.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, 0);
 
 			//Check if the player has any rtps left or permission to ignore the limit
-			if (CommandUtils.areTheSame(source, target) && targetUser.getRTPsLeft() <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
+			if (CommandUtils.areTheSame(source, target) && targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
 				targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
 				return;
 			}
@@ -240,7 +241,7 @@ public class RtpCommand extends EssentialCommand {
 
 			if (CommandUtils.areTheSame(source, target)) {
 				if (!PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
-					targetUser.setRTPsLeft(targetUser.getRTPsLeft() - 1);
+					targetUser.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT) - 1);
 				}
 			} else {
 				sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
@@ -249,7 +250,7 @@ public class RtpCommand extends EssentialCommand {
 			targetUser.sendMessage(new ChatMessage(
 					KiloConfig.messages().commands().rtp().teleported
 							.replace("{BIOME}", targetBiomeName)
-							.replace("{RTP_LEFT}", String.valueOf(targetUser.getRTPsLeft()))
+							.replace("{RTP_LEFT}", String.valueOf(targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT)))
 							.replace("{cord.X}", String.valueOf(randomX))
 							.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
 							.replace("{cord.Z}", String.valueOf(randomZ))

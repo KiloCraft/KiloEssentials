@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.user.setting.Settings;
 
 public class LocationUtil {
     public static int MAX_WORLD_HEIGHT = KiloServer.getServer().getVanillaServer().getWorldHeight();
@@ -26,7 +27,7 @@ public class LocationUtil {
     }
 
     public static boolean isBlockSafeFor(OnlineUser user, final Location loc) {
-        return user.getPlayer().isCreative() || user.isInvulnerable() || (isBlockSafe(loc) && !user.getPlayer().isFireImmune());
+        return user.getPlayer().isCreative() || user.getSetting(Settings.INVULNERABLE) || (isBlockSafe(loc) && !user.getPlayer().isFireImmune());
     }
 
     public static boolean isBlockSafe(final Location loc) {
