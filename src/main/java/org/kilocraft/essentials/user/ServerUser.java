@@ -46,6 +46,7 @@ import java.util.UUID;
 public class ServerUser implements User {
     protected static ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    short dataVer;
     UUID uuid;
     String name = "";
     private ServerUserSettings settings;
@@ -69,7 +70,7 @@ public class ServerUser implements User {
 
     public ServerUser(final UUID uuid, final @Nullable ServerPlayerEntity player) {
         this.uuid = uuid;
-        this.settings = new ServerUserSettings(this);
+        this.settings = new ServerUserSettings();
 
         if (UserHomeHandler.isEnabled()) {
             this.homeHandler = new UserHomeHandler(this);
@@ -110,9 +111,6 @@ public class ServerUser implements User {
             cacheTag.put("lastMessage", lastMessageTag);
         }
 
-        // Chat channels stuff
-        CompoundTag channelsCache = new CompoundTag();
-
         if (this.lastSocketAddress != null) {
             cacheTag.putString("lIP", this.lastSocketAddress);
         }
@@ -135,11 +133,16 @@ public class ServerUser implements User {
             mainTag.put("homes", homeTag);
         }
 
-        // Misc stuff now.
         mainTag.put("meta", metaTag);
         mainTag.put("cache", cacheTag);
         mainTag.put("settings", this.settings.toTag());
         mainTag.putString("name", this.name);
+
+        if (dataVer == 0) {
+            dataVer = UserHandler.DATA_VERSION;
+        }
+
+        mainTag.putShort("dataVer", this.dataVer);
         return mainTag;
     }
 
@@ -189,6 +192,10 @@ public class ServerUser implements User {
         }
 
         this.settings.fromTag(compoundTag.getCompound("settings"));
+
+        if (compoundTag.contains("dataVer")) {
+            this.dataVer = compoundTag.getShort("dataVer");
+        }
     }
 
     public void updateLocation() {

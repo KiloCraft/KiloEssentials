@@ -23,7 +23,6 @@ public class MessageCommand extends EssentialCommand {
         final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = this.argument("target", EntityArgumentType.player());
 
         final RequiredArgumentBuilder<ServerCommandSource, String> message = this.argument("message", StringArgumentType.greedyString())
-                .suggests(ArgumentCompletions::noSuggestions)
                 .executes(MessageCommand::execute);
 
         target.then(message);

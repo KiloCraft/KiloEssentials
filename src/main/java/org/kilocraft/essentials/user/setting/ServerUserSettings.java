@@ -3,27 +3,26 @@ package org.kilocraft.essentials.user.setting;
 import net.minecraft.nbt.CompoundTag;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
-import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ServerUserSettings implements UserSettings {
-    private Map<Setting<?>, Object> map;
+    private Map<String, Object> map;
 
-    public ServerUserSettings(ServerUser user) {
+    public ServerUserSettings() {
         this.map = new HashMap<>();
     }
 
     @Override
     public <T> void set(Setting<T> setting, T value) {
-        this.map.remove(setting);
-        this.map.put(setting, value);
+        this.map.remove(setting.getId());
+        this.map.put(setting.getId(), value);
     }
 
     @Override
     public <T> T get(Setting<T> setting) {
-        return (T) this.map.getOrDefault(setting, setting.getDefault());
+        return (T) this.map.getOrDefault(setting.getId(), setting.getDefault());
     }
 
     @Override
@@ -34,8 +33,11 @@ public class ServerUserSettings implements UserSettings {
     @Override
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
-        this.map.forEach((setting, value) -> {
-            tag.put(setting.getId(), setting.serialize(value));
+        this.map.forEach((id, value) -> {
+            Setting<?> setting = Settings.getById(id);
+            if (setting != null) {
+                setting.toTag(tag, value);
+            }
         });
 
         return tag;
@@ -43,11 +45,11 @@ public class ServerUserSettings implements UserSettings {
 
     @Override
     public void fromTag(CompoundTag tag) {
-        this.map.forEach((setting, value) -> {
-            if (tag.contains(setting.getId())) {
-                this.map.remove(setting);
-                this.map.put(setting, setting.deserialize(tag));
+        for (String key : tag.getKeys()) {
+            Setting<?> setting = Settings.getById(key);
+            if (setting != null) {
+                this.map.put(setting.getId(), setting.fromTag(tag));
             }
-        });
+        }
     }
 }

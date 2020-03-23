@@ -314,4 +314,11 @@ public class ServerUserManager implements UserManager {
             this.animatedText = null;
         }
     }
+
+    public void onServerReady() {
+//        if (KiloConfig.main().autoUserUpgrade) {
+//            this.handler.upgrade();
+//        }
+    }
+
 }

@@ -164,11 +164,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void setGameMode(GameMode mode) {
-        super.getSettings().set(Settings.GAME_MODE, mode);
-
-        if (this.isOnline()) {
-            ((OnlineUser) this).getPlayer().setGameMode(mode);
-        }
+        this.getPlayer().setGameMode(mode);
     }
 
     @Override
@@ -211,6 +207,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         }
 
         this.setGameMode(gameMode);
+        super.getSettings().set(Settings.GAME_MODE, gameMode);
 
         if (ticksPlayed <= 0) {
             ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));

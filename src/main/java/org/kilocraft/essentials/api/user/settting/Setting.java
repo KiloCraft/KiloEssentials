@@ -2,6 +2,7 @@ package org.kilocraft.essentials.api.user.settting;
 
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.user.setting.Settings;
 
 import java.util.function.Consumer;
 
@@ -15,6 +16,7 @@ public class Setting<T> {
     public Setting(@NotNull final String id, @NotNull final T defaultValue) {
         this.id = id;
         this.defaultValue = defaultValue;
+        Settings.list.add(this);
     }
 
     public Setting(@NotNull final String id, @NotNull final T defaultValue,
@@ -34,30 +36,10 @@ public class Setting<T> {
         return this.defaultValue;
     }
 
-    public CompoundTag serialize(@NotNull Object value) {
-        CompoundTag tag = new CompoundTag();
-
+    public void toTag(CompoundTag tag, Object value) throws IllegalArgumentException {
         if (this.hasCustomSerializer) {
             this.serializer.accept(new SerializerFunction(tag, (T) value, this));
-        } else {
-            put(tag, (T) value);
-        }
-
-        return tag;
-    }
-
-    public T deserialize(@NotNull CompoundTag tag) {
-        if (this.hasCustomSerializer) {
-            SerializerFunction function = new SerializerFunction(tag, this.defaultValue, this);
-            this.deserializer.accept(function);
-            return function.value;
-        }
-
-        return (T) get(tag);
-    }
-
-    private void put(CompoundTag tag, T value) throws IllegalArgumentException {
-        if (value instanceof String) {
+        } else if (value instanceof String) {
             tag.putString(this.id, (String) value);
         } else if (value instanceof Integer) {
             tag.putInt(this.id, (Integer) value);
@@ -76,8 +58,12 @@ public class Setting<T> {
         }
     }
 
-    private Object get(CompoundTag tag) throws IllegalArgumentException {
-        if (this.defaultValue instanceof String) {
+    public Object fromTag(CompoundTag tag) throws IllegalArgumentException {
+        if (this.hasCustomSerializer) {
+            SerializerFunction function = new SerializerFunction(tag, this.defaultValue, this);
+            this.deserializer.accept(function);
+            return function.value;
+        } else if (this.defaultValue instanceof String) {
             return tag.getString(this.id);
         } else if (this.defaultValue instanceof Integer) {
             return tag.getInt(this.id);

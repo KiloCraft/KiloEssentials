@@ -27,7 +27,6 @@ public class ReplyCommand extends EssentialCommand {
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = this.argument("message", greedyString())
-                .suggests(ArgumentCompletions::noSuggestions)
                 .executes(this::execute);
 
         this.commandNode.addChild(messageArgument.build());
