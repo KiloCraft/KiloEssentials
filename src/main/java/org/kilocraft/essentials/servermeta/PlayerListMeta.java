@@ -9,9 +9,17 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketMixin;
 import org.kilocraft.essentials.util.TPSTracker;
+import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
 public class PlayerListMeta {
     static String header = "", footer = "";
+    static String serverName;
+    static String serverTps;
+    static String serverFormattedTps;
+    static String serverPlayerCount;
+    static String serverMemoryMax;
+    static String serverMemoryPercentage;
+    static String serverFormattedMemoryPercentage;
 
     static void load() {
         header = KiloConfig.main().playerList().getHeader();
@@ -19,8 +27,9 @@ public class PlayerListMeta {
     }
 
     static void provideFor(ServerPlayerEntity player) {
-        if (player == null || player.networkHandler == null)
+        if (player == null || player.networkHandler == null) {
             return;
+        }
 
         PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket();
         ((PlayerListHeaderS2CPacketMixin) packet).setHeader(TextFormat.translateToLiteralText('&', getFormattedStringFor(player, header)));
@@ -36,12 +45,13 @@ public class PlayerListMeta {
                 .replaceAll("%PLAYER_DISPLAYNAME%", player.getDisplayName().asFormattedString())
                 .replaceAll("%PLAYER_PING%", String.valueOf(player.pingMilliseconds))
                 .replaceAll("%PLAYER_FORMATTED_PING%", TextFormat.getFormattedPing(player.pingMilliseconds))
-                .replaceAll("%USER_NAME%", user.getUsername())
                 .replaceAll("%USER_DISPLAYNAME%", user.getRankedDisplayName().asFormattedString())
-                .replaceAll("%SERVER_NAME%", server.getName())
-                .replaceAll("%SERVER_TPS%", TPSTracker.tps1.getShortAverage())
-                .replaceAll("%SERVER_FORMATTED_TPS%", "&" + TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()) + TPSTracker.tps1.getShortAverage() + "&r")
-                .replaceAll("%SERVER_PLAYER_COUNT%", String.valueOf(server.getPlayerManager().getCurrentPlayerCount()));
+                .replaceAll("%SERVER_NAME%", serverName)
+                .replaceAll("%SERVER_TPS%", serverTps)
+                .replaceAll("%SERVER_FORMATTED_TPS%", serverFormattedTps)
+                .replaceAll("%SERVER_PLAYER_COUNT%", serverPlayerCount)
+                .replaceAll("%SERVER_MEMORY_MAX%", serverMemoryMax)
+                .replaceAll("%SERVER_MEMORY_USAGE_PERCENTAGE%", serverFormattedMemoryPercentage);
     }
 
 }

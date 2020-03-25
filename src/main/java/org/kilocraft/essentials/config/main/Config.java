@@ -33,7 +33,9 @@ public class Config {
     @Setting(value = "world")
     private WorldConfigSection worldSection = new WorldConfigSection();
 
-    @Setting(value = "playerList", comment = "The appearance of the Player list")
+    @Setting(value = "playerList", comment = "The appearance of the Player list.\n" +
+            "Variables: User: %PLAYER_NAME%, %PLAYER_DISPLAYNAME%, %PLAYER_PING%, %PLAYER_FORMATTED_PING%, %USER_DISPLAYNAME%\n" +
+            "Server: %SERVER_NAME%, %SERVER_TPS%, %SERVER_FORMATTED_TPS%, %SERVER_PLAYER_COUNT%, %SERVER_MEMORY_MAX%, %SERVER_MEMORY_USAGE_PERCENTAGE%, %SERVER_FORMATTED_MEMORY_USAGE_PERCENTAGE%")
     private PlayerListConfigSection playerListSection = new PlayerListConfigSection();
 
     @Setting(value = "features", comment = "A Set of features you want to enable")

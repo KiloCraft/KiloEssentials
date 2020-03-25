@@ -406,6 +406,10 @@ public enum TextFormat {
         return 'c';
     }
 
+    public static char getFormattedPercentage(double percentage, boolean reverse) {
+        return percentage > 80 ? (reverse ? 'c' : 'a') : percentage < 40 ? (reverse ? 'a' : 'c') : 'e';
+    }
+
     static {
         for (TextFormat color : values()) {
             BY_ID.put(color.intCode, color);

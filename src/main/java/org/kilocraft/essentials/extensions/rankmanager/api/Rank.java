@@ -1,7 +1,11 @@
 package org.kilocraft.essentials.extensions.rankmanager.api;
 
+import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.extensions.rankmanager.api.permission.RankPermissions;
+
 public interface Rank {
     String getId();
-    String getDisplayName();
+    @Nullable String getDisplayName();
     RankMeta getMeta();
+    RankPermissions getPermission();
 }

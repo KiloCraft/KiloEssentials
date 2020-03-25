@@ -1,9 +1,18 @@
 package org.kilocraft.essentials.extensions.rankmanager.api;
 
-public interface RankMeta extends Comparable<Integer> {
+import org.jetbrains.annotations.Nullable;
+
+public interface RankMeta extends Comparable<RankMeta> {
     boolean isAfter(RankMeta meta);
     boolean isBefore(RankMeta meta);
+
     int getWeight();
-    String getPrefix();
-    String getSuffix();
+
+    void setWeight(int weight);
+
+    @Nullable String getPrefix();
+    @Nullable String getSuffix();
+
+    void setPrefix(String prefix);
+    void setSuffix(String suffix);
 }

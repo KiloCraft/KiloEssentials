@@ -11,6 +11,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -53,6 +54,8 @@ public class StatusCommand extends EssentialCommand {
     }
 
     private static String getInfo() throws Exception {
+        double cpuUsage = SystemMonitor.getCpuLoadPercentage();
+        double ramUsage = SystemMonitor.getRamUsedPercentage();
         return "&eGeneral status:&r\n" +
                 "&7- Platform: &6" + bean.getArch() + " &d" + System.getProperty("os.name") +
                 "\n&7- Server uptime: &6" + TimeDifferenceUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()) +
@@ -62,10 +65,10 @@ public class StatusCommand extends EssentialCommand {
                         getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(), getFormattedTPS(tps30.getAverage()), tps30.getShortAverage(),
                         getFormattedTPS(tps60.getAverage()), tps60.getShortAverage()) +
                 "\n&7- CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7:" +
-                " &6" + SystemMonitor.getCpuLoadPercentage() + "% Usage" +
+                " &" + TextFormat.getFormattedPercentage(cpuUsage, false) + cpuUsage + "&6% Usage" +
                 " &e" + Thread.activeCount() + " Running Threads" +
-                "\n&7- Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: &6" +
-                SystemMonitor.getRamUsedPercentage() + "% " +
+                "\n&7- Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: &" +
+                TextFormat.getFormattedPercentage(ramUsage, true) + ramUsage + "&6% " +
                 "&8(&e" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&e" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
                 "\n&7- Worlds&8:&e" +
