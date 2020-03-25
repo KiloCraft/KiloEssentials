@@ -26,11 +26,6 @@ public class ServerUserSettings implements UserSettings {
     }
 
     @Override
-    public <T> T getDefault(Setting<T> setting) {
-        return setting.getDefault();
-    }
-
-    @Override
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
         this.map.forEach((id, value) -> {

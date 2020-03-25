@@ -8,6 +8,4 @@ public interface UserSettings extends NBTSerializable {
 
     <T> T get(Setting<T> setting);
 
-    <T> T getDefault(Setting<T> setting);
-
 }

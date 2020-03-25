@@ -19,6 +19,7 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
@@ -34,7 +35,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-public class ServerUserManager implements UserManager {
+public class ServerUserManager implements UserManager, TickListener {
     private static final Pattern COMPILE = Pattern.compile(".dat");
     private final UserHandler handler = new UserHandler();
     private final List<OnlineUser> users = new ArrayList<>();
@@ -267,10 +268,12 @@ public class ServerUserManager implements UserManager {
 
     }
 
+    @Override
     public void onTick() {
         for (OnlineUser user : users) {
-            if (user == null)
+            if (user == null) {
                 continue;
+            }
 
             ((OnlineServerUser) user).onTick();
         }

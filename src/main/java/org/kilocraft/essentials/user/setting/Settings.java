@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.util.NBTUtils;
 
 import java.util.*;
@@ -20,6 +21,18 @@ public class Settings {
     public static final Setting<Boolean> SOCIAL_SPY = new Setting<>("social_spy", false);
     public static final Setting<Boolean> COMMAND_SPY = new Setting<>("command_spy", false);
     public static final Setting<Boolean> CAN_SEAT = new Setting<>("can_seat", false);
+    public static final Setting<SeatManager.SummonType> SEATING_TYPE = new Setting<SeatManager.SummonType>(
+            "seating_type", SeatManager.SummonType.NONE,
+            (fun) -> {
+                if (fun.value() != SeatManager.SummonType.NONE) {
+                    fun.tag().putString(fun.setting().getId(), fun.value().toString().toLowerCase(Locale.ROOT));
+                }
+            },
+            (fun) -> {
+                if (fun.tag().contains(fun.setting().getId())) {
+                    fun.set(SeatManager.SummonType.getByName(fun.tag().getString(fun.setting().getId())));
+                }
+            });
     public static final Setting<GameMode> GAME_MODE = new Setting<GameMode>(
             "gamemode", GameMode.NOT_SET,
             (fun) -> fun.tag().putInt(fun.setting().getId(), fun.value().getId()),
@@ -28,6 +41,10 @@ public class Settings {
     public static final Setting<Map<String, UUID>> IGNORE_LIST = new Setting<Map<String, UUID>>(
             "ignore_list", new HashMap<>(),
             (fun) -> {
+                if (fun.value().isEmpty()) {
+                    return;
+                }
+
                 ListTag listTag = new ListTag();
                 fun.value().forEach((name, uuid) -> {
                     CompoundTag ignoredOne = new CompoundTag();
@@ -38,6 +55,10 @@ public class Settings {
 
                 fun.tag().put(fun.setting().getId(), listTag);
             }, (fun) -> {
+                if (!fun.tag().contains(fun.setting().getId())) {
+                    return;
+                }
+
                 ListTag listTag = fun.tag().getList(fun.setting().getId(), 10);
                 for (int i = 0; i < listTag.size(); i++) {
                     Map<String, UUID> map = new HashMap<>();
@@ -56,7 +77,20 @@ public class Settings {
                 }
             }
     );
-    public static final Setting<String> UP_STREAM_CHANNEL = new Setting<>("up_stream_channel", GlobalChat.getChannelId());
+    public static final Setting<String> UP_STREAM_CHANNEL = new Setting<String>(
+            "up_stream_channel", GlobalChat.getChannelId(),
+            (fun) -> {
+                if (!fun.value().equals(GlobalChat.getChannelId())) {
+                    fun.set(fun.tag().getString(fun.setting().getId()));
+                }
+            }, (fun) -> {
+                if (!fun.tag().contains(fun.setting().getId())) {
+                    fun.set(GlobalChat.getChannelId());
+                } else {
+                    fun.set(fun.tag().getString(fun.setting().getId()));
+                }
+            }
+    );
     public static final Setting<Integer> RANDOM_TELEPORTS_LEFT = new Setting<>("rtps_left", 3);
     public static final Setting<Boolean> DON_NOT_DISTURB = new Setting<>("do_not_disturb", false);
 

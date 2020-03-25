@@ -27,7 +27,7 @@ import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
+import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
@@ -119,7 +119,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		FEATURES.tryToRegister(new UserHomeHandler(), "playerHomes");
 		FEATURES.tryToRegister(new ServerWarpManager(), "serverWideWarps");
 		FEATURES.tryToRegister(new PlayerWarpsManager(), "playerWarps");
-		FEATURES.tryToRegister(new PlayerSitManager(), "betterChairs");
+		FEATURES.tryToRegister(new SeatManager(), "betterChairs");
 		FEATURES.tryToRegister(new CustomCommands(), "customCommands");
 		FEATURES.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
 		FEATURES.tryToRegister(new DiscordCommand(), "discordCommand");
@@ -328,8 +328,8 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public void onServerStop() {
-		if (PlayerSitManager.INSTANCE != null && PlayerSitManager.enabled) {
-			PlayerSitManager.INSTANCE.killAll();
+		if (SeatManager.isEnabled()) {
+			SeatManager.getInstance().killAll();
 		}
 	}
 

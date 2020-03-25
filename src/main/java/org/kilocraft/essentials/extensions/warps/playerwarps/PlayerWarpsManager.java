@@ -7,7 +7,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
+import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.commands.PlayerWarpCommand;
 import org.kilocraft.essentials.provided.KiloFile;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTStorage {
+public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStorage {
     private static boolean enabled = false;
     private static ArrayList<String> byName = new ArrayList<>();
     private static List<PlayerWarp> warps = new ArrayList<>();

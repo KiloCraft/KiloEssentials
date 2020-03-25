@@ -12,17 +12,13 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.LocationUtil;
-
-import java.awt.*;
 
 public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEvent> {
     @Override
     public void handle(ServerScheduledUpdateEvent event) {
         KiloServer.getServer().getMetaManager().updateAll();
-        PlayerSitManager.INSTANCE.onScheduledUpdate();
 
         if (SharedConstants.isDevelopment) {
             KiloDebugUtils.INSTANCE.onScheduledUpdate();

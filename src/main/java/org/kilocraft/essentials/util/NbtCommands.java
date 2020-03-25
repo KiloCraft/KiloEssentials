@@ -31,7 +31,7 @@ public class NbtCommands {
             KiloEssentials.getServer().execute(player.getCommandSource(), listTag.getString(i));
         }
 
-        player.inventory.updateItems();
+        player.setStackInHand(hand, player.getStackInHand(hand));
         return true;
     }
 

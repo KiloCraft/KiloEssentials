@@ -12,7 +12,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -25,7 +24,6 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -34,7 +32,6 @@ import java.net.SocketAddress;
 import java.util.UUID;
 
 public class OnlineServerUser extends ServerUser implements OnlineUser {
-    private PlayerSitManager.SummonType sitState;
 
     @Override
     public ServerPlayerEntity getPlayer() {
@@ -109,17 +106,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     public Vec3d getEyeLocation() {
         final Vec3d vec = this.getPlayer().getPos();
         return new Vec3d(vec.getX(), this.getPlayer().getEyeY(), this.getPlayer().getPos().getZ());
-    }
-
-    @Override
-    public void setSittingType(final PlayerSitManager.SummonType type) {
-        this.sitState = type;
-    }
-
-    @Nullable
-    @Override
-    public PlayerSitManager.SummonType getSittingType() {
-        return this.sitState;
     }
 
     public static OnlineServerUser of(final UUID uuid) {

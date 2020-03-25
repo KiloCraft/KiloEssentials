@@ -1,21 +1,15 @@
 package org.kilocraft.essentials.user;
 
-import com.google.common.io.Files;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.apache.commons.lang3.time.StopWatch;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.util.NBTUtils;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class UserHandler {
@@ -73,67 +67,79 @@ public class UserHandler {
         return KiloEssentials.getDataDirPath().resolve("users").resolve(uuid.toString() + ".dat").toFile();
     }
 
-    File[] getUserFiles() {
+    public File[] getUserFiles() {
         return KiloEssentials.getDataDirPath().resolve("users").toFile().listFiles();
     }
 
+
     public void upgrade() {
-        StopWatch watch = new StopWatch();
-        watch.start();
-        int i = 0;
-        File[] files = this.getUserFiles();
+        File[] files = getUserFiles();
+        int random = ThreadLocalRandom.current().nextInt(0, files.length);
+
+        File file = files[random];
+        UUID uuid = UUID.fromString(file.getName().replace(".dat", ""));
 
         try {
-            for (File file : files) {
-                if (!file.exists() || !file.getName().toLowerCase(Locale.ROOT).endsWith(".dat")) {
-                    continue;
-                }
-
-                CompoundTag tag;
-                UUID uuid = UUID.fromString(file.getName().replaceFirst(".dat", ""));
-
-                try {
-                    tag = NbtIo.readCompressed(new FileInputStream(file));
-                } catch (Exception e) {
-                    KiloEssentials.getLogger().warn("Broken user data! [" + uuid + "] Please check their user file!");
-                    try {
-                        File renamedFile = new File(uuid.toString() + ".dat_broken");
-                        Files.copy(file, renamedFile);
-                        file.delete();
-                    } catch (Exception e1) {
-                        KiloEssentials.getLogger().error("Cannot rename the broken data file! [" + uuid + "]");
-                        e1.printStackTrace();
-                    }
-                    continue;
-                }
-
-                if (!tag.contains("dataVer")) {
-                    tag.putShort("dataVer", DATA_VERSION);
-                }
-
-                short dataVer = tag.getShort("dataVer");
-
-                if (dataVer != 0) {
-                    if (dataVer < DATA_VERSION) {
-                        NbtIo.writeCompressed(tag, new FileOutputStream(file));
-
-                        if (SharedConstants.isDevelopment) {
-                            KiloEssentials.getLogger().info("Updated User data for user [" + tag.getString("name") + "/" + uuid.toString() + "]");
-                        }
-
-                        i++;
-                    }
-                }
-
+            if (upgrade(file, uuid)) {
+                KiloEssentials.getLogger().info("Found old data format! Updating the user data format!");
+                upgradeAll();
             }
-
-            watch.stop();
-            String timeElapsed = new DecimalFormat("##.##").format(watch.getTime(TimeUnit.MILLISECONDS));
-            KiloEssentials.getLogger().info("Successfully upgraded the User data for " + i + " users, time elapsed: " + timeElapsed + "ms");
-
-        } catch (Exception e) {
-            KiloEssentials.getLogger().error("Failed to Upgrade the User Data! " + i + " Successful / " + (files.length - i) + " Filed");
+        } catch (IOException e) {
+            KiloEssentials.getLogger().error("Failed at checking the user data!");
             e.printStackTrace();
         }
+    }
+
+    private void upgradeAll() {
+        StopWatch watch = new StopWatch();
+        watch.start();
+        int updated = 0;
+        File[] files = getUserFiles();
+
+        for (File file : files) {
+            UUID uuid = UUID.fromString(file.getName().replace(".dat", ""));
+            try {
+                if (upgrade(file, uuid)) {
+                    updated++;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        watch.stop();
+        String timeElapsed = new DecimalFormat("##.##").format(watch.getTime(TimeUnit.MILLISECONDS));
+        KiloEssentials.getLogger().info("Successfully upgraded the User data for " + updated + " users, time elapsed: " + timeElapsed + "ms");
+    }
+
+    private boolean upgrade(File file, UUID uuid) throws IOException {
+        CompoundTag tag;
+
+        try {
+            tag = NbtIo.readCompressed(new FileInputStream(file));
+        } catch (Exception e) {
+            KiloEssentials.getLogger().warn("Broken user data! [" + uuid + "] Please check their user file!");
+            return true;
+        }
+
+        if (!tag.contains("dataVer")) {
+            tag.putShort("dataVer", DATA_VERSION);
+        }
+
+        short dataVer = tag.getShort("dataVer");
+
+        if (dataVer != 0) {
+            if (dataVer < DATA_VERSION) {
+                NbtIo.writeCompressed(tag, new FileOutputStream(file));
+
+                if (SharedConstants.isDevelopment) {
+                    KiloEssentials.getLogger().info("Updated User data for user [" + tag.getString("name") + "/" + uuid.toString() + "]");
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

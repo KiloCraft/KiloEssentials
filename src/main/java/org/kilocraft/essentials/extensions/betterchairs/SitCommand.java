@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.extensions.betterchairs;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -22,55 +23,61 @@ import static net.minecraft.command.arguments.EntityArgumentType.player;
 
 public class SitCommand extends EssentialCommand {
     public SitCommand() {
-        super("sit", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_SELF));
+        super("sit", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_SELF), new String[]{"seat"});
     }
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> boolArgument =  argument("set", word())
-                .suggests(ArgumentCompletions::stateSuggestions)
-                .executes(this::set);
+        LiteralArgumentBuilder<ServerCommandSource> enableArgument = literal("enable")
+                .executes((ctx) -> set(ctx, true))
+                .then(argument("target", player())
+                        .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
+                        .suggests(ArgumentCompletions::allPlayers)
+                        .executes((ctx) -> setOthers(ctx, true)));
 
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
-                .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
-                .suggests(ArgumentCompletions::allPlayers)
-                .executes(this::setOthers);
+        LiteralArgumentBuilder<ServerCommandSource> disableArgument = literal("disable")
+                .executes((ctx) -> set(ctx, false))
+                .then(argument("target", player())
+                        .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
+                        .suggests(ArgumentCompletions::allPlayers)
+                        .executes((ctx) -> setOthers(ctx, false)));
 
         argumentBuilder.executes(this::seat);
-        boolArgument.then(selectorArg);
-        commandNode.addChild(boolArgument.build());
+        commandNode.addChild(disableArgument.build());
+        commandNode.addChild(enableArgument.build());
     }
 
-    private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int set(CommandContext<ServerCommandSource> ctx, boolean enable) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
-        String input = getString(ctx, "set");
-        user.getSettings().set(Settings.CAN_SEAT, input.equalsIgnoreCase("toggle") ? !user.getSetting(Settings.CAN_SEAT) : input.equals("on"));
+        user.getSettings().set(Settings.CAN_SEAT, enable);
 
-        if (user.getSetting(Settings.CAN_SEAT))
+        if (user.getSetting(Settings.CAN_SEAT)) {
             user.sendLangMessage("command.sit.enabled");
-        else
+        } else {
             user.sendLangMessage("command.sit.disabled");
+        }
+
         return SINGLE_SUCCESS;
     }
 
     private int seat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
 
-        if (PlayerSitManager.INSTANCE.isSitting(user.getPlayer())) {
-            PlayerSitManager.INSTANCE.sitOff(user.getPlayer());
-            return -1;
+        if (SeatManager.getInstance().isSeating(user.getPlayer())) {
+            SeatManager.getInstance().unseat(user);
+            return SINGLE_FAILED;
         }
 
         if (!((EntityAccessor) user.getPlayer()).isOnGround()) {
             user.sendLangMessage("general.on_ground");
-            return -1;
+            return SINGLE_FAILED;
         }
 
-        PlayerSitManager.INSTANCE.sitOn(user.getPlayer(), user.getLocationAsVector(), PlayerSitManager.SummonType.COMMAND, false);
+        SeatManager.getInstance().seat(user, user.getLocationAsVector(), SeatManager.SummonType.COMMAND, true);
         return SINGLE_SUCCESS;
     }
 
-    private int setOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int setOthers(CommandContext<ServerCommandSource> ctx, boolean set) throws CommandSyntaxException {
         OnlineUser target = getOnlineUser(getPlayer(ctx, "target").getCommandSource());
         String input = getString(ctx, "set");
         boolean bool = input.equals("on");

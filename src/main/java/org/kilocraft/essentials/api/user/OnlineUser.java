@@ -1,19 +1,16 @@
 package org.kilocraft.essentials.api.user;
 
 import net.minecraft.network.ClientConnection;
-import net.minecraft.server.command.GameModeCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
-import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public interface OnlineUser extends User {
@@ -42,11 +39,6 @@ public interface OnlineUser extends User {
     Vec3dLocation getLocationAsVector();
 
     Vec3d getEyeLocation();
-
-    void setSittingType(PlayerSitManager.SummonType type);
-
-    @Nullable
-    PlayerSitManager.SummonType getSittingType();
 
     boolean hasPermission(CommandPermission perm);
 

@@ -215,9 +215,10 @@ public final class ServerChat {
                 .replace("%MESSAGE%",  message);
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.getSetting(Settings.COMMAND_SPY) && !CommandUtils.areTheSame(source, user))
+            if (user.getSetting(Settings.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
                         new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+            }
         }
     }
 

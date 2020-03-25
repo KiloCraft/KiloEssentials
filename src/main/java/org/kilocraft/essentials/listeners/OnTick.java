@@ -1,9 +1,11 @@
 package org.kilocraft.essentials.listeners;
 
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.ServerTickEvent;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
+import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
 import org.kilocraft.essentials.user.ServerUserManager;
 
@@ -19,7 +21,7 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 			tick = 0;
 		}
 
-		ParticleAnimationManager.onTick();
+		KiloEssentials.getInstance().getFeatures().onTick();
 		tick++;
 	}
 

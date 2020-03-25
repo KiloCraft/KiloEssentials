@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTStorage;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
+import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
+import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
 import org.kilocraft.essentials.api.world.RelativePosition;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ParticleAnimationManager implements ReloadableConfigurableFeature, NBTStorage {
+public class ParticleAnimationManager implements RelodableConfigurableFeature, TickListener, NBTStorage {
     static Map<Identifier, ParticleAnimation> map = new HashMap<>();
     private static Map<UUID, Identifier> uuidIdentifierMap = new HashMap<>();
     private static ParticleTypesConfig config;
@@ -190,7 +190,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     }
 
     private static int tick = 0;
-    public static void onTick() {
+    public void onTick() {
         //Tick counter logic, only shows the animations once in 4 ticks
         tick++;
         if (tick > config.getPps() && uuidIdentifierMap != null && !uuidIdentifierMap.isEmpty()) {

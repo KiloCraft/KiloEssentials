@@ -27,10 +27,8 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
@@ -289,16 +287,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public Vec3d getEyeLocation() {
-        return null;
-    }
-
-    @Override
-    public void setSittingType(PlayerSitManager.SummonType type) {
-
-    }
-
-    @Override
-    public @Nullable PlayerSitManager.SummonType getSittingType() {
         return null;
     }
 
