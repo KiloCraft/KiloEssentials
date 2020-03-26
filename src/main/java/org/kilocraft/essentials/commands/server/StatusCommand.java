@@ -65,13 +65,13 @@ public class StatusCommand extends EssentialCommand {
                         getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(), getFormattedTPS(tps30.getAverage()), tps30.getShortAverage(),
                         getFormattedTPS(tps60.getAverage()), tps60.getShortAverage()) +
                 "\n&7CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7:" +
-                " &" + TextFormat.getFormattedPercentage(cpuUsage, true) + cpuUsage + "&6% Usage" +
-                " &e" + Thread.activeCount() + " Running Threads" +
-                "\n&7- Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: &" +
-                TextFormat.getFormattedPercentage(ramUsage, true) + ramUsage + "&6% " +
+                " &" + TextFormat.getFormattedPercentage(cpuUsage, true) + cpuUsage + "% Usage" +
+                " &3" + Thread.activeCount() + " Running Threads" +
+                "\n&7Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: &" +
+                TextFormat.getFormattedPercentage(ramUsage, true) + ramUsage + "% " +
                 "&8(&b" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&7" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
-                "\n&7- Worlds&8:&e" +
+                "\n&7Worlds&8:&e" +
                 addWorldInfo();
     }
 
@@ -92,8 +92,7 @@ public class StatusCommand extends EssentialCommand {
     }
 
     private static String getWorldName(ServerWorld world) {
-        //return Objects.requireNonNull(Registry.DIMENSION_TYPE.getId(world.dimension.getType())).getPath();
-        return world.getSaveHandler().getWorldDir().getName();
+        return Objects.requireNonNull(Registry.DIMENSION_TYPE.getId(world.dimension.getType())).getPath();
     }
 
 }

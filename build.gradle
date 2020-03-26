@@ -65,7 +65,7 @@ dependencies {
 	compile "net.luckperms:api:${project.luckperms_version}"
 	//shadow "net.luckperms:api:${project.luckperms_version}"
 	compile group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
-	shadow group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
+	//shadow group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
 }
 
 tasks.jar.archiveClassifier = "compile"
