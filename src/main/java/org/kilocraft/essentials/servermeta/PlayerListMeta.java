@@ -13,13 +13,14 @@ import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
 public class PlayerListMeta {
     static String header = "", footer = "";
-    static String serverName;
-    static String serverTps;
-    static String serverFormattedTps;
-    static String serverPlayerCount;
-    static String serverMemoryMax;
-    static String serverMemoryPercentage;
-    static String serverFormattedMemoryPercentage;
+    static String serverName = "";
+    static String serverTps = "";
+    static String serverFormattedTps = "";
+    static String serverPlayerCount = "";
+    static String serverMemoryMax = "";
+    static String serverMemoryPercentage = "";
+    static String serverFormattedMemoryPercentage = "";
+    static String serverMemoryUsageMB = "";
 
     static void load() {
         header = KiloConfig.main().playerList().getHeader();
@@ -40,18 +41,19 @@ public class PlayerListMeta {
 
     private static String getFormattedStringFor(ServerPlayerEntity player, String string) {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
-        Server server = KiloServer.getServer();
         return string.replaceAll("%PLAYER_NAME%", player.getEntityName())
                 .replaceAll("%PLAYER_DISPLAYNAME%", player.getDisplayName().asFormattedString())
                 .replaceAll("%PLAYER_PING%", String.valueOf(player.pingMilliseconds))
                 .replaceAll("%PLAYER_FORMATTED_PING%", TextFormat.getFormattedPing(player.pingMilliseconds))
-                .replaceAll("%USER_DISPLAYNAME%", user.getRankedDisplayName().asFormattedString())
+                .replaceAll("%USER_DISPLAYNAME%", user.getFormattedDisplayName())
                 .replaceAll("%SERVER_NAME%", serverName)
                 .replaceAll("%SERVER_TPS%", serverTps)
                 .replaceAll("%SERVER_FORMATTED_TPS%", serverFormattedTps)
                 .replaceAll("%SERVER_PLAYER_COUNT%", serverPlayerCount)
                 .replaceAll("%SERVER_MEMORY_MAX%", serverMemoryMax)
-                .replaceAll("%SERVER_MEMORY_USAGE_PERCENTAGE%", serverFormattedMemoryPercentage);
+                .replaceAll("%SERVER_MEMORY_USAGE_PERCENTAGE%", serverMemoryPercentage)
+                .replaceAll("%SERVER_FORMATTED_MEMORY_USAGE_PERCENTAGE%", serverFormattedMemoryPercentage)
+                .replaceAll("%SERVER_MEMORY_USAGE_MB%", serverMemoryUsageMB);
     }
 
 }

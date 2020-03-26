@@ -22,6 +22,7 @@ public class NBTStorageUtil {
         try {
             save();
         } catch (IOException e) {
+            KiloEssentials.getLogger().fatal("Cannot save the NBT Data! " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -30,14 +31,16 @@ public class NBTStorageUtil {
         try {
             load();
         } catch (IOException e) {
+            KiloEssentials.getLogger().fatal("Cannot load the NBT Data! " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private static void load() throws IOException {
         for (NBTStorage callback : callbacks) {
-            if (SharedConstants.isDevelopment)
-                KiloEssentials.getLogger().info("Loading NBT File: \"" + callback.getSaveFile().getFile().getName() + "\":" + callback.getSaveFile().getFile().getAbsolutePath());
+            if (SharedConstants.isDevelopment) {
+                KiloEssentials.getLogger().info("Loading NBT File: \"" + callback.getSaveFile().getFile().getName() + "\":" + callback.getSaveFile().getAbsolutePath());
+            }
 
             if (!callback.getSaveFile().exists()) {
                 save();
@@ -50,16 +53,18 @@ public class NBTStorageUtil {
 
     private static void save() throws IOException {
         for (NBTStorage callback : callbacks) {
-            if (SharedConstants.isDevelopment)
+            if (SharedConstants.isDevelopment) {
                 KiloEssentials.getLogger().info("Saving NBT File: \"" + callback.getSaveFile().getFile().getName() + "\":" + callback.getSaveFile().getFile().getAbsolutePath());
+            }
 
             save(callback);
         }
     }
 
     private static void save(NBTStorage nbtStorage) throws IOException {
-        if (!nbtStorage.getSaveFile().exists())
+        if (!nbtStorage.getSaveFile().exists()) {
             nbtStorage.getSaveFile().createFile();
+        }
 
         NbtIo.writeCompressed(nbtStorage.serialize(), new FileOutputStream(nbtStorage.getSaveFile().getFile()));
     }

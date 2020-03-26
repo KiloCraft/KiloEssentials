@@ -54,47 +54,46 @@ public class StatusCommand extends EssentialCommand {
     }
 
     private static String getInfo() throws Exception {
-        double cpuUsage = SystemMonitor.getCpuLoadPercentage();
         double ramUsage = SystemMonitor.getRamUsedPercentage();
+        double cpuUsage = SystemMonitor.getCpuLoadPercentage();
         return "&eGeneral status:&r\n" +
-                "&7- Platform: &6" + bean.getArch() + " &d" + System.getProperty("os.name") +
-                "\n&7- Server uptime: &6" + TimeDifferenceUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()) +
-                "\n&7- TPS:" +
+                "&7Platform: &6" + bean.getArch() + " &d" + System.getProperty("os.name") +
+                "\n&7Server uptime: &6" + TimeDifferenceUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()) +
+                "\n&7TPS:" +
                 String.format("&%s %s&8,&8(&75m&8/&715m&8/&730m&8&8/&71h&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
                         getFormattedTPS(tps1.getAverage()), tps1.getShortAverage(), getFormattedTPS(tps5.getAverage()), tps5.getShortAverage(),
                         getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(), getFormattedTPS(tps30.getAverage()), tps30.getShortAverage(),
                         getFormattedTPS(tps60.getAverage()), tps60.getShortAverage()) +
-                "\n&7- CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7:" +
-                " &" + TextFormat.getFormattedPercentage(cpuUsage, false) + cpuUsage + "&6% Usage" +
+                "\n&7CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7:" +
+                " &" + TextFormat.getFormattedPercentage(cpuUsage, true) + cpuUsage + "&6% Usage" +
                 " &e" + Thread.activeCount() + " Running Threads" +
                 "\n&7- Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: &" +
                 TextFormat.getFormattedPercentage(ramUsage, true) + ramUsage + "&6% " +
-                "&8(&e" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&e" +
+                "&8(&b" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&7" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
                 "\n&7- Worlds&8:&e" +
                 addWorldInfo();
     }
 
     private static String addWorldInfo() {
-        String worldInfoLoaded = "&6%s Chunks &e%s Entities &6%s Players";
-        String worldInfoNotLoaded = "&7&oNot loaded.";
+        String worldInfoLoaded = "&6%s &7Chunks &8(&9%s&7 Cached&8) &e%s &7Entities &7&6%s &7Players";
         StringBuilder builder = new StringBuilder();
 
         for (ServerWorld world : KiloServer.getServer().getWorlds()) {
             MonitorableWorld monitoredWorld = (MonitorableWorld) world;
-            builder.append("\n&7 - ").append(getWorldName(world)).append("&8: ");
 
-            if (monitoredWorld.totalLoadedChunks() != 0)
-                builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.loadedEntities(), monitoredWorld.players()));
-            else
-                builder.append(worldInfoNotLoaded);
+            if (monitoredWorld.totalLoadedChunks() != 0) {
+                builder.append("\n&7* ").append(getWorldName(world)).append("&8: ");
+                builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.cachedChunks(), monitoredWorld.loadedEntities(), monitoredWorld.players()));
+            }
         }
 
         return builder.toString();
     }
 
     private static String getWorldName(ServerWorld world) {
-        return Objects.requireNonNull(Registry.DIMENSION_TYPE.getId(world.dimension.getType())).getPath();
+        //return Objects.requireNonNull(Registry.DIMENSION_TYPE.getId(world.dimension.getType())).getPath();
+        return world.getSaveHandler().getWorldDir().getName();
     }
 
 }

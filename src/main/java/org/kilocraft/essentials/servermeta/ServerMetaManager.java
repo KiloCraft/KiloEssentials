@@ -10,6 +10,7 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.util.RollingAverage;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
@@ -37,15 +38,17 @@ public class ServerMetaManager {
 
 
             Server server = KiloServer.getServer();
+            RollingAverage tps = TPSTracker.tps1;
+            double memoryUsedPercentage = SystemMonitor.getRamUsedPercentage();
+
             PlayerListMeta.serverName = server.getName();
-            PlayerListMeta.serverTps = TPSTracker.tps1.getShortAverage();
-            PlayerListMeta.serverFormattedTps = "&" + TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()) + TPSTracker.tps1.getShortAverage() + "&r";
+            PlayerListMeta.serverTps = tps.getShortAverage();
+            PlayerListMeta.serverFormattedTps = "&" + TextFormat.getFormattedTPS(tps.getAverage()) + tps.getShortAverage() + "&r";
             PlayerListMeta.serverPlayerCount = String.valueOf(server.getPlayerManager().getCurrentPlayerCount());
             PlayerListMeta.serverMemoryMax = String.valueOf(SystemMonitor.getRamMaxMB());
-
-            double memoryUsedPercentage = SystemMonitor.getRamUsedPercentage();
             PlayerListMeta.serverMemoryPercentage = String.valueOf(memoryUsedPercentage);
-            PlayerListMeta.serverFormattedMemoryPercentage = TextFormat.getFormattedPercentage(memoryUsedPercentage, true) + memoryUsedPercentage + "&r";
+            PlayerListMeta.serverFormattedMemoryPercentage = "&" + TextFormat.getFormattedPercentage(memoryUsedPercentage, true) + PlayerListMeta.serverMemoryPercentage + "&r";
+            PlayerListMeta.serverMemoryUsageMB = String.valueOf(SystemMonitor.getRamUsedMB());
 
             PlayerListMeta.provideFor(playerEntity);
         }

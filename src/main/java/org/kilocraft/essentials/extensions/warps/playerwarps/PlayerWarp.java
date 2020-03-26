@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class PlayerWarp extends Warp implements NBTSerializable {
+public class PlayerWarp extends Warp {
     private UUID owner;
     private String type;
 
@@ -32,8 +32,7 @@ public class PlayerWarp extends Warp implements NBTSerializable {
 
     @Override
     public CompoundTag toTag() {
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put("loc", super.getLocation().toTag());
+        CompoundTag compoundTag = super.toTag();
         compoundTag.putString("type", this.type);
         NBTUtils.putUUID(compoundTag, "owner", this.owner);
 
@@ -42,11 +41,7 @@ public class PlayerWarp extends Warp implements NBTSerializable {
 
     @Override
     public void fromTag(CompoundTag tag) {
-        if (super.getLocation() == null) {
-            super.setLocation(Vec3dLocation.dummy());
-        }
-
-        super.getLocation().fromTag(tag.getCompound("loc"));
+        super.fromTag(tag);
         this.type = tag.getString("type");
         this.owner = NBTUtils.getUUID(tag, "owner");
     }

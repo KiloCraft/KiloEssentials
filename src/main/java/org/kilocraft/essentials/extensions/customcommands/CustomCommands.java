@@ -142,7 +142,7 @@ public class CustomCommands implements ConfigurableFeature {
             }
 
             @Override
-            public boolean sendCommandFeedback() {
+            public boolean shouldReceiveFeedback() {
                 return true;
             }
 
