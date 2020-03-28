@@ -120,7 +120,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
         final BlockPos pos = hitResult.getBlockPos();
 
-        if (player.getBlockPos().getSquaredDistance(pos) > 3.55D) {
+        if (player.getBlockPos().isWithinDistance(pos, 3.55D)) {
             return false;
         }
 
@@ -136,12 +136,12 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
         if (state.getBlock() instanceof StairsBlock && state.get(Properties.BLOCK_HALF) == BlockHalf.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.40D);
-            return seat(user, getPosForStair(state, vec3dLoc.center()), SummonType.INTERACTION_STAIR, false, getYawForStand(state));
+            return seat(user, getPosForStair(state, vec3dLoc.center()), SummonType.INTERACTION_STAIR, true, getYawForStand(state));
         }
 
         if (state.getBlock() instanceof SlabBlock && state.get(Properties.SLAB_TYPE) == SlabType.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.45D);
-            return seat(user, vec3dLoc.center(), SummonType.INTERACTION_SLAB, false);
+            return seat(user, vec3dLoc.center(), SummonType.INTERACTION_SLAB, true);
         }
 
         return false;
