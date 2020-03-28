@@ -36,18 +36,22 @@ public class PlayerWarpCommand extends EssentialCommand {
     private static final String HEADER = ModConstants.getLang().getProperty("command.playerwarp.header");
     public PlayerWarpCommand(String label, CommandPermission permission, String[] alias) {
         super(label, permission, alias);
+        this.withUsage("command.playerwarp.usage", "add", "name", "type", "description");
     }
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         {
             final LiteralArgumentBuilder<ServerCommandSource> addArgument = literal("add");
-            final RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", StringArgumentType.word());
+            final RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", StringArgumentType.word())
+                    .executes((ctx) -> this.sendUsage(ctx, "command.playerwarp.usage.provide_type"));
             final RequiredArgumentBuilder<ServerCommandSource, String> typeArgument = argument("type", StringArgumentType.word())
-                    .suggests(this::typeSuggestions);
+                    .suggests(this::typeSuggestions)
+                    .executes((ctx) -> this.sendUsage(ctx, "command.playerwarp.usage.provide_desc"));
             final RequiredArgumentBuilder<ServerCommandSource, String> descArgument = argument("description", StringArgumentType.greedyString())
                     .executes(this::add);
 
+            typeArgument.then(descArgument);
             nameArgument.then(typeArgument);
             addArgument.then(nameArgument);
             commandNode.addChild(addArgument.build());
@@ -101,7 +105,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         final String type = StringArgumentType.getString(ctx, "type");
         final String desc = StringArgumentType.getString(ctx, "description");
 
-        if (TextFormat.removeAlternateColorCodes('&', desc).length() > 50) {
+        if (TextFormat.removeAlternateColorCodes('&', desc).length() > 100) {
             return user.sendLangError("command.playerwarp.desc_too_long");
         }
 
@@ -137,6 +141,10 @@ public class PlayerWarpCommand extends EssentialCommand {
 
     private int list(CommandContext<ServerCommandSource> ctx, int page, @Nullable String inputName) throws CommandSyntaxException {
         final OnlineUser src = this.getOnlineUser(ctx);
+
+        if (PlayerWarpsManager.getWarps().isEmpty()) {
+            return src.sendLangError("command.playerwarp.no_warp");
+        }
 
         if (inputName == null) {
             this.sendList(src.getCommandSource(), src, page);

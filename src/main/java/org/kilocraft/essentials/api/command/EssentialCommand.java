@@ -257,6 +257,11 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.argument(label, string()).suggests(ArgumentCompletions::allPlayers);
     }
 
+    public int sendUsage(CommandContext<ServerCommandSource> ctx, String key, Object... objects) {
+        this.getServerUser(ctx).sendLangMessage(key, objects);
+        return AWAIT_RESPONSE;
+    }
+
     public String tl(final String key) {
         return ModConstants.translation(key);
     }

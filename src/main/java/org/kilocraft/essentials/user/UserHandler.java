@@ -74,6 +74,10 @@ public class UserHandler {
 
     public void upgrade() {
         File[] files = getUserFiles();
+        if (files == null || files.length <= 0) {
+            return;
+        }
+
         int random = ThreadLocalRandom.current().nextInt(0, files.length);
 
         File file = files[random];

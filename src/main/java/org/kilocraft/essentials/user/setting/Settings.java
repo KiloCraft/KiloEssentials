@@ -93,6 +93,24 @@ public class Settings {
     );
     public static final Setting<Integer> RANDOM_TELEPORTS_LEFT = new Setting<>("rtps_left", 3);
     public static final Setting<Boolean> DON_NOT_DISTURB = new Setting<>("do_not_disturb", false);
+    public static final Setting<List<String>> FAVIORATE_PLAYER_WARPS = new Setting<List<String>>(
+            "fav_pwarps", Collections.emptyList(),
+            (fun) -> {
+                if (!fun.value().isEmpty()) {
+                    ListTag listTag = new ListTag();
+                    for (String s : fun.value()) {
+                        CompoundTag tag = new CompoundTag();
+                        tag.putString("name", s);
+                        listTag.add(tag);
+                        fun.tag().put(fun.setting().getId(), listTag);
+                    }
+                }
+            }, (fun) -> {
+                if (fun.tag().contains(fun.setting().getId())) {
+                    ListTag listTag = fun.tag().getList(fun.setting().getId(), 8);
+                }
+            }
+    );
 
     @Nullable
     public static Setting<?> getById(String id) {

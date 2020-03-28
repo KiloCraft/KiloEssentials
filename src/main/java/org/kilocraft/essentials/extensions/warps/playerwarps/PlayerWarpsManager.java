@@ -21,22 +21,21 @@ import java.util.UUID;
 
 public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStorage {
     private static boolean enabled = false;
-    private static ArrayList<String> byName = new ArrayList<>();
-    private static List<PlayerWarp> warps = new ArrayList<>();
+    private static final ArrayList<String> byName = new ArrayList<>();
+    private static final List<PlayerWarp> warps = new ArrayList<>();
 
     @Override
     public boolean register() {
         enabled = true;
         NBTStorageUtil.addCallback(this);
 
-        List<EssentialCommand> commands = new ArrayList<EssentialCommand>(){{
-            this.add(new PlayerWarpCommand("playerwarp", CommandPermission.PLAYER_WARP, new String[]{"pwarp"}));
-            this.add(new PlayerWarpsCommand("playerwarps", CommandPermission.PLAYER_WARPS, new String[]{"pwarps"}));
-        }};
+        KiloEssentials.getInstance().getCommandHandler().register(
+                new PlayerWarpCommand("playerwarp", CommandPermission.PLAYER_WARP, new String[]{"pwarp"})
+        );
 
-        for (EssentialCommand command : commands) {
-            KiloEssentials.getInstance().getCommandHandler().register(command);
-        }
+        KiloEssentials.getInstance().getCommandHandler().register(
+                new PlayerWarpsCommand("playerwarps", CommandPermission.PLAYER_WARPS, new String[]{"pwarps"})
+        );
 
         load();
         return true;
