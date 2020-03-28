@@ -92,6 +92,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
                     if (user.getSetting(Settings.SEATING_TYPE) == SummonType.INTERACTION_SLAB) {
                         stand.bodyYaw = user.getPlayer().bodyYaw;
+                        stand.yaw = user.getPlayer().bodyYaw;
                     }
                 }
             }
@@ -118,14 +119,9 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             return false;
         }
 
-        final BlockPos pos = hitResult.getBlockPos();
-
-        if (player.getBlockPos().isWithinDistance(pos, 3.55D)) {
-            return false;
-        }
-
-        final ServerWorld world = player.getServerWorld();
-        final BlockState state = world.getBlockState(pos);
+        BlockPos pos = hitResult.getBlockPos();
+        ServerWorld world = player.getServerWorld();
+        BlockState state = world.getBlockState(pos);
 
         if (world.getBlockState(pos.up()).getBlock() != Blocks.AIR) {
             return false;
