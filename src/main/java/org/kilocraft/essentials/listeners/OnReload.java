@@ -26,7 +26,7 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
         NBTStorageUtil.onSave();
 
         try {
-            KiloDebugUtils.validateDebugMode();
+            KiloDebugUtils.validateDebugMode(true);
         } catch (Exception e) {
             e.printStackTrace();
         }

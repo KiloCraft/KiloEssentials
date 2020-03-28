@@ -5,6 +5,9 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public class FeaturesConfigSection {
+    @Setting(value = "rankManager", comment = "Manage your Ranks easier!")
+    public boolean rankManager = true;
+
     @Setting(value = "playerHomes", comment = "Let players to set homes where ever they want!")
     public boolean playerHomes = true;
 
