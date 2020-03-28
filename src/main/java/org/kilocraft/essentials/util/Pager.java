@@ -42,6 +42,13 @@ public class Pager {
         return getPageFromFilterable(options, all.stream().map(StringFilterable::new).collect(Collectors.toList()));
     }
 
+    public static Page getPageFromText(@NotNull Options options, @NotNull List<Text> all) {
+        Objects.requireNonNull(options, "Options can not be null");
+        Objects.requireNonNull(all, "'all' can not be null");
+
+        return getPageFromFilterableText(options, all.stream().map(TextFilterable::new).collect(Collectors.toList()));
+    }
+
     /**
      * Returns the wanted page.
      * <p>
@@ -61,6 +68,14 @@ public class Pager {
 
         List<PagerFilterable> list = filter(options, all);
         return slice(list, options.getEntriesPerPage(), options.getPageIndex());
+    }
+
+    public static Page getPageFromFilterableText(@NotNull Options options, @NotNull List<TextPagerFilterable> all) {
+        Objects.requireNonNull(options, "Options can not be null");
+        Objects.requireNonNull(all, "'all' can not be null");
+
+        List<TextPagerFilterable> list = filterText(options, all);
+        return sliceText(list, options.getEntriesPerPage(), options.getPageIndex());
     }
 
     /**
@@ -97,6 +112,30 @@ public class Pager {
                         .collect(Collectors.toList()));
     }
 
+    @NotNull
+    private static Page sliceText(@NotNull List<TextPagerFilterable> all, int entriesPerPage, int pageIndex) {
+        Objects.requireNonNull(all, "'all' can not be null");
+
+        int pageAmount = (int) Math.ceil(all.size() / (double) entriesPerPage);
+
+        if (pageAmount == 0) {
+            return new Page(1, 0, Collections.emptyList());
+        }
+
+        if (pageIndex < 0 || pageIndex >= pageAmount) {
+            pageIndex = pageIndex < 0 ? 0 : pageAmount - 1;
+        }
+
+        List<TextPagerFilterable> entries = all.subList(
+                pageIndex * entriesPerPage,
+                Math.min((pageIndex + 1) * entriesPerPage, all.size()));
+
+        return new Page(entries.stream()
+                .flatMap(filterable -> filterable.getAllLines().stream())
+                .collect(Collectors.toList()),
+                pageAmount, pageIndex);
+    }
+
     /**
      * @param options The options to use
      * @param all All the {@link PagerFilterable} to filter
@@ -105,6 +144,16 @@ public class Pager {
      */
     @NotNull
     private static List<PagerFilterable> filter(@NotNull Options options, @NotNull List<PagerFilterable> all) {
+        Objects.requireNonNull(options, "Options can not be null");
+        Objects.requireNonNull(all, "'all' can not be null");
+
+        return all.stream()
+                .filter(pagerFilterable -> pagerFilterable.accepts(options))
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private static List<TextPagerFilterable> filterText(@NotNull Options options, @NotNull List<TextPagerFilterable> all) {
         Objects.requireNonNull(options, "Options can not be null");
         Objects.requireNonNull(all, "'all' can not be null");
 
@@ -129,6 +178,21 @@ public class Pager {
          */
         @NotNull
         List<String> getAllLines();
+    }
+
+    public interface TextPagerFilterable {
+        /**
+         * @param options The options to use
+         *
+         * @return True if this object should pass
+         */
+        boolean accepts(Options options);
+
+        /**
+         * @return All the lines this object has
+         */
+        @NotNull
+        List<Text> getAllLines();
     }
 
     /**
@@ -157,6 +221,35 @@ public class Pager {
         @Override
         public List<String> getAllLines() {
             return Collections.singletonList(string);
+        }
+    }
+
+    /**
+     * A small wrapper for a normal String
+     */
+    private static class TextFilterable implements TextPagerFilterable {
+        private Text text;
+
+        /**
+         * @param text The {@link Text}
+         */
+        private TextFilterable(Text text) {
+            Objects.requireNonNull(text, "String cannot be null!");
+
+            this.text = text;
+        }
+
+        @Override
+        public boolean accepts(@NotNull Options options) {
+            Objects.requireNonNull(options, "Options can not be null");
+
+            return options.matchesPattern(text.asFormattedString());
+        }
+
+        @NotNull
+        @Override
+        public List<Text> getAllLines() {
+            return Collections.singletonList(text);
         }
     }
 
@@ -472,7 +565,8 @@ public class Pager {
     public static class Page {
         private final int maxPages;
         private final int pageIndex;
-        private final List<String> entries;
+        private List<String> entries;
+        private List<Text> textEntries;
         private String stickyHeader;
         private String stickyFooter;
 
@@ -490,6 +584,10 @@ public class Pager {
          */
         private Page(int maxPages, int pageIndex, @NotNull List<String> entries) {
             this(maxPages, pageIndex, entries, "", "");
+        }
+
+        private Page(@NotNull List<Text> entries, int maxPages, int pageIndex) {
+            this(entries, maxPages, pageIndex, "", "");
         }
 
         /**
@@ -513,6 +611,19 @@ public class Pager {
             this.maxPages = maxPages;
             this.pageIndex = pageIndex;
             this.entries = new ArrayList<>(entries);
+            this.stickyHeader = headerKey;
+            this.stickyFooter = footerKey;
+        }
+
+        private Page(@NotNull List<Text> entries,int maxPages, int pageIndex, @NotNull String headerKey, @NotNull
+                String footerKey) {
+            Objects.requireNonNull(entries, "Entries can not be null");
+            Objects.requireNonNull(headerKey, "The header key can not be null");
+            Objects.requireNonNull(footerKey, "The footer key can not be null");
+
+            this.maxPages = maxPages;
+            this.pageIndex = pageIndex;
+            this.textEntries = new ArrayList<>(entries);
             this.stickyHeader = headerKey;
             this.stickyFooter = footerKey;
         }
@@ -600,7 +711,7 @@ public class Pager {
             final String SEPARATOR = "-----------------------------------------------------";
             Text header =  new LiteralText("")
                     .append(new LiteralText("- [ ").formatted(f3))
-                    .append(new LiteralText(title).formatted(f1))
+                    .append(Texter.toText(title).formatted(f1))
                     .append(" ] ")
                     .append(SEPARATOR.substring(TextFormat.removeAlternateColorCodes('&', title).length() + 4))
                     .formatted(f3);
@@ -645,8 +756,14 @@ public class Pager {
                     .append(buttons).append(new LiteralText(" ------------------------------".substring(buttons.asString().length() + 3)).formatted(Formatting.GRAY));
 
             Text text = new LiteralText("");
-            for (String entry : entries) {
-                text.append(new LiteralText(TextFormat.translate(entry)).append("\n"));
+            if (this.textEntries == null && this.entries != null) {
+                for (String entry : entries) {
+                    text.append(new LiteralText(TextFormat.translate(entry)).append("\n"));
+                }
+            } else if (this.textEntries != null && this.entries == null) {
+                for (Text textEntry : this.textEntries) {
+                    text.append(textEntry).append("\n");
+                }
             }
 
             if (!this.stickyFooter.isEmpty()) {

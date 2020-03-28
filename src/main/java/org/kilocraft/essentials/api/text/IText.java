@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.api.text;
 
+import net.minecraft.text.Text;
+
 import java.util.List;
 
 public interface IText {
@@ -7,5 +9,9 @@ public interface IText {
 
     List<String> getLines();
 
+    List<Text> getTextLines();
+
     IText append(String... strings);
+
+    IText append(Text... texts);
 }

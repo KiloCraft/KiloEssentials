@@ -1,15 +1,19 @@
 package org.kilocraft.essentials.util;
 
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
@@ -63,6 +67,13 @@ public class Texter {
 
         public static HoverEvent onHover(Text text) {
             return new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
+        }
+    }
+
+    public static class AnimationGallery {
+        public static void loadingBar(ServerPlayerEntity player, int delay) {
+            AnimatedText animatedText = new AnimatedText(0, delay, TimeUnit.SECONDS, player, TitleS2CPacket.Action.ACTIONBAR);
+            animatedText.append(toText(ModConstants.translation("")));
         }
     }
 

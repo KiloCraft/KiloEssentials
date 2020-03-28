@@ -49,6 +49,7 @@ public class ServerUser implements User {
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     UUID uuid;
     String name = "";
+    String cachedName = "";
     private ServerUserSettings settings;
     private UserHomeHandler homeHandler;
     private UserInventory inventory;
@@ -177,6 +178,7 @@ public class ServerUser implements User {
             this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         }
 
+        this.cachedName = compoundTag.getString("name");
         this.settings.fromTag(compoundTag.getCompound("settings"));
     }
 
@@ -417,4 +419,8 @@ public class ServerUser implements User {
         return true;
     }
 
+    public ServerUser withCachedName() {
+        this.name = this.cachedName;
+        return this;
+    }
 }

@@ -14,6 +14,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
@@ -34,7 +35,7 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.io.IOException;
 import java.util.*;
 
-public class CommandSourceServerUser implements CommandSourceUser {
+public  class CommandSourceServerUser implements CommandSourceUser {
     private ServerCommandSource source;
 
     public CommandSourceServerUser(ServerCommandSource source) {
@@ -242,6 +243,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public int sendError(String message) {
         this.source.sendError(new ChatMessage("&c" + message, true).toText());
+        return -1;
+    }
+
+    @Override
+    public int sendLangError(String key, Object... objects) {
+        this.sendMessage(LangText.getFormatter(true, key, objects));
         return -1;
     }
 

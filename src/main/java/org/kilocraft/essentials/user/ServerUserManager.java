@@ -111,6 +111,21 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     @Override
+    public CompletableFuture<Optional<User>> getOffline(UUID uuid) {
+        OnlineUser online = getOnline(uuid);
+        if (online != null)
+            return CompletableFuture.completedFuture(Optional.of(online));
+
+        if (handler.userExists(uuid)) {
+            ServerUser serverUser = new ServerUser(uuid).withCachedName();
+
+            return CompletableFuture.completedFuture(Optional.of(serverUser));
+        }
+
+        return CompletableFuture.completedFuture(Optional.of(new NeverJoinedUser()));
+    }
+
+    @Override
     public CompletableFuture<Optional<User>> getOffline(GameProfile profile) {
         profileSanityCheck(profile);
         return getOffline(profile.getId(), profile.getName());

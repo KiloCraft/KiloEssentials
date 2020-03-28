@@ -8,6 +8,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
+import java.util.UUID;
+
 public interface IEssentialCommand {
     int SINGLE_SUCCESS = 1;
     int AWAIT_RESPONSE = 0;
@@ -16,6 +18,7 @@ public interface IEssentialCommand {
     <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String string, ArgumentType<T> argumentType);
     OnlineUser getOnlineUser(String name);
     OnlineUser getOnlineUser(ServerCommandSource source) throws CommandSyntaxException;
+    OnlineUser getOnlineUser(UUID uuid) throws CommandSyntaxException;
 
     String getLabel();
 

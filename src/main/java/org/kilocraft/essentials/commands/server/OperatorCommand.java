@@ -33,6 +33,7 @@ import static net.minecraft.command.arguments.GameProfileArgumentType.getProfile
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+@Deprecated
 public class OperatorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = literal("operator")

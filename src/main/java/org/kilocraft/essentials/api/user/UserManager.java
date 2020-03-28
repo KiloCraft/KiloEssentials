@@ -35,7 +35,14 @@ public interface UserManager {
      * @param username The name of the user
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
      */
-    Object getOffline(UUID uuid, String username);
+    CompletableFuture<Optional<User>> getOffline(UUID uuid, String username);
+
+    /**
+     * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
+     * @param uuid The UUID of the user.
+     * @return The loaded offline user, otherwise a dummy user if the player has never joined.
+     */
+    CompletableFuture<Optional<User>> getOffline(UUID uuid);
 
     /**
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.

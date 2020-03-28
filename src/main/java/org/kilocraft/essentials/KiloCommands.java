@@ -105,7 +105,6 @@ public class KiloCommands {
             this.add(new SudoCommand());
             this.add(new ItemCommand());
             this.add(new WorkbenchCommand());
-            this.add(new SmithCommand());
             this.add(new AnvilCommand());
             this.add(new SigneditCommand());
             this.add(new HatCommand());

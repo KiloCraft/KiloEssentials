@@ -206,8 +206,9 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final ServerCommandSource requester,
 																	final String username,
 																	final Consumer<? super User> action) {
-		if (CommandUtils.isOnline(requester))
+		if (CommandUtils.isOnline(requester)) {
 			return this.getUserThenAcceptAsync(KiloEssentialsImpl.getServer().getOnlineUser(requester.getName()), username, action);
+		}
 
 		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
@@ -261,15 +262,62 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	@Override
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final OnlineUser requester,
+																	final UUID uuid,
+																	final Consumer<? super User> action) {
+
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(uuid);
+		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.getPlayer());
+		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
+			loadingText.stop();
+
+			if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
+				requester.sendError(ExceptionMessageNode.USER_NOT_FOUND);
+				return;
+			}
+
+			try {
+				action.accept(optionalUser.get());
+			} catch (Exception e) {
+				requester.sendError(e.getMessage());
+			}
+		}, KiloServer.getServer().getVanillaServer());
+
+		if (!optionalCompletableFuture.isDone())
+			loadingText.start();
+
+		return optionalCompletableFuture;
+	}
+
+	@Override
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final String username,
 																	final Consumer<? super Optional<User>> action) {
+		if (getServer().getUserManager().getOnline(username) != null) {
+			return CompletableFuture.completedFuture(Optional.ofNullable(getServer().getUserManager().getOnline(username)));
+		}
+
 		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(action);
 		return optionalCompletableFuture;
 	}
 
 	@Override
+	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(UUID uuid, Consumer<? super Optional<User>> action) {
+		if (getServer().getUserManager().getOnline(uuid) != null) {
+			return CompletableFuture.completedFuture(Optional.ofNullable(getServer().getUserManager().getOnline(uuid)));
+		}
+
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(uuid);
+		optionalCompletableFuture.thenAcceptAsync(action);
+		return optionalCompletableFuture;
+	}
+
+	@Override
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final String username, final Consumer<? super Optional<User>> action, final Executor executor) {
+		if (getServer().getUserManager().getOnline(username) != null) {
+			return CompletableFuture.completedFuture(Optional.ofNullable(getServer().getUserManager().getOnline(username)));
+		}
+
 		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
 		optionalCompletableFuture.thenAcceptAsync(action, executor);
 		return optionalCompletableFuture;

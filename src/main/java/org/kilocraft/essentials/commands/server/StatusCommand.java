@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.RegistryUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
@@ -76,23 +77,19 @@ public class StatusCommand extends EssentialCommand {
     }
 
     private static String addWorldInfo() {
-        String worldInfoLoaded = "&6%s &7Chunks &8(&9%s&7 Cached&8) &e%s &7Entities &7&6%s &7Players";
+        String worldInfoLoaded = "&6%s &7Chunks &8(&9%s&7 C&8) &e%s &7Entities &7&6%s &7Players";
         StringBuilder builder = new StringBuilder();
 
         for (ServerWorld world : KiloServer.getServer().getWorlds()) {
             MonitorableWorld monitoredWorld = (MonitorableWorld) world;
 
             if (monitoredWorld.totalLoadedChunks() != 0) {
-                builder.append("\n&7* ").append(getWorldName(world)).append("&8: ");
+                builder.append("\n&7* ").append(RegistryUtils.dimensionToName(world.dimension.getType())).append("&8: ");
                 builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.cachedChunks(), monitoredWorld.loadedEntities(), monitoredWorld.players()));
             }
         }
 
         return builder.toString();
-    }
-
-    private static String getWorldName(ServerWorld world) {
-        return Objects.requireNonNull(Registry.DIMENSION_TYPE.getId(world.dimension.getType())).getPath();
     }
 
 }

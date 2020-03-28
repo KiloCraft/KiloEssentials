@@ -89,7 +89,7 @@ public class PlaytimetopCommand extends EssentialCommand {
             send(src, page, sorted, totalTicks);
         });
 
-        return SINGLE_SUCCESS;
+        return AWAIT_RESPONSE;
     }
 
     private static int send(OnlineUser src, int page, List<Map.Entry<String, Integer>> sortedList, long totalTicks) {

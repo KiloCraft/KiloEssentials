@@ -10,6 +10,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.commands.PlayerWarpCommand;
+import org.kilocraft.essentials.extensions.warps.playerwarps.commands.PlayerWarpsCommand;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.NBTStorageUtil;
 
@@ -30,6 +31,7 @@ public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStor
 
         List<EssentialCommand> commands = new ArrayList<EssentialCommand>(){{
             this.add(new PlayerWarpCommand("playerwarp", CommandPermission.PLAYER_WARP, new String[]{"pwarp"}));
+            this.add(new PlayerWarpsCommand("playerwarps", CommandPermission.PLAYER_WARPS, new String[]{"pwarps"}));
         }};
 
         for (EssentialCommand command : commands) {
@@ -105,7 +107,6 @@ public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStor
     public KiloFile getSaveFile() {
         return new KiloFile("player_warps.dat", KiloEssentials.getDataDirPath());
     }
-
 
     @Override
     public CompoundTag serialize() {

@@ -18,8 +18,8 @@ public class CacheManager {
         }
     }
 
-    public static Cached<?> get(String id) {
-        return map.get(id);
+    public static <T> Cached<T> get(String id) {
+        return (Cached<T>) map.get(id);
     }
 
     public static boolean isCached(String id) {
@@ -30,8 +30,8 @@ public class CacheManager {
         return isCached(id) && get(id).isValid();
     }
 
-    public static void getAndRun(String id, Consumer<Cached<?>> consumer) {
-        Cached<?> cached = get(id);
+    public static <T> void getAndRun(String id, Consumer<Cached<T>> consumer) {
+        Cached<T> cached = get(id);
         consumer.accept(cached);
     }
 

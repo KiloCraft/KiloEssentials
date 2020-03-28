@@ -79,11 +79,9 @@ public class SitCommand extends EssentialCommand {
 
     private int setOthers(CommandContext<ServerCommandSource> ctx, boolean set) throws CommandSyntaxException {
         OnlineUser target = getOnlineUser(getPlayer(ctx, "target").getCommandSource());
-        String input = getString(ctx, "set");
-        boolean bool = input.equals("on");
 
-        target.getSettings().set(Settings.CAN_SEAT, bool);
-        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "canSit", bool, target.getUsername());
+        target.getSettings().set(Settings.CAN_SEAT, set);
+        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "canSit", set, target.getUsername());
         return SINGLE_SUCCESS;
     }
 
