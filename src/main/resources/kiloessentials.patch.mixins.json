@@ -6,7 +6,8 @@
   "mixins": [
   ],
   "server": [
-    "SignBlockEntityMixinPatch"
+    "SignBlockEntityMixinPatch",
+    "ServerPlayNetworkHandlerHandSwingPatch"
   ],
   "injectors": {
     "defaultRequire": 1
