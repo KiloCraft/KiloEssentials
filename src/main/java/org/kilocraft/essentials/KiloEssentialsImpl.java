@@ -30,7 +30,6 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
-import org.kilocraft.essentials.extensions.rankmanager.RankManager;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
@@ -117,7 +116,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		KiloEssentialsImpl.getServer().getChatManager().register(new BuilderChat());
 
 		FEATURES = new ConfigurableFeatures();
-		FEATURES.tryToRegister(new RankManager(), "rankManager");
 		FEATURES.tryToRegister(new UserHomeHandler(), "playerHomes");
 		FEATURES.tryToRegister(new ServerWarpManager(), "serverWideWarps");
 		FEATURES.tryToRegister(new PlayerWarpsManager(), "playerWarps");
