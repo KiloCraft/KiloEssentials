@@ -244,7 +244,7 @@ public final class ServerChat {
     private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new  SimpleCommandExceptionType(LangText.getFormatter(true, "command.message.error"));
 
     public enum Channel {
-        PUBLIC("public"),
+        PUBLIC("global"),
         STAFF("staff"),
         BUILDER("builder");
 

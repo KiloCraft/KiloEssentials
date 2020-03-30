@@ -6,8 +6,6 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
