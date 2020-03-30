@@ -19,6 +19,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
 import org.kilocraft.essentials.extensions.customcommands.config.sections.CustomCommandConfigSection;
 import org.kilocraft.essentials.provided.KiloFile;
@@ -116,46 +117,12 @@ public class CustomCommands implements ConfigurableFeature {
         }
 
         for (String s : commands) {
-            if (s.startsWith("!"))
-                server.execute(operatorSource(src), s.replace("!", ""));
-            else if (s.startsWith("?"))
-                    server.execute(s.replaceFirst("\\?", ""));
-            else
-                server.execute(src, s);
-
+            CommandUtils.run(src, s);
             var++;
         }
 
         return var;
     }
 
-    private static ServerCommandSource operatorSource(ServerCommandSource src) {
-        return new ServerCommandSource(commandOutput(src), src.getPosition(), src.getRotation(),
-                src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getMinecraftServer(), src.getEntity());
-    }
-
-    private static CommandOutput commandOutput(ServerCommandSource src) {
-        return new CommandOutput() {
-            @Override
-            public void sendMessage(Text text) {
-                src.sendFeedback(text, false);
-            }
-
-            @Override
-            public boolean shouldReceiveFeedback() {
-                return true;
-            }
-
-            @Override
-            public boolean shouldTrackOutput() {
-                return false;
-            }
-
-            @Override
-            public boolean shouldBroadcastConsoleToOps() {
-                return false;
-            }
-        };
-    }
 
 }

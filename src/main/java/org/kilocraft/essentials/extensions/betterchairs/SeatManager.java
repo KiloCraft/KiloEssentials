@@ -120,6 +120,11 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
 
         BlockPos pos = hitResult.getBlockPos();
+
+        if (player.squaredDistanceTo(pos.getX() + 0.5D, pos.getY() + 0.5, pos.getZ() + 0.5) < 25.5D) {
+            return false;
+        }
+
         ServerWorld world = player.getServerWorld();
         BlockState state = world.getBlockState(pos);
 

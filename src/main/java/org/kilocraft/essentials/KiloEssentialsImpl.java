@@ -30,6 +30,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
+import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
@@ -124,6 +125,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		FEATURES.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
 		FEATURES.tryToRegister(new DiscordCommand(), "discordCommand");
 		FEATURES.tryToRegister(new VoteCommand(), "voteCommand");
+		FEATURES.tryToRegister(new PlaytimeCommands(), "playtimeCommands");
 
 		if (KiloConfig.main().startupScript().enabled) {
 			this.startupScript = new StartupScript();

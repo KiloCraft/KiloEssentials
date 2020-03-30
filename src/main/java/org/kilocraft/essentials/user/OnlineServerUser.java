@@ -25,6 +25,7 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.Texter;
@@ -215,13 +216,23 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     }
 
+    private static int tick = 0;
     public void onTick() {
+        tick++;
         ticksPlayed++;
-        updateLocation();
         messageCooldown++;
 
         if (messageCooldown > 0) {
             --messageCooldown;
+        }
+
+        if (tick >= 20) {
+            tick = 0;
+            updateLocation();
+
+            if (PlaytimeCommands.isEnabled()) {
+                PlaytimeCommands.getInstance().onUserPlaytimeUp(this);
+            }
         }
     }
 
