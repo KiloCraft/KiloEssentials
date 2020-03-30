@@ -40,7 +40,7 @@ public class SimpleCommandManager {
             KiloCommands.getDispatcher().register(CommandManager.literal(command.getLabel())
                     .then(
                             CommandManager.argument("args", StringArgumentType.greedyString())
-                                    .suggests(ArgumentCompletions::noSuggestions)
+                                    .suggests(ArgumentCompletions::allPlayers)
                     )
             );
         }

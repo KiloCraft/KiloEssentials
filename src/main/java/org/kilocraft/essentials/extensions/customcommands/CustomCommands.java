@@ -18,6 +18,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
@@ -32,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CustomCommands implements ConfigurableFeature {
+public class CustomCommands implements RelodableConfigurableFeature {
     public static boolean enabled = false;
     static Map<Identifier, SimpleCommand> map = new HashMap<>();
     private static ConfigurationNode configNode;
@@ -42,10 +43,11 @@ public class CustomCommands implements ConfigurableFeature {
     public boolean register() {
         enabled = true;
         load();
+
         return true;
     }
 
-    public static void load() {
+    public void load() {
         try {
             KiloFile CONFIG_FILE = new KiloFile("customCommands.hocon", KiloEssentials.getEssentialsPath());
             if (!CONFIG_FILE.exists()) {
