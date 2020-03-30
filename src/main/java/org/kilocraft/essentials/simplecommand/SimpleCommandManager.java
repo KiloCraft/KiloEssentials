@@ -2,8 +2,6 @@ package org.kilocraft.essentials.simplecommand;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -13,7 +11,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.server.Server;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 
@@ -115,7 +113,7 @@ public class SimpleCommandManager {
                 if (isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
                     KiloCommands.sendPermissionError(source);
                 else
-                    KiloChat.sendMessageToSource(source, new ChatMessage(
+                    KiloChat.sendMessageToSource(source, new TextMessage(
                             KiloConfig.messages().commands().context().executionException
                             , true));
 

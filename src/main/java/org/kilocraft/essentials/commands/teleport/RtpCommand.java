@@ -29,7 +29,7 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
@@ -224,7 +224,7 @@ public class RtpCommand extends EssentialCommand {
 			if (!PERMISSION_CHECK_IGNORE_LIMIT.test(source))
 				targetUser.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT) - 1);
 
-			targetUser.sendMessage(new ChatMessage(
+			targetUser.sendMessage(new TextMessage(
 					KiloConfig.messages().commands().rtp().teleported
 							.replace("{BIOME}", targetBiomeName)
 							.replace("{RTP_LEFT}", String.valueOf(targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT)))

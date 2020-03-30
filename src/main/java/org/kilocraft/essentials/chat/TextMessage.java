@@ -7,12 +7,12 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 
-public class ChatMessage {
+public class TextMessage {
     private String original;
     private String formatted;
     private boolean formatText;
 
-    public ChatMessage(String message, boolean formatText) {
+    public TextMessage(String message, boolean formatText) {
         this.original = message;
         this.formatText = formatText;
         this.formatted = formatText ?
@@ -20,13 +20,13 @@ public class ChatMessage {
                 TextFormat.removeAlternateColorCodes('&', message);
     }
 
-    public ChatMessage(String message, User user) {
+    public TextMessage(String message, User user) {
         this.original = ConfigVariableFactory.replaceUserVariables(message, user);
         this.formatText = true;
         this.formatted = TextFormat.translateAlternateColorCodes('&', original);
     }
 
-    public ChatMessage(String message, OnlineUser user) {
+    public TextMessage(String message, OnlineUser user) {
         this.original = ConfigVariableFactory.replaceOnlineUserVariables(message, user);
         this.formatText = true;
         this.formatted = TextFormat.translateAlternateColorCodes('&', message);
@@ -51,8 +51,8 @@ public class ChatMessage {
         return new LiteralText(this.formatted);
     }
 
-    public boolean isFormattingAllowed() {
-        return this.formatText;
+    public Text toComponent() {
+        return toText();
     }
 
 }

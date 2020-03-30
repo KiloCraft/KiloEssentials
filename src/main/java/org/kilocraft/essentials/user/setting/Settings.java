@@ -6,6 +6,7 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.settting.Setting;
+import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.util.NBTUtils;
@@ -77,17 +78,17 @@ public class Settings {
                 }
             }
     );
-    public static final Setting<String> UP_STREAM_CHANNEL = new Setting<String>(
-            "up_stream_channel", GlobalChat.getChannelId(),
+    public static final Setting<ServerChat.Channel> CHAT_CHANNEL = new Setting<ServerChat.Channel>(
+            "chat_channel", ServerChat.Channel.PUBLIC,
             (fun) -> {
-                if (!fun.value().equals(GlobalChat.getChannelId())) {
-                    fun.set(fun.tag().getString(fun.setting().getId()));
+                if (!fun.value().equals(ServerChat.Channel.PUBLIC)) {
+                    fun.tag().putString(fun.tag().getString(fun.setting().getId()), fun.value().getId());
                 }
             }, (fun) -> {
                 if (!fun.tag().contains(fun.setting().getId())) {
-                    fun.set(GlobalChat.getChannelId());
+                    fun.set(ServerChat.Channel.PUBLIC);
                 } else {
-                    fun.set(fun.tag().getString(fun.setting().getId()));
+                    fun.set(ServerChat.Channel.getById(fun.tag().getString(fun.setting().getId())));
                 }
             }
     );

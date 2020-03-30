@@ -26,7 +26,7 @@ import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -242,7 +242,7 @@ public  class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public int sendError(String message) {
-        this.source.sendError(new ChatMessage("&c" + message, true).toText());
+        this.source.sendError(new TextMessage("&c" + message, true).toText());
         return -1;
     }
 
@@ -255,7 +255,7 @@ public  class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public int sendError(ExceptionMessageNode node, Object... objects) {
         String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.source, new ChatMessage(
+        KiloChat.sendMessageTo(this.source, new TextMessage(
                 (objects != null) ? String.format(message, objects) : message, true)
                 .toText().formatted(Formatting.RED));
         return -1;
@@ -267,8 +267,8 @@ public  class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void sendMessage(ChatMessage chatMessage) {
-        KiloChat.sendMessageToSource(this.source, chatMessage);
+    public void sendMessage(TextMessage textMessage) {
+        KiloChat.sendMessageToSource(this.source, textMessage);
     }
 
     @Override
@@ -279,7 +279,7 @@ public  class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public void sendConfigMessage(String key, Object... objects) {
         String string = KiloConfig.getMessage(key, objects);
-        KiloChat.sendMessageToSource(this.source, new ChatMessage(string, true));
+        KiloChat.sendMessageToSource(this.source, new TextMessage(string, true));
     }
 
     @Override

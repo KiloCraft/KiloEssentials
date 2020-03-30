@@ -22,13 +22,12 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.GlobalUtils;
-import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.net.SocketAddress;
@@ -56,12 +55,12 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(final String message) {
-        KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage(message, true));
+        KiloChat.sendMessageTo(this.getPlayer(), new TextMessage(message, true));
     }
 
     @Override
     public int sendError(final String message) {
-        KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage("&c" + message, true).toText().formatted(Formatting.RED));
+        KiloChat.sendMessageTo(this.getPlayer(), new TextMessage("&c" + message, true).toText().formatted(Formatting.RED));
         return -1;
     }
 
@@ -74,7 +73,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public int sendError(final ExceptionMessageNode node, final Object... objects) {
         final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.getPlayer(), new ChatMessage(
+        KiloChat.sendMessageTo(this.getPlayer(), new TextMessage(
                 objects != null ? String.format(message, objects) : message, true)
                 .toText().formatted(Formatting.RED));
         return -1;
@@ -86,8 +85,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public void sendMessage(final ChatMessage chatMessage) {
-        KiloChat.sendMessageTo(this.getPlayer(), chatMessage);
+    public void sendMessage(final TextMessage textMessage) {
+        KiloChat.sendMessageTo(this.getPlayer(), textMessage);
     }
 
     @Override
@@ -98,7 +97,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public void sendConfigMessage(final String key, final Object... objects) {
         final String message = KiloConfig.getMessage(key, objects);
-        this.sendMessage(new ChatMessage(message, true));
+        this.sendMessage(new TextMessage(message, true));
     }
 
     @Override

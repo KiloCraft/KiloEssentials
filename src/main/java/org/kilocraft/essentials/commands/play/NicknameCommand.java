@@ -20,7 +20,7 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.PlayerDataModifier;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -92,7 +92,7 @@ public class NicknameCommand extends EssentialCommand {
 
         User user = KiloServer.getServer().getUserManager().getOnline(self);
 
-        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(messages.commands().nickname().setSelf
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new TextMessage(messages.commands().nickname().setSelf
                 .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                 .replace("{NICK_NEW}", nickname)
                 , true));
@@ -113,7 +113,7 @@ public class NicknameCommand extends EssentialCommand {
 
         essentials.getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
             String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
-            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new ChatMessage(messages.commands().nickname().setOthers
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new TextMessage(messages.commands().nickname().setOthers
                     .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                     .replace("{NICK_NEW}", nickname)
                     .replace("{TARGET_TAG}", user.getNameTag())
@@ -166,7 +166,7 @@ public class NicknameCommand extends EssentialCommand {
                 dataModifier.save();
             }
 
-            KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new ChatMessage(messages.commands().nickname().resetOthers
+            KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new TextMessage(messages.commands().nickname().resetOthers
                     .replace("{TARGET_TAG}", user.getNameTag())
                     , true));
         });

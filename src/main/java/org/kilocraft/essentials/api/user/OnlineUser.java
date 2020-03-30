@@ -10,7 +10,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public interface OnlineUser extends User {
@@ -30,7 +30,7 @@ public interface OnlineUser extends User {
 
     void sendMessage(Text text);
 
-    void sendMessage(ChatMessage chatMessage);
+    void sendMessage(TextMessage textMessage);
 
     void sendLangMessage(String key, Object... objects);
 

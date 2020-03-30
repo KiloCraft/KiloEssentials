@@ -4,7 +4,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.chat.ChatChannel;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.ServerUser;
@@ -71,9 +71,9 @@ public class BuilderChat implements ChatChannel {
         this.subscribers.remove(user.getUuid());
     }
 
-    private void sendToSubscribers(ChatMessage chatMessage) {
+    private void sendToSubscribers(TextMessage textMessage) {
         for (UUID subscriber : this.subscribers) {
-            KiloChat.sendMessageTo(KiloServer.getServer().getPlayer(subscriber), chatMessage);
+            KiloChat.sendMessageTo(KiloServer.getServer().getPlayer(subscriber), textMessage);
         }
     }
 }

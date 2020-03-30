@@ -27,13 +27,13 @@ public class ChatManager<C extends ChatChannel> {
     public void onChatMessage(ServerPlayerEntity player, ChatMessageC2SPacket packet) {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
 
-        if (channels.containsKey(user.getSetting(Settings.UP_STREAM_CHANNEL)))
-            channels.get(user.getSetting(Settings.UP_STREAM_CHANNEL)).onChatMessage(player, packet.getChatMessage());
+        if (channels.containsKey(user.getSetting(Settings.CHAT_CHANNEL)))
+            channels.get(user.getSetting(Settings.CHAT_CHANNEL)).onChatMessage(player, packet.getChatMessage());
         else {
-            user.getSettings().set(Settings.UP_STREAM_CHANNEL, GlobalChat.getChannelId());
+            user.getSettings().set(Settings.CHAT_CHANNEL, GlobalChat.getChannelId());
             String errorMessage = String.format(
                     KiloEssentials.getInstance().getMessageUtil().fromExceptionNode(ExceptionMessageNode.INVALID_CHAT_UPSTREAM_ID),
-                    user.getUuid().toString(), user.getSetting(Settings.UP_STREAM_CHANNEL));
+                    user.getUuid().toString(), user.getSetting(Settings.CHAT_CHANNEL));
 
             user.getCommandSource().sendError(new LiteralText(errorMessage));
             KiloEssentials.getLogger().error(errorMessage);

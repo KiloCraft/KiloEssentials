@@ -17,8 +17,9 @@ public class StartupScript {
     private String STARTUP_CODE;
 
     public boolean exists() {
-        if (file != null)
+        if (file != null) {
             return file.exists();
+        }
 
         return false;
     }

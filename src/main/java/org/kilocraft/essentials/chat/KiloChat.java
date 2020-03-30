@@ -34,12 +34,12 @@ public class KiloChat {
 		return (objects[0] != null) ? String.format(string, objects) : string;
 	}
 
-	public static void sendMessageTo(ServerPlayerEntity player, ChatMessage chatMessage) {
-		sendMessageTo(player, new LiteralText(chatMessage.getFormattedMessage()));
+	public static void sendMessageTo(ServerPlayerEntity player, TextMessage textMessage) {
+		sendMessageTo(player, textMessage.toComponent());
 	}
 
-	public static void sendMessageTo(ServerCommandSource source, ChatMessage chatMessage) throws CommandSyntaxException {
-		sendMessageTo(source.getPlayer(), new LiteralText(chatMessage.getFormattedMessage()));
+	public static void sendMessageTo(ServerCommandSource source, TextMessage textMessage) throws CommandSyntaxException {
+		sendMessageTo(source.getPlayer(), textMessage.toComponent());
 	}
 
 	public static void sendMessageTo(ServerPlayerEntity player, Text text) {
@@ -50,7 +50,7 @@ public class KiloChat {
 		source.sendFeedback(text, false);
 	}
 
-	public static void sendMessageToSource(ServerCommandSource source, ChatMessage message) {
+	public static void sendMessageToSource(ServerCommandSource source, TextMessage message) {
 		if (CommandUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(message.getOriginal());
 		else
@@ -93,31 +93,31 @@ public class KiloChat {
 			source.sendFeedback(LangText.getFormatter(true, key, objects), false);
 	}
 
-	public static void broadCastExceptConsole(ChatMessage chatMessage) {
+	public static void broadCastExceptConsole(TextMessage textMessage) {
 		for (PlayerEntity entity : getServer().getPlayerList()) {
-			entity.addMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
+			entity.addMessage(new LiteralText(textMessage.getFormattedMessage()), false);
 		}
 	}
 
 	public static void broadCastLangExceptConsole(String key, Object... objects) {
-		broadCastExceptConsole(new ChatMessage(getFormattedLang(key, objects), false));
+		broadCastExceptConsole(new TextMessage(getFormattedLang(key, objects), false));
 	}
 
 	public static void broadCastLangToConsole(String key, Object... objects) {
-		broadCastToConsole(new ChatMessage(getFormattedLang(key, objects), false));
+		broadCastToConsole(new TextMessage(getFormattedLang(key, objects), false));
 	}
 
-	public static void broadCastToConsole(ChatMessage chatMessage) {
-		chatMessage.setMessage(chatMessage.getOriginal(), false);
-		getServer().sendMessage(chatMessage.getFormattedMessage());
+	public static void broadCastToConsole(TextMessage textMessage) {
+		textMessage.setMessage(textMessage.getOriginal(), false);
+		getServer().sendMessage(textMessage.getFormattedMessage());
 	}
 
-	public static void broadCast(ChatMessage chatMessage) {
+	public static void broadCast(TextMessage textMessage) {
 		for (PlayerEntity entity : getServer().getPlayerList()) {
-			entity.addMessage(new LiteralText(chatMessage.getFormattedMessage()), false);
+			entity.addMessage(new LiteralText(textMessage.getFormattedMessage()), false);
 		}
 
-		getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', chatMessage.getFormattedMessage()));
+		getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', textMessage.getFormattedMessage()));
 	}
 
 	public static void broadCast(Text text) {
@@ -133,21 +133,21 @@ public class KiloChat {
 	}
 
 	public static void broadCastLang(String key, Object... objects) {
-		broadCast(new ChatMessage(getFormattedLang(key, objects), true));
+		broadCast(new TextMessage(getFormattedLang(key, objects), true));
 	}
 
 	public static void onUserJoin(ServerUser user) {
 		if (DISABLE_EVENT_MESSAGES)
 			return;
 
-		broadCast(new ChatMessage(messages.events().userJoin, user));
+		broadCast(new TextMessage(messages.events().userJoin, user));
 	}
 
 	public static void onUserLeave(ServerUser user) {
 		if (DISABLE_EVENT_MESSAGES)
 			return;
 
-		broadCast(new ChatMessage(messages.events().userLeave, user));
+		broadCast(new TextMessage(messages.events().userLeave, user));
 	}
 
 	public static boolean DISABLE_EVENT_MESSAGES = messages.events().disableOnProxyMode && KiloConfig.main().server().proxyMode;

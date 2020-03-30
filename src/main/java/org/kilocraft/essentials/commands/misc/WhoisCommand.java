@@ -86,7 +86,7 @@ public class WhoisCommand extends EssentialCommand {
         }
 
         text.append("Meta", new String[]{"Homes", "RTPs", "UpStreamChannelId"},
-                target.getHomesHandler().homes(), target.getSetting(Settings.RANDOM_TELEPORTS_LEFT), target.getSetting(Settings.UP_STREAM_CHANNEL));
+                target.getHomesHandler().homes(), target.getSetting(Settings.RANDOM_TELEPORTS_LEFT), target.getSetting(Settings.CHAT_CHANNEL));
         text.append("Is Spying", new String[]{"On Commands", "On Social"},
                 target.getSetting(Settings.COMMAND_SPY), target.getSetting(Settings.SOCIAL_SPY));
 

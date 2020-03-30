@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.user.setting;
 
 import net.minecraft.nbt.CompoundTag;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 
@@ -26,12 +27,22 @@ public class ServerUserSettings implements UserSettings {
     }
 
     @Override
+    public <T> void reset(Setting<T> setting) {
+        this.set(setting, setting.getDefault());
+    }
+
+    @Override
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
         this.map.forEach((id, value) -> {
             Setting<?> setting = Settings.getById(id);
             if (setting != null) {
-                setting.toTag(tag, value);
+                try {
+                    setting.toTag(tag, value);
+                } catch (IllegalArgumentException e) {
+                    KiloEssentials.getLogger().fatal("Exception while serializing a User Setting, Can not save the Value");
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -43,7 +54,12 @@ public class ServerUserSettings implements UserSettings {
         for (String key : tag.getKeys()) {
             Setting<?> setting = Settings.getById(key);
             if (setting != null) {
-                this.map.put(setting.getId(), setting.fromTag(tag));
+                try {
+                    this.map.put(setting.getId(), setting.fromTag(tag));
+                } catch (IllegalArgumentException e) {
+                    KiloEssentials.getLogger().fatal("Exception while de-serializing a User Setting, Using Default Value");
+                    e.printStackTrace();
+                }
             }
         }
     }

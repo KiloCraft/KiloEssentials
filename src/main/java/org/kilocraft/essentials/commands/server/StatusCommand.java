@@ -6,14 +6,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.RegistryUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
@@ -21,7 +20,6 @@ import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
-import java.util.Objects;
 
 import static org.kilocraft.essentials.api.text.TextFormat.getFormattedTPS;
 import static org.kilocraft.essentials.util.TPSTracker.*;
@@ -39,7 +37,7 @@ public class StatusCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
         try {
-            KiloChat.sendMessageToSource(ctx.getSource(), new ChatMessage(getInfo(), true));
+            KiloChat.sendMessageToSource(ctx.getSource(), new TextMessage(getInfo(), true));
         } catch (Exception e) {
             String msg = "An unexpected exception occurred when processing the cpu usage" +
                     "Please report this to a Administrator";

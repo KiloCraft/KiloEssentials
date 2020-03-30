@@ -13,6 +13,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -49,7 +50,7 @@ public final class ServerChat {
         final String template = KiloConfig.getMainNode().getNode("chat").getNode("channelsMeta").getNode(channel.getId() + "Chat").getString();
         final ServerPlayerEntity player = sender.getPlayer();
 
-        final ChatMessage message = new ChatMessage(rawMessage, KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_COLOR));
+        final TextMessage message = new TextMessage(rawMessage, KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_COLOR));
 
         try {
             if (ServerChat.pingEnabled && KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_PING_OTHER)) {
@@ -196,14 +197,14 @@ public final class ServerChat {
                 .replace("%MESSAGE%", message);
 
         KiloChat.sendMessageToSource(source, new LiteralText(
-                new ChatMessage(toSource, true).getFormattedMessage()).formatted(Formatting.WHITE));
+                new TextMessage(toSource, true).getFormattedMessage()).formatted(Formatting.WHITE));
         KiloChat.sendMessageTo(target.getPlayer(), new LiteralText(
-                new ChatMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.WHITE));
+                new TextMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.WHITE));
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user))
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
-                    new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
+                    new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
         }
 
         KiloServer.getServer().sendMessage(String.format("[Chat/Private] %s -> %s: %s", source.getName(), target.getUsername(), message));
@@ -217,7 +218,23 @@ public final class ServerChat {
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {
                 KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
-                        new ChatMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+                        new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+            }
+        }
+    }
+
+    public static void sendToStaff(OnlineUser src, TextMessage message) {
+        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+            if (user.hasPermission(EssentialPermission.STAFF)) {
+                user.sendMessage(message);
+            }
+        }
+    }
+
+    public static void sendToBuilders(OnlineUser src, TextMessage message) {
+        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+            if (user.hasPermission(EssentialPermission.BUILDER)) {
+                user.sendMessage(message);
             }
         }
     }
@@ -225,4 +242,30 @@ public final class ServerChat {
     private static final SimpleCommandExceptionType SAME_TARGETS_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You can't message your self!"));
     private static final SimpleCommandExceptionType TARGET_OFFLINE_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("The Target player is offline!"));
     private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new  SimpleCommandExceptionType(LangText.getFormatter(true, "command.message.error"));
+
+    public enum Channel {
+        PUBLIC("public"),
+        STAFF("staff"),
+        BUILDER("builder");
+
+        private String id;
+        Channel(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return this.id;
+        }
+
+        @Nullable
+        public static Channel getById(String id) {
+            for (Channel value : values()) {
+                if (value.id.equalsIgnoreCase(id)) {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+    }
 }

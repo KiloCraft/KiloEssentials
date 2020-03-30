@@ -10,7 +10,7 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 
 import java.util.Collection;
 
@@ -37,12 +37,12 @@ public class ClearchatCommand extends EssentialCommand {
     }
 
     private static int executeAll(CommandContext<ServerCommandSource> ctx, boolean silent) {
-        broadCastExceptConsole(new ChatMessage(getClearString(), false));
+        broadCastExceptConsole(new TextMessage(getClearString(), false));
 
         if (!silent)
             broadCastLangExceptConsole("command.clearchat.broadcast", ctx.getSource().getName());
 
-        broadCastToConsole(new ChatMessage(
+        broadCastToConsole(new TextMessage(
                 getFormattedLang("command.clearchat.broadcast", ctx.getSource().getName()), false));
 
         return SUCCESS();

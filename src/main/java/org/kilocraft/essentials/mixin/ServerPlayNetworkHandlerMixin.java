@@ -40,7 +40,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onGameMessage(Lnet/minecraft/network/packet/c2s/play/ChatMessageC2SPacket;)V"))
     private void modify(ChatMessageC2SPacket chatMessageC2SPacket, CallbackInfo ci) {
         if (KiloConfig.main().chat().useVanillaChat &&
-                        KiloServer.getServer().getOnlineUser(player).getSetting(Settings.UP_STREAM_CHANNEL).equals(GlobalChat.getChannelId())) {
+                        KiloServer.getServer().getOnlineUser(player).getSetting(Settings.CHAT_CHANNEL).equals(GlobalChat.getChannelId())) {
             return;
         }
 

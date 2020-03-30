@@ -29,7 +29,7 @@ import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
@@ -214,7 +214,7 @@ public class KiloCommands {
     public static int executeUsageFor(final String langKey, final ServerCommandSource source) {
         final String fromLang = ModConstants.getLang().getProperty(langKey);
         if (fromLang != null)
-            KiloChat.sendMessageToSource(source, new ChatMessage("&6Command usage:\n" + fromLang, true));
+            KiloChat.sendMessageToSource(source, new TextMessage("&6Command usage:\n" + fromLang, true));
         else
             KiloChat.sendLangMessageTo(source, "general.usage.help");
         return 1;
@@ -289,7 +289,7 @@ public class KiloCommands {
     }
 
     public static void sendPermissionError(final ServerCommandSource source) {
-        KiloChat.sendMessageToSource(source, new ChatMessage(
+        KiloChat.sendMessageToSource(source, new TextMessage(
                 KiloConfig.messages().commands().context().permissionException
                 ,true));
     }
@@ -425,7 +425,7 @@ public class KiloCommands {
                     if (this.isCommand(literalName) && reqPerm != null && !KiloCommands.hasPermission(executor, reqPerm))
                         KiloCommands.sendPermissionError(executor);
                     else
-                        KiloChat.sendMessageToSource(executor, new ChatMessage(
+                        KiloChat.sendMessageToSource(executor, new TextMessage(
                                 KiloConfig.messages().commands().context().executionException, true));
 
                 } else {
