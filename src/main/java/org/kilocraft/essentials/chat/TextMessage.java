@@ -12,6 +12,10 @@ public class TextMessage {
     private String formatted;
     private boolean formatText;
 
+    public TextMessage(String message) {
+        this(message, true);
+    }
+
     public TextMessage(String message, boolean formatText) {
         this.original = message;
         this.formatText = formatText;

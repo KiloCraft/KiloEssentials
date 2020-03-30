@@ -6,6 +6,7 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -27,10 +28,10 @@ public class ChatManager<C extends ChatChannel> {
     public void onChatMessage(ServerPlayerEntity player, ChatMessageC2SPacket packet) {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
 
-        if (channels.containsKey(user.getSetting(Settings.CHAT_CHANNEL)))
-            channels.get(user.getSetting(Settings.CHAT_CHANNEL)).onChatMessage(player, packet.getChatMessage());
+        if (channels.containsKey(user.getSetting(Settings.CHAT_CHANNEL).getId()))
+            channels.get(user.getSetting(Settings.CHAT_CHANNEL).getId()).onChatMessage(player, packet.getChatMessage());
         else {
-            user.getSettings().set(Settings.CHAT_CHANNEL, GlobalChat.getChannelId());
+            user.getSettings().reset(Settings.CHAT_CHANNEL);
             String errorMessage = String.format(
                     KiloEssentials.getInstance().getMessageUtil().fromExceptionNode(ExceptionMessageNode.INVALID_CHAT_UPSTREAM_ID),
                     user.getUuid().toString(), user.getSetting(Settings.CHAT_CHANNEL));
