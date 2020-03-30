@@ -231,7 +231,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             updateLocation();
 
             if (PlaytimeCommands.isEnabled()) {
-                PlaytimeCommands.getInstance().onUserPlaytimeUp(this);
+                PlaytimeCommands.getInstance().onUserPlaytimeUp(this, ticksPlayed);
             }
         }
     }

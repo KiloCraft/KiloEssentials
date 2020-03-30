@@ -9,10 +9,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
-import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandConfigSection;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandsConfig;
@@ -60,11 +57,11 @@ public class PlaytimeCommands implements RelodableConfigurableFeature {
         }
     }
 
-    public void onUserPlaytimeUp(OnlineServerUser user) {
-        for (PlaytimeCommandConfigSection section : config.sections) {
-            int played = user.getTicksPlayed() * 20;
+    public void onUserPlaytimeUp(OnlineServerUser user, int ticksPlayed) {
+        int played = ticksPlayed / 20;
 
-            if (section.seconds == played) {
+        for (PlaytimeCommandConfigSection section : config.sections) {
+            if (played == section.seconds) {
                 for (String command : section.commands) {
                     runCommand(user, command);
                 }
