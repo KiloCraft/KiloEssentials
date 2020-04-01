@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.util.NBTUtils;
 

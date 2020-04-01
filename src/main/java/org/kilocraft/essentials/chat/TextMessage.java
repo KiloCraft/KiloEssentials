@@ -46,9 +46,13 @@ public class TextMessage {
 
     public void setMessage(String string, boolean format) {
         this.original = string;
-        this.formatted = format ?
-                TextFormat.translateAlternateColorCodes('&', string) :
-                TextFormat.removeAlternateColorCodes('&', string);
+        this.formatText = format;
+        formatMessage();
+    }
+
+    public void setMessage(String string) {
+        this.original = string;
+        formatMessage();
     }
 
     public Text toText() {
@@ -59,4 +63,13 @@ public class TextMessage {
         return toText();
     }
 
+    public boolean contains(String str) {
+        return this.original.contains(str);
+    }
+
+    private void formatMessage() {
+        this.formatted = this.formatText ?
+                TextFormat.translateAlternateColorCodes('&', this.original) :
+                TextFormat.removeAlternateColorCodes('&', this.original);
+    }
 }

@@ -8,7 +8,6 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;

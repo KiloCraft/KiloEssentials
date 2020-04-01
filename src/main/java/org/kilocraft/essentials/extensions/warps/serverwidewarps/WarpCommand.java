@@ -118,12 +118,12 @@ public class WarpCommand {
         int i = 0;
         boolean nextColor = false;
         for (ServerWarp warp : ServerWarpManager.getWarps()) {
-            LiteralText thisHome = new LiteralText("");
+            LiteralText thisWarp = new LiteralText("");
             i++;
 
             Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
 
-            thisHome.append(new LiteralText(warp.getName()).styled((style) -> {
+            thisWarp.append(new LiteralText(warp.getName()).styled((style) -> {
                 style.setColor(thisFormat);
                 style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                         new LiteralText("[i] ").formatted(Formatting.YELLOW)
@@ -133,11 +133,11 @@ public class WarpCommand {
             }));
 
             if (warpsSize != i)
-                thisHome.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
+                thisWarp.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
 
             nextColor = !nextColor;
 
-            text.append(thisHome);
+            text.append(thisWarp);
         }
 
         KiloChat.sendMessageToSource(source, text);

@@ -14,8 +14,8 @@ public class ChatConfigSection {
     @Setting(value = "kickForUsingIllegalCharacters", comment = "Kicks a player if they use Illegal Characters in the chat\n If set to false they will only get a warning")
     public boolean kickForUsingIllegalCharacters = false;
 
-    @Setting(value = "channelsMeta", comment = "Sets format and meta of chat channels")
-    private ChannelMetaConfigSection channelMetaSection = new ChannelMetaConfigSection();
+    @Setting(value = "prefixes", comment = "Sets format and meta of chat channels")
+    private ChatPrefixesConigSection prefixesSection = new ChatPrefixesConigSection();
 
     @Setting(value = "privateChat", comment = "Sets the format and meta of private chat channels")
     private PrivateChatConfigSection privateChatSection = new PrivateChatConfigSection();
@@ -23,8 +23,8 @@ public class ChatConfigSection {
     @Setting(value = "ping")
     private ChatPingConfigSection pingSection = new ChatPingConfigSection();
 
-    public ChannelMetaConfigSection channelMeta() {
-        return channelMetaSection;
+    public ChatPrefixesConigSection prefixes() {
+        return prefixesSection;
     }
 
     public PrivateChatConfigSection privateChat() {

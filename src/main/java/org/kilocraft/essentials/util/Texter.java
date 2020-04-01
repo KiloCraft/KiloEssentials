@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.*;
@@ -56,7 +56,7 @@ public class Texter {
         public static ClickEvent onClickRun(String command) {
             return new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
         }
-
+        
         public static ClickEvent onClickOpen(String url) {
             return new ClickEvent(ClickEvent.Action.OPEN_URL, url);
         }

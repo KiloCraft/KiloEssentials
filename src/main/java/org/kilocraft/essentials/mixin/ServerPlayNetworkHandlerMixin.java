@@ -18,7 +18,8 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.setting.Settings;
@@ -36,16 +37,20 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Shadow @Final private MinecraftServer server;
 
-    @Inject(method = "onGameMessage", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onGameMessage(Lnet/minecraft/network/packet/c2s/play/ChatMessageC2SPacket;)V"))
+    @Inject(
+            method = "onGameMessage", cancellable = true,
+            at = @At(
+                    value = "HEAD",
+                    target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onGameMessage(Lnet/minecraft/network/packet/c2s/play/ChatMessageC2SPacket;)V"
+            )
+    )
     private void modify(ChatMessageC2SPacket chatMessageC2SPacket, CallbackInfo ci) {
-        if (KiloConfig.main().chat().useVanillaChat &&
-                        KiloServer.getServer().getOnlineUser(player).getSetting(Settings.CHAT_CHANNEL).equals(GlobalChat.getChannelId())) {
-            return;
-        }
+        OnlineUser user = KiloServer.getServer().getOnlineUser(this.player);
 
-        ci.cancel();
-        ((ServerUserManager) KiloServer.getServer().getUserManager()).onChatMessage(player, chatMessageC2SPacket);
+        if (!KiloConfig.main().chat().useVanillaChat) {
+            ci.cancel();
+            ((ServerUserManager) KiloServer.getServer().getUserManager()).onChatMessage(user, chatMessageC2SPacket);
+        }
     }
 
     @Redirect(method = "onGameMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Z)V"))
@@ -53,8 +58,13 @@ public abstract class ServerPlayNetworkHandlerMixin {
         playerManager.broadcastChatMessage(new LiteralText(TextFormat.translate(text.asFormattedString())), false);
     }
 
-    @Inject(method = "onSignUpdate", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onSignUpdate(Lnet/minecraft/network/packet/c2s/play/UpdateSignC2SPacket;)V"))
+    @Inject(
+            method = "onSignUpdate", cancellable = true,
+            at = @At(
+                    value = "HEAD",
+                    target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onSignUpdate(Lnet/minecraft/network/packet/c2s/play/UpdateSignC2SPacket;)V"
+            )
+    )
     private void modify(UpdateSignC2SPacket updateSignC2SPacket, CallbackInfo ci) {
         ci.cancel();
         NetworkThreadUtils.forceMainThread(updateSignC2SPacket, player.networkHandler, this.player.getServerWorld());

@@ -17,7 +17,6 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
-import org.kilocraft.essentials.chat.channels.GlobalChat;
 import org.kilocraft.essentials.user.setting.Settings;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -50,7 +49,7 @@ public class StaffmsgCommand extends EssentialCommand {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
         user.getSettings().set(Settings.CHAT_CHANNEL, ServerChat.Channel.STAFF);
 
-        user.sendLangMessage("command.staffmsg.on");
+        user.sendLangMessage("channel.on", "staff");
         return SINGLE_SUCCESS;
     }
 
@@ -58,7 +57,7 @@ public class StaffmsgCommand extends EssentialCommand {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
         user.getSettings().reset(Settings.CHAT_CHANNEL);
 
-        user.sendLangMessage("command.staffmsg.off");
+        user.sendLangMessage("channel.off", "staff");
         return SINGLE_SUCCESS;
     }
 

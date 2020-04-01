@@ -18,14 +18,15 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.AnimatedText;
 
 import java.io.File;
@@ -229,13 +230,11 @@ public class ServerUserManager implements UserManager, TickListener {
 
         serverUser.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, playerEntity.getUuid()));
 
-        KiloServer.getServer().getChatManager().getChannel("global").join(serverUser);
         KiloChat.onUserJoin(serverUser);
     }
 
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
-        KiloServer.getServer().getChatManager().getChannel(GlobalChat.getChannelId()).leave(user);
         if (user.getNickname().isPresent())
             this.nicknameToUUID.remove(user.getNickname().get());
         this.usernameToUUID.remove(player.getEntityName());
@@ -251,7 +250,8 @@ public class ServerUserManager implements UserManager, TickListener {
         KiloChat.onUserLeave(user);
     }
 
-    public void onChatMessage(ServerPlayerEntity player, ChatMessageC2SPacket packet) {
+    public void onChatMessage(OnlineUser user, ChatMessageC2SPacket packet) {
+        ServerPlayerEntity player = user.getPlayer();
         NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
 
         player.updateLastActionTime();
@@ -259,10 +259,11 @@ public class ServerUserManager implements UserManager, TickListener {
 
         for (int i = 0; i < string.length(); ++i) {
             if (!SharedConstants.isValidChar(string.charAt(i))) {
-                if (KiloConfig.main().chat().kickForUsingIllegalCharacters)
+                if (KiloConfig.main().chat().kickForUsingIllegalCharacters) {
                     player.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
-                else
+                } else {
                     player.getCommandSource().sendError(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+                }
 
                 return;
             }
@@ -271,13 +272,11 @@ public class ServerUserManager implements UserManager, TickListener {
         if (string.startsWith("/")) {
             KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
         } else {
-            KiloServer.getServer().getChatManager().onChatMessage(player, packet);
+            user.getSetting(Settings.CHAT_CHANNEL).send(user, new TextMessage(string));
         }
 
-        ServerUser user = (ServerUser) KiloServer.getServer().getUserManager().getOnline(player);
-
         //user.messageCooldown += 20;
-        if (user.messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_BYPASS)) {
+        if (((ServerUser) user).messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_BYPASS)) {
             player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
         }
 

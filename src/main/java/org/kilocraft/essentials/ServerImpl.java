@@ -17,9 +17,6 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.chat.ChatManager;
-import org.kilocraft.essentials.api.text.LoggerFormats;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
@@ -32,7 +29,6 @@ import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.util.ANSIHelper;
 
 import java.io.File;
 import java.io.IOException;

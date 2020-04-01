@@ -7,6 +7,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
@@ -18,58 +19,67 @@ import org.kilocraft.essentials.config.KiloConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class SimpleCommandManager {
     private static SimpleCommandManager INSTANCE;
     private List<SimpleCommand> commands;
+    private List<String> byId;
     private Server server;
 
     public SimpleCommandManager(Server server, CommandDispatcher<ServerCommandSource> dispatcher) {
         INSTANCE = this;
         this.server = server;
         this.commands = new ArrayList<>();
+        this.byId = new ArrayList<>();
     }
 
     public static void register(SimpleCommand command) {
-        if (INSTANCE != null && INSTANCE.commands != null) {
+        if (INSTANCE != null) {
             INSTANCE.commands.add(command);
+            INSTANCE.byId.add(command.id);
 
             KiloCommands.getDispatcher().register(CommandManager.literal(command.getLabel())
                     .then(
                             CommandManager.argument("args", StringArgumentType.greedyString())
-                                    .suggests(ArgumentCompletions::allPlayers)
+                                    .requires(src -> INSTANCE.byId.contains(command.id))
+                                    .suggests(ArgumentCompletions::noSuggestions)
                     )
             );
         }
     }
 
     public static void unregister(String id) {
-        if (INSTANCE != null && INSTANCE.commands != null && getCommand(id) != null)
-            INSTANCE.commands.remove(getCommand(id));
+        if (INSTANCE != null &&  getCommand(id) != null) {
+            unregister(getCommand(id));
+        }
     }
 
     public static void unregister(SimpleCommand command) {
-        if (INSTANCE != null && INSTANCE.commands != null)
+        if (INSTANCE != null && INSTANCE.commands != null) {
             INSTANCE.commands.remove(command);
+            INSTANCE.byId.remove(command.id);
+        }
     }
 
     public static SimpleCommand getCommandByLabel(String label) {
         if (INSTANCE != null && INSTANCE.commands != null)
             for (SimpleCommand command : INSTANCE.commands) {
-                if (command.label.equals(label))
+                if (command.label.equals(label)) {
                     return command;
+                }
             }
 
         return null;
     }
 
+    @Nullable
     public static SimpleCommand getCommand(String id) {
-        if (INSTANCE != null && INSTANCE.commands != null)
+        if (INSTANCE != null && INSTANCE.commands != null) {
             for (SimpleCommand command : INSTANCE.commands) {
-                if (command.id.equals(id))
+                if (command.id.equals(id)) {
                     return command;
+                }
             }
+        }
 
         return null;
     }
