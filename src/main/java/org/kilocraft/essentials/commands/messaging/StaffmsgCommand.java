@@ -64,8 +64,7 @@ public class StaffmsgCommand extends EssentialCommand {
 
     private int send(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String message = StringArgumentType.getString(ctx, "message");
-        //ServerChat.sendToStaff(this.getOnlineUser(ctx), new TextMessage(message));
-        KiloServer.getServer().getChatManager().getChannel("staff").onChatMessage(ctx.getSource().getPlayer(), message);
+        ServerChat.sendToStaff(this.getOnlineUser(ctx), new TextMessage(message));
         return SINGLE_SUCCESS;
     }
 

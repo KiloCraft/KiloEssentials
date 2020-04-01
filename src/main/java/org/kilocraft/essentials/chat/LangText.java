@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.chat;
+package org.kilocraft.essentials.chat;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
