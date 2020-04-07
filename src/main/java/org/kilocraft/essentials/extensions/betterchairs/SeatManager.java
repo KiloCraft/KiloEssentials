@@ -121,7 +121,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
         BlockPos pos = hitResult.getBlockPos();
 
-        if (player.squaredDistanceTo(pos.getX() + 0.5D, pos.getY() + 0.5, pos.getZ() + 0.5) < 25.5D) {
+        if (player.squaredDistanceTo(pos.getX() + 0.5D, pos.getY() + 0.5, pos.getZ() + 0.5) > 3.85D) {
             return false;
         }
 

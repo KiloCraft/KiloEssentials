@@ -9,7 +9,7 @@ import org.kilocraft.essentials.util.NbtCommands;
 public class OnInteractBlock implements EventHandler<PlayerInteractBlockEvent> {
     @Override
     public void handle(PlayerInteractBlockEvent event) {
-        if (event.getPlayer().getStackInHand(event.getHand()) == ItemStack.EMPTY && SeatManager.isEnabled() && event.getHitResult() != null) {
+        if (SeatManager.isEnabled() && event.getPlayer().getStackInHand(event.getHand()) == ItemStack.EMPTY && event.getHitResult() != null) {
             event.setCancelled(SeatManager.getInstance().onInteractBlock(event.getPlayer(), event.getHitResult(), event.getHand()));
         } else {
             event.setCancelled(NbtCommands.fromRightClick(event.getPlayer(), event.getHand()));

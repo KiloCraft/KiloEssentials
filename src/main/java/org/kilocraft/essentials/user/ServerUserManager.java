@@ -24,6 +24,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
@@ -229,8 +230,12 @@ public class ServerUserManager implements UserManager, TickListener {
         this.users.add(serverUser);
 
         serverUser.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, playerEntity.getUuid()));
+    }
 
-        KiloChat.onUserJoin(serverUser);
+    public void onJoined(ServerPlayerEntity playerEntity) {
+        OnlineServerUser user = (OnlineServerUser) this.getOnline(playerEntity);
+        user.onJoined();
+        KiloChat.onUserJoin(user);
     }
 
     public void onLeave(ServerPlayerEntity player) {
@@ -272,7 +277,11 @@ public class ServerUserManager implements UserManager, TickListener {
         if (string.startsWith("/")) {
             KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
         } else {
-            user.getSetting(Settings.CHAT_CHANNEL).send(user, new TextMessage(string));
+            try {
+                ServerChat.send(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
+            } catch (Exception e) {
+                user.sendError(e.getMessage());
+            }
         }
 
         //user.messageCooldown += 20;

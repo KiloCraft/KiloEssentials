@@ -29,8 +29,9 @@ public abstract class SignBlockEntityMixinPatch {
         for (Text value : text) {
             Style style = value != null ? value.getStyle() : null;
             if (style != null && style.getClickEvent() != null && style.getClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) {
-                if (KiloServer.getServer().execute(getCommandSource((ServerPlayerEntity) playerEntity), style.getClickEvent().getValue()) > 0)
+                if (KiloServer.getServer().execute(getCommandSource((ServerPlayerEntity) playerEntity), style.getClickEvent().getValue()) > 0) {
                     cmds++;
+                }
             }
         }
 

@@ -4,6 +4,7 @@ public enum EssentialPermission {
     STAFF("staff"),
     BUILDER("builder"),
     CHAT_COLOR("chat.color"),
+    CHAT_URL("chat.url"),
     CHAT_BYPASS("chat.bypass"),
     CHAT_GET_PINGED("chat.ping.get_pinged"),
     CHAT_PING_OTHER("chat.ping.other"),

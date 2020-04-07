@@ -38,7 +38,7 @@ public class PermissionUtil {
         this.present = this.checkPresent();
 
         if (!this.present) {
-            logger.warn("**** " + manager.getName() + " is not this.present! Switching to vanilla operator system");
+            logger.warn("**** " + manager.getName() + " is not present! Switching to vanilla operator system");
             logger.warn("     You need to install either LuckPerms for Fabric Or Thimble to manage the permissions");
             this.manager = Manager.NONE;
             return;

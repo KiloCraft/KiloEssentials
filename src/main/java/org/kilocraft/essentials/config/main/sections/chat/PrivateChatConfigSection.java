@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.config.main.sections.chat;
 
+import net.minecraft.sound.SoundEvents;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -11,4 +12,11 @@ public class PrivateChatConfigSection {
 
     @Setting(value = "meFormat")
     public String privateChatMeFormat = "&cme";
+
+    @Setting(value = "sound", comment = "The sound you hear when someone messages you")
+    private ChatPingSoundConfigSection chatPingSound = new ChatPingSoundConfigSection(SoundEvents.ENTITY_SILVERFISH_DEATH, 0.5, 1.05D);
+
+    public ChatPingSoundConfigSection pingSound() {
+        return chatPingSound;
+    }
 }

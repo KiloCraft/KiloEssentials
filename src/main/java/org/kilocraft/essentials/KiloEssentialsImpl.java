@@ -20,6 +20,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
 import org.kilocraft.essentials.commands.misc.VoteCommand;
@@ -109,9 +110,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 			new KiloDebugUtils(this);
 		}
 
-		KiloEssentialsImpl.getServer().getChatManager().register(new GlobalChat());
-		KiloEssentialsImpl.getServer().getChatManager().register(new StaffChat());
-		KiloEssentialsImpl.getServer().getChatManager().register(new BuilderChat());
+		ServerChat.load();
 
 		FEATURES = new ConfigurableFeatures();
 		FEATURES.tryToRegister(new UserHomeHandler(), "playerHomes");

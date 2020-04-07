@@ -63,7 +63,7 @@ public class StaffmsgCommand extends EssentialCommand {
 
     private int send(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String message = StringArgumentType.getString(ctx, "message");
-        ServerChat.sendToStaff(this.getOnlineUser(ctx), new TextMessage(message));
+        ServerChat.send(this.getOnlineUser(ctx), new TextMessage(message), ServerChat.Channel.STAFF);
         return SINGLE_SUCCESS;
     }
 

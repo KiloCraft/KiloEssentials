@@ -14,6 +14,9 @@ public class ChatConfigSection {
     @Setting(value = "kickForUsingIllegalCharacters", comment = "Kicks a player if they use Illegal Characters in the chat\n If set to false they will only get a warning")
     public boolean kickForUsingIllegalCharacters = false;
 
+    @Setting(value = "itemFormat", comment = "The format someone has to use to show an Item (Main hand) in chat")
+    public String itemFormat = "[item]";
+
     @Setting(value = "prefixes", comment = "Sets format and meta of chat channels")
     private ChatPrefixesConigSection prefixesSection = new ChatPrefixesConigSection();
 

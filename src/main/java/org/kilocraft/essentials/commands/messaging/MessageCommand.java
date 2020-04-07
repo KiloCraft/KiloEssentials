@@ -9,12 +9,11 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.ServerChat;
 
 public class MessageCommand extends EssentialCommand {
     public MessageCommand() {
-        super("message", new String[]{"ke_msg", "ke_tell", "ke_whisper"});
+        super("message", new String[]{"ke_msg", "ke_tell", "ke_whisper", "dm", "directmessage"});
         this.withUsage("command.message.usage", "target", "message");
     }
 
@@ -30,7 +29,7 @@ public class MessageCommand extends EssentialCommand {
     }
 
     private static int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return ServerChat.executeSend(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "target"), StringArgumentType.getString(ctx, "message"));
+        return ServerChat.sendDirectMessage(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "target"), StringArgumentType.getString(ctx, "message"));
     }
 
 }

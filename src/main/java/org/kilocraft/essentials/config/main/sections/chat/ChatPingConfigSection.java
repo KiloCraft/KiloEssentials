@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.config.main.sections.chat;
 
+import net.minecraft.sound.SoundEvents;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -25,7 +26,7 @@ public class ChatPingConfigSection {
     public String pingedNotPingedFormat = "&a&o&m%PLAYER_DISPLAYNAME%";
 
     @Setting(value = "sound", comment = "The sound you hear when someone pings you")
-    private ChatPingSoundConfigSection chatPingSound = new ChatPingSoundConfigSection();
+    private ChatPingSoundConfigSection chatPingSound = new ChatPingSoundConfigSection(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 3.0D, 1.0D);
 
     public ChatPingSoundConfigSection pingSound() {
         return chatPingSound;

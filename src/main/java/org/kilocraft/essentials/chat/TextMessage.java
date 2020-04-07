@@ -63,13 +63,14 @@ public class TextMessage {
         return toText();
     }
 
-    public boolean contains(String str) {
-        return this.original.contains(str);
-    }
-
     private void formatMessage() {
         this.formatted = this.formatText ?
                 TextFormat.translateAlternateColorCodes('&', this.original) :
                 TextFormat.removeAlternateColorCodes('&', this.original);
+    }
+
+    @Override
+    public String toString() {
+        return this.original;
     }
 }

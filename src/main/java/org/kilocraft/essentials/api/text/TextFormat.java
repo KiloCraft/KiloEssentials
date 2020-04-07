@@ -298,6 +298,10 @@ public enum TextFormat {
         return new LiteralText(translateAlternateColorCodes(altColorChar, textToTranslate));
     }
 
+    public static String clearColorCodes(@NotNull String textToClear) {
+        return removeAlternateColorCodes(textToClear, '&');
+    }
+
     public static String removeAlternateColorCodes(@NotNull String textToTranslate, char... chars) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
         String string = "";

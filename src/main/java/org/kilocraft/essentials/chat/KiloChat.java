@@ -124,7 +124,6 @@ public class KiloChat {
 			entity.sendMessage(text);
 		}
 
-		getServer().sendMessage(text.asString());
 	}
 
 	public static void broadCastLang(String key) {

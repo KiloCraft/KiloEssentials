@@ -21,6 +21,7 @@ import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
@@ -41,7 +42,6 @@ public class ServerImpl implements Server {
     private String serverDisplayBrand;
     private String serverName = "Minecraft Server";
     private UserManager userManager;
-    private ChatManager chatManager;
     private ServerMetaManager metaManager;
     private boolean supportsANSI;
 
@@ -51,7 +51,6 @@ public class ServerImpl implements Server {
         this.userManager = serverUserManager;
         this.serverDisplayBrand = serverBrand;
         this.eventRegistry = eventManager;
-        this.chatManager = new ChatManager();
         this.metaManager = new ServerMetaManager(server.getServerMetadata());
         this.supportsANSI = System.console() != null && System.getenv().get("TERM") != null;
     }
@@ -95,11 +94,6 @@ public class ServerImpl implements Server {
     @Override
     public CommandSourceUser getCommandSourceUser(ServerCommandSource source) {
         return new CommandSourceServerUser(source);
-    }
-
-    @Override
-    public ChatManager getChatManager() {
-        return this.chatManager;
     }
 
     @Override

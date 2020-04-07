@@ -9,7 +9,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 
@@ -40,7 +39,7 @@ public class ReplyCommand extends EssentialCommand {
         if (lastPMGetter == null)
             throw ReplyCommand.NO_MESSAGES_EXCEPTION.create();
 
-        return ServerChat.executeSend(ctx.getSource(), KiloServer.getServer().getPlayer(lastPMGetter), message);
+        return ServerChat.sendDirectMessage(ctx.getSource(), KiloServer.getServer().getPlayer(lastPMGetter), message);
     }
 
     private static final SimpleCommandExceptionType NO_MESSAGES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You don't have any messages to reply to!"));
