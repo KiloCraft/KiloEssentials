@@ -58,7 +58,6 @@ public final class ServerChat {
 
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     private static final String ITEM_FORMATTED = "<I>";
-    private static final String URL_FORMATTED = "<U>";
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
     private static final int LINK_MAX_LENGTH = 20;
 
