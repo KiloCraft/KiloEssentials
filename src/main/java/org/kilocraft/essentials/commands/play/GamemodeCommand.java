@@ -93,7 +93,7 @@ public class GamemodeCommand extends EssentialCommand {
                 sourceUser.sendError(e.getMessage());
             }
 
-            sourceUser.sendLangMessage("template.#2", "GameMode", selectedMode.getName(), user.getNameTag());
+            sourceUser.sendLangMessage("template.#1", "GameMode", selectedMode.getName(), user.getNameTag());
         });
 
         return atomicInteger.get();

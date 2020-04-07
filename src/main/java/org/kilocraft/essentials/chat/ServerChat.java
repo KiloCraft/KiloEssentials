@@ -2,7 +2,6 @@ package org.kilocraft.essentials.chat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import io.netty.channel.Channel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
@@ -50,7 +49,6 @@ public final class ServerChat {
     private static String hoverStyle = ModConstants.translation("channel.message.hover");
     private static String hoverStyleNicked = ModConstants.translation("channel.message.hover.nicked");
     private static String hoverDateStyle = ModConstants.translation("channel.message.hover.time");
-    private static String logFormat = ModConstants.translation("channel.message.logged");
     private static String urlHoverStyle = ModConstants.translation("channel.message.hover.url");
 
     private static boolean pingSoundEnabled;
@@ -109,7 +107,7 @@ public final class ServerChat {
             }
         }
 
-        if (message.getOriginal().contains(itemFormat)) {
+        if (sender.hasPermission(EssentialPermission.CHAT_SHOW_ITEM) && message.getOriginal().contains(itemFormat)) {
             ServerPlayerEntity player = sender.getPlayer();
             ItemStack itemStack = player.getMainHandStack();
 
@@ -133,7 +131,7 @@ public final class ServerChat {
                         })
         ).append(" ").append(component);
 
-        KiloServer.getServer().sendMessage(String.format(logFormat, channel.getId(), sender.getUsername(), component.asFormattedString()));
+        KiloServer.getServer().sendMessage(component.asFormattedString());
         channel.send(text);
     }
 
@@ -263,54 +261,54 @@ public final class ServerChat {
             throw ServerChat.SAME_TARGETS_EXCEPTION.create();
         }
 
-        ServerChat.sendPrivateMessage(source, user, message);
+        ServerChat.messagePrivately(source, user, message);
         return 1;
     }
 
-    public static void sendPrivateMessage(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
-        final String format = ServerChat.config.privateChat().privateChat;
-        final String me_format = ServerChat.config.privateChat().privateChatMeFormat;
-        final String sourceName = source.getName();
+    public static void messagePrivately(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
+        String format = ServerChat.config.privateChat().privateChat;
+        String me_format = ServerChat.config.privateChat().privateChatMeFormat;
+        String sourceName = source.getName();
 
         Map<String, UUID> ignoreList =  target.getSetting(Settings.IGNORE_LIST);
         if (CommandUtils.isPlayer(source) && ignoreList.containsValue(source.getPlayer().getUuid())) {
             throw ServerChat.CANT_MESSAGE_EXCEPTION.create();
         }
 
-        final String toSource = format.replace("%SOURCE%", me_format)
+        String toSource = format.replace("%SOURCE%", me_format)
                 .replace("%TARGET%", "&r" + target.getUsername() + "&r")
                 .replace("%MESSAGE%", message);
-        final String toTarget = format.replace("%SOURCE%", sourceName)
+        String toTarget = format.replace("%SOURCE%", sourceName)
                 .replace("%TARGET%", me_format)
                 .replace("%MESSAGE%", message);
 
-        final String toSpy = format.replace("%SOURCE%", sourceName)
+        String toSpy = format.replace("%SOURCE%", sourceName)
                 .replace("%TARGET%", target.getUsername() + "&r")
                 .replace("%MESSAGE%", message);
 
-        KiloChat.sendMessageToSource(source, new LiteralText(
-                new TextMessage(toSource, true).getFormattedMessage()).formatted(Formatting.WHITE));
-        KiloChat.sendMessageTo(target.getPlayer(), new LiteralText(
-                new TextMessage(toTarget, true).getFormattedMessage()).formatted(Formatting.WHITE));
-
-        for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user))
-                KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
-                    new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
+        if (target.getSetting(Settings.SOUNDS)) {
+            pingPlayer(target.getPlayer(), PingType.PRIVATE);
         }
 
-        KiloServer.getServer().sendMessage(String.format("[Chat/Private] %s -> %s: %s", source.getName(), target.getUsername(), message));
+        KiloChat.sendMessageToSource(source, new TextMessage(toSource, true).toComponent().formatted(Formatting.WHITE));
+        KiloChat.sendMessageTo(target.getPlayer(), new TextMessage(toTarget, true).toComponent().formatted(Formatting.WHITE));
+
+        for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
+            if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
+                KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
+            }
+        }
+
+        KiloServer.getServer().sendMessage(toSpy);
     }
 
     public static void sendCommandSpy(final ServerCommandSource source, final String message) {
         final String format = ServerChat.config.commandSpyFormat;
-        final String toSpy = format.replace("%SOURCE%", source.getName())
-                .replace("%MESSAGE%",  message);
+        final String toSpy = format.replace("%SOURCE%", source.getName()).replace("%COMMAND%",  message);
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {
-                KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(
-                        new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+                KiloChat.sendMessageTo(user.getPlayer(), new TextMessage(toSpy, true).toComponent().formatted(Formatting.GRAY));
             }
         }
     }

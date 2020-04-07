@@ -108,9 +108,11 @@ public class Settings {
             }, (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {
                     ListTag listTag = fun.tag().getList(fun.setting().getId(), 8);
+                    //TODO: Fish the De-Serializer
                 }
             }
     );
+    public static final Setting<Boolean> SOUNDS = new Setting<>("sounds", true);
 
     @Nullable
     public static Setting<?> getById(String id) {
