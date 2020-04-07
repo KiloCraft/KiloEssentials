@@ -114,6 +114,7 @@ public class Settings {
     );
     public static final Setting<Boolean> SOUNDS = new Setting<>("sounds", true);
 
+
     @Nullable
     public static Setting<?> getById(String id) {
         for (Setting<?> setting : list) {

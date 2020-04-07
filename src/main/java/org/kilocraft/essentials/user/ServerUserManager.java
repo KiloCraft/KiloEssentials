@@ -280,7 +280,8 @@ public class ServerUserManager implements UserManager, TickListener {
             try {
                 ServerChat.send(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
             } catch (Exception e) {
-                user.sendError(e.getMessage());
+                user.sendError("Can not deliver Chat Message! " + e.getMessage());
+                KiloEssentials.getLogger().error("Can not deliver Chat Message!", e);
             }
         }
 

@@ -31,6 +31,7 @@ import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.*;
@@ -365,7 +366,7 @@ public class KiloCommands {
             builder.append('\n').append(ModConstants.translation("command.usage.aliases")).append(' ');
 
             for (int i = 0; i < essentialcommand.getAlias().length; i++) {
-                builder.append(ModConstants.translation("command.usage.alias", essentialcommand.getAlias()[i]));
+                builder.append(ModConstants.translation("command.usage.alias", LiteralCommandModified.normalizeName(essentialcommand.getAlias()[i])));
 
                 if (i + 1 != essentialcommand.getAlias().length) {
                     builder.append(ModConstants.translation("command.usage.separator")).append(' ');

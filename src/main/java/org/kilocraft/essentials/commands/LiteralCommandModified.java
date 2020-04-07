@@ -50,6 +50,14 @@ public class LiteralCommandModified {
         add("locatebiome");
     }};
 
+    public static String normalizeName(String name) {
+        if (keCommandsToKeep.contains(name)) {
+            return getKECommandName(name);
+        }
+
+        return name;
+    }
+
     public static boolean isVanillaCommand(String nodeName) {
         return vanillaCommandsToRename.contains(nodeName);
     }

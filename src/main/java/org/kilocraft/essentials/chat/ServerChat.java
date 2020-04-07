@@ -95,11 +95,11 @@ public final class ServerChat {
 
             if (url.length() > LINK_MAX_LENGTH) {
                 link.append("...");
-                link.append(url.substring(url.length() - 4));
+                link.append(url.substring(url.length() - 5));
             }
 
             component = new LiteralText("")
-                    .append(strings[0])
+                    .append(strings.length >= 1 ? strings[0] : "")
                     .append(link);
 
             if (strings.length > 1) {
@@ -114,7 +114,7 @@ public final class ServerChat {
             String[] strings = message.getOriginal().replace(itemFormat, ITEM_FORMATTED).split(ITEM_FORMATTED);
 
             component = new LiteralText("")
-                    .append(strings[0].replace("[", ""))
+                    .append(strings.length >= 1 ? strings[0].replace("[", "") : "")
                     .append(itemStack.toHoverableText());
 
             if (strings.length > 1) {
