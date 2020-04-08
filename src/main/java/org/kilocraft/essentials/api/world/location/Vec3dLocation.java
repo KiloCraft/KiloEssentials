@@ -11,6 +11,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
@@ -52,11 +53,13 @@ public class Vec3dLocation implements Location {
     }
 
     public static Vec3dLocation of(ServerPlayerEntity player) {
-        return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, RegistryUtils.toIdentifier(player.dimension));
+        Identifier dim = player.dimension != null ? RegistryUtils.toIdentifier(player.dimension) : null;
+        return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, dim);
     }
 
     public static Vec3dLocation of(Entity entity) {
-        return new Vec3dLocation(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch, RegistryUtils.toIdentifier(entity.dimension));
+        Identifier dim = entity.dimension != null ? RegistryUtils.toIdentifier(entity.dimension) : null;
+        return new Vec3dLocation(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch, dim);
     }
 
     public static Vec3dLocation of(OnlineUser user) {
@@ -78,11 +81,13 @@ public class Vec3dLocation implements Location {
         return z;
     }
 
+    @Nullable
     @Override
     public Identifier getDimension() {
         return dimension;
     }
 
+    @Nullable
     @Override
     public DimensionType getDimensionType() {
         return Registry.DIMENSION_TYPE.get(dimension);

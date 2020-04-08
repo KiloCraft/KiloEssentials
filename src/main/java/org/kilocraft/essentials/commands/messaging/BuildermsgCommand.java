@@ -71,7 +71,7 @@ public class BuildermsgCommand extends EssentialCommand {
 
     private int send(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String message = StringArgumentType.getString(ctx, "message");
-        ServerChat.send(this.getOnlineUser(ctx), new TextMessage(message), ServerChat.Channel.BUILDER);
+        ServerChat.sendSafely(this.getOnlineUser(ctx), new TextMessage(message), ServerChat.Channel.BUILDER);
         return SINGLE_SUCCESS;
     }
 

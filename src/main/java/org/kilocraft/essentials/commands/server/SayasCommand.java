@@ -69,7 +69,7 @@ public class SayasCommand extends EssentialCommand {
             return SINGLE_SUCCESS;
         }
 
-        ServerChat.send(target, new TextMessage(message.asFormattedString()), channel);
+        ServerChat.sendSafely(target, new TextMessage(message.asFormattedString()), channel);
         return SINGLE_SUCCESS;
     }
 

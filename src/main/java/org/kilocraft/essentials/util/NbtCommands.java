@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.util;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -13,17 +14,20 @@ public class NbtCommands {
     }
 
     private static boolean trigger(PlayerEntity player, Hand hand, boolean swingHand) {
-        if (hand == Hand.OFF_HAND)
+        if (hand == Hand.OFF_HAND) {
             return false;
+        }
 
         ItemStack stack = player.getMainHandStack();
         CompoundTag tag = stack.getTag();
 
-        if (tag == null || tag.isEmpty() || !tag.contains("NBTCommands") && !player.isSneaking())
+        if (tag == null || tag.isEmpty() || !tag.contains("NBTCommands")) {
             return false;
+        }
 
-        if (swingHand)
+        if (swingHand) {
             player.swingHand(Hand.MAIN_HAND, true);
+        }
 
         ListTag listTag = tag.getList("NBTCommands", 8);
 
@@ -31,7 +35,7 @@ public class NbtCommands {
             KiloEssentials.getServer().execute(player.getCommandSource(), listTag.getString(i));
         }
 
-        player.setStackInHand(hand, player.getStackInHand(hand));
+        player.getMainHandStack().setCount(player.getMainHandStack().getCount());
         return true;
     }
 

@@ -271,14 +271,14 @@ public class ServerImpl implements Server {
     @Override
     public void sendMessage(String message) {
         for (String s : message.split("\n")) {
-            getLogger().info(s);
+            getLogger().info(TextFormat.clearColorCodes(s));
         }
     }
 
     @Override
     public void sendWarning(String message) {
         for (String s : message.split("\n")) {
-            getLogger().warn(s);
+            getLogger().warn(TextFormat.clearColorCodes(s));
         }
     }
 

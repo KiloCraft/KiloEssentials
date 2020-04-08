@@ -4,6 +4,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Brandable;
+import org.kilocraft.essentials.events.server.ServerTickEventImpl;
 import org.kilocraft.essentials.util.RollingAverage;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.math.BigDecimal;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
@@ -21,10 +23,7 @@ public abstract class MinecraftServerMixin implements Brandable {
     private long currentTime;
     private long tickSection;
 
-    @Shadow
-    private long timeReference;
-
-    @Shadow public abstract PlayerManager getPlayerManager();
+    @Shadow private long timeReference;
 
     @Inject(at = @At(value = "HEAD"), method = "run")
     private void kilo$run(CallbackInfo ci) {
@@ -40,7 +39,7 @@ public abstract class MinecraftServerMixin implements Brandable {
         if (++currentTick % RollingAverage.SAMPLE_INTERVAL == 0) {
             final long diff = currentTime - tickSection;
 
-            java.math.BigDecimal currentTps = RollingAverage.TPS_BASE.divide(new java.math.BigDecimal(diff), 30, java.math.RoundingMode.HALF_UP);
+            BigDecimal currentTps = RollingAverage.TPS_BASE.divide(new BigDecimal(diff), 30, java.math.RoundingMode.HALF_UP);
             TPSTracker.tps1.add(currentTps, diff);
             TPSTracker.tps5.add(currentTps, diff);
             TPSTracker.tps15.add(currentTps, diff);
@@ -49,6 +48,7 @@ public abstract class MinecraftServerMixin implements Brandable {
             tickSection = currentTime;
         }
 
+        KiloServer.getServer().triggerEvent(new ServerTickEventImpl((MinecraftServer) (Object) this));
     }
 
     @Override

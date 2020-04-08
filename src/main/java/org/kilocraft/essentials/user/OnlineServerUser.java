@@ -227,7 +227,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         if (tick >= 20) {
             tick = 0;
-            updateLocation();
+            super.updateLocation();
 
             if (PlaytimeCommands.isEnabled()) {
                 PlaytimeCommands.getInstance().onUserPlaytimeUp(this, ticksPlayed);

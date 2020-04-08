@@ -299,7 +299,7 @@ public enum TextFormat {
     }
 
     public static String clearColorCodes(@NotNull String textToClear) {
-        return removeAlternateColorCodes(textToClear, '&');
+        return removeAlternateColorCodes(ALTERNATIVE_COLOR_CHAR, textToClear);
     }
 
     public static String removeAlternateColorCodes(@NotNull String textToTranslate, char... chars) {

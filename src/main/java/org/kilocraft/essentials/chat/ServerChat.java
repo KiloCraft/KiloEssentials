@@ -7,10 +7,16 @@ import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.*;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
+import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -29,6 +35,7 @@ import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.Texter;
 
+import java.rmi.UnexpectedException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,6 +45,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class ServerChat {
+    private static final String DEBUG_EXCEPTION = "--texc";
     private static ChatConfigSection config;
     private static String pingEveryoneTemplate;
     private static String senderFormat;
@@ -50,14 +58,15 @@ public final class ServerChat {
     private static String hoverStyleNicked = ModConstants.translation("channel.message.hover.nicked");
     private static String hoverDateStyle = ModConstants.translation("channel.message.hover.time");
     private static String urlHoverStyle = ModConstants.translation("channel.message.hover.url");
+    private static String commandSpyHoverStyle = ModConstants.translation("channel.commandspy.hover");
 
     private static boolean pingSoundEnabled;
     private static boolean pingEnabled;
 
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-    private static final String ITEM_FORMATTED = "<I>";
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
     private static final int LINK_MAX_LENGTH = 20;
+    private static final int COMMAND_MAX_LENGTH = 80;
 
     public static void load() {
         config = KiloConfig.main().chat();
@@ -71,56 +80,37 @@ public final class ServerChat {
         pingEnabled = ServerChat.config.ping().enabled;
     }
 
-    public static void send(final OnlineUser sender, final TextMessage message, Channel channel) {
+    public static void sendSafely(final OnlineUser sender, final TextMessage message, final Channel channel) {
+        try {
+            send(sender, message, channel);
+        } catch (Exception e) {
+            sender.getCommandSource().sendError(
+                    Texter.toText("an unexpected exception occurred while processing the message")
+                            .append(" ").append(Util.getInnermostMessage(e))
+            );
+
+            KiloEssentials.getLogger().error("Processing a chat message throw an exception", e);
+        }
+    }
+
+    public static void send(final OnlineUser sender, final TextMessage message, final Channel channel) throws Exception {
+        if (message.getOriginal().startsWith(DEBUG_EXCEPTION)) {
+            throw new UnexpectedException("Exception thrown by " + sender.getUsername() + " " + message.getOriginal().replaceFirst(DEBUG_EXCEPTION, ""));
+        }
+
         message.setMessage(message.getOriginal(), KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR));
 
         TextMessage prefix = new TextMessage(ConfigVariableFactory.replaceUserVariables(channel.getPrefix(), sender)
                 .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().asFormattedString()));
 
         processPings(sender, message, channel);
-        message.setMessage(message.getFormattedMessage());
 
-        Text component = message.toComponent();
-
-        Matcher matcher = LINK_PATTERN.matcher(message.getOriginal());
-        if (sender.hasPermission(EssentialPermission.CHAT_URL) && matcher.find()) {
-            String url = message.getOriginal().substring(matcher.start(), matcher.end());
-            String[] strings = message.getOriginal().split(url);
-            String shortenedUrl = url.substring(0, Math.min(url.length(), LINK_MAX_LENGTH));
-
-            Text link = new LiteralText(shortenedUrl).styled((style) -> {
-                style.setClickEvent(Texter.Events.onClickOpen(url));
-                style.setHoverEvent(Texter.Events.onHover(urlHoverStyle));
-            }).formatted(Formatting.AQUA, Formatting.ITALIC);
-
-            if (url.length() > LINK_MAX_LENGTH) {
-                link.append("...");
-                link.append(url.substring(url.length() - 5));
-            }
-
-            component = new LiteralText("")
-                    .append(strings.length >= 1 ? strings[0] : "")
-                    .append(link);
-
-            if (strings.length > 1) {
-                component.append(strings[1]);
-            }
-        }
-
-        if (sender.hasPermission(EssentialPermission.CHAT_SHOW_ITEM) && message.getOriginal().contains(itemFormat)) {
-            ServerPlayerEntity player = sender.getPlayer();
-            ItemStack itemStack = player.getMainHandStack();
-
-            String[] strings = message.getOriginal().replace(itemFormat, ITEM_FORMATTED).split(ITEM_FORMATTED);
-
-            component = new LiteralText("")
-                    .append(strings.length >= 1 ? strings[0].replace("[", "") : "")
-                    .append(itemStack.toHoverableText());
-
-            if (strings.length > 1) {
-                component.append(strings[1].replace("]", ""));
-            }
-        }
+        Text component = ServerChat.stringToMessageComponent(
+                message.getFormattedMessage(),
+                sender,
+                sender.hasPermission(EssentialPermission.CHAT_URL),
+                sender.hasPermission(EssentialPermission.CHAT_SHOW_ITEM)
+        );
 
         Text text = new LiteralText("");
         text.append(
@@ -209,7 +199,9 @@ public final class ServerChat {
         float volume = (float) cfg.volume;
         float pitch = (float) cfg.pitch;
 
-        target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
+        if (target.networkHandler != null) {
+            target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
+        }
     }
 
     public static void addSocialSpy(final ServerPlayerEntity player) {
@@ -302,31 +294,75 @@ public final class ServerChat {
         KiloServer.getServer().sendMessage(toSpy);
     }
 
-    public static void sendCommandSpy(final ServerCommandSource source, final String message) {
-        final String format = ServerChat.config.commandSpyFormat;
-        final String toSpy = format.replace("%SOURCE%", source.getName()).replace("%COMMAND%",  message);
+    public static void sendCommandSpy(final ServerCommandSource source, final String command) {
+        String format = ServerChat.config.commandSpyFormat;
+        String shortenedCommand = command.substring(0, Math.min(command.length(), COMMAND_MAX_LENGTH));
+        String toSpy = format.replace("%SOURCE%", source.getName()).replace("%COMMAND%",  shortenedCommand);
+        Text text = Texter.toText(toSpy).formatted(Formatting.GRAY);
 
-        for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
+        if (command.length() > COMMAND_MAX_LENGTH) {
+            text.append("...");
+        }
+
+        text.styled((style) -> {
+            style.setHoverEvent(Texter.Events.onHover(commandSpyHoverStyle));
+            style.setClickEvent(Texter.Events.onClickSuggest(command));
+        });
+
+        for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {
-                KiloChat.sendMessageTo(user.getPlayer(), new TextMessage(toSpy, true).toComponent().formatted(Formatting.GRAY));
+                user.sendMessage(text);
             }
         }
     }
 
-    public static void sendToStaff(Text message) {
+    public static void send(Text message, EssentialPermission permission) {
         for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-            if (user.hasPermission(EssentialPermission.STAFF)) {
+            if (user.hasPermission(permission)) {
                 user.sendMessage(message);
             }
         }
     }
 
-    public static void sendToBuilders(Text message) {
-        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-            if (user.hasPermission(EssentialPermission.BUILDER)) {
-                user.sendMessage(message);
+    public static Text stringToMessageComponent(@NotNull String string, OnlineUser sender, boolean appendLinks, boolean appendItems) {
+        Validate.notNull(string, "String must not be null!");
+        Text text = new LiteralText("");
+        String[] strings = string.split(" ");
+
+        int i = 0;
+        for (String s : strings) {
+            i++;
+            Matcher matcher = LINK_PATTERN.matcher(string);
+            if (appendLinks && matcher.find()) {
+                String shortenedUrl = s.substring(0, Math.min(s.length(), LINK_MAX_LENGTH));
+
+                Text link = new LiteralText(shortenedUrl).formatted(Formatting.GOLD).styled((style) -> {
+                    style.setClickEvent(Texter.Events.onClickOpen(s));
+                    style.setHoverEvent(Texter.Events.onHover(urlHoverStyle));
+                });
+
+                if (s.length() > LINK_MAX_LENGTH) {
+                    link.append("...");
+                    link.append(s.substring(s.length() - 5));
+                }
+
+                text.append(link.formatted(Formatting.RESET)).append(" ");
+            } else if (appendItems && s.contains(itemFormat)) {
+                ServerPlayerEntity player = sender.getPlayer();
+                ItemStack itemStack = player.getMainHandStack();
+
+                Text item = new LiteralText("").append(itemStack.toHoverableText());
+                text.append(item).append(" ");
+            } else {
+                text.append(s);
+
+                if (i < strings.length) {
+                    text.append(" ");
+                }
             }
         }
+
+        return text;
     }
 
     private static final SimpleCommandExceptionType SAME_TARGETS_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You can't message your self!"));
@@ -364,10 +400,10 @@ public final class ServerChat {
                     KiloChat.broadCast(message);
                     break;
                 case STAFF:
-                    ServerChat.sendToStaff(message);
+                    ServerChat.send(message, EssentialPermission.STAFF);
                     break;
                 case BUILDER:
-                    ServerChat.sendToBuilders(message);
+                    ServerChat.send(message, EssentialPermission.BUILDER);
                     break;
             }
         }

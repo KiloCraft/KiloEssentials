@@ -10,9 +10,9 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
@@ -29,6 +29,7 @@ import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.AnimatedText;
+import org.kilocraft.essentials.util.Texter;
 
 import java.io.File;
 import java.io.IOException;
@@ -277,12 +278,7 @@ public class ServerUserManager implements UserManager, TickListener {
         if (string.startsWith("/")) {
             KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
         } else {
-            try {
-                ServerChat.send(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
-            } catch (Exception e) {
-                user.sendError("Can not deliver Chat Message! " + e.getMessage());
-                KiloEssentials.getLogger().error("Can not deliver Chat Message!", e);
-            }
+            ServerChat.sendSafely(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
         }
 
         //user.messageCooldown += 20;
