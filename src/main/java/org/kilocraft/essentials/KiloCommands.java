@@ -49,6 +49,7 @@ import org.kilocraft.essentials.commands.teleport.BackCommand;
 import org.kilocraft.essentials.commands.teleport.RtpCommand;
 import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.TpaCommand;
+import org.kilocraft.essentials.commands.user.SilenceCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
@@ -150,6 +151,7 @@ public class KiloCommands {
             this.add(new PlaytimetopCommand());
             this.add(new BanCommand());
             this.add(new KickCommand());
+            this.add(new SilenceCommand());
             //this.add(new InventoryCommand());
         }};
 

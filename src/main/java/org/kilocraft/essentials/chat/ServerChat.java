@@ -7,10 +7,7 @@ import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -57,7 +54,6 @@ public final class ServerChat {
     private static String hoverStyle = ModConstants.translation("channel.message.hover");
     private static String hoverStyleNicked = ModConstants.translation("channel.message.hover.nicked");
     private static String hoverDateStyle = ModConstants.translation("channel.message.hover.time");
-    private static String urlHoverStyle = ModConstants.translation("channel.message.hover.url");
     private static String commandSpyHoverStyle = ModConstants.translation("channel.commandspy.hover");
 
     private static boolean pingSoundEnabled;
@@ -86,7 +82,7 @@ public final class ServerChat {
         } catch (Exception e) {
             sender.getCommandSource().sendError(
                     Texter.toText("an unexpected exception occurred while processing the message")
-                            .append(" ").append(Util.getInnermostMessage(e))
+                            .append("\n").append(Util.getInnermostMessage(e))
             );
 
             KiloEssentials.getLogger().error("Processing a chat message throw an exception", e);
@@ -95,7 +91,7 @@ public final class ServerChat {
 
     public static void send(final OnlineUser sender, final TextMessage message, final Channel channel) throws Exception {
         if (message.getOriginal().startsWith(DEBUG_EXCEPTION)) {
-            throw new UnexpectedException("Exception thrown by " + sender.getUsername() + " " + message.getOriginal().replaceFirst(DEBUG_EXCEPTION, ""));
+            throw new UnexpectedException("Debug exception thrown by " + sender.getUsername() + message.getOriginal().replaceFirst(DEBUG_EXCEPTION, ""));
         }
 
         message.setMessage(message.getOriginal(), KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR));
@@ -336,25 +332,20 @@ public final class ServerChat {
             if (appendLinks && matcher.find()) {
                 String shortenedUrl = s.substring(0, Math.min(s.length(), LINK_MAX_LENGTH));
 
-
-                Text link = new LiteralText("");
-                link.append(new LiteralText(shortenedUrl).formatted(Formatting.GOLD).styled((style) -> {
-                    style.setHoverEvent(Texter.Events.onHover(urlHoverStyle));
-                    style.setClickEvent(Texter.Events.onClickOpen(s));
-                }));
+                Text link = new LiteralText(shortenedUrl).styled((style) -> style.setClickEvent(Texter.Events.onClickOpen(s)));
 
                 if (s.length() > LINK_MAX_LENGTH) {
                     link.append("...");
                     link.append(s.substring(s.length() - 5));
                 }
 
-                text.append(link.deepCopy());
+                text.append(link);
             } else if (appendItems && s.contains(itemFormat)) {
                 ServerPlayerEntity player = sender.getPlayer();
                 ItemStack itemStack = player.getMainHandStack();
 
                 Text item = new LiteralText("").append(itemStack.toHoverableText());
-                text.append(item).append(" ");
+                text.append(item);
             } else {
                 text.append(s);
             }
