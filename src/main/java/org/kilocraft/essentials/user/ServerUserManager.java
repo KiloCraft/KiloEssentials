@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -281,9 +282,13 @@ public class ServerUserManager implements UserManager, TickListener {
             ServerChat.sendSafely(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
         }
 
-        //user.messageCooldown += 20;
-        if (((ServerUser) user).messageCooldown > 200 && !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.CHAT_BYPASS)) {
-            player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
+        ((OnlineServerUser) user).messageCooldown += 20;
+        if (((ServerUser) user).messageCooldown > 200 && !user.hasPermission(EssentialPermission.CHAT_BYPASS)) {
+            if (KiloConfig.main().chat().kickForSpamming) {
+                player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
+            } else {
+                player.getCommandSource().sendError(LangText.getFormatter(true, "channel.spam"));
+            }
         }
 
     }

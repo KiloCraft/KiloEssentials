@@ -23,6 +23,7 @@ import java.io.File;
 
 public class KiloDebugUtils {
     public static KiloDebugUtils INSTANCE;
+    private static boolean wasEnabled = false;
     private KiloEssentials ess;
     private Server server;
     private MinecraftServer minecraftServer;
@@ -54,7 +55,7 @@ public class KiloDebugUtils {
                 INSTANCE.removeBossBar();
             }
 
-            if (reload) {
+            if (reload && wasEnabled) {
                 KiloEssentials.getServer().getLogger().info("**** DEBUG/DEVELOPMENT MODE DISABLED!");
             }
         }
@@ -62,6 +63,7 @@ public class KiloDebugUtils {
 
     public static void setDebugMode(boolean set) {
         SharedConstants.isDevelopment = set;
+        wasEnabled = set;
     }
 
     public void onScheduledUpdate() {

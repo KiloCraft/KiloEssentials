@@ -7,8 +7,6 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.apache.commons.lang3.Validate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.chat.LangText;
@@ -48,6 +46,13 @@ public class Texter {
                 .append(LangText.getFormatter(true, langKey))
                 .append(" ")
                 .append(button);
+    }
+
+    public static class Unmodifiable {
+        public static Text append(Text original, Text textToAppend) {
+            original.getSiblings().add(textToAppend);
+            return original;
+        }
     }
 
     public static class Events {

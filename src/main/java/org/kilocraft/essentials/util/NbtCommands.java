@@ -25,14 +25,18 @@ public class NbtCommands {
             return false;
         }
 
-        if (swingHand) {
-            player.swingHand(Hand.MAIN_HAND, true);
-        }
-
         ListTag listTag = tag.getList("NBTCommands", 8);
 
+        int executed = 0;
         for (int i = 0; i < listTag.size(); i++) {
-            KiloEssentials.getServer().execute(player.getCommandSource(), listTag.getString(i));
+            int value = KiloEssentials.getServer().execute(player.getCommandSource(), listTag.getString(i));
+            if (value >= 1) {
+                executed++;
+            }
+        }
+
+        if (executed >= 1 && swingHand) {
+            player.swingHand(Hand.MAIN_HAND, true);
         }
 
         player.getMainHandStack().setCount(player.getMainHandStack().getCount());

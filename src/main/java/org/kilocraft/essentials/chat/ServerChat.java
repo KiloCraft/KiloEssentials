@@ -121,7 +121,7 @@ public final class ServerChat {
                         })
         ).append(" ").append(component);
 
-        KiloServer.getServer().sendMessage(component.asFormattedString());
+        KiloServer.getServer().sendMessage(text.asString());
         channel.send(text);
     }
 
@@ -336,17 +336,18 @@ public final class ServerChat {
             if (appendLinks && matcher.find()) {
                 String shortenedUrl = s.substring(0, Math.min(s.length(), LINK_MAX_LENGTH));
 
-                Text link = new LiteralText(shortenedUrl).formatted(Formatting.GOLD).styled((style) -> {
-                    style.setClickEvent(Texter.Events.onClickOpen(s));
-                    style.setHoverEvent(Texter.Events.onHover(urlHoverStyle));
-                });
+                Text link = new LiteralText(shortenedUrl)
+                                .formatted(Formatting.GOLD).styled((style) -> {
+                                    style.setClickEvent(Texter.Events.onClickOpen(s));
+                                    style.setHoverEvent(Texter.Events.onHover(urlHoverStyle));
+                                });
 
                 if (s.length() > LINK_MAX_LENGTH) {
                     link.append("...");
                     link.append(s.substring(s.length() - 5));
                 }
 
-                text.append(link.formatted(Formatting.RESET)).append(" ");
+                text.append(new LiteralText("").formatted(Formatting.RESET).append(link));
             } else if (appendItems && s.contains(itemFormat)) {
                 ServerPlayerEntity player = sender.getPlayer();
                 ItemStack itemStack = player.getMainHandStack();
@@ -355,10 +356,10 @@ public final class ServerChat {
                 text.append(item).append(" ");
             } else {
                 text.append(s);
+            }
 
-                if (i < strings.length) {
-                    text.append(" ");
-                }
+            if (i < strings.length) {
+                text.append(" ");
             }
         }
 
