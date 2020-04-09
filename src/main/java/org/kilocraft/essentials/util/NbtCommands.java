@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Hand;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 public class NbtCommands {
     public static boolean fromRightClick(PlayerEntity player, Hand hand) {
@@ -29,7 +30,7 @@ public class NbtCommands {
 
         int executed = 0;
         for (int i = 0; i < listTag.size(); i++) {
-            int value = KiloEssentials.getServer().execute(player.getCommandSource(), listTag.getString(i));
+            int value = CommandUtils.run(player.getCommandSource(), listTag.getString(i));
             if (value >= 1) {
                 executed++;
             }

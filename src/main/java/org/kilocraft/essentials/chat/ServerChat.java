@@ -336,18 +336,19 @@ public final class ServerChat {
             if (appendLinks && matcher.find()) {
                 String shortenedUrl = s.substring(0, Math.min(s.length(), LINK_MAX_LENGTH));
 
-                Text link = new LiteralText(shortenedUrl)
-                                .formatted(Formatting.GOLD).styled((style) -> {
-                                    style.setClickEvent(Texter.Events.onClickOpen(s));
-                                    style.setHoverEvent(Texter.Events.onHover(urlHoverStyle));
-                                });
+
+                Text link = new LiteralText("");
+                link.append(new LiteralText(shortenedUrl).formatted(Formatting.GOLD).styled((style) -> {
+                    style.setHoverEvent(Texter.Events.onHover(urlHoverStyle));
+                    style.setClickEvent(Texter.Events.onClickOpen(s));
+                }));
 
                 if (s.length() > LINK_MAX_LENGTH) {
                     link.append("...");
                     link.append(s.substring(s.length() - 5));
                 }
 
-                text.append(new LiteralText("").formatted(Formatting.RESET).append(link));
+                text.append(link.deepCopy());
             } else if (appendItems && s.contains(itemFormat)) {
                 ServerPlayerEntity player = sender.getPlayer();
                 ItemStack itemStack = player.getMainHandStack();
