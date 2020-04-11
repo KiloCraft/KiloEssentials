@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.util;
 
-import com.google.inject.internal.cglib.core.$Constants;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
@@ -8,15 +7,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
-
-import java.util.function.Predicate;
 
 public class LocationUtil {
     public static int MAX_WORLD_HEIGHT = KiloServer.getServer().getVanillaServer().getWorldHeight();
@@ -67,7 +63,7 @@ public class LocationUtil {
     }
 
     private static int getLevelOnGround(@NotNull final BlockPos pos, @NotNull BlockView view) {
-        BlockPos blockPos = new BlockPos(pos.getX(), view.getHeight(), pos.getZ());
+        BlockPos blockPos = new BlockPos(pos.getX(), pos.getY(), pos.getZ());
 
         BlockState state;
         do {
@@ -82,15 +78,38 @@ public class LocationUtil {
         return blockPos.getY() + 1;
     }
 
-    @Nullable
-    public static Location posOnGroundWothAirSpaceOnTop(@NotNull final Location loc, boolean passLiquid) {
+    public static boolean hasSolidGround(@NotNull final Location loc) {
+        BlockPos blockPos = loc.toPos();
+        BlockView view = loc.getWorld();
+        BlockState state;
+        Material material;
+
+        do {
+            if (blockPos.getY() <= 0) {
+                return false;
+            }
+
+            blockPos = blockPos.down();
+            state = view.getBlockState(blockPos);
+            material = state.getMaterial();
+
+            if (material.isSolid()) {
+                return true;
+            }
+
+        } while (state.isAir() && !material.isSolid());
+
+        return false;
+    }
+
+    public static void posOnGroundWothAirSpaceOnTop(@NotNull final Location loc, boolean passLiquid) {
         BlockPos pos = loc.toPos();
         BlockState state, state2, state3;
         BlockView view = loc.getWorld();
 
         do {
             if (pos.getY() <= 0) {
-                return null;
+                return;
             }
 
             pos = pos.down();
@@ -100,7 +119,6 @@ public class LocationUtil {
         } while (!state.isAir() && state2.isAir() && state3.isAir() && (!passLiquid || state.getMaterial().isLiquid()));
 
         loc.setY(pos.getY());
-        return loc;
     }
 
     public static Location copy(@NotNull final Location loc) {

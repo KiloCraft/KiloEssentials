@@ -35,7 +35,7 @@ public class Texter {
     }
 
     public static Text getButton(String title, String command, Text hoverText) {
-        return new LiteralText(title).styled((style) -> {
+        return Texter.toText(title).styled((style) -> {
            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
         });

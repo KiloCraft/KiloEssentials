@@ -21,7 +21,10 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -244,18 +247,26 @@ public class RtpCommand extends EssentialCommand {
 		BlockPos pos;
 		BlockState state;
 		int tries = 0;
+		boolean hasAirSpace;
+		boolean isNether = world.dimension.isNether();
 		boolean safe;
 
 		do {
-			loc = (Vec3dLocation) randomLocation(target.getServerWorld(), cfg.minX, cfg.maxX, cfg.minZ, cfg.maxZ);
+			tries++;
+			loc = (Vec3dLocation) randomLocation(world, isNether ? 90 : world.getHeight() , cfg.minX, cfg.maxX, cfg.minZ, cfg.maxZ);
 			loc = (Vec3dLocation) LocationUtil.posOnGround(loc, false);
-
 			pos = loc.toPos();
 			state = world.getBlockState(pos);
 			Material material = state.getMaterial();
 			Biome.Category category = world.getBiome(pos).getCategory();
-			safe = !material.isLiquid() && material != Material.FIRE && category != Category.OCEAN && category != Category.RIVER && !LocationUtil.isBlockLiquid(loc.down());
-			tries++;
+
+			if (!LocationUtil.hasSolidGround(loc)) {
+				safe = false;
+				continue;
+			}
+
+			hasAirSpace = !isNether || world.getBlockState(pos.up()).isAir();
+			safe = hasAirSpace && !material.isLiquid() && material != Material.FIRE && category != Category.OCEAN && category != Category.RIVER && !LocationUtil.isBlockLiquid(loc.down());
 		} while (tries <= cfg.maxTries && !safe);
 
 		if (!safe) {
@@ -266,20 +277,25 @@ public class RtpCommand extends EssentialCommand {
 
 			String biome = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
-			if (sourceUser.equals(targetUser)) {
-				if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
-					targetUser.getSettings().set(RTP_LEFT, targetUser.getSetting(RTP_LEFT) - 1);
-				}
+			if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
+				targetUser.getSettings().set(RTP_LEFT, targetUser.getSetting(RTP_LEFT) - 1);
+			}
 
-				targetUser.sendMessage(new TextMessage(
-						KiloConfig.messages().commands().rtp().teleported
-								.replace("{BIOME}", biome)
-								.replace("{RTP_LEFT}", String.valueOf(targetUser.getSetting(RTP_LEFT)))
-								.replace("{cord.X}", String.valueOf(loc.getX()))
-								.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
-								.replace("{cord.Z}", String.valueOf(loc.getZ()))
-						, true));
-			} else {
+			String cfgMessage = KiloConfig.messages().commands().rtp().teleported
+							.replace("{RTP_LEFT}", String.valueOf(targetUser.getSetting(RTP_LEFT)))
+							.replace("{cord.X}", String.valueOf(loc.getX()))
+							.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
+							.replace("{cord.Z}", String.valueOf(loc.getZ()));
+
+			TranslatableText translatable = (TranslatableText) target.getServerWorld().getBiome(target.getBlockPos()).getName();
+			Text text = new LiteralText("")
+					.append(new LiteralText("You've been teleported to this ").formatted(Formatting.YELLOW))
+					.append(translatable.formatted(Formatting.GOLD))
+					.append(new LiteralText(" biome!").formatted(Formatting.YELLOW))
+					.append("\n").append(Texter.toText(cfgMessage));
+
+			targetUser.sendMessage(text);
+			if (!sourceUser.equals(targetUser)) {
 				sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), biome);
 			}
 
@@ -288,11 +304,11 @@ public class RtpCommand extends EssentialCommand {
 	}
 
 	@NotNull
-	private static Location randomLocation(World world, int minX, int maxX, int minZ, int maxZ) {
+	private static Location randomLocation(World world, int height, int minX, int maxX, int minZ, int maxZ) {
 		int randX = ThreadLocalRandom.current().nextInt(minX, maxX + 1);
 		int randZ = ThreadLocalRandom.current().nextInt(minZ, maxZ + 1);
 
-		return Vec3dLocation.of(randX, world.getHeight(), randZ, 0, 0, RegistryUtils.toIdentifier(world.getDimension().getType()));
+		return Vec3dLocation.of(randX, height, randZ, 0, 0, RegistryUtils.toIdentifier(world.getDimension().getType()));
 	}
 }
 

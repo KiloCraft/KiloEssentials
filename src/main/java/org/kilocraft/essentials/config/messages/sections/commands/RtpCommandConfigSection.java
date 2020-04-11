@@ -16,5 +16,5 @@ public class RtpCommandConfigSection {
     public String dimensionException = "&cYou can only randomly teleport in the Overworld!";
 
     @Setting(value = "teleported", comment = "Local Variables: {BIOME}, {RTP_LEFT}, {cord.X}, {cord.Y}, {cord.Z}")
-    public String teleported = "&eYou've been teleported to this &6{BIOME}&e biome!\n&eYou have &6{RTP_LEFT}&e Random teleports left!";
+    public String teleported = "&eYou now have &6{RTP_LEFT}&e Random Teleports left!";
 }
