@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class LocateBiomeProvided implements Command {
@@ -63,7 +64,7 @@ public class LocateBiomeProvided implements Command {
 
     public static String getBiomeName(Biome biome) {
         String s = getBiomeId(biome).replaceAll("_", " ");
-        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
+        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase(Locale.ROOT));
     }
 
 

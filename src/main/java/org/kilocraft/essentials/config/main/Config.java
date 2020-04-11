@@ -51,6 +51,9 @@ public class Config {
     @Setting("moderation")
     private ModerationConfigSection moderationSection = new ModerationConfigSection();
 
+    @Setting(value = "rtpSpecs", comment = "Configure the RTP range")
+    private RtpSpecsConfigSection rtpSpecs = new RtpSpecsConfigSection();
+
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")
     public int homesLimit = 10;
 
@@ -107,6 +110,10 @@ public class Config {
 
     public ModerationConfigSection moderation() {
         return moderationSection;
+    }
+
+    public RtpSpecsConfigSection rtpSpecs() {
+        return rtpSpecs;
     }
 
 }

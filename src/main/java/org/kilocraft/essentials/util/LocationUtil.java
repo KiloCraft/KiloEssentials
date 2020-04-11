@@ -1,8 +1,7 @@
 package org.kilocraft.essentials.util;
 
-import net.minecraft.block.Block;
+import com.google.inject.internal.cglib.core.$Constants;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -16,6 +15,8 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
+
+import java.util.function.Predicate;
 
 public class LocationUtil {
     public static int MAX_WORLD_HEIGHT = KiloServer.getServer().getVanillaServer().getWorldHeight();
@@ -52,23 +53,33 @@ public class LocationUtil {
         return loc.getWorld().getBlockState(loc.toPos()).getMaterial().isSolid();
     }
 
-    @Nullable
-    public static Location posOnGround(@NotNull final Location loc, boolean passLiquid) {
-        BlockPos pos = loc.toPos();
-        BlockState state;
-        BlockView view = loc.getWorld();
+    public static boolean isLocationSafeFor(@NotNull final Location loc, @NotNull final OnlineUser user) {
 
+
+        return true;
+    }
+
+    public static Location posOnGround(@NotNull final Location loc, boolean passLiquid) {
+        int yLevel = getLevelOnGround(loc.toPos(), loc.getWorld());
+        Location location = copy(loc);
+        location.setY(yLevel);
+        return location;
+    }
+
+    private static int getLevelOnGround(@NotNull final BlockPos pos, @NotNull BlockView view) {
+        BlockPos blockPos = new BlockPos(pos.getX(), view.getHeight(), pos.getZ());
+
+        BlockState state;
         do {
-            if (pos.getY() <= 0) {
-                return null;
+            if (blockPos.getY() <= 0) {
+                return 257;
             }
 
-            pos = pos.down();
-            state = view.getBlockState(pos);
-        } while (state.isAir() && (!passLiquid || state.getMaterial().isLiquid()));
+            blockPos = blockPos.down();
+            state = view.getBlockState(blockPos);
+        } while (state.isAir());
 
-        loc.setY(pos.getY());
-        return loc;
+        return blockPos.getY() + 1;
     }
 
     @Nullable
@@ -90,6 +101,10 @@ public class LocationUtil {
 
         loc.setY(pos.getY());
         return loc;
+    }
+
+    public static Location copy(@NotNull final Location loc) {
+        return Vec3dLocation.of(loc.getX(), loc.getY(), loc.getZ(), loc.getRotation().getYaw(), loc.getRotation().getPitch(), loc.getDimension());
     }
 
 }

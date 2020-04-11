@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.util.NBTUtils;
 
@@ -15,6 +16,8 @@ import java.util.*;
 public class Settings {
     @NotNull
     public static final List<Setting<?>> list = new ArrayList<>();
+    @Nullable
+    static final Setting<?> DUMMY = new Setting<>("dummy", -1);
 
     public static final Setting<Boolean> CAN_FLY = new Setting<>("can_fly", false);
     public static final Setting<Boolean> INVULNERABLE = new Setting<>("invulnerable", false);
@@ -91,7 +94,7 @@ public class Settings {
                 }
             }
     );
-    public static final Setting<Integer> RANDOM_TELEPORTS_LEFT = new Setting<>("rtps_left", 3);
+    public static final Setting<Integer> RANDOM_TELEPORTS_LEFT = new Setting<>("rtps_left", KiloConfig.main().rtpSpecs().defaultRTPs);
     public static final Setting<Boolean> DON_NOT_DISTURB = new Setting<>("do_not_disturb", false);
     public static final Setting<List<String>> FAVIORATE_PLAYER_WARPS = new Setting<List<String>>(
             "fav_pwarps", Collections.emptyList(),

@@ -2,24 +2,35 @@ package org.kilocraft.essentials.commands.teleport;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Material;
 import net.minecraft.command.EntitySelector;
+import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -29,17 +40,26 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.settting.Setting;
+import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.util.LocationUtil;
+import org.kilocraft.essentials.util.RegistryUtils;
+import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
@@ -55,115 +75,128 @@ public class RtpCommand extends EssentialCommand {
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_IGNORE_LIMIT = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_BYPASS);
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER_DIMENSIONS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERDIMENSIONS);
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_MANAGE = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_MANAGE);
+	private static final Setting<Integer> RTP_LEFT = Settings.RANDOM_TELEPORTS_LEFT;
 
 	public RtpCommand() {
 		super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
 	}
 
 	public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		RequiredArgumentBuilder<ServerCommandSource, String> actionArg = argument("action", word())
-				.suggests(RtpCommand::actionSuggestions)
-				.executes(ctx -> execute(ctx, false, null));
+		LiteralArgumentBuilder<ServerCommandSource> addArgument = literal("add")
+				.requires(PERMISSION_CHECK_MANAGE)
+				.then(argument("target", EntityArgumentType.player())
+								.suggests(ArgumentCompletions::allPlayers).then(
+										argument("amount", IntegerArgumentType.integer(1))
+										.executes(this::executeAdd)
+						)
+				);
 
-		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
-				.requires(PERMISSION_CHECK_OTHERS)
-				.suggests(ArgumentCompletions::allPlayers)
-				.executes(ctx -> execute(ctx, false, getPlayer(ctx, "target")));
+		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set")
+				.requires(PERMISSION_CHECK_MANAGE)
+				.then(argument("target", EntityArgumentType.player())
+						.suggests(ArgumentCompletions::allPlayers).then(
+								argument("amount", IntegerArgumentType.integer(1))
+										.executes(this::executeSet)
+						)
+				);
 
-		RequiredArgumentBuilder<ServerCommandSource, Integer> amountArg = argument("amount", integer(0))
-				.executes(ctx -> execute(ctx, true, getPlayer(ctx, "target")));
+		LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove")
+				.requires(PERMISSION_CHECK_MANAGE)
+				.then(argument("target", EntityArgumentType.player())
+						.suggests(ArgumentCompletions::allPlayers).then(
+								argument("amount", IntegerArgumentType.integer(1))
+										.executes(this::executeRemove)
+						)
+				);
 
+		LiteralArgumentBuilder<ServerCommandSource> sendArgument = literal("send")
+				.requires(PERMISSION_CHECK_MANAGE)
+				.then(argument("target", EntityArgumentType.player())
+						.suggests(ArgumentCompletions::allPlayers)
+						.executes(this::executeOthers)
+				);
 
-		selectorArg.then(amountArg);
-		actionArg.then(selectorArg);
-		argumentBuilder.executes(this::executeSelf);
-		commandNode.addChild(actionArg.build());
+		LiteralArgumentBuilder<ServerCommandSource> checkArgument = literal("check")
+				.executes(this::executeLeft)
+				.then(argument("target", EntityArgumentType.player())
+						.requires(PERMISSION_CHECK_OTHERS)
+						.suggests(ArgumentCompletions::allPlayers)
+						.executes(this::executeGet)
+				);
+
+		LiteralArgumentBuilder<ServerCommandSource> performArgument = literal("perform")
+				.executes(this::executePerform);
+
+		this.commandNode.addChild(addArgument.build());
+		this.commandNode.addChild(setArgument.build());
+		this.commandNode.addChild(removeArgument.build());
+		this.commandNode.addChild(sendArgument.build());
+		this.commandNode.addChild(sendArgument.build());
+		this.commandNode.addChild(checkArgument.build());
+		this.commandNode.addChild(performArgument.build());
+		this.argumentBuilder.executes(this::executeSelf);
 	}
 
-	private int execute(CommandContext<ServerCommandSource> ctx, boolean isAction, @Nullable ServerPlayerEntity target) throws CommandSyntaxException {
-		ServerCommandSource src = ctx.getSource();
-		String actionType = getString(ctx, "action");
-
-		if (actionType.equalsIgnoreCase("check")) {
-			if (target != null)
-				return executeGet(ctx);
-
-			return executeLeft(ctx);
-		}
-
-		if (actionType.equalsIgnoreCase("send") && target != null) {
-			if (CommandUtils.areTheSame(src, target))
-				return executeSelf(ctx);
-
-			return executeOthers(ctx);
-		}
-
-		if (target != null && isAction) {
-			switch (actionType) {
-				case "add":
-					return executeAdd(ctx);
-				case "set":
-					return executeSet(ctx);
-				case "remove":
-					return executeRemove(ctx);
-			}
-
-		}
-
-		throw new SimpleCommandExceptionType(new LiteralMessage("Please enter a valid action type!")).create();
-	}
-
-	private static int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+	private int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getSetting(Settings.RANDOM_TELEPORTS_LEFT));
+				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getSetting(RTP_LEFT));
 
-		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
+		return user.getSetting(RTP_LEFT);
 	}
 
-	private static int executeAdd(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+	private int executeAdd(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		int amountToAdd = getInteger(ctx, "amount");
-		user.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, user.getSetting(Settings.RANDOM_TELEPORTS_LEFT) + amountToAdd);
+		user.getSettings().set(RTP_LEFT, user.getSetting(RTP_LEFT) + amountToAdd);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getSetting(Settings.RANDOM_TELEPORTS_LEFT), user.getDisplayName());
+				.sendLangMessage("template.#1", "RTPs left", user.getSetting(RTP_LEFT), user.getDisplayName());
 
-		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
+		return user.getSetting(RTP_LEFT);
 	}
 
-	private static int executeSet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+	private int executeSet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		int amountToSet = getInteger(ctx, "amount");
-		user.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, amountToSet);
+		user.getSettings().set(RTP_LEFT, amountToSet);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getSetting(Settings.RANDOM_TELEPORTS_LEFT), user.getDisplayName());
+				.sendLangMessage("template.#1", "RTPs left", user.getSetting(RTP_LEFT), user.getDisplayName());
 
-		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
+		return user.getSetting(RTP_LEFT);
 	}
 
-	private static int executeGet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+	private int executeGet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getSetting(Settings.RANDOM_TELEPORTS_LEFT));
+				.sendLangMessage("command.rtp.get", user.getDisplayName(), user.getSetting(RTP_LEFT));
 
-		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
+		return user.getSetting(RTP_LEFT);
 	}
 
-	private static int executeRemove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+	private int executeRemove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		OnlineUser user = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 		int amountToRemove = getInteger(ctx, "amount");
 
-		if ((user.getSetting(Settings.RANDOM_TELEPORTS_LEFT) - amountToRemove) < 0)
+		if ((user.getSetting(RTP_LEFT) - amountToRemove) < 0)
 			throw KiloCommands.getArgException(ArgExceptionMessageNode.NO_NEGATIVE_VALUES).create();
 
-		user.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, user.getSetting(Settings.RANDOM_TELEPORTS_LEFT) - amountToRemove);
+		user.getSettings().set(RTP_LEFT, user.getSetting(RTP_LEFT) - amountToRemove);
 		KiloEssentials.getServer().getCommandSourceUser(ctx.getSource())
-				.sendLangMessage("template.#1", "RTPs left", user.getSetting(Settings.RANDOM_TELEPORTS_LEFT), user.getDisplayName());
+				.sendLangMessage("template.#1", "RTPs left", user.getSetting(RTP_LEFT), user.getDisplayName());
 
-		return user.getSetting(Settings.RANDOM_TELEPORTS_LEFT);
+		return user.getSetting(RTP_LEFT);
 	}
 
 	private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+		Text text = Texter.confirmationMessage(
+				"command.rtp.confirm",
+				Texter.getButton("&8[&aClick Here to perform&8]", "/rtp perform", Texter.toText("&dConfirm"))
+		);
+		this.getOnlineUser(ctx).sendMessage(text);
+		return SINGLE_SUCCESS;
+	}
+
+	private int executePerform(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		return execute(ctx.getSource(), ctx.getSource().getPlayer());
 	}
 
@@ -180,78 +213,87 @@ public class RtpCommand extends EssentialCommand {
 		return 1;
 	}
 
-	//TODO: Update this
-	static void teleportRandomly(ServerCommandSource source, ServerPlayerEntity target) {
+	static void teleport(ServerCommandSource src, ServerPlayerEntity target) {
 		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
-		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(source);
+		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(src);
 
-		if (targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT) < 0)
-			targetUser.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, 0);
+		if (targetUser.getSetting(RTP_LEFT) < 0) {
+			targetUser.getSettings().set(RTP_LEFT, 0);
+		}
 
 		//Check if the player has any rtps left or permission to ignore the limit
-		if (CommandUtils.areTheSame(source, target) && targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(source)) {
+		if (CommandUtils.areTheSame(src, target) && targetUser.getSetting(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
 			targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
 			return;
 		}
 
 		//Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-		if (!target.dimension.equals(DimensionType.OVERWORLD) && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(source)) {
+		if (!target.dimension.equals(DimensionType.OVERWORLD) && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
 			targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
 			return;
 		}
 
-		//Generate random coordinates
-		Random random = new Random();
-		int randomX = random.nextInt(30000) - 15000; // -15000 to +15000
-		int randomZ = random.nextInt(30000) - 15000; // -15000 to  +15000
+		RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
 
-		Biome.Category biomeCategory = target.world.getBiomeAccess().getBiome(new BlockPos(randomX, 65, randomZ)).getCategory();
-
-		if (biomeCategory == Category.OCEAN || biomeCategory == Category.RIVER) {
-			teleportRandomly(source, target);
-			return;
+		if (!cfg.broadcastMessage.isEmpty()) {
+			KiloChat.broadCast(new TextMessage(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName())));
 		}
 
-		target.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 600, 255, false, false, false));
-		target.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 600, 255, false, false, false));
+		ServerWorld world = target.getServerWorld();
+		Vec3dLocation loc;
+		BlockPos pos;
+		BlockState state;
+		int tries = 0;
+		boolean safe;
 
-		targetUser.saveLocation();
-		target.teleport(target.getServerWorld(), randomX, 255, randomZ, 0, 0);
+		do {
+			loc = (Vec3dLocation) randomLocation(target.getServerWorld(), cfg.minX, cfg.maxX, cfg.minZ, cfg.maxZ);
+			loc = (Vec3dLocation) LocationUtil.posOnGround(loc, false);
 
-		String targetBiomeName = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
+			pos = loc.toPos();
+			state = world.getBlockState(pos);
+			Material material = state.getMaterial();
+			Biome.Category category = world.getBiome(pos).getCategory();
+			safe = !material.isLiquid() && material != Material.FIRE && category != Category.OCEAN && category != Category.RIVER && !LocationUtil.isBlockLiquid(loc.down());
+			tries++;
+		} while (tries <= cfg.maxTries && !safe);
 
-		if (CommandUtils.areTheSame(source, target)) {
-			if (!PERMISSION_CHECK_IGNORE_LIMIT.test(source))
-				targetUser.getSettings().set(Settings.RANDOM_TELEPORTS_LEFT, targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT) - 1);
+		if (!safe) {
+			sourceUser.sendLangError("command.rtp.failed");
+		} else {
+			targetUser.saveLocation();
+			targetUser.teleport(loc.center().up(), true);
 
-			targetUser.sendMessage(new TextMessage(
-					KiloConfig.messages().commands().rtp().teleported
-							.replace("{BIOME}", targetBiomeName)
-							.replace("{RTP_LEFT}", String.valueOf(targetUser.getSetting(Settings.RANDOM_TELEPORTS_LEFT)))
-							.replace("{cord.X}", String.valueOf(randomX))
-							.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
-							.replace("{cord.Z}", String.valueOf(randomZ))
-					, true));
-		} else
-			sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), targetBiomeName);
+			String biome = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
-		Thread.currentThread().interrupt();
-	}
+			if (sourceUser.equals(targetUser)) {
+				if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
+					targetUser.getSettings().set(RTP_LEFT, targetUser.getSetting(RTP_LEFT) - 1);
+				}
 
-	private static CompletableFuture<Suggestions> actionSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-		List<String> strings = new ArrayList<>();
-		strings.add("check");
+				targetUser.sendMessage(new TextMessage(
+						KiloConfig.messages().commands().rtp().teleported
+								.replace("{BIOME}", biome)
+								.replace("{RTP_LEFT}", String.valueOf(targetUser.getSetting(RTP_LEFT)))
+								.replace("{cord.X}", String.valueOf(loc.getX()))
+								.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
+								.replace("{cord.Z}", String.valueOf(loc.getZ()))
+						, true));
+			} else {
+				sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), biome);
+			}
 
-		if (PERMISSION_CHECK_MANAGE.test(context.getSource())) {
-			strings.add("add");
-			strings.add("set");
-			strings.add("remove");
-			strings.add("send");
+			Thread.currentThread().interrupt();
 		}
-
-		return CommandSource.suggestMatching(strings, builder);
 	}
 
+	@NotNull
+	private static Location randomLocation(World world, int minX, int maxX, int minZ, int maxZ) {
+		int randX = ThreadLocalRandom.current().nextInt(minX, maxX + 1);
+		int randZ = ThreadLocalRandom.current().nextInt(minZ, maxZ + 1);
+
+		return Vec3dLocation.of(randX, world.getHeight(), randZ, 0, 0, RegistryUtils.toIdentifier(world.getDimension().getType()));
+	}
 }
 
 class RandomTeleportThread implements Runnable {
@@ -267,6 +309,6 @@ class RandomTeleportThread implements Runnable {
 	@Override
 	public void run() {
 		logger.info("Randomly teleporting " + target.getEntityName() + ". executed by " + source.getName());
-		RtpCommand.teleportRandomly(this.source, this.target);
+		RtpCommand.teleport(this.source, this.target);
 	}
 }
