@@ -12,6 +12,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -46,6 +47,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private final Map<String, UUID> nicknameToUUID = new HashMap<>();
     private final Map<String, UUID> usernameToUUID = new HashMap<>();
     private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
+    private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
 
     private PunishmentManager punishManager;
 
@@ -183,6 +185,10 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     public boolean isOnline(User user) {
         return this.onlineUsers.containsKey(user.getUuid());
+    }
+
+    public Map<UUID, Pair<Pair<UUID, Boolean>, Long>> getTeleportRequestsMap() {
+        return this.teleportRequestsMap;
     }
 
     @Override

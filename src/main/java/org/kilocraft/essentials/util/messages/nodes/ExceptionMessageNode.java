@@ -20,6 +20,8 @@ public enum ExceptionMessageNode {
     INVALID_ID("invalid_id"),
     NO_VALUE_SET_USER("no_value_set_user"),
     INVALID_PAGE("invalid_page"),
+    IGNORED("ignored"),
+    SOURCE_IS_TARGET("source_is_target")
     ;
 
 

@@ -92,7 +92,7 @@ public enum CommandPermission {
     BAN_IP("ban.ip"),
     BAN_PROFILE("ban.profile"),
     KICK("kick"),
-    RAINBOWARMOR("rainbowarmor"),
+    TELEPORTREQUEST("teleportrequest"),
     ;
 
     private String node;

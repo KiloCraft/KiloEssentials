@@ -181,4 +181,9 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     public @Nullable UserInventory getInventory() {
         return null;
     }
+
+    @Override
+    public boolean ignored(UUID uuid) {
+        return false;
+    }
 }

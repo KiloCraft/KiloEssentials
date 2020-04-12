@@ -10,10 +10,11 @@ import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.setting.Settings;
 
-public class MessageToggleCommand extends EssentialCommand {
-    public MessageToggleCommand() {
-        super("messagetoggle", new String[]{"msgtoggle", "togglemessages", "togglemsg", "dontdisturb"});
-        this.withUsage("command.messagetoggle.usage");
+public class DonotdisturbCommand extends EssentialCommand {
+    private Setting<Boolean> SETTING = Settings.DON_NOT_DISTURB;
+    public DonotdisturbCommand() {
+        super("donotdisturb", new String[]{"dontdisturb", "toggledisturb"});
+        this.withUsage("command.donotdisturb.usage");
     }
 
     @Override
@@ -24,12 +25,12 @@ public class MessageToggleCommand extends EssentialCommand {
     private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final ServerUser user = (ServerUser) this.getOnlineUser(ctx);
 
-        user.getSettings().set(Settings.DON_NOT_DISTURB, !user.getSetting(Settings.DON_NOT_DISTURB));
+        user.getSettings().set(SETTING, !user.getSetting(SETTING));
 
-        if (user.getSetting(Settings.DON_NOT_DISTURB)) {
-            ((OnlineUser) user).sendLangMessage("command.messagetoggle.on");
+        if (user.getSetting(SETTING)) {
+            ((OnlineUser) user).sendLangMessage("command.donotdisturb.on");
         } else {
-            ((OnlineUser) user).sendLangMessage("command.messagetoggle.off");
+            ((OnlineUser) user).sendLangMessage("command.donotdisturb.off");
         }
 
         return SINGLE_SUCCESS;

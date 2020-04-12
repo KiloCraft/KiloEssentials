@@ -2,11 +2,13 @@ package org.kilocraft.essentials.api.command;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,6 +19,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.server.Server;
@@ -33,6 +36,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
@@ -232,6 +236,16 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return getString(ctx, label);
     }
 
+    public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
+        OnlineUser user = this.getOnlineUser(StringArgumentType.getString(ctx, label));
+
+        if (user == null) {
+            throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
+        }
+
+        return user;
+    }
+
     public CompletableFuture<Optional<User>> getUser(final GameProfile profile) {
         return this.server.getUserManager().getOffline(profile);
     }
@@ -253,6 +267,10 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(final String label) {
+        return this.argument(label, string()).suggests(ArgumentCompletions::allPlayers);
+    }
+
+    public RequiredArgumentBuilder<ServerCommandSource, String> getOnlineUserArgument(final String label) {
         return this.argument(label, string()).suggests(ArgumentCompletions::allPlayers);
     }
 

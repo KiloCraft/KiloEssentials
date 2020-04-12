@@ -21,6 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -45,10 +46,8 @@ import org.kilocraft.essentials.commands.moderation.IpInfoCommand;
 import org.kilocraft.essentials.commands.moderation.KickCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
-import org.kilocraft.essentials.commands.teleport.BackCommand;
-import org.kilocraft.essentials.commands.teleport.RtpCommand;
-import org.kilocraft.essentials.commands.teleport.TeleportCommands;
-import org.kilocraft.essentials.commands.teleport.TpaCommand;
+import org.kilocraft.essentials.commands.teleport.*;
+import org.kilocraft.essentials.commands.teleport.tpr.*;
 import org.kilocraft.essentials.commands.user.SilenceCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -137,7 +136,7 @@ public class KiloCommands {
             this.add(new TpsCommand());
             this.add(new LocateCommand());
             this.add(new MessageCommand());
-            this.add(new MessageToggleCommand());
+            this.add(new DonotdisturbCommand());
             this.add(new IgnoreCommand());
             this.add(new IgnorelistCommand());
             this.add(new ReplyCommand());
@@ -152,6 +151,11 @@ public class KiloCommands {
             this.add(new BanCommand());
             this.add(new KickCommand());
             this.add(new SilenceCommand());
+            this.add(new TpaCommand());
+            this.add(new TpahereCommand());
+            this.add(new TpacceptCommand());
+            this.add(new TpdenyCommand());
+            this.add(new TpcancelCommand());
             //this.add(new InventoryCommand());
         }};
 
@@ -163,7 +167,6 @@ public class KiloCommands {
 
         this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
 
-        TpaCommand.register(this.dispatcher);
         StopCommand.register(this.dispatcher);
         RestartCommand.register(this.dispatcher);
         OperatorCommand.register(this.dispatcher);
@@ -174,19 +177,19 @@ public class KiloCommands {
         this.registerCommand(c);
     }
 
-    private <C extends IEssentialCommand> void registerCommand(final C c) {
-        final EssentialCommand command = (EssentialCommand) c;
+    private <C extends IEssentialCommand> void registerCommand(@NotNull final C c) {
+        EssentialCommand command = (EssentialCommand) c;
         command.register(this.dispatcher);
         KiloCommands.rootNode.addChild(command.getArgumentBuilder().build());
         KiloCommands.rootNode.addChild(command.getCommandNode());
 
         if (command.getAlias() != null) {
-            for (final String alias : command.getAlias()) {
-                final LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
+            for (String alias : command.getAlias()) {
+                LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
                         .requires(command.getRootPermissionPredicate())
                         .executes(command.getArgumentBuilder().getCommand());
 
-                for (final CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
+                for (CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
                     argumentBuilder.then(child);
                 }
 

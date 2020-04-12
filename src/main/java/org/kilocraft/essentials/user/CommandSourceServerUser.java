@@ -215,6 +215,11 @@ public  class CommandSourceServerUser implements CommandSourceUser {
         return null;
     }
 
+    @Override
+    public boolean ignored(UUID uuid) {
+        return false;
+    }
+
     @Nullable
     @Override
     public ServerPlayerEntity getPlayer() {

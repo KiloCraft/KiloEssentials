@@ -16,6 +16,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -31,6 +32,8 @@ import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.UserUtils;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.rmi.UnexpectedException;
 import java.text.DateFormat;
@@ -172,7 +175,7 @@ public final class ServerChat {
         return Texter.Events.onClickSuggest("/msg " + user.getUsername() + " ");
     }
 
-    private static void pingPlayer(final ServerPlayerEntity target, final PingType type) {
+    public static void pingPlayer(final ServerPlayerEntity target, final PingType type) {
         ChatPingSoundConfigSection cfg = null;
         switch (type) {
             case PUBLIC:
@@ -246,7 +249,7 @@ public final class ServerChat {
         }
 
         if (CommandUtils.areTheSame(source, target)) {
-            throw ServerChat.SAME_TARGETS_EXCEPTION.create();
+            throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
         }
 
         ServerChat.messagePrivately(source, user, message);
@@ -258,9 +261,8 @@ public final class ServerChat {
         String me_format = ServerChat.config.privateChat().privateChatMeFormat;
         String sourceName = source.getName();
 
-        Map<String, UUID> ignoreList =  target.getSetting(Settings.IGNORE_LIST);
-        if (CommandUtils.isPlayer(source) && ignoreList.containsValue(source.getPlayer().getUuid())) {
-            throw ServerChat.CANT_MESSAGE_EXCEPTION.create();
+        if (CommandUtils.isPlayer(source) && target.ignored(source.getPlayer().getUuid())) {
+            throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
         }
 
         String toSource = format.replace("%SOURCE%", me_format)
@@ -358,7 +360,6 @@ public final class ServerChat {
         return text;
     }
 
-    private static final SimpleCommandExceptionType SAME_TARGETS_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You can't message your self!"));
     private static final SimpleCommandExceptionType TARGET_OFFLINE_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("The Target player is offline!"));
     private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new  SimpleCommandExceptionType(LangText.getFormatter(true, "command.message.error"));
 
@@ -415,7 +416,7 @@ public final class ServerChat {
         }
     }
 
-    private enum PingType {
+    public enum PingType {
         PUBLIC,
         PRIVATE,
         EVERYONE;

@@ -68,7 +68,7 @@ public interface Location {
             builder.append(RegistryUtils.dimensionToName(this.getWorld().getDimension().getType()));
         }
 
-        builder.append("&8/&e").append(decimal.format(this.getX())).append("&7,&e ").append(decimal.format(this.getY())).append("&7,&e ").append(decimal.format(this.getZ()));
+        builder.append("&8/&e").append(decimal.format(this.getX())).append(", ").append(decimal.format(this.getY())).append(", ").append(decimal.format(this.getZ()));
 
         return TextFormat.translate(builder.toString());
     }

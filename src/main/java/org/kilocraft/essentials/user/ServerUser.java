@@ -398,13 +398,18 @@ public class ServerUser implements User {
 
     @Override
     public boolean equals(User anotherUser) {
-        return anotherUser.getUuid().equals(this.uuid) || anotherUser.getUsername().equals(this.getUsername());
+        return anotherUser == this || anotherUser.getUuid().equals(this.uuid) || anotherUser.getUsername().equals(this.getUsername());
     }
 
     @Nullable
     @Override
     public UserInventory getInventory() {
         return this.inventory;
+    }
+
+    @Override
+    public boolean ignored(UUID uuid) {
+        return this.getSetting(Settings.IGNORE_LIST).containsValue(uuid);
     }
 
     public static void saveLocationOf(ServerPlayerEntity player) {

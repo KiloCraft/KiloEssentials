@@ -96,4 +96,6 @@ public interface User {
 
     @Nullable
     UserInventory getInventory();
+
+    boolean ignored(UUID uuid);
 }
