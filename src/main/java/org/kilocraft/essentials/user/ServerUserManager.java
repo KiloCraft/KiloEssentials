@@ -57,9 +57,9 @@ public class ServerUserManager implements UserManager, TickListener {
 
     @Override
     public CompletableFuture<List<User>> getAll() {
-        final List<User> users = new ArrayList<>();
+        List<User> users = new ArrayList<>();
 
-        for (final File file : this.handler.getUserFiles()) {
+        for (File file : this.handler.getUserFiles()) {
             if (!file.exists()) {
                 continue;
             }
@@ -73,7 +73,7 @@ public class ServerUserManager implements UserManager, TickListener {
                     users.add(serverUser);
                 }
 
-            } catch (final IOException ignored) {
+            } catch (IOException ignored) {
             }
         }
 
@@ -193,22 +193,24 @@ public class ServerUserManager implements UserManager, TickListener {
 
     @Override
     public void saveAllUsers() {
-        if (SharedConstants.isDevelopment)
+        if (SharedConstants.isDevelopment) {
             KiloEssentials.getLogger().info("Saving users data, this may take a while...");
+        }
 
         for (OnlineServerUser serverUser : onlineUsers.values()) {
             try {
-                if (SharedConstants.isDevelopment)
+                if (SharedConstants.isDevelopment) {
                     KiloEssentials.getLogger().debug("Saving user \"" + serverUser.getUsername() + "\"");
+                }
                 this.handler.saveData(serverUser);
             } catch (IOException e) {
-                KiloEssentials.getLogger().error("An unexpected exception occurred when saving a user's data!");
-                e.printStackTrace();
+                KiloEssentials.getLogger().error("An unexpected exception occurred when saving a user's data!", e);
             }
         }
 
-        if (SharedConstants.isDevelopment)
+        if (SharedConstants.isDevelopment) {
             KiloEssentials.getLogger().info("Saved the users data!");
+        }
     }
 
     @Override

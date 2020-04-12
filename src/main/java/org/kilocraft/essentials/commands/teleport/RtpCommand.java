@@ -52,9 +52,12 @@ import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
+import org.kilocraft.essentials.user.InProcessUser;
+import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.RegistryUtils;
+import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
@@ -73,6 +76,7 @@ import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 
 public class RtpCommand extends EssentialCommand {
+	private static final SimpleProcess<Void> PROCESS = new SimpleProcess<>("rtp_process");
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_SELF);
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_OTHERS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERS);
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_IGNORE_LIMIT = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_BYPASS);
@@ -200,11 +204,24 @@ public class RtpCommand extends EssentialCommand {
 	}
 
 	private int executePerform(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+		InProcessUser user = (InProcessUser) this.getOnlineUser(ctx);
+
+		if (user.hasProcess(PROCESS)) {
+			return user.sendLangError("command.rtp.in_process");
+		}
+
+		user.add(PROCESS);
 		return execute(ctx.getSource(), ctx.getSource().getPlayer());
 	}
 
 	private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-		return execute(ctx.getSource(), getPlayer(ctx, "target"));
+		InProcessUser target = (InProcessUser) this.getOnlineUser(getPlayer(ctx, "target"));
+
+		if (target.hasProcess(PROCESS)) {
+			return this.getServerUser(ctx).sendLangError("command.rtp.in_process");
+		}
+
+		return execute(ctx.getSource(), target.getPlayer());
 	}
 
 	private int execute(ServerCommandSource source, ServerPlayerEntity target) {
@@ -299,6 +316,7 @@ public class RtpCommand extends EssentialCommand {
 				sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), biome);
 			}
 
+			((InProcessUser) targetUser).remove(PROCESS);
 			Thread.currentThread().interrupt();
 		}
 	}

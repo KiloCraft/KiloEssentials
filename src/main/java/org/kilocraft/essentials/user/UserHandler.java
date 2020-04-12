@@ -43,12 +43,12 @@ public class UserHandler {
     }
 
     void saveData(final ServerUser serverUser) throws IOException {
-        if (this.getUserFile(serverUser).exists())
+        if (this.getUserFile(serverUser).exists()) {
             NbtIo.writeCompressed(
                     serverUser.serialize(),
                     new FileOutputStream(this.getUserFile(serverUser))
             );
-        else {
+        } else {
             UserHandler.saveDir.mkdirs();
             this.getUserFile(serverUser).createNewFile();
             this.saveData(serverUser);

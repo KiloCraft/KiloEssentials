@@ -47,8 +47,9 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void teleport(final Location loc, final boolean sendTicket) {
-        if (sendTicket)
+        if (sendTicket) {
             loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 1, this.getPlayer().getEntityId());
+        }
 
         this.getPlayer().teleport(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getRotation().getYaw(), loc.getRotation().getPitch());
     }

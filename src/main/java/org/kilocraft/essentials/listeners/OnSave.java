@@ -10,6 +10,5 @@ public class OnSave implements EventHandler<ServerSaveEvent> {
     public void handle(ServerSaveEvent event) {
         NBTStorageUtil.onSave();
         KiloServer.getServer().getUserManager().saveAllUsers();
-
     }
 }
