@@ -120,7 +120,7 @@ public class NicknameCommand extends EssentialCommand {
                     , true));
 
             if (user.isOnline())
-                ((OnlineUser) user).getPlayer().setCustomName(new LiteralText(formattedNickname));
+                ((OnlineUser) user).asPlayer().setCustomName(new LiteralText(formattedNickname));
             else {
                 PlayerDataModifier dataModifier = new PlayerDataModifier(user.getUuid());
                 if (!dataModifier.load())
@@ -157,7 +157,7 @@ public class NicknameCommand extends EssentialCommand {
                                    is always and automatically synchronized with the client. */
 
             if (user.isOnline())
-                ((OnlineUser) user).getPlayer().setCustomName(new LiteralText(""));
+                ((OnlineUser) user).asPlayer().setCustomName(new LiteralText(""));
             else {
                 PlayerDataModifier dataModifier = new PlayerDataModifier(user.getUuid());
                 if (!dataModifier.load())

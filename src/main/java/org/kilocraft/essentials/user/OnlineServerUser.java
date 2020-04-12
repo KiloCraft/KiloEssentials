@@ -18,7 +18,6 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -36,32 +35,32 @@ import java.util.UUID;
 public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
-    public ServerPlayerEntity getPlayer() {
+    public ServerPlayerEntity asPlayer() {
         return KiloServer.getServer().getPlayer(this.uuid);
     }
 
     @Override
     public ServerCommandSource getCommandSource() {
-        return this.getPlayer().getCommandSource();
+        return this.asPlayer().getCommandSource();
     }
 
     @Override
     public void teleport(final Location loc, final boolean sendTicket) {
         if (sendTicket) {
-            loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 1, this.getPlayer().getEntityId());
+            loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 1, this.asPlayer().getEntityId());
         }
 
-        this.getPlayer().teleport(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getRotation().getYaw(), loc.getRotation().getPitch());
+        this.asPlayer().teleport(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getRotation().getYaw(), loc.getRotation().getPitch());
     }
 
     @Override
     public void sendMessage(final String message) {
-        KiloChat.sendMessageTo(this.getPlayer(), new TextMessage(message, true));
+        KiloChat.sendMessageTo(this.asPlayer(), new TextMessage(message, true));
     }
 
     @Override
     public int sendError(final String message) {
-        KiloChat.sendMessageTo(this.getPlayer(), new TextMessage("&c" + message, true).toText().formatted(Formatting.RED));
+        KiloChat.sendMessageTo(this.asPlayer(), new TextMessage("&c" + message, true).toText().formatted(Formatting.RED));
         return -1;
     }
 
@@ -73,7 +72,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public int sendError(final ExceptionMessageNode node, final Object... objects) {
         final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.getPlayer(), new TextMessage(
+        KiloChat.sendMessageTo(this.asPlayer(), new TextMessage(
                 objects != null ? String.format(message, objects) : message, true)
                 .toText().formatted(Formatting.RED));
         return -1;
@@ -81,17 +80,17 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(final Text text) {
-        KiloChat.sendMessageTo(this.getPlayer(), text);
+        KiloChat.sendMessageTo(this.asPlayer(), text);
     }
 
     @Override
     public void sendMessage(final TextMessage textMessage) {
-        KiloChat.sendMessageTo(this.getPlayer(), textMessage);
+        KiloChat.sendMessageTo(this.asPlayer(), textMessage);
     }
 
     @Override
     public void sendLangMessage(final String key, final Object... objects) {
-        KiloChat.sendLangMessageTo(this.getPlayer(), key, objects);
+        KiloChat.sendLangMessageTo(this.asPlayer(), key, objects);
     }
 
     @Override
@@ -102,7 +101,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public ClientConnection getConnection() {
-        return this.getPlayer().networkHandler.connection;
+        return this.asPlayer().networkHandler.connection;
     }
 
     @Override
@@ -112,8 +111,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public Vec3d getEyeLocation() {
-        Vec3d vec = this.getPlayer().getPos();
-        return new Vec3d(vec.getX(), this.getPlayer().getEyeY(), this.getPlayer().getPos().getZ());
+        Vec3d vec = this.asPlayer().getPos();
+        return new Vec3d(vec.getX(), this.asPlayer().getEyeY(), this.asPlayer().getPos().getZ());
     }
 
     public static OnlineServerUser of(final UUID uuid) {
@@ -151,14 +150,14 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public void setFlight(final boolean set) {
         super.getSettings().set(Settings.CAN_FLY, true);
-        this.getPlayer().abilities.allowFlying = set;
-        this.getPlayer().abilities.flying = set;
-        this.getPlayer().sendAbilitiesUpdate();
+        this.asPlayer().abilities.allowFlying = set;
+        this.asPlayer().abilities.flying = set;
+        this.asPlayer().sendAbilitiesUpdate();
     }
 
     @Override
     public void setGameMode(GameMode mode) {
-        this.getPlayer().setGameMode(mode);
+        this.asPlayer().setGameMode(mode);
     }
 
     @Override
@@ -197,16 +196,16 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         GameMode gameMode = super.getSetting(Settings.GAME_MODE);
         if (gameMode == GameMode.NOT_SET) {
-            gameMode = this.getPlayer().interactionManager.getGameMode();
+            gameMode = this.asPlayer().interactionManager.getGameMode();
         }
 
         this.setGameMode(gameMode);
         super.getSettings().set(Settings.GAME_MODE, gameMode);
 
         if (ticksPlayed <= 0) {
-            ticksPlayed = this.getPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
+            ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
         } else {
-            this.getPlayer().getStatHandler().setStat(this.getPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE), ticksPlayed);
+            this.asPlayer().getStatHandler().setStat(this.asPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE), ticksPlayed);
         }
 
         if (KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF)) {

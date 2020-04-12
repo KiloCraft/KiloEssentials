@@ -4,10 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -49,7 +46,7 @@ public class InventoryCommand extends EssentialCommand {
 
         final AtomicInteger integer = new AtomicInteger(super.AWAIT_RESPONSE);
         super.essentials.getUserThenAcceptAsync(sender, inputName, (user) -> {
-            ServerPlayerEntity player = sender.getPlayer();
+            ServerPlayerEntity player = sender.asPlayer();
 
             if (user.getInventory() == null || user.getInventory().getMain() == null) {
                 sender.sendError(tl("command.inventory.no_cache"));
