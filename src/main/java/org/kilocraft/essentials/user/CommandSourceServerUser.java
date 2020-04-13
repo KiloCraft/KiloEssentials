@@ -257,6 +257,12 @@ public  class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public int sendError(Text text) {
+        KiloChat.sendMessageTo(this.source, text.formatted(Formatting.RED));
+        return -1;
+    }
+
+    @Override
     public int sendLangError(String key, Object... objects) {
         return this.sendError(ModConstants.translation(key, objects));
     }

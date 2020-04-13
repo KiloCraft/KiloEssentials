@@ -77,7 +77,7 @@ public class WhowasCommand extends EssentialCommand {
     }
 
     private int send(OnlineUser src, String name, int page) {
-        String uuid = null;
+        String uuid;
         try {
             uuid = NameLookup.getPlayerUUID(name);
 
@@ -85,7 +85,7 @@ public class WhowasCommand extends EssentialCommand {
                 throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
             }
         } catch (Exception e) {
-            src.sendMessage(Texter.exceptionToText(e, false));
+            return src.sendError(Texter.exceptionToText(e, false));
         }
 
         if (CacheManager.shouldUse(getCacheId(uuid))) {

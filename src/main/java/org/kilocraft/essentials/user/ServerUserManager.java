@@ -329,7 +329,7 @@ public class ServerUserManager implements UserManager, TickListener {
     public static class LoadingText {
         private AnimatedText animatedText;
         public LoadingText(ServerPlayerEntity player) {
-            this.animatedText = new AnimatedText(0, 115, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
                     .append(LangText.get(true, "general.wait_server.frame1"))
                     .append(LangText.get(true, "general.wait_server.frame2"))
                     .append(LangText.get(true, "general.wait_server.frame3"))
@@ -338,7 +338,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         public LoadingText(ServerPlayerEntity player, String key) {
-            this.animatedText = new AnimatedText(0, 115, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
                     .append(LangText.get(true, key + ".frame1"))
                     .append(LangText.get(true, key + ".frame2"))
                     .append(LangText.get(true, key + ".frame3"))

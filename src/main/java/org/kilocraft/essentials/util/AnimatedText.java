@@ -52,15 +52,20 @@ public class AnimatedText {
 
     public AnimatedText build() {
         this.runnable = () -> {
-            if (this.player == null || this.player.networkHandler == null)
+            if (this.player == null) {
+                this.remove();
                 return;
+            }
 
-            this.player.networkHandler.sendPacket(new TitleS2CPacket(this.action, this.frames.get(this.frame),1, this.nextFrameTime, -1));
-
-            if (this.frames.size() == this.frame)
+            if (this.frame > this.frames.size()) {
                 this.frame = 0;
-            else
-                this.frame++;
+            }
+
+            if (this.player.networkHandler != null) {
+                this.player.networkHandler.sendPacket(new TitleS2CPacket(this.action, this.frames.get(this.frame),1, this.nextFrameTime, -1));
+            }
+
+            this.frame++;
         };
 
         return this;
