@@ -2,10 +2,8 @@ package org.kilocraft.essentials.extensions.betterchairs;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -16,8 +14,6 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.mixin.accessor.EntityAccessor;
 import org.kilocraft.essentials.user.setting.Settings;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 
@@ -63,12 +59,12 @@ public class SitCommand extends EssentialCommand {
     private int seat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
 
-        if (SeatManager.getInstance().isSeating(user.getPlayer())) {
+        if (SeatManager.getInstance().isSeating(user.asPlayer())) {
             SeatManager.getInstance().unseat(user);
             return SINGLE_FAILED;
         }
 
-        if (!((EntityAccessor) user.getPlayer()).isOnGround()) {
+        if (!((EntityAccessor) user.asPlayer()).isOnGround()) {
             user.sendLangMessage("general.on_ground");
             return SINGLE_FAILED;
         }

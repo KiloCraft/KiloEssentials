@@ -32,15 +32,12 @@ import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.Texter;
-import org.kilocraft.essentials.util.UserUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.rmi.UnexpectedException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -134,7 +131,7 @@ public final class ServerChat {
 
             for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
                 if (user.getSetting(Settings.CHAT_CHANNEL) == channel) {
-                    ServerChat.pingPlayer(user.getPlayer(), PingType.EVERYONE);
+                    ServerChat.pingPlayer(user.asPlayer(), PingType.EVERYONE);
                 }
             }
         }
@@ -156,7 +153,7 @@ public final class ServerChat {
             );
 
             if (pingSoundEnabled && canPing) {
-                pingPlayer(target.getPlayer(), PingType.PUBLIC);
+                pingPlayer(target.asPlayer(), PingType.PUBLIC);
             }
         }
     }
@@ -277,15 +274,15 @@ public final class ServerChat {
                 .replace("%MESSAGE%", message);
 
         if (target.getSetting(Settings.SOUNDS)) {
-            pingPlayer(target.getPlayer(), PingType.PRIVATE);
+            pingPlayer(target.asPlayer(), PingType.PRIVATE);
         }
 
         KiloChat.sendMessageToSource(source, new TextMessage(toSource, true).toComponent().formatted(Formatting.WHITE));
-        KiloChat.sendMessageTo(target.getPlayer(), new TextMessage(toTarget, true).toComponent().formatted(Formatting.WHITE));
+        KiloChat.sendMessageTo(target.asPlayer(), new TextMessage(toTarget, true).toComponent().formatted(Formatting.WHITE));
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
-                KiloChat.sendMessageTo(user.getPlayer(), new LiteralText(new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
+                KiloChat.sendMessageTo(user.asPlayer(), new LiteralText(new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
             }
         }
 
@@ -343,7 +340,7 @@ public final class ServerChat {
 
                 text.append(link);
             } else if (appendItems && s.contains(itemFormat)) {
-                ServerPlayerEntity player = sender.getPlayer();
+                ServerPlayerEntity player = sender.asPlayer();
                 ItemStack itemStack = player.getMainHandStack();
 
                 Text item = new LiteralText("").append(itemStack.toHoverableText());

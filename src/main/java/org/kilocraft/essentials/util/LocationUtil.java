@@ -24,7 +24,7 @@ public class LocationUtil {
     }
 
     public static boolean isBlockSafeFor(OnlineUser user, final Location loc) {
-        return user.getPlayer().isCreative() || user.getSetting(Settings.INVULNERABLE) || (isBlockSafe(loc) && !user.getPlayer().isFireImmune());
+        return user.asPlayer().isCreative() || user.getSetting(Settings.INVULNERABLE) || (isBlockSafe(loc) && !user.asPlayer().isFireImmune());
     }
 
     public static boolean isBlockSafe(final Location loc) {

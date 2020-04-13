@@ -63,7 +63,7 @@ public class Vec3dLocation implements Location {
     }
 
     public static Vec3dLocation of(OnlineUser user) {
-        return of(user.getPlayer());
+        return of(user.asPlayer());
     }
 
     @Override

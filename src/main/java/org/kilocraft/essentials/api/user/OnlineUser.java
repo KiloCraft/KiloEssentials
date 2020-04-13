@@ -14,7 +14,7 @@ import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public interface OnlineUser extends User {
-    ServerPlayerEntity getPlayer();
+    ServerPlayerEntity asPlayer();
 
     ServerCommandSource getCommandSource();
 

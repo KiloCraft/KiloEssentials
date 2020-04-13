@@ -1,23 +1,13 @@
 package org.kilocraft.essentials.commands.teleport;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
-import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -26,7 +16,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
@@ -34,7 +23,6 @@ import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -42,6 +30,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.user.InProcessUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.world.location.Location;
@@ -52,28 +41,16 @@ import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
-import org.kilocraft.essentials.user.InProcessUser;
-import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.LocationUtil;
-import org.kilocraft.essentials.util.RegistryUtils;
-import org.kilocraft.essentials.util.SimpleProcess;
-import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.*;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
-import static net.minecraft.command.arguments.EntityArgumentType.player;
 
 public class RtpCommand extends EssentialCommand {
 	private static final SimpleProcess<Void> PROCESS = new SimpleProcess<>("rtp_process");
@@ -204,24 +181,25 @@ public class RtpCommand extends EssentialCommand {
 	}
 
 	private int executePerform(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-		InProcessUser user = (InProcessUser) this.getOnlineUser(ctx);
+		OnlineUser user = this.getOnlineUser(ctx);
 
-		if (user.hasProcess(PROCESS)) {
+		if (UserUtils.Process.isIn(user, PROCESS.getId())) {
 			return user.sendLangError("command.rtp.in_process");
 		}
 
-		user.add(PROCESS);
+		UserUtils.Process.add(user, PROCESS);
 		return execute(ctx.getSource(), ctx.getSource().getPlayer());
 	}
 
 	private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-		InProcessUser target = (InProcessUser) this.getOnlineUser(getPlayer(ctx, "target"));
+		OnlineUser target = this.getOnlineUser(ctx);
 
-		if (target.hasProcess(PROCESS)) {
+		if (UserUtils.Process.isIn(target, PROCESS.getId())) {
 			return this.getServerUser(ctx).sendLangError("command.rtp.in_process");
 		}
 
-		return execute(ctx.getSource(), target.getPlayer());
+		UserUtils.Process.add(target, PROCESS);
+		return execute(ctx.getSource(), target.asPlayer());
 	}
 
 	private int execute(ServerCommandSource source, ServerPlayerEntity target) {
@@ -230,7 +208,7 @@ public class RtpCommand extends EssentialCommand {
 		RandomTeleportThread rtp = new RandomTeleportThread(source, target);
 		Thread rtpThread = new Thread(rtp ,"RTP thread");
 		rtpThread.start();
-		return 1;
+		return SINGLE_SUCCESS;
 	}
 
 	static void teleport(ServerCommandSource src, ServerPlayerEntity target) {
@@ -316,7 +294,7 @@ public class RtpCommand extends EssentialCommand {
 				sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), biome);
 			}
 
-			((InProcessUser) targetUser).remove(PROCESS);
+			UserUtils.Process.remove(targetUser);
 			Thread.currentThread().interrupt();
 		}
 	}

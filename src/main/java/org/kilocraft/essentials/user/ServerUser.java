@@ -183,7 +183,7 @@ public class ServerUser implements User {
     }
 
     public void updateLocation() {
-        if (this instanceof OnlineUser && ((OnlineUser) this).getPlayer().getPos() != null) {
+        if (this instanceof OnlineUser && ((OnlineUser) this).asPlayer().getPos() != null) {
             this.location = Vec3dLocation.of((OnlineUser) this).shortDecimals();
         }
     }
@@ -283,7 +283,7 @@ public class ServerUser implements User {
 
     @Override
     public Location getLocation() {
-        if (this instanceof OnlineUser && this.location == null && ((OnlineUser) this).getPlayer() != null)
+        if (this instanceof OnlineUser && this.location == null && ((OnlineUser) this).asPlayer() != null)
             updateLocation();
 
         return this.location;

@@ -13,13 +13,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
-import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -31,7 +29,7 @@ import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.AnimatedText;
-import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.SimpleProcess;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +46,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private final Map<String, UUID> usernameToUUID = new HashMap<>();
     private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
     private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
+    private final Map<UUID, SimpleProcess<?>> inProcessUsers = new HashMap<>();
 
     private PunishmentManager punishManager;
 
@@ -191,6 +190,10 @@ public class ServerUserManager implements UserManager, TickListener {
         return this.teleportRequestsMap;
     }
 
+    public Map<UUID, SimpleProcess<?>> getInProcessUsers() {
+        return this.inProcessUsers;
+    }
+
     @Override
     public void saveAllUsers() {
         if (SharedConstants.isDevelopment) {
@@ -222,7 +225,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
         if (user.isOnline()) {
             KiloServer.getServer().getPlayerManager().sendToAll(
-                    new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, ((OnlineUser) user).getPlayer()));
+                    new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, ((OnlineUser) user).asPlayer()));
         }
     }
 
@@ -266,7 +269,7 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     public void onChatMessage(OnlineUser user, ChatMessageC2SPacket packet) {
-        ServerPlayerEntity player = user.getPlayer();
+        ServerPlayerEntity player = user.asPlayer();
         NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
 
         player.updateLastActionTime();

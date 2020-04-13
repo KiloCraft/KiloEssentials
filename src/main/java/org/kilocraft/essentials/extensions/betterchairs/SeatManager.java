@@ -91,8 +91,8 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                     }
 
                     if (user.getSetting(Settings.SEATING_TYPE) == SummonType.INTERACTION_SLAB) {
-                        stand.bodyYaw = user.getPlayer().bodyYaw;
-                        stand.yaw = user.getPlayer().bodyYaw;
+                        stand.bodyYaw = user.asPlayer().bodyYaw;
+                        stand.yaw = user.asPlayer().bodyYaw;
                     }
                 }
             }
@@ -149,11 +149,11 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     }
 
     public boolean seat(OnlineUser user, Vec3dLocation loc, SummonType summonType, boolean swingHand) {
-        return seat(user, loc, summonType, swingHand, user.getPlayer().bodyYaw);
+        return seat(user, loc, summonType, swingHand, user.asPlayer().bodyYaw);
     }
 
     public boolean seat(OnlineUser user, Vec3dLocation loc, SummonType summonType, boolean swingHand, float yaw) {
-        ServerPlayerEntity player = user.getPlayer();
+        ServerPlayerEntity player = user.asPlayer();
 
         if (player.isSpectator() || !user.getSetting(Settings.CAN_SEAT) || isSeating(player)) {
             return false;
@@ -194,7 +194,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             return;
         }
 
-        ServerPlayerEntity player = user.getPlayer();
+        ServerPlayerEntity player = user.asPlayer();
 
         if (player == null || !player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity)) {
             return;

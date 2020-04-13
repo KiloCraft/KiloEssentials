@@ -222,7 +222,7 @@ public  class CommandSourceServerUser implements CommandSourceUser {
 
     @Nullable
     @Override
-    public ServerPlayerEntity getPlayer() {
+    public ServerPlayerEntity asPlayer() {
         try {
             return this.source.getPlayer();
         } catch (CommandSyntaxException ignored) {

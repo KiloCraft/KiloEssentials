@@ -81,7 +81,7 @@ public class Home {
     }
 
     public static void teleportTo(OnlineUser user, Home home) {
-        ServerPlayerEntity player = user.getPlayer();
+        ServerPlayerEntity player = user.asPlayer();
         DimensionType type = DimensionType.byId(home.getLocation().getDimension());
         if (type == null)
             return;

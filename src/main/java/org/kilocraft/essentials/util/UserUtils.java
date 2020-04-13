@@ -9,6 +9,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.UUID;
 
 public class UserUtils {
+    private static final ServerUserManager manager = ((ServerUserManager) KiloServer.getServer().getUserManager());
     private static PermissionUtil.Manager permManager = KiloEssentials.getInstance().getPermissionUtil().getManager();
 
     public static boolean isIgnoring(@NotNull final User user, String username) {
@@ -46,7 +48,7 @@ public class UserUtils {
             return Texter.toText(builder.toString());
         }
 
-        return Team.modifyText(((OnlineUser) user).getPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
+        return Team.modifyText(((OnlineUser) user).asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
     }
 
     private static net.luckperms.api.model.user.User getLuckyUser(UUID uuid) {
@@ -60,9 +62,26 @@ public class UserUtils {
         return getLuckyUser(uuid).getCachedData().getMetaData(options);
     }
 
-    public static class TpaRequests {
-        private static final ServerUserManager manager = ((ServerUserManager) KiloServer.getServer().getUserManager());
+    public static class Process {
+        public static boolean isIn(@NotNull final OnlineUser user, String processId) {
+            return manager.getInProcessUsers().containsKey(user.getUuid()) && manager.getInProcessUsers().get(user.getUuid()).getId().equals(processId);
+        }
 
+        public static void add(@NotNull final OnlineUser user, SimpleProcess<?> process) {
+            manager.getInProcessUsers().put(user.getUuid(), process);
+        }
+
+        public static void remove(@NotNull final OnlineUser user) {
+            manager.getInProcessUsers().remove(user.getUuid());
+        }
+
+        @Nullable
+        public static <T> SimpleProcess<T> get(@NotNull final OnlineUser user) {
+            return (SimpleProcess<T>) manager.getInProcessUsers().get(user.getUuid());
+        }
+    }
+
+    public static class TpaRequests {
         public static boolean hasRequest(final OnlineUser src, final OnlineUser target) {
             if (PairMap.isInMap(src)) {
                 if (PairMap.get(src).getLeft().getLeft().equals(target.getUuid())) {

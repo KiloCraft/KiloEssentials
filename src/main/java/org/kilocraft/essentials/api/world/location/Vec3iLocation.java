@@ -51,7 +51,7 @@ public class Vec3iLocation implements Location {
     }
 
     public static Vec3iLocation of(OnlineUser user) {
-        return of(user.getPlayer());
+        return of(user.asPlayer());
     }
 
     @Override
