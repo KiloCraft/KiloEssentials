@@ -30,7 +30,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.api.user.InProcessUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.world.location.Location;
@@ -321,6 +320,10 @@ class RandomTeleportThread implements Runnable {
 	@Override
 	public void run() {
 		logger.info("Randomly teleporting " + target.getEntityName() + ". executed by " + source.getName());
-		RtpCommand.teleport(this.source, this.target);
+		try {
+			RtpCommand.teleport(this.source, this.target);
+		} catch (Exception e) {
+			KiloEssentials.getLogger().error("RTP Canceled, Target probably left... ", e);
+		}
 	}
 }

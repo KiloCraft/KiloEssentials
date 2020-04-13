@@ -30,6 +30,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.AnimatedText;
 import org.kilocraft.essentials.util.SimpleProcess;
+import org.kilocraft.essentials.util.UserUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -253,6 +254,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
+        UserUtils.Process.remove(user);
         if (user.getNickname().isPresent())
             this.nicknameToUUID.remove(user.getNickname().get());
         this.usernameToUUID.remove(player.getEntityName());

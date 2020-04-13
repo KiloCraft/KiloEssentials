@@ -253,8 +253,7 @@ public  class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public int sendLangError(String key, Object... objects) {
-        this.sendMessage(LangText.getFormatter(true, key, objects));
-        return -1;
+        return this.sendError(ModConstants.translation(key, objects));
     }
 
     @Override
