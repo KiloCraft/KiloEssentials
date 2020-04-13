@@ -9,6 +9,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.SharedConstants;
+import net.minecraft.command.arguments.NbtCompoundTagArgumentType;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
@@ -25,7 +27,10 @@ import org.kilocraft.essentials.util.Texter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DebugEssentialsCommand extends EssentialCommand {
@@ -41,17 +46,27 @@ public class DebugEssentialsCommand extends EssentialCommand {
                         argument("cached", StringArgumentType.string())
                                 .suggests(Cache::cacheIds)
                                 .executes(Cache::showInfo)
-                )
-                .then(
+                ).then(
                         literal("-p")
                                 .then(
                                         argument("page", IntegerArgumentType.integer(1))
                                                 .executes(ctx -> Cache.showList(ctx, IntegerArgumentType.getInteger(ctx, "page")))
                                 )
+                ).then(
+                        literal("add").then(
+                                argument("name", StringArgumentType.string()).then(
+                                        argument("livesFor", IntegerArgumentType.integer(0)).then(
+                                                argument("timeUnit", StringArgumentType.word())
+                                                        .suggests(Cache::timeUnits).then(
+                                                        argument("value", NbtCompoundTagArgumentType.nbtCompound())
+                                                                .executes(Cache::add)
+                                                )
+                                        )
+                                )
+                        )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> modeArgument = literal("mode")
-                .then(
+        LiteralArgumentBuilder<ServerCommandSource> modeArgument = literal("mode").then(
                         argument("set", BoolArgumentType.bool())
                                 .executes(Debug::setMode)
                 );
@@ -120,11 +135,34 @@ public class DebugEssentialsCommand extends EssentialCommand {
             return SINGLE_SUCCESS;
         }
 
+        public static int add(final CommandContext<ServerCommandSource> ctx) {
+            String name = StringArgumentType.getString(ctx, "name");
+            int livesFor = IntegerArgumentType.getInteger(ctx, "livesFor");
+            String timeUnit = StringArgumentType.getString(ctx, "timeUnit");
+            CompoundTag value = NbtCompoundTagArgumentType.getCompoundTag(ctx, "value");
+
+            TimeUnit unit = TimeUnit.valueOf(timeUnit.toUpperCase(Locale.ROOT));
+            Objects.requireNonNull(unit, "Invalid time unit!");
+
+            Cached<CompoundTag> cached = new Cached<>(name, livesFor, unit, value);
+            CacheManager.cache(cached);
+            KiloChat.sendMessageTo(ctx.getSource(), Texter.toText("Cached " + name));
+            return 1;
+        }
+
         public static CompletableFuture<Suggestions> cacheIds(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
             List<String> strings = new ArrayList<>();
             CacheManager.getMap().forEach((id, cached) -> {
                 strings.add(id);
             });
+            return CommandSource.suggestMatching(strings, builder);
+        }
+
+        public static CompletableFuture<Suggestions> timeUnits(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+            List<String> strings = new ArrayList<>();
+            for (TimeUnit value : TimeUnit.values()) {
+                strings.add(value.name().toLowerCase(Locale.ROOT));
+            }
             return CommandSource.suggestMatching(strings, builder);
         }
 
