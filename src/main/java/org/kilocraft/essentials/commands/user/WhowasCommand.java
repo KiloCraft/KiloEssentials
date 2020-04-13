@@ -14,10 +14,10 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.Cached;
+import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.*;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +27,6 @@ public class WhowasCommand extends EssentialCommand {
     private static final String LINE_FORMAT = ModConstants.translation("command.whowas.format");
     private static final String DATE_FORMAT = ModConstants.translation("command.whowas.format.time");
     private static final String INITIAL_FORMAT = ModConstants.translation("command.whowas.format.initial");
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String CACHE_ID = "command.whowas";
 
     public WhowasCommand() {
@@ -61,10 +60,14 @@ public class WhowasCommand extends EssentialCommand {
         }
 
         CompletableFuture.supplyAsync(() -> {
+            ServerUserManager.LoadingText loadingText = new ServerUserManager.LoadingText(src.asPlayer(), "general.querying");
+
             try {
+                loadingText.start();
                 send(src, input, page);
+                loadingText.stop();
             } catch (Exception e) {
-                return src.sendLangError("api.mojang.request_failed", e.getMessage());
+                src.sendLangError("api.mojang.request_failed", e.getMessage());
             }
 
             return AWAIT_RESPONSE;
@@ -120,7 +123,7 @@ public class WhowasCommand extends EssentialCommand {
             } else {
                 dateText = Texter.toText(String.format(DATE_FORMAT, TimeDifferenceUtil.formatDateDiff(entry.getChangeTime())))
                         .styled((style) ->
-                                style.setHoverEvent(Texter.Events.onHover("&d" + dateFormat.format(new Date(entry.getChangeTime()))))
+                                style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(new Date(entry.getChangeTime()))))
                         );
             }
 

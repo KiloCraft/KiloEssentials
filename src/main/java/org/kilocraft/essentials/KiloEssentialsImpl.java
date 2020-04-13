@@ -1,6 +1,5 @@
 package org.kilocraft.essentials;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
@@ -179,7 +178,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 																		  final String loadingTitle,
 																		  final Consumer<? super List<User>> action) {
 		CommandSourceUser src = getServer().getCommandSourceUser(requester.getCommandSource());
-		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.asPlayer(), loadingTitle);
+		final ServerUserManager.LoadingText loadingText = new ServerUserManager.LoadingText(requester.asPlayer(), loadingTitle);
 
 		if (!src.isConsole()) {
 			loadingText.start();
@@ -238,7 +237,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 																	final String username,
 																	final Consumer<? super User> action) {
 		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(username);
-		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.asPlayer());
+		final ServerUserManager.LoadingText loadingText = new ServerUserManager.LoadingText(requester.asPlayer());
 		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
 			loadingText.stop();
 
@@ -266,7 +265,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 																	final Consumer<? super User> action) {
 
 		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(uuid);
-		final ServerUserManager.UserLoadingText loadingText = new ServerUserManager.UserLoadingText(requester.asPlayer());
+		final ServerUserManager.LoadingText loadingText = new ServerUserManager.LoadingText(requester.asPlayer());
 		optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
 			loadingText.stop();
 

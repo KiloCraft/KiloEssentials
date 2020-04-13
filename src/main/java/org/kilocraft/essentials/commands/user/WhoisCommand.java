@@ -10,12 +10,16 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
@@ -50,10 +54,21 @@ public class WhoisCommand extends EssentialCommand {
     }
 
     private int execute(CommandSourceUser src, User target) {
-        Texter.InfoBlockStyle text = new Texter.InfoBlockStyle("Who's " + target.getNameTag(),
-                Formatting.GOLD, Formatting.AQUA, Formatting.GRAY);
+        Texter.InfoBlockStyle text = new Texter.InfoBlockStyle("Who's " + target.getNameTag(), Formatting.GOLD, Formatting.AQUA, Formatting.GRAY);
 
-        text.append("DisplayName", target.getFormattedDisplayName()).space().append("(").append(target.getUsername()).append(")");
+        text.append("DisplayName", target.getFormattedDisplayName())
+                .space()
+                .append("(").append(target.getUsername()).append(")")
+                .space()
+                .append(
+                        Texter.appendButton(
+                                Texter.toText("( More )").formatted(Formatting.GRAY),
+                                Texter.toText("Click to see the name history"),
+                                ClickEvent.Action.RUN_COMMAND,
+                                "/whowas " + target.getUsername()
+                        )
+                );
+
         text.append("UUID",
                 Texter.appendButton(
                         new LiteralText(target.getUuid().toString()),
@@ -72,47 +87,73 @@ public class WhoisCommand extends EssentialCommand {
         );
 
         UserSettings settings = target.getSettings();
-        text.append("Abilities",
-                new String[]{"Invulnerable", "May Fly", "May Seat", "Online", "isStaff", "GameMode"},
-                settings.get(Settings.INVULNERABLE), settings.get(Settings.CAN_FLY), settings.get(Settings.CAN_SEAT), target.isOnline(), ((ServerUser) target).isStaff(), settings.get(Settings.GAME_MODE).getName()
+        text.append("Status",
+                new String[]{"Invulnerable", "GameMode", "Online"},
+                settings.get(Settings.INVULNERABLE),
+                settings.get(Settings.GAME_MODE).getName(),
+                target.isOnline()
+        );
+
+        if (target.isOnline()) {
+            OnlineUser user = (OnlineUser) target;
+            text.append("Survival status",
+                    new String[]{"Health", "FoodLevel", "Saturation"},
+                    ModConstants.DECIMAL_FORMAT.format(user.asPlayer().getHealth()),
+                    ModConstants.DECIMAL_FORMAT.format(user.asPlayer().getHungerManager().getFoodLevel()),
+                    ModConstants.DECIMAL_FORMAT.format(user.asPlayer().getHungerManager().getSaturationLevel())
+            );
+        }
+
+        text.append("Artifacts",
+                new String[]{"IsStaff", "May Fly", "May Sit"},
+                ((ServerUser) target).isStaff(),
+                settings.get(Settings.CAN_FLY),
+                settings.get(Settings.CAN_SEAT)
         );
 
         if (target.getTicksPlayed() >= 0) {
             text.append("Playtime", TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e'));
         }
         if (target.getFirstJoin() != null) {
-            text.append("Join Date", target.getFirstJoin().toString());
-            text.append("First joined", TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()));
+            text.append("First joined", Texter.toText("&e" + TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime())).styled((style) -> {
+                style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getFirstJoin())));
+            }));
         }
 
-        text.append("Meta", new String[]{"Homes", "RTPs", "UpStreamChannelId"},
-                target.getHomesHandler().homes(), target.getSetting(Settings.RANDOM_TELEPORTS_LEFT), target.getSetting(Settings.CHAT_CHANNEL));
+        if (!target.isOnline() && target.getLastOnline() != null) {
+            text.append("Last Online", Texter.toText("&e" +  TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).styled((style) -> {
+                style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getLastOnline())));
+            }));
+        }
+
+        text.append("Meta", new String[]{"Homes", "RTP", "Selected channel"},
+                UserHomeHandler.isEnabled() ? target.getHomesHandler().homes() : 0,
+                target.getSetting(Settings.RANDOM_TELEPORTS_LEFT),
+                target.getSetting(Settings.CHAT_CHANNEL).getId());
+
         text.append("Is Spying", new String[]{"On Commands", "On Social"},
-                target.getSetting(Settings.COMMAND_SPY), target.getSetting(Settings.SOCIAL_SPY));
+                target.getSetting(Settings.COMMAND_SPY),
+                target.getSetting(Settings.SOCIAL_SPY));
 
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
-        text.append("Location", new String[]{"x", "y", "z", "World"},
-                vec.getX(), vec.getY(), vec.getZ(),
-                vec.getDimension().getPath(),
-                getButtonForVec(vec)
-        );
+        assert vec.getDimension() != null;
+        Text loc = Texter.toText(vec.asFormattedString());
+        text.append("Location", getButtonForVec(loc, vec));
 
         if (target.getLastSavedLocation() != null) {
             Vec3dLocation savedVec = ((Vec3dLocation) target.getLastSavedLocation()).shortDecimals();
-            text.append("Saved Loc", new String[]{"x", "y", "z", "World"},
-                    vec.getX(), vec.getY(), vec.getZ(),
-                    vec.getDimension().getPath(),
-                    getButtonForVec(savedVec)
-            );
+            Text lastLoc = Texter.toText(savedVec.asFormattedString());
+            text.append("Saved Location", getButtonForVec(lastLoc, savedVec));
         }
 
         src.sendMessage(text.get());
         return SINGLE_SUCCESS;
     }
 
-    private Text getButtonForVec(Vec3dLocation vec) {
+    private Text getButtonForVec(Text text, Vec3dLocation vec) {
+        assert vec.getDimension() != null;
         return Texter.appendButton(
-                new LiteralText("Click Here"),
+                text,
                 new LiteralText(tl("general.click_tp")),
                 ClickEvent.Action.SUGGEST_COMMAND,
                 "/tpin " + vec.getDimension().toString() + " " +

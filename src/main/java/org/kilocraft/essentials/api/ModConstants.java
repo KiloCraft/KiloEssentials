@@ -6,6 +6,8 @@ import org.kilocraft.essentials.util.messages.MessageUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Properties;
 
 public class ModConstants {
@@ -13,6 +15,8 @@ public class ModConstants {
     private static final Properties properties = new Properties();
     private static final Properties lang = new Properties(); // TODO i509VCB: Move lang stuff out of this later.
     private static MessageUtil messageUtil;
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.##");
 
     public ModConstants() {
     }

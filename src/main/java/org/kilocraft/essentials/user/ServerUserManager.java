@@ -326,10 +326,10 @@ public class ServerUserManager implements UserManager, TickListener {
         return this.punishManager;
     }
 
-    public static class UserLoadingText {
+    public static class LoadingText {
         private AnimatedText animatedText;
-        public UserLoadingText(ServerPlayerEntity player) {
-            this.animatedText = new AnimatedText(0, 650, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+        public LoadingText(ServerPlayerEntity player) {
+            this.animatedText = new AnimatedText(0, 115, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
                     .append(LangText.get(true, "general.wait_server.frame1"))
                     .append(LangText.get(true, "general.wait_server.frame2"))
                     .append(LangText.get(true, "general.wait_server.frame3"))
@@ -337,8 +337,8 @@ public class ServerUserManager implements UserManager, TickListener {
                     .build();
         }
 
-        public UserLoadingText(ServerPlayerEntity player, String key) {
-            this.animatedText = new AnimatedText(0, 100, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+        public LoadingText(ServerPlayerEntity player, String key) {
+            this.animatedText = new AnimatedText(0, 115, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
                     .append(LangText.get(true, key + ".frame1"))
                     .append(LangText.get(true, key + ".frame2"))
                     .append(LangText.get(true, key + ".frame3"))
@@ -346,7 +346,7 @@ public class ServerUserManager implements UserManager, TickListener {
                     .build();
         }
 
-        public UserLoadingText start() {
+        public LoadingText start() {
             this.animatedText.setStyle(new Style().setColor(Formatting.YELLOW)).start();
             return this;
         }
