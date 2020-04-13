@@ -54,10 +54,10 @@ public class AnimatedText {
         this.runnable = () -> {
             if (this.player == null) {
                 this.remove();
-                return;
+                Thread.currentThread().interrupt();
             }
 
-            if (this.frame > this.frames.size()) {
+            if (this.frame >= this.frames.size()) {
                 this.frame = 0;
             }
 

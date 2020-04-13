@@ -43,6 +43,7 @@ import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
+import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.*;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
@@ -307,10 +308,10 @@ public class RtpCommand extends EssentialCommand {
 			if (!sourceUser.equals(targetUser)) {
 				sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), biome);
 			}
-
-			UserUtils.Process.remove(targetUser);
-			Thread.currentThread().interrupt();
 		}
+
+		UserUtils.Process.remove(targetUser);
+		Thread.currentThread().interrupt();
 	}
 
 	@NotNull
