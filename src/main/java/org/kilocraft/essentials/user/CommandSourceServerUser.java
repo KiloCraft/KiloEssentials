@@ -151,6 +151,11 @@ public  class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public @Nullable Date getLastOnline() {
+        return null;
+    }
+
+    @Override
     public @Nullable UUID getLastPrivateMessageSender() {
         return null;
     }

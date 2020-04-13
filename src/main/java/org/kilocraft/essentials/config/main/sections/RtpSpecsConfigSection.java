@@ -27,4 +27,7 @@ public class RtpSpecsConfigSection {
     @Setting(value = "defaultAmount", comment = "The Default amount of RTPs for users")
     public int defaultRTPs = 3;
 
+    @Setting(value = "showTries", comment = "If set to true you will see the amount of tries in the action bar while performing an RTP")
+    public boolean showTries = true;
+
 }

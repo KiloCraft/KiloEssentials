@@ -13,7 +13,7 @@ import org.kilocraft.essentials.user.setting.Settings;
 public class DonotdisturbCommand extends EssentialCommand {
     private Setting<Boolean> SETTING = Settings.DON_NOT_DISTURB;
     public DonotdisturbCommand() {
-        super("donotdisturb", new String[]{"dontdisturb", "toggledisturb"});
+        super("donotdisturb", new String[]{"toggledisturb"});
         this.withUsage("command.donotdisturb.usage");
     }
 

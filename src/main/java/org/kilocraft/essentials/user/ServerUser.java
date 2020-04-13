@@ -46,7 +46,7 @@ import java.util.UUID;
 
 public class ServerUser implements User {
     protected static ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     UUID uuid;
     String name = "";
     String cachedName = "";
@@ -59,6 +59,7 @@ public class ServerUser implements User {
     private String lastPrivateMessageText = "";
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
+    private Date lastOnline;
     public int messageCooldown;
     boolean isStaff = false;
     String lastSocketAddress;
@@ -116,6 +117,7 @@ public class ServerUser implements User {
 
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
         metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
+        metaTag.putString("lastOnline", dateFormat.format(this.lastOnline));
 
         if (this.ticksPlayed != -1)
             metaTag.putInt("ticksPlayed", this.ticksPlayed);
@@ -167,6 +169,7 @@ public class ServerUser implements User {
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
+        this.lastOnline = getUserFirstJoinDate(metaTag.getString("lastOnline"));
 
         if (metaTag.contains("ticksPlayed"))
             this.ticksPlayed = metaTag.getInt("ticksPlayed");
@@ -339,6 +342,11 @@ public class ServerUser implements User {
     }
 
     @Override
+    public @Nullable Date getLastOnline() {
+        return this.lastOnline;
+    }
+
+    @Override
     public void setLastMessageSender(UUID uuid) {
         this.lastPrivateMessageGetterUUID = uuid;
     }
@@ -384,7 +392,6 @@ public class ServerUser implements User {
             return;
 
         manager = null;
-        dateFormat = null;
         uuid = null;
         name = null;
         homeHandler = null;

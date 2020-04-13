@@ -27,7 +27,11 @@ public class CacheManager {
     }
 
     public static boolean shouldUse(String id) {
-        return isCached(id) && get(id).isValid();
+        boolean should = isCached(id) && get(id).isValid();
+        if (!should) {
+            map.remove(id);
+        }
+        return should;
     }
 
     public static <T> void getAndRun(String id, Consumer<Cached<T>> consumer) {

@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -27,6 +28,7 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -35,6 +37,7 @@ import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -48,7 +51,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
-import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 
 public class RtpCommand extends EssentialCommand {
@@ -59,6 +61,7 @@ public class RtpCommand extends EssentialCommand {
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER_DIMENSIONS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERDIMENSIONS);
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK_MANAGE = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_MANAGE);
 	private static final Setting<Integer> RTP_LEFT = Settings.RANDOM_TELEPORTS_LEFT;
+	private static final String ACTION_MSG = ModConstants.translation("command.rtp.round_try");
 
 	public RtpCommand() {
 		super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
@@ -261,6 +264,18 @@ public class RtpCommand extends EssentialCommand {
 
 			hasAirSpace = !isNether || world.getBlockState(pos.up()).isAir();
 			safe = hasAirSpace && !material.isLiquid() && material != Material.FIRE && category != Category.OCEAN && category != Category.RIVER && !LocationUtil.isBlockLiquid(loc.down());
+
+			if (cfg.showTries && target.networkHandler != null) {
+				int finalTries = tries;
+				KiloServer.getServer().getVanillaServer().execute(() -> {
+					target.networkHandler.sendPacket(
+							new TitleS2CPacket(
+									TitleS2CPacket.Action.ACTIONBAR,
+									Texter.toText(String.format(ACTION_MSG, finalTries, cfg.maxTries))
+							)
+					);
+				});
+			}
 		} while (tries <= cfg.maxTries && !safe);
 
 		if (!safe) {

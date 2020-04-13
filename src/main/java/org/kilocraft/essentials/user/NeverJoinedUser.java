@@ -118,6 +118,11 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
+    public @Nullable Date getLastOnline() {
+        return null;
+    }
+
+    @Override
     public @Nullable UUID getLastPrivateMessageSender() {
         return null;
     }

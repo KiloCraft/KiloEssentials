@@ -84,6 +84,8 @@ public enum CommandPermission {
     IPINFO("ipinfo"),
     WHOIS_SELF("whois.self"),
     WHOIS_OTHERS("whois.others"),
+    WHOWAS_SELF("whowas.self"),
+    WHOWAS_OTHERS("whowas.others"),
     PLAYTIME_SELF("playtime.self"),
     PLAYTIME_OTHERS("playtime.others"),
     PLAYTIME_MODIFY("playtime.modify"),
@@ -93,6 +95,7 @@ public enum CommandPermission {
     BAN_PROFILE("ban.profile"),
     KICK("kick"),
     TELEPORTREQUEST("teleportrequest"),
+    LASTSEEN("lastseen"),
     ;
 
     private String node;

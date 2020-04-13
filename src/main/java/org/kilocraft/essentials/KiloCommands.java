@@ -48,7 +48,10 @@ import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.*;
 import org.kilocraft.essentials.commands.teleport.tpr.*;
+import org.kilocraft.essentials.commands.user.LastseenCommand;
 import org.kilocraft.essentials.commands.user.SilenceCommand;
+import org.kilocraft.essentials.commands.user.WhoisCommand;
+import org.kilocraft.essentials.commands.user.WhowasCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
@@ -144,6 +147,7 @@ public class KiloCommands {
             this.add(new IpInfoCommand());
             this.add(new HelpCommand());
             this.add(new WhoisCommand());
+            this.add(new WhowasCommand());
             this.add(new PlaytimeCommand());
             this.add(new MotdCommand());
             this.add(new HelpMeCommand());
@@ -156,6 +160,7 @@ public class KiloCommands {
             this.add(new TpacceptCommand());
             this.add(new TpdenyCommand());
             this.add(new TpcancelCommand());
+            this.add(new LastseenCommand());
             //this.add(new InventoryCommand());
         }};
 

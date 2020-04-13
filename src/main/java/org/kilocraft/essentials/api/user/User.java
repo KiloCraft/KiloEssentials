@@ -62,6 +62,9 @@ public interface User {
     Date getFirstJoin();
 
     @Nullable
+    Date getLastOnline();
+
+    @Nullable
     UUID getLastPrivateMessageSender();
 
     @Nullable

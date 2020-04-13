@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class PlaytimetopCommand extends EssentialCommand {
     private static final String CACHE_ID = "command.playtimetop";
-    private static final String TICKS_CACHE__ID = "command.playtimetop.ticks";
+    private static final String TICKS_CACHE_ID = "command.playtimetop.ticks";
 
     public PlaytimetopCommand() {
         super("playtimetop", CommandPermission.PLAYTIMETOP, new String[]{"pttop", "topplaytimes"});
@@ -52,14 +52,14 @@ public class PlaytimetopCommand extends EssentialCommand {
     }
 
     private int send(final CommandContext<ServerCommandSource> ctx, int page, boolean force) throws CommandSyntaxException {
-        final OnlineUser src = this.getOnlineUser(ctx);
+        OnlineUser src = this.getOnlineUser(ctx);
 
         if (!force && CacheManager.shouldUse(CACHE_ID)) {
             AtomicReference<List<Map.Entry<String, Integer>>> sortedList = new AtomicReference<>();
             AtomicLong totalTicks = new AtomicLong();
 
             CacheManager.getAndRun(CACHE_ID, (cached) -> sortedList.set((List<Map.Entry<String, Integer>>) cached.get()));
-            CacheManager.getAndRun(TICKS_CACHE__ID, (cached) -> totalTicks.set((Long) cached.get()));
+            CacheManager.getAndRun(TICKS_CACHE_ID, (cached) -> totalTicks.set((Long) cached.get()));
 
             if (sortedList.get() != null) {
                 return send(src, page, sortedList.get(), totalTicks.get());
@@ -83,7 +83,7 @@ public class PlaytimetopCommand extends EssentialCommand {
             sorted.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 
             Cached<List<Map.Entry<String, Integer>>> listCached = new Cached<>(CACHE_ID, 60, TimeUnit.MINUTES, sorted);
-            Cached<Long> ticksCached = new Cached<>(TICKS_CACHE__ID, totalTicks);
+            Cached<Long> ticksCached = new Cached<>(TICKS_CACHE_ID, totalTicks);
             CacheManager.cache(listCached, ticksCached);
 
             send(src, page, sorted, totalTicks);
