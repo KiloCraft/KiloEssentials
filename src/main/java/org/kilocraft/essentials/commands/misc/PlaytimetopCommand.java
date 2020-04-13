@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlaytimetopCommand extends EssentialCommand {
+    private static final String LINE_FORMAT = ModConstants.translation("command.playtimetop.format");
     private static final String CACHE_ID = "command.playtimetop";
     private static final String TICKS_CACHE_ID = "command.playtimetop.ticks";
 
@@ -93,7 +94,6 @@ public class PlaytimetopCommand extends EssentialCommand {
     }
 
     private static int send(OnlineUser src, int page, List<Map.Entry<String, Integer>> sortedList, long totalTicks) {
-        final String LINE_FORMAT = ModConstants.translation("command.playtimetop.format");
         int rank = 0;
 
         TextInput input = new TextInput(

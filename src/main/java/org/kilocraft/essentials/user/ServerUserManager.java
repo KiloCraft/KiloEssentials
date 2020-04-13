@@ -254,6 +254,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
+        user.onLeave();
         UserUtils.Process.remove(user);
         if (user.getNickname().isPresent())
             this.nicknameToUUID.remove(user.getNickname().get());

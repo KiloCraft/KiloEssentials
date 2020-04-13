@@ -229,7 +229,7 @@ public final class ServerChat {
         final CommandSourceUser src = KiloServer.getServer().getCommandSourceUser(source);
 
         if (!((ServerUser) user).shouldMessage() && src.getUser() != null) {
-            if (!src.isConsole() && src.isOnline() &&  !((ServerUser) src.getUser()).isStaff()) {
+            if (!src.isConsole() && src.isOnline() && !((ServerUser) src.getUser()).isStaff()) {
                 throw ServerChat.CANT_MESSAGE_EXCEPTION.create();
             }
         }

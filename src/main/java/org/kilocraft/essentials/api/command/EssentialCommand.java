@@ -19,7 +19,6 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.server.Server;
@@ -36,7 +35,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
@@ -230,6 +228,10 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public CommandSourceUser getServerUser(final CommandContext<ServerCommandSource> ctx) {
         return this.server.getCommandSourceUser(ctx.getSource());
+    }
+
+    public RequiredArgumentBuilder<ServerCommandSource, String> getAsyncProfileArgument(final String label) {
+        return argument(label, StringArgumentType.string()).suggests(ArgumentCompletions::allPlayers);
     }
 
     public String getUserArgumentInput(final CommandContext<ServerCommandSource> ctx, final String label) {

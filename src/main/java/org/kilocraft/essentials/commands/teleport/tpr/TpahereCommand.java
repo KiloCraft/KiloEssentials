@@ -20,6 +20,7 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 public class TpahereCommand extends EssentialCommand {
     public TpahereCommand() {
         super("tpahere", CommandPermission.TELEPORTREQUEST, new String[]{"tprhere"});
+        this.withUsage("command.tpa.usage", "target");
     }
 
     @Override

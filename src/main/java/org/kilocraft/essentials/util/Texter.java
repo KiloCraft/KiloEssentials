@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.util;
 
+import net.minecraft.SharedConstants;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -15,11 +16,31 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
+
 public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
 
     public static Text toText(String str) {
         return new LiteralText(TextFormat.translate(str));
+    }
+
+    public static Text exceptionToText(Exception e, boolean requireDevMode) {
+        Text text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
+
+        if (!requireDevMode && SharedConstants.isDevelopment) {
+            StackTraceElement[] stackTraceElements = e.getStackTrace();
+
+            for (int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
+                text.append("\n\n").append(stackTraceElements[i].getMethodName())
+                        .append("\n ")
+                        .append(stackTraceElements[i].getFileName())
+                        .append(":")
+                        .append(String.valueOf(stackTraceElements[i].getLineNumber()));
+            }
+        }
+
+        return text;
     }
 
     public static Text blockStyle(Text text) {

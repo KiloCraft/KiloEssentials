@@ -85,12 +85,11 @@ public class UserUtils {
         public static boolean hasRequest(final OnlineUser src, final OnlineUser target) {
             if (PairMap.isInMap(src)) {
                 if (PairMap.get(src).getLeft().getLeft().equals(target.getUuid())) {
-                    if (new Date().getTime() - PairMap.get(src).getRight() > 6000) {
+                    if (new Date().getTime() - PairMap.get(src).getRight() > 60000) {
                         PairMap.remove(src);
-                        return false;
+                    } else {
+                        return true;
                     }
-
-                    return true;
                 }
             }
 

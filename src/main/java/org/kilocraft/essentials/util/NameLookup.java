@@ -29,6 +29,12 @@ public class NameLookup {
      * The URL from Mojang API to resolve the UUID of a player from their name.
      */
     private static final String GET_UUID_URL = "https://api.mojang.com/users/profiles/minecraft/%s?t=0";
+
+    /**
+     * The URL from Mojang API to resolve the current name of a player from their UUID
+     */
+    private static final String GET_NAME_URL = "https://api.mojang.com/users/profiles/minecraft/%s?t=0";
+
     private static final Gson JSON_PARSER = new Gson();
 
     /**
@@ -81,6 +87,21 @@ public class NameLookup {
         if (o == null)
             return null;
         return o.get("id") == null ? null : o.get("id").getAsString();
+    }
+
+    /**
+     * If you don't have the Username of a player, this method will resolve it for you.<br>
+     * <b>NOTE: as with the rest, this method opens a connection with a remote server, so running it synchronously will block the main thread which will lead to server lag.</b>
+     * @param uuid
+     * @return
+     * @throws IOException
+     */
+    public static String getPlayerName(String uuid) throws IOException {
+        String response = getRawJsonResponse(new URL(String.format(GET_NAME_URL, uuid)));
+        JsonObject o = JSON_PARSER.fromJson(response, JsonObject.class);
+        if (o == null)
+            return null;
+        return o.get("name") == null ? null : o.get("name").getAsString();
     }
 
     /**

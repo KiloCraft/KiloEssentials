@@ -33,6 +33,7 @@ import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
+import org.kilocraft.essentials.commands.debug.DebugEssentialsCommand;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.*;
@@ -103,6 +104,7 @@ public class KiloCommands {
 
     private void register() {
         final List<IEssentialCommand> commandsList = new ArrayList<IEssentialCommand>() {{
+            this.add(new DebugEssentialsCommand());
             this.add(new SmiteCommand());
             this.add(new NicknameCommand());
             this.add(new SayasCommand());

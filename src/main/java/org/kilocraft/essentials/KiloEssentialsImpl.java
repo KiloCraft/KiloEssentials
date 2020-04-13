@@ -1,5 +1,6 @@
 package org.kilocraft.essentials;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;

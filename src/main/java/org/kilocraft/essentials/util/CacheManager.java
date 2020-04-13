@@ -10,6 +10,10 @@ import java.util.function.Consumer;
 public class CacheManager {
     private static final Map<String, Cached<?>> map = new HashMap<>();
 
+    public static Map<String, Cached<?>> getMap() {
+        return map;
+    }
+
     public static void cache(Cached<?>... cached) {
         Objects.requireNonNull(cached, "Cache entry must not be null!");
 

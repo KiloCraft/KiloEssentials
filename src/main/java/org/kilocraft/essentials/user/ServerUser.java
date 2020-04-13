@@ -59,11 +59,11 @@ public class ServerUser implements User {
     private String lastPrivateMessageText = "";
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
-    private Date lastOnline;
     public int messageCooldown;
     boolean isStaff = false;
     String lastSocketAddress;
     int ticksPlayed = 0;
+    Date lastOnline;
 
     public ServerUser(UUID uuid) {
         this(uuid, null);
@@ -117,7 +117,9 @@ public class ServerUser implements User {
 
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
         metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
-        metaTag.putString("lastOnline", dateFormat.format(this.lastOnline));
+        if (this.lastOnline != null) {
+            metaTag.putString("lastOnline", dateFormat.format(this.lastOnline));
+        }
 
         if (this.ticksPlayed != -1)
             metaTag.putInt("ticksPlayed", this.ticksPlayed);
@@ -428,7 +430,7 @@ public class ServerUser implements User {
     }
 
     public boolean shouldMessage() {
-        return true;
+        return !this.getSetting(Settings.DON_NOT_DISTURB);
     }
 
     public ServerUser withCachedName() {

@@ -30,6 +30,7 @@ import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.net.SocketAddress;
+import java.util.Date;
 import java.util.UUID;
 
 public class OnlineServerUser extends ServerUser implements OnlineUser {
@@ -212,6 +213,10 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             isStaff = true;
         }
 
+    }
+
+    public void onLeave() {
+        super.lastOnline = new Date();
     }
 
     private static int tick = 0;

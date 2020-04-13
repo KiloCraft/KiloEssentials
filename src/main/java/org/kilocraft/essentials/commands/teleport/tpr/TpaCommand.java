@@ -20,6 +20,7 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 public class TpaCommand extends EssentialCommand {
     public TpaCommand() {
         super("tpa", CommandPermission.TELEPORTREQUEST, new String[]{"tpr"});
+        this.withUsage("command.tpa.usage", "target");
     }
 
     @Override
