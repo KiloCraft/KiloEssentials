@@ -31,7 +31,7 @@ import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.RegexLib;
-import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.rmi.UnexpectedException;

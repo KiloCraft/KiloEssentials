@@ -9,7 +9,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.text.Texter;
 
 public class StaffCommand extends EssentialCommand {
     public StaffCommand() {

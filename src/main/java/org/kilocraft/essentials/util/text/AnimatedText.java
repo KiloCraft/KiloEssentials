@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.text;
 
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;

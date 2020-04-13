@@ -9,7 +9,7 @@ import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
-import org.kilocraft.essentials.util.NBTUtils;
+import org.kilocraft.essentials.util.nbt.NBTUtils;
 
 import java.util.*;
 

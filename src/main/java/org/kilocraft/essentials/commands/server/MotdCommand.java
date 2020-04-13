@@ -16,7 +16,7 @@ import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
-import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 import java.util.Arrays;

@@ -28,9 +28,9 @@ import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.AnimatedText;
+import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.SimpleProcess;
-import org.kilocraft.essentials.util.UserUtils;
+import org.kilocraft.essentials.util.player.UserUtils;
 
 import java.io.File;
 import java.io.IOException;

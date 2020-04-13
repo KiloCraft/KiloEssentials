@@ -17,7 +17,7 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.util.TPSTracker;
-import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.File;
 

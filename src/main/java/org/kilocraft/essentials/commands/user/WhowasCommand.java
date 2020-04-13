@@ -16,6 +16,8 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.*;
+import org.kilocraft.essentials.util.text.Pager;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 import java.util.Date;

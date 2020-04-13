@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.player;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -16,6 +16,9 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.util.PermissionUtil;
+import org.kilocraft.essentials.util.SimpleProcess;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.Date;
 import java.util.UUID;

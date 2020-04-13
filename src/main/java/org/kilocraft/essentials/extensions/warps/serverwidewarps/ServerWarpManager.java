@@ -17,7 +17,7 @@ import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
-import org.kilocraft.essentials.util.NBTStorageUtil;
+import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 
 import java.util.ArrayList;
 import java.util.List;

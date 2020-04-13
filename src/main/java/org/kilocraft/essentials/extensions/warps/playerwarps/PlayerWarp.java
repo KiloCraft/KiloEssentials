@@ -2,11 +2,9 @@ package org.kilocraft.essentials.extensions.warps.playerwarps;
 
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.api.NBTSerializable;
 import org.kilocraft.essentials.api.world.location.Location;
-import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.extensions.warps.Warp;
-import org.kilocraft.essentials.util.NBTUtils;
+import org.kilocraft.essentials.util.nbt.NBTUtils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -60,6 +60,9 @@ public class Config {
     @Setting(value = "playerWarpsLimit", comment = "The maximum amount of warps a player can set")
     public int playerWarpsLimit = 10;
 
+    @Setting(value = "maxCachedMessage", comment = "The maximum amount of cached Direct Messages per User")
+    public int maxCachedMessages = 20;
+
     @Setting(value = "playerWarpTypes", comment = "The Types that you can select for making a player warp")
     public List<String> playerWarpTypes = new ArrayList<String>(){{
         this.add("shop");

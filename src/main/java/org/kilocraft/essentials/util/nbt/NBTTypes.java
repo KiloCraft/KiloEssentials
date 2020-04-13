@@ -1,6 +1,7 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.nbt;
 
-public class NBTTypes {	public static final int END = 0;
+public class NBTTypes {
+    public static final int END = 0;
     public static final int BYTE = 1;
     public static final int SHORT = 2;
     public static final int INT = 3;

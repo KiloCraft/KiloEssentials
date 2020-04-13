@@ -22,8 +22,8 @@ import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.CacheManager;
-import org.kilocraft.essentials.util.Pager;
-import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.text.Pager;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
 import java.util.List;

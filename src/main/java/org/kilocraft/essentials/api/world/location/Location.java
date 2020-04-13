@@ -12,7 +12,7 @@ import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
-import org.kilocraft.essentials.util.RegistryUtils;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.text.DecimalFormat;
 

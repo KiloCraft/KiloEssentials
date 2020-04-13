@@ -30,7 +30,7 @@ import org.kilocraft.essentials.extensions.magicalparticles.config.DustParticleE
 import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleFrameConfigSection;
 import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleTypesConfig;
 import org.kilocraft.essentials.provided.KiloFile;
-import org.kilocraft.essentials.util.NBTStorageUtil;
+import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 
 import java.io.IOException;
 import java.util.HashMap;

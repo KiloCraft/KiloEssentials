@@ -6,7 +6,7 @@ import org.kilocraft.essentials.api.event.server.lifecycle.ServerReadyEvent;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.WarpCommand;
 import org.kilocraft.essentials.provided.BrandedServer;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.util.NBTStorageUtil;
+import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 
 public class OnServerReady implements EventHandler<ServerReadyEvent> {
     @Override

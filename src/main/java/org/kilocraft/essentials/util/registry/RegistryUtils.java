@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.registry;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;

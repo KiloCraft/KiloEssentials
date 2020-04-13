@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.player;
 
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.nbt.CompoundTag;

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.text;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;

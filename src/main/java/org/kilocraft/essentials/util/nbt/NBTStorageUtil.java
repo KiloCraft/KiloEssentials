@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.nbt;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtIo;

@@ -8,10 +8,9 @@ import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.net.SocketAddress;
 import java.util.Date;

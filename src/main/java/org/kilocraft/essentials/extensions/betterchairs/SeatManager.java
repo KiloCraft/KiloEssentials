@@ -30,7 +30,7 @@ import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.RegistryUtils;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.HashMap;
 import java.util.UUID;

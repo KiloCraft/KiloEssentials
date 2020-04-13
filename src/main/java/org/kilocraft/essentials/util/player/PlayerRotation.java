@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.player;
 
 import org.kilocraft.essentials.api.util.EntityRotation;
 

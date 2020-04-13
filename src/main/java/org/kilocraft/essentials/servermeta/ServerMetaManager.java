@@ -8,9 +8,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.util.RollingAverage;
+import org.kilocraft.essentials.util.math.RollingAverage;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 

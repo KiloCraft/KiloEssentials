@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.text;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -15,8 +15,6 @@ import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import static org.kilocraft.essentials.api.KiloEssentials.getLogger;
 
 public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";

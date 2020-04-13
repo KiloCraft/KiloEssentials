@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.text;
 
 import org.kilocraft.essentials.api.text.LoggerFormats;
 import org.kilocraft.essentials.api.text.TextFormat;

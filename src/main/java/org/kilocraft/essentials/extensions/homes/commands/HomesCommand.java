@@ -16,8 +16,8 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
-import org.kilocraft.essentials.util.RegistryUtils;
-import org.kilocraft.essentials.util.Texter;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
+import org.kilocraft.essentials.util.text.Texter;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 

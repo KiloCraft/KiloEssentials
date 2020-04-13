@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util;
+package org.kilocraft.essentials.util.math;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;

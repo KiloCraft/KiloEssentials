@@ -26,15 +26,13 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.inventory.ServerUserInventory;
 import org.kilocraft.essentials.user.setting.ServerUserSettings;
 import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.NBTTypes;
-import org.kilocraft.essentials.util.UserUtils;
+import org.kilocraft.essentials.util.nbt.NBTTypes;
+import org.kilocraft.essentials.util.player.UserUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author CODY_AI
@@ -82,7 +80,7 @@ public class ServerUser implements User {
         try {
             manager.getHandler().handleUser(this);
         } catch (IOException e) {
-            KiloEssentials.getLogger().error("Failed to Load User Data [" + uuid.toString() + "]");
+            KiloEssentials.getLogger().error("Failed to Load User Data [" + uuid.toString() + "]", e);
         }
 
     }
@@ -94,8 +92,8 @@ public class ServerUser implements User {
 
         // Here we store the players current location
         if (this.location != null) {
-            mainTag.put("loc", this.location.toTag());
             this.location.shortDecimals();
+            mainTag.put("loc", this.location.toTag());
         }
 
         if (this.lastLocation != null)

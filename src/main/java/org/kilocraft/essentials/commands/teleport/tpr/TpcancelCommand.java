@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.util.UserUtils;
+import org.kilocraft.essentials.util.player.UserUtils;
 
 public class TpcancelCommand extends EssentialCommand {
     public TpcancelCommand() {
