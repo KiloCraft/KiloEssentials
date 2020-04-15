@@ -1,11 +1,10 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Brandable;
 import org.kilocraft.essentials.events.server.ServerTickEventImpl;
-import org.kilocraft.essentials.util.RollingAverage;
+import org.kilocraft.essentials.util.math.RollingAverage;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

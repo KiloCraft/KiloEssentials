@@ -233,9 +233,16 @@ public class SigneditCommand extends EssentialCommand {
         BlockState oldState = sign.getCachedState();
         Block oldBlock = oldState.getBlock();
         SignType type = SignType.getByName(inputType);
+        boolean wallSign = Registry.BLOCK.getId(oldBlock).getPath().contains("wall");
         assert type != null;
-        Block newBlock = Registry.BLOCK.getId(oldBlock).getPath().contains("wall") ? type.getWallBlock() : type.getBlock();
-        BlockState newState = newBlock.getDefaultState().with(Properties.ROTATION, oldState.get(Properties.ROTATION));
+        Block newBlock = wallSign ? type.getWallBlock() : type.getBlock();
+        BlockState newState;
+
+        if (wallSign) {
+            newState = newBlock.getDefaultState().with(Properties.HORIZONTAL_FACING, oldState.get(Properties.HORIZONTAL_FACING));
+        } else {
+            newState = newBlock.getDefaultState().with(Properties.ROTATION, oldState.get(Properties.ROTATION));
+        }
 
         SignBlockEntity newSign = new SignBlockEntity();
         for (int i = 0; i < sign.text.length; i++) {

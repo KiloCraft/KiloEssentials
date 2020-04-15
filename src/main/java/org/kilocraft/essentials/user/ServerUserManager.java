@@ -363,4 +363,8 @@ public class ServerUserManager implements UserManager, TickListener {
         }
     }
 
+    public void appendCachedName(ServerUser user) {
+        user.name = user.cachedName;
+    }
+
 }

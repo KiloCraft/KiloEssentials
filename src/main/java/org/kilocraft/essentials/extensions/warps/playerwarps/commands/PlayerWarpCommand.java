@@ -108,11 +108,13 @@ public class PlayerWarpCommand extends EssentialCommand {
         final String desc = StringArgumentType.getString(ctx, "description");
 
         if (TextFormat.removeAlternateColorCodes('&', desc).length() > 100) {
-            return user.sendLangError("command.playerwarp.desc_too_long");
+            user.sendLangError("command.playerwarp.desc_too_long");
+            return SINGLE_FAILED;
         }
 
         if (!PlayerWarp.Type.isValid(type)) {
-            return user.sendLangError("command.playerwarp.invalid_type", type);
+            user.sendLangError("command.playerwarp.invalid_type", type);
+            return SINGLE_FAILED;
         }
 
         if (PlayerWarpsManager.getWarpsByName().contains(name) && !input.startsWith("-confirmed-")) {
@@ -145,7 +147,8 @@ public class PlayerWarpCommand extends EssentialCommand {
         final OnlineUser src = this.getOnlineUser(ctx);
 
         if (PlayerWarpsManager.getWarps().isEmpty()) {
-            return src.sendLangError("command.playerwarp.no_warp");
+            src.sendLangError("command.playerwarp.no_warp");
+            return SINGLE_FAILED;
         }
 
         if (inputName == null) {
@@ -155,7 +158,8 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         if (this.isOnline(inputName)) {
             if (!inputName.equals(src.getUsername()) && !src.hasPermission(CommandPermission.PLAYER_WARP_OTHERS)) {
-                return src.sendLangError("command.exception.permission");
+                src.sendLangError("command.exception.permission");
+                return SINGLE_FAILED;
             }
 
             this.sendList(src.getCommandSource(), this.getOnlineUser(inputName), page);
@@ -176,7 +180,8 @@ public class PlayerWarpCommand extends EssentialCommand {
         final PlayerWarp warp = PlayerWarpsManager.getWarp(inputName);
 
         if (warp == null) {
-            return src.sendLangError("command.playerwarp.invalid_warp");
+            src.sendLangError("command.playerwarp.invalid_warp");
+            return SINGLE_FAILED;
         }
 
         if (this.isOnline(warp.getOwner())) {

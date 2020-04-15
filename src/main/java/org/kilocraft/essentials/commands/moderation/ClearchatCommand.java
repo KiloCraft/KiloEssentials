@@ -50,7 +50,7 @@ public class ClearchatCommand extends EssentialCommand {
 
     private static int executeMultiple(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> targets, boolean silent) {
         for (ServerPlayerEntity target : targets) {
-            target.sendMessage(new LiteralText(getClearString()));
+            target.sendMessage(new LiteralText(getClearString()), false);
 
             if (!silent)
                 sendLangMessageTo(target, "command.clearchat.singleton", ctx.getSource().getName());

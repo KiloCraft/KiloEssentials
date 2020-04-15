@@ -11,7 +11,7 @@ import org.kilocraft.essentials.commands.CommandUtils;
 
 public class NbtCommands {
     public static boolean fromRightClick(PlayerEntity player, Hand hand) {
-        return trigger(player, hand, !player.isHandSwinging);
+        return trigger(player, hand, !player.handSwinging);
     }
 
     private static boolean trigger(PlayerEntity player, Hand hand, boolean swingHand) {

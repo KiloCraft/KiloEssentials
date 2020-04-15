@@ -188,7 +188,8 @@ public class RtpCommand extends EssentialCommand {
 		OnlineUser user = this.getOnlineUser(ctx);
 
 		if (UserUtils.Process.isIn(user, PROCESS.getId())) {
-			return user.sendLangError("command.rtp.in_process");
+			user.sendLangError("command.rtp.in_process");
+			return SINGLE_FAILED;
 		}
 
 		UserUtils.Process.add(user, PROCESS);
@@ -199,7 +200,8 @@ public class RtpCommand extends EssentialCommand {
 		OnlineUser target = this.getOnlineUser(ctx);
 
 		if (UserUtils.Process.isIn(target, PROCESS.getId())) {
-			return this.getServerUser(ctx).sendLangError("command.rtp.in_process");
+			this.getServerUser(ctx).sendLangError("command.rtp.in_process");
+			return SINGLE_FAILED;
 		}
 
 		UserUtils.Process.add(target, PROCESS);

@@ -73,6 +73,19 @@ public class Config {
         this.add("others");
     }};
 
+    @Setting(value = "commandSpyIgnored", comment = "The commands that the command logger will ignore")
+    public List<String> ignoredCommandsForLogging = new ArrayList<String>(){{
+        this.add("trigger");
+        this.add("msg");
+        this.add("tell");
+        this.add("whisper");
+        this.add("r");
+        this.add("reply");
+        this.add("staffmsg");
+        this.add("sm");
+        this.add("buildermsg");
+    }};
+
     @Setting(value = "nicknameMaxLength", comment = "The maximum length for a nickname")
     public int nicknameMaxLength = 35;
 

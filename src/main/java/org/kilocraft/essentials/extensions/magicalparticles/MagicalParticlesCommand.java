@@ -72,7 +72,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
             throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Particle animation").create();
 
         addPlayer(player.getUuid(), identifier);
-        player.addMessage(LangText.getFormatter(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
+        player.sendMessage(LangText.getFormatter(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
         return SINGLE_SUCCESS;
     }
 

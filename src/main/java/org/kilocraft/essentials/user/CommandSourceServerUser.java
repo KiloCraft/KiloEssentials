@@ -1,20 +1,22 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
@@ -26,6 +28,7 @@ import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.chat.LoggedMessage;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
@@ -35,7 +38,7 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.io.IOException;
 import java.util.*;
 
-public  class CommandSourceServerUser implements CommandSourceUser {
+public class CommandSourceServerUser implements CommandSourceUser {
     private ServerCommandSource source;
 
     public CommandSourceServerUser(ServerCommandSource source) {
@@ -241,8 +244,11 @@ public  class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void teleport(Location loc, boolean sendTicket) {
+    public void teleport(@NotNull Location loc, boolean sendTicket) {
+    }
 
+    @Override
+    public void teleport(@NotNull OnlineUser user) {
     }
 
     @Override
@@ -257,14 +263,22 @@ public  class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public int sendError(Text text) {
-        KiloChat.sendMessageTo(this.source, text.formatted(Formatting.RED));
-        return -1;
+    public void sendError(TextMessage message) {
+        try {
+            KiloChat.sendMessageTo(this.source, message);
+        } catch (CommandSyntaxException e) {
+            this.source.sendError(Texts.toText(e.getRawMessage()));
+        }
     }
 
     @Override
-    public int sendLangError(String key, Object... objects) {
-        return this.sendError(ModConstants.translation(key, objects));
+    public void sendError(Text text) {
+        KiloChat.sendMessageTo(this.source, text.formatted(Formatting.RED));
+    }
+
+    @Override
+    public void sendLangError(String key, Object... objects) {
+        this.sendError(ModConstants.translation(key, objects));
     }
 
     @Override
@@ -356,5 +370,25 @@ public  class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public @Nullable OnlineUser getUser() throws CommandSyntaxException {
         return KiloServer.getServer().getOnlineUser(source.getPlayer());
+    }
+
+    @Override
+    public CompoundTag toTag() {
+        return null;
+    }
+
+    @Override
+    public void fromTag(CompoundTag tag) {
+
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public UUID getId() {
+        return null;
     }
 }

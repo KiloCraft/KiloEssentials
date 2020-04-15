@@ -16,8 +16,8 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
 import org.kilocraft.essentials.util.LocationUtil;
-import org.kilocraft.essentials.util.PlayerRotation;
-import org.kilocraft.essentials.util.RegistryUtils;
+import org.kilocraft.essentials.util.player.PlayerRotation;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.text.DecimalFormat;
 

@@ -61,7 +61,8 @@ public class SayasCommand extends EssentialCommand {
         OnlineUser target = this.getOnlineUser(inputTarget);
 
         if (channel == null) {
-            return src.sendLangError("channel.invalid");
+            src.sendLangError("channel.invalid");
+            return SINGLE_FAILED;
         }
 
         if (inputTarget.equalsIgnoreCase("-Server")) {

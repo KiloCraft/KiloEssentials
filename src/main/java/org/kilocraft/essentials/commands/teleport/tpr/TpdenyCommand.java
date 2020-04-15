@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.util.UserUtils;
+import org.kilocraft.essentials.util.player.UserUtils;
 
 public class TpdenyCommand extends EssentialCommand {
     public TpdenyCommand() {
@@ -28,7 +28,8 @@ public class TpdenyCommand extends EssentialCommand {
         OnlineUser target = this.getOnlineUser(ctx, "target");
 
         if (!UserUtils.TpaRequests.hasRequest(src, target)) {
-            return src.sendLangError("command.tpa.no_requests", target.getFormattedDisplayName());
+            src.sendLangError("command.tpa.no_requests", target.getFormattedDisplayName());
+            return SINGLE_FAILED;
         }
 
         UserUtils.TpaRequests.remove(src);

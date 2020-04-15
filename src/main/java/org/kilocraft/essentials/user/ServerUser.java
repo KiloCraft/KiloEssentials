@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.text.TextFormat;
@@ -31,20 +32,29 @@ import org.kilocraft.essentials.util.player.UserUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
- * @author CODY_AI
- * An easy way to handle the User (Instance of player)
+ * Main User Implementation
  *
+ * @see User
  * @see ServerUserManager
  * @see UserHomeHandler
+ * @see UserSettings
+ * @see UserInventory
+ * @see OnlineUser
+ * @see org.kilocraft.essentials.api.user.CommandSourceUser
+ * @see org.kilocraft.essentials.user.UserHandler
+ * @see net.minecraft.entity.player.PlayerEntity
+ * @see net.minecraft.server.network.ServerPlayerEntity
+ * @since 1.5
+ * @author CODY_AI (OnBlock)
  */
 
 public class ServerUser implements User {
     protected static ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     UUID uuid;
     String name = "";
     String cachedName = "";
@@ -63,11 +73,11 @@ public class ServerUser implements User {
     int ticksPlayed = 0;
     Date lastOnline;
 
-    public ServerUser(UUID uuid) {
+    public ServerUser(@NotNull final UUID uuid) {
         this(uuid, null);
     }
 
-    public ServerUser(final UUID uuid, final @Nullable ServerPlayerEntity player) {
+    public ServerUser(@NotNull final UUID uuid, final @Nullable ServerPlayerEntity player) {
         this.uuid = uuid;
         this.settings = new ServerUserSettings();
 
@@ -85,7 +95,7 @@ public class ServerUser implements User {
 
     }
 
-    protected CompoundTag serialize() {
+    public CompoundTag toTag() {
         CompoundTag mainTag = new CompoundTag();
         CompoundTag metaTag = new CompoundTag();
         CompoundTag cacheTag = new CompoundTag();
@@ -114,9 +124,9 @@ public class ServerUser implements User {
         }
 
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
-        metaTag.putString("firstJoin", dateFormat.format(this.firstJoin));
+        metaTag.putString("firstJoin", ModConstants.DATE_FORMAT.format(this.firstJoin));
         if (this.lastOnline != null) {
-            metaTag.putString("lastOnline", dateFormat.format(this.lastOnline));
+            metaTag.putString("lastOnline", ModConstants.DATE_FORMAT.format(this.lastOnline));
         }
 
         if (this.ticksPlayed != -1)
@@ -138,7 +148,7 @@ public class ServerUser implements User {
         return mainTag;
     }
 
-    protected void deserialize(@NotNull CompoundTag compoundTag) {
+    public void fromTag(@NotNull CompoundTag compoundTag) {
     	CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
@@ -155,12 +165,13 @@ public class ServerUser implements User {
 
         if (cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
             CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
-            if (lastMessageTag.contains("destUUID", NBTTypes.STRING))
+            if (lastMessageTag.contains("destUUID", NBTTypes.STRING)) {
                 this.lastPrivateMessageGetterUUID = UUID.fromString(lastMessageTag.getString("destUUID"));
+            }
 
-            if (lastMessageTag.contains("text", NBTTypes.STRING))
+            if (lastMessageTag.contains("text", NBTTypes.STRING)) {
                 this.lastPrivateMessageText = lastMessageTag.getString("text");
-
+            }
         }
 
         if (cacheTag.contains("lIP")) {
@@ -168,14 +179,16 @@ public class ServerUser implements User {
         }
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
-        this.firstJoin = getUserFirstJoinDate(metaTag.getString("firstJoin"));
-        this.lastOnline = getUserFirstJoinDate(metaTag.getString("lastOnline"));
+        this.firstJoin = dateFromString(metaTag.getString("firstJoin"));
+        this.lastOnline = dateFromString(metaTag.getString("lastOnline"));
 
-        if (metaTag.contains("ticksPlayed"))
+        if (metaTag.contains("ticksPlayed")) {
             this.ticksPlayed = metaTag.getInt("ticksPlayed");
+        }
 
-        if (metaTag.contains("isStaff"))
+        if (metaTag.contains("isStaff")) {
             this.isStaff = true;
+        }
 
         if (UserHomeHandler.isEnabled()) {
             this.homeHandler.deserialize(compoundTag.getCompound("homes"));
@@ -191,16 +204,16 @@ public class ServerUser implements User {
         }
     }
 
-    private Date getUserFirstJoinDate(String stringToParse) {
+    private Date dateFromString(String stringToParse) {
         Date date = new Date();
         try {
-            date = dateFormat.parse(stringToParse);
-        } catch (ParseException e) {
-            //Pass, this is the first time that user is joined.
+            date = ModConstants.DATE_FORMAT.parse(stringToParse);
+        } catch (ParseException ignored) {
         }
         return date;
     }
 
+    @Nullable
     public UserHomeHandler getHomesHandler() {
         return this.homeHandler;
     }
@@ -232,8 +245,7 @@ public class ServerUser implements User {
     }
 
     public String getDisplayName() {
-        Optional<String> nickname = this.getSetting(Settings.NICKNAME);
-        return nickname.orElseGet(() -> this.name);
+        return this.getSetting(Settings.NICKNAME).orElseGet(() -> this.name);
     }
 
     @Override
@@ -434,5 +446,15 @@ public class ServerUser implements User {
     public ServerUser withCachedName() {
         this.name = this.cachedName;
         return this;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public UUID getId() {
+        return this.uuid;
     }
 }

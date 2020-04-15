@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
@@ -10,6 +11,7 @@ import org.kilocraft.essentials.api.user.inventory.UserInventory;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.chat.LoggedMessage;
 
 import java.io.IOException;
 import java.util.Date;
@@ -190,5 +192,25 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     @Override
     public boolean ignored(UUID uuid) {
         return false;
+    }
+
+    @Override
+    public CompoundTag toTag() {
+        return null;
+    }
+
+    @Override
+    public void fromTag(CompoundTag tag) {
+
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public UUID getId() {
+        return null;
     }
 }

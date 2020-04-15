@@ -28,7 +28,8 @@ public class TpcancelCommand extends EssentialCommand {
         OnlineUser target = this.getOnlineUser(ctx, "target");
 
         if (!UserUtils.TpaRequests.hasRequest(src, target)) {
-            return src.sendLangError("command.tpa.no_requests", target.getFormattedDisplayName());
+            src.sendLangError("command.tpa.no_requests", target.getFormattedDisplayName());
+            return SINGLE_FAILED;
         }
 
         UserUtils.TpaRequests.remove(src);

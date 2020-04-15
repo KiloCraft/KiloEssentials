@@ -205,7 +205,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                 stand != null &&
                 stand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())
         ) {
-            player.addMessage(LangText.get(true, "sit.stop_riding"), true);
+            player.sendMessage(LangText.get(true, "sit.stop_riding"), true);
             stands.remove(RegistryUtils.toIdentifier(stand.dimension), stand.getUuid());
             stand.kill();
         }

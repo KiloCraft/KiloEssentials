@@ -45,11 +45,10 @@ public class StatusCommand extends EssentialCommand {
                     new LiteralText(msg + "\n Exception message:")
                             .append(new LiteralText(e.getMessage()).formatted(Formatting.WHITE)).formatted(Formatting.RED));
 
-            KiloEssentials.getLogger().error(msg);
-            e.printStackTrace();
+            KiloEssentials.getLogger().error(msg, e);
         }
 
-        return 1;
+        return SINGLE_SUCCESS;
     }
 
     private static String getInfo() throws Exception {

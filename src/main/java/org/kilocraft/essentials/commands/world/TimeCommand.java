@@ -103,7 +103,7 @@ public class TimeCommand extends EssentialCommand {
     }
 
     public static int executeGet(CommandContext<ServerCommandSource> context, int time) throws CommandSyntaxException {
-        context.getSource().getPlayer().sendMessage(LangText.getFormatter(true, "command.time.get",time));
+        context.getSource().getPlayer().sendMessage(LangText.getFormatter(true, "command.time.get",time), false);
         return time;
     }
 

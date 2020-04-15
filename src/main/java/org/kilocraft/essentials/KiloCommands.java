@@ -426,20 +426,21 @@ public class KiloCommands {
             } catch (final CommandSyntaxException e) {
                 final EssentialCommand essentialcommand = (EssentialCommand) this.getEssentialCommand(cmd.replaceFirst("/", "").split(" ")[0]);
 
-                if (essentialcommand != null && essentialcommand.hasUsage() && essentialcommand.getRootPermissionPredicate().test(executor)) {
-                    this.sendUsage(executor, essentialcommand);
-                    return var;
-                }
-
                 if (e.getRawMessage().getString().startsWith("Unknown or incomplete")) {
-                    final String literalName = cmd.split(" ")[0].replace("/", "");
-                    final CommandPermission reqPerm = CommandPermission.getByNode(literalName);
+                    String literalName = cmd.split(" ")[0].replace("/", "");
+                    CommandPermission reqPerm = CommandPermission.getByNode(literalName);
 
-                    if (this.isCommand(literalName) && reqPerm != null && !KiloCommands.hasPermission(executor, reqPerm))
+                    if (essentialcommand != null && essentialcommand.hasUsage() && essentialcommand.getRootPermissionPredicate().test(executor)) {
+                        this.sendUsage(executor, essentialcommand);
+                        return var;
+                    }
+
+
+                    if (this.isCommand(literalName) && reqPerm != null && !KiloCommands.hasPermission(executor, reqPerm)) {
                         KiloCommands.sendPermissionError(executor);
-                    else
-                        KiloChat.sendMessageToSource(executor, new TextMessage(
-                                KiloConfig.messages().commands().context().executionException, true));
+                    } else {
+                        KiloChat.sendMessageToSource(executor, new TextMessage(KiloConfig.messages().commands().context().executionException, true));
+                    }
 
                 } else {
                     executor.sendError(Texts.toText(e.getRawMessage()));

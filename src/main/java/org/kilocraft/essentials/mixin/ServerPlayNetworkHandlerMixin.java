@@ -14,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -36,6 +37,8 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow public ServerPlayerEntity player;
 
     @Shadow @Final private MinecraftServer server;
+
+    @Shadow @Final private static Logger LOGGER;
 
     @Inject(
             method = "onGameMessage", cancellable = true,
@@ -80,7 +83,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
             SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
             if (!signBlockEntity.isEditable() || signBlockEntity.getEditor() != this.player) {
-                this.server.warn("Player " + this.player.getName().getString() + " just tried to change non-editable sign");
+                LOGGER.warn("Player {} just tried to change non-editable sign", this.player.getEntityName());
                 return;
             }
 

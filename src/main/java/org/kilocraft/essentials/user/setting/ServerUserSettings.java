@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.user.setting;
 
 import net.minecraft.nbt.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
@@ -39,9 +40,8 @@ public class ServerUserSettings implements UserSettings {
             if (setting != null) {
                 try {
                     setting.toTag(tag, value);
-                } catch (IllegalArgumentException e) {
-                    KiloEssentials.getLogger().fatal("Exception while serializing a User Setting, Can not save the Value");
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    KiloEssentials.getLogger().fatal("Exception while serializing a User Setting, Can not save the Value", e);
                 }
             }
         });
@@ -50,7 +50,7 @@ public class ServerUserSettings implements UserSettings {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void fromTag(@NotNull final CompoundTag tag) {
         for (String key : tag.getKeys()) {
             Setting<?> setting = Settings.getById(key);
             if (setting != null) {

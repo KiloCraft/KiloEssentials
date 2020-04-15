@@ -46,12 +46,27 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public void teleport(final Location loc, final boolean sendTicket) {
+    public void teleport(@NotNull final Location loc, final boolean sendTicket) {
         if (sendTicket) {
             loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 1, this.asPlayer().getEntityId());
         }
 
         this.asPlayer().teleport(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getRotation().getYaw(), loc.getRotation().getPitch());
+    }
+
+    @Override
+    public void teleport(@NotNull OnlineUser target) {
+        this.teleport(target.getLocation(), true);
+    }
+
+    @Override
+    public String getName() {
+        return super.name;
+    }
+
+    @Override
+    public UUID getId() {
+        return super.uuid;
     }
 
     @Override
@@ -62,18 +77,22 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public int sendError(final String message) {
         KiloChat.sendMessageTo(this.asPlayer(), new TextMessage("&c" + message, true).toText().formatted(Formatting.RED));
-        return -1;
+        return 0;
     }
 
     @Override
-    public int sendError(Text text) {
+    public void sendError(TextMessage message) {
+
+    }
+
+    @Override
+    public void sendError(Text text) {
         KiloChat.sendMessageTo(this.asPlayer(), text.formatted(Formatting.RED));
-        return -1;
     }
 
     @Override
-    public int sendLangError(String key, Object... objects) {
-        return this.sendError(ModConstants.translation(key, objects));
+    public void sendLangError(String key, Object... objects) {
+        this.sendError(ModConstants.translation(key, objects));
     }
 
     @Override
@@ -144,9 +163,9 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    protected void deserialize(@NotNull final CompoundTag tag) {
+    public void fromTag(@NotNull final CompoundTag tag) {
         // All the other serialization logic is handled.
-        super.deserialize(tag);
+        super.fromTag(tag);
     }
 
     @Override

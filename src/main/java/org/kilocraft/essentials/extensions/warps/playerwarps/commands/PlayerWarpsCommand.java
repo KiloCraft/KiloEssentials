@@ -56,7 +56,8 @@ public class PlayerWarpsCommand extends EssentialCommand {
         OnlineUser src = this.getOnlineUser(ctx);
 
         if (PlayerWarpsManager.getWarps().isEmpty()) {
-            return src.sendLangError("command.playerwarp.no_warp");
+            src.sendLangError("command.playerwarp.no_warp");
+            return SINGLE_FAILED;
         }
 
         if (!force && CacheManager.shouldUse(CACHE_ID)) {

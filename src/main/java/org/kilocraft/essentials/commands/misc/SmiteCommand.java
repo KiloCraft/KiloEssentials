@@ -28,7 +28,7 @@ public class SmiteCommand extends EssentialCommand {
         LightningEntity lightning = new LightningEntity(player.getServerWorld(), vec3d.x, vec3d.y, vec3d.z, false);
         player.getServerWorld().addLightning(lightning);
 
-        player.addMessage(LangText.getFormatter(true, "command.smite"), true);
+        player.sendMessage(LangText.getFormatter(true, "command.smite"), true);
         return SINGLE_SUCCESS;
     }
 

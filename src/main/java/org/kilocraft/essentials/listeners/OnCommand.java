@@ -13,16 +13,14 @@ public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
         if (CommandUtils.isPlayer(event.getExecutor())) {
             String command = event.getCommand().startsWith("/") ? event.getCommand().substring(1) : event.getCommand();
 
-            for (String messageCommand : new String[]{"msg", "tell", "whisper", "r", "reply", "staffmsg", "sm", "buildermsg", "trigger"}) {
-                if (command.replace("/", "").startsWith(messageCommand)) {
-                    return;
+            for (String cmd : KiloConfig.main().ignoredCommandsForLogging) {
+                if (!command.startsWith(cmd)) {
+                    ServerChat.sendCommandSpy(event.getExecutor(), command);
+
+                    if (KiloConfig.main().server().logCommands) {
+                        KiloServer.getLogger().info("[" + event.getExecutor().getName() + "]: " + command);
+                    }
                 }
-            }
-
-            ServerChat.sendCommandSpy(event.getExecutor(), command);
-
-            if (KiloConfig.main().server().logCommands) {
-                KiloServer.getLogger().info("[" + event.getExecutor().getName() + "]: " + command);
             }
         }
     }

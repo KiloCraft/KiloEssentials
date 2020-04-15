@@ -114,7 +114,7 @@ public class CommandUtils {
     private static CommandOutput commandOutput(ServerCommandSource src) {
         return new CommandOutput() {
             @Override
-            public void sendMessage(Text text) {
+            public void sendSystemMessage(Text text) {
                 src.sendFeedback(text, false);
             }
 

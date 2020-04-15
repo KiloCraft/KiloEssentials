@@ -58,7 +58,8 @@ public class WhowasCommand extends EssentialCommand {
         String input = this.getUserArgumentInput(ctx, "username");
 
         if (!src.hasPermission(CommandPermission.WHOIS_OTHERS) && !src.getUsername().equals(input)) {
-            return src.sendLangError("command.exception.permission");
+            src.sendLangError("command.exception.permission");
+            return SINGLE_FAILED;
         }
 
         CompletableFuture.supplyAsync(() -> {
@@ -87,7 +88,8 @@ public class WhowasCommand extends EssentialCommand {
                 throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
             }
         } catch (Exception e) {
-            return src.sendError(Texter.exceptionToText(e, false));
+            src.sendError(Texter.exceptionToText(e, false));
+            return SINGLE_FAILED;
         }
 
         if (CacheManager.shouldUse(getCacheId(uuid))) {
@@ -113,7 +115,8 @@ public class WhowasCommand extends EssentialCommand {
         TextInput input = new TextInput();
 
         if (nameEntries == null) {
-            return src.sendLangError("api.mojang.request_failed", "Could not get the name history of that player");
+            src.sendLangError("api.mojang.request_failed", "Could not get the name history of that player");
+            return SINGLE_FAILED;
         }
 
         int i = 0;

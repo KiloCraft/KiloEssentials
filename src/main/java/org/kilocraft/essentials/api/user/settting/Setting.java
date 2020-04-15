@@ -36,7 +36,7 @@ public class Setting<T> {
         return this.defaultValue;
     }
 
-    public void toTag(CompoundTag tag, Object value) throws IllegalArgumentException {
+    public void toTag(@NotNull final CompoundTag tag, @NotNull final Object value) throws IllegalArgumentException {
         if (this.hasCustomSerializer) {
             this.serializer.accept(new SerializerFunction(tag, (T) value, this));
         } else if (value instanceof String) {
@@ -58,7 +58,7 @@ public class Setting<T> {
         }
     }
 
-    public Object fromTag(CompoundTag tag) throws IllegalArgumentException {
+    public Object fromTag(@NotNull final CompoundTag tag) throws IllegalArgumentException {
         if (this.hasCustomSerializer) {
             SerializerFunction function = new SerializerFunction(tag, this.defaultValue, this);
             this.deserializer.accept(function);

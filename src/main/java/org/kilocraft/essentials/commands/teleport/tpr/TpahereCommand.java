@@ -44,7 +44,8 @@ public class TpahereCommand extends EssentialCommand {
         }
 
         if (UserUtils.TpaRequests.hasRequest(src, target)) {
-            return src.sendLangError("command.tpa.already_requested", target.getFormattedDisplayName());
+            src.sendLangError("command.tpa.already_requested", target.getFormattedDisplayName());
+            return SINGLE_FAILED;
         }
 
         UserUtils.TpaRequests.add(src, target, true);

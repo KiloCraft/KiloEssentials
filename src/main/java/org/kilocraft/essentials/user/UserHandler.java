@@ -29,29 +29,29 @@ public class UserHandler {
     void loadUserAndResolveName(final ServerUser user) throws IOException {
         if (this.getUserFile(user).exists()) {
             CompoundTag tag = NbtIo.readCompressed(new FileInputStream(this.getUserFile(user)));
-            user.deserialize(tag);
+            user.fromTag(tag);
             user.name = tag.getString("name");
         }
     }
 
     private boolean loadUser(final ServerUser serverUser) throws IOException {
         if (this.getUserFile(serverUser).exists()) {
-            serverUser.deserialize(NbtIo.readCompressed(new FileInputStream(this.getUserFile(serverUser))));
+            serverUser.fromTag(NbtIo.readCompressed(new FileInputStream(this.getUserFile(serverUser))));
             return true;
         }
         return false;
     }
 
-    void saveData(final ServerUser serverUser) throws IOException {
-        if (this.getUserFile(serverUser).exists()) {
+    void saveData(final ServerUser user) throws IOException {
+        if (this.getUserFile(user).exists()) {
             NbtIo.writeCompressed(
-                    serverUser.serialize(),
-                    new FileOutputStream(this.getUserFile(serverUser))
+                    user.toTag(),
+                    new FileOutputStream(this.getUserFile(user))
             );
         } else {
             UserHandler.saveDir.mkdirs();
-            this.getUserFile(serverUser).createNewFile();
-            this.saveData(serverUser);
+            this.getUserFile(user).createNewFile();
+            this.saveData(user);
         }
     }
 
