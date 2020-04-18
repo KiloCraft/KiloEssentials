@@ -163,7 +163,7 @@ public class KiloCommands {
             this.add(new TpdenyCommand());
             this.add(new TpcancelCommand());
             this.add(new LastseenCommand());
-            //this.add(new InventoryCommand());
+            this.add(new InventoryCommand());
         }};
 
         this.commands.addAll(commandsList);

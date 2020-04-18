@@ -3,17 +3,13 @@ package org.kilocraft.essentials.api.user;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTSerializable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.text.MessageReceptionist;
-import org.kilocraft.essentials.api.user.inventory.UserInventory;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
-import org.kilocraft.essentials.user.ServerUser;
-import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
 import java.io.IOException;
@@ -28,7 +24,6 @@ import java.util.UUID;
  * @see OnlineUser
  * @see CommandSourceUser
  * @see NeverJoinedUser
- * @see UserInventory
  * @see UserHomeHandler
  * @see org.kilocraft.essentials.user.UserHandler
  * @see net.minecraft.entity.player.PlayerEntity
@@ -236,9 +231,6 @@ public interface User extends MessageReceptionist, NBTSerializable {
      * @return is This equals to another user
      */
     boolean equals(User anotherUser);
-
-    @Nullable
-    UserInventory getInventory();
 
     /**
      * Checks if this user is ignoring another user

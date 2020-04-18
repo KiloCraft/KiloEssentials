@@ -39,28 +39,9 @@ public class InventoryCommand extends EssentialCommand {
             return SINGLE_FAILED;
         }
 
-        if (this.server.getOnlineUser(inputName) == null && !KiloConfig.main().cachedInventoriesSection().enabled) {
-            sender.sendError(tl("command.inventory.not_enabled"));
-            return SINGLE_FAILED;
-        }
+        
 
-        final AtomicInteger integer = new AtomicInteger(super.AWAIT_RESPONSE);
-        super.essentials.getUserThenAcceptAsync(sender, inputName, (user) -> {
-            ServerPlayerEntity player = sender.asPlayer();
-
-            if (user.getInventory() == null || user.getInventory().getMain() == null) {
-                sender.sendError(tl("command.inventory.no_cache"));
-                return;
-            }
-
-            player.openHandledScreen(
-                    create(player, user.getInventory().getMain().get(), new LiteralText(tl("command.inventory.info", "")))
-            );
-
-            integer.set(this.SINGLE_SUCCESS);
-        });
-
-        return integer.get();
+        return SINGLE_SUCCESS;
     }
 
     private SimpleNamedScreenHandlerFactory create(final ServerPlayerEntity src, final Inventory inv, Text text) {

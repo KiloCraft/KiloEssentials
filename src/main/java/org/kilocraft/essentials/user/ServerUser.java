@@ -18,13 +18,11 @@ import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.inventory.UserInventory;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.user.inventory.ServerUserInventory;
 import org.kilocraft.essentials.user.setting.ServerUserSettings;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
@@ -43,7 +41,6 @@ import java.util.UUID;
  * @see ServerUserManager
  * @see UserHomeHandler
  * @see UserSettings
- * @see UserInventory
  * @see OnlineUser
  * @see org.kilocraft.essentials.api.user.CommandSourceUser
  * @see org.kilocraft.essentials.user.UserHandler
@@ -60,7 +57,6 @@ public class ServerUser implements User {
     String cachedName = "";
     private ServerUserSettings settings;
     private UserHomeHandler homeHandler;
-    private UserInventory inventory;
     private Vec3dLocation location;
     private Vec3dLocation lastLocation;
     private UUID lastPrivateMessageGetterUUID;
@@ -74,18 +70,12 @@ public class ServerUser implements User {
     Date lastOnline;
 
     public ServerUser(@NotNull final UUID uuid) {
-        this(uuid, null);
-    }
-
-    public ServerUser(@NotNull final UUID uuid, final @Nullable ServerPlayerEntity player) {
         this.uuid = uuid;
         this.settings = new ServerUserSettings();
 
         if (UserHomeHandler.isEnabled()) {
             this.homeHandler = new UserHomeHandler(this);
         }
-
-        this.inventory = player == null ? new ServerUserInventory(this) : new ServerUserInventory(this, player);
 
         try {
             manager.getHandler().handleUser(this);
@@ -419,12 +409,6 @@ public class ServerUser implements User {
     @Override
     public boolean equals(User anotherUser) {
         return anotherUser == this || anotherUser.getUuid().equals(this.uuid) || anotherUser.getUsername().equals(this.getUsername());
-    }
-
-    @Nullable
-    @Override
-    public UserInventory getInventory() {
-        return this.inventory;
     }
 
     @Override

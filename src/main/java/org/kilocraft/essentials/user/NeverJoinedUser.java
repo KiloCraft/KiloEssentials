@@ -7,11 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.inventory.UserInventory;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
-import org.kilocraft.essentials.chat.LoggedMessage;
 
 import java.io.IOException;
 import java.util.Date;
@@ -182,11 +180,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     @Override
     public boolean equals(User anotherUser) {
         return false;
-    }
-
-    @Override
-    public @Nullable UserInventory getInventory() {
-        return null;
     }
 
     @Override

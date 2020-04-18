@@ -17,26 +17,27 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.inventory.UserInventory;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.LoggedMessage;
-import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 public class CommandSourceServerUser implements CommandSourceUser {
     private ServerCommandSource source;
@@ -216,11 +217,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public boolean equals(User anotherUser) {
         return this.source.getName().equals(anotherUser.getUsername());
-    }
-
-    @Override
-    public @Nullable UserInventory getInventory() {
-        return null;
     }
 
     @Override

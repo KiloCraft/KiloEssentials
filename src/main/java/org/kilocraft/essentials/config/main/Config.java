@@ -116,10 +116,6 @@ public class Config {
         return chatSection;
     }
 
-    public CachedInventoriesConfigSection cachedInventoriesSection() {
-        return cachedInventoriesSection;
-    }
-
     public String permissionManager() {
         return permissionManager;
     }
