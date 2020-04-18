@@ -59,7 +59,7 @@ public class WhowasCommand extends EssentialCommand {
 
         if (!src.hasPermission(CommandPermission.WHOIS_OTHERS) && !src.getUsername().equals(input)) {
             src.sendLangError("command.exception.permission");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         CompletableFuture.supplyAsync(() -> {
@@ -73,10 +73,10 @@ public class WhowasCommand extends EssentialCommand {
                 src.sendLangError("api.mojang.request_failed", e.getMessage());
             }
 
-            return AWAIT_RESPONSE;
+            return AWAIT;
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private int send(OnlineUser src, String name, int page) {
@@ -89,7 +89,7 @@ public class WhowasCommand extends EssentialCommand {
             }
         } catch (Exception e) {
             src.sendError(Texter.exceptionToText(e, false));
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (CacheManager.shouldUse(getCacheId(uuid))) {
@@ -107,7 +107,7 @@ public class WhowasCommand extends EssentialCommand {
             return send(src, name, page, entries);
         } catch (IOException e) {
             src.sendError("Can not get the data! " + e.getMessage());
-            return SINGLE_FAILED;
+            return FAILED;
         }
     }
 
@@ -116,7 +116,7 @@ public class WhowasCommand extends EssentialCommand {
 
         if (nameEntries == null) {
             src.sendLangError("api.mojang.request_failed", "Could not get the name history of that player");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         int i = 0;
@@ -138,7 +138,7 @@ public class WhowasCommand extends EssentialCommand {
         Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
 
         paged.send(src.getCommandSource(), "Name history of " + name + " (&e" + i + "&6)", "/whowas " + name + " %page%");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private static String getCacheId(String username) {

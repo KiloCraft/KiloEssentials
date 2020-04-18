@@ -29,7 +29,7 @@ public class TpacceptCommand extends EssentialCommand {
 
         if (!UserUtils.TpaRequests.hasRequest(target, src)) {
             src.sendLangError("command.tpa.no_requests", target.getFormattedDisplayName());
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         boolean toSender = UserUtils.TpaRequests.useRequest(src);
@@ -39,6 +39,6 @@ public class TpacceptCommand extends EssentialCommand {
         src.sendLangMessage("command.tpa.accepted.announce", target.getFormattedDisplayName());
         target.sendLangMessage("command.tpa.accepted", src.getFormattedDisplayName());
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

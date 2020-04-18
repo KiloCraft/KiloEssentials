@@ -61,12 +61,12 @@ public class SethomeCommand extends EssentialCommand {
 
         if (!canSet(user) && !homeHandler.hasHome(name)) {
             user.sendMessage(messages.commands().playerHomes().reachedLimit);
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
             KiloChat.sendMessageTo(player, getConfirmationText(name, ""));
-            return AWAIT_RESPONSE;
+            return AWAIT;
         } else {
             homeHandler.removeHome(name);
         }
@@ -75,7 +75,7 @@ public class SethomeCommand extends EssentialCommand {
         user.sendMessage(new TextMessage(HomeCommand.replaceVariables(
                 KiloConfig.messages().commands().playerHomes().homeSet, user, user, homeHandler.getHome(name)), user));
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -117,7 +117,7 @@ public class SethomeCommand extends EssentialCommand {
                     .replace("{TARGET_TAG}", user.getNameTag()));
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
     
     private static boolean canSet(User user) {

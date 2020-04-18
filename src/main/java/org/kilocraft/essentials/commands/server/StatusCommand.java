@@ -48,7 +48,7 @@ public class StatusCommand extends EssentialCommand {
             KiloEssentials.getLogger().error(msg, e);
         }
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private static String getInfo() throws Exception {

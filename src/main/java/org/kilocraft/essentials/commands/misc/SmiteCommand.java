@@ -29,7 +29,7 @@ public class SmiteCommand extends EssentialCommand {
         player.getServerWorld().addLightning(lightning);
 
         player.sendMessage(LangText.getFormatter(true, "command.smite"), true);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

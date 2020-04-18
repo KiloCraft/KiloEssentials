@@ -45,7 +45,7 @@ public class TpahereCommand extends EssentialCommand {
 
         if (UserUtils.TpaRequests.hasRequest(src, target)) {
             src.sendLangError("command.tpa.already_requested", target.getFormattedDisplayName());
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         UserUtils.TpaRequests.add(src, target, true);
@@ -67,7 +67,7 @@ public class TpahereCommand extends EssentialCommand {
         if (target.getSetting(Settings.SOUNDS)) {
             ServerChat.pingPlayer(target.asPlayer(), ServerChat.PingType.PRIVATE);
         }
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

@@ -56,12 +56,12 @@ public class DelhomeCommand extends EssentialCommand {
 
         if (!homeHandler.hasHome(name)) {
             user.sendMessage(KiloConfig.messages().commands().playerHomes().invalidHome);
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
             KiloChat.sendMessageTo(player, getConfirmationText(name, ""));
-            return AWAIT_RESPONSE;
+            return AWAIT;
         } else {
             homeHandler.removeHome(name);
         }
@@ -69,7 +69,7 @@ public class DelhomeCommand extends EssentialCommand {
         user.sendMessage(new TextMessage(KiloConfig.messages().commands().playerHomes().homeRemoved
                 .replace("{HOME_NAME}", name), true));
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -112,7 +112,7 @@ public class DelhomeCommand extends EssentialCommand {
                     .replace("{TARGET_TAG}", user.getNameTag()));
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private Text getConfirmationText(String homeName, String user) {

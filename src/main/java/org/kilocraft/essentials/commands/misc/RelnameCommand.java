@@ -35,12 +35,12 @@ public class RelnameCommand extends EssentialCommand {
 			String nick = TextFormat.removeAlternateColorCodes('&', user.getDisplayName());
 			if (input.equalsIgnoreCase(nick) || input.equals(user.getUsername())) {
 				KiloChat.sendLangMessageTo(ctx.getSource(), "command.realname.success", user.getFormattedDisplayName(), user.getUsername());
-				return SINGLE_SUCCESS;
+				return SUCCESS;
 			}
 		}
 
 		KiloChat.sendLangMessageTo(ctx.getSource(), "command.realname.error");
-		return SINGLE_FAILED;
+		return FAILED;
 	}
 
 }

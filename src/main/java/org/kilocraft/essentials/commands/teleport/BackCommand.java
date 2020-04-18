@@ -58,6 +58,6 @@ public class BackCommand extends EssentialCommand {
         else
             sendMessage(ctx, "command.back.others", user.getUsername(), loc.asFormattedString());
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

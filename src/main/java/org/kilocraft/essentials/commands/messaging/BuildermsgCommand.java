@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.commands.messaging;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,22 +9,15 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
-import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.setting.Settings;
-
-import java.util.UUID;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
@@ -58,7 +50,7 @@ public class BuildermsgCommand extends EssentialCommand {
         user.getSettings().set(Settings.CHAT_CHANNEL, ServerChat.Channel.STAFF);
 
         user.sendLangMessage("channel.on", "builder");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int off(ServerCommandSource source, ServerPlayerEntity player) {
@@ -66,13 +58,13 @@ public class BuildermsgCommand extends EssentialCommand {
         user.getSettings().reset(Settings.CHAT_CHANNEL);
 
         user.sendLangMessage("channel.off", "builder");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int send(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String message = StringArgumentType.getString(ctx, "message");
         ServerChat.sendSafely(this.getOnlineUser(ctx), new TextMessage(message), ServerChat.Channel.BUILDER);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

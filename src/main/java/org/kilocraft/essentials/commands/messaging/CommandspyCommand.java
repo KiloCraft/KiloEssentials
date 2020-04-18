@@ -25,11 +25,11 @@ public class CommandspyCommand extends EssentialCommand {
         if (ServerChat.isCommandSpy(ctx.getSource().getPlayer())) {
             ServerChat.removeCommandSpy(ctx.getSource().getPlayer());
             ctx.getSource().sendFeedback(new LiteralText("CommandSpy is now inactive").formatted(Formatting.YELLOW), false);
-            return SINGLE_SUCCESS;
+            return SUCCESS;
         }
 
         ServerChat.addCommandSpy(ctx.getSource().getPlayer());
         ctx.getSource().sendFeedback(new LiteralText("CommandSpy is now active").formatted(Formatting.YELLOW), false);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

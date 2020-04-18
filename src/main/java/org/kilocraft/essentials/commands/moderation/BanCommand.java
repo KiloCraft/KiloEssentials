@@ -13,10 +13,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.PunishmentManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -60,12 +57,12 @@ public class BanCommand extends EssentialCommand {
 
         if (!manager.shouldBan(target, reason)) {
             src.sendError(tl("command.ban.failed", target.getName()));
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         manager.ban(target, src.getUsername(), reason);
 
         src.sendLangMessage("command.ban.banned", target.getName(), reason);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

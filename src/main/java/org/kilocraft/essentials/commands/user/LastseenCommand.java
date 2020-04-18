@@ -42,6 +42,6 @@ public class LastseenCommand extends EssentialCommand {
             src.sendLangMessage("command.lastseen", user.getNameTag(), string);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 }

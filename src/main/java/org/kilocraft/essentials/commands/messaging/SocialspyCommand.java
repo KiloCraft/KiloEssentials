@@ -25,11 +25,11 @@ public class SocialspyCommand extends EssentialCommand {
         if (ServerChat.isSocialSpy(ctx.getSource().getPlayer())) {
             ServerChat.removeSocialSpy(ctx.getSource().getPlayer());
             ctx.getSource().sendFeedback(new LiteralText("SocialSpy is now inactive").formatted(Formatting.YELLOW), false);
-            return SINGLE_SUCCESS;
+            return SUCCESS;
         }
 
         ServerChat.addSocialSpy(ctx.getSource().getPlayer());
         ctx.getSource().sendFeedback(new LiteralText("SocialSpy is now active").formatted(Formatting.YELLOW), false);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

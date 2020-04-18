@@ -73,7 +73,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
         addPlayer(player.getUuid(), identifier);
         player.sendMessage(LangText.getFormatter(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int list(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -100,14 +100,14 @@ public class MagicalParticlesCommand extends EssentialCommand {
         ));
 
         KiloChat.sendMessageTo(player, text.setSize(map.size()).build());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int disable(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         KiloChat.sendLangMessageTo(player, "command.magicalparticles.disabled");
         removePlayer(player.getUuid());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private CompletableFuture<Suggestions> particleIdSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

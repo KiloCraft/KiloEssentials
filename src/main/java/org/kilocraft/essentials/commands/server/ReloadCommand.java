@@ -30,6 +30,6 @@ public class ReloadCommand extends EssentialCommand {
 
         String timeElapsed = new DecimalFormat("##.##").format(watch.getTime(TimeUnit.MILLISECONDS));
         KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.end", timeElapsed);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

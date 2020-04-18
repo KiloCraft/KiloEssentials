@@ -49,7 +49,7 @@ public class MotdCommand extends EssentialCommand {
         final String[] lines = description.asFormattedString().split("\n");
 
         this.getServerUser(ctx).sendLangMessage("command.motd", (lines.length >= 0) ? lines[0] : "", lines.length >= 1 ? lines[1] : "");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int setMotd(final CommandContext<ServerCommandSource> ctx) {
@@ -79,7 +79,7 @@ public class MotdCommand extends EssentialCommand {
         final String[] motd = this.server.getMetaManager().getDescription().asFormattedString().split(MotdCommand.COMPILE.pattern());
 
         ctx.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.set", TextFormat.translate(motd[0]), TextFormat.translate(motd[1])), true);
-        return this.SINGLE_SUCCESS;
+        return this.SUCCESS;
     }
 
     private CompletableFuture<Suggestions> suggestions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {

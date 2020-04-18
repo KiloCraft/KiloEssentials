@@ -57,7 +57,7 @@ public class ShootCommand extends EssentialCommand {
         world.spawnEntity(entity);
 
         player.sendMessage(new LiteralText("You have thrown a ").append(new TranslatableText(entity.getType().getTranslationKey())), true);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private CompletableFuture<Suggestions> suggestThrowableEntityTypes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

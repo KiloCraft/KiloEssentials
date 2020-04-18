@@ -8,7 +8,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Texts;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
@@ -47,7 +46,7 @@ public class TpaCommand extends EssentialCommand {
 
         if (UserUtils.TpaRequests.hasRequest(src, target)) {
             src.sendLangError("command.tpa.already_requested", target.getFormattedDisplayName());
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         UserUtils.TpaRequests.add(src, target, false);
@@ -69,7 +68,7 @@ public class TpaCommand extends EssentialCommand {
         if (target.getSetting(Settings.SOUNDS)) {
             ServerChat.pingPlayer(target.asPlayer(), ServerChat.PingType.PRIVATE);
         }
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

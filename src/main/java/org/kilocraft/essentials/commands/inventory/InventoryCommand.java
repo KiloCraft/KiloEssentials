@@ -39,12 +39,12 @@ public class InventoryCommand extends EssentialCommand {
 
         if (sender.equals(target)) {
             sender.sendError(tl("command.inventory.error"));
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         sender.asPlayer().openHandledScreen(factory(sender, target));
         sender.sendLangMessage("general.seek_screen", target.getFormattedDisplayName(), "");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private NamedScreenHandlerFactory factory(final OnlineUser src, final OnlineUser target) {

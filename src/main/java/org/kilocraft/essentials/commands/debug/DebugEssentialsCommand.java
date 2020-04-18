@@ -109,7 +109,7 @@ public class DebugEssentialsCommand extends EssentialCommand {
 
             Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
             paged.send(ctx.getSource(), "CACHED DATA", "/debugess cache %page%");
-            return SINGLE_SUCCESS;
+            return SUCCESS;
         }
 
         private static final String FORMAT = "&6Cached&b<&7capture of &b%s> &9%s &b {\n";
@@ -132,7 +132,7 @@ public class DebugEssentialsCommand extends EssentialCommand {
                             .append(new LiteralText(data).formatted(Formatting.WHITE).append(Texter.toText(FORMAT1)))
                     , false);
 
-            return SINGLE_SUCCESS;
+            return SUCCESS;
         }
 
         public static int add(final CommandContext<ServerCommandSource> ctx) {

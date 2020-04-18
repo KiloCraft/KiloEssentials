@@ -58,7 +58,7 @@ public class PlaytimeCommand extends EssentialCommand {
         CommandSourceUser src = getServerUser(ctx);
         int ticks = getInteger(ctx, "seconds") * 20;
 
-        AtomicInteger atomicInteger = new AtomicInteger(AWAIT_RESPONSE);
+        AtomicInteger atomicInteger = new AtomicInteger(AWAIT);
         essentials.getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
             try {
                 user.setTicksPlayed(
@@ -94,7 +94,7 @@ public class PlaytimeCommand extends EssentialCommand {
             execute(src, user);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private int execute(CommandSourceUser src, User target) {

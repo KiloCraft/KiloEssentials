@@ -36,7 +36,7 @@ public class VersionCommand extends EssentialCommand {
                 permManager
         );
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

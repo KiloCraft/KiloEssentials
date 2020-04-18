@@ -53,7 +53,7 @@ public class SitCommand extends EssentialCommand {
             user.sendLangMessage("command.sit.disabled");
         }
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int seat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -61,16 +61,16 @@ public class SitCommand extends EssentialCommand {
 
         if (SeatManager.getInstance().isSeating(user.asPlayer())) {
             SeatManager.getInstance().unseat(user);
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (!((EntityAccessor) user.asPlayer()).isOnGround()) {
             user.sendLangMessage("general.on_ground");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         SeatManager.getInstance().seat(user, user.getLocationAsVector(), SeatManager.SummonType.COMMAND, false);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int setOthers(CommandContext<ServerCommandSource> ctx, boolean set) throws CommandSyntaxException {
@@ -78,7 +78,7 @@ public class SitCommand extends EssentialCommand {
 
         target.getSettings().set(Settings.CAN_SEAT, set);
         KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "canSit", set, target.getUsername());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

@@ -50,7 +50,6 @@ import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
-import java.text.DecimalFormat;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -184,7 +183,7 @@ public class RtpCommand extends EssentialCommand {
 				Texter.getButton("&8[&aClick Here to perform&8]", "/rtp perform", Texter.toText("&dConfirm"))
 		);
 		this.getOnlineUser(ctx).sendMessage(text);
-		return SINGLE_SUCCESS;
+		return SUCCESS;
 	}
 
 	private int executePerform(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -192,7 +191,7 @@ public class RtpCommand extends EssentialCommand {
 
 		if (UserUtils.Process.isIn(user, PROCESS.getId())) {
 			user.sendLangError("command.rtp.in_process");
-			return SINGLE_FAILED;
+			return FAILED;
 		}
 
 		UserUtils.Process.add(user, PROCESS);
@@ -204,7 +203,7 @@ public class RtpCommand extends EssentialCommand {
 
 		if (UserUtils.Process.isIn(target, PROCESS.getId())) {
 			this.getServerUser(ctx).sendLangError("command.rtp.in_process");
-			return SINGLE_FAILED;
+			return FAILED;
 		}
 
 		UserUtils.Process.add(target, PROCESS);
@@ -217,7 +216,7 @@ public class RtpCommand extends EssentialCommand {
 		RandomTeleportThread rtp = new RandomTeleportThread(source, target);
 		Thread rtpThread = new Thread(rtp ,"RTP thread");
 		rtpThread.start();
-		return SINGLE_SUCCESS;
+		return SUCCESS;
 	}
 
 	static void teleport(ServerCommandSource src, ServerPlayerEntity target, Logger logger) {

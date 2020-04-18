@@ -29,13 +29,13 @@ public class TpdenyCommand extends EssentialCommand {
 
         if (!UserUtils.TpaRequests.hasRequest(src, target)) {
             src.sendLangError("command.tpa.no_requests", target.getFormattedDisplayName());
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         UserUtils.TpaRequests.remove(src);
         src.sendLangError("command.tpa.denied", target.getFormattedDisplayName());
         target.sendLangError("command.tpa.denied.announce", src.getFormattedDisplayName());
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

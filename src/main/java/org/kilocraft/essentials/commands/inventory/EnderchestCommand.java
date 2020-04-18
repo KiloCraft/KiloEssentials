@@ -59,7 +59,7 @@ public class EnderchestCommand extends EssentialCommand {
             src.sendLangMessage("general.seek_screen", target.getEntityName(), "Ender Chest");
         }
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

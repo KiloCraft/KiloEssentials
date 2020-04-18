@@ -132,7 +132,7 @@ public class NicknameCommand extends EssentialCommand {
             user.setNickname(nickname);
         });
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int resetSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -145,7 +145,7 @@ public class NicknameCommand extends EssentialCommand {
         player.setCustomName(null);
 
         getServerUser(ctx).sendMessage(messages.commands().nickname().resetSelf);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int resetOther(CommandContext<ServerCommandSource> ctx) {
@@ -171,7 +171,7 @@ public class NicknameCommand extends EssentialCommand {
                     , true));
         });
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private static CompletableFuture<Suggestions> setSelfSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {

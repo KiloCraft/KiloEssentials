@@ -49,7 +49,7 @@ public class WhoisCommand extends EssentialCommand {
             execute(src, user);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private int execute(CommandSourceUser src, User target) {
@@ -146,7 +146,7 @@ public class WhoisCommand extends EssentialCommand {
         }
 
         src.sendMessage(text.get());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private Text getButtonForVec(Text text, Vec3dLocation vec) {

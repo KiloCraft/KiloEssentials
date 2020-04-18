@@ -33,7 +33,7 @@ public class FormatPreviewCommand extends EssentialCommand {
         String arg = getString(ctx, "string");
         KiloChat.sendMessageToSource(ctx.getSource(), new TextMessage("&eString preview:\n" + arg, true));
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private static CompletableFuture<Suggestions> staticSuggestion(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

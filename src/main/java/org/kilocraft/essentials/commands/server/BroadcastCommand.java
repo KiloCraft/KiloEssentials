@@ -29,6 +29,6 @@ public class BroadcastCommand extends EssentialCommand {
         String format = KiloConfig.messages().commands().broadCastFormat;
         KiloChat.broadCast(new TextMessage(
                 format.replace("%MESSAGE%", getString(ctx, "message")), true));
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

@@ -14,7 +14,6 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.setting.Settings;
 
 import java.util.Map;
@@ -78,6 +77,6 @@ public class IgnorelistCommand extends EssentialCommand {
             src.sendMessage(text);
         });
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

@@ -50,7 +50,7 @@ public class StaffmsgCommand extends EssentialCommand {
         user.getSettings().set(Settings.CHAT_CHANNEL, ServerChat.Channel.STAFF);
 
         user.sendLangMessage("channel.on", "staff");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int off(ServerCommandSource source, ServerPlayerEntity player) {
@@ -58,13 +58,13 @@ public class StaffmsgCommand extends EssentialCommand {
         user.getSettings().reset(Settings.CHAT_CHANNEL);
 
         user.sendLangMessage("channel.off", "staff");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int send(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String message = StringArgumentType.getString(ctx, "message");
         ServerChat.sendSafely(this.getOnlineUser(ctx), new TextMessage(message), ServerChat.Channel.STAFF);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

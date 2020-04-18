@@ -101,7 +101,7 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         if (PlayerWarpsManager.getWarp(name) != null) {
             user.sendLangMessage("command.playerwarp.already_set");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         final String type = StringArgumentType.getString(ctx, "type");
@@ -109,23 +109,23 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         if (TextFormat.removeAlternateColorCodes('&', desc).length() > 100) {
             user.sendLangError("command.playerwarp.desc_too_long");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (!PlayerWarp.Type.isValid(type)) {
             user.sendLangError("command.playerwarp.invalid_type", type);
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (PlayerWarpsManager.getWarpsByName().contains(name) && !input.startsWith("-confirmed-")) {
             user.sendMessage(getConfirmationText(name, ""));
-            return AWAIT_RESPONSE;
+            return AWAIT;
         } else {
             PlayerWarpsManager.addWarp(new PlayerWarp(name, user.getLocation(), user.getUuid(), type, desc));
         }
 
         user.sendLangMessage("command.playerwarp.set", name);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int remove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -134,13 +134,13 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         if (!PlayerWarpsManager.getWarpsByName().contains(name)) {
             user.sendLangMessage("command.playerwarp.invalid_warp");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         PlayerWarpsManager.removeWarp(name);
 
         user.sendLangMessage("command.playerwarp.remove", name);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int list(CommandContext<ServerCommandSource> ctx, int page, @Nullable String inputName) throws CommandSyntaxException {
@@ -148,29 +148,29 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         if (PlayerWarpsManager.getWarps().isEmpty()) {
             src.sendLangError("command.playerwarp.no_warp");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (inputName == null) {
             this.sendList(src.getCommandSource(), src, page);
-            return SINGLE_SUCCESS;
+            return SUCCESS;
         }
 
         if (this.isOnline(inputName)) {
             if (!inputName.equals(src.getUsername()) && !src.hasPermission(CommandPermission.PLAYER_WARP_OTHERS)) {
                 src.sendLangError("command.exception.permission");
-                return SINGLE_FAILED;
+                return FAILED;
             }
 
             this.sendList(src.getCommandSource(), this.getOnlineUser(inputName), page);
-            return SINGLE_SUCCESS;
+            return SUCCESS;
         }
 
         this.essentials.getUserThenAcceptAsync(src, inputName, (user) -> {
             this.sendList(src.getCommandSource(), user, page);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private int info(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -181,19 +181,19 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         if (warp == null) {
             src.sendLangError("command.playerwarp.invalid_warp");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (this.isOnline(warp.getOwner())) {
             sendInfo(src, warp, this.getOnlineUser(warp.getOwner()));
-            return SINGLE_SUCCESS;
+            return SUCCESS;
         }
 
         this.essentials.getUserThenAcceptAsync(src, warp.getOwner(), (user) -> {
             sendInfo(src, warp, user);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private void sendInfo(OnlineUser src, PlayerWarp warp, User owner) {

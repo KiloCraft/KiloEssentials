@@ -42,7 +42,7 @@ public class HatCommand extends EssentialCommand {
 
         if (player.getMainHandStack().isEmpty()) {
             KiloChat.sendLangMessageTo(player, "general.no_item");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         PlayerInventory inventory = player.inventory;
@@ -53,7 +53,7 @@ public class HatCommand extends EssentialCommand {
         inventory.armor.set(EquipmentSlot.HEAD.getEntitySlotId(), hand);
 
         KiloChat.sendLangMessageTo(player, "command.hat");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -73,6 +73,6 @@ public class HatCommand extends EssentialCommand {
             KiloChat.sendLangMessageTo(target, "command.hat.announce", player.getEntityName());
         }
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

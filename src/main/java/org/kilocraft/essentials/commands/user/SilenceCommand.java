@@ -29,7 +29,7 @@ public class SilenceCommand extends EssentialCommand {
             user.sendLangMessage("command.silence.off");
         }
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

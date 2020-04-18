@@ -278,7 +278,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public int sendUsage(CommandContext<ServerCommandSource> ctx, String key, Object... objects) {
         this.getServerUser(ctx).sendLangMessage(key, objects);
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     public String tl(final String key) {

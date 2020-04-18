@@ -90,7 +90,7 @@ public class PlaytimetopCommand extends EssentialCommand {
             send(src, page, sorted, totalTicks);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private static int send(OnlineUser src, int page, List<Map.Entry<String, Integer>> sortedList, long totalTicks) {
@@ -116,6 +116,6 @@ public class PlaytimetopCommand extends EssentialCommand {
         String pt = TimeDifferenceUtil.convertSecondsToString(src.getTicksPlayed() / 20, 'b', '3');
         paged.setStickyFooter(String.format(ModConstants.translation("command.playtimetop.format.self"), rank + 1, src.getFormattedDisplayName(), pt));
         paged.send(src.getCommandSource(), "Top Play Times", "/playtimetop %page%");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

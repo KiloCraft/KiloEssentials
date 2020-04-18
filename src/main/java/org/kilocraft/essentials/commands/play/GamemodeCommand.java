@@ -79,7 +79,7 @@ public class GamemodeCommand extends EssentialCommand {
         if (!this.hasPermission(src, GamemodeCommand.getPermission("self", selectedMode)))
             throw new SimpleCommandExceptionType(getPermissionError(GamemodeCommand.getPermission("self", selectedMode).getNode())).create();
 
-        final AtomicInteger atomicInteger = new AtomicInteger(IEssentialCommand.AWAIT_RESPONSE);
+        final AtomicInteger atomicInteger = new AtomicInteger(IEssentialCommand.AWAIT);
         this.essentials.getUserThenAcceptAsync(sourceUser, selection, user -> {
             try {
                 user.getSettings().set(Settings.GAME_MODE, selectedMode);
@@ -121,7 +121,7 @@ public class GamemodeCommand extends EssentialCommand {
         KiloChat.sendLangMessageTo(src, "template.#1", "gamemode",
                 selectedMode.getName(), players.size() == 1 ? singletonName : players.size() + " players");
 
-        return IEssentialCommand.SINGLE_SUCCESS;
+        return IEssentialCommand.SUCCESS;
     }
 
     private static GameMode getMode(final String arg) {

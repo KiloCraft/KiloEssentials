@@ -34,7 +34,7 @@ public class IpInfoCommand extends EssentialCommand {
             source.sendLangMessage("command.ipinfo", user.getUsername(), user.getLastSocketAddress());
         });
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

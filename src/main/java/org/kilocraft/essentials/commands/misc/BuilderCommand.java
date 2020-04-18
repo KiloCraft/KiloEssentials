@@ -33,6 +33,6 @@ public class BuilderCommand extends EssentialCommand {
         }
 
         this.getServerUser(ctx).sendMessage(text.build());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

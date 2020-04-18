@@ -52,12 +52,12 @@ public class HomeCommand extends EssentialCommand {
 
         if (!homeHandler.hasHome(name)) {
             user.sendMessage(this.messages.commands().playerHomes().invalidHome);
-            return IEssentialCommand.SINGLE_FAILED;
+            return IEssentialCommand.FAILED;
         }
 
         if (homeHandler.getHome(name).shouldTeleport()) {
             user.sendLangMessage("command.home.invalid_dim", homeHandler.getHome(name).getLocation().getDimensionType().toString());
-            return IEssentialCommand.SINGLE_FAILED;
+            return IEssentialCommand.FAILED;
         }
 
         try {
@@ -69,7 +69,7 @@ public class HomeCommand extends EssentialCommand {
 
         user.sendMessage(new TextMessage(HomeCommand.replaceVariables(
                 this.messages.commands().playerHomes().teleporting, user, user, user.getHomesHandler().getHome(name)), user));
-        return IEssentialCommand.SINGLE_SUCCESS;
+        return IEssentialCommand.SUCCESS;
     }
 
     private int executeOthers(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -104,7 +104,7 @@ public class HomeCommand extends EssentialCommand {
                     message, source, user, user.getHomesHandler().getHome(name)), user));
         });
 
-        return IEssentialCommand.AWAIT_RESPONSE;
+        return IEssentialCommand.AWAIT;
     }
 
     public static String replaceVariables(final String str, final OnlineUser source, final User target, final Home home) {

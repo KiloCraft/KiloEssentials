@@ -62,16 +62,16 @@ public class SayasCommand extends EssentialCommand {
 
         if (channel == null) {
             src.sendLangError("channel.invalid");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (inputTarget.equalsIgnoreCase("-Server")) {
             KiloServer.getServer().getPlayerManager().sendToAll(new TranslatableText("chat.type.announcement", "Server", message));
-            return SINGLE_SUCCESS;
+            return SUCCESS;
         }
 
         ServerChat.sendSafely(target, new TextMessage(message.asFormattedString()), channel);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private CompletableFuture<Suggestions> playerSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

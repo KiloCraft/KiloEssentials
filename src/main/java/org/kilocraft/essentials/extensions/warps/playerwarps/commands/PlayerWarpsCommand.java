@@ -57,7 +57,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
 
         if (PlayerWarpsManager.getWarps().isEmpty()) {
             src.sendLangError("command.playerwarp.no_warp");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (!force && CacheManager.shouldUse(CACHE_ID)) {
@@ -100,7 +100,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
             send(src, page, sorted);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private int send(OnlineUser src, int page, List<Map.Entry<PlayerWarp, String>> list) {
@@ -144,6 +144,6 @@ public class PlayerWarpsCommand extends EssentialCommand {
         Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
 
         paged.send(src.getCommandSource(), "Player Warps", "/playerwarps %page%");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

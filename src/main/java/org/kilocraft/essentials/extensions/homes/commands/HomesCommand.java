@@ -16,7 +16,6 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
-import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -50,7 +49,7 @@ public class HomesCommand extends EssentialCommand {
             sendInfo(source, user);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private int sendInfo(OnlineUser source, User user) {
@@ -59,7 +58,7 @@ public class HomesCommand extends EssentialCommand {
              source.sendMessage(areTheSame ? KiloConfig.messages().commands().playerHomes().noHome :
                     KiloConfig.messages().commands().playerHomes().admin().noHome.replace("{TARGET_TAG}", user.getNameTag()));
 
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         Texter.ListStyle text = Texter.ListStyle.of(
@@ -79,6 +78,6 @@ public class HomesCommand extends EssentialCommand {
         }
 
         source.sendMessage(text.build());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

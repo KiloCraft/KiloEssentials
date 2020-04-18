@@ -33,7 +33,7 @@ public class DonotdisturbCommand extends EssentialCommand {
             ((OnlineUser) user).sendLangMessage("command.donotdisturb.off");
         }
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }
