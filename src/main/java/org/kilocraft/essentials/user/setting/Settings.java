@@ -16,8 +16,6 @@ import java.util.*;
 public class Settings {
     @NotNull
     public static final List<Setting<?>> list = new ArrayList<>();
-    @Nullable
-    static final Setting<?> DUMMY = new Setting<>("dummy", -1);
 
     public static final Setting<Boolean> CAN_FLY = new Setting<>("can_fly", false);
     public static final Setting<Boolean> INVULNERABLE = new Setting<>("invulnerable", false);
@@ -71,8 +69,8 @@ public class Settings {
                 }
             }
     );
-    public static final Setting<Optional<String>> NICKNAME = new Setting<Optional<String>>(
-            "nickname", Optional.empty(),
+    public static final Setting<Optional<String>> NICK = new Setting<Optional<String>>(
+            "nick", Optional.empty(),
             (fun) -> fun.value().ifPresent((nickname) -> fun.tag().putString(fun.setting().getId(), nickname)),
             (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {

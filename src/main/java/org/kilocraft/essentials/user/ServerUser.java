@@ -246,7 +246,7 @@ public class ServerUser implements User {
     }
 
     public String getDisplayName() {
-        return this.getSetting(Settings.NICKNAME).orElseGet(() -> this.name);
+        return this.getSetting(Settings.NICK).orElseGet(() -> this.name);
     }
 
     @Override
@@ -294,7 +294,7 @@ public class ServerUser implements User {
 
     @Override
     public Optional<String> getNickname() {
-        return this.getSetting(Settings.NICKNAME);
+        return this.getSetting(Settings.NICK);
     }
 
     @Override
@@ -319,14 +319,14 @@ public class ServerUser implements User {
 
     @Override
     public void setNickname(String name) {
-        this.getSettings().set(Settings.NICKNAME, Optional.of(name));
+        this.getSettings().set(Settings.NICK, Optional.of(name));
         KiloServer.getServer().getUserManager().onChangeNickname(this, this.getNickname().isPresent() ? this.getNickname().get() : ""); // This is to update the entries in UserManager.
     }
 
     @Override
     public void clearNickname() {
         KiloServer.getServer().getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
-        this.getSettings().set(Settings.NICKNAME, Optional.empty());
+        this.getSettings().set(Settings.NICK, Optional.empty());
     }
 
     @Override
