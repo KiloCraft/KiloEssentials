@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.dimension.DimensionType;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +50,9 @@ import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
@@ -217,7 +220,7 @@ public class RtpCommand extends EssentialCommand {
 		return SINGLE_SUCCESS;
 	}
 
-	static void teleport(ServerCommandSource src, ServerPlayerEntity target) {
+	static void teleport(ServerCommandSource src, ServerPlayerEntity target, Logger logger) {
 		OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
 		CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(src);
 
@@ -237,11 +240,15 @@ public class RtpCommand extends EssentialCommand {
 			return;
 		}
 
+		StopWatch watch = new StopWatch();
+		watch.start();
+
 		RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
 
 		if (!cfg.broadcastMessage.isEmpty()) {
 			KiloChat.broadCast(new TextMessage(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName())));
 		}
+
 
 		ServerWorld world = target.getServerWorld();
 		Vec3dLocation loc;
@@ -282,11 +289,15 @@ public class RtpCommand extends EssentialCommand {
 			}
 		} while (tries <= cfg.maxTries && !safe);
 
+		watch.stop();
+		String timeElapsed = ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)) + "ms";
+
 		if (!safe) {
 			sourceUser.sendLangError("command.rtp.failed");
 		} else {
 			targetUser.saveLocation();
-			targetUser.teleport(loc.center().up(), true);
+			loc.setY(loc.getY() + 3);
+			targetUser.teleport(loc.center(), true);
 
 			String biome = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
@@ -298,7 +309,8 @@ public class RtpCommand extends EssentialCommand {
 							.replace("{RTP_LEFT}", String.valueOf(targetUser.getSetting(RTP_LEFT)))
 							.replace("{cord.X}", String.valueOf(loc.getX()))
 							.replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
-							.replace("{cord.Z}", String.valueOf(loc.getZ()));
+							.replace("{cord.Z}", String.valueOf(loc.getZ()))
+							.replace("{ELAPSED_TIME}", timeElapsed);
 
 			TranslatableText translatable = (TranslatableText) target.getServerWorld().getBiome(target.getBlockPos()).getName();
 			Text text = new LiteralText("")
@@ -311,6 +323,8 @@ public class RtpCommand extends EssentialCommand {
 			if (!sourceUser.equals(targetUser)) {
 				sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), biome);
 			}
+
+			logger.info("Finished RTP For " + targetUser.getUsername() + " in " + timeElapsed);
 		}
 
 		UserUtils.Process.remove(targetUser);
@@ -340,9 +354,9 @@ class RandomTeleportThread implements Runnable {
 	public void run() {
 		logger.info("Randomly teleporting " + target.getEntityName() + ". executed by " + source.getName());
 		try {
-			RtpCommand.teleport(this.source, this.target);
+			RtpCommand.teleport(this.source, this.target, logger);
 		} catch (Exception e) {
-			KiloEssentials.getLogger().error("RTP Canceled, Target probably left... ", e);
+			KiloEssentials.getLogger().error("Canceled RTP for {}, Target probably left... ", target.getEntityName());
 		}
 	}
 }

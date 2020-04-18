@@ -106,8 +106,9 @@ public class ServerUser implements User {
             mainTag.put("loc", this.location.toTag());
         }
 
-        if (this.lastLocation != null)
+        if (this.lastLocation != null) {
             cacheTag.put("lastLoc", this.lastLocation.toTag());
+        }
 
         // Private messaging stuff
         if (this.getLastPrivateMessageSender() != null) {

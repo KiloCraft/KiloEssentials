@@ -37,7 +37,9 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.rmi.UnexpectedException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,7 +96,21 @@ public final class ServerChat {
             throw new UnexpectedException("Debug exception thrown by " + sender.getUsername() + message.getOriginal().replaceFirst(DEBUG_EXCEPTION, ""));
         }
 
-        message.setMessage(message.getOriginal(), KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR));
+        boolean processWords;
+        if (channel == Channel.PUBLIC) {
+            processWords = true;
+        } else {
+            processWords = KiloConfig.messages().censorList().censorPrivateChannels;
+        }
+
+        try {
+            message.setMessage(
+                    processWords ? processWords(sender, message.getOriginal()) : message.getOriginal(),
+                    KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR)
+            );
+        } catch (Exception e) {
+            return;
+        }
 
         TextMessage prefix = new TextMessage(ConfigVariableFactory.replaceUserVariables(channel.getPrefix(), sender)
                 .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().asFormattedString()));
@@ -117,7 +133,7 @@ public final class ServerChat {
                         })
         ).append(" ").append(component);
 
-        KiloServer.getServer().sendMessage(text.asString());
+        KiloServer.getServer().sendMessage(text.getString());
         channel.send(text);
     }
 
@@ -249,7 +265,16 @@ public final class ServerChat {
             throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
         }
 
-        ServerChat.messagePrivately(source, user, message);
+        String msg = message;
+        if (KiloConfig.messages().censorList().censorDirectMessages) {
+            try {
+                msg = processWords(src, msg);
+            } catch (Exception e) {
+                return -1;
+            }
+        }
+
+        ServerChat.messagePrivately(source, user, msg);
         return 1;
     }
 
@@ -319,8 +344,39 @@ public final class ServerChat {
         }
     }
 
+    private static String processWords(@NotNull final OnlineUser sender, @NotNull final String message) throws Exception {
+        String msg = message;
+        String lowerCased = msg.toLowerCase(Locale.ROOT);
+        int index = 0;
+        boolean censor = KiloConfig.messages().censorList().censor;
+
+        for (String value : KiloConfig.messages().censorList().words) {
+            String s = value.toLowerCase(Locale.ROOT);
+            if (lowerCased.contains(s)) {
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < s.length(); i++) {
+                    builder.append(KiloConfig.messages().censorList().alternateChar);
+                }
+
+                msg = msg.replaceAll(("(?i)" + s), Matcher.quoteReplacement(builder.toString()));
+                index++;
+
+                if (!censor) {
+                    break;
+                }
+            }
+        }
+
+        if (index >= 1 && !censor) {
+            sender.sendError(String.format(KiloConfig.messages().censorList().blockMessage, sender.getFormattedDisplayName()));
+            throw new Exception(KiloConfig.messages().censorList().blockMessage);
+        }
+
+        return msg;
+    }
+
     public static Text stringToMessageComponent(@NotNull String string, OnlineUser sender, boolean appendLinks, boolean appendItems) {
-        Validate.notNull(string, "String must not be null!");
+        Validate.notNull(string, "Message string must not be null!");
         Text text = new LiteralText("");
         String[] strings = string.split(" ");
 
@@ -409,7 +465,7 @@ public final class ServerChat {
                     return KiloConfig.main().chat().prefixes().builderChat;
             }
 
-            return "! <%USER_RANKED_DISPLAYNAME%> ";
+            return null;
         }
     }
 

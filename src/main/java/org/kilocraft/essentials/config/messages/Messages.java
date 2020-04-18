@@ -18,6 +18,9 @@ public class Messages {
     @Setting(value = "commands")
     private CommandsConfigSection commandsSection = new CommandsConfigSection();
 
+    @Setting(value = "censorList")
+    private MessageCensorList censorList = new MessageCensorList();
+
     public GeneralConfigSection general() {
         return generalSection;
     }
@@ -30,4 +33,7 @@ public class Messages {
         return commandsSection;
     }
 
+    public MessageCensorList censorList() {
+        return censorList;
+    }
 }

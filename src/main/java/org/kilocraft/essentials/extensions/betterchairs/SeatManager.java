@@ -86,11 +86,11 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                 ServerWorld world = KiloServer.getServer().getVanillaServer().getWorld(RegistryUtils.toDimension(dim));
 
                 if (user != null) {
-                    if (user.getSetting(Settings.SEATING_TYPE) != SummonType.COMMAND && world.getBlockState(stand.getBlockPos().up().up()).getBlock() == Blocks.AIR) {
+                    if (user.getSetting(Settings.SITTING_TYPE) != SummonType.COMMAND && world.getBlockState(stand.getBlockPos().up().up()).getBlock() == Blocks.AIR) {
                         unseat(user);
                     }
 
-                    if (user.getSetting(Settings.SEATING_TYPE) == SummonType.INTERACTION_SLAB) {
+                    if (user.getSetting(Settings.SITTING_TYPE) == SummonType.INTERACTION_SLAB) {
                         stand.bodyYaw = user.asPlayer().bodyYaw;
                         stand.yaw = user.asPlayer().bodyYaw;
                     }
@@ -178,7 +178,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         stand.setInvulnerable(true);
         stand.addScoreboardTag("KE$SitStand#" + user.getUsername());
         stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
-        user.getSettings().set(Settings.SEATING_TYPE, summonType);
+        user.getSettings().set(Settings.SITTING_TYPE, summonType);
         stand.bodyYaw = yaw;
         stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
         loc.getWorld().spawnEntity(stand);

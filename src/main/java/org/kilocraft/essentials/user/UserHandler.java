@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class UserHandler {
-    public static final short DATA_VERSION = 1;
+    public static final short DATA_VERSION = 2;
     private static final File saveDir = KiloEssentials.getDataDirPath().resolve("users").toFile();
 
     void handleUser(final ServerUser serverUser) throws IOException {

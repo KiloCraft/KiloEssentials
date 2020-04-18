@@ -24,8 +24,8 @@ public class Settings {
     public static final Setting<Boolean> SOCIAL_SPY = new Setting<>("social_spy", false);
     public static final Setting<Boolean> COMMAND_SPY = new Setting<>("command_spy", false);
     public static final Setting<Boolean> CAN_SEAT = new Setting<>("can_seat", false);
-    public static final Setting<SeatManager.SummonType> SEATING_TYPE = new Setting<SeatManager.SummonType>(
-            "seating_type", SeatManager.SummonType.NONE,
+    public static final Setting<SeatManager.SummonType> SITTING_TYPE = new Setting<SeatManager.SummonType>(
+            "sitting_type", SeatManager.SummonType.NONE,
             (fun) -> {
                 if (fun.value() != SeatManager.SummonType.NONE) {
                     fun.tag().putString(fun.setting().getId(), fun.value().toString().toLowerCase(Locale.ROOT));
