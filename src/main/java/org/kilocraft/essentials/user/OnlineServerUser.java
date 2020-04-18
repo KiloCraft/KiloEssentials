@@ -158,7 +158,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public OnlineServerUser(final ServerPlayerEntity player) {
-        super(player.getUuid(), player);
+        super(player.getUuid());
         super.name = player.getEntityName();
     }
 

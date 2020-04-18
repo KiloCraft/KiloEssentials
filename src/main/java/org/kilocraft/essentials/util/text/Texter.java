@@ -23,6 +23,10 @@ public class Texter {
         return new LiteralText(TextFormat.translate(str));
     }
 
+    public static Text toText() {
+        return new LiteralText("");
+    }
+
     public static Text exceptionToText(Exception e, boolean requireDevMode) {
         Text text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
 

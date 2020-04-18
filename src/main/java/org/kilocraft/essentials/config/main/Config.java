@@ -45,9 +45,6 @@ public class Config {
     @Setting(value = "chat", comment = "Configure the appearance of the Chat Channels")
     private ChatConfigSection chatSection = new ChatConfigSection();
 
-    @Setting(value = "cachedInventories", comment = "Caches the User inventories, mostly used by the '/invsee' and '/invload' commands")
-    private CachedInventoriesConfigSection cachedInventoriesSection = new CachedInventoriesConfigSection();
-
     @Setting("moderation")
     private ModerationConfigSection moderationSection = new ModerationConfigSection();
 

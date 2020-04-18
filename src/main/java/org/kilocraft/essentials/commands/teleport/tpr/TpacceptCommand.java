@@ -34,7 +34,7 @@ public class TpacceptCommand extends EssentialCommand {
 
         boolean toSender = UserUtils.TpaRequests.useRequest(src);
         OnlineUser tpTarget = toSender ? src : target;
-        (toSender ? target : src).teleport(tpTarget.getLocation(), true);
+        (toSender ? target : src).teleport(tpTarget);
 
         src.sendLangMessage("command.tpa.accepted.announce", target.getFormattedDisplayName());
         target.sendLangMessage("command.tpa.accepted", src.getFormattedDisplayName());

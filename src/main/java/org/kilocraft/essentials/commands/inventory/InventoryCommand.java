@@ -4,27 +4,30 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.collection.DefaultedList;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.config.KiloConfig;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import org.kilocraft.essentials.util.text.Texter;
 
 public class InventoryCommand extends EssentialCommand {
-
     public InventoryCommand() {
         super("inventory", CommandPermission.SEEK_INVENTORY, new String[]{"inv", "seekinv"});
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("user")
+        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getOnlineUserArgument("target")
                 .executes(this::execute);
 
         this.commandNode.addChild(userArgument.build());
@@ -32,23 +35,78 @@ public class InventoryCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final OnlineUser sender = this.getOnlineUser(ctx);
-        final String inputName = this.getUserArgumentInput(ctx, "user");
+        final OnlineUser target = this.getOnlineUser(ctx, "target");
 
-        if (sender.getUsername().equals(inputName)) {
+        if (sender.equals(target)) {
             sender.sendError(tl("command.inventory.error"));
             return SINGLE_FAILED;
         }
 
-        
-
+        sender.asPlayer().openHandledScreen(factory(sender, target));
+        sender.sendLangMessage("general.seek_screen", target.getFormattedDisplayName(), "");
         return SINGLE_SUCCESS;
     }
 
-    private SimpleNamedScreenHandlerFactory create(final ServerPlayerEntity src, final Inventory inv, Text text) {
-//        return new SimpleNamedScreenHandlerFactory((syncId, playerInv, player) ->
-//                new GenericContainerScreen(GenericContainerScreenHandler, player.inventory, text),
-//                text);
-        return null;
+    private NamedScreenHandlerFactory factory(final OnlineUser src, final OnlineUser target) {
+        return new NamedScreenHandlerFactory() {
+            @Override
+            public Text getDisplayName() {
+                Text text;
+                Text translatable =  new TranslatableText("container.inventory");
+
+                if (src.equals(target)) {
+                    text = Texter.toText().append(translatable).append(" ").append(target.getFormattedDisplayName());
+                } else {
+                    text = translatable;
+                }
+
+                return text;
+            }
+
+            @Override
+            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                ScreenHandler handler = GenericContainerScreenHandler.createGeneric9x5(syncId, src.asPlayer().inventory);
+                handler.addListener(new ScreenHandlerListener() {
+                    @Override
+                    public void onHandlerRegistered(ScreenHandler screenHandler, DefaultedList<ItemStack> defaultedList) {
+                        setSlotsInit(target.asPlayer(), handler);
+                    }
+
+                    @Override
+                    public void onSlotUpdate(ScreenHandler screenHandler, int i, ItemStack itemStack) {
+                        copySlotsFromInventory(target.asPlayer(), handler, syncId);
+                    }
+
+                    @Override
+                    public void onPropertyUpdate(ScreenHandler screenHandler, int i, int j) {
+                    }
+                });
+
+                return handler;
+            }
+        };
+    }
+
+    private static void setSlotsInit(ServerPlayerEntity target, ScreenHandler handler){
+        for (int i = 0; i < 36; i++){
+            handler.setStackInSlot(i, target.inventory.main.get(i));
+        }
+
+        for (int i = 0; i < 4; i++){
+            handler.setStackInSlot(i + 36, target.inventory.armor.get(i));
+        }
+
+        handler.setStackInSlot(44, target.inventory.offHand.get(0));
+    }
+
+    private static void copySlotsFromInventory(ServerPlayerEntity target, ScreenHandler handler, int slotID){
+        if (slotID < 36){
+            target.inventory.main.set(slotID, handler.getStacks().get(slotID));
+        } else if (slotID < 40){
+            target.inventory.armor.set(slotID - 36, handler.getStacks().get(slotID));
+        } else if (slotID == 44){
+            target.inventory.offHand.set(0, handler.getStacks().get(slotID));
+        }
     }
 
 }
