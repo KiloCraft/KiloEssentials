@@ -18,8 +18,10 @@ import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public class TpaCommand extends EssentialCommand {
+    public static final CommandPermission PERMISSION = CommandPermission.TELEPORTREQUEST;
+
     public TpaCommand() {
-        super("tpa", CommandPermission.TELEPORTREQUEST, new String[]{"tpr"});
+        super("tpa", PERMISSION, new String[]{"tpr"});
         this.withUsage("command.tpa.usage", "target");
     }
 
@@ -39,7 +41,7 @@ public class TpaCommand extends EssentialCommand {
             throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
         }
 
-        if (target.ignored(src.getUuid()) || target.getSetting(Settings.DON_NOT_DISTURB)) {
+        if (target.ignored(src.getUuid()) || target.getSetting(Settings.DON_NOT_DISTURB) || !target.hasPermission(PERMISSION)) {
             throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
         }
 
@@ -51,15 +53,15 @@ public class TpaCommand extends EssentialCommand {
         UserUtils.TpaRequests.add(src, target, false);
 
         src.sendMessage(
-                Texter.toText(ModConstants.translation("command.tpa.sent", target.getFormattedDisplayName()))
+                Texter.toText(tl("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
                         .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.toText("&cCancel"))))
         );
 
         target.sendMessage(
-                Texter.toText(ModConstants.translation("command.tpa.receive", src.getFormattedDisplayName()))
+                Texter.toText(tl("command.tpa.receive", src.getFormattedDisplayName()))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.toText("&aClick to accept"))))
+                            .append(Texts.bracketed(Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.toText("&aClick to accept"))))
                         .append(" ")
                         .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.toText("&cClick to deny"))))
         );

@@ -24,12 +24,8 @@ import java.util.Date;
 import java.util.UUID;
 
 public class UserUtils {
-    private static final ServerUserManager manager = ((ServerUserManager) KiloServer.getServer().getUserManager());
+    private static final ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
     private static PermissionUtil.Manager permManager = KiloEssentials.getInstance().getPermissionUtil().getManager();
-
-    public static boolean isIgnoring(@NotNull final User user, String username) {
-        return user.getSetting(Settings.IGNORE_LIST).containsKey(username);
-    }
 
     public static Text getDisplayNameWithMeta(User user, boolean nickName) {
         if (permManager == PermissionUtil.Manager.LUCKPERMS) {
@@ -90,6 +86,7 @@ public class UserUtils {
                 if (PairMap.get(src).getLeft().getLeft().equals(target.getUuid())) {
                     if (new Date().getTime() - PairMap.get(src).getRight() > 60000) {
                         PairMap.remove(src);
+                        return false;
                     } else {
                         return true;
                     }
@@ -100,9 +97,9 @@ public class UserUtils {
         }
 
         public static boolean useRequest(final OnlineUser src) {
-            boolean bool = PairMap.get(src).getLeft().getRight();;
+            boolean toSender = PairMap.get(src).getLeft().getRight();;
             PairMap.remove(src);
-            return bool;
+            return toSender;
         }
 
         public static void remove(@NotNull final OnlineUser src) {
@@ -120,10 +117,6 @@ public class UserUtils {
                             new Date().getTime()
                     )
             );
-        }
-
-        public static Pair<Pair<UUID, Boolean>, Long> get(@NotNull final OnlineUser src) {
-            return PairMap.get(src);
         }
 
         private static class PairMap {

@@ -27,14 +27,14 @@ public class TpacceptCommand extends EssentialCommand {
         OnlineUser src = this.getOnlineUser(ctx);
         OnlineUser target = this.getOnlineUser(ctx, "target");
 
-        if (!UserUtils.TpaRequests.hasRequest(src, target)) {
+        if (!UserUtils.TpaRequests.hasRequest(target, src)) {
             src.sendLangError("command.tpa.no_requests", target.getFormattedDisplayName());
             return SINGLE_FAILED;
         }
 
         boolean toSender = UserUtils.TpaRequests.useRequest(src);
         OnlineUser tpTarget = toSender ? src : target;
-        (toSender ? target : src).teleport(tpTarget);
+        (toSender ? src : target).teleport(tpTarget);
 
         src.sendLangMessage("command.tpa.accepted.announce", target.getFormattedDisplayName());
         target.sendLangMessage("command.tpa.accepted", src.getFormattedDisplayName());
