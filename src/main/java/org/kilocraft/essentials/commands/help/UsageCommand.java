@@ -37,7 +37,7 @@ public class UsageCommand extends EssentialCommand {
         else
             KiloCommands.executeSmartUsageFor(command, ctx.getSource());
 
-        return KiloCommands.SUCCESS();
+        return SUCCESS;
     }
 
 }

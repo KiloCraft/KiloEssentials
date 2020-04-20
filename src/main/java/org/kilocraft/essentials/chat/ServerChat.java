@@ -238,11 +238,10 @@ public final class ServerChat {
         return KiloServer.getServer().getOnlineUser(player).getSetting(Settings.COMMAND_SPY);
     }
 
-    public static int sendDirectMessage(final ServerCommandSource source, final ServerPlayerEntity target, final String message) throws CommandSyntaxException {
-        final OnlineUser user = KiloServer.getServer().getOnlineUser(target);
+    public static int sendDirectMessage(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
         final CommandSourceUser src = KiloServer.getServer().getCommandSourceUser(source);
 
-        if (!((ServerUser) user).shouldMessage() && src.getUser() != null) {
+        if (!((ServerUser) target).shouldMessage() && src.getUser() != null) {
             if (!src.isConsole() && src.isOnline() && !((ServerUser) src.getUser()).isStaff()) {
                 throw ServerChat.CANT_MESSAGE_EXCEPTION.create();
             }
@@ -250,14 +249,14 @@ public final class ServerChat {
 
         if  (!CommandUtils.isConsole(source)) {
             final OnlineUser online = KiloServer.getServer().getOnlineUser(source.getPlayer());
-            user.setLastMessageSender(source.getPlayer().getUuid());
+            target.setLastMessageSender(source.getPlayer().getUuid());
             online.setLastMessageSender(target.getUuid());
             online.setLastPrivateMessage(message);
         }
 
-        if (target == null) {
-            throw ServerChat.TARGET_OFFLINE_EXCEPTION.create();
-        }
+//        if (target == null) {
+//            throw ServerChat.TARGET_OFFLINE_EXCEPTION.create();
+//        }
 
         if (CommandUtils.areTheSame(source, target)) {
             throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
@@ -272,7 +271,7 @@ public final class ServerChat {
             }
         }
 
-        ServerChat.messagePrivately(source, user, msg);
+        ServerChat.messagePrivately(source, target, msg);
         return 1;
     }
 

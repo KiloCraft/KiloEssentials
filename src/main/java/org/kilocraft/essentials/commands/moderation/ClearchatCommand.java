@@ -8,15 +8,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.TextMessage;
 
 import java.util.Collection;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
-import static org.kilocraft.essentials.KiloCommands.SUCCESS;
 import static org.kilocraft.essentials.chat.KiloChat.*;
 
 public class ClearchatCommand extends EssentialCommand {
@@ -45,7 +44,7 @@ public class ClearchatCommand extends EssentialCommand {
         broadCastToConsole(new TextMessage(
                 getFormattedLang("command.clearchat.broadcast", ctx.getSource().getName()), false));
 
-        return SUCCESS();
+        return SUCCESS;
     }
 
     private static int executeMultiple(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> targets, boolean silent) {
@@ -58,7 +57,7 @@ public class ClearchatCommand extends EssentialCommand {
 
         broadCastLangToConsole("command.clearchat.singleton.broadcast", ctx.getSource().getName(), targets.size());
 
-        return SUCCESS();
+        return SUCCESS;
     }
 
     private static String getClearString() {

@@ -358,29 +358,29 @@ public class KiloCommands {
         return esscommand;
     }
 
-    public final void sendUsage(final ServerCommandSource source, final EssentialCommand essentialcommand) {
-        if (!essentialcommand.hasUsage()) {
+    public final void sendUsage(final ServerCommandSource source, final EssentialCommand command) {
+        if (!command.hasUsage()) {
             source.sendError(new LiteralText("No Usage!"));
             return;
         }
 
-        final StringBuilder builder = new StringBuilder(ModConstants.translation("command.usage", essentialcommand.getLabel().replaceFirst("ke_", ""))).append(' ');
+        StringBuilder builder = new StringBuilder(ModConstants.translation("command.usage", LiteralCommandModified.normalizeName(command.getLabel()))).append(' ');
 
-        for (final String arg : essentialcommand.getUsageArguments()) {
+        for (String arg : command.getUsageArguments()) {
             builder.append(ModConstants.translation("command.usage.arg", arg)).append(' ');
         }
 
-        if (essentialcommand.getDescriptionId() != null) {
-            builder.append('\n').append(ModConstants.translation("command.usage.desc", ModConstants.translation(essentialcommand.getDescriptionId())));
+        if (command.getDescriptionId() != null) {
+            builder.append('\n').append(ModConstants.translation("command.usage.desc", ModConstants.translation(command.getDescriptionId())));
         }
 
-        if (essentialcommand.getAlias() != null && essentialcommand.getAlias().length > 0) {
+        if (command.getAlias() != null && command.getAlias().length > 0) {
             builder.append('\n').append(ModConstants.translation("command.usage.aliases")).append(' ');
 
-            for (int i = 0; i < essentialcommand.getAlias().length; i++) {
-                builder.append(ModConstants.translation("command.usage.alias", LiteralCommandModified.normalizeName(essentialcommand.getAlias()[i])));
+            for (int i = 0; i < command.getAlias().length; i++) {
+                builder.append(ModConstants.translation("command.usage.alias", LiteralCommandModified.normalizeName(command.getAlias()[i])));
 
-                if (i + 1 != essentialcommand.getAlias().length) {
+                if (i + 1 != command.getAlias().length) {
                     builder.append(ModConstants.translation("command.usage.separator")).append(' ');
                 }
             }
@@ -390,7 +390,7 @@ public class KiloCommands {
     }
 
     public int execute(final ServerCommandSource executor, final String command) {
-        final OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(executor, command);
+        OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(executor, command);
         String cmd = command;
 
         if (!command.endsWith("--push") && !executor.hasPermissionLevel(4)) {
@@ -407,7 +407,7 @@ public class KiloCommands {
             return this.simpleCommandManager.execute(cmd, executor);
         }
 
-        final StringReader reader = new StringReader(cmd);
+        StringReader reader = new StringReader(cmd);
 
         if (reader.canRead() && reader.peek() == '/') {
             reader.skip();
@@ -434,7 +434,6 @@ public class KiloCommands {
                         this.sendUsage(executor, essentialcommand);
                         return var;
                     }
-
 
                     if (this.isCommand(literalName) && reqPerm != null && !KiloCommands.hasPermission(executor, reqPerm)) {
                         KiloCommands.sendPermissionError(executor);
@@ -470,16 +469,14 @@ public class KiloCommands {
             final Text text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
             if (SharedConstants.isDevelopment) {
                 getLogger().error("Command exception: {}", command, e);
-                final StackTraceElement[] stackTraceElements = e.getStackTrace();
+                StackTraceElement[] stackTraceElements = e.getStackTrace();
 
-                for(int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
-                    text.append("\n\n").append(stackTraceElements[i].getMethodName()).append("\n ").append(stackTraceElements[i].getFileName()).append(":").append(String.valueOf(stackTraceElements[i].getLineNumber()));
+                for (int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
+                    text.append(Texter.exceptionToText(e, true));
                 }
             }
 
-            executor.sendError(new TranslatableText("command.failed").styled(style -> {
-                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text));
-            }));
+            executor.sendError(new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text))));
 
             if (SharedConstants.isDevelopment) {
                 executor.sendError(new LiteralText(Util.getInnermostMessage(e)));

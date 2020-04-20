@@ -18,18 +18,18 @@ public class MessageCommand extends EssentialCommand {
     }
 
     @Override
-    public final void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = this.argument("target", EntityArgumentType.player());
+    public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
+        RequiredArgumentBuilder<ServerCommandSource, String> target = this.getOnlineUserArgument("target");
 
-        final RequiredArgumentBuilder<ServerCommandSource, String> message = this.argument("message", StringArgumentType.greedyString())
-                .executes(MessageCommand::execute);
+        RequiredArgumentBuilder<ServerCommandSource, String> message = this.argument("message", StringArgumentType.greedyString())
+                .executes(this::execute);
 
         target.then(message);
         this.commandNode.addChild(target.build());
     }
 
-    private static int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return ServerChat.sendDirectMessage(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "target"), StringArgumentType.getString(ctx, "message"));
+    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        return ServerChat.sendDirectMessage(ctx.getSource(), this.getOnlineUser(ctx, "target"), StringArgumentType.getString(ctx, "message"));
     }
 
 }
