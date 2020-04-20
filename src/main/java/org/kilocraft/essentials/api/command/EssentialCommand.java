@@ -230,10 +230,6 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.server.getCommandSourceUser(ctx.getSource());
     }
 
-    public RequiredArgumentBuilder<ServerCommandSource, String> getAsyncProfileArgument(final String label) {
-        return argument(label, StringArgumentType.string()).suggests(ArgumentCompletions::allPlayers);
-    }
-
     public String getUserArgumentInput(final CommandContext<ServerCommandSource> ctx, final String label) {
         return getString(ctx, label);
     }
@@ -269,11 +265,11 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(final String label) {
-        return this.argument(label, string()).suggests(ArgumentCompletions::allPlayers);
+        return this.argument(label, string()).suggests(ArgumentCompletions::users);
     }
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getOnlineUserArgument(final String label) {
-        return this.argument(label, string()).suggests(ArgumentCompletions::allPlayers);
+        return this.argument(label, string()).suggests(ArgumentCompletions::users);
     }
 
     public int sendUsage(CommandContext<ServerCommandSource> ctx, String key, Object... objects) {

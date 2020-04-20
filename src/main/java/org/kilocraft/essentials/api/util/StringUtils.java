@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.api.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.Iterator;
@@ -11,32 +12,18 @@ import java.util.regex.Pattern;
 
 public class StringUtils {
     private static final Pattern INVALID_FILE_CHARS = Pattern.compile("[^a-z0-9-]");
+    private static final Pattern USERNAME = Pattern.compile("/[a-zA-Z][a-zA-Z0-9-_]/gi");
 
     public static String sanitizeFileName(final String name) {
         return INVALID_FILE_CHARS.matcher(name.toLowerCase(Locale.ENGLISH)).replaceAll("_");
     }
 
-    public static String censor(@NotNull final String message) {
-        String msg = message;
-        String lowerCased = msg.toLowerCase(Locale.ROOT);
-
-        for (String value : KiloConfig.messages().censorList().words) {
-            String s = value.toLowerCase(Locale.ROOT);
-            if (lowerCased.contains(s)) {
-                msg = msg.replaceAll(("(?i)" + s), Matcher.quoteReplacement(KiloConfig.messages().censorList().alternateChar));
-            }
-        }
-
-        return msg;
+    public static String uniformNickname(final String nickname) {
+        return stringToUsername(TextFormat.clearColorCodes(nickname)).replaceAll("\\s+", "");
     }
 
-
-
-
-
-
-
-
-
+    public static String stringToUsername(final String string) {
+        return string.replaceAll("[^A-Za-z0-9()\\\\[\\\\]]", "");
+    }
 
 }

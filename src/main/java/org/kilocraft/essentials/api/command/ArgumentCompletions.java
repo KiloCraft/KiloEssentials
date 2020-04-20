@@ -12,10 +12,12 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 
 import java.util.*;
@@ -25,6 +27,25 @@ import java.util.stream.Stream;
 public class ArgumentCompletions {
 
     private static final PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
+
+
+    public static CompletableFuture<Suggestions> users(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
+        List<String> strings = new ArrayList<>();
+        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+            if (user.hasNickname()) {
+                String name = TextFormat.clearColorCodes(user.getDisplayName());
+                if (name.contains(" ")) {
+                    strings.add(StringUtils.uniformNickname(user.getDisplayName()));
+                } else {
+                    strings.add(name);
+                }
+            }
+
+            strings.add(user.getUsername());
+        }
+
+        return CommandSource.suggestMatching(strings, builder);
+    }
 
     public static CompletableFuture<Suggestions> noSuggestions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         return new CompletableFuture<>();
@@ -216,4 +237,5 @@ public class ArgumentCompletions {
         }
 
     }
+
 }

@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -22,6 +23,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.player.PlayerDataModifier;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -92,21 +94,30 @@ public class NicknameCommand extends EssentialCommand {
         	formattedNickname = TextFormat.removeAlternateColorCodes('&', nickname);
         }
 
-        User user = KiloServer.getServer().getUserManager().getOnline(self);
+        OnlineUser src = KiloServer.getServer().getUserManager().getOnline(self);
 
-        KiloServer.getServer().getCommandSourceUser(source).sendMessage(new TextMessage(messages.commands().nickname().setSelf
-                .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
-                .replace("{NICK_NEW}", nickname)
-                , true));
+        String finalFormattedNickname = formattedNickname;
+        KiloEssentials.getInstance().getUserThenAcceptAsync(src, src.getUsername(), (user) -> {
+            if (!((ServerUserManager) server.getUserManager()).canUseNickname(src, nickname)) {
+                src.sendLangMessage("command.nickname.already_taken");
+                return;
+            }
 
-        user.setNickname(nickname);
-        self.setCustomName(new LiteralText(formattedNickname));
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new TextMessage(messages.commands().nickname().setSelf
+                    .replace("{NICK}", src.getNickname().isPresent() ? src.getNickname().get() : src.getDisplayName())
+                    .replace("{NICK_NEW}", nickname)
+                    , true));
 
-        return 1;
+            src.setNickname(nickname);
+            self.setCustomName(new LiteralText(finalFormattedNickname));
+        });
+
+        return AWAIT;
     }
 
     private int setOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerCommandSource source = ctx.getSource();
+        OnlineUser src = this.getOnlineUser(ctx);
         String nickname = getString(ctx, "nickname");
         String unformatted = TextFormat.clearColorCodes(nickname);
         int maxLength = KiloConfig.main().nicknameMaxLength;
@@ -115,8 +126,13 @@ public class NicknameCommand extends EssentialCommand {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
         }
 
-        essentials.getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
+        essentials.getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
             String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
+            if (!((ServerUserManager) server.getUserManager()).canUseNickname(src, nickname)) {
+                src.sendLangMessage("command.nickname.already_taken");
+                return;
+            }
+
             KiloServer.getServer().getCommandSourceUser(source).sendMessage(new TextMessage(messages.commands().nickname().setOthers
                     .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                     .replace("{NICK_NEW}", nickname)

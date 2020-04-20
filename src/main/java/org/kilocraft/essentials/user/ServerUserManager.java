@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -28,6 +30,7 @@ import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.util.CacheManager;
 import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.player.UserUtils;
@@ -37,6 +40,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public class ServerUserManager implements UserManager, TickListener {
@@ -48,6 +52,8 @@ public class ServerUserManager implements UserManager, TickListener {
     private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
     private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
     private final Map<UUID, SimpleProcess<?>> inProcessUsers = new HashMap<>();
+    private final String NICKNAME_CACHE = "nicknames";
+    private List<String> cachedNicknames = new ArrayList<>();
 
     private PunishmentManager punishManager;
 
@@ -82,6 +88,11 @@ public class ServerUserManager implements UserManager, TickListener {
 
     @Override
     public CompletableFuture<Optional<User>> getOffline(String username) {
+        OnlineUser user = this.getOnlineNickname(username);
+        if (user != null) {
+            return CompletableFuture.completedFuture(Optional.of(user));
+        }
+
         UUID ret = usernameToUUID.get(username);
         if (ret != null) {
             return getOffline(ret, username);
@@ -91,11 +102,9 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     private CompletableFuture<Optional<User>> getUserAsync(String username) {
-        CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() -> {
-            GameProfile profile = KiloServer.getServer().getVanillaServer().getUserCache().findByName(username);
-
-            return profile;
-        }); // This is hacky and probably doesn't work. //CODY_AI: But it works!
+        CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() ->
+                KiloServer.getServer().getVanillaServer().getUserCache().findByName(username)
+        ); // This is hacky and probably doesn't work. //CODY_AI: But it works!
 
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
     }
@@ -163,13 +172,34 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     @Nullable
     public OnlineUser getOnline(String username) {
-        return getOnline(usernameToUUID.get(username));
+        OnlineUser user = getOnline(usernameToUUID.get(username));
+        return user == null ? getOnlineNickname(username) : user;
     }
 
     @Override
     @Nullable
     public OnlineUser getOnlineNickname(String nickname) {
-        return getOnline(nicknameToUUID.get(nickname));
+        if (usernameToUUID.containsKey(nickname)) {
+            return this.getOnline(nickname);
+        }
+
+        if (nicknameToUUID.containsKey(nickname)) {
+            return this.getOnline(nicknameToUUID.get(nickname));
+        }
+
+        for (OnlineUser user : users) {
+            if (user.hasNickname()) {
+                String nick = org.kilocraft.essentials.api.util.StringUtils.stringToUsername(
+                        TextFormat.clearColorCodes(user.getDisplayName()).replaceAll("\\s+", "")
+                );
+
+                if (nick.equals(nickname)) {
+                    return user;
+                }
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -228,6 +258,32 @@ public class ServerUserManager implements UserManager, TickListener {
             KiloServer.getServer().getPlayerManager().sendToAll(
                     new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, ((OnlineUser) user).asPlayer()));
         }
+    }
+
+    public boolean canUseNickname(OnlineUser user, String rawNickname) {
+        if (!CacheManager.shouldUse(NICKNAME_CACHE)) {
+            List<String> nicks = new ArrayList<>();
+            KiloEssentials.getInstance().getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
+                for (User victim : list) {
+                    victim.getNickname().ifPresent(nick -> {
+                        nicks.add(org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT));
+                    });
+                }
+            });
+
+            cachedNicknames = nicks;
+            Cached<List<String>> cached = new Cached<>(NICKNAME_CACHE, nicks);
+            CacheManager.cache(cached);
+        }
+
+        boolean canUse = true;
+        String uniformedNickname = org.kilocraft.essentials.api.util.StringUtils.uniformNickname(rawNickname).toLowerCase(Locale.ROOT);
+
+        if (cachedNicknames.contains(uniformedNickname)) {
+            canUse = false;
+        }
+
+        return canUse;
     }
 
     private void profileSanityCheck(GameProfile profile) {
