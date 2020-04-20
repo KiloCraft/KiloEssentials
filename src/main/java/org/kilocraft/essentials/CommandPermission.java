@@ -96,6 +96,7 @@ public enum CommandPermission {
     KICK("kick"),
     TELEPORTREQUEST("teleportrequest"),
     LASTSEEN("lastseen"),
+    CALCULATE("calculate"),
     ;
 
     private String node;

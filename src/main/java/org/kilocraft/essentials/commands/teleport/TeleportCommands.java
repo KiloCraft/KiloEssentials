@@ -24,6 +24,7 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.SUCCESS;
 
+@Deprecated
 public class TeleportCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> tptoCommand = dispatcher.register(literal("teleportto")
