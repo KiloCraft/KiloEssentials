@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.commands.misc;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -50,6 +49,6 @@ public class CalculateCommand extends EssentialCommand {
     }
 
     private CompletableFuture<Suggestions> operations(final CommandContext<ServerCommandSource> ctx, final SuggestionsBuilder builder) {
-        return ArgumentCompletions.suggestAtCursor(Lists.newArrayList("+", "-", "*", "/"), ctx);
+        return ArgumentCompletions.suggestAtCursor(StringUtils.Calculator.operations(), ctx);
     }
 }

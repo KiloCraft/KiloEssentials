@@ -5,6 +5,7 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.Locale;
+import java.util.Stack;
 import java.util.regex.Pattern;
 
 
@@ -40,6 +41,16 @@ public class StringUtils {
             float var = 0.0F;
             String[] strings = this.input.replaceAll("\\s+", "").split(" ");
 
+            //TODO: Iterate through the Strings
+            for (String string : strings) {
+                //Check for brackets in the strings
+                //Add the strings into a Stack until we reach a operation
+            }
+
+            //TODO: Check the Stack for any possible operations in the brackets
+            //TODO: go through the Stacks and do the operations
+            //TODO: sum the results and output the number
+
             this.output = var;
         }
 
@@ -54,6 +65,14 @@ public class StringUtils {
         @Override
         public int compareTo(@NotNull Float o) {
             return o.compareTo(this.output);
+        }
+
+        public static String[] operations() {
+            return new String[]{"+", "-", "*", "/", "^"};
+        }
+
+        public static String[] brackets() {
+            return new String[]{"(", ")"};
         }
     }
 }
