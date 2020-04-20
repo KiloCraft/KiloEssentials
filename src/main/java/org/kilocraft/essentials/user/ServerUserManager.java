@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public class ServerUserManager implements UserManager, TickListener {
@@ -251,7 +250,12 @@ public class ServerUserManager implements UserManager, TickListener {
     public void onChangeNickname(User user, String oldNick) {
         if (oldNick != null) {
             this.nicknameToUUID.remove(oldNick);
-            user.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, user.getUuid()));
+            this.cachedNicknames.remove(org.kilocraft.essentials.api.util.StringUtils.uniformNickname(oldNick));
+
+            user.getNickname().ifPresent((nick) -> {
+                this.nicknameToUUID.put(nick, user.getUuid());
+                this.cachedNicknames.add(org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick));
+            });
         }
 
         if (user.isOnline()) {
@@ -260,7 +264,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
     }
 
-    public boolean canUseNickname(OnlineUser user, String rawNickname) {
+    public boolean shouldNotUseNickname(OnlineUser user, String rawNickname) {
         if (!CacheManager.shouldUse(NICKNAME_CACHE)) {
             List<String> nicks = new ArrayList<>();
             KiloEssentials.getInstance().getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
@@ -283,7 +287,7 @@ public class ServerUserManager implements UserManager, TickListener {
             canUse = false;
         }
 
-        return canUse;
+        return !canUse;
     }
 
     private void profileSanityCheck(GameProfile profile) {

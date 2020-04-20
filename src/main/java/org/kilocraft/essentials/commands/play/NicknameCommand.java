@@ -98,7 +98,7 @@ public class NicknameCommand extends EssentialCommand {
 
         String finalFormattedNickname = formattedNickname;
         KiloEssentials.getInstance().getUserThenAcceptAsync(src, src.getUsername(), (user) -> {
-            if (!((ServerUserManager) server.getUserManager()).canUseNickname(src, nickname)) {
+            if (((ServerUserManager) server.getUserManager()).shouldNotUseNickname(src, nickname)) {
                 src.sendLangMessage("command.nickname.already_taken");
                 return;
             }
@@ -128,7 +128,7 @@ public class NicknameCommand extends EssentialCommand {
 
         essentials.getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
             String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
-            if (!((ServerUserManager) server.getUserManager()).canUseNickname(src, nickname)) {
+            if (((ServerUserManager) server.getUserManager()).shouldNotUseNickname(src, nickname)) {
                 src.sendLangMessage("command.nickname.already_taken");
                 return;
             }
