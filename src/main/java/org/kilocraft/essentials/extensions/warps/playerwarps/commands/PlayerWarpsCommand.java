@@ -10,6 +10,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -62,9 +63,9 @@ public class PlayerWarpsCommand extends EssentialCommand {
         }
 
         if (!force && CacheManager.shouldUse(CACHE_ID)) {
-            AtomicReference<List<Map.Entry<PlayerWarp, String>>> sortedList = new AtomicReference<>();
+            AtomicReference<List<Map.Entry<String, List<PlayerWarp>>>> sortedList = new AtomicReference<>();
 
-            CacheManager.getAndRun(CACHE_ID, (cached) -> sortedList.set((List<Map.Entry<PlayerWarp, String>>) cached.get()));
+            CacheManager.getAndRun(CACHE_ID, (cached) -> sortedList.set((List<Map.Entry<String, List<PlayerWarp>>>) cached.get()));
 
             if (sortedList.get() != null) {
                 return send(src, page, sortedList.get());
@@ -72,29 +73,30 @@ public class PlayerWarpsCommand extends EssentialCommand {
         }
 
         CompletableFuture.runAsync(() -> {
-            Map<PlayerWarp, String> map = new HashMap<>();
+            Map<String, List<PlayerWarp>> map = new HashMap<>();
 
-            for (PlayerWarp warp : PlayerWarpsManager.getWarps()) {
-                if (this.isOnline(warp.getOwner())) {
+            for (UUID owner : PlayerWarpsManager.getOwners()) {
+                List<PlayerWarp> warps = PlayerWarpsManager.getWarps(owner);
+
+                if (this.isOnline(owner)) {
                     try {
-                        map.put(warp, this.getOnlineUser(warp.getOwner()).getFormattedDisplayName());
+                        map.put(this.getOnlineUser(owner).getFormattedDisplayName(), warps);
                         continue;
-                    } catch (CommandSyntaxException e) {
-                        src.sendError(e.getMessage());
+                    } catch (CommandSyntaxException ignored) {
                     }
                 }
 
-                this.essentials.getUserThenAcceptAsync(warp.getOwner(), (optionalUser) -> {
+                this.essentials.getUserThenAcceptAsync(owner, (optionalUser) -> {
                     if (optionalUser.isPresent()) {
-                        map.put(warp, optionalUser.get().getFormattedDisplayName());
+                        map.put(optionalUser.get().getFormattedDisplayName(), warps);
                     } else {
-                        map.put(warp, StringUtils.EMPTY_STRING);
+                        map.put(StringUtils.EMPTY_STRING, warps);
                     }
                 }).join();
             }
 
-            List<Map.Entry<PlayerWarp, String>> sorted = new ArrayList<>(map.entrySet());
-            sorted.sort(Map.Entry.comparingByValue());
+            List<Map.Entry<String, List<PlayerWarp>>> sorted = new ArrayList<>(map.entrySet());
+            sorted.sort(Map.Entry.comparingByKey());
 
             CacheManager.cache(new Cached<>(CACHE_ID, 60, TimeUnit.MINUTES, sorted));
             send(src, page, sorted);
@@ -103,47 +105,65 @@ public class PlayerWarpsCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private int send(OnlineUser src, int page, List<Map.Entry<PlayerWarp, String>> list) {
+    private int send(OnlineUser src, int page, List<Map.Entry<String, List<PlayerWarp>>> list) {
         TextInput input = new TextInput(Texter.toText(tl("command.playerwarps.total", list.size())));
 
         for (int i = 0; i < list.size(); i++) {
-            Map.Entry<PlayerWarp, String> entry = list.get(i);
-            String ownerName = entry.getValue().isEmpty() ? "&c&oNot Present" : entry.getValue();
+            Map.Entry<String, List<PlayerWarp>> entry = list.get(i);
+            String ownerName = entry.getKey().isEmpty() ? "&c&oNot Present" : entry.getKey();
 
-            Text text = new LiteralText("");
-            text.append(new LiteralText((i + 1) + ".").formatted(Formatting.GOLD));
-            text.append(" ");
-            text.append(new LiteralText(entry.getKey().getName()).formatted(Formatting.WHITE)).styled((style) -> {
-                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText("")
-                        .append(new LiteralText("By ").formatted(Formatting.WHITE))
-                        .append(new LiteralText(ownerName))
-                        .append("\n")
-                        .append(new LiteralText("In ").formatted(Formatting.WHITE))
-                        .append(new LiteralText(RegistryUtils.dimensionToName(entry.getKey().getLocation().getDimensionType())))));
-            });
-            text.append(new LiteralText(" (").formatted(Formatting.DARK_GRAY));
-            text.append(new LiteralText(entry.getKey().getType()).formatted(Formatting.LIGHT_PURPLE));
-            text.append(new LiteralText(") ").formatted(Formatting.DARK_GRAY));
+            List<PlayerWarp> warps = entry.getValue();
+            for (PlayerWarp warp : warps) {
+                Text text = new LiteralText("");
+                text.append(new LiteralText((i + 1) + ".").formatted(Formatting.GOLD));
+                text.append(" ");
+                text.append(new LiteralText(warp.getName()).formatted(Formatting.WHITE)).styled((style) -> {
+                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText("")
+                            .append(new LiteralText("By ").formatted(Formatting.WHITE))
+                            .append(new LiteralText(ownerName))
+                            .append("\n")
+                            .append(new LiteralText("In ").formatted(Formatting.WHITE))
+                            .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())))));
+                });
+                text.append(new LiteralText(" (").formatted(Formatting.DARK_GRAY));
+                text.append(new LiteralText(warp.getType()).formatted(Formatting.LIGHT_PURPLE));
+                text.append(new LiteralText(") ").formatted(Formatting.DARK_GRAY));
+                text.append(
+                        Texter.toText().append(
+                                Texts.bracketed(Texter.getButton(" &6i ", "/pwarp info " + warp.getName(), Texter.toText("&dClick for more Info")))
+                        ).append(" ").append(
+                                Texts.bracketed(Texter.getButton("&cTP", "/pwarp teleport " + warp.getName(), Texter.toText("&dClick to Teleport")))
+                        )
+                ).append(" ");
 
-            int maxLength = 45 - text.getString().length();
-            String desc = entry.getKey().getDescription();
-            String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
+                int maxLength = 60 - text.getString().length();
+                String desc = warp.getDescription();
+                String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
 
-            Text description = Texter.toText(shortenedDesc).styled((style) -> {
-                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(desc).formatted(Formatting.WHITE)));
-            });
+                Text description = Texter.toText(shortenedDesc).styled((style) -> {
+                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(desc).formatted(Formatting.WHITE)));
+                });
 
-            if (desc.length() > maxLength) {
-                description.append("...");
+                if (desc.length() > maxLength) {
+                    description.append("...");
+                }
+
+                text.append(description.formatted(Formatting.GRAY));
+                input.append(text);
             }
-
-            text.append(description.formatted(Formatting.GRAY));
-            input.append(text);
         }
 
         Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
 
         paged.send(src.getCommandSource(), "Player Warps", "/playerwarps %page%");
         return SUCCESS;
+    }
+
+    private Text buttons(PlayerWarp warp) {
+        return Texter.toText().append(
+                Texts.bracketed(Texter.getButton("&6i", "/pwarp info " + warp.getName(), Texter.toText("&dClick for more Info")))
+        ).append(" ").append(
+                Texts.bracketed(Texter.getButton("&cT", "/pwarp teleport " + warp.getName(), Texter.toText("&dClick to Teleport")))
+        );
     }
 }

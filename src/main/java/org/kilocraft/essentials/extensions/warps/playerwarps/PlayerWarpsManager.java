@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.extensions.warps.playerwarps;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
@@ -12,6 +13,7 @@ import org.kilocraft.essentials.extensions.warps.playerwarps.commands.PlayerWarp
 import org.kilocraft.essentials.extensions.warps.playerwarps.commands.PlayerWarpsCommand;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
+import org.kilocraft.essentials.util.nbt.NBTTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.UUID;
 
 public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStorage {
     private static boolean enabled = false;
+    private static final List<UUID> warpOwners = new ArrayList<>();
     private static final ArrayList<String> byName = new ArrayList<>();
     private static final List<PlayerWarp> warps = new ArrayList<>();
 
@@ -60,11 +63,13 @@ public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStor
     public static void addWarp(PlayerWarp warp) {
         warps.add(warp);
         byName.add(warp.getName());
+        warpOwners.add(warp.getOwner());
     }
 
     public static void removeWarp(PlayerWarp warp) {
         warps.remove(warp);
         byName.remove(warp.getName());
+        warpOwners.remove(warp.getOwner());
     }
 
     public static void removeWarp(String name) {
@@ -97,6 +102,10 @@ public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStor
         return list;
     }
 
+    public static List<UUID> getOwners() {
+        return warpOwners;
+    }
+
     public static boolean isEnabled() {
         return enabled;
     }
@@ -120,9 +129,14 @@ public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStor
     public void deserialize(@NotNull CompoundTag compoundTag) {
         warps.clear();
         byName.clear();
-        compoundTag.getKeys().forEach((key) -> {
-            warps.add(new PlayerWarp(key, compoundTag.getCompound(key)));
+        warpOwners.clear();
+
+        for (String key : compoundTag.getKeys()) {
+            PlayerWarp warp = new PlayerWarp(key, compoundTag.getCompound(key));
+            warpOwners.add(warp.getOwner());
+            warps.add(warp);
             byName.add(key);
-        });
+        }
+
     }
 }
