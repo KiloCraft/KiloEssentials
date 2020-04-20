@@ -28,6 +28,7 @@ import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.player.UserUtils;
 
 import java.net.SocketAddress;
 import java.util.Date;
@@ -56,7 +57,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void teleport(@NotNull OnlineUser target) {
-        this.teleport(target.getLocation(), true);
+        this.teleport(Vec3dLocation.of(target), true);
     }
 
     @Override
@@ -248,7 +249,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     public void onTick() {
         tick++;
         ticksPlayed++;
-        messageCooldown++;
 
         if (messageCooldown > 0) {
             --messageCooldown;
@@ -262,6 +262,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
                 PlaytimeCommands.getInstance().onUserPlaytimeUp(this, ticksPlayed);
             }
         }
+
     }
 
 }

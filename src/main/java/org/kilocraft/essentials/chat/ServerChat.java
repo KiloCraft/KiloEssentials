@@ -147,7 +147,7 @@ public final class ServerChat {
 
             for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
                 if (user.getSetting(Settings.CHAT_CHANNEL) == channel) {
-                    ServerChat.pingPlayer(user.asPlayer(), PingType.EVERYONE);
+                    ServerChat.pingPlayer(user.asPlayer(), config.ping().pingSound());
                 }
             }
         }
@@ -192,20 +192,18 @@ public final class ServerChat {
         ChatPingSoundConfigSection cfg = null;
         switch (type) {
             case PUBLIC:
+            case EVERYONE:
                 cfg = config.ping().pingSound();
                 break;
             case PRIVATE:
                 cfg = config.privateChat().pingSound();
                 break;
-            case EVERYONE:
-                config.ping().pingSound();
-                break;
         }
 
-        if (cfg == null) {
-            return;
-        }
+        pingPlayer(target, cfg);
+    }
 
+    private static void pingPlayer(final ServerPlayerEntity target, final ChatPingSoundConfigSection cfg) {
         Vec3d vec3d = target.getCommandSource().getPosition();
         String soundId = cfg.id;
         float volume = (float) cfg.volume;

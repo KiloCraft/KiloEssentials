@@ -12,7 +12,7 @@ import org.kilocraft.essentials.util.player.UserUtils;
 
 public class TpcancelCommand extends EssentialCommand {
     public TpcancelCommand() {
-        super("tpcancel", CommandPermission.TELEPORTREQUEST);
+        super("tpcancel", TpaCommand.PERMISSION);
     }
 
     @Override

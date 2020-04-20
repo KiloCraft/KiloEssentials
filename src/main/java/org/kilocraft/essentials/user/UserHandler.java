@@ -20,7 +20,7 @@ public class UserHandler {
         if (!this.loadUser(serverUser)) {
             UserHandler.saveDir.mkdirs();
             this.getUserFile(serverUser).createNewFile();
-            this.saveData(serverUser);
+            this.save(serverUser);
             this.handleUser(serverUser);
         }
 
@@ -42,7 +42,7 @@ public class UserHandler {
         return false;
     }
 
-    void saveData(final ServerUser user) throws IOException {
+    void save(final ServerUser user) throws IOException {
         if (this.getUserFile(user).exists()) {
             NbtIo.writeCompressed(
                     user.toTag(),
@@ -51,7 +51,7 @@ public class UserHandler {
         } else {
             UserHandler.saveDir.mkdirs();
             this.getUserFile(user).createNewFile();
-            this.saveData(user);
+            this.save(user);
         }
     }
 

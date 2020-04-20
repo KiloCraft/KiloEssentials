@@ -19,13 +19,13 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public class TpahereCommand extends EssentialCommand {
     public TpahereCommand() {
-        super("tpahere", CommandPermission.TELEPORTREQUEST, new String[]{"tprhere"});
+        super("tpahere", TpaCommand.PERMISSION, new String[]{"tprhere"});
         this.withUsage("command.tpa.usage", "target");
     }
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("target")
+        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("victim")
                 .executes(this::request);
 
         this.commandNode.addChild(selectorArgument.build());
@@ -33,13 +33,13 @@ public class TpahereCommand extends EssentialCommand {
 
     private int request(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
-        OnlineUser target = this.getOnlineUser(ctx, "target");
+        OnlineUser target = this.getOnlineUser(ctx, "victim");
 
         if (src.equals(target)) {
             throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
         }
 
-        if (target.ignored(src.getUuid()) || target.getSetting(Settings.DON_NOT_DISTURB)) {
+        if (target.ignored(src.getUuid()) || target.getSetting(Settings.DON_NOT_DISTURB) || !target.hasPermission(TpaCommand.PERMISSION)) {
             throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
         }
 

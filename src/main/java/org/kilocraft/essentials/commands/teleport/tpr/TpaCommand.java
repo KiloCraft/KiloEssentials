@@ -26,7 +26,7 @@ public class TpaCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("target")
+        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("victim")
                 .executes(this::request);
 
         this.commandNode.addChild(selectorArgument.build());
@@ -34,7 +34,7 @@ public class TpaCommand extends EssentialCommand {
 
     private int request(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
-        OnlineUser target = this.getOnlineUser(ctx, "target");
+        OnlineUser target = this.getOnlineUser(ctx, "victim");
 
         if (src.equals(target)) {
             throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
@@ -68,6 +68,7 @@ public class TpaCommand extends EssentialCommand {
         if (target.getSetting(Settings.SOUNDS)) {
             ServerChat.pingPlayer(target.asPlayer(), ServerChat.PingType.PRIVATE);
         }
+
         return SUCCESS;
     }
 

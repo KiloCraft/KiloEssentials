@@ -201,12 +201,12 @@ public class ServerUserManager implements UserManager, TickListener {
             KiloEssentials.getLogger().info("Saving users data, this may take a while...");
         }
 
-        for (OnlineServerUser serverUser : onlineUsers.values()) {
+        for (OnlineServerUser user : onlineUsers.values()) {
             try {
                 if (SharedConstants.isDevelopment) {
-                    KiloEssentials.getLogger().debug("Saving user \"" + serverUser.getUsername() + "\"");
+                    KiloEssentials.getLogger().info("Saving user \"{}\"", user.getUsername());
                 }
-                this.handler.saveData(serverUser);
+                this.handler.save(user);
             } catch (IOException e) {
                 KiloEssentials.getLogger().error("An unexpected exception occurred when saving a user's data!", e);
             }
@@ -255,14 +255,16 @@ public class ServerUserManager implements UserManager, TickListener {
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
         user.onLeave();
+        this.teleportRequestsMap.remove(user.getId());
         UserUtils.Process.remove(user);
-        if (user.getNickname().isPresent())
+        if (user.getNickname().isPresent()) {
             this.nicknameToUUID.remove(user.getNickname().get());
+        }
         this.usernameToUUID.remove(player.getEntityName());
         this.users.remove(user);
 
         try {
-            this.handler.saveData(user);
+            this.handler.save(user);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -290,12 +292,6 @@ public class ServerUserManager implements UserManager, TickListener {
             }
         }
 
-        if (string.startsWith("/")) {
-            KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
-        } else {
-            ServerChat.sendSafely(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
-        }
-
         ((OnlineServerUser) user).messageCooldown += 20;
         if (((ServerUser) user).messageCooldown > 200 && !user.hasPermission(EssentialPermission.CHAT_BYPASS)) {
             if (KiloConfig.main().chat().kickForSpamming) {
@@ -303,6 +299,12 @@ public class ServerUserManager implements UserManager, TickListener {
             } else {
                 player.getCommandSource().sendError(LangText.getFormatter(true, "channel.spam"));
             }
+        }
+
+        if (string.startsWith("/")) {
+            KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
+        } else {
+            ServerChat.sendSafely(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
         }
 
     }

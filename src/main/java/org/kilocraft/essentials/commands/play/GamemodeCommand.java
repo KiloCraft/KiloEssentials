@@ -52,7 +52,7 @@ public class GamemodeCommand extends EssentialCommand {
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> gameTypeArgument = this.argument("mode", string())
-                .suggests(GamemodeCommand::suggestGameModes)
+                .suggests(this::suggestGameModes)
                 .executes(ctx -> this.execute(ctx, null, ctx.getSource().getName(),false));
 
         final RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("target")
@@ -68,18 +68,20 @@ public class GamemodeCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable final GameMode cValue, final String selection, final boolean silent) throws CommandSyntaxException {
-        final ServerCommandSource src = ctx.getSource();
-        final CommandSourceUser sourceUser = this.getServerUser(ctx);
-        final String arg = cValue == null ? getString(ctx, "mode") : cValue.getName();
-        final GameMode selectedMode = GamemodeCommand.getMode(arg);
+        ServerCommandSource src = ctx.getSource();
+        CommandSourceUser sourceUser = this.getServerUser(ctx);
+        String arg = cValue == null ? getString(ctx, "mode") : cValue.getName();
+        GameMode selectedMode = this.getMode(arg);
 
-        if (selectedMode == null)
+        if (selectedMode == null) {
             throw new SimpleCommandExceptionType(new LiteralText("Please select a valid Game type!")).create();
+        }
 
-        if (!this.hasPermission(src, GamemodeCommand.getPermission("self", selectedMode)))
-            throw new SimpleCommandExceptionType(getPermissionError(GamemodeCommand.getPermission("self", selectedMode).getNode())).create();
+        if (!this.hasPermission(src, this.getPermission("self", selectedMode))) {
+            throw new SimpleCommandExceptionType(getPermissionError(this.getPermission("self", selectedMode).getNode())).create();
+        }
 
-        final AtomicInteger atomicInteger = new AtomicInteger(IEssentialCommand.AWAIT);
+        AtomicInteger atomicInteger = new AtomicInteger(IEssentialCommand.AWAIT);
         this.essentials.getUserThenAcceptAsync(sourceUser, selection, user -> {
             try {
                 user.getSettings().set(Settings.GAME_MODE, selectedMode);
@@ -99,32 +101,39 @@ public class GamemodeCommand extends EssentialCommand {
         return atomicInteger.get();
     }
 
-    private int setPlayers(final ServerCommandSource src, final Collection<ServerPlayerEntity> players, final GameMode selectedMode, final boolean silent) throws CommandSyntaxException {
-        if (players.size() == 1 && !this.hasPermission(src, GamemodeCommand.getPermission("self", selectedMode)))
-            throw new SimpleCommandExceptionType(getPermissionError(GamemodeCommand.getPermission("self", selectedMode).getNode())).create();
-
-        if (players.size() > 1 && !this.hasPermission(src, GamemodeCommand.getPermission("others", selectedMode)))
-            throw new SimpleCommandExceptionType(getPermissionError(GamemodeCommand.getPermission("others", selectedMode).getNode())).create();
-
-        String singletonName = null;
-        for (final ServerPlayerEntity player : players) {
-            if (!silent && !CommandUtils.areTheSame(src, player))
-                KiloChat.sendLangMessageTo(player, "template.#1.announce", src.getName(), "gamemode", selectedMode.getName());
-            player.setGameMode(selectedMode);
-            if (players.size() == 1)
-                singletonName = player.getEntityName();
+    private int setPlayers(final ServerCommandSource src, final Collection<ServerPlayerEntity> players, final GameMode selectedMode, boolean silent) throws CommandSyntaxException {
+        if (players.size() == 1 && !this.hasPermission(src, this.getPermission("self", selectedMode))) {
+            throw new SimpleCommandExceptionType(getPermissionError(this.getPermission("self", selectedMode).getNode())).create();
         }
 
-        if (singletonName == null)
+        if (players.size() > 1 && !this.hasPermission(src, this.getPermission("others", selectedMode))) {
+            throw new SimpleCommandExceptionType(getPermissionError(this.getPermission("others", selectedMode).getNode())).create();
+        }
+
+        String singletonName = null;
+        for (ServerPlayerEntity player : players) {
+            if (!silent && !CommandUtils.areTheSame(src, player)) {
+                KiloChat.sendLangMessageTo(player, "template.#1.announce", src.getName(), "gamemode", selectedMode.getName());
+            }
+
+            player.setGameMode(selectedMode);
+
+            if (players.size() == 1) {
+                singletonName = player.getEntityName();
+            }
+        }
+
+        if (singletonName == null) {
             singletonName = src.getName();
+        }
 
         KiloChat.sendLangMessageTo(src, "template.#1", "gamemode",
                 selectedMode.getName(), players.size() == 1 ? singletonName : players.size() + " players");
 
-        return IEssentialCommand.SUCCESS;
+        return SUCCESS;
     }
 
-    private static GameMode getMode(final String arg) {
+    private GameMode getMode(final String arg) {
         if  (arg.startsWith("sp") || arg.equals("3"))
             return GameMode.SPECTATOR;
         if  (arg.startsWith("s") || arg.equals("0"))
@@ -137,15 +146,16 @@ public class GamemodeCommand extends EssentialCommand {
         return null;
     }
 
-    private static CommandPermission getPermission(final String type, final GameMode mode) {
+    private CommandPermission getPermission(final String type, final GameMode mode) {
         return CommandPermission.byName("gamemode." + type + "." + mode.getName().toLowerCase());
     }
 
-    private static CompletableFuture<Suggestions> suggestGameModes(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        final List<String> strings = new ArrayList<>();
-        for (final GameMode value : GameMode.values()) {
-            if (value.equals(GameMode.NOT_SET))
+    private CompletableFuture<Suggestions> suggestGameModes(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
+        List<String> strings = new ArrayList<>();
+        for (GameMode value : GameMode.values()) {
+            if (value.equals(GameMode.NOT_SET) || !this.getOnlineUser(context).hasPermission(this.getPermission("self", value))) {
                 continue;
+            }
 
             strings.add(value.getName());
         }

@@ -79,9 +79,11 @@ public class NicknameCommand extends EssentialCommand {
         ServerPlayerEntity self = source.getPlayer();
         int maxLength = KiloConfig.main().nicknameMaxLength;
         String nickname = getString(ctx, "nickname");
+        String unformatted = TextFormat.clearColorCodes(nickname);
 
-        if (nickname.length() > maxLength || nickname.length() < 3)
+        if (unformatted.length() > maxLength || unformatted.length() < 3) {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
+        }
 
         String formattedNickname = "";
         if (KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING)) {
@@ -106,10 +108,12 @@ public class NicknameCommand extends EssentialCommand {
     private int setOther(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerCommandSource source = ctx.getSource();
         String nickname = getString(ctx, "nickname");
+        String unformatted = TextFormat.clearColorCodes(nickname);
         int maxLength = KiloConfig.main().nicknameMaxLength;
 
-        if (nickname.length() > maxLength || nickname.length() < 3)
+        if (unformatted.length() > maxLength || unformatted.length() < 3) {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
+        }
 
         essentials.getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
             String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);

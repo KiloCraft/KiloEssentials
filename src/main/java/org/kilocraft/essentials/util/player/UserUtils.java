@@ -96,7 +96,7 @@ public class UserUtils {
             return false;
         }
 
-        public static boolean useRequest(final OnlineUser src) {
+        public static boolean useRequestAndGetType(final OnlineUser src) {
             boolean toSender = PairMap.get(src).getLeft().getRight();;
             PairMap.remove(src);
             return toSender;

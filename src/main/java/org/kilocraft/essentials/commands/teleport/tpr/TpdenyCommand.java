@@ -12,12 +12,12 @@ import org.kilocraft.essentials.util.player.UserUtils;
 
 public class TpdenyCommand extends EssentialCommand {
     public TpdenyCommand() {
-        super("tpdeny", CommandPermission.TELEPORTREQUEST);
+        super("tpdeny", TpaCommand.PERMISSION);
     }
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("target")
+        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("victim")
                 .executes(this::deny);
 
         this.commandNode.addChild(selectorArgument.build());
@@ -25,9 +25,9 @@ public class TpdenyCommand extends EssentialCommand {
 
     private int deny(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
-        OnlineUser target = this.getOnlineUser(ctx, "target");
+        OnlineUser target = this.getOnlineUser(ctx, "victim");
 
-        if (!UserUtils.TpaRequests.hasRequest(src, target)) {
+        if (!UserUtils.TpaRequests.hasRequest(target, src)) {
             src.sendLangError("command.tpa.no_requests", target.getFormattedDisplayName());
             return FAILED;
         }

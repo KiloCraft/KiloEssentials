@@ -55,7 +55,7 @@ import java.util.function.Consumer;
 public final class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 	private static final String KE_PREFIX = "[KiloEssentials] ";
-	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials", KiloEssentialsImpl.massageFactory());
+	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials");
 	private static KiloEssentialsImpl instance;
 	private PermissionUtil permUtil;
 	private static final ModConstants constants = new ModConstants();
