@@ -9,6 +9,7 @@ import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
+import org.kilocraft.essentials.util.nbt.NBTTypes;
 import org.kilocraft.essentials.util.nbt.NBTUtils;
 
 import java.util.*;
@@ -108,12 +109,44 @@ public class Settings {
                 }
             }, (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {
-                    ListTag listTag = fun.tag().getList(fun.setting().getId(), 8);
-                    //TODO: Fish the De-Serializer
+                    List<String> strings = new ArrayList<>();
+                    ListTag listTag = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
+                    for (int i = 0; i < 10; i++) {
+                        if (listTag.getCompound(i) != null && listTag.getCompound(i).contains("name")) {
+                            strings.add(listTag.getCompound(i).getString("name"));
+                        }
+                    }
+
+                    fun.set(strings);
                 }
             }
     );
     public static final Setting<Boolean> SOUNDS = new Setting<>("sounds", true);
+    public static final Setting<List<String>> PENDING_COMMANDS = new Setting<List<String>>(
+            "pendingCommands", Collections.emptyList(),
+            (fun) -> {
+                if (!fun.value().isEmpty()) {
+                    ListTag listTag = new ListTag();
+                    for (String s : fun.value()) {
+                        CompoundTag tag = new CompoundTag();
+                        tag.putString("cmd", s);
+                        listTag.add(tag);
+                        fun.tag().put(fun.setting().getId(), listTag);
+                    }
+                }
+            }, (fun) -> {
+                if (fun.tag().contains(fun.setting().getId())) {
+                    List<String> strings = new ArrayList<>();
+                    ListTag listTag = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
+                    for (int i = 0; i < 10; i++) {
+                        if (listTag.getCompound(i) != null && listTag.getCompound(i).contains("cmd")) {
+                            strings.add(listTag.getCompound(i).getString("cmd"));
+                        }
+                    }
+
+                    fun.set(strings);
+                }
+    });
 
 
     @Nullable

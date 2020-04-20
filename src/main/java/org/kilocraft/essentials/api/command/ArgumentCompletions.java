@@ -96,7 +96,6 @@ public class ArgumentCompletions {
         return ArgumentCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()).filter(it -> context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)) == '&'), context);
     }
 
-
     public static CompletableFuture<Suggestions> allNonOperators(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(ArgumentCompletions.playerManager.getPlayerList().stream().filter(p -> !ArgumentCompletions.playerManager.isOperator(p.getGameProfile())).map(PlayerEntity::getEntityName), builder);
     }

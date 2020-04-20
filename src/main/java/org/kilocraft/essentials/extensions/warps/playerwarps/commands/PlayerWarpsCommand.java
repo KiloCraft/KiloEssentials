@@ -16,6 +16,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.Cached;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.util.CacheManager;
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayerWarpsCommand extends EssentialCommand {
-    private static String CACHE_ID = "command.playerwarps";
+    private static final String CACHE_ID = "command.playerwarps";
 
     public PlayerWarpsCommand(String label, CommandPermission permission, String[] alias) {
         super(label, permission, alias);
@@ -72,7 +73,6 @@ public class PlayerWarpsCommand extends EssentialCommand {
 
         CompletableFuture.runAsync(() -> {
             Map<PlayerWarp, String> map = new HashMap<>();
-            String EMPTY_STRING = "";
 
             for (PlayerWarp warp : PlayerWarpsManager.getWarps()) {
                 if (this.isOnline(warp.getOwner())) {
@@ -88,9 +88,9 @@ public class PlayerWarpsCommand extends EssentialCommand {
                     if (optionalUser.isPresent()) {
                         map.put(warp, optionalUser.get().getFormattedDisplayName());
                     } else {
-                        map.put(warp, EMPTY_STRING);
+                        map.put(warp, StringUtils.EMPTY_STRING);
                     }
-                });
+                }).join();
             }
 
             List<Map.Entry<PlayerWarp, String>> sorted = new ArrayList<>(map.entrySet());
@@ -125,17 +125,17 @@ public class PlayerWarpsCommand extends EssentialCommand {
             text.append(new LiteralText(entry.getKey().getType()).formatted(Formatting.LIGHT_PURPLE));
             text.append(new LiteralText(") ").formatted(Formatting.DARK_GRAY));
 
-            int textLength = text.asString().length();
+            int maxLength = 45 - text.getString().length();
             String desc = entry.getKey().getDescription();
-            //int cutBy = textLength / desc.length();
+            String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
 
-            Text description = new LiteralText(desc).styled((style) -> {
+            Text description = Texter.toText(shortenedDesc).styled((style) -> {
                 style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(desc).formatted(Formatting.WHITE)));
             });
 
-//            if (desc.length() >= cutBy) {
-//                description.append("...");
-//            }
+            if (desc.length() > maxLength) {
+                description.append("...");
+            }
 
             text.append(description.formatted(Formatting.GRAY));
             input.append(text);

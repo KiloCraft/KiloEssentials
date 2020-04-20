@@ -254,10 +254,6 @@ public final class ServerChat {
             online.setLastPrivateMessage(message);
         }
 
-//        if (target == null) {
-//            throw ServerChat.TARGET_OFFLINE_EXCEPTION.create();
-//        }
-
         if (CommandUtils.areTheSame(source, target)) {
             throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
         }

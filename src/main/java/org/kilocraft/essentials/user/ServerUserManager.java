@@ -259,8 +259,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         if (user.isOnline()) {
-            KiloServer.getServer().getPlayerManager().sendToAll(
-                    new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, ((OnlineUser) user).asPlayer()));
+            KiloServer.getServer().sendGlobalPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, ((OnlineUser) user).asPlayer()));
         }
     }
 

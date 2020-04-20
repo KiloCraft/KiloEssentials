@@ -49,9 +49,8 @@ public class LocationUtil {
         return loc.getWorld().getBlockState(loc.toPos()).getMaterial().isSolid();
     }
 
+    @Deprecated
     public static boolean isLocationSafeFor(@NotNull final Location loc, @NotNull final OnlineUser user) {
-
-
         return true;
     }
 

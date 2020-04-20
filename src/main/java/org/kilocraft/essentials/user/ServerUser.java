@@ -30,9 +30,7 @@ import org.kilocraft.essentials.util.player.UserUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Main User Implementation
@@ -120,11 +118,13 @@ public class ServerUser implements User {
             metaTag.putString("lastOnline", ModConstants.DATE_FORMAT.format(this.lastOnline));
         }
 
-        if (this.ticksPlayed != -1)
+        if (this.ticksPlayed != -1) {
             metaTag.putInt("ticksPlayed", this.ticksPlayed);
+        }
 
-        if (this.isStaff)
+        if (this.isStaff) {
             metaTag.putBoolean("isStaff", true);
+        }
 
         if (UserHomeHandler.isEnabled()) {
             CompoundTag homeTag = new CompoundTag();
