@@ -18,6 +18,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class SimpleCommandManager {
     private static SimpleCommandManager INSTANCE;
@@ -38,6 +39,9 @@ public class SimpleCommandManager {
             INSTANCE.byId.add(command.id);
 
             KiloCommands.getDispatcher().register(CommandManager.literal(command.getLabel())
+                    .requires(
+                            src -> canUse(src, command)
+                    )
                     .then(
                             CommandManager.argument("args", StringArgumentType.greedyString())
                                     .requires(src -> INSTANCE.byId.contains(command.id))
@@ -45,6 +49,19 @@ public class SimpleCommandManager {
                     )
             );
         }
+    }
+
+    private static boolean canUse(ServerCommandSource src, SimpleCommand command) {
+        boolean canUse = true;
+        if (command.opReq != 0) {
+            canUse = src.hasPermissionLevel(command.opReq);
+        }
+
+        if (command.permReq != null && !command.permReq.isEmpty()) {
+            canUse = canUse || KiloCommands.hasPermission(src, command.permReq, command.opReq == 0 ? 2 : command.opReq);
+        }
+
+        return canUse && getCommand(command.getId()) != null;
     }
 
     public static void unregister(String id) {

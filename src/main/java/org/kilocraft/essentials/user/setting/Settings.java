@@ -71,7 +71,7 @@ public class Settings {
             }
     );
     public static final Setting<Optional<String>> NICK = new Setting<Optional<String>>(
-            "nick", Optional.empty(),
+            "nickname", Optional.empty(),
             (fun) -> fun.value().ifPresent((nickname) -> fun.tag().putString(fun.setting().getId(), nickname)),
             (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {

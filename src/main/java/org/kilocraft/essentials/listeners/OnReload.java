@@ -16,7 +16,6 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
     @Override
     public void handle(ServerReloadEvent event) {
         KiloConfig.reload();
-        KiloCommands.updateCommandTreeForEveryone();
         BrandedServer.load();
         KiloServer.getServer().getMetaManager().load();
         KiloServer.getServer().getMetaManager().updateAll();
@@ -30,7 +29,9 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
         try {
             KiloDebugUtils.validateDebugMode(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            KiloEssentials.getLogger().error("An unexpected error occurred while reloading the server!", e);
         }
+
+        KiloCommands.updateCommandTreeForEveryone();
     }
 }

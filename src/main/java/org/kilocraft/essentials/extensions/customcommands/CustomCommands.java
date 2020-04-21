@@ -28,6 +28,7 @@ import org.kilocraft.essentials.extensions.customcommands.config.sections.Custom
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
+import org.kilocraft.essentials.util.PermissionUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,13 +79,24 @@ public class CustomCommands implements RelodableConfigurableFeature {
     }
 
     private static void createFromConfig() {
-        map.clear();
+        if (!map.isEmpty()) {
+            map.forEach((string, cs) -> SimpleCommandManager.unregister(string.toString()));
+            map.clear();
+        }
+
         config.commands.forEach((string, cs) -> {
             SimpleCommandManager.unregister(string);
             SimpleCommand simpleCommand = new SimpleCommand(string, cs.label, (source, args, server) -> runCommand(source, args, server, cs));
 
-            simpleCommand.requires(cs.reqSection.op);
-            simpleCommand.requires(cs.reqSection.permission);
+            if (cs.reqSection.op != 0) {
+                simpleCommand.requires(cs.reqSection.op);
+            }
+
+            if (cs.reqSection.permission != null && !cs.reqSection.permission.equalsIgnoreCase("none")) {
+                simpleCommand.requires(cs.reqSection.permission);
+                PermissionUtil.registerNode(cs.reqSection.permission);
+            }
+
             SimpleCommandManager.register(simpleCommand);
             map.put(new Identifier(string), simpleCommand);
         });

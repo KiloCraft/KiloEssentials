@@ -23,7 +23,7 @@ public class StringUtils {
     }
 
     public static String stringToUsername(final String string) {
-        return string.replaceAll("[^A-Za-z0-9()\\\\[\\\\]]", "");
+        return string.replaceAll("[^a-zA-Z0-9_]", "");
     }
 
     public static class Calculator implements Comparable<Double> {

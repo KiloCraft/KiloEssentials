@@ -18,8 +18,11 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.extensions.warps.Warp;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
+
+import java.util.Locale;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
@@ -56,7 +59,7 @@ public class WarpCommand {
             if (warp.addCommand()) {
                 SimpleCommandManager.register(
                         new SimpleCommand(
-                                "warp." + warp.getName().toLowerCase(),
+                                "server_warp:" + warp.getName().toLowerCase(Locale.ROOT),
                                 warp.getName().toLowerCase(),
                                 (source, args, server) -> executeTeleport(source, warp.getName())
                         )
@@ -150,15 +153,14 @@ public class WarpCommand {
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
         registerAliases();
         KiloCommands.updateCommandTreeForEveryone();
-
         return 1;
     }
 
     private static int executeRemove(ServerCommandSource source, String warp) throws CommandSyntaxException {
-        if (ServerWarpManager.getWarpsByName().contains(warp)) {
-            ServerWarpManager.removeWarp(warp);
+        ServerWarp w = ServerWarpManager.getWarp(warp);
+        if (w != null) {
+            ServerWarpManager.removeWarp(w);
             KiloChat.sendLangMessageTo(source, "command.warp.remove", warp);
-            registerAliases();
         }
         else
             throw WARP_NOT_FOUND_EXCEPTION.create();

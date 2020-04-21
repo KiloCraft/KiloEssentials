@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class ServerUserManager implements UserManager, TickListener {
@@ -52,7 +53,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
     private final Map<UUID, SimpleProcess<?>> inProcessUsers = new HashMap<>();
     private final String NICKNAME_CACHE = "nicknames";
-    private List<String> cachedNicknames = new ArrayList<>();
+    private Map<UUID, String> cachedNicknames = new HashMap<>();
 
     private PunishmentManager punishManager;
 
@@ -250,11 +251,11 @@ public class ServerUserManager implements UserManager, TickListener {
     public void onChangeNickname(User user, String oldNick) {
         if (oldNick != null) {
             this.nicknameToUUID.remove(oldNick);
-            this.cachedNicknames.remove(org.kilocraft.essentials.api.util.StringUtils.uniformNickname(oldNick));
+            this.cachedNicknames.remove(user.getUuid());
 
             user.getNickname().ifPresent((nick) -> {
                 this.nicknameToUUID.put(nick, user.getUuid());
-                this.cachedNicknames.add(org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick));
+                this.cachedNicknames.put(user.getUuid(), org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick));
             });
         }
 
@@ -265,31 +266,36 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public boolean shouldNotUseNickname(OnlineUser user, String rawNickname) {
         if (!CacheManager.shouldUse(NICKNAME_CACHE)) {
-            List<String> nicks = new ArrayList<>();
+            Map<UUID, String> map = new HashMap<>();
             KiloEssentials.getInstance().getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
                 for (User victim : list) {
                     victim.getNickname().ifPresent(nick -> {
-                        nicks.add(org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT));
+                        map.put(
+                                victim.getUuid(),
+                                org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT)
+                        );
                     });
                 }
             });
 
-            cachedNicknames = nicks;
-            Cached<List<String>> cached = new Cached<>(NICKNAME_CACHE, nicks);
+            cachedNicknames = map;
+            Cached<Map<UUID, String>> cached = new Cached<>(NICKNAME_CACHE, map);
             CacheManager.cache(cached);
         }
 
-        boolean canUse = true;
+        AtomicBoolean canUse = new AtomicBoolean(true);
         String uniformedNickname = org.kilocraft.essentials.api.util.StringUtils.uniformNickname(rawNickname).toLowerCase(Locale.ROOT);
 
-        for (String cachedNickname : cachedNicknames) {
-            if (cachedNickname.equalsIgnoreCase(uniformedNickname)) {
-                canUse = false;
+        for (Map.Entry<UUID, String> entry : cachedNicknames.entrySet()) {
+            UUID uuid = entry.getKey();
+            String string = entry.getValue();
+            if (string.equalsIgnoreCase(uniformedNickname) && !user.getUuid().equals(uuid)) {
+                canUse.set(false);
                 break;
             }
         }
 
-        return !canUse;
+        return !canUse.get();
     }
 
     private void profileSanityCheck(GameProfile profile) {

@@ -17,9 +17,12 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class PermissionUtil {
+    private static final List<String> pendingPermissions = new ArrayList<>();
     private boolean present;
     private Manager manager;
 
@@ -48,23 +51,39 @@ public class PermissionUtil {
 
         if (manager == Manager.THIMBLE) {
             Thimble.permissionWriters.add((map, server) -> {
+                for (String pendingPermission : pendingPermissions) {
+                    if (!map.permissionExists(pendingPermission)) {
+                        map.registerPermission(pendingPermission, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    }
+                }
+
                 for (final EssentialPermission perm : EssentialPermission.values()) {
-                    map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    if (!map.permissionExists(perm.getNode())) {
+                        map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    }
                 }
 
                 for (final CommandPermission perm : CommandPermission.values()) {
-                    map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    if (!map.permissionExists(perm.getNode())) {
+                        map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    }
                 }
 
                 if (KiloConfig.main().features().playerHomes) {
                     for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
-                        map.registerPermission(CommandPermission.HOME_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                        String perm = CommandPermission.HOME_LIMIT.getNode() + "." + i;
+                        if (!map.permissionExists(perm)) {
+                            map.registerPermission(perm, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                        }
                     }
                 }
 
                 if (KiloConfig.main().features().playerWarps) {
                     for (int i = 1; i <= KiloConfig.main().playerWarpsLimit; i++) {
-                        map.registerPermission(CommandPermission.PLAYER_WARP_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                        String perm = CommandPermission.PLAYER_WARP_LIMIT.getNode() + "." + i;
+                        if (!map.permissionExists(perm)) {
+                            map.registerPermission(perm, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                        }
                     }
                 }
             });
@@ -85,6 +104,10 @@ public class PermissionUtil {
         }
 
         return src.hasPermissionLevel(opLevel);
+    }
+
+    public static void registerNode(final String node) {
+        pendingPermissions.add(node);
     }
 
     private boolean fromLuckPerms(ServerCommandSource src, String perm, int op) {

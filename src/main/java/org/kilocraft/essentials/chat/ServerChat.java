@@ -64,7 +64,7 @@ public final class ServerChat {
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
     private static final int LINK_MAX_LENGTH = 20;
-    private static final int COMMAND_MAX_LENGTH = 80;
+    private static final int COMMAND_MAX_LENGTH = 45;
 
     public static void load() {
         config = KiloConfig.main().chat();
@@ -239,7 +239,7 @@ public final class ServerChat {
     }
 
     public static int sendDirectMessage(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
-        final CommandSourceUser src = KiloServer.getServer().getCommandSourceUser(source);
+        CommandSourceUser src = KiloServer.getServer().getCommandSourceUser(source);
 
         if (!((ServerUser) target).shouldMessage() && src.getUser() != null) {
             if (!src.isConsole() && src.isOnline() && !((ServerUser) src.getUser()).isStaff()) {
@@ -319,7 +319,7 @@ public final class ServerChat {
 
         text.styled((style) -> {
             style.setHoverEvent(Texter.Events.onHover(commandSpyHoverStyle));
-            style.setClickEvent(Texter.Events.onClickSuggest(command));
+            style.setClickEvent(Texter.Events.onClickSuggest("/" + command));
         });
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
@@ -406,7 +406,6 @@ public final class ServerChat {
         return text;
     }
 
-    private static final SimpleCommandExceptionType TARGET_OFFLINE_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("The Target player is offline!"));
     private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new  SimpleCommandExceptionType(LangText.getFormatter(true, "command.message.error"));
 
     public enum Channel {
