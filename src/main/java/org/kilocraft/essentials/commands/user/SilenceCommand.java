@@ -24,9 +24,9 @@ public class SilenceCommand extends EssentialCommand {
         user.getSettings().set(Settings.SOUNDS, set);
 
         if (set) {
-            user.sendLangMessage("command.silence.on");
-        } else {
             user.sendLangMessage("command.silence.off");
+        } else {
+            user.sendLangMessage("command.silence.on");
         }
 
         return SUCCESS;

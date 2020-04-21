@@ -28,6 +28,7 @@ public enum EssentialPermission {
     MAGIC_PARTICLES_SELF("magicparticles"),
     SIT_SELF("sit.self"),
     SIT_OTHERS("sit.others"),
+    IGNORE_COMMAND_EVENTS("ignore_command_events"),
     ;
 
     private String node;

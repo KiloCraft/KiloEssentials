@@ -137,6 +137,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
+    public Location getLocation() {
+        return Vec3dLocation.of(this.asPlayer());
+    }
+
+    @Override
     public Vec3d getEyeLocation() {
         Vec3d vec = this.asPlayer().getPos();
         return new Vec3d(vec.getX(), this.asPlayer().getEyeY(), this.asPlayer().getPos().getZ());

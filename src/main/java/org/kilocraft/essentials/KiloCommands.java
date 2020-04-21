@@ -26,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
@@ -391,10 +393,11 @@ public class KiloCommands {
     }
 
     public int execute(final ServerCommandSource executor, final String command) {
+        CommandSourceUser src = KiloServer.getServer().getCommandSourceUser(executor);
         OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(executor, command);
         String cmd = command;
 
-        if (!command.endsWith("--push") && !executor.hasPermissionLevel(4)) {
+        if (!command.endsWith("--push") && !src.hasPermission(EssentialPermission.IGNORE_COMMAND_EVENTS)) {
             KiloServer.getServer().triggerEvent(event);
         } else {
             cmd = command.replace(" --push", "");

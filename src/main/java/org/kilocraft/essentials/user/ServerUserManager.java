@@ -282,8 +282,11 @@ public class ServerUserManager implements UserManager, TickListener {
         boolean canUse = true;
         String uniformedNickname = org.kilocraft.essentials.api.util.StringUtils.uniformNickname(rawNickname).toLowerCase(Locale.ROOT);
 
-        if (cachedNicknames.contains(uniformedNickname)) {
-            canUse = false;
+        for (String cachedNickname : cachedNicknames) {
+            if (cachedNickname.equalsIgnoreCase(uniformedNickname)) {
+                canUse = false;
+                break;
+            }
         }
 
         return !canUse;

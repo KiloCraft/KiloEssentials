@@ -289,7 +289,7 @@ public class ServerUser implements User {
 
     @Override
     public Location getLocation() {
-        if (this.isOnline() && this.location == null) {
+        if (this.isOnline() || (this.isOnline() && this.location == null)) {
             updateLocation();
         }
 
