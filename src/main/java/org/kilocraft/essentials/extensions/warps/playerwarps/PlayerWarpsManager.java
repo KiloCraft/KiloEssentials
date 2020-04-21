@@ -5,7 +5,9 @@ import net.minecraft.nbt.ListTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -32,7 +34,10 @@ public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStor
         NBTStorageUtil.addCallback(this);
 
         KiloEssentials.getInstance().getCommandHandler().register(
-                new PlayerWarpCommand("playerwarp", CommandPermission.PLAYER_WARP, new String[]{"pwarp"})
+                new PlayerWarpCommand("playerwarp", src ->
+                        KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_SELF) ||
+                                KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_OTHERS)
+                        , new String[]{"pwarp"})
         );
 
         KiloEssentials.getInstance().getCommandHandler().register(

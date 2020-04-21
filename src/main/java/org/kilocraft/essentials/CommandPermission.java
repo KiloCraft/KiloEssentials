@@ -22,6 +22,7 @@ public enum CommandPermission {
     PLAYER_WARP_SELF("player_warp.self"),
     PLAYER_WARP_OTHERS("player_warp.others"),
     PLAYER_WARP_LIMIT("player_warp.limit"),
+    PLAYER_WARP_LIMIT_BYPASS("player_warp.limit.bypass"),
     PLAYER_WARPS("playerwarps"),
     RELOAD("reload"),
     GAMEMODE_SELF_SURVIVAL("gamemode.self.survival"),

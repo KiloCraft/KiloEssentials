@@ -43,11 +43,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
 public class PlayerWarpCommand extends EssentialCommand {
     private static final String HEADER = ModConstants.getLang().getProperty("command.playerwarp.header");
-    public PlayerWarpCommand(String label, CommandPermission permission, String[] alias) {
-        super(label, permission, alias);
+    public PlayerWarpCommand(String label, Predicate<ServerCommandSource> predicate, String[] alias) {
+        super(label, predicate, alias);
         this.withUsage("command.playerwarp.usage", "add", "name", "type", "description");
     }
 
@@ -118,9 +119,15 @@ public class PlayerWarpCommand extends EssentialCommand {
         OnlineUser user = getOnlineUser(ctx);
         String input = StringArgumentType.getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
+        PlayerWarp warp = PlayerWarpsManager.getWarp(name);
 
-        if (PlayerWarpsManager.getWarp(name) != null) {
-            user.sendLangMessage("command.playerwarp.already_set");
+        if (!canSet(user) && !user.hasPermission(CommandPermission.PLAYER_WARP_LIMIT_BYPASS)) {
+            user.sendMessage(messages.commands().playerWarp().limitReached);
+            return FAILED;
+        }
+
+        if (warp != null && !warp.getOwner().equals(user.getUuid())) {
+            user.sendLangMessage(messages.commands().playerWarp().nameAlreadyTaken);
             return FAILED;
         }
 
@@ -137,8 +144,6 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        PlayerWarp warp = PlayerWarpsManager.getWarp(name);
-
         if (warp != null && !user.hasPermission(CommandPermission.PLAYER_WARP_OTHERS)) {
             user.sendError(KiloCommands.getPermissionError(CommandPermission.PLAYER_WARP_OTHERS.getNode()));
             return FAILED;
@@ -149,7 +154,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             PlayerWarpsManager.addWarp(new PlayerWarp(name, user.getLocation(), user.getUuid(), type, desc));
         }
 
-        user.sendLangMessage("command.playerwarp.set", name);
+        user.sendMessage(messages.commands().playerWarp().warpSet.replace("{NAME}", name));
         return SUCCESS;
     }
 
@@ -177,7 +182,7 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         PlayerWarpsManager.removeWarp(name);
 
-        user.sendLangMessage("command.playerwarp.remove", name);
+        user.sendMessage(messages.commands().playerWarp().warpRemoved.replace("{NAME}", name));
         return SUCCESS;
     }
 
@@ -291,6 +296,20 @@ public class PlayerWarpCommand extends EssentialCommand {
         paged.send(src, "Player Warps: " + user.getNameTag(), "/playerwarps " + src.getName() + " %page%");
     }
 
+    private static boolean canSet(User user) {
+        for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
+            String thisPerm = "kiloessentials.command.player_warp.limit." + i;
+            int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
+
+            if (PlayerWarpsManager.getWarps(user.getUuid()).size() + 1 <= allowed &&
+                    KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
+                return true;
+            }
+        }
+
+        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS);
+    }
+
     private CompletableFuture<Suggestions> warpSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         if (CommandUtils.isPlayer(context.getSource())) {
             List<String> strings = new ArrayList<>();
@@ -312,14 +331,14 @@ public class PlayerWarpCommand extends EssentialCommand {
     private Text getConfirmationText(String warpName, String user) {
         return Texter.confirmationMessage(
                 "command.playerwarp.set.confirmation_message",
-                Texter.getButton("Confirm", "/pwarp set " + warpName, Texter.toText("Click").formatted(Formatting.GREEN))
+                Texter.getButton("&7[&eClick here to Confirm&7]", "/pwarp set " + warpName, Texter.toText("Click").formatted(Formatting.GREEN))
         );
     }
 
     private Text getRemoveConfirmationText(String warpName) {
         return Texter.confirmationMessage(
                 "command.playerwarp.remove.confirmation_message",
-                Texter.getButton("Confirm", "/pwarp remove -confirmed-" + warpName, Texter.toText("Click").formatted(Formatting.GREEN))
+                Texter.getButton("&7[&eClick here to Confirm&7]", "/pwarp remove -confirmed-" + warpName, Texter.toText("Click").formatted(Formatting.GREEN))
         );
     }
 

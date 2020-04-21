@@ -111,7 +111,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
 
         int index = 0;
         for (Map.Entry<String, List<PlayerWarp>> entry : list) {
-            String ownerName = entry.getKey().isEmpty() ? "&c&oNot Present" : entry.getKey();
+            String ownerName = entry.getKey().isEmpty() ? "&c&o?" : entry.getKey();
 
             List<PlayerWarp> warps = entry.getValue();
             for (PlayerWarp warp : warps) {
@@ -134,7 +134,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
                         Texter.toText().append(
                                 Texts.bracketed(Texter.getButton(" &6i ", "/pwarp info " + warp.getName(), Texter.toText("&dClick for more Info")))
                         ).append(" ").append(
-                                Texts.bracketed(Texter.getButton("&cTP", "/pwarp teleport " + warp.getName(), Texter.toText("&dClick to Teleport")))
+                                Texts.bracketed(Texter.getButton("&aGo", "/pwarp teleport " + warp.getName(), Texter.toText("&dClick to Teleport")))
                         )
                 ).append(" ");
 
@@ -142,7 +142,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
                 String desc = warp.getDescription();
                 String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
 
-                Text description = Texter.toText(TextFormat.clearColorCodes(shortenedDesc)).styled((style) -> {
+                Text description = Texter.toText(TextFormat.clearColorCodes(shortenedDesc)).formatted(Formatting.WHITE).styled((style) -> {
                     style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText(desc).formatted(Formatting.WHITE)));
                 });
 
@@ -156,9 +156,8 @@ public class PlayerWarpsCommand extends EssentialCommand {
         }
 
         Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
-        paged.setStickyHeader(tl("command.playerwarps.total", index));
 
-        paged.send(src.getCommandSource(), "Player Warps", "/playerwarps %page%");
+        paged.send(src.getCommandSource(), "Player Warps (" + index + ")", "/playerwarps %page%");
         return SUCCESS;
     }
 
