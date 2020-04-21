@@ -58,6 +58,7 @@ public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
 
         if (warp.addCommand()) {
             SimpleCommandManager.unregister("server_warp:" + warp.getName().toLowerCase(Locale.ROOT));
+            KiloCommands.updateCommandTreeForEveryone();
         }
     }
 
