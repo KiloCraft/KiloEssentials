@@ -11,8 +11,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.util.StringUtils;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -31,7 +32,7 @@ public class CalculateCommand extends EssentialCommand {
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser src = this.getOnlineUser(ctx);
+        CommandSourceUser src = this.getServerUser(ctx);
         String input = StringArgumentType.getString(ctx, "input");
         StringUtils.Calculator calculator = new StringUtils.Calculator(input);
         int result;
@@ -40,11 +41,12 @@ public class CalculateCommand extends EssentialCommand {
             calculator.calculate();
             result = (int) calculator.result();
         } catch (Exception e) {
-            src.sendError(e.getMessage());
+            src.sendError(Texter.exceptionToText(e, true));
+            e.printStackTrace();
             return FAILED;
         }
 
-        src.sendLangMessage("command.calculate.result", input, calculator.resultAsShortString());
+        src.sendLangMessage("command.calculate.result", calculator.getInput(), calculator.resultAsShortString());
         return result;
     }
 

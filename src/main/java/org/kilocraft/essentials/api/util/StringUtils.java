@@ -1,11 +1,11 @@
 package org.kilocraft.essentials.api.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.Locale;
-import java.util.Stack;
 import java.util.regex.Pattern;
 
 
@@ -26,35 +26,40 @@ public class StringUtils {
         return string.replaceAll("[^A-Za-z0-9()\\\\[\\\\]]", "");
     }
 
-    /**
-     * @author CODY_AI (OnBlock)
-     */
-    public static class Calculator implements Comparable<Float> {
+    public static class Calculator implements Comparable<Double> {
         private String input;
-        private float output;
+        private double output;
 
         public Calculator(@NotNull final String input) {
             this.input = input;
         }
 
         public void calculate() throws Exception {
-            float var = 0.0F;
-            String[] strings = this.input.replaceAll("\\s+", "").split(" ");
+            String[] strings = this.input.split("(?<=[-+*^%/])|(?=[-+*^%/])");
 
-            //TODO: Iterate through the Strings
-            for (String string : strings) {
-                //Check for brackets in the strings
-                //Add the strings into a Stack until we reach a operation
+            double x = Double.parseDouble(strings[0]);
+            double y = Double.parseDouble(strings[2]);
+
+            Operator operator = Operator.byIcon(strings[1]);
+            if (operator == null) {
+                throw new Exception("Invalid Operation!");
             }
 
-            //TODO: Check the Stack for any possible operations in the brackets
-            //TODO: go through the Stacks and do the operations
-            //TODO: sum the results and output the number
-
-            this.output = var;
+            this.output = operator.operate(x, y);
         }
 
-        public float result() {
+        public String getInput() {
+            String[] strings = this.input.split("(?<=[-+*^%/])|(?=[-+*^%/])");
+            StringBuilder builder = new StringBuilder();
+
+            for (String string : strings) {
+                builder.append(string);
+            }
+
+            return builder.toString();
+        }
+
+        public double result() {
             return this.output;
         }
 
@@ -63,16 +68,67 @@ public class StringUtils {
         }
 
         @Override
-        public int compareTo(@NotNull Float o) {
+        public int compareTo(@NotNull Double o) {
             return o.compareTo(this.output);
         }
 
         public static String[] operations() {
-            return new String[]{"+", "-", "*", "/", "^"};
+            String[] strings = new String[Operator.values().length];
+            for (int i = 0; i < Operator.values().length; i++) {
+                strings[i] = Operator.values()[i].i;
+            }
+
+            return strings;
         }
 
-        public static String[] brackets() {
-            return new String[]{"(", ")"};
+        private enum Operator {
+            SUM("addition", "+"),
+            MINUS("subtraction", "-"),
+            OBELUS("division", "/"),
+            TIMES("multiplication", "*"),
+            REMAINDER("modules", "%"),
+            POWER_OF("power", "^");
+
+            private final String name;
+            private final String i;
+            Operator(final String name, final String i) {
+                this.name = name;
+                this.i = i;
+            }
+
+            public double operate(final double x, final double y) throws Exception {
+                switch (this) {
+                    case SUM:
+                        return x + y;
+                    case MINUS:
+                        return x - y;
+                    case TIMES:
+                        return x * y;
+                    case OBELUS:
+                        return x / y;
+                    case REMAINDER:
+                        return x % y;
+                    case POWER_OF:
+                        return Math.pow(x, y);
+                    default:
+                        throw new Exception("Invalid Operation!");
+                }
+            }
+
+            public String getName() {
+                return this.name;
+            }
+
+            @Nullable
+            public static Operator byIcon(final String i) {
+                for (Operator value : values()) {
+                    if (value.i.equals(i)) {
+                        return value;
+                    }
+                }
+
+                return null;
+            }
         }
     }
 }
