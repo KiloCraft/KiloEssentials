@@ -75,7 +75,7 @@ public class HomeCommand extends EssentialCommand {
             LocationUtil.validateIsSafe(home.getLocation());
         } catch (InsecureDestinationException e) {
             if (!input.startsWith("-confirmed")) {
-                user.sendMessage(getTeleportConfirmationText(name));
+                user.sendMessage(getTeleportConfirmationText(name, ""));
                 return FAILED;
             }
         }
@@ -117,7 +117,7 @@ public class HomeCommand extends EssentialCommand {
                 LocationUtil.validateIsSafe(home.getLocation());
             } catch (InsecureDestinationException e) {
                 if (!input.startsWith("-confirmed-")) {
-                    source.sendMessage(getTeleportConfirmationText(name));
+                    source.sendMessage(getTeleportConfirmationText(name, user.getUsername()));
                     return;
                 }
             }
@@ -152,7 +152,7 @@ public class HomeCommand extends EssentialCommand {
         return string;
     }
 
-    private Text getTeleportConfirmationText(String homeName) {
+    private Text getTeleportConfirmationText(String homeName, String owner) {
         return new LiteralText("")
                 .append(LangText.get(true, "general.loc.unsafe.confirmation")
                         .formatted(Formatting.YELLOW))
@@ -162,7 +162,7 @@ public class HomeCommand extends EssentialCommand {
                         .styled((style) -> {
                             style.setColor(Formatting.GRAY);
                             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW)));
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home -confirmed-" + homeName));
+                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home -confirmed-" + homeName + " " + owner));
                         }));
     }
 
