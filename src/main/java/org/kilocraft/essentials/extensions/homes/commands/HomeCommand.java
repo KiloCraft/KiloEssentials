@@ -74,8 +74,10 @@ public class HomeCommand extends EssentialCommand {
         try {
             LocationUtil.validateIsSafe(home.getLocation());
         } catch (InsecureDestinationException e) {
-            user.sendMessage(getTeleportConfirmationText(name));
-            return FAILED;
+            if (!input.startsWith("-confirmed")) {
+                user.sendMessage(getTeleportConfirmationText(name));
+                return FAILED;
+            }
         }
 
         try {
@@ -83,10 +85,6 @@ public class HomeCommand extends EssentialCommand {
         } catch (final UnsafeHomeException e) {
             if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION)
                 throw HomeCommand.MISSING_DIMENSION.create();
-            else if (e.getReason() == UserHomeHandler.Reason.UNSAFE_DESTINATION && !input.startsWith("-confirmed-")) {
-                user.sendMessage(getTeleportConfirmationText(name));
-                return FAILED;
-            }
         }
 
         user.sendMessage(new TextMessage(HomeCommand.replaceVariables(
