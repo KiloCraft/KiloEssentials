@@ -159,11 +159,4 @@ public class PlayerWarpsCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private Text buttons(PlayerWarp warp) {
-        return Texter.toText().append(
-                Texts.bracketed(Texter.getButton("&6i", "/pwarp info " + warp.getName(), Texter.toText("&dClick for more Info")))
-        ).append(" ").append(
-                Texts.bracketed(Texter.getButton("&cT", "/pwarp teleport " + warp.getName(), Texter.toText("&dClick to Teleport")))
-        );
-    }
 }

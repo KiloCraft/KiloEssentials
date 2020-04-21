@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 public class CalculateCommand extends EssentialCommand {
     public CalculateCommand() {
         super("calculate", CommandPermission.CALCULATE, new String[]{"calc"});
+        this.withUsage("command.calculate.usage", "input");
     }
 
     @Override
@@ -42,7 +43,6 @@ public class CalculateCommand extends EssentialCommand {
             result = (int) calculator.result();
         } catch (Exception e) {
             src.sendError(Texter.exceptionToText(e, true));
-            e.printStackTrace();
             return FAILED;
         }
 

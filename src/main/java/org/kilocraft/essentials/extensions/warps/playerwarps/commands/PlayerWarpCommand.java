@@ -11,22 +11,29 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Pager;
 import org.kilocraft.essentials.util.text.Texter;
@@ -130,7 +137,12 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        if (PlayerWarpsManager.getWarpsByName().contains(name) && !input.startsWith("-confirmed-")) {
+        PlayerWarp warp = PlayerWarpsManager.getWarp(name);
+
+        if (warp != null && !user.hasPermission(CommandPermission.PLAYER_WARP_OTHERS)) {
+            user.sendError(KiloCommands.getPermissionError(CommandPermission.PLAYER_WARP_OTHERS.getNode()));
+            return FAILED;
+        } else if (warp != null && !input.startsWith("-confirmed-")) {
             user.sendMessage(getConfirmationText(name, ""));
             return AWAIT;
         } else {
@@ -143,10 +155,23 @@ public class PlayerWarpCommand extends EssentialCommand {
 
     private int remove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx);
-        String name = StringArgumentType.getString(ctx, "name");
+        String input = StringArgumentType.getString(ctx, "name");
+        String name = input.replaceFirst("-confirmed-", "");
 
-        if (!PlayerWarpsManager.getWarpsByName().contains(name)) {
+        PlayerWarp warp = PlayerWarpsManager.getWarp(name);
+
+        if (warp == null) {
             user.sendLangMessage("command.playerwarp.invalid_warp");
+            return FAILED;
+        }
+
+        if (!warp.getOwner().equals(user.getUuid()) && !user.hasPermission(CommandPermission.PLAYER_WARP_OTHERS)) {
+            user.sendError(KiloCommands.getPermissionError(CommandPermission.PLAYER_WARP_OTHERS.getNode()));
+            return FAILED;
+        }
+
+        if (!input.startsWith("-confirmed-")) {
+            user.sendMessage(getRemoveConfirmationText(name));
             return FAILED;
         }
 
@@ -212,12 +237,23 @@ public class PlayerWarpCommand extends EssentialCommand {
     private int teleport(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         String inputName = StringArgumentType.getString(ctx, "warp");
+        String warpName = inputName.replaceFirst("-confirmed-", "");
 
-        PlayerWarp warp = PlayerWarpsManager.getWarp(inputName);
+        PlayerWarp warp = PlayerWarpsManager.getWarp(warpName);
 
         if (warp == null) {
             src.sendLangError("command.playerwarp.invalid_warp");
             return FAILED;
+        }
+
+        try {
+            LocationUtil.validateIsSafe(src, warp.getLocation());
+        } catch (InsecureDestinationException e) {
+            src.sendError(e.getMessage());
+            if (!inputName.startsWith("-confirmed-")) {
+                src.sendMessage(getTeleportConfirmationText(warpName));
+                return -1;
+            }
         }
 
         src.teleport(warp.getLocation(), true);
@@ -279,6 +315,27 @@ public class PlayerWarpCommand extends EssentialCommand {
                 "command.playerwarp.set.confirmation_message",
                 Texter.getButton("Confirm", "/pwarp set " + warpName, Texter.toText("Click").formatted(Formatting.GREEN))
         );
+    }
+
+    private Text getRemoveConfirmationText(String warpName) {
+        return Texter.confirmationMessage(
+                "command.playerwarp.remove.confirmation_message",
+                Texter.getButton("Confirm", "/pwarp remove -confirmed-" + warpName, Texter.toText("Click").formatted(Formatting.GREEN))
+        );
+    }
+
+    private Text getTeleportConfirmationText(String warpName) {
+        return new LiteralText("")
+                .append(LangText.get(true, "general.loc.unsafe.confirmation")
+                        .formatted(Formatting.YELLOW))
+                .append(new LiteralText(" [").formatted(Formatting.GRAY)
+                        .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
+                        .append(new LiteralText("]").formatted(Formatting.GRAY))
+                        .styled((style) -> {
+                            style.setColor(Formatting.GRAY);
+                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW)));
+                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pwarp teleport -confirmed-" + warpName));
+                        }));
     }
 
 }

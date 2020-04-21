@@ -8,12 +8,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
@@ -48,7 +53,8 @@ public class HomeCommand extends EssentialCommand {
         final ServerPlayerEntity player = ctx.getSource().getPlayer();
         final OnlineUser user = this.getOnlineUser(player);
         final UserHomeHandler homeHandler = user.getHomesHandler();
-        final String name = StringArgumentType.getString(ctx, "name");
+        final String input = StringArgumentType.getString(ctx, "name");
+        final String name = input.replaceFirst("-confirmed-", "");
 
         if (!homeHandler.hasHome(name)) {
             user.sendMessage(this.messages.commands().playerHomes().invalidHome);
@@ -65,6 +71,10 @@ public class HomeCommand extends EssentialCommand {
         } catch (final UnsafeHomeException e) {
             if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION)
                 throw HomeCommand.MISSING_DIMENSION.create();
+            else if (e.getReason() == UserHomeHandler.Reason.UNSAFE_DESTINATION && !input.startsWith("-confirmed-")) {
+                user.sendMessage(getTeleportConfirmationText(name));
+                return FAILED;
+            }
         }
 
         user.sendMessage(new TextMessage(HomeCommand.replaceVariables(
@@ -74,7 +84,8 @@ public class HomeCommand extends EssentialCommand {
 
     private int executeOthers(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final ServerPlayerEntity player = ctx.getSource().getPlayer();
-        final String name = StringArgumentType.getString(ctx, "name");
+        final String input = StringArgumentType.getString(ctx, "name");
+        final String name = input.replaceFirst("-confirmed-", "");
         final OnlineUser source = this.getOnlineUser(player);
         final String inputName = StringArgumentType.getString(ctx, "user");
 
@@ -93,8 +104,13 @@ public class HomeCommand extends EssentialCommand {
             try {
                 homeHandler.teleportToHome(source, name);
             } catch (final UnsafeHomeException e) {
-                source.sendError(e.getMessage());
-                return;
+                if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION) {
+                    source.sendError(e.getMessage());
+                } else if (e.getReason() == UserHomeHandler.Reason.UNSAFE_DESTINATION && !input.startsWith("-confirmed-")) {
+                    source.sendMessage(getTeleportConfirmationText(name));
+                    return;
+                }
+
             }
 
             final String message = CommandUtils.areTheSame(source, user) ? this.messages.commands().playerHomes().teleporting :
@@ -117,6 +133,20 @@ public class HomeCommand extends EssentialCommand {
                 .toString();
 
         return string;
+    }
+
+    private Text getTeleportConfirmationText(String homeName) {
+        return new LiteralText("")
+                .append(LangText.get(true, "general.loc.unsafe.confirmation")
+                        .formatted(Formatting.YELLOW))
+                .append(new LiteralText(" [").formatted(Formatting.GRAY)
+                        .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
+                        .append(new LiteralText("]").formatted(Formatting.GRAY))
+                        .styled((style) -> {
+                            style.setColor(Formatting.GRAY);
+                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW)));
+                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home -confirmed-" + homeName));
+                        }));
     }
 
 }

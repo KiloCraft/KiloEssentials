@@ -43,6 +43,7 @@ public enum CommandPermission {
     ITEM_LORE("item.lore"),
     ITEM_ENCHANT("item.enchant"),
     ITEM_COMMANDS("item.commands"),
+    ITEM_MEND("item.mend"),
     LOCATE("locate"),
     LOCATE_BIOME("locate.biome"),
     LOCATE_STRUCTURE("locate.structure"),

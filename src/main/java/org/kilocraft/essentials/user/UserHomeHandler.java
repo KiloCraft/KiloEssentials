@@ -14,12 +14,14 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.extensions.homes.commands.DelhomeCommand;
 import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
 import org.kilocraft.essentials.extensions.homes.commands.HomesCommand;
 import org.kilocraft.essentials.extensions.homes.commands.SethomeCommand;
+import org.kilocraft.essentials.util.LocationUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,8 +123,15 @@ public class UserHomeHandler implements ConfigurableFeature {
         if (user.isOnline()) {
             ServerWorld world = Objects.requireNonNull(user.asPlayer().getServer()).getWorld(DimensionType.byId(home.getLocation().getDimension()));
 
-            if (world == null)
+            try {
+                LocationUtil.validateIsSafe(user, home.getLocation());
+            } catch (InsecureDestinationException e) {
+                throw new UnsafeHomeException(home, Reason.UNSAFE_DESTINATION);
+            }
+
+            if (world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
+            }
 
             Home.teleportTo(user, home);
         }

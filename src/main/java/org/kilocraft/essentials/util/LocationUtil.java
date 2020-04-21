@@ -11,6 +11,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
 
@@ -49,9 +50,13 @@ public class LocationUtil {
         return loc.getWorld().getBlockState(loc.toPos()).getMaterial().isSolid();
     }
 
-    @Deprecated
-    public static boolean isLocationSafeFor(@NotNull final Location loc, @NotNull final OnlineUser user) {
-        return true;
+    public static void validateIsSafe(@NotNull final OnlineUser user, @NotNull final Location loc) throws InsecureDestinationException {
+        Vec3dLocation vector = (Vec3dLocation) loc;
+        posOnGround(loc, false);
+
+        if (!isBlockSafeFor(user, vector)) {
+            throw new InsecureDestinationException("Destination is not safe!");
+        }
     }
 
     public static Location posOnGround(@NotNull final Location loc, boolean passLiquid) {
