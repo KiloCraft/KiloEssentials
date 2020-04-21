@@ -1,8 +1,12 @@
 package org.kilocraft.essentials.extensions.customcommands;
 
 import com.google.common.reflect.TypeToken;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -14,6 +18,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
@@ -29,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class CustomCommands implements RelodableConfigurableFeature {
     public static boolean enabled = false;
@@ -78,6 +84,7 @@ public class CustomCommands implements RelodableConfigurableFeature {
             SimpleCommand simpleCommand = new SimpleCommand(string, cs.label, (source, args, server) -> runCommand(source, args, server, cs));
 
             simpleCommand.requires(cs.reqSection.op);
+            simpleCommand.requires(cs.reqSection.permission);
             SimpleCommandManager.register(simpleCommand);
             map.put(new Identifier(string), simpleCommand);
         });
@@ -123,5 +130,24 @@ public class CustomCommands implements RelodableConfigurableFeature {
         return var;
     }
 
+    public enum SuggestionType {
+        EMPTY("empty"),
+        PLAYERS("players");
+
+        private final String id;
+        SuggestionType(String id) {
+            this.id = id;
+        }
+
+        public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
+            switch (this) {
+                case PLAYERS:
+                    return ArgumentCompletions.allPlayers(ctx, builder);
+
+                default:
+                    return ArgumentCompletions.noSuggestions(ctx, builder);
+            }
+        }
+    }
 
 }

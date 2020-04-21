@@ -123,12 +123,6 @@ public class UserHomeHandler implements ConfigurableFeature {
         if (user.isOnline()) {
             ServerWorld world = Objects.requireNonNull(user.asPlayer().getServer()).getWorld(DimensionType.byId(home.getLocation().getDimension()));
 
-            try {
-                LocationUtil.validateIsSafe(user, home.getLocation());
-            } catch (InsecureDestinationException e) {
-                throw new UnsafeHomeException(home, Reason.UNSAFE_DESTINATION);
-            }
-
             if (world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
             }

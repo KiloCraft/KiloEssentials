@@ -14,6 +14,7 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.Cached;
@@ -106,16 +107,17 @@ public class PlayerWarpsCommand extends EssentialCommand {
     }
 
     private int send(OnlineUser src, int page, List<Map.Entry<String, List<PlayerWarp>>> list) {
-        TextInput input = new TextInput(Texter.toText(tl("command.playerwarps.total", list.size())));
+        TextInput input = new TextInput();
 
-        for (int i = 0; i < list.size(); i++) {
-            Map.Entry<String, List<PlayerWarp>> entry = list.get(i);
+        int index = 0;
+        for (Map.Entry<String, List<PlayerWarp>> entry : list) {
             String ownerName = entry.getKey().isEmpty() ? "&c&oNot Present" : entry.getKey();
 
             List<PlayerWarp> warps = entry.getValue();
             for (PlayerWarp warp : warps) {
+                index++;
                 Text text = new LiteralText("");
-                text.append(new LiteralText((i + 1) + ".").formatted(Formatting.GOLD));
+                text.append(new LiteralText((index) + ".").formatted(Formatting.GOLD));
                 text.append(" ");
                 text.append(new LiteralText(warp.getName()).formatted(Formatting.WHITE)).styled((style) -> {
                     style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText("")
@@ -140,8 +142,8 @@ public class PlayerWarpsCommand extends EssentialCommand {
                 String desc = warp.getDescription();
                 String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
 
-                Text description = Texter.toText(shortenedDesc).styled((style) -> {
-                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(desc).formatted(Formatting.WHITE)));
+                Text description = Texter.toText(TextFormat.clearColorCodes(shortenedDesc)).styled((style) -> {
+                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText(desc).formatted(Formatting.WHITE)));
                 });
 
                 if (desc.length() > maxLength) {
@@ -154,6 +156,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
         }
 
         Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
+        paged.setStickyHeader(tl("command.playerwarps.total", index));
 
         paged.send(src.getCommandSource(), "Player Warps", "/playerwarps %page%");
         return SUCCESS;

@@ -247,9 +247,8 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         try {
-            LocationUtil.validateIsSafe(src, warp.getLocation());
+            LocationUtil.validateIsSafe(warp.getLocation());
         } catch (InsecureDestinationException e) {
-            src.sendError(e.getMessage());
             if (!inputName.startsWith("-confirmed-")) {
                 src.sendMessage(getTeleportConfirmationText(warpName));
                 return -1;

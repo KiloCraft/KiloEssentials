@@ -18,6 +18,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
@@ -26,6 +27,7 @@ import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.LocationUtil;
 
 public class HomeCommand extends EssentialCommand {
     private static final SimpleCommandExceptionType MISSING_DIMENSION = new SimpleCommandExceptionType(new LiteralText("The Dimension this home exists in no longer exists"));
@@ -66,6 +68,16 @@ public class HomeCommand extends EssentialCommand {
             return IEssentialCommand.FAILED;
         }
 
+
+        Home home = homeHandler.getHome(name);
+
+        try {
+            LocationUtil.validateIsSafe(home.getLocation());
+        } catch (InsecureDestinationException e) {
+            user.sendMessage(getTeleportConfirmationText(name));
+            return FAILED;
+        }
+
         try {
             homeHandler.teleportToHome(user, name);
         } catch (final UnsafeHomeException e) {
@@ -101,19 +113,26 @@ public class HomeCommand extends EssentialCommand {
                 return;
             }
 
+            Home home = homeHandler.getHome(name);
+
+            try {
+                LocationUtil.validateIsSafe(home.getLocation());
+            } catch (InsecureDestinationException e) {
+                if (!input.startsWith("-confirmed-")) {
+                    source.sendMessage(getTeleportConfirmationText(name));
+                    return;
+                }
+            }
+
             try {
                 homeHandler.teleportToHome(source, name);
             } catch (final UnsafeHomeException e) {
                 if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION) {
                     source.sendError(e.getMessage());
-                } else if (e.getReason() == UserHomeHandler.Reason.UNSAFE_DESTINATION && !input.startsWith("-confirmed-")) {
-                    source.sendMessage(getTeleportConfirmationText(name));
-                    return;
                 }
-
             }
 
-            final String message = CommandUtils.areTheSame(source, user) ? this.messages.commands().playerHomes().teleporting :
+            String message = CommandUtils.areTheSame(source, user) ? this.messages.commands().playerHomes().teleporting :
                     this.messages.commands().playerHomes().admin().teleporting;
 
             source.sendMessage(new TextMessage(HomeCommand.replaceVariables(
