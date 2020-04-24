@@ -13,15 +13,15 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -41,7 +41,7 @@ public class SethomeCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = argument("name", word())
-                .suggests(TabCompletions::noSuggestions)
+                .suggests(ArgumentCompletions::noSuggestions)
                 .executes(this::executeSelf);
 
         RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("user")
@@ -59,23 +59,23 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        if (!validateCanSet(user) && !homeHandler.hasHome(name)) {
+        if (!canSet(user) && !homeHandler.hasHome(name)) {
             user.sendMessage(messages.commands().playerHomes().reachedLimit);
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
             KiloChat.sendMessageTo(player, getConfirmationText(name, ""));
-            return AWAIT_RESPONSE;
+            return AWAIT;
         } else {
             homeHandler.removeHome(name);
         }
 
         homeHandler.addHome(new Home(player.getUuid(), name, Vec3dLocation.of(player).shortDecimals()));
-        user.sendMessage(new ChatMessage(HomeCommand.replaceVariables(
+        user.sendMessage(new TextMessage(HomeCommand.replaceVariables(
                 KiloConfig.messages().commands().playerHomes().homeSet, user, user, homeHandler.getHome(name)), user));
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -88,7 +88,7 @@ public class SethomeCommand extends EssentialCommand {
         essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
-            if (CmdUtils.areTheSame(source, user) && validateCanSet(user) && !homeHandler.hasHome(name)) {
+            if (CommandUtils.areTheSame(source, user) && canSet(user) && !homeHandler.hasHome(name)) {
                 source.sendMessage(messages.commands().playerHomes().reachedLimit
                         .replace("{HOME_SIZE}", String.valueOf(homeHandler.getHomes().size())));
                 return;
@@ -109,7 +109,7 @@ public class SethomeCommand extends EssentialCommand {
                 source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
             }
 
-            if (CmdUtils.areTheSame(source, user))
+            if (CommandUtils.areTheSame(source, user))
                 source.sendMessage(messages.commands().playerHomes().homeSet
                         .replace("{HOME_NAME}", name));
             else source.sendMessage(messages.commands().playerHomes().admin().homeSet
@@ -117,10 +117,10 @@ public class SethomeCommand extends EssentialCommand {
                     .replace("{TARGET_TAG}", user.getNameTag()));
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
     
-    private static boolean validateCanSet(User user) {
+    private static boolean canSet(User user) {
         for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
             String thisPerm = "kiloessentials.command.home.limit." + i;
             int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);

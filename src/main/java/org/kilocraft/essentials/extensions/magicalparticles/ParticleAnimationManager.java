@@ -20,7 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTStorage;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
+import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
 import org.kilocraft.essentials.api.world.RelativePosition;
@@ -29,7 +30,7 @@ import org.kilocraft.essentials.extensions.magicalparticles.config.DustParticleE
 import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleFrameConfigSection;
 import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleTypesConfig;
 import org.kilocraft.essentials.provided.KiloFile;
-import org.kilocraft.essentials.util.NBTStorageUtil;
+import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage {
+public class ParticleAnimationManager implements RelodableConfigurableFeature, TickListener, NBTStorage {
     static Map<Identifier, ParticleAnimation> map = new HashMap<>();
     private static Map<UUID, Identifier> uuidIdentifierMap = new HashMap<>();
     private static ParticleTypesConfig config;
@@ -50,7 +51,8 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
         return true;
     }
 
-    public static void load() {
+    @Override
+    public void load() {
         loadConfig();
         createFromConfig();
     }
@@ -188,7 +190,7 @@ public class ParticleAnimationManager implements ConfigurableFeature, NBTStorage
     }
 
     private static int tick = 0;
-    public static void onTick() {
+    public void onTick() {
         //Tick counter logic, only shows the animations once in 4 ticks
         tick++;
         if (tick > config.getPps() && uuidIdentifierMap != null && !uuidIdentifierMap.isEmpty()) {

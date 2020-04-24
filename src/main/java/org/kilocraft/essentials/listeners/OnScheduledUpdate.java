@@ -9,10 +9,9 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.lifecycle.ServerScheduledUpdateEvent;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.betterchairs.PlayerSitManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.LocationUtil;
 
@@ -20,7 +19,6 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
     @Override
     public void handle(ServerScheduledUpdateEvent event) {
         KiloServer.getServer().getMetaManager().updateAll();
-        PlayerSitManager.INSTANCE.onScheduledUpdate();
 
         if (SharedConstants.isDevelopment) {
             KiloDebugUtils.INSTANCE.onScheduledUpdate();
@@ -36,7 +34,9 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
         boolean kickFromDim = KiloConfig.main().world().kickFromDimension;
 
         if (kickFromDim && !LocationUtil.isDimensionValid(player.dimension) && player.getServer() != null) {
-            BlockPos pos = player.getSpawnPosition();
+            BlockPos pos = player.getSpawnPointPosition();
+            DimensionType dim = player.getSpawnPointDimension();
+
             if (pos == null) {
                 OnlineUser user = KiloServer.getServer().getOnlineUser(player);
                 if (user.getLastSavedLocation() != null) {
@@ -51,8 +51,8 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
             }
 
             if (pos != null) {
-                player.teleport(player.getServer().getWorld(DimensionType.OVERWORLD), pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch);
-                KiloChat.sendMessageTo(player, new ChatMessage(String.format(KiloConfig.main().world().kickOutMessage, player.dimension.toString()), true));
+                player.teleport(player.getServer().getWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch);
+                KiloChat.sendMessageTo(player, new TextMessage(String.format(KiloConfig.main().world().kickOutMessage, player.dimension.toString()), true));
             }
         }
 

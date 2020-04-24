@@ -1,53 +1,58 @@
 package org.kilocraft.essentials.commands.moderation;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.EntitySelector;
+import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.user.punishment.PunishmentManager;
+import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.user.PunishmentManager;
 
 import java.util.Collection;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
-import static net.minecraft.command.arguments.EntityArgumentType.players;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
-import static org.kilocraft.essentials.KiloCommands.SUCCESS;
-import static org.kilocraft.essentials.KiloCommands.hasPermission;
+public class KickCommand extends EssentialCommand {
+    public KickCommand() {
+        super(
+                "ke_kick",
+                CommandPermission.KICK
+        );
 
-public class KickCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> kickCommand = literal("ke_kick")
-                .requires(src -> hasPermission(src, "kick", 3))
-                .executes(KiloCommands::executeSmartUsage);
-
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("targets", players())
-                .suggests(TabCompletions::allPlayers)
-                .executes(ctx -> execute(ctx.getSource(), getPlayers(ctx, "targets"), ""))
-                .then(argument("reason", string())
-                .executes(ctx -> execute(ctx.getSource(), getPlayers(ctx, "targets"), getString(ctx, "reason"))));
-
-        kickCommand.then(targetArgument);
-        dispatcher.register(kickCommand);
+        this.withUsage("command.kick.usage", "profile/username", "reason");
     }
 
-    private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> players, String reason) {
-        PunishmentManager punishmentManager = KiloServer.getServer().getUserManager().getPunishmentManager();
+    @Override
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("targets", EntityArgumentType.players())
+                .executes((ctx) -> this.execute(ctx, null));
+        final RequiredArgumentBuilder<ServerCommandSource, String> reasonArgument = argument("reason", StringArgumentType.greedyString())
+                .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason")));
 
-        for (ServerPlayerEntity player : players) {
-            punishmentManager.kick(player, new LiteralText(TextFormat.translate(reason)));
+        selectorArgument.then(reasonArgument);
+        commandNode.addChild(selectorArgument.build());
+    }
+
+    private int execute(CommandContext<ServerCommandSource> ctx, String reason) throws CommandSyntaxException {
+        final PunishmentManager manager = KiloServer.getServer().getUserManager().getPunishmentManager();
+        final Collection<ServerPlayerEntity> collection = EntityArgumentType.getPlayers(ctx, "targets");
+
+        for (ServerPlayerEntity player : collection) {
+            manager.kick(player, reason);
         }
 
-        return SUCCESS();
-    }
+        if (collection.size() == 1) {
+            this.getServerUser(ctx).sendLangMessage("command.kick.singleton", collection.iterator().next().getEntityName(), reason);
+        } else {
+            this.getServerUser(ctx).sendLangMessage("command.kick.multiple", collection.size(), reason);
+        }
 
+        return collection.size();
+    }
 }

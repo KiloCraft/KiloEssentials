@@ -1,16 +1,17 @@
 package org.kilocraft.essentials.api.text;
 
+import net.minecraft.text.Text;
+
 import java.util.List;
-import java.util.Map;
 
 public interface IText {
-
-    IText add(String add);
+    String asString();
 
     List<String> getLines();
 
-    List<String> getChapters();
+    List<Text> getTextLines();
 
-    Map<String, Integer> getBookmarks();
+    IText append(String... strings);
 
+    IText append(Text... texts);
 }

@@ -1,17 +1,18 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
-import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.user.settting.Setting;
+import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +24,16 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public UserSettings getSettings() {
+        return null;
+    }
+
+    @Override
+    public <T> T getSetting(Setting<T> setting) {
         return null;
     }
 
@@ -62,16 +73,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public List<String> getSubscriptionChannels() {
-        return null;
-    }
-
-    @Override
-    public String getUpstreamChannelId() {
-        return null;
-    }
-
-    @Override
     public Optional<String> getNickname() {
         return Optional.empty();
     }
@@ -88,14 +89,17 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public void saveLocation() {
+
     }
 
     @Override
     public void setNickname(String name) {
+
     }
 
     @Override
     public void clearNickname() {
+
     }
 
     @Override
@@ -104,84 +108,38 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public boolean canFly() {
-        return false;
-    }
-
-    @Override
-    public void setFlight(boolean set) {
-    }
-
-    @Override
-    public boolean isSocialSpyOn() {
-        return false;
-    }
-
-    @Override
-    public void setSocialSpyOn(boolean on) {
-
-    }
-
-    @Override
-    public boolean isCommandSpyOn() {
-        return false;
-    }
-
-    @Override
-    public void setCommandSpyOn(boolean on) {
-    }
-
-    @Override
     public boolean hasJoinedBefore() {
         return false;
     }
 
     @Override
-    @Nullable
-    public Date getFirstJoin() {
+    public @Nullable Date getFirstJoin() {
         return null;
     }
 
     @Override
-    public void setUpstreamChannelId(String id) {
-    }
-
-    @Override
-    public boolean isInvulnerable() {
-        return false;
-    }
-
-    @Override
-    public void setInvulnerable(boolean set) {
-    }
-
-    @Override
-    public int getRTPsLeft() {
-        return 0;
-    }
-
-    @Override
-    public void setRTPsLeft(int amount) {
-    }
-
-    @Override
-    @Nullable
-    public UUID getLastPrivateMessageSender() {
+    public @Nullable Date getLastOnline() {
         return null;
     }
 
     @Override
-    @Nullable
-    public String getLastPrivateMessage() {
-        return "";
+    public @Nullable UUID getLastPrivateMessageSender() {
+        return null;
+    }
+
+    @Override
+    public @Nullable String getLastPrivateMessage() {
+        return null;
     }
 
     @Override
     public void setLastMessageSender(UUID uuid) {
+
     }
 
     @Override
     public void setLastPrivateMessage(String message) {
+
     }
 
     @Override
@@ -200,38 +158,23 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public GameMode getGameMode() {
-        return null;
-    }
-
-    @Override
-    public void setGameMode(GameMode mode) {
-    }
-
-    @Override
-    public boolean canSit() {
-        return false;
-    }
-
-    @Override
-    public void setCanSit(boolean set) {
-    }
-
-    @Override
     public int getTicksPlayed() {
-        return -1;
+        return 0;
     }
 
     @Override
-    public void setTicksPlayed(int minutes) {
+    public void setTicksPlayed(int ticks) {
+
     }
 
     @Override
     public void saveData() throws IOException {
+
     }
 
     @Override
     public void trySave() throws CommandSyntaxException {
+
     }
 
     @Override
@@ -239,4 +182,28 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
         return false;
     }
 
+    @Override
+    public boolean ignored(UUID uuid) {
+        return false;
+    }
+
+    @Override
+    public CompoundTag toTag() {
+        return null;
+    }
+
+    @Override
+    public void fromTag(CompoundTag tag) {
+
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public UUID getId() {
+        return null;
+    }
 }

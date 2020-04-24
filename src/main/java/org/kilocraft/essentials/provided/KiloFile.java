@@ -52,6 +52,10 @@ public class KiloFile {
         return this.file;
     }
 
+    public String getAbsolutePath() {
+        return this.file.getAbsolutePath();
+    }
+
     public void pasteFromResources(String resourcesPath) {
         try {
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcesPath);

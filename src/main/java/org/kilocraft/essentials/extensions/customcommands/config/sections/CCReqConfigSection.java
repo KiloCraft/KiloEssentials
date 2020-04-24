@@ -9,4 +9,7 @@ public class CCReqConfigSection {
     @Setting(value = "op")
     public int op = 2;
 
+    @Setting(value = "perm")
+    public String permission = "myserver.custom.permission.node";
+
 }

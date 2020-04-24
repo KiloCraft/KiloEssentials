@@ -13,8 +13,9 @@ import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
-import org.kilocraft.essentials.util.PlayerRotation;
-import org.kilocraft.essentials.util.RegistryUtils;
+import org.kilocraft.essentials.util.LocationUtil;
+import org.kilocraft.essentials.util.player.PlayerRotation;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 public class Vec3iLocation implements Location {
     private int x, y, z;
@@ -50,7 +51,7 @@ public class Vec3iLocation implements Location {
     }
 
     public static Vec3iLocation of(OnlineUser user) {
-        return of(user.getPlayer());
+        return of(user.asPlayer());
     }
 
     @Override
@@ -90,17 +91,17 @@ public class Vec3iLocation implements Location {
 
     @Override
     public boolean isSafe() {
-        return false;
+        return LocationUtil.isBlockSafe(this);
     }
 
     @Override
     public boolean isSafeFor(OnlineUser user) {
-        return false;
+        return LocationUtil.isBlockSafeFor(user, this);
     }
 
     @Override
     public boolean isSafeFor(ServerPlayerEntity player) {
-        return false;
+        return isSafeFor(KiloServer.getServer().getOnlineUser(player));
     }
 
     @Override
@@ -192,6 +193,18 @@ public class Vec3iLocation implements Location {
     @Override
     public Vec3i toVec3i() {
         return new Vec3i(this.z, this.y, this.z);
+    }
+
+    @Override
+    public Location up() {
+        this.y += 1;
+        return this;
+    }
+
+    @Override
+    public Location down() {
+        this.y -= 1;
+        return this;
     }
 
     public Vec3dLocation toVec3dLocation() {

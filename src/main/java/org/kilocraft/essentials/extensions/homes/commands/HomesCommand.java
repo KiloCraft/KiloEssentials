@@ -13,11 +13,10 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
-import org.kilocraft.essentials.util.RegistryUtils;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.util.text.Texter;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 
@@ -50,19 +49,19 @@ public class HomesCommand extends EssentialCommand {
             sendInfo(source, user);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private int sendInfo(OnlineUser source, User user) {
-        boolean areTheSame = CmdUtils.areTheSame(source, user);
+        boolean areTheSame = CommandUtils.areTheSame(source, user);
         if (user.getHomesHandler().homes() <= 0) {
              source.sendMessage(areTheSame ? KiloConfig.messages().commands().playerHomes().noHome :
                     KiloConfig.messages().commands().playerHomes().admin().noHome.replace("{TARGET_TAG}", user.getNameTag()));
 
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
-        TextUtils.ListStyle text = TextUtils.ListStyle.of(
+        Texter.ListStyle text = Texter.ListStyle.of(
                 areTheSame ? "Homes" : user.getFormattedDisplayName() + "'s Homes"
                 , Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY
         );
@@ -70,19 +69,15 @@ public class HomesCommand extends EssentialCommand {
         for (Home home : user.getHomesHandler().getHomes()) {
             Vec3dLocation loc = (Vec3dLocation) home.getLocation();
             text.append(home.getName(),
-                    TextUtils.Events.onHover(new LiteralText("")
+                    Texter.Events.onHover(new LiteralText("")
                             .append(new LiteralText(tl("general.click_teleport")).formatted(Formatting.YELLOW))
                             .append("\n")
-                            .append(new LiteralText("Location: ").formatted(Formatting.GRAY))
-                            .append(TextUtils.toText(String.format("&7x: &a%s &7y: &a%s &7z: &a%s", loc.getX(), loc.getY(), loc.getZ())))
-                            .append(new LiteralText(" (").formatted(Formatting.DARK_GRAY))
-                            .append(RegistryUtils.dimensionToName(loc.getDimensionType())).formatted(Formatting.YELLOW)
-                            .append(new LiteralText(")").formatted(Formatting.DARK_GRAY))
+                            .append(Texter.toText(loc.asFormattedString()))
                     ),
-                    TextUtils.Events.onClickRun("/home " + home.getName() + (areTheSame ? "" : " " + user.getUsername())));
+                    Texter.Events.onClickRun("/home " + home.getName() + (areTheSame ? "" : " " + user.getUsername())));
         }
 
         source.sendMessage(text.build());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

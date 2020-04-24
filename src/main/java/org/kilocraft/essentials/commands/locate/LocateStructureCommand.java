@@ -59,21 +59,20 @@ public class LocateStructureCommand {
         return 1;
     }
 
-}
+    static class StructureLocatorThread implements Runnable {
+        private Logger logger = LogManager.getLogger();
+        private ServerCommandSource source;
+        private String structure;
 
-class StructureLocatorThread implements Runnable {
-    private Logger logger = LogManager.getLogger();
-    private ServerCommandSource source;
-    private String structure;
+        public StructureLocatorThread(ServerCommandSource source, String structure) {
+            this.source = source;
+            this.structure = structure;
+        }
 
-    public StructureLocatorThread(ServerCommandSource source, String structure) {
-        this.source = source;
-        this.structure = structure;
-    }
-
-    @Override
-    public void run() {
-        logger.info("Locating structure \"" + structure + "\", executed by " + source.getName());
-        LocateStructureProvided.execute(this.source, this.structure);
+        @Override
+        public void run() {
+            logger.info("Locating structure \"" + structure + "\", executed by " + source.getName());
+            LocateStructureProvided.execute(this.source, this.structure);
+        }
     }
 }

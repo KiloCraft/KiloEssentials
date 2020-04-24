@@ -16,10 +16,10 @@ import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
@@ -72,42 +72,42 @@ public class MagicalParticlesCommand extends EssentialCommand {
             throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Particle animation").create();
 
         addPlayer(player.getUuid(), identifier);
-        player.addMessage(LangText.getFormatter(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
-        return SINGLE_SUCCESS;
+        player.sendMessage(LangText.getFormatter(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
+        return SUCCESS;
     }
 
     private int list(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        TextUtils.ListStyle text = TextUtils.ListStyle.of(
+        Texter.ListStyle text = Texter.ListStyle.of(
                 "Particle Animations", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY
         );
 
         text.append("&cdisable",
-                TextUtils.Events.onHover(new LiteralText("Click Here to Disable").formatted(Formatting.GOLD)
+                Texter.Events.onHover(new LiteralText("Click Here to Disable").formatted(Formatting.GOLD)
                 ),
-                TextUtils.Events.onClickRun("/mp disable")
+                Texter.Events.onClickRun("/mp disable")
         ).append("&7|&r");
 
         map.forEach((id, animation) -> text.append(id.getPath(),
-                TextUtils.Events.onHover(new LiteralText("")
+                Texter.Events.onHover(new LiteralText("")
                         .append(new LiteralText(animation.getName()).formatted(Formatting.GOLD))
                         .append("\n")
                         .append(new LiteralText(animation.getId().toString()).formatted(Formatting.DARK_GRAY))
                         .append("\n")
                         .append(new LiteralText(tl("general.click_apply")).formatted(Formatting.YELLOW))
                 ),
-                TextUtils.Events.onClickRun("/mp set " + id.toString() + "--s")
+                Texter.Events.onClickRun("/mp set " + id.toString() + "--s")
         ));
 
         KiloChat.sendMessageTo(player, text.setSize(map.size()).build());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int disable(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         KiloChat.sendLangMessageTo(player, "command.magicalparticles.disabled");
         removePlayer(player.getUuid());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private CompletableFuture<Suggestions> particleIdSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

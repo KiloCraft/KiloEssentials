@@ -10,7 +10,9 @@ import java.util.Map;
 
 @ConfigSerializable
 public class CustomCommandsConfig {
-    public static String HEADER = Config.HEADER + "\n\nCustom commands";
+    public static final String COMMANDS_DESC = "Put a \"!\" at the start of the command to run with Operator permissions\n" +
+            "put a \"?\" at the start to run as the Server";
+    public static final String HEADER = Config.HEADER + "\n\nCustom commands\n" + COMMANDS_DESC;
 
     @Setting("commands")
     public Map<String, CustomCommandConfigSection> commands = new HashMap<String, CustomCommandConfigSection>(){{

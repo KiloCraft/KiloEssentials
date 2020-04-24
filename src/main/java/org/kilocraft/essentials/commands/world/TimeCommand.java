@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
 
@@ -87,7 +87,7 @@ public class TimeCommand extends EssentialCommand {
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", timeName + " &8(&d" + time + "&8)&r");
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     public static int executeAdd(CommandContext<ServerCommandSource> context, int timeToAdd) {
@@ -99,11 +99,11 @@ public class TimeCommand extends EssentialCommand {
         }
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", context.getSource().getWorld().getTimeOfDay());
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     public static int executeGet(CommandContext<ServerCommandSource> context, int time) throws CommandSyntaxException {
-        context.getSource().getPlayer().sendMessage(LangText.getFormatter(true, "command.time.get",time));
+        context.getSource().getPlayer().sendMessage(LangText.getFormatter(true, "command.time.get",time), false);
         return time;
     }
 

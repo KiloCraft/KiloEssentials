@@ -5,7 +5,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.*;
-import net.minecraft.entity.thrown.*;
+import net.minecraft.entity.projectile.thrown.*;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -23,15 +23,15 @@ public class ThrowableEntities {
     ) {
         switch (type) {
             case EGG:
-                return completeThrownEntity(new ThrownEggEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
+                return completeThrownEntity(new EggEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
             case SNOWBALL:
                 return completeThrownEntity(new SnowballEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
             case ENDER_PEARL:
-                return completeThrownEntity(new ThrownEnderpearlEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
+                return completeThrownEntity(new EnderPearlEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
             case EXPERIENCE_BOTTLE:
-                return completeThrownEntity(new ThrownExperienceBottleEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
+                return completeThrownEntity(new ExperienceBottleEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
             case POTION:
-                return completeThrown(new ThrownPotionEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
+                return completeThrown(new PotionEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
             case ARROW:
                 return completeProjectile(new ArrowEntity(world, player), player, yaw, pitch, motionX, motionY, motionZ);
             case DRAGON_FIRE_BALL:
@@ -87,7 +87,7 @@ public class ThrowableEntities {
     }
 
     public static Entity completeAbstracted(EntityType<?> type, World world, PlayerEntity player) {
-        Entity entity = type.create(world, null, null, player, player.getSenseCenterPos(), SpawnType.COMMAND, true, false);
+        Entity entity = type.create(world, null, null, player, player.getBlockPos(), SpawnType.COMMAND, true, false);
         if (entity == null)
             return null;
 

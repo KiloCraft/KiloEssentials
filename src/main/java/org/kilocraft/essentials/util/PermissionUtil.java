@@ -17,19 +17,33 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 public class PermissionUtil {
-    private final Manager manager;
-    private final boolean present;
+    private static final List<String> pendingPermissions = new ArrayList<>();
+    private boolean present;
+    private Manager manager;
 
     public PermissionUtil() {
         Logger logger = (Logger) KiloEssentials.getLogger();
         logger.info("Setting up Permissions...");
         this.manager = Manager.fromString(KiloConfig.main().permissionManager());
-        this.present = checkPresent(manager);
 
-        if (!present) {
-            logger.warn("**** Permission Manager is not Present! Switching to vanilla operator system");
-            logger.warn("     You can install either LuckPerms for Fabric Or Thimble to manage the permissions");
+        if (manager == Manager.VANILLA) {
+            this.present = false;
+            return;
+        }
+
+        logger.info("Checking " + manager.getName() + " for Availability");
+
+        this.present = this.checkPresent();
+
+        if (!this.present) {
+            logger.warn("**** " + manager.getName() + " is not present! Switching to vanilla operator system");
+            logger.warn("     You need to install either LuckPerms for Fabric Or Thimble to manage the permissions");
+            this.manager = Manager.NONE;
             return;
         }
 
@@ -37,16 +51,40 @@ public class PermissionUtil {
 
         if (manager == Manager.THIMBLE) {
             Thimble.permissionWriters.add((map, server) -> {
+                for (String pendingPermission : pendingPermissions) {
+                    if (!map.permissionExists(pendingPermission)) {
+                        map.registerPermission(pendingPermission, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    }
+                }
+
                 for (final EssentialPermission perm : EssentialPermission.values()) {
-                    map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    if (!map.permissionExists(perm.getNode())) {
+                        map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    }
                 }
 
                 for (final CommandPermission perm : CommandPermission.values()) {
-                    map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    if (!map.permissionExists(perm.getNode())) {
+                        map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
+                    }
                 }
 
-                for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
-                    map.registerPermission(CommandPermission.HOME_LIMIT.getNode() + "." + i, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                if (KiloConfig.main().features().playerHomes) {
+                    for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
+                        String perm = CommandPermission.HOME_LIMIT.getNode() + "." + i;
+                        if (!map.permissionExists(perm)) {
+                            map.registerPermission(perm, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                        }
+                    }
+                }
+
+                if (KiloConfig.main().features().playerWarps) {
+                    for (int i = 1; i <= KiloConfig.main().playerWarpsLimit; i++) {
+                        String perm = CommandPermission.PLAYER_WARP_LIMIT.getNode() + "." + i;
+                        if (!map.permissionExists(perm)) {
+                            map.registerPermission(perm, PermChangeBehavior.UPDATE_COMMAND_TREE);
+                        }
+                    }
                 }
             });
         }
@@ -55,7 +93,7 @@ public class PermissionUtil {
     }
 
     public boolean hasPermission(ServerCommandSource src, String permission, int opLevel) {
-        if (present) {
+        if (this.present) {
             if (manager == Manager.LUCKPERMS) {
                 return fromLuckPerms(src, permission, opLevel);
             }
@@ -66,6 +104,10 @@ public class PermissionUtil {
         }
 
         return src.hasPermissionLevel(opLevel);
+    }
+
+    public static void registerNode(final String node) {
+        pendingPermissions.add(node);
     }
 
     private boolean fromLuckPerms(ServerCommandSource src, String perm, int op) {
@@ -90,27 +132,41 @@ public class PermissionUtil {
         return Thimble.hasPermissionOrOp(src, perm, op);
     }
 
-    private boolean checkPresent(Manager manager) {
+    private boolean checkPresent() {
         if (manager == Manager.NONE) {
             return false;
         }
 
         try {
             if (manager == Manager.LUCKPERMS) {
-                LuckPermsProvider.get();
+                try {
+                    LuckPermsProvider.get();
+                    return true;
+                } catch (Throwable ignored) {
+                }
             }
 
-            Class.forName(manager.getClassPath());
-            ClassLoader.getSystemClassLoader().loadClass(manager.getClassPath());
+            if (manager == Manager.THIMBLE) {
+                Thimble.permissionWriters.get(0);
+            }
 
-            return FabricLoader.getInstance().getModContainer(manager.getName().toLowerCase()).isPresent();
+            return FabricLoader.getInstance().getModContainer(manager.getName().toLowerCase(Locale.ROOT)).isPresent();
         } catch (Exception ignored) {
             return false;
         }
     }
 
-    private enum Manager {
+    public boolean managerPresent() {
+        return this.present;
+    }
+
+    public Manager getManager() {
+        return this.manager;
+    }
+
+    public enum Manager {
         NONE("none", ""),
+        VANILLA("Vanilla", ""),
         LUCKPERMS("LuckPerms", "net.luckperms.api.LuckPerms"),
         THIMBLE("Thimble", "io.github.indicode.fabric.permissions.Thimble");
 
@@ -122,16 +178,12 @@ public class PermissionUtil {
             this.classPath = classPath;
         }
 
-        public final String getName() {
+        public String getName() {
             return this.name;
         }
 
-        public final String getClassPath() {
-            return this.classPath;
-        }
-
         @NotNull
-        public static Manager fromString(String str) {
+        public static Manager fromString(@NotNull final String str) {
             for (Manager value : Manager.values()) {
                 if (value.name.equalsIgnoreCase(str)) {
                     return value;

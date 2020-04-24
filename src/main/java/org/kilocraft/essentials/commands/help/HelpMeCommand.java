@@ -8,12 +8,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.OnlineServerUser;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.util.text.Texter;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -39,7 +39,7 @@ public class HelpMeCommand extends EssentialCommand {
                 .append(" ")
                 .append(new LiteralText(ctx.getSource().getName()).formatted(Formatting.YELLOW)
                         .append(new LiteralText(": ").formatted(Formatting.WHITE)))
-                .append(TextUtils.toText(getString(ctx, "message")).formatted(Formatting.WHITE));
+                .append(Texter.toText(getString(ctx, "message")).formatted(Formatting.WHITE));
 
         int i = 0;
         for (final OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
@@ -55,7 +55,7 @@ public class HelpMeCommand extends EssentialCommand {
             src.sendLangMessage("command.helpme.sent");
         }
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
 }

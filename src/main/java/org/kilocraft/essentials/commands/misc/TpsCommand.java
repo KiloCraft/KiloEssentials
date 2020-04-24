@@ -4,14 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import static org.kilocraft.essentials.util.TPSTracker.*;
 
 public class TpsCommand extends EssentialCommand {
     public TpsCommand() {
-        super("tps", new String[]{"tickspersecond"});
+        super("tps");
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -19,8 +19,8 @@ public class TpsCommand extends EssentialCommand {
     }
 
     private int run(CommandContext<ServerCommandSource> ctx) {
-        KiloChat.sendMessageToSource(ctx.getSource(), new ChatMessage(String.format(
-                        "&6TPS&8:&%s %s&7 &8(&75m&8/&715m&8/&730m&8/&71h&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
+        KiloChat.sendMessageToSource(ctx.getSource(), new TextMessage(String.format(
+                        "&6TPS &%s %s&7 &8(&75m&8/&715m&8/&730m&8/&71h&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
                         tpstoColorCode(tps1.getAverage()), tps1.getShortAverage(),
                         tpstoColorCode(tps5.getAverage()), tps5.getShortAverage(),
                         tpstoColorCode(tps15.getAverage()), tps15.getShortAverage(),

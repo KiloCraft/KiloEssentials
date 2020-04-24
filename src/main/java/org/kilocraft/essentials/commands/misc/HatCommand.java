@@ -14,9 +14,9 @@ import net.minecraft.util.Hand;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -30,7 +30,7 @@ public class HatCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("target", player())
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.HAT_OTHERS))
-                .suggests(TabCompletions::allPlayers)
+                .suggests(ArgumentCompletions::allPlayers)
                 .executes(this::executeOthers);
 
         commandNode.addChild(targetArgument.build());
@@ -42,7 +42,7 @@ public class HatCommand extends EssentialCommand {
 
         if (player.getMainHandStack().isEmpty()) {
             KiloChat.sendLangMessageTo(player, "general.no_item");
-            return SINGLE_FAILED;
+            return FAILED;
         }
 
         PlayerInventory inventory = player.inventory;
@@ -53,7 +53,7 @@ public class HatCommand extends EssentialCommand {
         inventory.armor.set(EquipmentSlot.HEAD.getEntitySlotId(), hand);
 
         KiloChat.sendLangMessageTo(player, "command.hat");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -66,13 +66,13 @@ public class HatCommand extends EssentialCommand {
         target.setStackInHand(Hand.MAIN_HAND, head);
         inventory.armor.set(EquipmentSlot.HEAD.getEntitySlotId(), hand);
 
-        if (CmdUtils.areTheSame(player, target))
+        if (CommandUtils.areTheSame(player, target))
             KiloChat.sendLangMessageTo(player, "command.hat");
         else {
             KiloChat.sendLangMessageTo(player, "command.hat.others", target.getEntityName());
             KiloChat.sendLangMessageTo(target, "command.hat.announce", player.getEntityName());
         }
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

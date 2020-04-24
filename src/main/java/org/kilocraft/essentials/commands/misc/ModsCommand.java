@@ -75,7 +75,7 @@ public class ModsCommand extends EssentialCommand {
         }
 
         KiloChat.sendMessageTo(ctx.getSource(), text);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int sendInfo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -94,7 +94,7 @@ public class ModsCommand extends EssentialCommand {
             text.append("\n").append(new LiteralText("Description: ").append(new LiteralText(meta.getDescription())));
 
         KiloChat.sendMessageTo(ctx.getSource(), text);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private Text getModAuthorList(ModMetadata meta) {

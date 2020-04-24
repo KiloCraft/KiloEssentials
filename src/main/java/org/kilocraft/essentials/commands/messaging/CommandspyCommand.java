@@ -10,11 +10,11 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 public class CommandspyCommand extends EssentialCommand {
     public CommandspyCommand() {
-        super("commandspy", src -> !CmdUtils.isConsole(src) && KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_COMMAND));
+        super("commandspy", src -> !CommandUtils.isConsole(src) && KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_COMMAND));
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -25,11 +25,11 @@ public class CommandspyCommand extends EssentialCommand {
         if (ServerChat.isCommandSpy(ctx.getSource().getPlayer())) {
             ServerChat.removeCommandSpy(ctx.getSource().getPlayer());
             ctx.getSource().sendFeedback(new LiteralText("CommandSpy is now inactive").formatted(Formatting.YELLOW), false);
-            return SINGLE_SUCCESS;
+            return SUCCESS;
         }
 
         ServerChat.addCommandSpy(ctx.getSource().getPlayer());
         ctx.getSource().sendFeedback(new LiteralText("CommandSpy is now active").formatted(Formatting.YELLOW), false);
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }

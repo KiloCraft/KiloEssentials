@@ -30,13 +30,11 @@ public class LiteralCommandModified {
         add("ke_ban");
         add("ke_ban");
         add("ke_kick");
-        add("ke_help");
         add("ke_gamerule");
     }};
 
     private static List<String> vanillaCommandsToRename = new ArrayList<String>(){{
         add("gamemode");
-        add("help");
         add("locate");
         add("op");
         add("deop");
@@ -51,6 +49,14 @@ public class LiteralCommandModified {
         add("enchant");
         add("locatebiome");
     }};
+
+    public static String normalizeName(String name) {
+        if (keCommandsToKeep.contains(name)) {
+            return getKECommandName(name);
+        }
+
+        return name;
+    }
 
     public static boolean isVanillaCommand(String nodeName) {
         return vanillaCommandsToRename.contains(nodeName);

@@ -7,7 +7,7 @@ import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUser;
-import org.kilocraft.essentials.util.RegistryUtils;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.util;
 
+import org.kilocraft.essentials.util.math.RollingAverage;
+
 public class TPSTracker {
     public static final RollingAverage tps1 = new RollingAverage(60);
     public static final RollingAverage tps5 = new RollingAverage(60 * 5);

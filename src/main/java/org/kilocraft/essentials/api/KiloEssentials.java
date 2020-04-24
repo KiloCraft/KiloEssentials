@@ -24,16 +24,15 @@
 
 package org.kilocraft.essentials.api;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
-import org.kilocraft.essentials.api.feature.FeatureNotPresentException;
-import org.kilocraft.essentials.api.feature.FeatureType;
-import org.kilocraft.essentials.api.feature.SingleInstanceConfigurableFeature;
+import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -45,6 +44,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -84,7 +84,11 @@ public interface KiloEssentials {
 
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(OnlineUser requester, String username, Consumer<? super User> action);
 
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(OnlineUser requester, UUID uuid, Consumer<? super User> action);
+
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action);
+
+    CompletableFuture<Optional<User>> getUserThenAcceptAsync(UUID uuid, Consumer<? super Optional<User>> action);
 
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor);
 
@@ -99,6 +103,8 @@ public interface KiloEssentials {
      * @throws FeatureNotPresentException If the feature type is disabled, not present or not a SingleInstanceConfigurableFeature.
      */
     <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException;
+
+    ConfigurableFeatures getFeatures();
 
     PermissionUtil getPermissionUtil();
 

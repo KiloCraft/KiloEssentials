@@ -29,6 +29,9 @@ public class CommandsConfigSection {
     @Setting(value = "rtp")
     private RtpCommandConfigSection rtpSection = new RtpCommandConfigSection();
 
+    @Setting(value = "playerWarp")
+    private PlayerWarpCommandConfigSection playerWarpSection = new PlayerWarpCommandConfigSection();
+
     @Setting(value = "nickname", comment = "Local Variables: {NICK}, {NICK_NEW}, {TARGET_TAG}")
     private NicknameCommandConfigSection nickname = new NicknameCommandConfigSection();
 
@@ -50,6 +53,10 @@ public class CommandsConfigSection {
 
     public NicknameCommandConfigSection nickname() {
         return nickname;
+    }
+
+    public PlayerWarpCommandConfigSection playerWarp() {
+        return playerWarpSection;
     }
 
 }

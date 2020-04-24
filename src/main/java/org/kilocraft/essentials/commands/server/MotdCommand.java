@@ -12,11 +12,11 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.NonNls;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.chat.LangText;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public class MotdCommand extends EssentialCommand {
         final String[] lines = description.asFormattedString().split("\n");
 
         this.getServerUser(ctx).sendLangMessage("command.motd", (lines.length >= 0) ? lines[0] : "", lines.length >= 1 ? lines[1] : "");
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 
     private int setMotd(final CommandContext<ServerCommandSource> ctx) {
@@ -68,7 +68,7 @@ public class MotdCommand extends EssentialCommand {
         }
 
         try {
-            this.server.getMetaManager().setDescription(TextUtils.toText(finalmotd));
+            this.server.getMetaManager().setDescription(Texter.toText(finalmotd));
         } catch (final IOException e) {
             this.getServerUser(ctx).sendError("Can not save the value \"motd\" in server.properties\n" + e.getMessage());
 
@@ -79,7 +79,7 @@ public class MotdCommand extends EssentialCommand {
         final String[] motd = this.server.getMetaManager().getDescription().asFormattedString().split(MotdCommand.COMPILE.pattern());
 
         ctx.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.set", TextFormat.translate(motd[0]), TextFormat.translate(motd[1])), true);
-        return this.SINGLE_SUCCESS;
+        return this.SUCCESS;
     }
 
     private CompletableFuture<Suggestions> suggestions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
@@ -94,12 +94,12 @@ public class MotdCommand extends EssentialCommand {
                 builder.suggest('"' + desc + '"');
             } catch (final ArrayIndexOutOfBoundsException ignored) {}
 
-        } else if (context.getInput().charAt(TabCompletions.getPendingCursor(context)) == '&') {
-            return TabCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()), context);
+        } else if (context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)) == '&') {
+            return ArgumentCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()), context);
         } else if (!builder.getRemaining().endsWith("\"")) {
-            return TabCompletions.suggestAtCursor("\"", context);
+            return ArgumentCompletions.suggestAtCursor("\"", context);
         } else if (builder.getRemaining().endsWith("\"")) {
-            return TabCompletions.suggestAtCursor("&", context);
+            return ArgumentCompletions.suggestAtCursor("&", context);
         }
 
         return builder.buildFuture();

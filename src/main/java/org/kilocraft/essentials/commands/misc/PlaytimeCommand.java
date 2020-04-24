@@ -10,8 +10,8 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.commands.CmdUtils;
-import org.kilocraft.essentials.util.TextUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class PlaytimeCommand extends EssentialCommand {
         CommandSourceUser src = getServerUser(ctx);
         int ticks = getInteger(ctx, "seconds") * 20;
 
-        AtomicInteger atomicInteger = new AtomicInteger(AWAIT_RESPONSE);
+        AtomicInteger atomicInteger = new AtomicInteger(AWAIT);
         essentials.getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
             try {
                 user.setTicksPlayed(
@@ -94,7 +94,7 @@ public class PlaytimeCommand extends EssentialCommand {
             execute(src, user);
         });
 
-        return AWAIT_RESPONSE;
+        return AWAIT;
     }
 
     private int execute(CommandSourceUser src, User target) {
@@ -102,8 +102,8 @@ public class PlaytimeCommand extends EssentialCommand {
                 TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e');
         String firstJoin = target.getFirstJoin() != null ? TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()) : tl("general.not_present");
 
-        String title = CmdUtils.areTheSame(src, target) ? tl("command.playtime.title.self") : tl("command.playtime.title.others", target.getNameTag());
-        TextUtils.InfoBlockStyle text = TextUtils.InfoBlockStyle.of(title);
+        String title = CommandUtils.areTheSame(src, target) ? tl("command.playtime.title.self") : tl("command.playtime.title.others", target.getNameTag());
+        Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(title);
 
         text.append(tl("command.playtime.total"), pt)
                 .append(tl("command.playtime.first_join"), firstJoin);

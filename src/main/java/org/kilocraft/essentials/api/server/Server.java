@@ -12,7 +12,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.api.chat.ChatManager;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
@@ -61,13 +60,6 @@ public interface Server {
     OnlineUser getOnlineUser(UUID uuid);
 
     CommandSourceUser getCommandSourceUser(ServerCommandSource source);
-
-    /**
-     * Gets the chat manager
-     *
-     * @return instance of ChatManager
-     */
-    ChatManager getChatManager();
 
     /**
      * Gets a Entity object by the given UUID

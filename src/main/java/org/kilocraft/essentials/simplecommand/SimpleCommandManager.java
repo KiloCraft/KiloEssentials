@@ -1,71 +1,102 @@
 package org.kilocraft.essentials.simplecommand;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.server.Server;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
-import static org.kilocraft.essentials.KiloCommands.*;
+import java.util.function.Predicate;
 
 public class SimpleCommandManager {
     private static SimpleCommandManager INSTANCE;
     private List<SimpleCommand> commands;
+    private List<String> byId;
     private Server server;
 
     public SimpleCommandManager(Server server, CommandDispatcher<ServerCommandSource> dispatcher) {
         INSTANCE = this;
         this.server = server;
         this.commands = new ArrayList<>();
+        this.byId = new ArrayList<>();
     }
 
     public static void register(SimpleCommand command) {
-        if (INSTANCE != null && INSTANCE.commands != null) {
+        if (INSTANCE != null) {
             INSTANCE.commands.add(command);
+            INSTANCE.byId.add(command.id);
 
-            getDispatcher().register(literal(command.getLabel())
-                    .then(argument("args", greedyString()).suggests(TabCompletions::noSuggestions)));
+            KiloCommands.getDispatcher().register(CommandManager.literal(command.getLabel())
+                    .requires(
+                            src -> canUse(src, command)
+                    )
+                    .then(
+                            CommandManager.argument("args", StringArgumentType.greedyString())
+                                    .requires(src -> INSTANCE.byId.contains(command.id))
+                                    .suggests(ArgumentCompletions::noSuggestions)
+                    )
+            );
         }
     }
 
+    private static boolean canUse(ServerCommandSource src, SimpleCommand command) {
+        boolean canUse = true;
+        if (command.opReq != 0) {
+            canUse = src.hasPermissionLevel(command.opReq);
+        }
+
+        if (command.permReq != null && !command.permReq.isEmpty()) {
+            canUse = canUse || KiloCommands.hasPermission(src, command.permReq, command.opReq == 0 ? 2 : command.opReq);
+        }
+
+        return canUse && getCommand(command.getId()) != null;
+    }
+
     public static void unregister(String id) {
-        if (INSTANCE != null && INSTANCE.commands != null && getCommand(id) != null)
-            INSTANCE.commands.remove(getCommand(id));
+        if (INSTANCE != null &&  getCommand(id) != null) {
+            unregister(getCommand(id));
+        }
     }
 
     public static void unregister(SimpleCommand command) {
-        if (INSTANCE != null && INSTANCE.commands != null)
+        if (INSTANCE != null && INSTANCE.commands != null) {
             INSTANCE.commands.remove(command);
+            INSTANCE.byId.remove(command.id);
+        }
     }
 
     public static SimpleCommand getCommandByLabel(String label) {
         if (INSTANCE != null && INSTANCE.commands != null)
             for (SimpleCommand command : INSTANCE.commands) {
-                if (command.label.equals(label))
+                if (command.label.equals(label)) {
                     return command;
+                }
             }
 
         return null;
     }
 
+    @Nullable
     public static SimpleCommand getCommand(String id) {
-        if (INSTANCE != null && INSTANCE.commands != null)
+        if (INSTANCE != null && INSTANCE.commands != null) {
             for (SimpleCommand command : INSTANCE.commands) {
-                if (command.id.equals(id))
+                if (command.id.equals(id)) {
                     return command;
+                }
             }
+        }
 
         return null;
     }
@@ -96,7 +127,7 @@ public class SimpleCommandManager {
         try {
             if (command != null) {
                 if (command.opReq >= 1 && !source.hasPermissionLevel(command.opReq)) {
-                    sendPermissionError(source);
+                    KiloCommands.sendPermissionError(source);
                     return 0;
                 }
 
@@ -106,10 +137,10 @@ public class SimpleCommandManager {
             if (e.getRawMessage().getString().equals("Unknown command")) {
                 CommandPermission reqPerm = CommandPermission.getByNode(label);
 
-                if (isCommand(label) && (reqPerm != null && !hasPermission(source, reqPerm)))
-                    sendPermissionError(source);
+                if (isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
+                    KiloCommands.sendPermissionError(source);
                 else
-                    KiloChat.sendMessageToSource(source, new ChatMessage(
+                    KiloChat.sendMessageToSource(source, new TextMessage(
                             KiloConfig.messages().commands().context().executionException
                             , true));
 

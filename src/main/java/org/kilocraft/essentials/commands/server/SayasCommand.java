@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.commands.server;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -13,8 +14,10 @@ import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.chat.channels.GlobalChat;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.chat.TextMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,38 +36,55 @@ public class SayasCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         ArgumentCommandNode<ServerCommandSource, String> selectorArg = argument("target", word())
-                .suggests(SayasCommand::playerSuggestions)
-                .executes(SayasCommand::execute)
+                .suggests(this::playerSuggestions)
+                .build();
+
+        ArgumentCommandNode<ServerCommandSource, String> channelArg = argument("channel", word())
+                .suggests(this::channelIdSuggestions)
                 .build();
 
         ArgumentCommandNode<ServerCommandSource, MessageFormat> messageArg = argument("message", message())
-                .suggests(TabCompletions::noSuggestions)
-                .executes(SayasCommand::execute)
+                .suggests(ArgumentCompletions::noSuggestions)
+                .executes(this::execute)
                 .build();
 
-        selectorArg.addChild(messageArg);
+        channelArg.addChild(messageArg);
+        selectorArg.addChild(channelArg);
         commandNode.addChild(selectorArg);
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String inputTarget = getString(ctx, "target");
         Text message = getMessage(ctx, "message");
+        ServerChat.Channel channel = ServerChat.Channel.getById(StringArgumentType.getString(ctx, "channel"));
+        OnlineUser src = this.getOnlineUser(ctx);
+        OnlineUser target = this.getOnlineUser(inputTarget);
 
-        if (inputTarget.equalsIgnoreCase("-Server")) {
-            KiloServer.getServer().getPlayerManager().sendToAll(
-                    new TranslatableText("chat.type.announcement", "Server", message));
-            return 1;
+        if (channel == null) {
+            src.sendLangError("channel.invalid");
+            return FAILED;
         }
 
-        KiloServer.getServer().getChatManager().getChannel(GlobalChat.getChannelId())
-                .onChatMessage(KiloServer.getServer().getPlayer(inputTarget), message.asFormattedString());
+        if (inputTarget.equalsIgnoreCase("-Server")) {
+            KiloServer.getServer().getPlayerManager().sendToAll(new TranslatableText("chat.type.announcement", "Server", message));
+            return SUCCESS;
+        }
 
-        return 1;
+        ServerChat.sendSafely(target, new TextMessage(message.asFormattedString()), channel);
+        return SUCCESS;
     }
 
-    private static CompletableFuture<Suggestions> playerSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    private CompletableFuture<Suggestions> playerSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         List<String> strings = new ArrayList<>(Arrays.asList(KiloServer.getServer().getPlayerManager().getPlayerNames()));
         strings.add("-server");
+        return CommandSource.suggestMatching(strings, builder);
+    }
+
+    private CompletableFuture<Suggestions> channelIdSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+        List<String> strings = new ArrayList<>();
+        for (ServerChat.Channel value : ServerChat.Channel.values()) {
+            strings.add(value.getId());
+        }
         return CommandSource.suggestMatching(strings, builder);
     }
 }

@@ -11,20 +11,22 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
-import org.kilocraft.essentials.util.PlayerRotation;
-import org.kilocraft.essentials.util.RegistryUtils;
+import org.kilocraft.essentials.util.LocationUtil;
+import org.kilocraft.essentials.util.player.PlayerRotation;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.text.DecimalFormat;
 
 public class Vec3dLocation implements Location {
+    private static DecimalFormat decimalFormat = new DecimalFormat("##.##");
     private double x, y, z;
     private EntityRotation rotation;
     private Identifier dimension;
     private boolean useShortDecimals = false;
-    private DecimalFormat decimalFormat = new DecimalFormat("##.##");
 
     private Vec3dLocation(double x, double y, double z, float yaw, float pitch, Identifier dimension) {
         this.x = x;
@@ -51,15 +53,17 @@ public class Vec3dLocation implements Location {
     }
 
     public static Vec3dLocation of(ServerPlayerEntity player) {
-        return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, RegistryUtils.toIdentifier(player.dimension));
+        Identifier dim = player.dimension != null ? RegistryUtils.toIdentifier(player.dimension) : null;
+        return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, dim);
     }
 
     public static Vec3dLocation of(Entity entity) {
-        return new Vec3dLocation(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch, RegistryUtils.toIdentifier(entity.dimension));
+        Identifier dim = entity.dimension != null ? RegistryUtils.toIdentifier(entity.dimension) : null;
+        return new Vec3dLocation(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch, dim);
     }
 
     public static Vec3dLocation of(OnlineUser user) {
-        return of(user.getPlayer());
+        return of(user.asPlayer());
     }
 
     @Override
@@ -77,11 +81,13 @@ public class Vec3dLocation implements Location {
         return z;
     }
 
+    @Nullable
     @Override
     public Identifier getDimension() {
         return dimension;
     }
 
+    @Nullable
     @Override
     public DimensionType getDimensionType() {
         return Registry.DIMENSION_TYPE.get(dimension);
@@ -104,12 +110,12 @@ public class Vec3dLocation implements Location {
 
     @Override
     public boolean isSafeFor(OnlineUser user) {
-        return false;
+        return LocationUtil.isBlockSafeFor(user, this);
     }
 
     @Override
     public boolean isSafeFor(ServerPlayerEntity player) {
-        return false;
+        return isSafeFor(KiloServer.getServer().getOnlineUser(player));
     }
 
     @Override
@@ -205,6 +211,18 @@ public class Vec3dLocation implements Location {
     @Override
     public Vec3i toVec3i() {
         return new Vec3i(this.z, this.y, this.z);
+    }
+
+    @Override
+    public Location up() {
+        this.y += 1;
+        return this;
+    }
+
+    @Override
+    public Location down() {
+        this.y -= 1;
+        return this;
     }
 
     public Vec3iLocation toVec3iLocation() {

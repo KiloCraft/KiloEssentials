@@ -4,80 +4,111 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.EntitySelector;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.collection.DefaultedList;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.util.text.Texter;
 
-import java.util.function.Predicate;
-
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
-import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
-
-public class InventoryCommand {
-    private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.SEEK_INVENTORY);
-
-    @Deprecated
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> rootCommand = literal("inv")
-                .requires(PERMISSION_CHECK)
-                .build();
-
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("target", player())
-                .suggests(TabCompletions::allPlayers)
-                .executes(InventoryCommand::execute);
-
-        rootCommand.addChild(selectorArgument.build());
-        dispatcher.getRoot().addChild(rootCommand);
-        dispatcher.register(literal("inventory").requires(PERMISSION_CHECK).redirect(rootCommand));
-        dispatcher.register(literal("seekinv").requires(PERMISSION_CHECK).redirect(rootCommand));
+public class InventoryCommand extends EssentialCommand {
+    public InventoryCommand() {
+        super("inventory", CommandPermission.SEEK_INVENTORY, new String[]{"inv", "seekinv"});
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity source = ctx.getSource().getPlayer();
-        ServerPlayerEntity target = getPlayer(ctx, "target");
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getOnlineUserArgument("target")
+                .executes(this::execute);
 
-        //target.inventory.onInvOpen(source);
-
-//        NameableContainerProvider container = new NameableContainerProvider() {
-//            @Override
-//            public Text getDisplayName() {
-//                String displayName = KiloServer.getServer().getOnlineUser(target).getDisplayname();
-//                return new LiteralText(TextFormat.translate(displayName + "&r's Inventory", false));
-//            }
-//
-//            @Override
-//            public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-//                return new GenericContainer(ContainerType.GENERIC_9X4, i, source.inventory, target.inventory, 4);
-//            }
-//
-//        };
-
-        KiloChat.sendLangMessageTo(source, "general.seek_container", target.getEntityName(), "Inventory");
-//        source.openContainer(container(source, target));
-
-        return 1;
+        this.commandNode.addChild(userArgument.build());
     }
 
-//    private static SimpleNamedContainerFactory container(ServerPlayerEntity player, ServerPlayerEntity target) {
-//        return new SimpleNamedContainerFactory() {
-//            @Override
-//            public Text getDisplayName() {
-//                String displayName = KiloServer.getServer().getOnlineUser(target).getDisplayname();
-//                return new LiteralText(TextFormat.translate(displayName + "&r's Inventory", false));
-//            }
-//
-//            @Override
-//            public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-//                return new GenericContainer(ContainerType.GENERIC_9X4, i, playerInventory, target.inventory, 4);
-//            }
-//        };
-//    }
+    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        final OnlineUser sender = this.getOnlineUser(ctx);
+        final OnlineUser target = this.getOnlineUser(ctx, "target");
+
+        if (sender.equals(target)) {
+            sender.sendError(tl("command.inventory.error"));
+            return FAILED;
+        }
+
+        sender.asPlayer().openHandledScreen(factory(sender, target));
+        sender.sendLangMessage("general.seek_screen", target.getFormattedDisplayName(), "");
+        return SUCCESS;
+    }
+
+    private NamedScreenHandlerFactory factory(final OnlineUser src, final OnlineUser target) {
+        return new NamedScreenHandlerFactory() {
+            @Override
+            public Text getDisplayName() {
+                Text text;
+                Text translatable =  new TranslatableText("container.inventory");
+
+                if (src.equals(target)) {
+                    text = Texter.toText().append(translatable).append(" ").append(target.getFormattedDisplayName());
+                } else {
+                    text = translatable;
+                }
+
+                return text;
+            }
+
+            @Override
+            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                ScreenHandler handler = GenericContainerScreenHandler.createGeneric9x5(syncId, src.asPlayer().inventory);
+                handler.addListener(new ScreenHandlerListener() {
+                    @Override
+                    public void onHandlerRegistered(ScreenHandler screenHandler, DefaultedList<ItemStack> defaultedList) {
+                        setSlotsInit(target.asPlayer(), handler);
+                    }
+
+                    @Override
+                    public void onSlotUpdate(ScreenHandler screenHandler, int i, ItemStack itemStack) {
+                        copySlotsFromInventory(target.asPlayer(), handler, syncId);
+                    }
+
+                    @Override
+                    public void onPropertyUpdate(ScreenHandler screenHandler, int i, int j) {
+                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(screenHandler.syncId, i, j));
+                    }
+                });
+
+                return handler;
+            }
+        };
+    }
+
+    private static void setSlotsInit(ServerPlayerEntity target, ScreenHandler handler){
+        for (int i = 0; i < 36; i++){
+            handler.setStackInSlot(i, target.inventory.main.get(i));
+        }
+
+        for (int i = 0; i < 4; i++){
+            handler.setStackInSlot(i + 36, target.inventory.armor.get(i));
+        }
+
+        handler.setStackInSlot(44, target.inventory.offHand.get(0));
+    }
+
+    private static void copySlotsFromInventory(ServerPlayerEntity target, ScreenHandler handler, int slotID){
+        if (slotID < 36){
+            target.inventory.main.set(slotID, handler.getStacks().get(slotID));
+        } else if (slotID < 40){
+            target.inventory.armor.set(slotID - 36, handler.getStacks().get(slotID));
+        } else if (slotID == 44){
+            target.inventory.offHand.set(0, handler.getStacks().get(slotID));
+        }
+    }
 
 }

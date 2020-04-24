@@ -3,7 +3,7 @@
 plugins {
 	id 'com.github.johnrengelman.shadow' version '5.1.0'
 	id 'java'
-	id 'fabric-loom' version '0.2.6-SNAPSHOT'
+	id 'fabric-loom' version '0.2.7-SNAPSHOT'
 	id 'maven-publish'
 	id 'com.palantir.git-version' version '0.12.2'
 }
@@ -38,6 +38,7 @@ repositories {
 	maven { url 'https://jitpack.io' }
 	maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
 	maven { url 'https://repo.spongepowered.org/maven'}
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 shadowJar {
@@ -53,14 +54,18 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation "com.github.voidpointerdev:Thimble-Permissions:${project.thimble_permissions_version}"
+	modImplementation "com.github.OnBlock:Thimble-Permissions:${project.thimble_permissions_version}"
+	//modImplementation "com.github.voidpointerdev:Thimble-Permissions:${project.thimble_permissions_version}"
+	implementation "com.github.KiloCraft:KiloEssentialsBungee:${project.ke_bungee_version}"
 
 	compile "org.spongepowered:configurate-hocon:${project.configurate_version}"
 	shadow "org.spongepowered:configurate-hocon:${project.configurate_version}"
 	compile group: 'com.google.inject', name: 'guice', version: '4.0'
 	shadow group: 'com.google.inject', name: 'guice', version: '4.0'
 	compile "net.luckperms:api:${project.luckperms_version}"
-	shadow "net.luckperms:api:${project.luckperms_version}"
+	//shadow "net.luckperms:api:${project.luckperms_version}"
+	compile group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
+	//shadow group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
 }
 
 tasks.jar.archiveClassifier = "compile"

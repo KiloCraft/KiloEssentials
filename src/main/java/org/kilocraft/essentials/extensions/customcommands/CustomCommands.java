@@ -1,11 +1,13 @@
 package org.kilocraft.essentials.extensions.customcommands;
 
 import com.google.common.reflect.TypeToken;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.server.command.CommandOutput;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -16,22 +18,26 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.chat.LangText;
-import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
 import org.kilocraft.essentials.extensions.customcommands.config.sections.CustomCommandConfigSection;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
+import org.kilocraft.essentials.util.PermissionUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-public class CustomCommands implements ConfigurableFeature {
+public class CustomCommands implements RelodableConfigurableFeature {
     public static boolean enabled = false;
     static Map<Identifier, SimpleCommand> map = new HashMap<>();
     private static ConfigurationNode configNode;
@@ -41,10 +47,11 @@ public class CustomCommands implements ConfigurableFeature {
     public boolean register() {
         enabled = true;
         load();
+
         return true;
     }
 
-    public static void load() {
+    public void load() {
         try {
             KiloFile CONFIG_FILE = new KiloFile("customCommands.hocon", KiloEssentials.getEssentialsPath());
             if (!CONFIG_FILE.exists()) {
@@ -72,12 +79,24 @@ public class CustomCommands implements ConfigurableFeature {
     }
 
     private static void createFromConfig() {
-        map.clear();
+        if (!map.isEmpty()) {
+            map.forEach((string, cs) -> SimpleCommandManager.unregister(string.toString()));
+            map.clear();
+        }
+
         config.commands.forEach((string, cs) -> {
             SimpleCommandManager.unregister(string);
             SimpleCommand simpleCommand = new SimpleCommand(string, cs.label, (source, args, server) -> runCommand(source, args, server, cs));
 
-            simpleCommand.requires(cs.reqSection.op);
+            if (cs.reqSection.op != 0) {
+                simpleCommand.requires(cs.reqSection.op);
+            }
+
+            if (cs.reqSection.permission != null && !cs.reqSection.permission.equalsIgnoreCase("none")) {
+                simpleCommand.requires(cs.reqSection.permission);
+                PermissionUtil.registerNode(cs.reqSection.permission);
+            }
+
             SimpleCommandManager.register(simpleCommand);
             map.put(new Identifier(string), simpleCommand);
         });
@@ -116,46 +135,31 @@ public class CustomCommands implements ConfigurableFeature {
         }
 
         for (String s : commands) {
-            if (s.startsWith("!"))
-                server.execute(operatorSource(src), s.replace("!", ""));
-            else if (s.startsWith("?"))
-                    server.execute(s.replaceFirst("\\?", ""));
-            else
-                server.execute(src, s);
-
+            CommandUtils.run(src, s);
             var++;
         }
 
         return var;
     }
 
-    private static ServerCommandSource operatorSource(ServerCommandSource src) {
-        return new ServerCommandSource(commandOutput(src), src.getPosition(), src.getRotation(),
-                src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getMinecraftServer(), src.getEntity());
-    }
+    public enum SuggestionType {
+        EMPTY("empty"),
+        PLAYERS("players");
 
-    private static CommandOutput commandOutput(ServerCommandSource src) {
-        return new CommandOutput() {
-            @Override
-            public void sendMessage(Text text) {
-                src.sendFeedback(text, false);
-            }
+        private final String id;
+        SuggestionType(String id) {
+            this.id = id;
+        }
 
-            @Override
-            public boolean sendCommandFeedback() {
-                return true;
-            }
+        public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
+            switch (this) {
+                case PLAYERS:
+                    return ArgumentCompletions.allPlayers(ctx, builder);
 
-            @Override
-            public boolean shouldTrackOutput() {
-                return false;
+                default:
+                    return ArgumentCompletions.noSuggestions(ctx, builder);
             }
-
-            @Override
-            public boolean shouldBroadcastConsoleToOps() {
-                return false;
-            }
-        };
+        }
     }
 
 }

@@ -9,29 +9,27 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
 import org.kilocraft.essentials.chat.ServerChat;
 
 public class MessageCommand extends EssentialCommand {
     public MessageCommand() {
-        super("message", new String[]{"ke_msg", "ke_tell", "ke_whisper"});
+        super("message", new String[]{"ke_msg", "ke_tell", "ke_whisper", "dm", "directmessage"});
         this.withUsage("command.message.usage", "target", "message");
     }
 
     @Override
-    public final void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = this.argument("target", EntityArgumentType.player());
+    public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
+        RequiredArgumentBuilder<ServerCommandSource, String> target = this.getOnlineUserArgument("target");
 
-        final RequiredArgumentBuilder<ServerCommandSource, String> message = this.argument("message", StringArgumentType.greedyString())
-                .suggests(TabCompletions::noSuggestions)
-                .executes(MessageCommand::execute);
+        RequiredArgumentBuilder<ServerCommandSource, String> message = this.argument("message", StringArgumentType.greedyString())
+                .executes(this::execute);
 
         target.then(message);
         this.commandNode.addChild(target.build());
     }
 
-    private static int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return ServerChat.executeSend(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "target"), StringArgumentType.getString(ctx, "message"));
+    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        return ServerChat.sendDirectMessage(ctx.getSource(), this.getOnlineUser(ctx, "target"), StringArgumentType.getString(ctx, "message"));
     }
 
 }

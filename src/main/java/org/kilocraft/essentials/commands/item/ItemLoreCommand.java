@@ -19,8 +19,9 @@ import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.nbt.NBTTypes;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -47,13 +48,13 @@ public class ItemLoreCommand {
 
 		LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove");
 		RequiredArgumentBuilder<ServerCommandSource, Integer> removeLineArgument = argument("line", integer(1, 10))
-				.suggests(TabCompletions::noSuggestions)
+				.suggests(ArgumentCompletions::noSuggestions)
 				.executes(ItemLoreCommand::executeRemove);
 
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
 
 		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 10))
-				.suggests(TabCompletions::noSuggestions);
+				.suggests(ArgumentCompletions::noSuggestions);
 
 		RequiredArgumentBuilder<ServerCommandSource, String> textArgument = argument("text", greedyString())
 				.suggests(ItemLoreCommand::loreSuggestions)
@@ -74,7 +75,7 @@ public class ItemLoreCommand {
 
 		if (item.isEmpty() || !item.hasTag() || item.getTag() == null ||
 				!item.getTag().contains("display") || !item.getTag().getCompound("display").contains("Lore"))
-			return TabCompletions.noSuggestions(context, builder);
+			return ArgumentCompletions.noSuggestions(context, builder);
 
 		int inputLine = 0;
 
@@ -110,7 +111,7 @@ public class ItemLoreCommand {
 			return -1;
 		}
 
-		ListTag lore = item.getTag().getCompound("display").getList("Lore", 8);
+		ListTag lore = item.getTag().getCompound("display").getList("Lore", NBTTypes.STRING);
 
 		if (inputLine >= lore.size()) {
 			KiloChat.sendLangMessageTo(player, "command.item.nothing_to_reset");

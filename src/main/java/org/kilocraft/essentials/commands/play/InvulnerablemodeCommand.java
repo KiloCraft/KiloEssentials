@@ -8,10 +8,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.user.setting.Settings;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
@@ -25,7 +26,7 @@ public class InvulnerablemodeCommand extends EssentialCommand {
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("player", player())
-                .suggests(TabCompletions::allPlayers)
+                .suggests(ArgumentCompletions::allPlayers)
                 .executes(c -> executeToggle(c.getSource(), getPlayer(c, "player")));
 
         RequiredArgumentBuilder<ServerCommandSource, Boolean> setArgument = argument("set", bool())
@@ -46,9 +47,9 @@ public class InvulnerablemodeCommand extends EssentialCommand {
         KiloChat.sendLangMessageTo(source, "template.#1", "Invulnerable", set, player.getName().asString());
 
         OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
-        user.setInvulnerable(set);
+        user.getSettings().set(Settings.INVULNERABLE, set);
         
-        if (!CmdUtils.areTheSame(source, player))
+        if (!CommandUtils.areTheSame(source, player))
             KiloChat.sendLangMessageTo(player, "template.#1.announce", source.getName(), "Invulnerable", set);
 
         player.sendAbilitiesUpdate();

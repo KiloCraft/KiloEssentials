@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class LocateBiomeProvided implements Command {
@@ -39,7 +40,7 @@ public class LocateBiomeProvided implements Command {
 
     public static void stopAll() {
         for (Thread thread : threads) {
-            thread.stop();
+            thread.interrupt();
         }
     }
 
@@ -63,28 +64,28 @@ public class LocateBiomeProvided implements Command {
 
     public static String getBiomeName(Biome biome) {
         String s = getBiomeId(biome).replaceAll("_", " ");
-        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
+        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase(Locale.ROOT));
     }
 
-}
 
-class BiomeLocatorThread implements Runnable {
-    private Logger logger = LogManager.getLogger();
-    private ServerCommandSource source;
-    private Biome biome;
+    static class BiomeLocatorThread implements Runnable {
+        private Logger logger = LogManager.getLogger();
+        private ServerCommandSource source;
+        private Biome biome;
 
-    public BiomeLocatorThread(ServerCommandSource source, Biome biome) {
-        this.source = source;
-        this.biome = biome;
-    }
+        public BiomeLocatorThread(ServerCommandSource source, Biome biome) {
+            this.source = source;
+            this.biome = biome;
+        }
 
-    @Override
-    public void run() {
-        logger.info("Locating biome \"" + LocateBiomeProvided.getBiomeId(biome) + "\", executed by " + source.getName());
-        try {
-            LocateBiomeProvided.execute(this.source, this.biome);
-        } catch (CommandSyntaxException e) {
-            source.sendError(new LiteralText(e.getMessage()));
+        @Override
+        public void run() {
+            logger.info("Locating biome \"" + LocateBiomeProvided.getBiomeId(biome) + "\", executed by " + source.getName());
+            try {
+                LocateBiomeProvided.execute(this.source, this.biome);
+            } catch (CommandSyntaxException e) {
+                source.sendError(new LiteralText(e.getMessage()));
+            }
         }
     }
 }

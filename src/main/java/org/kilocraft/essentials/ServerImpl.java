@@ -17,13 +17,11 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.chat.ChatManager;
-import org.kilocraft.essentials.api.text.LoggerFormats;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
@@ -32,7 +30,6 @@ import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.util.ANSIHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +42,6 @@ public class ServerImpl implements Server {
     private String serverDisplayBrand;
     private String serverName = "Minecraft Server";
     private UserManager userManager;
-    private ChatManager chatManager;
     private ServerMetaManager metaManager;
     private boolean supportsANSI;
 
@@ -55,7 +51,6 @@ public class ServerImpl implements Server {
         this.userManager = serverUserManager;
         this.serverDisplayBrand = serverBrand;
         this.eventRegistry = eventManager;
-        this.chatManager = new ChatManager();
         this.metaManager = new ServerMetaManager(server.getServerMetadata());
         this.supportsANSI = System.console() != null && System.getenv().get("TERM") != null;
     }
@@ -99,11 +94,6 @@ public class ServerImpl implements Server {
     @Override
     public CommandSourceUser getCommandSourceUser(ServerCommandSource source) {
         return new CommandSourceServerUser(source);
-    }
-
-    @Override
-    public ChatManager getChatManager() {
-        return this.chatManager;
     }
 
     @Override
@@ -281,14 +271,14 @@ public class ServerImpl implements Server {
     @Override
     public void sendMessage(String message) {
         for (String s : message.split("\n")) {
-            getLogger().info(s);
+            getLogger().info(TextFormat.clearColorCodes(s));
         }
     }
 
     @Override
     public void sendWarning(String message) {
         for (String s : message.split("\n")) {
-            getLogger().warn(s);
+            getLogger().warn(TextFormat.clearColorCodes(s));
         }
     }
 

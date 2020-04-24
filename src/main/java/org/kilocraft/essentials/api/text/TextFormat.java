@@ -9,7 +9,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -115,6 +115,7 @@ public enum TextFormat {
     }
 
     public static final char COLOR_CHAR = '\u00A7';
+    public static final char ALTERNATIVE_COLOR_CHAR = '&';
     private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + COLOR_CHAR + "[0-9A-FK-OR]");
 
     private final int intCode;
@@ -297,6 +298,10 @@ public enum TextFormat {
         return new LiteralText(translateAlternateColorCodes(altColorChar, textToTranslate));
     }
 
+    public static String clearColorCodes(@NotNull String textToClear) {
+        return removeAlternateColorCodes(ALTERNATIVE_COLOR_CHAR, textToClear);
+    }
+
     public static String removeAlternateColorCodes(@NotNull String textToTranslate, char... chars) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
         String string = "";
@@ -326,7 +331,7 @@ public enum TextFormat {
 
     public static void sendToUniversalSource(ServerCommandSource source, String text, boolean log) {
         LiteralText literalText;
-        if (CmdUtils.isConsole(source)) {
+        if (CommandUtils.isConsole(source)) {
             literalText = new LiteralText(removeAlternateColorCodes('&', text));
         } else {
             literalText = new LiteralText(translateAlternateColorCodes('&', text));
@@ -337,7 +342,7 @@ public enum TextFormat {
 
     public static void sendToUniversalSource(char altColorChar, ServerCommandSource source, String text, boolean log) {
         LiteralText literalText;
-        if (CmdUtils.isConsole(source)) {
+        if (CommandUtils.isConsole(source)) {
             literalText = new LiteralText(removeAlternateColorCodes(altColorChar, text));
         } else {
             literalText = new LiteralText(translateAlternateColorCodes(altColorChar, text));
@@ -404,6 +409,10 @@ public enum TextFormat {
             return 'e';
 
         return 'c';
+    }
+
+    public static char getFormattedPercentage(double percentage, boolean reverse) {
+        return percentage > 80 ? (reverse ? 'c' : 'a') : percentage < 40 ? (reverse ? 'a' : 'c') : 'e';
     }
 
     static {

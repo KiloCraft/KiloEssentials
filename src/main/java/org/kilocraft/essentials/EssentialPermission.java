@@ -2,7 +2,10 @@ package org.kilocraft.essentials;
 
 public enum EssentialPermission {
     STAFF("staff"),
+    BUILDER("builder"),
     CHAT_COLOR("chat.color"),
+    CHAT_URL("chat.url"),
+    CHAT_SHOW_ITEM("chat.show_item"),
     CHAT_BYPASS("chat.bypass"),
     CHAT_GET_PINGED("chat.ping.get_pinged"),
     CHAT_PING_OTHER("chat.ping.other"),
@@ -25,6 +28,7 @@ public enum EssentialPermission {
     MAGIC_PARTICLES_SELF("magicparticles"),
     SIT_SELF("sit.self"),
     SIT_OTHERS("sit.others"),
+    IGNORE_COMMAND_EVENTS("ignore_command_events"),
     ;
 
     private String node;

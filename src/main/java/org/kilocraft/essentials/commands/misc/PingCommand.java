@@ -9,9 +9,9 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -25,7 +25,7 @@ public class PingCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("player", player())
                 .requires(src -> hasPermission(src, CommandPermission.PING_OTHERS))
-                .suggests(TabCompletions::allPlayers)
+                .suggests(ArgumentCompletions::allPlayers)
                 .executes(ctx -> execute(ctx.getSource(), getPlayer(ctx, "player")));
 
         argumentBuilder.executes(ctx -> execute(ctx.getSource(), ctx.getSource().getPlayer()));
@@ -33,7 +33,7 @@ public class PingCommand extends EssentialCommand {
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity target) {
-        if (CmdUtils.areTheSame(source, target)) {
+        if (CommandUtils.areTheSame(source, target)) {
             KiloChat.sendLangMessageTo(source, "command.ping.self",
                     TextFormat.getFormattedPing(target.pingMilliseconds), getStringForPing(target.pingMilliseconds));
             return 1;

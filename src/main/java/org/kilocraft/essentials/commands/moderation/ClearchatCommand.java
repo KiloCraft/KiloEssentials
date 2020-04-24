@@ -8,15 +8,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
-import org.kilocraft.essentials.chat.ChatMessage;
+import org.kilocraft.essentials.chat.TextMessage;
 
 import java.util.Collection;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
-import static org.kilocraft.essentials.KiloCommands.SUCCESS;
 import static org.kilocraft.essentials.chat.KiloChat.*;
 
 public class ClearchatCommand extends EssentialCommand {
@@ -26,7 +25,7 @@ public class ClearchatCommand extends EssentialCommand {
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetsArgument = argument("targets", players())
-                .suggests(TabCompletions::allPlayers)
+                .suggests(ArgumentCompletions::allPlayers)
                 .executes(ctx -> executeMultiple(ctx, getPlayers(ctx, "targets"), false))
                 .then(literal("-silent")
                         .executes(ctx -> executeMultiple(ctx, getPlayers(ctx, "targets"), true)));
@@ -37,20 +36,20 @@ public class ClearchatCommand extends EssentialCommand {
     }
 
     private static int executeAll(CommandContext<ServerCommandSource> ctx, boolean silent) {
-        broadCastExceptConsole(new ChatMessage(getClearString(), false));
+        broadCastExceptConsole(new TextMessage(getClearString(), false));
 
         if (!silent)
             broadCastLangExceptConsole("command.clearchat.broadcast", ctx.getSource().getName());
 
-        broadCastToConsole(new ChatMessage(
+        broadCastToConsole(new TextMessage(
                 getFormattedLang("command.clearchat.broadcast", ctx.getSource().getName()), false));
 
-        return SUCCESS();
+        return SUCCESS;
     }
 
     private static int executeMultiple(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> targets, boolean silent) {
         for (ServerPlayerEntity target : targets) {
-            target.sendMessage(new LiteralText(getClearString()));
+            target.sendMessage(new LiteralText(getClearString()), false);
 
             if (!silent)
                 sendLangMessageTo(target, "command.clearchat.singleton", ctx.getSource().getName());
@@ -58,7 +57,7 @@ public class ClearchatCommand extends EssentialCommand {
 
         broadCastLangToConsole("command.clearchat.singleton.broadcast", ctx.getSource().getName(), targets.size());
 
-        return SUCCESS();
+        return SUCCESS;
     }
 
     private static String getClearString() {

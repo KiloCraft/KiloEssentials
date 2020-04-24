@@ -9,10 +9,10 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.TabCompletions;
+import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
-import org.kilocraft.essentials.commands.CmdUtils;
+import org.kilocraft.essentials.commands.CommandUtils;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -26,7 +26,7 @@ public class BackCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("target", player())
                 .requires(src -> hasPermission(src, CommandPermission.BACK_OTHERS))
-                .suggests(TabCompletions::allPlayers)
+                .suggests(ArgumentCompletions::allPlayers)
                 .executes(this::executeOthers);
 
         commandNode.addChild(selectorArgument.build());
@@ -53,11 +53,11 @@ public class BackCommand extends EssentialCommand {
         user.saveLocation();
         user.teleport(loc, true);
 
-        if (CmdUtils.areTheSame(ctx.getSource(), target))
-            ctx.getSource().getPlayer().addMessage(getLang("command.back.self"), true);
+        if (CommandUtils.areTheSame(ctx.getSource(), target))
+            user.sendLangMessage("command.back.self", loc.asFormattedString());
         else
-            sendMessage(ctx, "command.back.others", user.getUsername());
+            sendMessage(ctx, "command.back.others", user.getUsername(), loc.asFormattedString());
 
-        return SINGLE_SUCCESS;
+        return SUCCESS;
     }
 }
