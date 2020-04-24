@@ -3,8 +3,9 @@
 plugins {
 	id 'com.github.johnrengelman.shadow' version '5.1.0'
 	id 'java'
-	id 'fabric-loom' version '0.2.5-SNAPSHOT'
+	id 'fabric-loom' version '0.2.7-SNAPSHOT'
 	id 'maven-publish'
+	id 'com.palantir.git-version' version '0.12.2'
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -13,9 +14,22 @@ apply plugin: 'java'
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+version gitVersion()
+def details = versionDetails()
+details.lastTag
+details.commitDistance
+details.gitHash
+details.gitHashFull // full 40-character Git commit hash
+details.branchName // is null if the repository in detached HEAD mode
+details.isCleanTag
+
 archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
+version = project.mod_version as Object
+def buildType = details.isCleanTag ? "stable" : "dirty"
+
+def gitVersion = "${version}-${buildType}+git.${details.branchName}-${details.gitHash}"
+def buildTime = new Date();
+group = project.maven_group as Object
 
 minecraft {
 }
@@ -23,6 +37,8 @@ repositories {
 	mavenCentral()
 	maven { url 'https://jitpack.io' }
 	maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
+	maven { url 'https://repo.spongepowered.org/maven'}
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 shadowJar {
@@ -38,15 +54,18 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
-	modImplementation "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
-	modImplementation "com.github.indi-code:WorldDataLib:${project.worlddatalib_version}"
+	modImplementation "com.github.OnBlock:Thimble-Permissions:${project.thimble_permissions_version}"
+	//modImplementation "com.github.voidpointerdev:Thimble-Permissions:${project.thimble_permissions_version}"
+	implementation "com.github.KiloCraft:KiloEssentialsBungee:${project.ke_bungee_version}"
 
-	include "com.github.indi-code:TinyConfig:${project.tiny_config_version}"
-	//include "com.github.indi-code:Thimble-Permissions:${project.thimble_permissions_version}"
-	//include "com.github.indi-code:WorldDataLib:${project.worlddatalib_version}"
-
-	shadow group: 'com.electronwill.night-config', name: 'yaml', version: "${project.night_config_version}"
+	compile "org.spongepowered:configurate-hocon:${project.configurate_version}"
+	shadow "org.spongepowered:configurate-hocon:${project.configurate_version}"
+	compile group: 'com.google.inject', name: 'guice', version: '4.0'
+	shadow group: 'com.google.inject', name: 'guice', version: '4.0'
+	compile "net.luckperms:api:${project.luckperms_version}"
+	//shadow "net.luckperms:api:${project.luckperms_version}"
+	compile group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
+	//shadow group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
 }
 
 tasks.jar.archiveClassifier = "compile"
@@ -55,14 +74,14 @@ task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
 	from zipTree(shadowJar.archiveFile) dependsOn shadowJar
 }
 
-
 processResources {
-	inputs.property "version", project.version
+	inputs.property "version", project.gitVersion
 
 	from(sourceSets.main.resources.srcDirs) {
 		include "fabric.mod.json", "mod.properties"
-		expand "version": project.version, "fabric_loader_version": project.loader_version,
-				"fabric_yarn_mappings": project.yarn_mappings, "mc_version": project.minecraft_version
+		expand "version": gitVersion, "version_int": project.mod_version, "built_at": buildTime, "fabric_loader_version": project.loader_version,
+				"fabric_yarn_mappings": project.yarn_mappings, "mc_version": project.minecraft_version,
+				"git_hash": details.gitHash, "git_hash_full": details.gitHashFull, "git_branch": details.branchName, "build_type": buildType
 	}
 
 	from(sourceSets.main.resources.srcDirs) {

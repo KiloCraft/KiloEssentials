@@ -1,15 +1,22 @@
 {
   "required": true,
   "minVersion": "0.7.11",
-  "package": "org.kilocraft.essentials.craft.mixin",
+  "package": "org.kilocraft.essentials.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
   ],
   "server": [
-    "MixinCommandManager",
-    "MixinServerPlayNetWorkHandler",
-    "MixinCreeperEntity",
-    "MixinServerPlayerEntity"
+    "CommandManagerMixin",
+    "ForgingScreenHandlerMixin",
+    "AnvilScreenHandlerMixin",
+    "MinecraftServerMixin",
+    "ServerCommandOutputMixin",
+    "ServerPlayerEntityMixin",
+    "PlayerEntityMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "ServerWorldMixin",
+    "CraftingScreenHandlerMixin",
+    "PlayerListS2CPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1

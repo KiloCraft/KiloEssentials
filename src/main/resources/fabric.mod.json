@@ -3,13 +3,14 @@
   "id": "kilo_essentials",
   "version": "${version}",
 
-  "name": "Kilo Essentials",
-  "description": "Server essentials made for fabric",
+  "name": "KiloEssentials",
+  "description": "Server management made easy with this mod",
   "authors": [
     "CODY_AI",
     "MCrafterzz",
-    "Indicode",
-    "DrexHD"
+    "GiantNuker",
+    "i509VCB",
+    "Thanks to DrexHD"
   ],
 
   "license": "MIT",
@@ -17,16 +18,21 @@
   "environment": "server",
   "entrypoints": {
     "server": [
-      "org.kilocraft.essentials.onInit"
+      "org.kilocraft.essentials.KiloEssentialsMod"
     ]
   },
   "mixins": [
-    "kiloapi.mixins.json",
-    "kiloapi.events.mixins.json",
-    "kiloessentials.mixins.json"
+    "kiloessentials.events.mixins.json",
+    "kiloessentials.mixins.json",
+    "kiloessentials.accessors.mixins.json",
+    "kiloessentials.patch.mixins.json"
   ],
 
   "depends": {
-    "fabricloader": ">=0.6.1+build.165"
+    "fabricloader": ">=0.7.1+build.174"
+  },
+  "suggests": {
+    "luckperms": "*",
+    "thimble": "*"
   }
 }
