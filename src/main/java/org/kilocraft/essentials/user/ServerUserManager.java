@@ -275,6 +275,8 @@ public class ServerUserManager implements UserManager, TickListener {
                                 org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT)
                         );
                     });
+
+                    map.put(victim.getUuid(), org.kilocraft.essentials.api.util.StringUtils.uniformNickname(victim.getUsername()).toLowerCase(Locale.ROOT));
                 }
             });
 
