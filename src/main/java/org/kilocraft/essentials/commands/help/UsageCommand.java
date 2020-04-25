@@ -20,7 +20,7 @@ public class UsageCommand extends EssentialCommand {
 
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("command", string())
+        final RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("command", greedyString())
                 .suggests(ArgumentCompletions::usableCommands)
                 .executes(this::execute);
 
