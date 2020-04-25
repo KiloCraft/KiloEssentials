@@ -10,8 +10,7 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static com.mojang.brigadier.arguments.StringArgumentType.*;
 
 
 public class UsageCommand extends EssentialCommand {
@@ -21,7 +20,7 @@ public class UsageCommand extends EssentialCommand {
 
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("command", greedyString())
+        final RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("command", string())
                 .suggests(ArgumentCompletions::usableCommands)
                 .executes(this::execute);
 
