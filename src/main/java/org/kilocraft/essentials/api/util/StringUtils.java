@@ -37,15 +37,21 @@ public class StringUtils {
         public void calculate() throws Exception {
             String[] strings = this.input.split("(?<=[-+*^%/])|(?=[-+*^%/])");
 
-            double x = Double.parseDouble(strings[0]);
-            double y = Double.parseDouble(strings[2]);
+            for (int i = 0; i < strings.length - 2; i+=2) {
+                double x = Double.parseDouble(strings[i]);
+                double y = Double.parseDouble(strings[i + 2]);
 
-            Operator operator = Operator.byIcon(strings[1]);
-            if (operator == null) {
-                throw new Exception("Invalid Operation!");
+                Operator operator = Operator.byIcon(strings[i + 1]);
+                if (operator == null) {
+                    throw new Exception("Invalid Operation!");
+                }
+
+                if (i == 0) {
+                    this.output = operator.operate(x, y);
+                } else {
+                    this.output = operator.operate(this.output, y);
+                }
             }
-
-            this.output = operator.operate(x, y);
         }
 
         public String getInput() {

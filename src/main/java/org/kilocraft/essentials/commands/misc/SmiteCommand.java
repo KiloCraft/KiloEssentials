@@ -14,7 +14,7 @@ import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 
 public class SmiteCommand extends EssentialCommand {
     public SmiteCommand() {
-        super("smite", CommandPermission.SMITE, new String[]{"lightning"});
+        super("lightning", CommandPermission.SMITE);
     }
 
     @Override

@@ -38,6 +38,11 @@ public class CalculateCommand extends EssentialCommand {
         StringUtils.Calculator calculator = new StringUtils.Calculator(input);
         int result;
 
+        if (!input.contains("+") && !input.contains("-") && !input.contains("*") && !input.contains("/") && !input.contains("^") && !input.contains("%")) {
+            src.sendLangMessage("command.calculate.nooperator");
+            return FAILED;
+        }
+
         try {
             calculator.calculate();
             result = (int) calculator.result();
@@ -46,6 +51,7 @@ public class CalculateCommand extends EssentialCommand {
             return FAILED;
         }
 
+        src.sendLangMessage("command.calculate.info");
         src.sendLangMessage("command.calculate.result", calculator.getInput(), calculator.resultAsShortString());
         return result;
     }
