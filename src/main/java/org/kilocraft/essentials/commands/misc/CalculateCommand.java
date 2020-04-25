@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class CalculateCommand extends EssentialCommand {
@@ -38,7 +39,7 @@ public class CalculateCommand extends EssentialCommand {
         StringUtils.Calculator calculator = new StringUtils.Calculator(input);
         int result;
 
-        if (!input.contains("+") && !input.contains("-") && !input.contains("*") && !input.contains("/") && !input.contains("^") && !input.contains("%")) {
+        if (!Arrays.stream(StringUtils.Calculator.operations()).parallel().anyMatch(input::contains)) {
             src.sendLangMessage("command.calculate.nooperator");
             return FAILED;
         }
