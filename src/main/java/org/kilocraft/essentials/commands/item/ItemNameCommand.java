@@ -45,8 +45,9 @@ public class ItemNameCommand {
 	private static CompletableFuture<Suggestions> itemNameSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
 		ItemStack item = context.getSource().getPlayer().getMainHandStack();
 		List<String> list = new ArrayList<String>(){{ add("reset"); }};
-		if (!item.isEmpty())
+		if (!item.isEmpty()) {
 			list.add(TextFormat.reverseTranslate(item.getName().asFormattedString(), '&'));
+		}
 		return CommandSource.suggestMatching(list, builder);
 	}
 
