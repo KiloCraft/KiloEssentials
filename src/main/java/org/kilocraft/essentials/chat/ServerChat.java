@@ -322,6 +322,7 @@ public final class ServerChat {
         text.styled((style) -> {
             style.setHoverEvent(Texter.Events.onHover(commandSpyHoverStyle));
             style.withClickEvent(Texter.Events.onClickSuggest("/" + command));
+            return style;
         });
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
