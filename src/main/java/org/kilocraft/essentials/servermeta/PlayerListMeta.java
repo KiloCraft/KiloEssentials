@@ -10,6 +10,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketMixin;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
+import org.kilocraft.essentials.util.text.Texter;
 
 public class PlayerListMeta {
     static String header = "", footer = "";
@@ -42,7 +43,7 @@ public class PlayerListMeta {
     private static String getFormattedStringFor(ServerPlayerEntity player, String string) {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
         return string.replaceAll("%PLAYER_NAME%", player.getEntityName())
-                .replaceAll("%PLAYER_DISPLAYNAME%", player.getDisplayName().asFormattedString())
+                .replaceAll("%PLAYER_DISPLAYNAME%", Texter.Legacy.toFormattedString(player.getDisplayName()))
                 .replaceAll("%PLAYER_PING%", String.valueOf(player.pingMilliseconds))
                 .replaceAll("%PLAYER_FORMATTED_PING%", TextFormat.getFormattedPing(player.pingMilliseconds))
                 .replaceAll("%USER_DISPLAYNAME%", user.getFormattedDisplayName())

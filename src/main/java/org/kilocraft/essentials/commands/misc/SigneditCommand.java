@@ -39,6 +39,7 @@ import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -294,7 +295,7 @@ public class SigneditCommand extends EssentialCommand {
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
         if (blockEntity != null) {
             SignBlockEntity sign = (SignBlockEntity) blockEntity;
-            strings.add(TextFormat.reverseTranslate(sign.getTextOnRow(line).asFormattedString(), '&'));
+            strings.add(TextFormat.reverseTranslate(Texter.Legacy.toFormattedString(sign.getTextOnRow(line)), '&'));
             return CommandSource.suggestMatching(strings, builder);
         }
 

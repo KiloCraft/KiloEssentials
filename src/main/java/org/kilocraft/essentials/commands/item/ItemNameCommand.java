@@ -17,6 +17,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ItemNameCommand {
 		ItemStack item = context.getSource().getPlayer().getMainHandStack();
 		List<String> list = new ArrayList<String>(){{ add("reset"); }};
 		if (!item.isEmpty()) {
-			list.add(TextFormat.reverseTranslate(item.getName().asFormattedString(), '&'));
+			list.add(TextFormat.reverseTranslate(Texter.Legacy.toFormattedString(item.getName()), '&'));
 		}
 		return CommandSource.suggestMatching(list, builder);
 	}
@@ -71,7 +72,7 @@ public class ItemNameCommand {
 
 		if (inputString.equalsIgnoreCase("reset")) {
 			item.removeCustomName();
-			KiloChat.sendLangMessageTo(player, "command.item.reset", "name", item.getName().asFormattedString());
+			KiloChat.sendLangMessageTo(player, "command.item.reset", "name", Texter.Legacy.toFormattedString(item.getName()));
 
 			return 1;
 		}

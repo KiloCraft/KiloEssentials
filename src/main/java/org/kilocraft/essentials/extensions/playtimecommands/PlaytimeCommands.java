@@ -15,6 +15,7 @@ import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeComma
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandsConfig;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.user.OnlineServerUser;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 
@@ -72,7 +73,7 @@ public class PlaytimeCommands implements RelodableConfigurableFeature {
     private void runCommand(OnlineServerUser user, String command) {
         String cmd = command.replace("${user.name}", user.getUsername())
                 .replace("${user.displayname}", user.getFormattedDisplayName())
-                .replace("${user.ranked_displayname}", user.getRankedDisplayName().asFormattedString());
+                .replace("${user.ranked_displayname}", Texter.Legacy.toFormattedString(user.getRankedDisplayName()));
 
         CommandUtils.run(user.getCommandSource(), cmd);
     }

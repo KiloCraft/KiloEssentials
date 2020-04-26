@@ -77,7 +77,7 @@ public class Texter {
             return original;
         }
 
-        public static String toFormattedString(LiteralText text) {
+        public static String toFormattedString(Text text) {
             StringBuilder builder = new StringBuilder();
             String main = "";
             for (Text sibling : text.getSiblings()) {
