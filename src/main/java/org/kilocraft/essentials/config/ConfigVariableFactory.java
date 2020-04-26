@@ -9,6 +9,7 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.util.TPSTracker;
+import org.kilocraft.essentials.util.text.Texter;
 
 public class ConfigVariableFactory {
     private static Server server = KiloEssentials.getServer();
@@ -17,7 +18,7 @@ public class ConfigVariableFactory {
         Validate.notNull(user, "User most not be null!");
         String string = replaceUserVariables(str, user);
         return new ConfigObjectReplacerUtil("user", string)
-                .append("ranked_displayName", user.getRankedDisplayName().asFormattedString())
+                .append("ranked_displayName", Texter.Legacy.toFormattedString(user.getRankedDisplayName()))
                 .toString();
     }
 

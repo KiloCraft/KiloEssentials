@@ -71,10 +71,70 @@ public class Texter {
                 .append(button);
     }
 
-    public static class Unmodifiable {
+    public static class Legacy {
         public static MutableText append(MutableText original, MutableText textToAppend) {
             original.getSiblings().add(textToAppend);
             return original;
+        }
+
+        public static String toFormattedString(Text text) {
+            StringBuilder builder = new StringBuilder();
+            String main = "";
+            for (Text sibling : text.getSiblings()) {
+                String str_1 = sibling.asString();
+                if (!str_1.isEmpty()) {
+                    String str_2 = styleToString(sibling.getStyle());
+                    if (!str_2.equals(main)) {
+                        if (!main.isEmpty()) {
+                            builder.append(Formatting.RESET);
+                        }
+
+                        builder.append(str_2);
+                        main = str_2;
+                    }
+
+                    builder.append(str_1);
+                }
+            }
+
+            if (!main.isEmpty()) {
+                builder.append(Formatting.RESET);
+            }
+
+            return builder.toString();
+        }
+
+        private static String styleToString(Style style) {
+            if (style.isEmpty()) {
+                return style.getColor() != null ? style.getColor().toString() : "";
+            }
+
+            StringBuilder builder = new StringBuilder();
+            if (style.getColor() != null) {
+                builder.append(style.getColor());
+            }
+
+            if (style.isBold()) {
+                builder.append(Formatting.BOLD);
+            }
+
+            if (style.isItalic()) {
+                builder.append(Formatting.ITALIC);
+            }
+
+            if (style.isUnderlined()) {
+                builder.append(Formatting.UNDERLINE);
+            }
+
+            if (style.isObfuscated()) {
+                builder.append(Formatting.OBFUSCATED);
+            }
+
+            if (style.isStrikethrough()) {
+                builder.append(Formatting.STRIKETHROUGH);
+            }
+
+            return builder.toString();
         }
     }
 

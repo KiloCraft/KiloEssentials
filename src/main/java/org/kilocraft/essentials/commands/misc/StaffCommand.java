@@ -28,7 +28,7 @@ public class StaffCommand extends EssentialCommand {
 
         for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
             if (user.hasPermission(EssentialPermission.STAFF)) {
-                text.append(user.getRankedDisplayName().asFormattedString());
+                text.append(Texter.Legacy.toFormattedString(user.getRankedDisplayName()));
             }
         }
 

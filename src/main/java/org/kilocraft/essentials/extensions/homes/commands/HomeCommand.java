@@ -71,14 +71,14 @@ public class HomeCommand extends EssentialCommand {
 
         Home home = homeHandler.getHome(name);
 
-        try {
-            LocationUtil.validateIsSafe(home.getLocation());
-        } catch (InsecureDestinationException e) {
-            if (!input.startsWith("-confirmed")) {
-                user.sendMessage(getTeleportConfirmationText(name, ""));
-                return FAILED;
-            }
-        }
+//        try {
+//            LocationUtil.validateIsSafe(home.getLocation());
+//        } catch (InsecureDestinationException e) {
+//            if (!input.startsWith("-confirmed")) {
+//                user.sendMessage(getTeleportConfirmationText(name, ""));
+//                return FAILED;
+//            }
+//        }
 
         try {
             homeHandler.teleportToHome(user, name);
@@ -113,14 +113,14 @@ public class HomeCommand extends EssentialCommand {
 
             Home home = homeHandler.getHome(name);
 
-            try {
-                LocationUtil.validateIsSafe(home.getLocation());
-            } catch (InsecureDestinationException e) {
-                if (!input.startsWith("-confirmed-")) {
-                    source.sendMessage(getTeleportConfirmationText(name, user.getUsername()));
-                    return;
-                }
-            }
+//            try {
+//                LocationUtil.validateIsSafe(home.getLocation());
+//            } catch (InsecureDestinationException e) {
+//                if (!input.startsWith("-confirmed-")) {
+//                    source.sendMessage(getTeleportConfirmationText(name, user.getUsername()));
+//                    return;
+//                }
+//            }
 
             try {
                 homeHandler.teleportToHome(source, name);

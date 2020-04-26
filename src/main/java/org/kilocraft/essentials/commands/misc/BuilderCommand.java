@@ -28,7 +28,7 @@ public class BuilderCommand extends EssentialCommand {
 
         for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
             if (user.hasPermission(EssentialPermission.BUILDER)) {
-                text.append(user.getRankedDisplayName().asFormattedString());
+                text.append(Texter.Legacy.toFormattedString(user.getRankedDisplayName()));
             }
         }
 

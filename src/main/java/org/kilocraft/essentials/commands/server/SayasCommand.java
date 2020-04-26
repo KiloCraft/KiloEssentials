@@ -18,6 +18,7 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,7 +71,7 @@ public class SayasCommand extends EssentialCommand {
             return SUCCESS;
         }
 
-        ServerChat.sendSafely(target, new TextMessage(message.asFormattedString()), channel);
+        ServerChat.sendSafely(target, new TextMessage(Texter.Legacy.toFormattedString(message)), channel);
         return SUCCESS;
     }
 

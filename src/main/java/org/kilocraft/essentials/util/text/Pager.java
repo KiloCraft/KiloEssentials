@@ -1,10 +1,7 @@
 package org.kilocraft.essentials.util.text;
 
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.text.TextFormat;
@@ -243,7 +240,7 @@ public class Pager {
         public boolean accepts(@NotNull Options options) {
             Objects.requireNonNull(options, "Options can not be null");
 
-            return options.matchesPattern(text.asFormattedString());
+            return options.matchesPattern(Texter.Legacy.toFormattedString(text));
         }
 
         @NotNull
@@ -708,8 +705,8 @@ public class Pager {
             int prevPage = pageIndex;
             int nextPage = pageIndex + 2;
 
-            final String SEPARATOR = "-----------------------------------------------------";
-            Text header =  new LiteralText("")
+            String SEPARATOR = "-----------------------------------------------------";
+            MutableText header =  new LiteralText("")
                     .append(new LiteralText("- [ ").formatted(f3))
                     .append(Texter.toText(title).formatted(f1))
                     .append(" ] ")
@@ -724,18 +721,20 @@ public class Pager {
                     .append(new LiteralText("<-").formatted(Formatting.WHITE, Formatting.BOLD))
                     .append(" ").append(new LiteralText("Prev").formatted(f1))
                     .styled((style) -> {
-                        style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)));
                         if (prevPage > 0)
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(prevPage))));
+                            style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(prevPage))));
+
+                        return style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)));
                     });
 
             Text button_next = new LiteralText("")
                     .append(new LiteralText("Next").formatted(f1))
                     .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
                     .styled((style) -> {
-                        style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((nextPage < maxPages) ? ">>>" : ">|").formatted(f3)));
                         if (nextPage < maxPages)
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(nextPage))));
+                            style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(nextPage))));
+
+                        return style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((nextPage < maxPages) ? ">>>" : ">|").formatted(f3)));
                     });
 
             Text buttons = new LiteralText("")
@@ -755,7 +754,7 @@ public class Pager {
                     .formatted(Formatting.GRAY)
                     .append(buttons).append(new LiteralText(" ------------------------------".substring(buttons.asString().length() + 3)).formatted(Formatting.GRAY));
 
-            Text text = new LiteralText("");
+            MutableText text = new LiteralText("");
             if (this.textEntries == null && this.entries != null) {
                 for (String entry : entries) {
                     text.append(new LiteralText(TextFormat.translate(entry)).append("\n"));

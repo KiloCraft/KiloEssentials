@@ -131,10 +131,6 @@ public final class ServerChat {
                         .styled((style) -> style.setHoverEvent(hoverEvent(sender, channel)).withClickEvent(clickEvent(sender)))
         ).append(" ").append(component);
 
-        text.append(
-                prefix.toComponent()
-        );
-
         KiloServer.getServer().sendMessage(text.getString());
         channel.send(text);
     }
