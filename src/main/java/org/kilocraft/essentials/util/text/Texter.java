@@ -83,8 +83,7 @@ public class Texter {
             for (Text sibling : text.getSiblings()) {
                 String str_1 = sibling.asString();
                 if (!str_1.isEmpty()) {
-                    //TODO: sibling.getStyle().asString();
-                    String str_2 = sibling.getStyle().toString();
+                    String str_2 = styleToString(sibling.getStyle());
                     if (!str_2.equals(main)) {
                         if (!main.isEmpty()) {
                             builder.append(Formatting.RESET);
@@ -100,6 +99,39 @@ public class Texter {
 
             if (!main.isEmpty()) {
                 builder.append(Formatting.RESET);
+            }
+
+            return builder.toString();
+        }
+
+        private static String styleToString(Style style) {
+            if (style.isEmpty()) {
+                return style.getColor() != null ? style.getColor().toString() : "";
+            }
+
+            StringBuilder builder = new StringBuilder();
+            if (style.getColor() != null) {
+                builder.append(style.getColor());
+            }
+
+            if (style.isBold()) {
+                builder.append(Formatting.BOLD);
+            }
+
+            if (style.isItalic()) {
+                builder.append(Formatting.ITALIC);
+            }
+
+            if (style.isUnderlined()) {
+                builder.append(Formatting.UNDERLINE);
+            }
+
+            if (style.isObfuscated()) {
+                builder.append(Formatting.OBFUSCATED);
+            }
+
+            if (style.isStrikethrough()) {
+                builder.append(Formatting.STRIKETHROUGH);
             }
 
             return builder.toString();
