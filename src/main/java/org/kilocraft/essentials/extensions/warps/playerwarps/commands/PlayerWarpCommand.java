@@ -251,14 +251,14 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        try {
-            LocationUtil.validateIsSafe(warp.getLocation());
-        } catch (InsecureDestinationException e) {
-            if (!inputName.startsWith("-confirmed-")) {
-                src.sendMessage(getTeleportConfirmationText(warpName));
-                return -1;
-            }
-        }
+//        try {
+//            LocationUtil.validateIsSafe(warp.getLocation());
+//        } catch (InsecureDestinationException e) {
+//            if (!inputName.startsWith("-confirmed-")) {
+//                src.sendMessage(getTeleportConfirmationText(warpName));
+//                return -1;
+//            }
+//        }
 
         src.teleport(warp.getLocation(), true);
         src.sendMessage(new TextMessage(

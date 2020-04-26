@@ -73,6 +73,10 @@ public class UserUtils {
             manager.getInProcessUsers().remove(user.getUuid());
         }
 
+        public static boolean isInAny(@NotNull final OnlineUser user) {
+            return manager.getInProcessUsers().containsKey(user.getUuid());
+        }
+
         @Nullable
         public static <T> SimpleProcess<T> get(@NotNull final OnlineUser user) {
             return (SimpleProcess<T>) manager.getInProcessUsers().get(user.getUuid());

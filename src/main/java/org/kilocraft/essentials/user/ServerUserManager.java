@@ -326,12 +326,15 @@ public class ServerUserManager implements UserManager, TickListener {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
         user.onLeave();
         this.teleportRequestsMap.remove(user.getId());
-        UserUtils.Process.remove(user);
         if (user.getNickname().isPresent()) {
             this.nicknameToUUID.remove(user.getNickname().get());
         }
         this.usernameToUUID.remove(player.getEntityName());
         this.users.remove(user);
+
+        if (UserUtils.Process.isInAny(user)) {
+            UserUtils.Process.remove(user);
+        }
 
         try {
             this.handler.save(user);

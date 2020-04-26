@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
@@ -33,14 +32,14 @@ public class CalculateCommand extends EssentialCommand {
         this.commandNode.addChild(inputArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(CommandContext<ServerCommandSource> ctx) {
         CommandSourceUser src = this.getServerUser(ctx);
         String input = StringArgumentType.getString(ctx, "input");
         StringUtils.Calculator calculator = new StringUtils.Calculator(input);
         int result;
 
-        if (!Arrays.stream(StringUtils.Calculator.operations()).parallel().anyMatch(input::contains)) {
-            src.sendLangMessage("command.calculate.nooperator");
+        if (Arrays.stream(StringUtils.Calculator.operations()).parallel().noneMatch(input::contains)) {
+            src.sendLangError("command.calculate.no_operators");
             return FAILED;
         }
 
@@ -52,7 +51,6 @@ public class CalculateCommand extends EssentialCommand {
             return FAILED;
         }
 
-        src.sendLangMessage("command.calculate.info");
         src.sendLangMessage("command.calculate.result", calculator.getInput(), calculator.resultAsShortString());
         return result;
     }
