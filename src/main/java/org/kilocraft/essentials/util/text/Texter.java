@@ -71,10 +71,38 @@ public class Texter {
                 .append(button);
     }
 
-    public static class Unmodifiable {
+    public static class Legacy {
         public static MutableText append(MutableText original, MutableText textToAppend) {
             original.getSiblings().add(textToAppend);
             return original;
+        }
+
+        public static String toFormattedString(LiteralText text) {
+            StringBuilder builder = new StringBuilder();
+            String main = "";
+            for (Text sibling : text.getSiblings()) {
+                String str_1 = sibling.asString();
+                if (!str_1.isEmpty()) {
+                    //TODO: sibling.getStyle().asString();
+                    String str_2 = sibling.getStyle().toString();
+                    if (!str_2.equals(main)) {
+                        if (!main.isEmpty()) {
+                            builder.append(Formatting.RESET);
+                        }
+
+                        builder.append(str_2);
+                        main = str_2;
+                    }
+
+                    builder.append(str_1);
+                }
+            }
+
+            if (!main.isEmpty()) {
+                builder.append(Formatting.RESET);
+            }
+
+            return builder.toString();
         }
     }
 
