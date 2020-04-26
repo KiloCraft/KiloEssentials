@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class CalculateCommand extends EssentialCommand {
@@ -38,6 +39,11 @@ public class CalculateCommand extends EssentialCommand {
         StringUtils.Calculator calculator = new StringUtils.Calculator(input);
         int result;
 
+        if (!Arrays.stream(StringUtils.Calculator.operations()).parallel().anyMatch(input::contains)) {
+            src.sendLangMessage("command.calculate.nooperator");
+            return FAILED;
+        }
+
         try {
             calculator.calculate();
             result = (int) calculator.result();
@@ -46,6 +52,7 @@ public class CalculateCommand extends EssentialCommand {
             return FAILED;
         }
 
+        src.sendLangMessage("command.calculate.info");
         src.sendLangMessage("command.calculate.result", calculator.getInput(), calculator.resultAsShortString());
         return result;
     }

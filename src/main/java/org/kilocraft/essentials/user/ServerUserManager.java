@@ -275,6 +275,8 @@ public class ServerUserManager implements UserManager, TickListener {
                                 org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT)
                         );
                     });
+
+                    map.put(victim.getUuid(), org.kilocraft.essentials.api.util.StringUtils.uniformNickname(victim.getUsername()).toLowerCase(Locale.ROOT));
                 }
             });
 
@@ -417,7 +419,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         public LoadingText start() {
-            this.animatedText.setStyle(new Style().setColor(Formatting.YELLOW)).start();
+            this.animatedText.setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)).start();
             return this;
         }
 

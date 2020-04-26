@@ -1,12 +1,10 @@
 package org.kilocraft.essentials.util.text;
 
+import com.mojang.datafixers.kinds.IdF;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
@@ -19,16 +17,16 @@ import java.util.concurrent.TimeUnit;
 public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
 
-    public static Text toText(String str) {
+    public static MutableText toText(String str) {
         return new LiteralText(TextFormat.translate(str));
     }
 
-    public static Text toText() {
+    public static MutableText toText() {
         return new LiteralText("");
     }
 
-    public static Text exceptionToText(Exception e, boolean requireDevMode) {
-        Text text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
+    public static MutableText exceptionToText(Exception e, boolean requireDevMode) {
+        MutableText text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
 
         if (!requireDevMode && SharedConstants.isDevelopment) {
             StackTraceElement[] stackTraceElements = e.getStackTrace();
@@ -45,26 +43,28 @@ public class Texter {
         return text;
     }
 
-    public static Text blockStyle(Text text) {
-        Text separator = new LiteralText(SEPARATOR).formatted(Formatting.GRAY);
+    public static MutableText blockStyle(MutableText text) {
+        MutableText separator = new LiteralText(SEPARATOR).formatted(Formatting.GRAY);
         return new LiteralText("").append(separator).append(text).append(separator);
     }
 
-    public static Text appendButton(Text text, Text hoverText, ClickEvent.Action action, String actionValue) {
+    public static MutableText appendButton(MutableText text, MutableText hoverText, ClickEvent.Action action, String actionValue) {
         return text.styled((style) -> {
             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
-            style.setClickEvent(new ClickEvent(action, actionValue));
+            style.withClickEvent(new ClickEvent(action, actionValue));
+            return style;
         });
     }
 
-    public static Text getButton(String title, String command, Text hoverText) {
+    public static MutableText getButton(String title, String command, MutableText hoverText) {
         return Texter.toText(title).styled((style) -> {
            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
-           style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+           style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+           return style;
         });
     }
 
-    public static Text confirmationMessage(String langKey, Text button) {
+    public static MutableText confirmationMessage(String langKey, MutableText button) {
         return new LiteralText("")
                 .append(LangText.getFormatter(true, langKey))
                 .append(" ")
@@ -72,7 +72,7 @@ public class Texter {
     }
 
     public static class Unmodifiable {
-        public static Text append(Text original, Text textToAppend) {
+        public static MutableText append(MutableText original, MutableText textToAppend) {
             original.getSiblings().add(textToAppend);
             return original;
         }
@@ -95,7 +95,7 @@ public class Texter {
             return new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(TextFormat.translate(text)));
         }
 
-        public static HoverEvent onHover(Text text) {
+        public static HoverEvent onHover(MutableText text) {
             return new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
         }
     }
@@ -108,8 +108,8 @@ public class Texter {
     }
 
     public static class ListStyle {
-        private Text title;
-        private Text text;
+        private MutableText title;
+        private MutableText text;
         private Formatting primary;
         private Formatting aFormat;
         private Formatting bFormat;
@@ -150,12 +150,12 @@ public class Texter {
 
         public ListStyle append(Object obj, @Nullable HoverEvent hoverEvent, @Nullable ClickEvent clickEvent) {
             Formatting formatting = nextColor ? bFormat : aFormat;
-            Text text = obj instanceof Text ? ((Text) obj).formatted(formatting) :
+            MutableText MutableText = obj instanceof MutableText ? ((MutableText) obj).formatted(formatting) :
                     new LiteralText(TextFormat.translate(String.valueOf(obj))).formatted(formatting);
             if (hoverEvent != null)
                 text.getStyle().setHoverEvent(hoverEvent);
             if (clickEvent != null) {
-                text.getStyle().setClickEvent(clickEvent);
+                text.getStyle().withClickEvent(clickEvent);
             }
 
             this.size++;
@@ -169,7 +169,7 @@ public class Texter {
             return this;
         }
 
-        public Text build() {
+        public MutableText build() {
             this.title = new LiteralText("")
                     .append(new LiteralText(this.title.getString()).formatted(primary))
                     .append(" ")
@@ -190,13 +190,13 @@ public class Texter {
     }
 
     public static class InfoBlockStyle {
-        private Text header;
-        private Text text;
+        private MutableText header;
+        private MutableText text;
         private Formatting primary;
         private Formatting secondary;
         private Formatting borders;
-        private Text lineStarter;
-        private Text valueObjectSeparator;
+        private MutableText lineStarter;
+        private MutableText valueObjectSeparator;
         private boolean useLineStarter = false;
 
         public static InfoBlockStyle of(String title) {
@@ -224,7 +224,7 @@ public class Texter {
             this.valueObjectSeparator = new LiteralText(": ").formatted(borders);
         }
 
-        public InfoBlockStyle setLineStarter(Text text) {
+        public InfoBlockStyle setLineStarter(MutableText text) {
             if (!this.useLineStarter)
                 this.useLineStarter = true;
 
@@ -232,24 +232,25 @@ public class Texter {
             return this;
         }
 
-        public InfoBlockStyle setValueObjectSeparator(Text text) {
+        public InfoBlockStyle setValueObjectSeparator(MutableText text) {
             this.valueObjectSeparator = text;
             return this;
         }
 
         public InfoBlockStyle append(String title, String[] subTitles, Object... objects) {
-            Text text = new LiteralText("");
+            MutableText MutableText = new LiteralText("");
 
             for (int i = 0; i < objects.length; i++) {
                 if (objects[i] instanceof Text) {
-                    Text objectToText = (Text) objects[i];
+                    MutableText objectToText = (MutableText) objects[i];
                         text.styled((style) -> {
                             if (objectToText.getStyle().getHoverEvent() != null)
                                 style.setHoverEvent(objectToText.getStyle().getHoverEvent());
 
                             if (objectToText.getStyle().getClickEvent() != null) {
-                                style.setClickEvent(objectToText.getStyle().getClickEvent());
+                                style.withClickEvent(objectToText.getStyle().getClickEvent());
                             }
+                            return style;
                         });
                 }
                 else if (objects[i] instanceof List<?>) {
@@ -312,7 +313,7 @@ public class Texter {
             return this;
         }
 
-        public InfoBlockStyle append(Text text) {
+        public InfoBlockStyle append(MutableText text) {
             this.text.append(text);
             return this;
         }
@@ -321,7 +322,7 @@ public class Texter {
             return this.append(true, true, title, obj);
         }
 
-        public InfoBlockStyle append(String title, Text text) {
+        public InfoBlockStyle append(String title, MutableText text) {
             return this.append(title, text, true, true);
         }
 
@@ -336,7 +337,7 @@ public class Texter {
             );
         }
 
-        public InfoBlockStyle append(String title, Text text, boolean separateLine, boolean nextLine) {
+        public InfoBlockStyle append(String title, MutableText text, boolean separateLine, boolean nextLine) {
             if (nextLine)
                 this.text.append("\n");
 
@@ -347,7 +348,7 @@ public class Texter {
             return this;
         }
 
-        public Text get() {
+        public MutableText get() {
             return new LiteralText("").append(header).append(this.text).append(new LiteralText(SEPARATOR).formatted(borders));
         }
     }

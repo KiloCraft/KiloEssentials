@@ -264,11 +264,13 @@ public class KiloCommands {
         final Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = KiloCommands.getDispatcher().getSmartUsage(((ParsedCommandNode)Iterables.getLast(parseResults.getContext().getNodes())).getNode(), source);
         final Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
-        KiloChat.sendLangMessageTo(source, "command.usage.firstRow", parseResults.getReader().getString());
-        if (parseResults.getContext().getNodes().get(0).getNode().getCommand() != null)
-            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
-
         int usages = 0;
+        KiloChat.sendLangMessageTo(source, "command.usage.firstRow", parseResults.getReader().getString());
+        if (parseResults.getContext().getNodes().get(0).getNode().getCommand() != null) {
+            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
+            usages++;
+        }
+
         while (iterator.hasNext()) {
             usages++;
             final String usage = iterator.next();
@@ -287,9 +289,10 @@ public class KiloCommands {
                         .append("\n")
                         .append(new LiteralText("GitHub: ").formatted(Formatting.GRAY))
                         .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/").styled(style -> {
-                            style.setColor(Formatting.GOLD);
-                            style.setClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"));
+                            style.withFormatting(Formatting.GOLD);
+                            style.withClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"));
                             style.setHoverEvent(Texter.Events.onHover("&eClick to open"));
+                            return style;
                         })))
                 , false);
 
@@ -300,6 +303,7 @@ public class KiloCommands {
         final LiteralText literalText = LangText.get(true, "command.exception.permission");
         literalText.styled(style -> {
            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW)));
+           return style;
         });
         return literalText;
     }
@@ -450,9 +454,10 @@ public class KiloCommands {
 
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         final int cursor = Math.min(e.getInput().length(), e.getCursor());
-                        final Text text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> {
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
+                        final MutableText text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> {
+                            style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
                             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(command).formatted(Formatting.YELLOW)));
+                            return style;
                         });
 
                         if (cursor > 10) text.append("...");
@@ -470,7 +475,7 @@ public class KiloCommands {
 
             }
         } catch (final Exception e) {
-            final Text text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
+            final MutableText text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
             if (SharedConstants.isDevelopment) {
                 getLogger().error("Command exception: {}", command, e);
                 StackTraceElement[] stackTraceElements = e.getStackTrace();

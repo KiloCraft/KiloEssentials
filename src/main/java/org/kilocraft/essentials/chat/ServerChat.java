@@ -2,6 +2,7 @@ package org.kilocraft.essentials.chat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.datafixers.kinds.IdF;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
@@ -124,12 +125,12 @@ public final class ServerChat {
                 sender.hasPermission(EssentialPermission.CHAT_SHOW_ITEM)
         );
 
-        Text text = new LiteralText("");
+        MutableText text = new LiteralText("");
         text.append(
                 prefix.toComponent()
                         .styled((style) -> {
                             style.setHoverEvent(hoverEvent(sender, channel));
-                            style.setClickEvent(clickEvent(sender));
+                            style.withClickEvent(clickEvent(sender));
                         })
         ).append(" ").append(component);
 
@@ -295,8 +296,8 @@ public final class ServerChat {
             pingPlayer(target.asPlayer(), PingType.PRIVATE);
         }
 
-        KiloChat.sendMessageToSource(source, new TextMessage(toSource, true).toComponent().formatted(Formatting.WHITE));
-        KiloChat.sendMessageTo(target.asPlayer(), new TextMessage(toTarget, true).toComponent().formatted(Formatting.WHITE));
+        KiloChat.sendMessageToSource(source, ((MutableText)new TextMessage(toSource, true).toText()).formatted(Formatting.WHITE));
+        KiloChat.sendMessageTo(target.asPlayer(), ((MutableText)new TextMessage(toTarget, true).toText()).formatted(Formatting.WHITE));
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
@@ -311,7 +312,7 @@ public final class ServerChat {
         String format = ServerChat.config.commandSpyFormat;
         String shortenedCommand = command.substring(0, Math.min(command.length(), COMMAND_MAX_LENGTH));
         String toSpy = format.replace("%SOURCE%", source.getName()).replace("%COMMAND%",  shortenedCommand);
-        Text text = Texter.toText(toSpy).formatted(Formatting.GRAY);
+        MutableText text = Texter.toText(toSpy).formatted(Formatting.GRAY);
 
         if (command.length() > COMMAND_MAX_LENGTH) {
             text.append("...");
@@ -319,7 +320,7 @@ public final class ServerChat {
 
         text.styled((style) -> {
             style.setHoverEvent(Texter.Events.onHover(commandSpyHoverStyle));
-            style.setClickEvent(Texter.Events.onClickSuggest("/" + command));
+            style.withClickEvent(Texter.Events.onClickSuggest("/" + command));
         });
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
@@ -368,9 +369,9 @@ public final class ServerChat {
         return msg;
     }
 
-    public static Text stringToMessageComponent(@NotNull String string, OnlineUser sender, boolean appendLinks, boolean appendItems) {
+    public static MutableText stringToMessageComponent(@NotNull String string, OnlineUser sender, boolean appendLinks, boolean appendItems) {
         Validate.notNull(string, "Message string must not be null!");
-        Text text = new LiteralText("");
+        MutableText text = new LiteralText("");
         String[] strings = string.split(" ");
 
         int i = 0;
@@ -380,7 +381,7 @@ public final class ServerChat {
             if (appendLinks && matcher.find()) {
                 String shortenedUrl = s.substring(0, Math.min(s.length(), LINK_MAX_LENGTH));
 
-                Text link = new LiteralText(shortenedUrl).styled((style) -> style.setClickEvent(Texter.Events.onClickOpen(s)));
+                MutableText link = new LiteralText(shortenedUrl).styled((style) -> style.withClickEvent(Texter.Events.onClickOpen(s)));
 
                 if (s.length() > LINK_MAX_LENGTH) {
                     link.append("...");

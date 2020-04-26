@@ -3,6 +3,7 @@ package org.kilocraft.essentials.servermeta;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -70,7 +71,7 @@ public class ServerMetaManager {
 
         final Properties properties = new Properties();
         properties.load(new FileInputStream(KiloEssentials.getServerProperties().toFile()));
-        properties.setProperty("motd", TextFormat.translate(description.asFormattedString()));
+        properties.setProperty("motd", TextFormat.translate(((MutableText)description).getString()));
         properties.store(new FileOutputStream(KiloEssentials.getServerProperties().toFile()), "");
     }
 
