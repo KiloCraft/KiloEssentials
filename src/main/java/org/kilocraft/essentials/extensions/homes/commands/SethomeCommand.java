@@ -41,7 +41,6 @@ public class SethomeCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = argument("name", word())
-                .suggests(ArgumentCompletions::noSuggestions)
                 .executes(this::executeSelf);
 
         RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("user")
