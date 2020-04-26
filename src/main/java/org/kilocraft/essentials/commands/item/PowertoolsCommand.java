@@ -16,6 +16,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
@@ -153,7 +154,7 @@ public class PowertoolsCommand {
 
         ListTag commands = item.getTag().getList("NBTCommands", 8);
 
-        Text text = new LiteralText("PowerTool Commands:").formatted(Formatting.GOLD);
+        MutableText text = new LiteralText("PowerTool Commands:").formatted(Formatting.GOLD);
 
         for (int i = 0; i < commands.size(); i++) {
             if (commands.getString(i).equals(""))

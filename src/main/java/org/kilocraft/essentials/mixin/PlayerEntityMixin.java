@@ -31,8 +31,8 @@ public abstract class PlayerEntityMixin {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player.getUuid());
         if (player.getScoreboardTeam() != null && user != null) {
             Text text = new LiteralText(user.getFormattedDisplayName()).styled((style) ->
-                    style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + this.getEntityName() + " "))
-                            .setHoverEvent(getHoverEvent(player)).setInsertion(this.getEntityName()));
+                    style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + this.getEntityName() + " "))
+                            .setHoverEvent(getHoverEvent(player)).withInsertion(this.getEntityName()));
 
             cir.setReturnValue(player.getScoreboardTeam().modifyText(text));
         }
