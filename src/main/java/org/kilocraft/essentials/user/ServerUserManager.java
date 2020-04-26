@@ -419,7 +419,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         public LoadingText start() {
-            this.animatedText.setStyle(new Style().setColor(Formatting.YELLOW)).start();
+            this.animatedText.setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)).start();
             return this;
         }
 
