@@ -127,10 +127,11 @@ public final class ServerChat {
 
         MutableText text = new LiteralText("");
         text.append(
-                prefix.toComponent()
+                ((MutableText)prefix.toText())
                         .styled((style) -> {
                             style.setHoverEvent(hoverEvent(sender, channel));
                             style.withClickEvent(clickEvent(sender));
+                            return style;
                         })
         ).append(" ").append(component);
 
@@ -321,6 +322,7 @@ public final class ServerChat {
         text.styled((style) -> {
             style.setHoverEvent(Texter.Events.onHover(commandSpyHoverStyle));
             style.withClickEvent(Texter.Events.onClickSuggest("/" + command));
+            return style;
         });
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
