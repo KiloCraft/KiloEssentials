@@ -12,10 +12,7 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -44,7 +41,7 @@ public class ModsCommand extends EssentialCommand {
 
     private int sendList(CommandContext<ServerCommandSource> ctx) {
         int allMods = FabricLoader.getInstance().getAllMods().size();
-        Text text = new LiteralText("Mods").formatted(Formatting.GOLD)
+        MutableText text = new LiteralText("Mods").formatted(Formatting.GOLD)
                 .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
                 .append(new LiteralText(String.valueOf(allMods)).formatted(Formatting.LIGHT_PURPLE))
                 .append(new LiteralText(" ]: ").formatted(Formatting.DARK_GRAY));
@@ -54,17 +51,18 @@ public class ModsCommand extends EssentialCommand {
 
         for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
             ModMetadata meta = mod.getMetadata();
-            Text thisMod = new LiteralText("");
+            MutableText thisMod = new LiteralText("");
 
             i++;
             Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
 
             thisMod.append(new LiteralText(meta.getName()).styled((style) -> {
-                style.setColor(thisFormat);
+                style.withFormatting(thisFormat);
                 style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                         new LiteralText("[i] ").formatted(Formatting.YELLOW)
                                 .append(new LiteralText("Click for more info!").formatted(Formatting.GREEN))));
-                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mods " + meta.getId()));
+                style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mods " + meta.getId()));
+                return style;
             }));
 
             if (allMods != i)
@@ -85,7 +83,7 @@ public class ModsCommand extends EssentialCommand {
             throw MOD_NOT_PRESENT.create();
 
         ModMetadata meta = FabricLoader.getInstance().getModContainer(inputId).get().getMetadata();
-        Text text = new LiteralText("").append(new LiteralText(meta.getName()).formatted(Formatting.YELLOW)).append("\n")
+        MutableText text = new LiteralText("").append(new LiteralText(meta.getName()).formatted(Formatting.YELLOW)).append("\n")
                 .append(new LiteralText(meta.getId()).append("@").append(String.valueOf(meta.getVersion())).formatted(Formatting.GRAY))
                 .append("\n").formatted(Formatting.RESET)
                 .append(new LiteralText("Author(s): ").append(getModAuthorList(meta)).formatted(Formatting.RESET));
@@ -98,13 +96,13 @@ public class ModsCommand extends EssentialCommand {
     }
 
     private Text getModAuthorList(ModMetadata meta) {
-        Text text = new LiteralText("");
+        MutableText text = new LiteralText("");
         AtomicInteger i = new AtomicInteger();
         AtomicBoolean nextColor = new AtomicBoolean(false);
         int authors = meta.getAuthors().size();
 
         meta.getAuthors().forEach((person) -> {
-            Text thisPerson = new LiteralText("");
+            MutableText thisPerson = new LiteralText("");
             i.getAndIncrement();
             Formatting thisFormat = nextColor.get() ? Formatting.WHITE : Formatting.GRAY;
 

@@ -6,6 +6,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
@@ -269,7 +270,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendError(Text text) {
-        KiloChat.sendMessageTo(this.source, text.formatted(Formatting.RED));
+        KiloChat.sendMessageTo(this.source, ((MutableText)text).formatted(Formatting.RED));
     }
 
     @Override
@@ -280,9 +281,9 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public int sendError(ExceptionMessageNode node, Object... objects) {
         String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.source, new TextMessage(
+        KiloChat.sendMessageTo(this.source, ((MutableText)new TextMessage(
                 (objects != null) ? String.format(message, objects) : message, true)
-                .toText().formatted(Formatting.RED));
+                .toText()).formatted(Formatting.RED));
         return -1;
     }
 

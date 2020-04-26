@@ -5,10 +5,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -46,7 +43,7 @@ public class IgnorelistCommand extends EssentialCommand {
 
             int listSize = ignoreList.size();
             String prefix = CommandUtils.areTheSame(src, user) ? "Ignore list" : user.getFormattedDisplayName() + "'s Ignore list";
-            Text text = new LiteralText(prefix).formatted(Formatting.GOLD)
+            MutableText text = new LiteralText(prefix).formatted(Formatting.GOLD)
                     .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
                     .append(new LiteralText(String.valueOf(listSize)).formatted(Formatting.LIGHT_PURPLE))
                     .append(new LiteralText(" ]: ").formatted(Formatting.DARK_GRAY));
@@ -60,11 +57,12 @@ public class IgnorelistCommand extends EssentialCommand {
                 Formatting thisFormat = nextColor[0] ? Formatting.WHITE : Formatting.GRAY;
 
                 thisIgnored.append(new LiteralText(name).styled((style) -> {
-                    style.setColor(thisFormat);
+                    style.withFormatting(thisFormat);
                     style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                             new LiteralText("[i] ").formatted(Formatting.YELLOW)
                                     .append(new LiteralText("Click to remove!").formatted(Formatting.GREEN))));
-                    style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ignore " + name));
+                    style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ignore " + name));
+                    return style;
                 }));
 
                 if (listSize != i[0])

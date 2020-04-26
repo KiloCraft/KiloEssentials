@@ -43,9 +43,10 @@ public class RestartCommand {
 
             LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
             literalText.styled((style) -> {
-                style.setColor(Formatting.RED);
+                style.withFormatting(Formatting.RED);
                 style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to restart the server").formatted(Formatting.YELLOW)));
-                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/restart -confirmed"));
+                style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/restart -confirmed"));
+                return style;
             });
 
             KiloChat.sendMessageTo(source, literalText);

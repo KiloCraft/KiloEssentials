@@ -141,7 +141,7 @@ public class OperatorCommand {
         String s = Arrays.toString(source.getMinecraftServer().getPlayerManager().getOpList().getNames());
         LiteralText literalText = (LiteralText) new LiteralText(
                 "&eOperators&8:&r " + s.replace("[", "").replace("]", "").replaceAll(",", "&7,&r")
-        ).setStyle(new Style().setColor(Formatting.GRAY));
+        ).setStyle(Style.EMPTY.withFormatting(Formatting.GRAY));
 
         TextFormat.sendToUniversalSource(source, literalText, false);
         return 1;

@@ -6,10 +6,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -113,7 +110,7 @@ public class WarpCommand {
         if (warpsSize == 0)
             throw NO_WARPS.create();
 
-        Text text = new LiteralText("Warps").formatted(Formatting.GOLD)
+        MutableText text = new LiteralText("Warps").formatted(Formatting.GOLD)
                 .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
                 .append(new LiteralText(String.valueOf(warpsSize)).formatted(Formatting.LIGHT_PURPLE))
                 .append(new LiteralText(" ]: ").formatted(Formatting.DARK_GRAY));
@@ -127,12 +124,13 @@ public class WarpCommand {
             Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
 
             thisWarp.append(new LiteralText(warp.getName()).styled((style) -> {
-                style.setColor(thisFormat);
+                style.withFormatting(thisFormat);
                 style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                         new LiteralText("[i] ").formatted(Formatting.YELLOW)
                                 .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN))));
-                style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                         "/warp " + warp.getName()));
+                return style;
             }));
 
             if (warpsSize != i)

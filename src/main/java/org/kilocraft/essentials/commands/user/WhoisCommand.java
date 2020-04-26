@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
@@ -116,12 +117,14 @@ public class WhoisCommand extends EssentialCommand {
         if (target.getFirstJoin() != null) {
             text.append("First joined", Texter.toText("&e" + TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime())).styled((style) -> {
                 style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getFirstJoin())));
+                return style;
             }));
         }
 
         if (!target.isOnline() && target.getLastOnline() != null) {
             text.append("Last Online", Texter.toText("&e" +  TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).styled((style) -> {
                 style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getLastOnline())));
+                return style;
             }));
         }
 
@@ -136,12 +139,12 @@ public class WhoisCommand extends EssentialCommand {
 
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         assert vec.getDimension() != null;
-        Text loc = Texter.toText(vec.asFormattedString());
+        MutableText loc = Texter.toText(vec.asFormattedString());
         text.append("Location", getButtonForVec(loc, vec));
 
         if (target.getLastSavedLocation() != null) {
             Vec3dLocation savedVec = ((Vec3dLocation) target.getLastSavedLocation()).shortDecimals();
-            Text lastLoc = Texter.toText(savedVec.asFormattedString());
+            MutableText lastLoc = Texter.toText(savedVec.asFormattedString());
             text.append("Saved Location", getButtonForVec(lastLoc, savedVec));
         }
 
@@ -149,7 +152,7 @@ public class WhoisCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private Text getButtonForVec(Text text, Vec3dLocation vec) {
+    private MutableText getButtonForVec(MutableText text, Vec3dLocation vec) {
         assert vec.getDimension() != null;
         return Texter.appendButton(
                 text,
