@@ -114,7 +114,7 @@ public final class ServerChat {
         }
 
         TextMessage prefix = new TextMessage(ConfigVariableFactory.replaceUserVariables(channel.getPrefix(), sender)
-                .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().asFormattedString()));
+                .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().getString()));
 
         processPings(sender, message, channel);
 
@@ -127,13 +127,13 @@ public final class ServerChat {
 
         MutableText text = new LiteralText("");
         text.append(
-                ((MutableText)prefix.toText())
-                        .styled((style) -> {
-                            style.setHoverEvent(hoverEvent(sender, channel));
-                            style.withClickEvent(clickEvent(sender));
-                            return style;
-                        })
+                prefix.toComponent()
+                        .styled((style) -> style.setHoverEvent(hoverEvent(sender, channel)).withClickEvent(clickEvent(sender)))
         ).append(" ").append(component);
+
+        text.append(
+                prefix.toComponent()
+        );
 
         KiloServer.getServer().sendMessage(text.getString());
         channel.send(text);

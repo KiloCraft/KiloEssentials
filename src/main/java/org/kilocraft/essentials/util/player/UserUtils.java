@@ -6,7 +6,7 @@ import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.query.QueryOptions;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +15,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.text.Texter;
@@ -27,7 +26,7 @@ public class UserUtils {
     private static final ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
     private static PermissionUtil.Manager permManager = KiloEssentials.getInstance().getPermissionUtil().getManager();
 
-    public static Text getDisplayNameWithMeta(User user, boolean nickName) {
+    public static MutableText getDisplayNameWithMeta(User user, boolean nickName) {
         if (permManager == PermissionUtil.Manager.LUCKPERMS) {
             StringBuilder builder = new StringBuilder();
             CachedMetaData metaData = getLuckyMetaData(user.getUuid());
