@@ -7,6 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
@@ -77,7 +78,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public int sendError(final String message) {
-        KiloChat.sendMessageTo(this.asPlayer(), new TextMessage("&c" + message, true).toText().formatted(Formatting.RED));
+        KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)new TextMessage("&c" + message, true).toText()).formatted(Formatting.RED));
         return 0;
     }
 
@@ -88,7 +89,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendError(Text text) {
-        KiloChat.sendMessageTo(this.asPlayer(), text.formatted(Formatting.RED));
+        KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)text).formatted(Formatting.RED));
     }
 
     @Override
@@ -99,9 +100,9 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public int sendError(final ExceptionMessageNode node, final Object... objects) {
         final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.asPlayer(), new TextMessage(
+        KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)new TextMessage(
                 objects != null ? String.format(message, objects) : message, true)
-                .toText().formatted(Formatting.RED));
+                .toText()).formatted(Formatting.RED));
         return -1;
     }
 
