@@ -251,14 +251,14 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        try {
-            LocationUtil.validateIsSafe(warp.getLocation());
-        } catch (InsecureDestinationException e) {
-            if (!inputName.startsWith("-confirmed-")) {
-                src.sendMessage(getTeleportConfirmationText(warpName));
-                return -1;
-            }
-        }
+//        try {
+//            LocationUtil.validateIsSafe(warp.getLocation());
+//        } catch (InsecureDestinationException e) {
+//            if (!inputName.startsWith("-confirmed-")) {
+//                src.sendMessage(getTeleportConfirmationText(warpName));
+//                return -1;
+//            }
+//        }
 
         src.teleport(warp.getLocation(), true);
         src.sendMessage(new TextMessage(
@@ -350,9 +350,10 @@ public class PlayerWarpCommand extends EssentialCommand {
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
                         .append(new LiteralText("]").formatted(Formatting.GRAY))
                         .styled((style) -> {
-                            style.setColor(Formatting.GRAY);
+                            style.withFormatting(Formatting.GRAY);
                             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW)));
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pwarp teleport -confirmed-" + warpName));
+                            style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pwarp teleport -confirmed-" + warpName));
+                            return style;
                         }));
     }
 

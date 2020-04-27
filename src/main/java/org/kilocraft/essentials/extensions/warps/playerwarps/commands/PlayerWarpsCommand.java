@@ -7,10 +7,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -116,7 +113,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
             List<PlayerWarp> warps = entry.getValue();
             for (PlayerWarp warp : warps) {
                 index++;
-                Text text = new LiteralText("");
+                MutableText text = new LiteralText("");
                 text.append(new LiteralText((index) + ".").formatted(Formatting.GOLD));
                 text.append(" ");
                 text.append(new LiteralText(warp.getName()).formatted(Formatting.WHITE)).styled((style) -> {
@@ -126,6 +123,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
                             .append("\n")
                             .append(new LiteralText("In ").formatted(Formatting.WHITE))
                             .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())))));
+                    return style;
                 });
                 text.append(new LiteralText(" (").formatted(Formatting.DARK_GRAY));
                 text.append(new LiteralText(warp.getType()).formatted(Formatting.LIGHT_PURPLE));
@@ -142,8 +140,9 @@ public class PlayerWarpsCommand extends EssentialCommand {
                 String desc = warp.getDescription();
                 String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
 
-                Text description = Texter.toText(TextFormat.clearColorCodes(shortenedDesc)).formatted(Formatting.WHITE).styled((style) -> {
+                MutableText description = Texter.toText(TextFormat.clearColorCodes(shortenedDesc)).formatted(Formatting.WHITE).styled((style) -> {
                     style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText(desc).formatted(Formatting.WHITE)));
+                    return style;
                 });
 
                 if (desc.length() > maxLength) {

@@ -41,7 +41,6 @@ public class SethomeCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = argument("name", word())
-                .suggests(ArgumentCompletions::noSuggestions)
                 .executes(this::executeSelf);
 
         RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("user")
@@ -142,9 +141,10 @@ public class SethomeCommand extends EssentialCommand {
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
                         .append(new LiteralText("]").formatted(Formatting.GRAY))
                         .styled((style) -> {
-                            style.setColor(Formatting.GRAY);
+                            style.withFormatting(Formatting.GRAY);
                             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW)));
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome -confirmed-" + homeName + " " + user));
+                            style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome -confirmed-" + homeName + " " + user));
+                            return style;
                         }));
     }
 

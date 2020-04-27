@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.chat;
 
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -55,11 +56,11 @@ public class TextMessage {
         formatMessage();
     }
 
-    public Text toText() {
+    public LiteralText toText() {
         return new LiteralText(this.formatted);
     }
 
-    public Text toComponent() {
+    public MutableText toComponent() {
         return toText();
     }
 

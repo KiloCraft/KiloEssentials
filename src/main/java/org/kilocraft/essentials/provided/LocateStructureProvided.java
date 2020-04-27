@@ -24,9 +24,10 @@ public class LocateStructureProvided {
         int int_1 = MathHelper.floor(getDistance(blockPos_1.getX(), blockPos_1.getZ(), blockPos_2.getX(), blockPos_2.getZ()));
         Text coordinates = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos_2.getX(), "~", blockPos_2.getZ())
                 .styled((style) -> {
-                    style.setColor(Formatting.GREEN);
-                    style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + source.getName() + " " + blockPos_2.getX() + " ~ " + blockPos_2.getZ()));
+                    style.withFormatting(Formatting.GREEN);
+                    style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + source.getName() + " " + blockPos_2.getX() + " ~ " + blockPos_2.getZ()));
                     style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")));
+                    return style;
                 })
         );
 

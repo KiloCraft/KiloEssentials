@@ -275,6 +275,8 @@ public class ServerUserManager implements UserManager, TickListener {
                                 org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT)
                         );
                     });
+
+                    map.put(victim.getUuid(), org.kilocraft.essentials.api.util.StringUtils.uniformNickname(victim.getUsername()).toLowerCase(Locale.ROOT));
                 }
             });
 
@@ -324,12 +326,15 @@ public class ServerUserManager implements UserManager, TickListener {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
         user.onLeave();
         this.teleportRequestsMap.remove(user.getId());
-        UserUtils.Process.remove(user);
         if (user.getNickname().isPresent()) {
             this.nicknameToUUID.remove(user.getNickname().get());
         }
         this.usernameToUUID.remove(player.getEntityName());
         this.users.remove(user);
+
+        if (UserUtils.Process.isInAny(user)) {
+            UserUtils.Process.remove(user);
+        }
 
         try {
             this.handler.save(user);
@@ -417,7 +422,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         public LoadingText start() {
-            this.animatedText.setStyle(new Style().setColor(Formatting.YELLOW)).start();
+            this.animatedText.setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)).start();
             return this;
         }
 

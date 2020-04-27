@@ -98,10 +98,12 @@ public class DebugEssentialsCommand extends EssentialCommand {
                 input.append(
                         Texter.toText(String.format(LINE_FORMAT, atomicInteger.get(), id1, type, cached.isValid())).styled((style) -> {
                             style.setHoverEvent(Texter.Events.onHover(id));
+                            return style;
                         }).append(
                                 Texter.toText(String.format(DATA_FORMAT, data.substring(0, Math.min(data.length(), 10)))).styled((style) -> {
                                     style.setHoverEvent(Texter.Events.onHover(data));
-                                    style.setClickEvent(Texter.Events.onClickRun("/debugess cache " + id));
+                                    style.withClickEvent(Texter.Events.onClickRun("/debugess cache " + id));
+                                    return style;
                                 })
                         )
                 );

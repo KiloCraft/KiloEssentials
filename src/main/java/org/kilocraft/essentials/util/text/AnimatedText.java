@@ -3,6 +3,7 @@ package org.kilocraft.essentials.util.text;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
@@ -44,7 +45,7 @@ public class AnimatedText {
 
     public AnimatedText setStyle(Style style) {
         for (Text frame : this.frames) {
-            frame.setStyle(style);
+            ((MutableText)frame).setStyle(style);
         }
 
         return this;

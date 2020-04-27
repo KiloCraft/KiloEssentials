@@ -71,14 +71,14 @@ public class HomeCommand extends EssentialCommand {
 
         Home home = homeHandler.getHome(name);
 
-        try {
-            LocationUtil.validateIsSafe(home.getLocation());
-        } catch (InsecureDestinationException e) {
-            if (!input.startsWith("-confirmed")) {
-                user.sendMessage(getTeleportConfirmationText(name, ""));
-                return FAILED;
-            }
-        }
+//        try {
+//            LocationUtil.validateIsSafe(home.getLocation());
+//        } catch (InsecureDestinationException e) {
+//            if (!input.startsWith("-confirmed")) {
+//                user.sendMessage(getTeleportConfirmationText(name, ""));
+//                return FAILED;
+//            }
+//        }
 
         try {
             homeHandler.teleportToHome(user, name);
@@ -113,14 +113,14 @@ public class HomeCommand extends EssentialCommand {
 
             Home home = homeHandler.getHome(name);
 
-            try {
-                LocationUtil.validateIsSafe(home.getLocation());
-            } catch (InsecureDestinationException e) {
-                if (!input.startsWith("-confirmed-")) {
-                    source.sendMessage(getTeleportConfirmationText(name, user.getUsername()));
-                    return;
-                }
-            }
+//            try {
+//                LocationUtil.validateIsSafe(home.getLocation());
+//            } catch (InsecureDestinationException e) {
+//                if (!input.startsWith("-confirmed-")) {
+//                    source.sendMessage(getTeleportConfirmationText(name, user.getUsername()));
+//                    return;
+//                }
+//            }
 
             try {
                 homeHandler.teleportToHome(source, name);
@@ -160,9 +160,10 @@ public class HomeCommand extends EssentialCommand {
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
                         .append(new LiteralText("]").formatted(Formatting.GRAY))
                         .styled((style) -> {
-                            style.setColor(Formatting.GRAY);
+                            style.withFormatting(Formatting.GRAY);
                             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW)));
-                            style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home -confirmed-" + homeName + " " + owner));
+                            style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home -confirmed-" + homeName + " " + owner));
+                            return style;
                         }));
     }
 

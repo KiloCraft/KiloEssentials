@@ -24,6 +24,7 @@ import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.util.text.Texter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -58,7 +59,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Redirect(method = "onGameMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Z)V"))
     private void redirect(PlayerManager playerManager, Text text, boolean bl) {
-        playerManager.broadcastChatMessage(new LiteralText(TextFormat.translate(text.asFormattedString())), false);
+        playerManager.broadcastChatMessage(new LiteralText(TextFormat.translate(Texter.Legacy.toFormattedString(text))), false);
     }
 
     @Inject(

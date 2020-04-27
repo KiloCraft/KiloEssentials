@@ -46,7 +46,7 @@ public class MotdCommand extends EssentialCommand {
 
     private int execute(final CommandContext<ServerCommandSource> ctx) {
         final Text description = this.server.getMetaManager().getDescription();
-        final String[] lines = description.asFormattedString().split("\n");
+        final String[] lines = Texter.Legacy.toFormattedString(description).split("\n");
 
         this.getServerUser(ctx).sendLangMessage("command.motd", (lines.length >= 0) ? lines[0] : "", lines.length >= 1 ? lines[1] : "");
         return SUCCESS;
@@ -60,10 +60,10 @@ public class MotdCommand extends EssentialCommand {
         @NonNls String finalmotd = null;
 
         if (line == 1) {
-            final String str = TextFormat.reverseTranslate(description.asFormattedString().split("\n")[1], '&');
+            final String str = TextFormat.reverseTranslate(Texter.Legacy.toFormattedString(description).split("\n")[1], '&');
             finalmotd = input + MotdCommand.COMPILE.pattern() + str;
         } else {
-            final String str = TextFormat.reverseTranslate(description.asFormattedString().split("\n")[0], '&');
+            final String str = TextFormat.reverseTranslate(Texter.Legacy.toFormattedString(description).split("\n")[0], '&');
             finalmotd = str + MotdCommand.COMPILE.pattern() + input;
         }
 
@@ -76,7 +76,7 @@ public class MotdCommand extends EssentialCommand {
             e.printStackTrace();
         }
 
-        final String[] motd = this.server.getMetaManager().getDescription().asFormattedString().split(MotdCommand.COMPILE.pattern());
+        final String[] motd = Texter.Legacy.toFormattedString(this.server.getMetaManager().getDescription()).split(MotdCommand.COMPILE.pattern());
 
         ctx.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.set", TextFormat.translate(motd[0]), TextFormat.translate(motd[1])), true);
         return this.SUCCESS;
@@ -90,7 +90,7 @@ public class MotdCommand extends EssentialCommand {
 
             try {
                 @NonNls final String desc = TextFormat.reverseTranslate(
-                        this.server.getMetaManager().getDescription().asFormattedString().split(MotdCommand.COMPILE.pattern())[line - 1], '&');
+                        Texter.Legacy.toFormattedString(this.server.getMetaManager().getDescription()).split(MotdCommand.COMPILE.pattern())[line - 1], '&');
                 builder.suggest('"' + desc + '"');
             } catch (final ArrayIndexOutOfBoundsException ignored) {}
 
