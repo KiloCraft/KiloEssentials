@@ -315,11 +315,7 @@ public final class ServerChat {
             text.append("...");
         }
 
-        text.styled((style) -> {
-            style.setHoverEvent(Texter.Events.onHover(commandSpyHoverStyle));
-            style.withClickEvent(Texter.Events.onClickSuggest("/" + command));
-            return style;
-        });
+        text.styled((style) -> style.setHoverEvent(Texter.Events.onHover(commandSpyHoverStyle)).withClickEvent(Texter.Events.onClickSuggest("/" + command)));
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {
