@@ -49,19 +49,12 @@ public class Texter {
     }
 
     public static MutableText appendButton(MutableText text, MutableText hoverText, ClickEvent.Action action, String actionValue) {
-        return text.styled((style) -> {
-            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
-            style.withClickEvent(new ClickEvent(action, actionValue));
-            return style;
-        });
+        return text.styled((style) -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText)).withClickEvent(new ClickEvent(action, actionValue)));
     }
 
     public static MutableText getButton(String title, String command, MutableText hoverText) {
-        return Texter.toText(title).styled((style) -> {
-           style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
-           style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
-           return style;
-        });
+        return Texter.toText(title)
+                .styled((style) -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText)).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
     }
 
     public static MutableText confirmationMessage(String langKey, MutableText button) {
@@ -305,10 +298,10 @@ public class Texter {
                     MutableText objectToText = (MutableText) objects[i];
                         text.styled((style) -> {
                             if (objectToText.getStyle().getHoverEvent() != null)
-                                style.setHoverEvent(objectToText.getStyle().getHoverEvent());
+                                return style.setHoverEvent(objectToText.getStyle().getHoverEvent());
 
                             if (objectToText.getStyle().getClickEvent() != null) {
-                                style.withClickEvent(objectToText.getStyle().getClickEvent());
+                                return style.withClickEvent(objectToText.getStyle().getClickEvent());
                             }
                             return style;
                         });

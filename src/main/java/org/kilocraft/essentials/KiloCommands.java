@@ -288,23 +288,15 @@ public class KiloCommands {
                         .formatted(Formatting.GRAY)
                         .append("\n")
                         .append(new LiteralText("GitHub: ").formatted(Formatting.GRAY))
-                        .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/").styled(style -> {
-                            style.withFormatting(Formatting.GOLD);
-                            style.withClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"));
-                            style.setHoverEvent(Texter.Events.onHover("&eClick to open"));
-                            return style;
-                        })))
-                , false);
+                        .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/")
+                                .styled(style -> style.withFormatting(Formatting.GOLD).withClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/")).setHoverEvent(Texter.Events.onHover("&eClick to open"))))), false);
 
         return 1;
     }
 
     public static LiteralText getPermissionError(final String hoverText) {
         final LiteralText literalText = LangText.get(true, "command.exception.permission");
-        literalText.styled(style -> {
-           style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW)));
-           return style;
-        });
+        literalText.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW))));
         return literalText;
     }
 
@@ -454,11 +446,8 @@ public class KiloCommands {
 
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         final int cursor = Math.min(e.getInput().length(), e.getCursor());
-                        final MutableText text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> {
-                            style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
-                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(command).formatted(Formatting.YELLOW)));
-                            return style;
-                        });
+                        final MutableText text = new LiteralText("").formatted(Formatting.GRAY)
+                                .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(command).formatted(Formatting.YELLOW))));
 
                         if (cursor > 10) text.append("...");
 
