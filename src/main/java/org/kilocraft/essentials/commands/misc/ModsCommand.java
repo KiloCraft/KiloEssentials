@@ -57,12 +57,9 @@ public class ModsCommand extends EssentialCommand {
             Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
 
             thisMod.append(new LiteralText(meta.getName()).styled((style) -> {
-                style.withFormatting(thisFormat);
-                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mods " + meta.getId())).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                         new LiteralText("[i] ").formatted(Formatting.YELLOW)
-                                .append(new LiteralText("Click for more info!").formatted(Formatting.GREEN))));
-                style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mods " + meta.getId()));
-                return style;
+                                .append(new LiteralText("Click for more info!").formatted(Formatting.GREEN)))).withFormatting(thisFormat);
             }));
 
             if (allMods != i)
