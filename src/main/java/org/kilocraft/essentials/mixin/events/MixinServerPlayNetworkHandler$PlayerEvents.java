@@ -78,15 +78,6 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         }
     }
 
-    @Inject(method = "onHandSwing", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onHandSwing(Lnet/minecraft/network/packet/c2s/play/HandSwingC2SPacket;)V"))
-    private void modifyOnHandSwing(HandSwingC2SPacket handSwingC2SPacket, CallbackInfo ci) {
-        PlayerOnHandSwingEvent event = new PlayerOnHandSwingEventImpl(player, handSwingC2SPacket.getHand());
-        KiloServer.getServer().triggerEvent(event);
-        if (event.isCancelled())
-            ci.cancel();
-    }
-
     @Inject(method = "onPlayerInteractBlock", cancellable = true,
             at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onPlayerInteractBlock(Lnet/minecraft/network/packet/c2s/play/PlayerInteractBlockC2SPacket;)V"))
     private void modifyOnIteractBlock(PlayerInteractBlockC2SPacket playerInteractBlockC2SPacket, CallbackInfo ci) {

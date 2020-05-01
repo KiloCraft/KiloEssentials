@@ -27,6 +27,7 @@ import org.kilocraft.essentials.user.setting.ServerUserSettings;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
 import org.kilocraft.essentials.util.player.UserUtils;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -236,7 +237,7 @@ public class ServerUser implements User {
     }
 
     public String getDisplayName() {
-        return this.getSetting(Settings.NICK).orElseGet(() -> this.name);
+        return this.getNickname().orElseGet(() -> this.name);
     }
 
     @Override
@@ -246,12 +247,20 @@ public class ServerUser implements User {
 
     @Override
     public Text getRankedDisplayName() {
-        return UserUtils.getDisplayNameWithMeta(this, true);
+        if (this.isOnline()) {
+            return UserUtils.getDisplayNameWithMeta((OnlineUser) this, true);
+        }
+
+        return Texter.toText(this.getDisplayName());
     }
 
     @Override
     public Text getRankedName() {
-        return UserUtils.getDisplayNameWithMeta(this, false);
+        if (this.isOnline()) {
+            return UserUtils.getDisplayNameWithMeta((OnlineUser) this, false);
+        }
+
+        return Texter.toText(this.name);
     }
 
     @Override
