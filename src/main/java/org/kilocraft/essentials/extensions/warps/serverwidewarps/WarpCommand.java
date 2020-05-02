@@ -124,13 +124,10 @@ public class WarpCommand {
             Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
 
             thisWarp.append(new LiteralText(warp.getName()).styled((style) -> {
-                style.withFormatting(thisFormat);
-                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                return style.withFormatting(thisFormat).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                         new LiteralText("[i] ").formatted(Formatting.YELLOW)
-                                .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN))));
-                style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                         "/warp " + warp.getName()));
-                return style;
             }));
 
             if (warpsSize != i)
