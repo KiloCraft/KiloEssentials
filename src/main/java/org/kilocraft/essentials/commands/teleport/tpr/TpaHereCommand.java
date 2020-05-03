@@ -17,8 +17,8 @@ import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-public class TpahereCommand extends EssentialCommand {
-    public TpahereCommand() {
+public class TpaHereCommand extends EssentialCommand {
+    public TpaHereCommand() {
         super("tpahere", TpaCommand.PERMISSION, new String[]{"tprhere"});
         this.withUsage("command.tpa.usage", "target");
     }

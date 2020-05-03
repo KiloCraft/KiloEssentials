@@ -19,8 +19,8 @@ import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
 
-public class InvulnerablemodeCommand extends EssentialCommand {
-    public InvulnerablemodeCommand() {
+public class InvulnerableCommand extends EssentialCommand {
+    public InvulnerableCommand() {
         super("invulnerable", CommandPermission.INVULNERAVLE, new String[]{"godmode"});
     }
 
