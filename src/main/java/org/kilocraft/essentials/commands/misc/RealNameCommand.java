@@ -14,8 +14,8 @@ import org.kilocraft.essentials.chat.KiloChat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 
-public class RelnameCommand extends EssentialCommand {
-	public RelnameCommand() {
+public class RealNameCommand extends EssentialCommand {
+	public RealNameCommand() {
 		super("realname", CommandPermission.REALNAME);
 		this.withUsage("command.realname.usage", "nickname");
 	}

@@ -17,7 +17,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -35,22 +34,22 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class PowertoolsCommand {
+public class PowerToolsCommand {
     private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS, 4);
 
     public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> rootCommand = literal("command")
                 .requires(PERMISSION_CHECK)
-                .executes(PowertoolsCommand::executeList)
+                .executes(PowerToolsCommand::executeList)
                 .build();
 
         LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset")
-                .executes(PowertoolsCommand::executeReset);
+                .executes(PowerToolsCommand::executeReset);
 
         LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove");
         RequiredArgumentBuilder<ServerCommandSource, Integer> removeLineArgument = argument("line", integer(1, 10))
                 .suggests(ArgumentCompletions::noSuggestions)
-                .executes(PowertoolsCommand::executeRemove);
+                .executes(PowerToolsCommand::executeRemove);
 
         LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
 
@@ -58,8 +57,8 @@ public class PowertoolsCommand {
                 .suggests(ArgumentCompletions::noSuggestions);
 
         RequiredArgumentBuilder<ServerCommandSource, String> textArgument = argument("command", greedyString())
-                .suggests(PowertoolsCommand::commandSuggestions)
-                .executes(PowertoolsCommand::execute);
+                .suggests(PowerToolsCommand::commandSuggestions)
+                .executes(PowerToolsCommand::execute);
 
         removeArgument.then(removeLineArgument);
         lineArgument.then(textArgument.build());
@@ -67,7 +66,7 @@ public class PowertoolsCommand {
         rootCommand.addChild(removeArgument.build());
         rootCommand.addChild(resetArgument.build());
         rootCommand.addChild(setArgument.build());
-        dispatcher.register(literal("powertool").requires(PERMISSION_CHECK).executes(PowertoolsCommand::executeList).redirect(rootCommand));
+        dispatcher.register(literal("powertool").requires(PERMISSION_CHECK).executes(PowerToolsCommand::executeList).redirect(rootCommand));
         builder.then(rootCommand);
     }
 

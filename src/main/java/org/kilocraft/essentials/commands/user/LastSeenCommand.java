@@ -11,8 +11,8 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-public class LastseenCommand extends EssentialCommand {
-    public LastseenCommand() {
+public class LastSeenCommand extends EssentialCommand {
+    public LastSeenCommand() {
         super("lastseen", CommandPermission.LASTSEEN);
     }
 

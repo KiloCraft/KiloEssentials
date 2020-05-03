@@ -18,8 +18,8 @@ import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
 import static net.minecraft.command.arguments.EntityArgumentType.players;
 import static org.kilocraft.essentials.chat.KiloChat.*;
 
-public class ClearchatCommand extends EssentialCommand {
-    public ClearchatCommand() {
+public class ClearChatCommand extends EssentialCommand {
+    public ClearChatCommand() {
         super("clearchat", CommandPermission.CLEARCHAT);
     }
 
@@ -62,7 +62,7 @@ public class ClearchatCommand extends EssentialCommand {
 
     private static String getClearString() {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < 18; i++) builder.append("\n\n\n\n\n\n");
+        for (int i = 0; i < 100; i++) builder.append("\n");
         return builder.toString();
     }
 

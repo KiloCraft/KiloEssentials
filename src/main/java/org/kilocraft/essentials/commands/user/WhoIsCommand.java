@@ -24,8 +24,8 @@ import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
-public class WhoisCommand extends EssentialCommand {
-    public WhoisCommand() {
+public class WhoIsCommand extends EssentialCommand {
+    public WhoIsCommand() {
         super("whois", CommandPermission.WHOIS_SELF, new String[]{"info"});
     }
 

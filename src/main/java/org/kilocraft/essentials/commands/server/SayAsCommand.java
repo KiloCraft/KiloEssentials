@@ -29,8 +29,8 @@ import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.command.arguments.MessageArgumentType.*;
 
-public class SayasCommand extends EssentialCommand {
-    public SayasCommand() {
+public class SayAsCommand extends EssentialCommand {
+    public SayAsCommand() {
         super("sayas", CommandPermission.SAYAS_OTHERS, 4);
     }
 
