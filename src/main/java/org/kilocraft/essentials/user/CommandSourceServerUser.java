@@ -20,6 +20,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -161,26 +162,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public @Nullable UUID getLastPrivateMessageSender() {
-        return null;
-    }
-
-    @Override
-    public @Nullable String getLastPrivateMessage() {
-        return null;
-    }
-
-    @Override
-    public void setLastMessageSender(UUID uuid) {
-
-    }
-
-    @Override
-    public void setLastPrivateMessage(String message) {
-
-    }
-
-    @Override
     public <F extends UserProvidedFeature> F feature(FeatureType<F> type) {
         return null;
     }
@@ -223,6 +204,16 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public boolean ignored(UUID uuid) {
         return false;
+    }
+
+    @Override
+    public MessageReceptionist getLastDirectMessageReceptionist() {
+        return null;
+    }
+
+    @Override
+    public void setLastDirectMessageReceptionist(MessageReceptionist receptionist) {
+
     }
 
     @Nullable

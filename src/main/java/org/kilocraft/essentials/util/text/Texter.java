@@ -8,6 +8,7 @@ import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
@@ -160,13 +161,6 @@ public class Texter {
         }
     }
 
-    public static class AnimationGallery {
-        public static void loadingBar(ServerPlayerEntity player, int delay) {
-            AnimatedText animatedText = new AnimatedText(0, delay, TimeUnit.SECONDS, player, TitleS2CPacket.Action.ACTIONBAR);
-            animatedText.append(toText(ModConstants.translation("")));
-        }
-    }
-
     public static class ListStyle {
         private MutableText title;
         private MutableText text;
@@ -298,8 +292,6 @@ public class Texter {
         }
 
         public InfoBlockStyle append(String title, String[] subTitles, Object... objects) {
-            MutableText MutableText = new LiteralText("");
-
             for (int i = 0; i < objects.length; i++) {
                 if (objects[i] instanceof Text) {
                     MutableText objectToText = (MutableText) objects[i];
@@ -315,7 +307,6 @@ public class Texter {
                 }
                 else if (objects[i] instanceof List<?>) {
                     List<?> list = (List<?>) objects[i];
-                    int anInt = 0;
                     text.append(new LiteralText("[").formatted(borders))
                             .append(new LiteralText(valueObjectSeparator.getString()).formatted(borders));
 
@@ -326,7 +317,6 @@ public class Texter {
                             text.append(", ").formatted(borders);
                         else
                             text.append("...").formatted(borders);
-                        anInt++;
                     }
 
                     text.append(new LiteralText("]").formatted(borders));

@@ -201,12 +201,21 @@ public class TimeDifferenceUtil {
 
 
 
-        return ArgumentCompletions.suggestAtCursor(
-                Arrays.stream(VALID_UNITS).filter((it) ->{
-                    String inputChar = String.valueOf(context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)));
-                    boolean containsValidUnit = it.equals(inputChar);
+//        return ArgumentCompletions.suggestAtCursor(
+//                Arrays.stream(VALID_UNITS).filter((it) ->{
+//                    String inputChar = String.valueOf(context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)));
+//                    boolean containsValidUnit = it.equals(inputChar);
+//
+//                    return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
+//                }),
+//                context
+//        );
 
-                    return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
+        return ArgumentCompletions.suggestAtCursor(
+                Arrays.stream(VALID_UNITS).filter((it) -> {
+                    String input = String.valueOf(ArgumentCompletions.)
+
+                    return true;
                 }),
                 context
         );

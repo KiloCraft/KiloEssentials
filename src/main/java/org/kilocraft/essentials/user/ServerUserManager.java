@@ -29,6 +29,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.CacheManager;
 import org.kilocraft.essentials.util.text.AnimatedText;
@@ -370,7 +371,7 @@ public class ServerUserManager implements UserManager, TickListener {
             if (KiloConfig.main().chat().kickForSpamming) {
                 player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
             } else {
-                player.getCommandSource().sendError(LangText.getFormatter(true, "channel.spam"));
+                user.sendLangError("channel.spam");
             }
         }
 
@@ -390,6 +391,14 @@ public class ServerUserManager implements UserManager, TickListener {
             }
 
             ((OnlineServerUser) user).onTick();
+        }
+    }
+
+    public void onDeath(OnlineUser user) {
+        user.saveLocation();
+
+        if (SeatManager.isEnabled() && SeatManager.getInstance().isSeating(user.asPlayer())) {
+            SeatManager.getInstance().unseat(user);
         }
     }
 

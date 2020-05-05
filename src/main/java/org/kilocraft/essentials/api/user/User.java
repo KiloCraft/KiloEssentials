@@ -172,20 +172,6 @@ public interface User extends MessageReceptionist, NBTSerializable {
     Date getLastOnline();
 
     @Deprecated
-    @Nullable
-    UUID getLastPrivateMessageSender();
-
-    @Deprecated
-    @Nullable
-    String getLastPrivateMessage();
-
-    @Deprecated
-    void setLastMessageSender(UUID uuid);
-
-    @Deprecated
-    void setLastPrivateMessage(String message);
-
-    @Deprecated
     <F extends UserProvidedFeature> F feature(FeatureType<F> type);
 
     /**
@@ -238,5 +224,9 @@ public interface User extends MessageReceptionist, NBTSerializable {
      * @return is This user ignoring the other user
      */
     boolean ignored(UUID uuid);
+
+    MessageReceptionist getLastDirectMessageReceptionist();
+
+    void setLastDirectMessageReceptionist(MessageReceptionist receptionist);
 
 }

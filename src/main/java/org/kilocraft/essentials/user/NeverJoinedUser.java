@@ -6,6 +6,7 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
@@ -123,26 +124,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public @Nullable UUID getLastPrivateMessageSender() {
-        return null;
-    }
-
-    @Override
-    public @Nullable String getLastPrivateMessage() {
-        return null;
-    }
-
-    @Override
-    public void setLastMessageSender(UUID uuid) {
-
-    }
-
-    @Override
-    public void setLastPrivateMessage(String message) {
-
-    }
-
-    @Override
     public <F extends UserProvidedFeature> F feature(FeatureType<F> type) {
         return null;
     }
@@ -185,6 +166,16 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     @Override
     public boolean ignored(UUID uuid) {
         return false;
+    }
+
+    @Override
+    public MessageReceptionist getLastDirectMessageReceptionist() {
+        return null;
+    }
+
+    @Override
+    public void setLastDirectMessageReceptionist(MessageReceptionist receptionist) {
+
     }
 
     @Override

@@ -15,6 +15,11 @@ public class UserMessageReceptionist implements MessageReceptionist {
         this.id = user.getUuid();
     }
 
+    public UserMessageReceptionist(@NotNull final String name, @NotNull final UUID uuid) {
+        this.name = name;
+        this.id = uuid;
+    }
+
     @Override
     public String getName() {
         return this.name;

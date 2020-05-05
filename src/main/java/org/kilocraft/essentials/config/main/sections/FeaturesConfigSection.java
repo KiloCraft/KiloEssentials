@@ -8,7 +8,7 @@ public class FeaturesConfigSection {
     @Setting(value = "playtimeCommands", comment = "Schedule commands to run at a specific amount of playtime!")
     public boolean playtimeCommands = true;
 
-    @Setting(value = "playerHomes", comment = "Let players to set homes where ever they want!")
+    @Setting(value = "playerHomes", comment = "Let players to set homes where ever they want! **WARNING: YOU WILL LOSE ALL THE HOME DATA IF YOU DISABLE THIS AND RE-LOAD THE SERVER")
     public boolean playerHomes = true;
 
     @Setting(value = "serverWideWarps", comment = "Set different warps and allow players to teleport to them!")

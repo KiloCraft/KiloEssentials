@@ -3,6 +3,7 @@ package org.kilocraft.essentials.api.user.settting;
 import com.google.inject.internal.asm.$Label;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.user.setting.Settings;
 
 import java.util.List;
@@ -15,13 +16,13 @@ public class Setting<T> {
     private Consumer<SerializerFunction> deserializer;
     private boolean hasCustomSerializer;
 
-    public Setting(@NotNull final String id, @NotNull final T defaultValue) {
+    public Setting(@NotNull final String id, @Nullable final T defaultValue) {
         this.id = id;
         this.defaultValue = defaultValue;
         Settings.list.add(this);
     }
 
-    public Setting(@NotNull final String id, @NotNull final T defaultValue,
+    public Setting(@NotNull final String id, @Nullable final T defaultValue,
                    @NotNull final Consumer<SerializerFunction> serializer,
                    @NotNull final Consumer<SerializerFunction> deserializer) {
         this(id, defaultValue);

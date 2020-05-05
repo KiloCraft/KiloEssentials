@@ -5,10 +5,15 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.user.settting.Setting;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.chat.UserMessageReceptionist;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
+import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
 import org.kilocraft.essentials.util.nbt.NBTUtils;
 
@@ -41,31 +46,28 @@ public class Settings {
             (fun) -> fun.set(GameMode.byId(fun.tag().getInt(fun.setting().getId())))
     );
     public static final Setting<Map<String, UUID>> IGNORE_LIST = new Setting<Map<String, UUID>>(
-            "ignore_list", new HashMap<>(),
+            "ignored", new HashMap<>(),
             (fun) -> {
-                if (fun.value().isEmpty()) {
-                    return;
+                if (!fun.value().isEmpty()) {
+                    ListTag list = new ListTag();
+                    for (Map.Entry<String, UUID> entry : fun.value().entrySet()) {
+                        CompoundTag ignored = new CompoundTag();
+                        ignored.putString("name", entry.getKey());
+                        NBTUtils.putUUID(ignored, "uuid", entry.getValue());
+
+                        list.add(ignored);
+                    }
+
+                    fun.tag().put(fun.setting().getId(), list);
                 }
-
-                ListTag listTag = new ListTag();
-                fun.value().forEach((name, uuid) -> {
-                    CompoundTag ignoredOne = new CompoundTag();
-                    NBTUtils.putUUID(ignoredOne, "uuid", uuid);
-                    ignoredOne.putString("name", name);
-                    listTag.add(ignoredOne);
-                });
-
-                fun.tag().put(fun.setting().getId(), listTag);
             }, (fun) -> {
-                if (!fun.tag().contains(fun.setting().getId())) {
-                    return;
-                }
-
-                ListTag listTag = fun.tag().getList(fun.setting().getId(), 10);
-                for (int i = 0; i < listTag.size(); i++) {
+                if (fun.tag().contains(fun.setting().getId())) {
+                    ListTag list = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
                     Map<String, UUID> map = new HashMap<>();
-                    CompoundTag ignoredOne = listTag.getCompound(i);
-                    map.put(ignoredOne.getString("name"), NBTUtils.getUUID(ignoredOne, "uuid"));
+                    for (int i = 0; i < list.size(); i++) {
+                        CompoundTag tag = list.getCompound(i);
+                        map.put(tag.getString("name"), NBTUtils.getUUID(tag, "uuid"));
+                    }
                     fun.set(map);
                 }
             }
@@ -123,7 +125,7 @@ public class Settings {
     );
     public static final Setting<Boolean> SOUNDS = new Setting<>("sounds", true);
     public static final Setting<List<String>> PENDING_COMMANDS = new Setting<List<String>>(
-            "pendingCommands", Collections.emptyList(),
+            "pending_commands", Collections.emptyList(),
             (fun) -> {
                 if (!fun.value().isEmpty()) {
                     ListTag listTag = new ListTag();
@@ -147,7 +149,6 @@ public class Settings {
                     fun.set(strings);
                 }
     });
-
 
     @Nullable
     public static Setting<?> getById(String id) {
