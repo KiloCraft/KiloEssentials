@@ -213,7 +213,7 @@ public class TimeDifferenceUtil {
 
         return ArgumentCompletions.suggestAtCursor(
                 Arrays.stream(VALID_UNITS).filter((it) -> {
-                    String input = String.valueOf(ArgumentCompletions.)
+                    //String input = String.valueOf(ArgumentCompletions.)
 
                     return true;
                 }),

@@ -204,12 +204,13 @@ public class Texter {
 
         public ListStyle append(Object obj, @Nullable HoverEvent hoverEvent, @Nullable ClickEvent clickEvent) {
             Formatting formatting = nextColor ? bFormat : aFormat;
-            MutableText MutableText = obj instanceof MutableText ? ((MutableText) obj).formatted(formatting) :
-                    new LiteralText(TextFormat.translate(String.valueOf(obj))).formatted(formatting);
-            if (hoverEvent != null)
-                text.getStyle().setHoverEvent(hoverEvent);
+            MutableText text = obj instanceof MutableText ? ((MutableText) obj).formatted(formatting) :
+                    Texter.toText(String.valueOf(obj)).formatted(formatting);
+            if (hoverEvent != null) {
+                text.styled((style) -> style.setHoverEvent(hoverEvent));
+            }
             if (clickEvent != null) {
-                text.getStyle().withClickEvent(clickEvent);
+                text.styled((style) -> style.withClickEvent(clickEvent));
             }
 
             this.size++;
