@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.KiloEssentials;
 
 public class ParticleFrame<P extends ParticleEffect> {
     private P effect;
@@ -91,8 +92,24 @@ public class ParticleFrame<P extends ParticleEffect> {
     }
 
     @Nullable
-    public ParticleS2CPacket toPacket(Vec3d vec3d, float rotation) {
+    public ParticleS2CPacket toPacket(Vec3d vec3d, double rotation) {
         Vec3d vec = relativePosition.getRelativeVector(vec3d);
+
+        if (getRelative()) {
+            if (rotation < 0) {
+                rotation += 360;
+            }
+
+            if (rotation > 360) {
+                rotation -= 360;
+            }
+
+            rotation = Math.toRadians(rotation);
+
+            double x = relativePosition.getX() * Math.cos(rotation) - relativePosition.getZ() * Math.sin(rotation);
+            double z = relativePosition.getX() * Math.sin(rotation) + relativePosition.getZ() * Math.cos(rotation);
+            vec = new Vec3d(x + vec3d.x, vec.y, z + vec3d.z);
+        }
 
         return new ParticleS2CPacket(
                 this.effect,
