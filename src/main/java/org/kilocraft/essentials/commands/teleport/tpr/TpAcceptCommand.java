@@ -11,8 +11,8 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.player.UserUtils;
 
-public class TpacceptCommand extends EssentialCommand {
-    public TpacceptCommand() {
+public class TpAcceptCommand extends EssentialCommand {
+    public TpAcceptCommand() {
         super("tpaccept", TpaCommand.PERMISSION);
     }
 

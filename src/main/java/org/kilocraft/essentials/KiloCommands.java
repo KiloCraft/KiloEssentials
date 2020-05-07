@@ -27,7 +27,6 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
@@ -44,17 +43,17 @@ import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
 import org.kilocraft.essentials.commands.moderation.BanCommand;
-import org.kilocraft.essentials.commands.moderation.ClearchatCommand;
+import org.kilocraft.essentials.commands.moderation.ClearChatCommand;
 import org.kilocraft.essentials.commands.moderation.IpInfoCommand;
 import org.kilocraft.essentials.commands.moderation.KickCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.*;
 import org.kilocraft.essentials.commands.teleport.tpr.*;
-import org.kilocraft.essentials.commands.user.LastseenCommand;
+import org.kilocraft.essentials.commands.user.LastSeenCommand;
 import org.kilocraft.essentials.commands.user.SilenceCommand;
-import org.kilocraft.essentials.commands.user.WhoisCommand;
-import org.kilocraft.essentials.commands.user.WhowasCommand;
+import org.kilocraft.essentials.commands.user.WhoIsCommand;
+import org.kilocraft.essentials.commands.user.WhoWasCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
@@ -107,14 +106,14 @@ public class KiloCommands {
     private void register() {
         final List<IEssentialCommand> commandsList = new ArrayList<IEssentialCommand>() {{
             this.add(new DebugEssentialsCommand());
-            this.add(new SmiteCommand());
+            this.add(new LightningCommand());
             this.add(new NicknameCommand());
-            this.add(new SayasCommand());
+            this.add(new SayAsCommand());
             this.add(new SudoCommand());
             this.add(new ItemCommand());
             this.add(new WorkbenchCommand());
             this.add(new AnvilCommand());
-            this.add(new SigneditCommand());
+            this.add(new SignEditCommand());
             this.add(new HatCommand());
             this.add(new VersionCommand());
             this.add(new ReloadCommand());
@@ -127,44 +126,44 @@ public class KiloCommands {
             this.add(new FeedCommand());
             this.add(new TimeCommand());
             this.add(new FlyCommand());
-            this.add(new InvulnerablemodeCommand());
+            this.add(new InvulnerableCommand());
             this.add(new FormatPreviewCommand());
             this.add(new PingCommand());
-            this.add(new ClearchatCommand());
+            this.add(new ClearChatCommand());
             this.add(new EnderchestCommand());
             this.add(new StatusCommand());
-            this.add(new StaffmsgCommand());
-            this.add(new BuildermsgCommand());
-            this.add(new SocialspyCommand());
-            this.add(new CommandspyCommand());
+            this.add(new StaffMessageCommand());
+            this.add(new BuilderMsgCommand());
+            this.add(new SocialSpyCommand());
+            this.add(new CommandSpyCommand());
             this.add(new BackCommand());
             //this.add(new ShootCommand());
             this.add(new ModsCommand());
             this.add(new TpsCommand());
             this.add(new LocateCommand());
             this.add(new MessageCommand());
-            this.add(new DonotdisturbCommand());
+            this.add(new DoNotDisturbCommand());
             this.add(new IgnoreCommand());
-            this.add(new IgnorelistCommand());
+            this.add(new IgnoreListCommand());
             this.add(new ReplyCommand());
-            this.add(new RelnameCommand());
+            this.add(new RealNameCommand());
             this.add(new IpInfoCommand());
             this.add(new HelpCommand());
-            this.add(new WhoisCommand());
-            this.add(new WhowasCommand());
+            this.add(new WhoIsCommand());
+            this.add(new WhoWasCommand());
             this.add(new PlaytimeCommand());
             this.add(new MotdCommand());
             this.add(new HelpMeCommand());
-            this.add(new PlaytimetopCommand());
+            this.add(new PlaytimeTopCommand());
             this.add(new BanCommand());
             this.add(new KickCommand());
             this.add(new SilenceCommand());
             this.add(new TpaCommand());
-            this.add(new TpahereCommand());
-            this.add(new TpacceptCommand());
-            this.add(new TpdenyCommand());
-            this.add(new TpcancelCommand());
-            this.add(new LastseenCommand());
+            this.add(new TpaHereCommand());
+            this.add(new TpAcceptCommand());
+            this.add(new TpDenyCommand());
+            this.add(new TpCancelCommand());
+            this.add(new LastSeenCommand());
             this.add(new InventoryCommand());
             this.add(new CalculateCommand());
             this.add(new StaffCommand());
@@ -289,23 +288,15 @@ public class KiloCommands {
                         .formatted(Formatting.GRAY)
                         .append("\n")
                         .append(new LiteralText("GitHub: ").formatted(Formatting.GRAY))
-                        .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/").styled(style -> {
-                            style.withFormatting(Formatting.GOLD);
-                            style.withClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"));
-                            style.setHoverEvent(Texter.Events.onHover("&eClick to open"));
-                            return style;
-                        })))
-                , false);
+                        .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/")
+                                .styled(style -> style.withFormatting(Formatting.GOLD).withClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/")).setHoverEvent(Texter.Events.onHover("&eClick to open"))))), false);
 
         return 1;
     }
 
     public static LiteralText getPermissionError(final String hoverText) {
         final LiteralText literalText = LangText.get(true, "command.exception.permission");
-        literalText.styled(style -> {
-           style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW)));
-           return style;
-        });
+        literalText.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW))));
         return literalText;
     }
 
@@ -455,11 +446,8 @@ public class KiloCommands {
 
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         final int cursor = Math.min(e.getInput().length(), e.getCursor());
-                        final MutableText text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> {
-                            style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
-                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(command).formatted(Formatting.YELLOW)));
-                            return style;
-                        });
+                        final MutableText text = new LiteralText("").formatted(Formatting.GRAY)
+                                .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(command).formatted(Formatting.YELLOW))));
 
                         if (cursor > 10) text.append("...");
 

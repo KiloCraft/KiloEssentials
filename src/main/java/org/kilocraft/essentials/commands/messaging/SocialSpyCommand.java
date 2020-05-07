@@ -12,24 +12,24 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 
-public class CommandspyCommand extends EssentialCommand {
-    public CommandspyCommand() {
-        super("commandspy", src -> !CommandUtils.isConsole(src) && KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_COMMAND));
+public class SocialSpyCommand extends EssentialCommand {
+    public SocialSpyCommand() {
+        super("socialspy", src -> !CommandUtils.isConsole(src) && KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_CHAT));
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         argumentBuilder.executes(this::execute);
     }
-
+    
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        if (ServerChat.isCommandSpy(ctx.getSource().getPlayer())) {
-            ServerChat.removeCommandSpy(ctx.getSource().getPlayer());
-            ctx.getSource().sendFeedback(new LiteralText("CommandSpy is now inactive").formatted(Formatting.YELLOW), false);
+        if (ServerChat.isSocialSpy(ctx.getSource().getPlayer())) {
+            ServerChat.removeSocialSpy(ctx.getSource().getPlayer());
+            ctx.getSource().sendFeedback(new LiteralText("SocialSpy is now inactive").formatted(Formatting.YELLOW), false);
             return SUCCESS;
         }
 
-        ServerChat.addCommandSpy(ctx.getSource().getPlayer());
-        ctx.getSource().sendFeedback(new LiteralText("CommandSpy is now active").formatted(Formatting.YELLOW), false);
+        ServerChat.addSocialSpy(ctx.getSource().getPlayer());
+        ctx.getSource().sendFeedback(new LiteralText("SocialSpy is now active").formatted(Formatting.YELLOW), false);
         return SUCCESS;
     }
 }

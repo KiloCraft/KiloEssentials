@@ -22,7 +22,7 @@ public class ItemCommand extends EssentialCommand {
         ItemNameCommand.registerChild(argumentBuilder, dispatcher);
         ItemLoreCommand.registerChild(argumentBuilder, dispatcher);
         ItemEnchantCommand.registerChild(argumentBuilder, dispatcher);
-        PowertoolsCommand.registerChild(argumentBuilder, dispatcher);
+        PowerToolsCommand.registerChild(argumentBuilder, dispatcher);
         //ItemMendCommand.registerChild(argumentBuilder, dispatcher);
     }
 }
