@@ -24,8 +24,8 @@ import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
-public class WhoIsCommand extends EssentialCommand {
-    public WhoIsCommand() {
+public class WhoisCommand extends EssentialCommand {
+    public WhoisCommand() {
         super("whois", CommandPermission.WHOIS_SELF, new String[]{"info"});
     }
 
@@ -146,7 +146,7 @@ public class WhoIsCommand extends EssentialCommand {
             text.append("Saved Location", getButtonForVec(lastLoc, savedVec));
         }
 
-        src.sendMessage(text.get());
+        src.sendMessage(text.build());
         return SUCCESS;
     }
 
