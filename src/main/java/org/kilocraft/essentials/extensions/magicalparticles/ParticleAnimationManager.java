@@ -8,6 +8,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.particle.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -25,10 +27,7 @@ import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleFrame;
 import org.kilocraft.essentials.api.world.RelativePosition;
-import org.kilocraft.essentials.extensions.magicalparticles.config.BlockStateParticleEffectConfigSection;
-import org.kilocraft.essentials.extensions.magicalparticles.config.DustParticleEffectConfigSection;
-import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleFrameConfigSection;
-import org.kilocraft.essentials.extensions.magicalparticles.config.ParticleTypesConfig;
+import org.kilocraft.essentials.extensions.magicalparticles.config.*;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 
@@ -97,6 +96,9 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
                     continue;
                 }
 
+                boolean relative = frame.pos.contains("^");
+                frame.pos = frame.pos.replace("^", "");
+
                 String[] oI = frame.offset.split(" ");
                 String[] pI = frame.pos.split(" ");
                 double offsetX = Double.parseDouble(oI[0]);
@@ -145,13 +147,162 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
                 }
 
                 if (particleEffect != null) {
-                    animation.append(new ParticleFrame<>(
-                            particleEffect,
-                            frame.longDistance,
-                            new RelativePosition(x, y, z),
-                            offsetX, offsetY, offsetZ,
-                            frame.speed, frame.count)
-                    );
+                    if (relative) {
+                        // Shape
+                        ShapeConfigSection section = frame.getShapeSection().get();
+                        float spacing = section.spacing;
+
+                        if (!section.shape.equals("square") && !section.shape.equals("circle") && !section.shape.equals("line") && !section.shape.equals("bezier")) {
+                            KiloEssentials.getLogger().error("Error when initializing a ParticleFrame! Id: " + string +
+                                    " Frame: " + i + "Shape " + section.shape + " Invalid shape! Must be: square, circle, line or bezier");
+                            return;
+                        }
+
+                        if (section.size < 0.1f) {
+                            KiloEssentials.getLogger().error("Error when initializing a ParticleFrame! Id: " + string +
+                                    " Frame: " + i + "Size " + section.size + " Invalid size! Must be more than 0.1");
+                            return;
+                        }
+
+                        if (section.spacing < 0.01f) {
+                            KiloEssentials.getLogger().error("Error when initializing a ParticleFrame! Id: " + string +
+                                    " Frame: " + i + "Spacing " + section.spacing + " Invalid spacing! Must be more than 0.01");
+                            return;
+                        }
+
+                        if (section.shape.equals("square")) {
+                            // Square
+                            for (float t = -section.size / 2; t < section.size / 2; t += spacing) {
+                                // Left and right line
+                                if (t == -section.size / 2 || t + spacing > section.size / 2) {
+                                    for (float u = -section.size / 2; u < section.size / 2; u += spacing) {
+                                        animation.append(new ParticleFrame<>(
+                                                particleEffect,
+                                                frame.longDistance,
+                                                new RelativePosition(x + t, y + u, z),
+                                                offsetX, offsetY, offsetZ,
+                                                frame.speed, frame.count,true)
+                                        );
+                                    }
+                                } else {
+                                    // Above
+                                    animation.append(new ParticleFrame<>(
+                                            particleEffect,
+                                            frame.longDistance,
+                                            new RelativePosition(x + t, y + section.size / 2, z),
+                                            offsetX, offsetY, offsetZ,
+                                            frame.speed, frame.count,true)
+                                    );
+
+                                    // Below
+                                    animation.append(new ParticleFrame<>(
+                                            particleEffect,
+                                            frame.longDistance,
+                                            new RelativePosition(x + t, y - section.size / 2, z),
+                                            offsetX, offsetY, offsetZ,
+                                            frame.speed, frame.count,true)
+                                    );
+                                }
+                            }
+                        } else if (section.shape.equals("circle")) {
+                            double circumference = Math.PI * Math.pow(section.size / 2, 2);
+                            double angle = 360 / (circumference / spacing);
+
+                            // Circle
+                            for (float t = 0; t < 360; t += angle) {
+                                double newX = section.size / 2*Math.cos(t) - (section.size / 2)*Math.sin(t);
+                                double newY = section.size / 2*Math.sin(t) + (section.size / 2)*Math.cos(t);
+
+                                animation.append(new ParticleFrame<>(
+                                        particleEffect,
+                                        frame.longDistance,
+                                        new RelativePosition(x + newX, y + newY, z),
+                                        offsetX, offsetY, offsetZ,
+                                        frame.speed, frame.count, true)
+                                );
+                            }
+                        } else if (section.shape.equals("line")) {
+                            // Line
+                            String[] startPosition = section.getLineConfigSection().get().startPosition.split(" ");
+                            float startPositionX = Float.parseFloat(startPosition[0]);
+                            float startPositionY = Float.parseFloat(startPosition[1]);
+                            float startPositionZ = Float.parseFloat(startPosition[2]);
+
+                            String[] endPosition = section.getLineConfigSection().get().endPosition.split(" ");
+                            float endPositionX = Float.parseFloat(endPosition[0]);
+                            float endPositionY = Float.parseFloat(endPosition[1]);
+                            float endPositionZ = Float.parseFloat(endPosition[2]);
+
+                            double distance = Math.abs(startPositionX - endPositionX) + Math.abs(startPositionY - endPositionY) + Math.abs(startPositionZ - endPositionZ);
+                            double step = 1 / distance;
+
+                            for (float t = 0; t <= 1; t += step) {
+                                double newX = startPositionX + (endPositionX - startPositionX) * t;
+                                double newY = startPositionY + (endPositionY - startPositionY) * t;
+                                double newZ = startPositionZ + (endPositionZ - startPositionZ) * t;
+
+                                animation.append(new ParticleFrame<>(
+                                        particleEffect,
+                                        frame.longDistance,
+                                        new RelativePosition(x + newX, y + newY, z + newZ),
+                                        offsetX, offsetY, offsetZ,
+                                        frame.speed, frame.count, true)
+                                );
+                            }
+                        } else if (section.shape.equals("bezier")) {
+                            // Bezier curve
+                            String[] points = section.getBezierConfigSection().get().points.split(" ");
+                            // Relative to points
+                            String[] controlPoints = section.getBezierConfigSection().get().controlPoints.split(" ");
+                            int amountOfPoints = points.length / 3;
+                            int usedControlPoints = 0;
+
+                            // One line at the time
+                            for (int j = 0; j < amountOfPoints - 1; j++) {
+                                float[] startPoint = new float[]{Float.parseFloat(points[j * 3]), Float.parseFloat(points[j * 3 + 1]), Float.parseFloat(points[j * 3 + 2])};
+                                float[] startTangent = new float[]{Float.parseFloat(controlPoints[usedControlPoints * 3]), Float.parseFloat(controlPoints[usedControlPoints * 3 + 1]), Float.parseFloat(controlPoints[usedControlPoints * 3 + 2])};
+                                float[] endTangent = new float[]{Float.parseFloat(controlPoints[(usedControlPoints + 1) * 3]), Float.parseFloat(controlPoints[(usedControlPoints + 1) * 3 + 1]), Float.parseFloat(controlPoints[(usedControlPoints + 1) * 3 + 2])};
+                                float[] endPoint = new float[]{Float.parseFloat(points[(j + 1) * 3]), Float.parseFloat(points[(j + 1) * 3 + 1]), Float.parseFloat(points[(j + 1) * 3 + 2])};
+
+                                // Tangents are relative
+                                startTangent[0] += startPoint[0];
+                                startTangent[1] += startPoint[1];
+                                startTangent[2] += startPoint[2];
+
+                                endTangent[0] += endPoint[0];
+                                endTangent[1] += endPoint[1];
+                                endTangent[2] += endPoint[2];
+
+                                float distance = startTangent[0] + Math.abs(endTangent[0] - startTangent[0]) + Math.abs(endTangent[0]); // X
+                                distance += startTangent[1] + Math.abs(endTangent[1] - startTangent[1]) + Math.abs(endTangent[1]); // Y
+                                distance += startTangent[2] + Math.abs(endTangent[2] - startTangent[2]) + Math.abs(endTangent[2]); // Z
+
+                                float step = 1f / distance;
+
+                                for (float t = 0; t <= 1; t+= step) {
+                                    double[] newPos = GetBezierPoint(startPoint, endPoint, startTangent, endTangent, t);
+
+                                    animation.append(new ParticleFrame<>(
+                                            particleEffect,
+                                            frame.longDistance,
+                                            new RelativePosition(x + newPos[0], y + newPos[1], z + newPos[2]),
+                                            offsetX, offsetY, offsetZ,
+                                            frame.speed, frame.count, true)
+                                    );
+                                }
+
+                                usedControlPoints += 2;
+                            }
+                        }
+                    } else {
+                        animation.append(new ParticleFrame<>(
+                                particleEffect,
+                                frame.longDistance,
+                                new RelativePosition(x, y, z),
+                                offsetX, offsetY, offsetZ,
+                                frame.speed, frame.count, false)
+                        );
+                    }
                 } else {
                     KiloEssentials.getLogger().error("Error when initializing a ParticleFrame! Id: " + string +
                             " Frame: " + i);
@@ -160,6 +311,16 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
 
             map.put(animation.getId(), animation);
         });
+    }
+
+    public static double[] GetBezierPoint(float[] startPoint, float[] endPoint, float[] startTangent, float[] endTangent, float t)
+    {
+        double[] result = new double[3];
+
+        result[0] = Math.pow(1 - t, 3) * startPoint[0] + 3 * t * Math.pow(1 - t, 2) * startTangent[0] + 3 * Math.pow(t, 2) * (1 - t) * endTangent[0] + Math.pow(t, 3) * endPoint[0];
+        result[1] = Math.pow(1 - t, 3) * startPoint[1] + 3 * t * Math.pow(1 - t, 2) * startTangent[1] + 3 * Math.pow(t, 2) * (1 - t) * endTangent[1] + Math.pow(t, 3) * endPoint[1];
+        result[2] = Math.pow(1 - t, 3) * startPoint[2] + 3 * t * Math.pow(1 - t, 2) * startTangent[2] + 3 * Math.pow(t, 2) * (1 - t) * endTangent[2] + Math.pow(t, 3) * endPoint[2];
+        return result;
     }
 
     public static void addPlayer(UUID player, Identifier identifier) {
@@ -226,7 +387,7 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
             if (frame == null)
                 continue;
 
-            Packet<?> packet = frame.toPacket(player.getPos());
+            Packet<?> packet = frame.toPacket(player.getPos(), player.bodyYaw);
             if (packet != null)
                 player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
         }

@@ -16,12 +16,13 @@ public class ParticleFrame<P extends ParticleEffect> {
     private double speed;
     private int count;
     private Type type;
+    private boolean relative;
 
     public ParticleFrame(P effect,
                          boolean longDistance,
                          RelativePosition relPos,
                          double offsetX, double offsetY, double offsetZ,
-                         double speed, int count) {
+                         double speed, int count, boolean relative) {
 
         this.effect = effect;
         this.longDistance = longDistance;
@@ -32,6 +33,7 @@ public class ParticleFrame<P extends ParticleEffect> {
         this.speed = speed;
         this.count = count;
         this.type = Type.NORMAL;
+        this.relative = relative;
     }
 
     @Nullable
@@ -84,8 +86,12 @@ public class ParticleFrame<P extends ParticleEffect> {
         return effect;
     }
 
+    public boolean getRelative () {
+        return relative;
+    }
+
     @Nullable
-    public ParticleS2CPacket toPacket(Vec3d vec3d) {
+    public ParticleS2CPacket toPacket(Vec3d vec3d, float rotation) {
         Vec3d vec = relativePosition.getRelativeVector(vec3d);
 
         return new ParticleS2CPacket(

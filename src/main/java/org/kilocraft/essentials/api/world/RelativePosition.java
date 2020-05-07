@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.world;
 
+import net.minecraft.server.command.CommandSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
