@@ -52,7 +52,7 @@ import org.kilocraft.essentials.commands.teleport.*;
 import org.kilocraft.essentials.commands.teleport.tpr.*;
 import org.kilocraft.essentials.commands.user.LastSeenCommand;
 import org.kilocraft.essentials.commands.user.SilenceCommand;
-import org.kilocraft.essentials.commands.user.WhoisCommand;
+import org.kilocraft.essentials.commands.user.WhoIsCommand;
 import org.kilocraft.essentials.commands.user.WhoWasCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -149,7 +149,7 @@ public class KiloCommands {
             this.add(new RealNameCommand());
             this.add(new IpInfoCommand());
             this.add(new HelpCommand());
-            this.add(new WhoisCommand());
+            this.add(new WhoIsCommand());
             this.add(new WhoWasCommand());
             this.add(new PlaytimeCommand());
             this.add(new MotdCommand());
