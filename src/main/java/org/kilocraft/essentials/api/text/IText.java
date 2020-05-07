@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.text;
 
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 import java.util.List;
@@ -9,9 +10,9 @@ public interface IText {
 
     List<String> getLines();
 
-    List<Text> getTextLines();
+    List<MutableText> getTextLines();
 
     IText append(String... strings);
 
-    IText append(Text... texts);
+    IText append(MutableText... texts);
 }

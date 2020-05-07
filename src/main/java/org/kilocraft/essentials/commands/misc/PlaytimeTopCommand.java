@@ -26,12 +26,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PlaytimetopCommand extends EssentialCommand {
+public class PlaytimeTopCommand extends EssentialCommand {
     private static final String LINE_FORMAT = ModConstants.translation("command.playtimetop.format");
     private static final String CACHE_ID = "command.playtimetop";
     private static final String TICKS_CACHE_ID = "command.playtimetop.ticks";
 
-    public PlaytimetopCommand() {
+    public PlaytimeTopCommand() {
         super("playtimetop", CommandPermission.PLAYTIMETOP, new String[]{"pttop", "topplaytimes"});
     }
 

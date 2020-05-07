@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.commands.misc;
 
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -10,23 +11,25 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.fabricmc.loader.api.metadata.Person;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.text.Texter;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 
 public class ModsCommand extends EssentialCommand {
     public ModsCommand() {
-        super("mods", new String[]{"mod", "fabric"});
+        super("mods", new String[]{"fabric"});
     }
 
     @Override
@@ -41,75 +44,76 @@ public class ModsCommand extends EssentialCommand {
 
     private int sendList(CommandContext<ServerCommandSource> ctx) {
         int allMods = FabricLoader.getInstance().getAllMods().size();
-        MutableText text = new LiteralText("Mods").formatted(Formatting.GOLD)
-                .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
-                .append(new LiteralText(String.valueOf(allMods)).formatted(Formatting.LIGHT_PURPLE))
-                .append(new LiteralText(" ]: ").formatted(Formatting.DARK_GRAY));
-
-        int i = 0;
-        boolean nextColor = false;
+        Texter.ListStyle text = Texter.ListStyle.of("Mods", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY);
+        text.setSize(allMods);
 
         for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
             ModMetadata meta = mod.getMetadata();
-            MutableText thisMod = new LiteralText("");
 
-            i++;
-            Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
-
-            thisMod.append(new LiteralText(meta.getName()).styled((style) -> {
-                return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mods " + meta.getId())).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new LiteralText("[i] ").formatted(Formatting.YELLOW)
-                                .append(new LiteralText("Click for more info!").formatted(Formatting.GREEN)))).withFormatting(thisFormat);
-            }));
-
-            if (allMods != i)
-                thisMod.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
-
-            nextColor = !nextColor;
-            text.append(thisMod);
+            text.append(
+                    Texter.Events.onHover(tl("general.click_info")),
+                    Texter.Events.onClickRun("/mods " + meta.getId()),
+                    meta.getName()
+            );
         }
 
-        KiloChat.sendMessageTo(ctx.getSource(), text);
+        KiloChat.sendMessageTo(ctx.getSource(), text.build());
         return SUCCESS;
     }
 
     private int sendInfo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String inputId = getString(ctx, "modid");
 
-        if (!FabricLoader.getInstance().getModContainer(inputId).isPresent())
+        if (!FabricLoader.getInstance().getModContainer(inputId).isPresent()) {
             throw MOD_NOT_PRESENT.create();
+        }
 
         ModMetadata meta = FabricLoader.getInstance().getModContainer(inputId).get().getMetadata();
-        MutableText text = new LiteralText("").append(new LiteralText(meta.getName()).formatted(Formatting.YELLOW)).append("\n")
-                .append(new LiteralText(meta.getId()).append("@").append(String.valueOf(meta.getVersion())).formatted(Formatting.GRAY))
-                .append("\n").formatted(Formatting.RESET)
-                .append(new LiteralText("Author(s): ").append(getModAuthorList(meta)).formatted(Formatting.RESET));
 
-        if (!meta.getDescription().isEmpty())
-            text.append("\n").append(new LiteralText("Description: ").append(new LiteralText(meta.getDescription())));
+        Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(meta.getName());
+        text.append("Version", meta.getVersion().getFriendlyString());
+        text.append(authorsToTextList(meta), "Authors");
+        text.append("Description", "");
 
-        KiloChat.sendMessageTo(ctx.getSource(), text);
+        KiloChat.sendMessageTo(ctx.getSource(), text.build());
         return SUCCESS;
+    }
+
+    private List<MutableText> authorsToTextList(ModMetadata meta) {
+        List<MutableText> list = Lists.newArrayList();
+        for (Person author : meta.getAuthors()) {
+            MutableText text = Texter.toText(author.getName());
+            text.styled((style) -> {
+                style.setHoverEvent(Texter.Events.onHover(tl("general.click_info")));
+                style.withClickEvent(Texter.Events.onClickRun("/mods " + meta.getId() + " " + author.getName()));
+                return style;
+            });
+
+            list.add(text);
+        }
+
+        return list;
     }
 
     private Text getModAuthorList(ModMetadata meta) {
         MutableText text = new LiteralText("");
-        AtomicInteger i = new AtomicInteger();
+        int i = 0;
         AtomicBoolean nextColor = new AtomicBoolean(false);
         int authors = meta.getAuthors().size();
 
-        meta.getAuthors().forEach((person) -> {
+        for (Person person : meta.getAuthors()) {
             MutableText thisPerson = new LiteralText("");
-            i.getAndIncrement();
+            i++;
             Formatting thisFormat = nextColor.get() ? Formatting.WHITE : Formatting.GRAY;
 
             thisPerson.append(new LiteralText(person.getName()).formatted(thisFormat));
-            if (authors != i.get())
+            if (authors != i) {
                 thisPerson.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
+            }
 
             nextColor.set(!nextColor.get());
             text.append(thisPerson);
-        });
+        }
 
         return text;
     }
@@ -119,5 +123,5 @@ public class ModsCommand extends EssentialCommand {
                 .map(mod -> mod.getMetadata().getId()), builder);
     }
 
-    private SimpleCommandExceptionType MOD_NOT_PRESENT = new SimpleCommandExceptionType(new LiteralText("Can't find a mod with that name/id!"));
+    private final SimpleCommandExceptionType MOD_NOT_PRESENT = new SimpleCommandExceptionType(new LiteralText("Can't find a mod with that name/id!"));
 }

@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.FeatureType;
 import org.kilocraft.essentials.api.feature.UserProvidedFeature;
+import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -22,11 +23,14 @@ import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.chat.UserMessageReceptionist;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.ServerUserSettings;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
+import org.kilocraft.essentials.util.nbt.NBTUtils;
 import org.kilocraft.essentials.util.player.UserUtils;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -55,13 +59,12 @@ public class ServerUser implements User {
     String cachedName = "";
     private ServerUserSettings settings;
     private UserHomeHandler homeHandler;
-    private Vec3dLocation location;
+    Vec3dLocation location;
     private Vec3dLocation lastLocation;
-    private UUID lastPrivateMessageGetterUUID;
-    private String lastPrivateMessageText = "";
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
     public int messageCooldown;
+    private MessageReceptionist lastDmReceptionist;
     boolean isStaff = false;
     String lastSocketAddress;
     int ticksPlayed = 0;
@@ -78,7 +81,7 @@ public class ServerUser implements User {
         try {
             manager.getHandler().handleUser(this);
         } catch (IOException e) {
-            KiloEssentials.getLogger().error("Failed to Load User Data [" + uuid.toString() + "]", e);
+            KiloEssentials.getLogger().fatal("Failed to Load User Data [" + uuid.toString() + "]", e);
         }
 
     }
@@ -95,21 +98,18 @@ public class ServerUser implements User {
         }
 
         if (this.lastLocation != null) {
-            cacheTag.put("lastLoc", this.lastLocation.toTag());
-        }
-
-        // Private messaging stuff
-        if (this.getLastPrivateMessageSender() != null) {
-            CompoundTag lastMessageTag = new CompoundTag();
-            lastMessageTag.putString("destUUID", this.getLastPrivateMessageSender().toString());
-            if (this.getLastPrivateMessage() != null) {
-                lastMessageTag.putString("text", this.getLastPrivateMessage());
-            }
-            cacheTag.put("lastMessage", lastMessageTag);
+            cacheTag.put("cLoc", this.lastLocation.toTag());
         }
 
         if (this.lastSocketAddress != null) {
-            cacheTag.putString("lIP", this.lastSocketAddress);
+            cacheTag.putString("ip", this.lastSocketAddress);
+        }
+
+        if (this.lastDmReceptionist != null) {
+            CompoundTag lastDmTag = new CompoundTag();
+            lastDmTag.putString("name", this.lastDmReceptionist.getName());
+            NBTUtils.putUUID(lastDmTag, "id", this.lastDmReceptionist.getId());
+            cacheTag.put("dmRec", lastDmTag);
         }
 
         metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
@@ -126,7 +126,7 @@ public class ServerUser implements User {
             metaTag.putBoolean("isStaff", true);
         }
 
-        if (UserHomeHandler.isEnabled()) {
+        if (UserHomeHandler.isEnabled() || this.homeHandler != null) {
             CompoundTag homeTag = new CompoundTag();
             this.homeHandler.serialize(homeTag);
             mainTag.put("homes", homeTag);
@@ -145,7 +145,7 @@ public class ServerUser implements User {
 
         if (cacheTag.contains("lastLoc")) {
             this.lastLocation = Vec3dLocation.dummy();
-            this.lastLocation.fromTag(cacheTag.getCompound("lastLoc"));
+            this.lastLocation.fromTag(cacheTag.getCompound("cIp"));
         }
 
         if (compoundTag.contains("loc")) {
@@ -154,19 +154,13 @@ public class ServerUser implements User {
         	this.location.shortDecimals();
         }
 
-        if (cacheTag.contains("lastMessage", NBTTypes.COMPOUND)) {
-            CompoundTag lastMessageTag = cacheTag.getCompound("lastMessage");
-            if (lastMessageTag.contains("destUUID", NBTTypes.STRING)) {
-                this.lastPrivateMessageGetterUUID = UUID.fromString(lastMessageTag.getString("destUUID"));
-            }
-
-            if (lastMessageTag.contains("text", NBTTypes.STRING)) {
-                this.lastPrivateMessageText = lastMessageTag.getString("text");
-            }
+        if (cacheTag.contains("cIp")) {
+            this.lastSocketAddress = cacheTag.getString("ip");
         }
 
-        if (cacheTag.contains("lIP")) {
-            this.lastSocketAddress = cacheTag.getString("lIP");
+        if (cacheTag.contains("dmRec")) {
+            CompoundTag lastDmTag = cacheTag.getCompound("dmRec");
+            this.lastDmReceptionist = new UserMessageReceptionist(lastDmTag.getString("name"), NBTUtils.getUUID(lastDmTag, "id"));
         }
 
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
@@ -236,7 +230,7 @@ public class ServerUser implements User {
     }
 
     public String getDisplayName() {
-        return this.getSetting(Settings.NICK).orElseGet(() -> this.name);
+        return this.getNickname().orElseGet(() -> this.name);
     }
 
     @Override
@@ -246,12 +240,20 @@ public class ServerUser implements User {
 
     @Override
     public Text getRankedDisplayName() {
-        return UserUtils.getDisplayNameWithMeta(this, true);
+        if (this.isOnline()) {
+            return UserUtils.getDisplayNameWithMeta((OnlineUser) this, true);
+        }
+
+        return Texter.toText(this.getDisplayName());
     }
 
     @Override
     public Text getRankedName() {
-        return UserUtils.getDisplayNameWithMeta(this, false);
+        if (this.isOnline()) {
+            return UserUtils.getDisplayNameWithMeta((OnlineUser) this, false);
+        }
+
+        return Texter.toText(this.name);
     }
 
     @Override
@@ -326,16 +328,6 @@ public class ServerUser implements User {
     }
 
     @Override
-    public UUID getLastPrivateMessageSender() {
-        return this.lastPrivateMessageGetterUUID;
-    }
-
-    @Override
-    public String getLastPrivateMessage() {
-        return this.lastPrivateMessageText;
-    }
-
-    @Override
     public boolean hasJoinedBefore() {
         return this.hasJoinedBefore;
     }
@@ -348,16 +340,6 @@ public class ServerUser implements User {
     @Override
     public @Nullable Date getLastOnline() {
         return this.lastOnline;
-    }
-
-    @Override
-    public void setLastMessageSender(UUID uuid) {
-        this.lastPrivateMessageGetterUUID = uuid;
-    }
-
-    @Override
-    public void setLastPrivateMessage(String message) {
-        this.lastPrivateMessageText = message;
     }
 
     @Override
@@ -390,7 +372,7 @@ public class ServerUser implements User {
         return this.isStaff;
     }
 
-    @SuppressWarnings({"untested", "Do Not Run If the User is Online"})
+    @SuppressWarnings({"untested"})
     public void clear() {
         if (this.isOnline())
             return;
@@ -401,8 +383,6 @@ public class ServerUser implements User {
         homeHandler = null;
         location = null;
         lastLocation = null;
-        lastPrivateMessageGetterUUID = null;
-        lastPrivateMessageText = null;
         firstJoin = null;
         settings = null;
     }
@@ -415,6 +395,16 @@ public class ServerUser implements User {
     @Override
     public boolean ignored(UUID uuid) {
         return this.getSetting(Settings.IGNORE_LIST).containsValue(uuid);
+    }
+
+    @Override
+    public MessageReceptionist getLastDirectMessageReceptionist() {
+        return this.lastDmReceptionist;
+    }
+
+    @Override
+    public void setLastDirectMessageReceptionist(MessageReceptionist receptionist) {
+        this.lastDmReceptionist = receptionist;
     }
 
     public static void saveLocationOf(ServerPlayerEntity player) {

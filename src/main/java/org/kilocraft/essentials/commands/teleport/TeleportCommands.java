@@ -24,25 +24,24 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.SUCCESS;
 
-@Deprecated
 public class TeleportCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> tptoCommand = dispatcher.register(literal("teleportto")
+        LiteralCommandNode<ServerCommandSource> tpToCommand = dispatcher.register(literal("teleportto")
             .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO))
             .then(argument("target", player()).executes(TeleportCommands::teleportTo))
         );
 
-        LiteralCommandNode<ServerCommandSource> tpposCommand = dispatcher.register(literal("teleportpos")
+        LiteralCommandNode<ServerCommandSource> tpPosCommand = dispatcher.register(literal("teleportpos")
                 .requires(src -> KiloCommands.hasPermission(src , CommandPermission.TELEPORTPOS))
                 .then(argument("pos", vec3()).executes(TeleportCommands::teleportPos))
         );
 
-        LiteralCommandNode<ServerCommandSource> tphereCommand = dispatcher.register(literal("teleporthere")
+        LiteralCommandNode<ServerCommandSource> tpHereCommand = dispatcher.register(literal("teleporthere")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTHERE))
                 .then(argument("target", player()).executes(TeleportCommands::teleportHere))
         );
 
-        LiteralCommandNode<ServerCommandSource> tpinCommand = dispatcher.register(literal("teleportin")
+        LiteralCommandNode<ServerCommandSource> tpInCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN))
                 .then(argument("dimension", dimension()).suggests(ArgumentCompletions::dimensions).then(argument("pos", vec3())
                         .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
@@ -52,10 +51,10 @@ public class TeleportCommands {
                 )
         );
 
-        dispatcher.register(literal("tpto").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO)).redirect(tptoCommand));
-        dispatcher.register(literal("tppos").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTPOS)).redirect(tpposCommand));
-        dispatcher.register(literal("tphere").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTHERE)).redirect(tphereCommand));
-        dispatcher.register(literal("tpin").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN)).redirect(tpinCommand));
+        dispatcher.register(literal("tpto").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO)).redirect(tpToCommand));
+        dispatcher.register(literal("tppos").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTPOS)).redirect(tpPosCommand));
+        dispatcher.register(literal("tphere").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTHERE)).redirect(tpHereCommand));
+        dispatcher.register(literal("tpin").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN)).redirect(tpInCommand));
     }
 
     private static int teleportTo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

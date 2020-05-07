@@ -10,6 +10,6 @@ public interface MinecraftServerAccessor {
     @Accessor("serverThread")
     Thread getServerThread();
 
-    @Accessor
+    @Accessor("LOGGER")
     Logger getLogger();
 }

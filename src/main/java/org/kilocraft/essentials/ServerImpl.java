@@ -133,18 +133,12 @@ public class ServerImpl implements Server {
 
     @Override
     public Logger getLogger() {
-        return ((MinecraftServerAccessor) server).getLogger();
+        return ((MinecraftServerAccessor) this.server).getLogger();
     }
 
     @Override
     public Collection<PlayerEntity> getPlayerList() {
-        Set<PlayerEntity> players = new HashSet<>();
-
-        server.getPlayerManager().getPlayerList().forEach(e ->
-                players.add(e)
-        );
-
-        return players;
+        return new HashSet<>(server.getPlayerManager().getPlayerList());
     }
 
     @Override

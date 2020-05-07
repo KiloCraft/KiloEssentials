@@ -8,6 +8,7 @@ import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
@@ -49,12 +50,19 @@ public class Texter {
     }
 
     public static MutableText appendButton(MutableText text, MutableText hoverText, ClickEvent.Action action, String actionValue) {
-        return text.styled((style) -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText)).withClickEvent(new ClickEvent(action, actionValue)));
+        return text.styled((style) -> {
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
+            style.withClickEvent(new ClickEvent(action, actionValue));
+            return style;
+        });
     }
 
     public static MutableText getButton(String title, String command, MutableText hoverText) {
-        return Texter.toText(title)
-                .styled((style) -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText)).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
+        return Texter.toText(title).styled((style) -> {
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
+            style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+            return style;
+        });
     }
 
     public static MutableText confirmationMessage(String langKey, MutableText button) {
@@ -139,7 +147,7 @@ public class Texter {
         public static ClickEvent onClickRun(String command) {
             return new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
         }
-        
+
         public static ClickEvent onClickOpen(String url) {
             return new ClickEvent(ClickEvent.Action.OPEN_URL, url);
         }
@@ -150,13 +158,6 @@ public class Texter {
 
         public static HoverEvent onHover(MutableText text) {
             return new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
-        }
-    }
-
-    public static class AnimationGallery {
-        public static void loadingBar(ServerPlayerEntity player, int delay) {
-            AnimatedText animatedText = new AnimatedText(0, delay, TimeUnit.SECONDS, player, TitleS2CPacket.Action.ACTIONBAR);
-            animatedText.append(toText(ModConstants.translation("")));
         }
     }
 
@@ -203,12 +204,13 @@ public class Texter {
 
         public ListStyle append(Object obj, @Nullable HoverEvent hoverEvent, @Nullable ClickEvent clickEvent) {
             Formatting formatting = nextColor ? bFormat : aFormat;
-            MutableText MutableText = obj instanceof MutableText ? ((MutableText) obj).formatted(formatting) :
-                    new LiteralText(TextFormat.translate(String.valueOf(obj))).formatted(formatting);
-            if (hoverEvent != null)
-                text.getStyle().setHoverEvent(hoverEvent);
+            MutableText text = obj instanceof MutableText ? ((MutableText) obj).formatted(formatting) :
+                    Texter.toText(String.valueOf(obj)).formatted(formatting);
+            if (hoverEvent != null) {
+                text.styled((style) -> style.setHoverEvent(hoverEvent));
+            }
             if (clickEvent != null) {
-                text.getStyle().withClickEvent(clickEvent);
+                text.styled((style) -> style.withClickEvent(clickEvent));
             }
 
             this.size++;
@@ -227,9 +229,8 @@ public class Texter {
                     .append(new LiteralText(this.title.getString()).formatted(primary))
                     .append(" ")
                     .append(new LiteralText("[").formatted(borders))
-                    .append(new LiteralText(String.valueOf(this.size)).formatted(Formatting.LIGHT_PURPLE))
-                    .append(new LiteralText("]:")).formatted(borders)
-                    .append(" ");
+                    .append(new LiteralText(String.valueOf(this.size)).formatted(this.primary))
+                    .append(new LiteralText("]: ")).formatted(borders);
 
             if (!this.list.isEmpty()) {
                 for (Object o : this.list) {
@@ -290,36 +291,63 @@ public class Texter {
             return this;
         }
 
-        public InfoBlockStyle append(String title, String[] subTitles, Object... objects) {
-            MutableText MutableText = new LiteralText("");
+        public InfoBlockStyle append(List<?> objects, String title) {
+            for (int i = 0; i < objects.size(); i++) {
+                if (objects.get(i) == null) {
+                    text.append(String.valueOf(objects.get(i)));
+                } else if (objects.get(i) instanceof Text) {
+                    MutableText objectToText = (MutableText) objects.get(i);
+                    text.styled((style) -> {
+                        if (objectToText.getStyle().getHoverEvent() != null) {
+                            style.setHoverEvent(objectToText.getStyle().getHoverEvent());
+                        }
 
+                        if (objectToText.getStyle().getClickEvent() != null) {
+                            style.withClickEvent(objectToText.getStyle().getClickEvent());
+                        }
+                        return style;
+                    });
+                } else {
+                    TypeFormat typeFormat = TypeFormat.getByClazz(objects.get(i).getClass());
+                    text.append(Texter.toText(String.valueOf(objects.get(i)))
+                            .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary));
+
+                    if (i != objects.size()) {
+                        text.append(new LiteralText(", ").formatted(borders));
+                    }
+                }
+            }
+
+            return this.append(title, text, false, true);
+        }
+
+        public InfoBlockStyle append(String title, String[] subTitles, Object... objects) {
             for (int i = 0; i < objects.length; i++) {
                 if (objects[i] instanceof Text) {
                     MutableText objectToText = (MutableText) objects[i];
-                        text.styled((style) -> {
-                            if (objectToText.getStyle().getHoverEvent() != null)
-                                return style.setHoverEvent(objectToText.getStyle().getHoverEvent());
+                    text.styled((style) -> {
+                        if (objectToText.getStyle().getHoverEvent() != null) {
+                            style.setHoverEvent(objectToText.getStyle().getHoverEvent());
+                        }
 
-                            if (objectToText.getStyle().getClickEvent() != null) {
-                                return style.withClickEvent(objectToText.getStyle().getClickEvent());
-                            }
-                            return style;
-                        });
-                }
-                else if (objects[i] instanceof List<?>) {
+                        if (objectToText.getStyle().getClickEvent() != null) {
+                            style.withClickEvent(objectToText.getStyle().getClickEvent());
+                        }
+                        return style;
+                    });
+                } else if (objects[i] instanceof List<?>) {
                     List<?> list = (List<?>) objects[i];
-                    int anInt = 0;
                     text.append(new LiteralText("[").formatted(borders))
                             .append(new LiteralText(valueObjectSeparator.getString()).formatted(borders));
 
                     for (int i1 = 0; i1 < list.size() && i1 < 6; i1++) {
-                        text.append(list.get(i1).toString()).formatted(secondary);
+                        text.append(String.valueOf(list.get(i1))).formatted(secondary);
 
-                        if (i != 6 && i != list.size())
+                        if (i != 6 && i != list.size()) {
                             text.append(", ").formatted(borders);
-                        else
+                        } else {
                             text.append("...").formatted(borders);
-                        anInt++;
+                        }
                     }
 
                     text.append(new LiteralText("]").formatted(borders));
@@ -333,8 +361,9 @@ public class Texter {
                                     .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary)
                             );
 
-                    if (i != subTitles.length - 1)
+                    if (i != subTitles.length - 1) {
                         text.append(", ").formatted(borders);
+                    }
                 }
             }
 
@@ -366,13 +395,13 @@ public class Texter {
             return this;
         }
 
+        public InfoBlockStyle append(String title, Object obj) {
+            return this.append(true, true, title, obj);
+        }
+
         public InfoBlockStyle append(MutableText text) {
             this.text.append(text);
             return this;
-        }
-
-        public InfoBlockStyle append(String title, Object obj) {
-            return this.append(true, true, title, obj);
         }
 
         public InfoBlockStyle append(String title, MutableText text) {
@@ -401,23 +430,23 @@ public class Texter {
             return this;
         }
 
-        public MutableText get() {
+        public MutableText build() {
             return new LiteralText("").append(header).append(this.text).append(new LiteralText(SEPARATOR).formatted(borders));
         }
     }
 
     public enum TypeFormat {
-        STRING("string", String.class, Formatting.YELLOW),
-        INTEGER("integer", Integer.class, Formatting.GOLD),
-        DOUBLE("double", Double.class, Formatting.GOLD),
-        FLOAT("float", Float.class, Formatting.GOLD),
-        BYTE("byte", Byte.class, Formatting.RED),
-        CHAR("char", Character.class, Formatting.AQUA),
-        LONG("long", Long.class, Formatting.GOLD),
-        BOOLEAN("boolean", Boolean.class, Formatting.GREEN),
-        SHORT("short", Short.class, Formatting.GOLD),
-        LIST("list", List.class, Formatting.WHITE),
-        MAP("map", Map.class, Formatting.WHITE);
+        STRING("String", String.class, Formatting.YELLOW),
+        INTEGER("Integer", Integer.class, Formatting.GOLD),
+        DOUBLE("Double", Double.class, Formatting.GOLD),
+        FLOAT("Float", Float.class, Formatting.GOLD),
+        BYTE("Byte", Byte.class, Formatting.RED),
+        CHAR("Char", Character.class, Formatting.AQUA),
+        LONG("Long", Long.class, Formatting.GOLD),
+        BOOLEAN("Boolean", Boolean.class, Formatting.GREEN),
+        SHORT("Short", Short.class, Formatting.GOLD),
+        LIST("List", List.class, Formatting.WHITE),
+        MAP("Map", Map.class, Formatting.WHITE);
 
         private String name;
         private Class<?> clazz;
@@ -439,8 +468,9 @@ public class Texter {
         @Nullable
         public static Texter.TypeFormat getByName(String name) {
             for (TypeFormat value : values()) {
-                if (value.name.equals(name))
+                if (value.name.equals(name)) {
                     return value;
+                }
             }
 
             return null;

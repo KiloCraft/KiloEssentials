@@ -8,7 +8,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
@@ -21,11 +20,11 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
+import org.kilocraft.essentials.util.text.Texter;
 
-public class WhoisCommand extends EssentialCommand {
-    public WhoisCommand() {
+public class WhoIsCommand extends EssentialCommand {
+    public WhoIsCommand() {
         super("whois", CommandPermission.WHOIS_SELF, new String[]{"info"});
     }
 
@@ -146,7 +145,7 @@ public class WhoisCommand extends EssentialCommand {
             text.append("Saved Location", getButtonForVec(lastLoc, savedVec));
         }
 
-        src.sendMessage(text.get());
+        src.sendMessage(text.build());
         return SUCCESS;
     }
 
@@ -160,5 +159,4 @@ public class WhoisCommand extends EssentialCommand {
                         vec.getX() + " " + vec.getY() + " " + vec.getZ() + " @s"
         );
     }
-
 }

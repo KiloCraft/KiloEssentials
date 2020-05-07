@@ -35,16 +35,16 @@ public class ServerUserSettings implements UserSettings {
     @Override
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
-        this.map.forEach((id, value) -> {
-            Setting<?> setting = Settings.getById(id);
+        for (Map.Entry<String, Object> entry : this.map.entrySet()) {
+            Setting<?> setting = Settings.getById(entry.getKey());
             if (setting != null) {
                 try {
-                    setting.toTag(tag, value);
-                } catch (Exception e) {
-                    KiloEssentials.getLogger().fatal("Exception while serializing a User Setting, Can not save the Value", e);
+                    setting.toTag(tag, entry.getValue());
+                } catch (IllegalArgumentException e) {
+                    KiloEssentials.getLogger().fatal("Exception while serializing a User Setting: Can not save the Value", e);
                 }
             }
-        });
+        }
 
         return tag;
     }
@@ -57,8 +57,7 @@ public class ServerUserSettings implements UserSettings {
                 try {
                     this.map.put(setting.getId(), setting.fromTag(tag));
                 } catch (IllegalArgumentException e) {
-                    KiloEssentials.getLogger().fatal("Exception while de-serializing a User Setting, Using Default Value");
-                    e.printStackTrace();
+                    KiloEssentials.getLogger().fatal("Exception while de-serializing a User Setting: Using Default Value", e);
                 }
             }
         }

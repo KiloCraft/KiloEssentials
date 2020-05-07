@@ -97,6 +97,11 @@ public final class ServerChat {
             throw new UnexpectedException("Debug exception thrown by " + sender.getUsername() + message.getOriginal().replaceFirst(DEBUG_EXCEPTION, ""));
         }
 
+        if (channel == null) {
+            sender.getSettings().set(Settings.CHAT_CHANNEL, Channel.PUBLIC);
+            throw new NullPointerException("Channel must not be Null! channel set to Public");
+        }
+
         boolean processWords;
         if (channel == Channel.PUBLIC) {
             processWords = true;
@@ -104,10 +109,12 @@ public final class ServerChat {
             processWords = KiloConfig.messages().censorList().censorPrivateChannels;
         }
 
+        message.setMessage(message.getFormattedMessage(), KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR));
+
         try {
             message.setMessage(
                     processWords ? processWords(sender, message.getOriginal()) : message.getOriginal(),
-                    KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR)
+                    true
             );
         } catch (Exception e) {
             return;
@@ -151,7 +158,7 @@ public final class ServerChat {
         }
 
         for (OnlineUser target : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-            String format = senderFormat.replace("%PLAYER_NAME%", target.getUsername());
+            String format = senderFormat.replace(" %PLAYER_NAME% ", target.getUsername());
             if (!message.getOriginal().contains(format) || !KiloEssentials.hasPermissionNode(target.getCommandSource(), EssentialPermission.CHAT_GET_PINGED)) {
                 continue;
             }
@@ -175,6 +182,7 @@ public final class ServerChat {
     private static HoverEvent hoverEvent(final OnlineUser user, Channel channel) {
         String date = String.format(hoverDateStyle, dateFormat.format(new Date()));
 
+        assert channel.getPrefix() != null;
         if (user.hasNickname() && channel.getPrefix().contains("%USER_RANKED_DISPLAYNAME%")) {
             return Texter.Events.onHover(String.format(hoverStyleNicked, user.getUsername(), date));
         } else {
@@ -203,12 +211,13 @@ public final class ServerChat {
 
     private static void pingPlayer(final ServerPlayerEntity target, final ChatPingSoundConfigSection cfg) {
         Vec3d vec3d = target.getCommandSource().getPosition();
-        String soundId = cfg.id;
-        float volume = (float) cfg.volume;
-        float pitch = (float) cfg.pitch;
-
         if (target.networkHandler != null) {
-            target.networkHandler.sendPacket(new PlaySoundIdS2CPacket(new Identifier(soundId), SoundCategory.MASTER, vec3d, volume, pitch));
+            target.networkHandler.sendPacket(
+                    new PlaySoundIdS2CPacket(
+                            new Identifier(cfg.id),
+                            SoundCategory.MASTER,
+                            vec3d, (float) cfg.volume, (float) cfg.pitch)
+            );
         }
     }
 
@@ -246,10 +255,12 @@ public final class ServerChat {
         }
 
         if  (!CommandUtils.isConsole(source)) {
-            final OnlineUser online = KiloServer.getServer().getOnlineUser(source.getPlayer());
-            target.setLastMessageSender(source.getPlayer().getUuid());
-            online.setLastMessageSender(target.getUuid());
-            online.setLastPrivateMessage(message);
+            OnlineUser online = KiloServer.getServer().getOnlineUser(source.getPlayer());
+//            target.setLastMessageSender(source.getPlayer().getUuid());
+//            online.setLastMessageSender(target.getUuid());
+//            online.setLastPrivateMessage(message);
+            target.setLastDirectMessageReceptionist(src);
+            online.setLastDirectMessageReceptionist(target);
         }
 
         if (CommandUtils.areTheSame(source, target)) {
@@ -285,7 +296,7 @@ public final class ServerChat {
                 .replace("%TARGET%", me_format)
                 .replace("%MESSAGE%", message);
 
-        String toSpy = format.replace("%SOURCE%", sourceName)
+        String toSpy = ServerChat.config.socialSpyFormat.replace("%SOURCE%", sourceName)
                 .replace("%TARGET%", target.getUsername() + "&r")
                 .replace("%MESSAGE%", message);
 
@@ -293,12 +304,12 @@ public final class ServerChat {
             pingPlayer(target.asPlayer(), PingType.PRIVATE);
         }
 
-        KiloChat.sendMessageToSource(source, ((MutableText)new TextMessage(toSource, true).toText()).formatted(Formatting.WHITE));
-        KiloChat.sendMessageTo(target.asPlayer(), ((MutableText)new TextMessage(toTarget, true).toText()).formatted(Formatting.WHITE));
+        KiloChat.sendMessageToSource(source, new TextMessage(toSource, true).toText().formatted(Formatting.WHITE));
+        KiloChat.sendMessageTo(target.asPlayer(), new TextMessage(toTarget, true).toText().formatted(Formatting.WHITE));
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
-                KiloChat.sendMessageTo(user.asPlayer(), new LiteralText(new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.WHITE));
+                KiloChat.sendMessageTo(user.asPlayer(), new LiteralText(new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
             }
         }
 

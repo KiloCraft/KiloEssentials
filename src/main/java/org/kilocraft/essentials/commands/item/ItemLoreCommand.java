@@ -161,8 +161,9 @@ public class ItemLoreCommand {
 
 		AtomicBoolean containsEnchantmentName = new AtomicBoolean(false);
 		Registry.ENCHANTMENT.forEach((enchantment) -> {
-			if (TextFormat.translate(inputString, false).contains(enchantment.getName(1).asString()))
+			if (TextFormat.translate(inputString, false).contains(enchantment.getName(1).getString())) {
 				containsEnchantmentName.set(true);
+			}
 		});
 
 		if (containsEnchantmentName.get()) {
