@@ -147,7 +147,7 @@ public class WhoisCommand extends EssentialCommand {
             text.append("Saved Location", getButtonForVec(lastLoc, savedVec));
         }
 
-        src.sendMessage(text.build());
+        src.sendMessage(text.get());
         return SUCCESS;
     }
 
