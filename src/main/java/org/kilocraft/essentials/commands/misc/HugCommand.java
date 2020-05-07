@@ -13,6 +13,7 @@ import net.minecraft.sound.SoundEvents;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.ServerChat;
@@ -30,8 +31,8 @@ public class HugCommand extends EssentialCommand {
         this.argumentBuilder.executes(this::execute);
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) {
-        CommandSourceUser src = this.getServerUser(ctx);
+    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        OnlineUser src = this.getOnlineUser(ctx);
         src.sendLangMessage("command.hug.self");
         src.asPlayer().playSound(
                 SoundEvents.ENTITY_ENDER_DRAGON_DEATH,
