@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.extensions.magicalparticles.config;
 
-import net.minecraft.particle.ParticleTypes;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
