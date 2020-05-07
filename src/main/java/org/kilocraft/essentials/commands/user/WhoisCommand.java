@@ -8,6 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
@@ -23,8 +24,8 @@ import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
-public class WhoisCommand extends EssentialCommand {
-    public WhoisCommand() {
+public class WhoIsCommand extends EssentialCommand {
+    public WhoIsCommand() {
         super("whois", CommandPermission.WHOIS_SELF, new String[]{"info"});
     }
 
@@ -115,19 +116,17 @@ public class WhoisCommand extends EssentialCommand {
         }
         if (target.getFirstJoin() != null) {
             text.append("First joined", Texter.toText("&e" + TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime())).styled((style) -> {
-                style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getFirstJoin())));
-                return style;
+                return style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getFirstJoin())));
             }));
         }
 
         if (!target.isOnline() && target.getLastOnline() != null) {
             text.append("Last Online", Texter.toText("&e" +  TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).styled((style) -> {
-                style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getLastOnline())));
-                return style;
+                return style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getLastOnline())));
             }));
         }
 
-        text.append("Meta", new String[]{"Homes", "Random Teleports Left", "Selected channel"},
+        text.append("Meta", new String[]{"Homes", "RTP", "Selected channel"},
                 UserHomeHandler.isEnabled() ? target.getHomesHandler().homes() : 0,
                 target.getSetting(Settings.RANDOM_TELEPORTS_LEFT),
                 target.getSetting(Settings.CHAT_CHANNEL).getId());
@@ -158,7 +157,7 @@ public class WhoisCommand extends EssentialCommand {
                 new LiteralText(tl("general.click_tp")),
                 ClickEvent.Action.SUGGEST_COMMAND,
                 "/tpin " + vec.getDimension().toString() + " " +
-                        vec.getX() + " " + vec.getY() + " " + vec.getZ()
+                        vec.getX() + " " + vec.getY() + " " + vec.getZ() + " @s"
         );
     }
 
