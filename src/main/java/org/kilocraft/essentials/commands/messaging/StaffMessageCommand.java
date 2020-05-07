@@ -21,8 +21,8 @@ import org.kilocraft.essentials.user.setting.Settings;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
-public class StaffmsgCommand extends EssentialCommand {
-    public StaffmsgCommand() {
+public class StaffMessageCommand extends EssentialCommand {
+    public StaffMessageCommand() {
         super("staffmsg", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_STAFFMSG), new String[]{"sm"});
     }
 

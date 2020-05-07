@@ -301,10 +301,11 @@ public class Texter {
                             return style.setHoverEvent(objectToText.getStyle().getHoverEvent());
 
                         if (objectToText.getStyle().getClickEvent() != null) {
+                            return style.
+                        if (objectToText.getStyle().getClickEvent() != null) {
                             return style.withClickEvent(objectToText.getStyle().getClickEvent());
                         }
-                        return style;
-                    });
+                    }
                 }
                 else if (objects[i] instanceof List<?>) {
                     List<?> list = (List<?>) objects[i];

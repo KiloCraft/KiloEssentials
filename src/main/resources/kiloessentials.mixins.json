@@ -12,7 +12,6 @@
     "MinecraftServerMixin",
     "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
-    "PlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
     "CraftingScreenHandlerMixin",

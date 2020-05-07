@@ -160,5 +160,4 @@ public class WhoIsCommand extends EssentialCommand {
                         vec.getX() + " " + vec.getY() + " " + vec.getZ() + " @s"
         );
     }
-
 }

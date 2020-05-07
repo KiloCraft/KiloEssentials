@@ -26,13 +26,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class WhowasCommand extends EssentialCommand {
+public class WhoWasCommand extends EssentialCommand {
     private static final String LINE_FORMAT = ModConstants.translation("command.whowas.format");
     private static final String DATE_FORMAT = ModConstants.translation("command.whowas.format.time");
     private static final String INITIAL_FORMAT = ModConstants.translation("command.whowas.format.initial");
     private static final String CACHE_ID = "command.whowas";
 
-    public WhowasCommand() {
+    public WhoWasCommand() {
         super("whowas", CommandPermission.WHOWAS_SELF, new String[]{"namehistory"});
     }
 

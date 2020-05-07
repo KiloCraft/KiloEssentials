@@ -117,13 +117,12 @@ public class PlayerWarpsCommand extends EssentialCommand {
                 text.append(new LiteralText((index) + ".").formatted(Formatting.GOLD));
                 text.append(" ");
                 text.append(new LiteralText(warp.getName()).formatted(Formatting.WHITE)).styled((style) -> {
-                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText("")
+                    return style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText("")
                             .append(new LiteralText("By ").formatted(Formatting.WHITE))
                             .append(new LiteralText(ownerName))
                             .append("\n")
                             .append(new LiteralText("In ").formatted(Formatting.WHITE))
                             .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())))));
-                    return style;
                 });
                 text.append(new LiteralText(" (").formatted(Formatting.DARK_GRAY));
                 text.append(new LiteralText(warp.getType()).formatted(Formatting.LIGHT_PURPLE));
@@ -141,8 +140,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
                 String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
 
                 MutableText description = Texter.toText(TextFormat.clearColorCodes(shortenedDesc)).formatted(Formatting.WHITE).styled((style) -> {
-                    style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText(desc).formatted(Formatting.WHITE)));
-                    return style;
+                    return style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.toText(desc).formatted(Formatting.WHITE)));
                 });
 
                 if (desc.length() > maxLength) {
