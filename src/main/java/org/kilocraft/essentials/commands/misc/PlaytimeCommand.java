@@ -108,7 +108,7 @@ public class PlaytimeCommand extends EssentialCommand {
         text.append(tl("command.playtime.total"), pt)
                 .append(tl("command.playtime.first_join"), firstJoin);
 
-        src.sendMessage(text.get());
+        src.sendMessage(text.build());
         return target.getTicksPlayed();
     }
 

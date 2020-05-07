@@ -26,7 +26,7 @@ public class UserUtils {
     private static final ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
     private static PermissionUtil.Manager permManager = KiloEssentials.getInstance().getPermissionUtil().getManager();
 
-    public static MutableText getDisplayNameWithMeta(User user, boolean nickName) {
+    public static MutableText getDisplayNameWithMeta(OnlineUser user, boolean nickName) {
         if (permManager == PermissionUtil.Manager.LUCKPERMS) {
             StringBuilder builder = new StringBuilder();
             CachedMetaData metaData = getLuckyMetaData(user.getUuid());
@@ -46,7 +46,7 @@ public class UserUtils {
             return Texter.toText(builder.toString());
         }
 
-        return Team.modifyText(((OnlineUser) user).asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
+        return Team.modifyText(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
     }
 
     private static net.luckperms.api.model.user.User getLuckyUser(UUID uuid) {
@@ -100,7 +100,7 @@ public class UserUtils {
         }
 
         public static boolean useRequestAndGetType(final OnlineUser src) {
-            boolean toSender = PairMap.get(src).getLeft().getRight();;
+            boolean toSender = PairMap.get(src).getLeft().getRight();
             PairMap.remove(src);
             return toSender;
         }

@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.text;
 
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -8,14 +9,14 @@ import java.util.List;
 
 public class TextInput implements IText {
     private List<String> lines;
-    private List<Text> textLines;
+    private List<MutableText> textLines;
 
     public TextInput(String... strings) {
         this();
         this.append(strings);
     }
 
-    public TextInput(Text... texts) {
+    public TextInput(MutableText... texts) {
         this();
         this.append(texts);
     }
@@ -40,7 +41,7 @@ public class TextInput implements IText {
     }
 
     @Override
-    public List<net.minecraft.text.Text> getTextLines() {
+    public List<MutableText> getTextLines() {
         return this.textLines;
     }
 
@@ -51,7 +52,7 @@ public class TextInput implements IText {
     }
 
     @Override
-    public IText append(Text... texts) {
+    public IText append(MutableText... texts) {
         textLines.addAll(Arrays.asList(texts));
         return this;
     }

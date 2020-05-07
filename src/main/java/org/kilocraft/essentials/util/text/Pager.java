@@ -39,7 +39,7 @@ public class Pager {
         return getPageFromFilterable(options, all.stream().map(StringFilterable::new).collect(Collectors.toList()));
     }
 
-    public static Page getPageFromText(@NotNull Options options, @NotNull List<Text> all) {
+    public static Page getPageFromText(@NotNull Options options, @NotNull List<MutableText> all) {
         Objects.requireNonNull(options, "Options can not be null");
         Objects.requireNonNull(all, "'all' can not be null");
 
@@ -67,12 +67,12 @@ public class Pager {
         return slice(list, options.getEntriesPerPage(), options.getPageIndex());
     }
 
-    public static Page getPageFromFilterableText(@NotNull Options options, @NotNull List<TextPagerFilterable> all) {
+    public static Page getPageFromFilterableText(@NotNull Options options, @NotNull List<MutableTextPagerFilterable> all) {
         Objects.requireNonNull(options, "Options can not be null");
         Objects.requireNonNull(all, "'all' can not be null");
 
-        List<TextPagerFilterable> list = filterText(options, all);
-        return sliceText(list, options.getEntriesPerPage(), options.getPageIndex());
+        List<MutableTextPagerFilterable> list = filterMutableText(options, all);
+        return sliceMutableText(list, options.getEntriesPerPage(), options.getPageIndex());
     }
 
     /**
@@ -110,7 +110,7 @@ public class Pager {
     }
 
     @NotNull
-    private static Page sliceText(@NotNull List<TextPagerFilterable> all, int entriesPerPage, int pageIndex) {
+    private static Page sliceMutableText(@NotNull List<MutableTextPagerFilterable> all, int entriesPerPage, int pageIndex) {
         Objects.requireNonNull(all, "'all' can not be null");
 
         int pageAmount = (int) Math.ceil(all.size() / (double) entriesPerPage);
@@ -123,7 +123,7 @@ public class Pager {
             pageIndex = pageIndex < 0 ? 0 : pageAmount - 1;
         }
 
-        List<TextPagerFilterable> entries = all.subList(
+        List<MutableTextPagerFilterable> entries = all.subList(
                 pageIndex * entriesPerPage,
                 Math.min((pageIndex + 1) * entriesPerPage, all.size()));
 
@@ -150,7 +150,7 @@ public class Pager {
     }
 
     @NotNull
-    private static List<TextPagerFilterable> filterText(@NotNull Options options, @NotNull List<TextPagerFilterable> all) {
+    private static List<MutableTextPagerFilterable> filterMutableText(@NotNull Options options, @NotNull List<MutableTextPagerFilterable> all) {
         Objects.requireNonNull(options, "Options can not be null");
         Objects.requireNonNull(all, "'all' can not be null");
 
@@ -177,7 +177,7 @@ public class Pager {
         List<String> getAllLines();
     }
 
-    public interface TextPagerFilterable {
+    public interface MutableTextPagerFilterable {
         /**
          * @param options The options to use
          *
@@ -189,7 +189,7 @@ public class Pager {
          * @return All the lines this object has
          */
         @NotNull
-        List<Text> getAllLines();
+        List<MutableText> getAllLines();
     }
 
     /**
@@ -224,14 +224,14 @@ public class Pager {
     /**
      * A small wrapper for a normal String
      */
-    private static class TextFilterable implements TextPagerFilterable {
-        private Text text;
+    private static class TextFilterable implements MutableTextPagerFilterable {
+        private MutableText text;
 
         /**
-         * @param text The {@link Text}
+         * @param text The {@link MutableText}
          */
-        private TextFilterable(Text text) {
-            Objects.requireNonNull(text, "String cannot be null!");
+        private TextFilterable(MutableText text) {
+            Objects.requireNonNull(text, "MutableText cannot be null!");
 
             this.text = text;
         }
@@ -245,7 +245,7 @@ public class Pager {
 
         @NotNull
         @Override
-        public List<Text> getAllLines() {
+        public List<MutableText> getAllLines() {
             return Collections.singletonList(text);
         }
     }
@@ -563,7 +563,7 @@ public class Pager {
         private final int maxPages;
         private final int pageIndex;
         private List<String> entries;
-        private List<Text> textEntries;
+        private List<MutableText> textEntries;
         private String stickyHeader;
         private String stickyFooter;
 
@@ -583,7 +583,7 @@ public class Pager {
             this(maxPages, pageIndex, entries, "", "");
         }
 
-        private Page(@NotNull List<Text> entries, int maxPages, int pageIndex) {
+        private Page(@NotNull List<MutableText> entries, int maxPages, int pageIndex) {
             this(entries, maxPages, pageIndex, "", "");
         }
 
@@ -612,7 +612,7 @@ public class Pager {
             this.stickyFooter = footerKey;
         }
 
-        private Page(@NotNull List<Text> entries,int maxPages, int pageIndex, @NotNull String headerKey, @NotNull
+        private Page(@NotNull List<MutableText> entries,int maxPages, int pageIndex, @NotNull String headerKey, @NotNull
                 String footerKey) {
             Objects.requireNonNull(entries, "Entries can not be null");
             Objects.requireNonNull(headerKey, "The header key can not be null");
@@ -717,27 +717,29 @@ public class Pager {
                 header.append("\n").append(new LiteralText(TextFormat.translate(this.stickyHeader))).append("\n");
             }
 
-            Text button_prev = new LiteralText("")
+            MutableText button_prev = new LiteralText("")
                     .append(new LiteralText("<-").formatted(Formatting.WHITE, Formatting.BOLD))
                     .append(" ").append(new LiteralText("Prev").formatted(f1))
                     .styled((style) -> {
-                        if (prevPage > 0)
-                            style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(prevPage))));
+                        if (prevPage > 0) {
+                            style.withClickEvent(Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(prevPage))));
+                        }
 
-                        return style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)));
+                        return style.setHoverEvent(Texter.Events.onHover(new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)));
                     });
 
-            Text button_next = new LiteralText("")
+            MutableText button_next = new LiteralText("")
                     .append(new LiteralText("Next").formatted(f1))
                     .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
                     .styled((style) -> {
-                        if (nextPage < maxPages)
-                            style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.replace("%page%",  String.valueOf(nextPage))));
+                        if (nextPage < maxPages) {
+                            style.withClickEvent(Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(nextPage))));
+                        }
 
-                        return style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText((nextPage < maxPages) ? ">>>" : ">|").formatted(f3)));
+                        return style.setHoverEvent(Texter.Events.onHover(new LiteralText((nextPage < maxPages) ? ">>>" : ">|").formatted(f3)));
                     });
 
-            Text buttons = new LiteralText("")
+            MutableText buttons = new LiteralText("")
                     .append(new LiteralText("[ ").formatted(Formatting.GRAY))
                     .append(button_prev)
                     .append(" ")
@@ -750,7 +752,7 @@ public class Pager {
                     .append(button_next)
                     .append(new LiteralText("] ").formatted(f3));
 
-            Text footer = new LiteralText("- ")
+            MutableText footer = new LiteralText("- ")
                     .formatted(Formatting.GRAY)
                     .append(buttons).append(new LiteralText(" ------------------------------".substring(buttons.asString().length() + 3)).formatted(Formatting.GRAY));
 
@@ -760,7 +762,7 @@ public class Pager {
                     text.append(new LiteralText(TextFormat.translate(entry)).append("\n"));
                 }
             } else if (this.textEntries != null && this.entries == null) {
-                for (Text textEntry : this.textEntries) {
+                for (MutableText textEntry : this.textEntries) {
                     text.append(textEntry).append("\n");
                 }
             }

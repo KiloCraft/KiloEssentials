@@ -139,7 +139,7 @@ public class Texter {
         public static ClickEvent onClickRun(String command) {
             return new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
         }
-        
+
         public static ClickEvent onClickOpen(String url) {
             return new ClickEvent(ClickEvent.Action.OPEN_URL, url);
         }
@@ -296,15 +296,16 @@ public class Texter {
             for (int i = 0; i < objects.length; i++) {
                 if (objects[i] instanceof Text) {
                     MutableText objectToText = (MutableText) objects[i];
-                        text.styled((style) -> {
-                            if (objectToText.getStyle().getHoverEvent() != null)
-                                return style.setHoverEvent(objectToText.getStyle().getHoverEvent());
+                    text.styled((style) -> {
+                        if (objectToText.getStyle().getHoverEvent() != null)
+                            return style.setHoverEvent(objectToText.getStyle().getHoverEvent());
 
-                            if (objectToText.getStyle().getClickEvent() != null) {
-                                return style.withClickEvent(objectToText.getStyle().getClickEvent());
-                            }
-                            return style;
-                        });
+                        if (objectToText.getStyle().getClickEvent() != null) {
+                            return style.
+                        if (objectToText.getStyle().getClickEvent() != null) {
+                            return style.withClickEvent(objectToText.getStyle().getClickEvent());
+                        }
+                    }
                 }
                 else if (objects[i] instanceof List<?>) {
                     List<?> list = (List<?>) objects[i];

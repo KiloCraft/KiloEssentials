@@ -35,28 +35,14 @@ public class PingCommand extends EssentialCommand {
     private static int execute(ServerCommandSource source, ServerPlayerEntity target) {
         if (CommandUtils.areTheSame(source, target)) {
             KiloChat.sendLangMessageTo(source, "command.ping.self",
-                    TextFormat.getFormattedPing(target.pingMilliseconds), getStringForPing(target.pingMilliseconds));
+                    TextFormat.getFormattedPing(target.pingMilliseconds), target.pingMilliseconds);
             return 1;
         }
 
         KiloChat.sendLangMessageTo(source, "command.ping.others", target.getName().asString(),
-                TextFormat.getFormattedPing(target.pingMilliseconds), getStringForPing(target.pingMilliseconds));
+                TextFormat.getFormattedPing(target.pingMilliseconds), target.pingMilliseconds);
 
         return target.pingMilliseconds;
-    }
-
-    private static String getStringForPing(int i) {
-        String prefix = "general.text.";
-        String key;
-        if (i < 200)
-            key = prefix + "good";
-        else if (i > 200 && i < 400)
-            key = prefix + "medium";
-        else if (i > 400 && i < 800)
-            key = prefix + "bad";
-        else key =  prefix + "oof";
-
-        return ModConstants.getLang().getProperty(key);
     }
 
 }
