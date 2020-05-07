@@ -59,7 +59,7 @@ public class ServerUser implements User {
     String cachedName = "";
     private ServerUserSettings settings;
     private UserHomeHandler homeHandler;
-    private Vec3dLocation location;
+    Vec3dLocation location;
     private Vec3dLocation lastLocation;
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
