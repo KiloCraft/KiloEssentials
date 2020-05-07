@@ -8,7 +8,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
@@ -128,7 +127,8 @@ public class WhoisCommand extends EssentialCommand {
             }));
         }
 
-        text.append("Meta", new String[]{"Homes", "RTP", "Selected channel"},
+        assert target.getHomesHandler() != null;
+        text.append("Meta", new String[]{"Homes", "Random Teleports Left", "Selected channel"},
                 UserHomeHandler.isEnabled() ? target.getHomesHandler().homes() : 0,
                 target.getSetting(Settings.RANDOM_TELEPORTS_LEFT),
                 target.getSetting(Settings.CHAT_CHANNEL).getId());
@@ -140,26 +140,26 @@ public class WhoisCommand extends EssentialCommand {
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         assert vec.getDimension() != null;
         MutableText loc = Texter.toText(vec.asFormattedString());
-        text.append("Location", getButtonForVec(loc, vec));
+        text.append("Location", vecLocToText(loc, vec));
 
         if (target.getLastSavedLocation() != null) {
             Vec3dLocation savedVec = ((Vec3dLocation) target.getLastSavedLocation()).shortDecimals();
             MutableText lastLoc = Texter.toText(savedVec.asFormattedString());
-            text.append("Saved Location", getButtonForVec(lastLoc, savedVec));
+            text.append("Saved Location", vecLocToText(lastLoc, savedVec));
         }
 
-        src.sendMessage(text.get());
+        src.sendMessage(text.build());
         return SUCCESS;
     }
 
-    private MutableText getButtonForVec(MutableText text, Vec3dLocation vec) {
+    private MutableText vecLocToText(MutableText text, Vec3dLocation vec) {
         assert vec.getDimension() != null;
         return Texter.appendButton(
                 text,
                 new LiteralText(tl("general.click_tp")),
                 ClickEvent.Action.SUGGEST_COMMAND,
                 "/tpin " + vec.getDimension().toString() + " " +
-                        vec.getX() + " " + vec.getY() + " " + vec.getZ() + " @s"
+                        vec.getX() + " " + vec.getY() + " " + vec.getZ()
         );
     }
 

@@ -45,7 +45,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class ServerUserManager implements UserManager, TickListener {
-    private static final Pattern COMPILE = Pattern.compile(".dat");
+    private static final Pattern DAT_FILE_PATTERN = Pattern.compile(".dat");
+    private static final Pattern UUID_PATTERN = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
+    private static final Pattern USER_FILE_NAME = Pattern.compile(UUID_PATTERN + "\\.dat");
     private final UserHandler handler = new UserHandler();
     private final List<OnlineUser> users = new ArrayList<>();
     private final Map<String, UUID> nicknameToUUID = new HashMap<>();
@@ -67,20 +69,20 @@ public class ServerUserManager implements UserManager, TickListener {
         List<User> users = new ArrayList<>();
 
         for (File file : this.handler.getUserFiles()) {
-            if (!file.exists()) {
+            if (!file.exists() || !USER_FILE_NAME.matcher(file.getName()).matches()) {
                 continue;
             }
 
-            ServerUser serverUser = new ServerUser(UUID.fromString(COMPILE.matcher(file.getName()).replaceFirst("")));
-
             try {
-                this.handler.loadUserAndResolveName(serverUser);
+                ServerUser user = new ServerUser(UUID.fromString(DAT_FILE_PATTERN.matcher(file.getName()).replaceFirst("")));
+                this.handler.loadUserAndResolveName(user);
 
-                if (serverUser.getUsername() != null) {
-                    users.add(serverUser);
+                if (user.getUsername() != null) {
+                    users.add(user);
                 }
 
-            } catch (IOException ignored) {
+            } catch (Exception e) {
+                KiloEssentials.getLogger().error("Can not load the user file \"{}\"!", file.getName(), e);
             }
         }
 
@@ -397,7 +399,7 @@ public class ServerUserManager implements UserManager, TickListener {
     public void onDeath(OnlineUser user) {
         user.saveLocation();
 
-        if (SeatManager.isEnabled() && SeatManager.getInstance().isSeating(user.asPlayer())) {
+        if (SeatManager.isEnabled() && SeatManager.getInstance().isSitting(user.asPlayer())) {
             SeatManager.getInstance().unseat(user);
         }
     }

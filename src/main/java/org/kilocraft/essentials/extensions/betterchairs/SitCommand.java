@@ -59,7 +59,7 @@ public class SitCommand extends EssentialCommand {
     private int seat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
 
-        if (SeatManager.getInstance().isSeating(user.asPlayer())) {
+        if (SeatManager.getInstance().isSitting(user.asPlayer())) {
             SeatManager.getInstance().unseat(user);
             return FAILED;
         }

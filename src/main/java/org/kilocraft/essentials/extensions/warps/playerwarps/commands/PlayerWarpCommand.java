@@ -25,15 +25,12 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
-import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Pager;
 import org.kilocraft.essentials.util.text.Texter;
@@ -276,7 +273,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         text.append("Type", warp.getType()).append(" ");
         text.append("World", RegistryUtils.dimensionToName(owner.getLocation().getDimensionType()));
 
-        src.sendMessage(text.get());
+        src.sendMessage(text.build());
     }
 
     private void sendList(ServerCommandSource src, User user, int page) {
