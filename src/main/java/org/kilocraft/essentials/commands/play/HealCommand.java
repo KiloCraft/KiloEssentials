@@ -25,7 +25,9 @@ public class HealCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> KiloCommands.hasPermission(s, CommandPermission.HEAL_OTHERS))
                 .suggests(ArgumentCompletions::allPlayers)
+
                 .executes(context -> execute(context.getSource(), getPlayer(context, "target")));
+
 
         argumentBuilder.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
         commandNode.addChild(target.build());
