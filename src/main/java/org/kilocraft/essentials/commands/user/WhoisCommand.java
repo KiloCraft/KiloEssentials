@@ -127,7 +127,6 @@ public class WhoisCommand extends EssentialCommand {
             }));
         }
 
-        assert target.getHomesHandler() != null;
         text.append("Meta", new String[]{"Homes", "Random Teleports Left", "Selected channel"},
                 UserHomeHandler.isEnabled() ? target.getHomesHandler().homes() : 0,
                 target.getSetting(Settings.RANDOM_TELEPORTS_LEFT),
@@ -140,19 +139,19 @@ public class WhoisCommand extends EssentialCommand {
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         assert vec.getDimension() != null;
         MutableText loc = Texter.toText(vec.asFormattedString());
-        text.append("Location", vecLocToText(loc, vec));
+        text.append("Location", getButtonForVec(loc, vec));
 
         if (target.getLastSavedLocation() != null) {
             Vec3dLocation savedVec = ((Vec3dLocation) target.getLastSavedLocation()).shortDecimals();
             MutableText lastLoc = Texter.toText(savedVec.asFormattedString());
-            text.append("Saved Location", vecLocToText(lastLoc, savedVec));
+            text.append("Saved Location", getButtonForVec(lastLoc, savedVec));
         }
 
         src.sendMessage(text.build());
         return SUCCESS;
     }
 
-    private MutableText vecLocToText(MutableText text, Vec3dLocation vec) {
+    private MutableText getButtonForVec(MutableText text, Vec3dLocation vec) {
         assert vec.getDimension() != null;
         return Texter.appendButton(
                 text,
