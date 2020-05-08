@@ -311,8 +311,7 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
         });
     }
 
-    public static double[] GetBezierPoint(float[] startPoint, float[] endPoint, float[] startTangent, float[] endTangent, float t)
-    {
+    public static double[] GetBezierPoint(float[] startPoint, float[] endPoint, float[] startTangent, float[] endTangent, float t) {
         double[] result = new double[3];
 
         result[0] = Math.pow(1 - t, 3) * startPoint[0] + 3 * t * Math.pow(1 - t, 2) * startTangent[0] + 3 * Math.pow(t, 2) * (1 - t) * endTangent[0] + Math.pow(t, 3) * endPoint[0];
