@@ -194,4 +194,9 @@ public class PermissionUtil {
         }
     }
 
+    @Override
+    public String toString() {
+        return this.manager.name;
+    }
+
 }

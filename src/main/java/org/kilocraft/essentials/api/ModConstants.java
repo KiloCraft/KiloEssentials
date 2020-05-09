@@ -64,6 +64,10 @@ public class ModConstants {
         return ModConstants.properties.getProperty("version");
     }
 
+    public static String getVersionNick() {
+        return ModConstants.properties.getProperty("version_nick");
+    }
+
     public static String getVersionInt() {
         return ModConstants.properties.getProperty("version_int");
     }
