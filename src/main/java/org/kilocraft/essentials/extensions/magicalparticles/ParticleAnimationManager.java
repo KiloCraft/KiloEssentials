@@ -125,20 +125,21 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
 
                 } else if (frame.getDustParticleSection().isPresent() && !frame.getBlockStateSection().isPresent()) {
                     DustParticleEffectConfigSection section = frame.getDustParticleSection().get();
+                    String[] rgb = section.rgb.split(" ");
 
                     boolean shouldContinue = true;
-                    for (int i1 = 0; i1 < section.rgb.size(); i1++) {
-                        int color = section.rgb.get(i1);
-                        if (color > 255 || color < 0) {
+                    for (int j = 0; j < 3; j++) {
+                        float color = Float.parseFloat(rgb[j]);
+                        if (color > 1 || color < 0) {
                             KiloEssentials.getLogger().warn("Error when initializing a ParticleFrame! Id: " + string +
-                                    " Frame: " + i + "RGB: " + i1 + " Invalid RGB Color value! a RGB Color value must be between 0 and 255");
+                                    " Frame: " + i + "RGB: " + j + " Invalid RGB Color value! a RGB Color value must be between 0 and 1");
                             shouldContinue = false;
                         }
                     }
 
                     if (shouldContinue)
                         particleEffect = new DustParticleEffect(
-                                section.rgb.get(0), section.rgb.get(1), section.rgb.get(2), section.scale
+                                Float.parseFloat(rgb[0]), Float.parseFloat(rgb[1]), Float.parseFloat(rgb[2]), section.scale
                         );
                 } else {
                     particleEffect = (DefaultParticleType) effect;
@@ -207,9 +208,14 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
                             double angle = 360 / (circumference / spacing);
 
                             // Circle
-                            for (float t = 0; t < 360; t += angle) {
-                                double newX = section.size / 2*Math.cos(t) - (section.size / 2)*Math.sin(t);
-                                double newY = section.size / 2*Math.sin(t) + (section.size / 2)*Math.cos(t);
+                            for (float t = 0; t < 360 + angle; t += angle) {
+                                float realT = t;
+                                if (realT > 360) {
+                                    realT = 360;
+                                }
+
+                                double newX = section.size / 2*Math.cos(realT) - (section.size / 2)*Math.sin(realT);
+                                double newY = section.size / 2*Math.sin(realT) + (section.size / 2)*Math.cos(realT);
 
                                 animation.append(new ParticleFrame<>(
                                         particleEffect,
@@ -311,8 +317,7 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
         });
     }
 
-    public static double[] GetBezierPoint(float[] startPoint, float[] endPoint, float[] startTangent, float[] endTangent, float t)
-    {
+    public static double[] GetBezierPoint(float[] startPoint, float[] endPoint, float[] startTangent, float[] endTangent, float t) {
         double[] result = new double[3];
 
         result[0] = Math.pow(1 - t, 3) * startPoint[0] + 3 * t * Math.pow(1 - t, 2) * startTangent[0] + 3 * Math.pow(t, 2) * (1 - t) * endTangent[0] + Math.pow(t, 3) * endPoint[0];
