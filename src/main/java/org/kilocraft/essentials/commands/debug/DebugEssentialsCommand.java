@@ -148,6 +148,9 @@ public class DebugEssentialsCommand extends EssentialCommand {
         }
 
         public static CompletableFuture<Suggestions> cacheIds(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+context.getSource().getMinecraftServer().getPlayerManager().getPlayerList().forEach(playerEntity -> {
+
+});
             List<String> strings = new ArrayList<>();
             CacheManager.getMap().forEach((id, cached) -> {
                 strings.add(id);

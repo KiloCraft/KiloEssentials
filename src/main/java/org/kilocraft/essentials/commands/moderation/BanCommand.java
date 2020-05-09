@@ -15,6 +15,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.user.PunishmentManager;
+import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.Collection;
@@ -40,8 +41,11 @@ public class BanCommand extends EssentialCommand {
                 .executes((ctx) -> this.ban(ctx, null));
         final RequiredArgumentBuilder<ServerCommandSource, String> reasonArgument = argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.ban(ctx, StringArgumentType.getString(ctx, "reason")));
+        final RequiredArgumentBuilder<ServerCommandSource, String> dateArgument = argument("date", StringArgumentType.word()).suggests(TimeDifferenceUtil::listSuggestions)
+                .executes((ctx) -> this.ban(ctx, StringArgumentType.getString(ctx, "date")));
 
-        profileArgument.then(reasonArgument);
+        dateArgument.then(reasonArgument);
+        profileArgument.then(dateArgument);
         commandNode.addChild(profileArgument.build());
     }
 
