@@ -125,20 +125,21 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
 
                 } else if (frame.getDustParticleSection().isPresent() && !frame.getBlockStateSection().isPresent()) {
                     DustParticleEffectConfigSection section = frame.getDustParticleSection().get();
+                    String[] rgb = section.rgb.split(" ");
 
                     boolean shouldContinue = true;
-                    for (int i1 = 0; i1 < section.rgb.size(); i1++) {
-                        int color = section.rgb.get(i1);
+                    for (int j = 0; j < 3; j++) {
+                        int color = Integer.parseInt(rgb[j]);
                         if (color > 255 || color < 0) {
                             KiloEssentials.getLogger().warn("Error when initializing a ParticleFrame! Id: " + string +
-                                    " Frame: " + i + "RGB: " + i1 + " Invalid RGB Color value! a RGB Color value must be between 0 and 255");
+                                    " Frame: " + i + "RGB: " + j + " Invalid RGB Color value! a RGB Color value must be between 0 and 255");
                             shouldContinue = false;
                         }
                     }
 
                     if (shouldContinue)
                         particleEffect = new DustParticleEffect(
-                                section.rgb.get(0), section.rgb.get(1), section.rgb.get(2), section.scale
+                                Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]), section.scale
                         );
                 } else {
                     particleEffect = (DefaultParticleType) effect;

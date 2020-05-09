@@ -10,7 +10,7 @@ import java.util.List;
 public class DustParticleEffectConfigSection {
 
     @Setting("rgb")
-    public List<Integer> rgb = Arrays.asList(0, 0, 1);
+    public String rgb = "1 0 0";
 
     @Setting("scale")
     public float scale = 1.0F;
