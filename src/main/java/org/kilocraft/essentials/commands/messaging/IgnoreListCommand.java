@@ -16,8 +16,8 @@ import org.kilocraft.essentials.user.setting.Settings;
 import java.util.Map;
 import java.util.UUID;
 
-public class IgnorelistCommand extends EssentialCommand {
-    public IgnorelistCommand() {
+public class IgnoreListCommand extends EssentialCommand {
+    public IgnoreListCommand() {
         super("ignorelist");
     }
 

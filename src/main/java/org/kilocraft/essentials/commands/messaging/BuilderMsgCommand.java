@@ -21,8 +21,8 @@ import org.kilocraft.essentials.user.setting.Settings;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
-public class BuildermsgCommand extends EssentialCommand {
-    public BuildermsgCommand() {
+public class BuilderMsgCommand extends EssentialCommand {
+    public BuilderMsgCommand() {
         super("buildermsg", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_BUILDERMSG));
     }
 

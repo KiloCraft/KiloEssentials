@@ -53,8 +53,8 @@ import static net.minecraft.command.arguments.EntityArgumentType.player;
 import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
 import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
 
-public class SigneditCommand extends EssentialCommand {
-    public SigneditCommand() {
+public class SignEditCommand extends EssentialCommand {
+    public SignEditCommand() {
         super("signedit", src ->
                 KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_TEXT) ||
                 KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_TEXT) ||

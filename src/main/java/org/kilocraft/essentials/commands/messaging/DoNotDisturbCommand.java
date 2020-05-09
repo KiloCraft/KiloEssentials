@@ -10,9 +10,9 @@ import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.setting.Settings;
 
-public class DonotdisturbCommand extends EssentialCommand {
+public class DoNotDisturbCommand extends EssentialCommand {
     private Setting<Boolean> SETTING = Settings.DON_NOT_DISTURB;
-    public DonotdisturbCommand() {
+    public DoNotDisturbCommand() {
         super("donotdisturb", new String[]{"toggledisturb"});
         this.withUsage("command.donotdisturb.usage");
     }

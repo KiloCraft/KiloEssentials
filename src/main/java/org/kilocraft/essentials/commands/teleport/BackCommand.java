@@ -41,12 +41,12 @@ public class BackCommand extends EssentialCommand {
         return sendBack(ctx, getPlayer(ctx, "target"));
     }
 
-    private int sendBack(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
+    private int sendBack(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) {
         OnlineUser user = getOnlineUser(target);
 
         if (user.getLastSavedLocation() == null) {
             sendMessage(ctx, "command.back.no_loc");
-            return -1;
+            return FAILED;
         }
 
         Location loc = user.getLastSavedLocation();

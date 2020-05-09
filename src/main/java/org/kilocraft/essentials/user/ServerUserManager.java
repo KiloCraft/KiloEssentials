@@ -29,6 +29,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.CacheManager;
 import org.kilocraft.essentials.util.text.AnimatedText;
@@ -44,7 +45,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class ServerUserManager implements UserManager, TickListener {
-    private static final Pattern COMPILE = Pattern.compile(".dat");
+    private static final Pattern DAT_FILE_PATTERN = Pattern.compile(".dat");
+    private static final Pattern UUID_PATTERN = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
+    private static final Pattern USER_FILE_NAME = Pattern.compile(UUID_PATTERN + "\\.dat");
     private final UserHandler handler = new UserHandler();
     private final List<OnlineUser> users = new ArrayList<>();
     private final Map<String, UUID> nicknameToUUID = new HashMap<>();
@@ -66,20 +69,20 @@ public class ServerUserManager implements UserManager, TickListener {
         List<User> users = new ArrayList<>();
 
         for (File file : this.handler.getUserFiles()) {
-            if (!file.exists()) {
+            if (!file.exists() || !USER_FILE_NAME.matcher(file.getName()).matches()) {
                 continue;
             }
 
-            ServerUser serverUser = new ServerUser(UUID.fromString(COMPILE.matcher(file.getName()).replaceFirst("")));
-
             try {
-                this.handler.loadUserAndResolveName(serverUser);
+                ServerUser user = new ServerUser(UUID.fromString(DAT_FILE_PATTERN.matcher(file.getName()).replaceFirst("")));
+                this.handler.loadUserAndResolveName(user);
 
-                if (serverUser.getUsername() != null) {
-                    users.add(serverUser);
+                if (user.getUsername() != null) {
+                    users.add(user);
                 }
 
-            } catch (IOException ignored) {
+            } catch (Exception e) {
+                KiloEssentials.getLogger().error("Can not load the user file \"{}\"!", file.getName(), e);
             }
         }
 
@@ -370,7 +373,7 @@ public class ServerUserManager implements UserManager, TickListener {
             if (KiloConfig.main().chat().kickForSpamming) {
                 player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
             } else {
-                player.getCommandSource().sendError(LangText.getFormatter(true, "channel.spam"));
+                user.sendLangError("channel.spam");
             }
         }
 
@@ -390,6 +393,14 @@ public class ServerUserManager implements UserManager, TickListener {
             }
 
             ((OnlineServerUser) user).onTick();
+        }
+    }
+
+    public void onDeath(OnlineUser user) {
+        user.saveLocation();
+
+        if (SeatManager.isEnabled() && SeatManager.getInstance().isSitting(user.asPlayer())) {
+            SeatManager.getInstance().unseat(user);
         }
     }
 

@@ -36,12 +36,19 @@ public class ParticleFrameConfigSection {
     @Setting("speed")
     public double speed = 0.0D;
 
+    @Setting("shapeProperties")
+    private ShapeConfigSection shapeParticleSection = pos.contains("^") ? new ShapeConfigSection() : null;
+
     public Optional<BlockStateParticleEffectConfigSection> getBlockStateSection() {
         return Optional.ofNullable(blockStateSection);
     }
 
     public Optional<DustParticleEffectConfigSection> getDustParticleSection() {
         return Optional.ofNullable(dustParticleSection);
+    }
+
+    public Optional<ShapeConfigSection> getShapeSection () {
+        return Optional.ofNullable(shapeParticleSection);
     }
 
     private boolean isEqualTo(ParticleType<?> particleType) {

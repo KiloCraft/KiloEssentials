@@ -54,7 +54,8 @@ public class HomesCommand extends EssentialCommand {
 
     private int sendInfo(OnlineUser source, User user) {
         boolean areTheSame = CommandUtils.areTheSame(source, user);
-        if (user.getHomesHandler().homes() <= 0) {
+        assert user.getHomesHandler() != null;
+        if (user.getHomesHandler().homes() == 0) {
              source.sendMessage(areTheSame ? KiloConfig.messages().commands().playerHomes().noHome :
                     KiloConfig.messages().commands().playerHomes().admin().noHome.replace("{TARGET_TAG}", user.getNameTag()));
 
