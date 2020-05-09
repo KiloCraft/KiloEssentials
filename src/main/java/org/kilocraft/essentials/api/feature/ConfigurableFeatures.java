@@ -2,6 +2,7 @@ package org.kilocraft.essentials.api.feature;
 
 import net.minecraft.SharedConstants;
 import org.kilocraft.essentials.KiloEssentialsImpl;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
@@ -25,10 +26,9 @@ public class ConfigurableFeatures {
 
                 if (feature instanceof TickListener) {
                     tickListeners.add((TickListener) feature);
-                } else {
-                    features.add(feature);
                 }
 
+                features.add(feature);
                 feature.register();
             }
         } catch (NullPointerException ignored) {
