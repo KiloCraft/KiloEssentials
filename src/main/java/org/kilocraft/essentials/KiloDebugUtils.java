@@ -4,7 +4,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.boss.CommandBossBar;
-import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
@@ -105,7 +104,7 @@ public class KiloDebugUtils {
                 TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()), tps, entities, loadedChunks, ModConstants.getVersionInt()
         );
 
-        MutableText text = ((MutableText)getDebugText()).append(Texter.toText(debugText));
+        MutableText text = ((MutableText)getDebugText()).append(Texter.newText(debugText));
 
         if (tps > 15) {
             bossBar.setColor(BossBar.Color.GREEN);

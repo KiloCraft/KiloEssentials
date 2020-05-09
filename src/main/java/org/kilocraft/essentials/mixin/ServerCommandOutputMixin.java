@@ -18,7 +18,8 @@ public abstract class ServerCommandOutputMixin {
     @Inject(at = @At("RETURN"), method = "<init>")
     private void kilo$init(MinecraftServer minecraftServer, CallbackInfo ci) {
         new ModConstants().loadConstants();
-        String brand = String.format(ModConstants.getProperties().getProperty("server.brand.full"),
+        String brand = String.format(
+                ModConstants.getProperties().getProperty("server.brand.full"),
                 ModConstants.getMinecraftVersion(),
                 ModConstants.getLoaderVersion(),
                 ModConstants.getMappingsVersion(),
@@ -34,6 +35,6 @@ public abstract class ServerCommandOutputMixin {
                 )
         );
 
-        ModConstants.getLogger().info("Server set: {}", brand);
+        ModConstants.getLogger().info("Server set: " + brand);
     }
 }

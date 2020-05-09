@@ -72,27 +72,26 @@ public class ModsCommand extends EssentialCommand {
 
         Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(meta.getName());
         text.append("Version", meta.getVersion().getFriendlyString());
-        text.append(authorsToTextList(meta), "Authors");
+        text.append("Authors", authorsToArrayText(meta));
         text.append("Description", "");
 
         KiloChat.sendMessageTo(ctx.getSource(), text.build());
         return SUCCESS;
     }
 
-    private List<MutableText> authorsToTextList(ModMetadata meta) {
-        List<MutableText> list = Lists.newArrayList();
+    private MutableText authorsToArrayText(ModMetadata meta) {
+        Texter.ArrayStyle text = new Texter.ArrayStyle();
         for (Person author : meta.getAuthors()) {
-            MutableText text = Texter.toText(author.getName());
-            text.styled((style) -> {
+            MutableText mutable = Texter.newText(author.getName());
+            mutable.styled((style) -> {
                 style.setHoverEvent(Texter.Events.onHover(tl("general.click_info")));
-                style.withClickEvent(Texter.Events.onClickRun("/mods " + meta.getId() + " " + author.getName()));
+                style.withClickEvent(Texter.Events.onClickRun("mods", meta.getId(), author.getName()));
                 return style;
             });
-
-            list.add(text);
+            text.append(mutable);
         }
 
-        return list;
+        return text.build();
     }
 
     private Text getModAuthorList(ModMetadata meta) {

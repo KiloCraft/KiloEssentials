@@ -708,7 +708,7 @@ public class Pager {
             String SEPARATOR = "-----------------------------------------------------";
             MutableText header =  new LiteralText("")
                     .append(new LiteralText("- [ ").formatted(f3))
-                    .append(Texter.toText(title).formatted(f1))
+                    .append(Texter.newText(title).formatted(f1))
                     .append(" ] ")
                     .append(SEPARATOR.substring(TextFormat.removeAlternateColorCodes('&', title).length() + 4))
                     .formatted(f3);

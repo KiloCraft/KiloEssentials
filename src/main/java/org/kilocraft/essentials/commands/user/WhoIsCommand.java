@@ -61,8 +61,8 @@ public class WhoIsCommand extends EssentialCommand {
                 .space()
                 .append(
                         Texter.appendButton(
-                                Texter.toText("( More )").formatted(Formatting.GRAY),
-                                Texter.toText("Click to see the name history"),
+                                Texter.newText("( More )").formatted(Formatting.GRAY),
+                                Texter.newText("Click to see the name history"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/whowas " + target.getUsername()
                         )
@@ -114,13 +114,13 @@ public class WhoIsCommand extends EssentialCommand {
             text.append("Playtime", TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e'));
         }
         if (target.getFirstJoin() != null) {
-            text.append("First joined", Texter.toText("&e" + TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime())).styled((style) -> {
+            text.append("First joined", Texter.newText("&e" + TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime())).styled((style) -> {
                 return style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getFirstJoin())));
             }));
         }
 
         if (!target.isOnline() && target.getLastOnline() != null) {
-            text.append("Last Online", Texter.toText("&e" +  TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).styled((style) -> {
+            text.append("Last Online", Texter.newText("&e" +  TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).styled((style) -> {
                 return style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getLastOnline())));
             }));
         }
@@ -136,12 +136,12 @@ public class WhoIsCommand extends EssentialCommand {
 
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         assert vec.getDimension() != null;
-        MutableText loc = Texter.toText(vec.asFormattedString());
+        MutableText loc = Texter.newText(vec.asFormattedString());
         text.append("Location", getButtonForVec(loc, vec));
 
         if (target.getLastSavedLocation() != null) {
             Vec3dLocation savedVec = ((Vec3dLocation) target.getLastSavedLocation()).shortDecimals();
-            MutableText lastLoc = Texter.toText(savedVec.asFormattedString());
+            MutableText lastLoc = Texter.newText(savedVec.asFormattedString());
             text.append("Saved Location", getButtonForVec(lastLoc, savedVec));
         }
 

@@ -328,14 +328,14 @@ public class PlayerWarpCommand extends EssentialCommand {
     private Text getConfirmationText(String warpName, String user) {
         return Texter.confirmationMessage(
                 "command.playerwarp.set.confirmation_message",
-                Texter.getButton("&7[&eClick here to Confirm&7]", "/pwarp set " + warpName, Texter.toText("Click").formatted(Formatting.GREEN))
+                Texter.getButton("&7[&eClick here to Confirm&7]", "/pwarp set " + warpName, Texter.newText("Click").formatted(Formatting.GREEN))
         );
     }
 
     private Text getRemoveConfirmationText(String warpName) {
         return Texter.confirmationMessage(
                 "command.playerwarp.remove.confirmation_message",
-                Texter.getButton("&7[&eClick here to Confirm&7]", "/pwarp remove -confirmed-" + warpName, Texter.toText("Click").formatted(Formatting.GREEN))
+                Texter.getButton("&7[&eClick here to Confirm&7]", "/pwarp remove -confirmed-" + warpName, Texter.newText("Click").formatted(Formatting.GREEN))
         );
     }
 

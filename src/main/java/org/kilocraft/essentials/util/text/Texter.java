@@ -1,28 +1,22 @@
 package org.kilocraft.essentials.util.text;
 
-import com.mojang.datafixers.kinds.IdF;
 import net.minecraft.SharedConstants;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
 
-    public static MutableText toText(String str) {
+    public static MutableText newText(String str) {
         return new LiteralText(TextFormat.translate(str));
     }
 
-    public static MutableText toText() {
+    public static MutableText newText() {
         return new LiteralText("");
     }
 
@@ -58,7 +52,7 @@ public class Texter {
     }
 
     public static MutableText getButton(String title, String command, MutableText hoverText) {
-        return Texter.toText(title).styled((style) -> {
+        return Texter.newText(title).styled((style) -> {
             style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
             style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
             return style;
@@ -148,6 +142,15 @@ public class Texter {
             return new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
         }
 
+        public static ClickEvent onClickRun(String... command) {
+            StringBuilder builder = new StringBuilder();
+            for (String s : command) {
+                builder.append(s);
+            }
+
+            return onClickRun("/" + builder.toString());
+        }
+
         public static ClickEvent onClickOpen(String url) {
             return new ClickEvent(ClickEvent.Action.OPEN_URL, url);
         }
@@ -159,6 +162,64 @@ public class Texter {
         public static HoverEvent onHover(MutableText text) {
             return new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
         }
+    }
+
+    public static class ArrayStyle {
+        private List<Object> list;
+        private boolean nextColor = false;
+        private final Formatting aFormat;
+        private final Formatting bFormat;
+
+        public static ArrayStyle of(List<Object> list) {
+            return new Texter.ArrayStyle(Formatting.WHITE, Formatting.GRAY, list);
+        }
+
+        public ArrayStyle(Formatting aFormat, Formatting bFormat, @Nullable List<Object> list) {
+            this.list = list == null ? new ArrayList<>() : list;
+            this.aFormat = aFormat;
+            this.bFormat = bFormat;
+        }
+
+        public ArrayStyle() {
+            this(Formatting.WHITE, Formatting.GRAY, null);
+        }
+
+        public ArrayStyle append(String string) {
+            this.list.add(string);
+            return this;
+        }
+
+        public ArrayStyle append(Text text) {
+            this.list.add(text);
+            return this;
+        }
+
+        private Formatting formatting() {
+            nextColor = !nextColor;
+            return !nextColor ? aFormat : bFormat;
+        }
+
+        public MutableText build() {
+            MutableText text = newText();
+            for (int i = 0; i < this.list.size(); i++) {
+                Object obj = this.list.get(i);
+                if (obj == null) {
+                    text.append(newText(String.valueOf((Object) null)).formatted(formatting()));
+                } else if (obj instanceof Text) {
+                    text.append((Text) obj);
+                } else {
+                    TypeFormat format = TypeFormat.getByClazz(obj.getClass());
+                    text.append(newText(String.valueOf(obj)).formatted(format == null ? formatting() : format.getDefaultFormatting()));
+                }
+
+                if (i != this.list.size()) {
+                    text.append(" ");
+                }
+            }
+
+            return text;
+        }
+
     }
 
     public static class ListStyle {
@@ -205,7 +266,7 @@ public class Texter {
         public ListStyle append(Object obj, @Nullable HoverEvent hoverEvent, @Nullable ClickEvent clickEvent) {
             Formatting formatting = nextColor ? bFormat : aFormat;
             MutableText text = obj instanceof MutableText ? ((MutableText) obj).formatted(formatting) :
-                    Texter.toText(String.valueOf(obj)).formatted(formatting);
+                    Texter.newText(String.valueOf(obj)).formatted(formatting);
             if (hoverEvent != null) {
                 text.styled((style) -> style.setHoverEvent(hoverEvent));
             }
@@ -266,7 +327,7 @@ public class Texter {
         public InfoBlockStyle(String title, Formatting primary, Formatting secondary, Formatting borders) {
             this.header = new LiteralText("")
                     .append(new LiteralText("- [ ").formatted(borders))
-                    .append(toText(title).formatted(primary))
+                    .append(newText(title).formatted(primary))
                     .append(" ] ")
                     .append(SEPARATOR.substring(TextFormat.removeAlternateColorCodes('&', title).length() + 4))
                     .formatted(borders);
@@ -290,26 +351,29 @@ public class Texter {
             this.valueObjectSeparator = text;
             return this;
         }
-
+        
         public InfoBlockStyle append(List<?> objects, String title) {
+            MutableText text = newText();
             for (int i = 0; i < objects.size(); i++) {
-                if (objects.get(i) == null) {
-                    text.append(String.valueOf(objects.get(i)));
-                } else if (objects.get(i) instanceof Text) {
-                    MutableText objectToText = (MutableText) objects.get(i);
-                    text.styled((style) -> {
-                        if (objectToText.getStyle().getHoverEvent() != null) {
-                            style.setHoverEvent(objectToText.getStyle().getHoverEvent());
+                Object obj = objects.get(i);
+                if (obj == null) {
+                    this.text.append(String.valueOf((Object) null));
+                } else if (obj instanceof Text) {
+                    MutableText mutable = (MutableText) obj;
+                    this.text.styled((style) -> {
+                        if (mutable.getStyle().getHoverEvent() != null) {
+                            style.setHoverEvent(mutable.getStyle().getHoverEvent());
                         }
 
-                        if (objectToText.getStyle().getClickEvent() != null) {
-                            style.withClickEvent(objectToText.getStyle().getClickEvent());
+                        if (mutable.getStyle().getClickEvent() != null) {
+                            style.withClickEvent(mutable.getStyle().getClickEvent());
                         }
                         return style;
                     });
+                    text.append(mutable);
                 } else {
                     TypeFormat typeFormat = TypeFormat.getByClazz(objects.get(i).getClass());
-                    text.append(Texter.toText(String.valueOf(objects.get(i)))
+                    text.append(Texter.newText(String.valueOf(objects.get(i)))
                             .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary));
 
                     if (i != objects.size()) {
