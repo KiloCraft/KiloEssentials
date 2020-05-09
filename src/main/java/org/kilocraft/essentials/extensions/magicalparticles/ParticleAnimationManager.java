@@ -129,17 +129,17 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
 
                     boolean shouldContinue = true;
                     for (int j = 0; j < 3; j++) {
-                        int color = Integer.parseInt(rgb[j]);
-                        if (color > 255 || color < 0) {
+                        float color = Float.parseFloat(rgb[j]);
+                        if (color > 1 || color < 0) {
                             KiloEssentials.getLogger().warn("Error when initializing a ParticleFrame! Id: " + string +
-                                    " Frame: " + i + "RGB: " + j + " Invalid RGB Color value! a RGB Color value must be between 0 and 255");
+                                    " Frame: " + i + "RGB: " + j + " Invalid RGB Color value! a RGB Color value must be between 0 and 1");
                             shouldContinue = false;
                         }
                     }
 
                     if (shouldContinue)
                         particleEffect = new DustParticleEffect(
-                                Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]), section.scale
+                                Float.parseFloat(rgb[0]), Float.parseFloat(rgb[1]), Float.parseFloat(rgb[2]), section.scale
                         );
                 } else {
                     particleEffect = (DefaultParticleType) effect;
@@ -208,9 +208,14 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
                             double angle = 360 / (circumference / spacing);
 
                             // Circle
-                            for (float t = 0; t < 360; t += angle) {
-                                double newX = section.size / 2*Math.cos(t) - (section.size / 2)*Math.sin(t);
-                                double newY = section.size / 2*Math.sin(t) + (section.size / 2)*Math.cos(t);
+                            for (float t = 0; t < 360 + angle; t += angle) {
+                                float realT = t;
+                                if (realT > 360) {
+                                    realT = 360;
+                                }
+
+                                double newX = section.size / 2*Math.cos(realT) - (section.size / 2)*Math.sin(realT);
+                                double newY = section.size / 2*Math.sin(realT) + (section.size / 2)*Math.cos(realT);
 
                                 animation.append(new ParticleFrame<>(
                                         particleEffect,
