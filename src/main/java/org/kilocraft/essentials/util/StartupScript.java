@@ -75,7 +75,7 @@ public class StartupScript {
             reader.close();
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            KiloEssentials.getLogger().error("An unexpected error occurred whilst generating a Startup Script", e);
         } finally {
             KiloEssentials.getLogger().info("Generated the Start script \"" + this.FILE_NAME + "\"");
         }

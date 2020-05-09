@@ -27,7 +27,6 @@ import org.kilocraft.essentials.chat.UserMessageReceptionist;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.ServerUserSettings;
 import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.nbt.NBTTypes;
 import org.kilocraft.essentials.util.nbt.NBTUtils;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.Texter;
@@ -244,7 +243,7 @@ public class ServerUser implements User {
             return UserUtils.getDisplayNameWithMeta((OnlineUser) this, true);
         }
 
-        return Texter.toText(this.getDisplayName());
+        return Texter.newText(this.getDisplayName());
     }
 
     @Override
@@ -253,7 +252,7 @@ public class ServerUser implements User {
             return UserUtils.getDisplayNameWithMeta((OnlineUser) this, false);
         }
 
-        return Texter.toText(this.name);
+        return Texter.newText(this.name);
     }
 
     @Override

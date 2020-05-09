@@ -2,7 +2,6 @@ package org.kilocraft.essentials.chat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.datafixers.kinds.IdF;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
@@ -38,7 +37,6 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.rmi.UnexpectedException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -84,7 +82,7 @@ public final class ServerChat {
             send(sender, message, channel);
         } catch (Exception e) {
             sender.getCommandSource().sendError(
-                    Texter.toText("an unexpected exception occurred while processing the message")
+                    Texter.newText("an unexpected exception occurred while processing the message")
                             .append("\n").append(Util.getInnermostMessage(e))
             );
 
@@ -320,7 +318,7 @@ public final class ServerChat {
         String format = ServerChat.config.commandSpyFormat;
         String shortenedCommand = command.substring(0, Math.min(command.length(), COMMAND_MAX_LENGTH));
         String toSpy = format.replace("%SOURCE%", source.getName()).replace("%COMMAND%",  shortenedCommand);
-        MutableText text = Texter.toText(toSpy).formatted(Formatting.GRAY);
+        MutableText text = Texter.newText(toSpy).formatted(Formatting.GRAY);
 
         if (command.length() > COMMAND_MAX_LENGTH) {
             text.append("...");

@@ -126,15 +126,15 @@ public class WhoWasCommand extends EssentialCommand {
             i++;
             Text dateText;
             if (entry.isPlayersInitialName()) {
-                dateText = Texter.toText(INITIAL_FORMAT);
+                dateText = Texter.newText(INITIAL_FORMAT);
             } else {
-                dateText = Texter.toText(String.format(DATE_FORMAT, TimeDifferenceUtil.formatDateDiff(entry.getChangeTime())))
+                dateText = Texter.newText(String.format(DATE_FORMAT, TimeDifferenceUtil.formatDateDiff(entry.getChangeTime())))
                         .styled((style) ->
                                 style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(new Date(entry.getChangeTime()))))
                         );
             }
 
-            input.append(Texter.toText(String.format(LINE_FORMAT, i, entry.getPlayerName())).append(" ").append(dateText));
+            input.append(Texter.newText(String.format(LINE_FORMAT, i, entry.getPlayerName())).append(" ").append(dateText));
         }
 
         Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());

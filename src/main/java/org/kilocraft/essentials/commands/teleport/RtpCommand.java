@@ -180,7 +180,7 @@ public class RtpCommand extends EssentialCommand {
 	private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		Text text = Texter.confirmationMessage(
 				"command.rtp.confirm",
-				Texter.getButton("&8[&aClick Here to perform&8]", "/rtp perform", Texter.toText("&dConfirm"))
+				Texter.getButton("&8[&aClick Here to perform&8]", "/rtp perform", Texter.newText("&dConfirm"))
 		);
 		this.getOnlineUser(ctx).sendMessage(text);
 		return SUCCESS;
@@ -281,7 +281,7 @@ public class RtpCommand extends EssentialCommand {
 					target.networkHandler.sendPacket(
 							new TitleS2CPacket(
 									TitleS2CPacket.Action.ACTIONBAR,
-									Texter.toText(String.format(ACTION_MSG, finalTries, cfg.maxTries))
+									Texter.newText(String.format(ACTION_MSG, finalTries, cfg.maxTries))
 							)
 					);
 				});
@@ -316,7 +316,7 @@ public class RtpCommand extends EssentialCommand {
 					.append(new LiteralText("You've been teleported to this ").formatted(Formatting.YELLOW))
 					.append(translatable.formatted(Formatting.GOLD))
 					.append(new LiteralText(" biome!").formatted(Formatting.YELLOW))
-					.append("\n").append(Texter.toText(cfgMessage));
+					.append("\n").append(Texter.newText(cfgMessage));
 
 			targetUser.sendMessage(text);
 			if (!sourceUser.equals(targetUser)) {
