@@ -73,7 +73,7 @@ public class HomesCommand extends EssentialCommand {
                     Texter.Events.onHover(new LiteralText("")
                             .append(new LiteralText(tl("general.click_teleport")).formatted(Formatting.YELLOW))
                             .append("\n")
-                            .append(Texter.toText(loc.asFormattedString()))
+                            .append(Texter.newText(loc.asFormattedString()))
                     ),
                     Texter.Events.onClickRun("/home " + home.getName() + (areTheSame ? "" : " " + user.getUsername())));
         }

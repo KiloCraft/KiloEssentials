@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Texts;
-import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -51,17 +50,17 @@ public class TpaHereCommand extends EssentialCommand {
         UserUtils.TpaRequests.add(src, target, true);
 
         src.sendMessage(
-                Texter.toText(ModConstants.translation("command.tpa.sent", target.getFormattedDisplayName()))
+                Texter.newText(ModConstants.translation("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.toText("&cCancel"))))
+                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText("&cCancel"))))
         );
 
         target.sendMessage(
-                Texter.toText(ModConstants.translation("command.tpa.receive.here", src.getFormattedDisplayName()))
+                Texter.newText(ModConstants.translation("command.tpa.receive.here", src.getFormattedDisplayName()))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.toText("&aClick to accept"))))
+                        .append(Texts.bracketed(Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText("&aClick to accept"))))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.toText("&cClick to deny"))))
+                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText("&cClick to deny"))))
         );
 
         if (target.getSetting(Settings.SOUNDS)) {

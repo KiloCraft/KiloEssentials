@@ -32,7 +32,7 @@ public class PunishmentManager {
 
     public void kick(ServerPlayerEntity player, String reason) {
         final String finalReason = reason == null ? KiloConfig.main().moderation().defaults().kick : reason;
-        player.networkHandler.disconnect(Texter.toText(reason));
+        player.networkHandler.disconnect(Texter.newText(reason));
     }
 
     public void ban(GameProfile profile, String source, String reason) {

@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.SimpleProcess;
@@ -43,7 +42,7 @@ public class UserUtils {
                 builder.append(suffix);
             }
 
-            return Texter.toText(builder.toString());
+            return Texter.newText(builder.toString());
         }
 
         return Team.modifyText(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));

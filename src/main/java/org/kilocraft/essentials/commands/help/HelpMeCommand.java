@@ -39,7 +39,7 @@ public class HelpMeCommand extends EssentialCommand {
                 .append(" ")
                 .append(new LiteralText(ctx.getSource().getName()).formatted(Formatting.YELLOW)
                         .append(new LiteralText(": ").formatted(Formatting.WHITE)))
-                .append(Texter.toText(getString(ctx, "message")).formatted(Formatting.WHITE));
+                .append(Texter.newText(getString(ctx, "message")).formatted(Formatting.WHITE));
 
         int i = 0;
         for (final OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {

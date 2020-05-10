@@ -386,7 +386,7 @@ public class KiloCommands {
             }
         }
 
-        source.sendFeedback(Texter.toText(builder.toString()), false);
+        source.sendFeedback(Texter.newText(builder.toString()), false);
     }
 
     public int execute(final ServerCommandSource executor, final String command) {

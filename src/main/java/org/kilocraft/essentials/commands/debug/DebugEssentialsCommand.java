@@ -96,9 +96,9 @@ public class DebugEssentialsCommand extends EssentialCommand {
                 }
 
                 input.append(
-                        Texter.toText(String.format(LINE_FORMAT, atomicInteger.get(), id1, type, cached.isValid()))
+                        Texter.newText(String.format(LINE_FORMAT, atomicInteger.get(), id1, type, cached.isValid()))
                                 .styled((style) -> style.setHoverEvent(Texter.Events.onHover(id))).append(
-                                Texter.toText(String.format(DATA_FORMAT, data.substring(0, Math.min(data.length(), 10))))
+                                Texter.newText(String.format(DATA_FORMAT, data.substring(0, Math.min(data.length(), 10))))
                                         .styled((style) -> style.setHoverEvent(Texter.Events.onHover(data)).withClickEvent(Texter.Events.onClickRun("/debugess cache " + id)))
                         )
                 );
@@ -116,7 +116,7 @@ public class DebugEssentialsCommand extends EssentialCommand {
             Cached<?> cached = CacheManager.get(id);
 
             if (cached == null) {
-                ctx.getSource().sendError(Texter.toText("&cCache doesn't exist"));
+                ctx.getSource().sendError(Texter.newText("&cCache doesn't exist"));
                 return -1;
             }
 
@@ -125,8 +125,8 @@ public class DebugEssentialsCommand extends EssentialCommand {
             String data = o == null ? "null" : o.toString();
 
             ctx.getSource().sendFeedback(
-                    Texter.toText(String.format(FORMAT, type, id))
-                            .append(new LiteralText(data).formatted(Formatting.WHITE).append(Texter.toText(FORMAT1)))
+                    Texter.newText(String.format(FORMAT, type, id))
+                            .append(new LiteralText(data).formatted(Formatting.WHITE).append(Texter.newText(FORMAT1)))
                     , false);
 
             return SUCCESS;
@@ -143,7 +143,7 @@ public class DebugEssentialsCommand extends EssentialCommand {
 
             Cached<CompoundTag> cached = new Cached<>(name, livesFor, unit, value);
             CacheManager.cache(cached);
-            KiloChat.sendMessageTo(ctx.getSource(), Texter.toText("Cached " + name));
+            KiloChat.sendMessageTo(ctx.getSource(), Texter.newText("Cached " + name));
             return 1;
         }
 
@@ -170,7 +170,7 @@ public class DebugEssentialsCommand extends EssentialCommand {
             boolean set = BoolArgumentType.getBool(ctx, "set");
 
             KiloDebugUtils.setDebugMode(set);
-            KiloChat.sendMessageTo(ctx.getSource(), Texter.toText("&eSet debug mode to &6" + set));
+            KiloChat.sendMessageTo(ctx.getSource(), Texter.newText("&eSet debug mode to &6" + set));
             return 1;
         }
     }

@@ -52,17 +52,17 @@ public class TpaCommand extends EssentialCommand {
         UserUtils.TpaRequests.add(src, target, false);
 
         src.sendMessage(
-                Texter.toText(tl("command.tpa.sent", target.getFormattedDisplayName()))
+                Texter.newText(tl("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.toText("&cCancel"))))
+                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText("&cCancel"))))
         );
 
         target.sendMessage(
-                Texter.toText(tl("command.tpa.receive", src.getFormattedDisplayName()))
+                Texter.newText(tl("command.tpa.receive", src.getFormattedDisplayName()))
                         .append(" ")
-                            .append(Texts.bracketed(Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.toText("&aClick to accept"))))
+                            .append(Texts.bracketed(Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText("&aClick to accept"))))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.toText("&cClick to deny"))))
+                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText("&cClick to deny"))))
         );
 
         if (target.getSetting(Settings.SOUNDS)) {
