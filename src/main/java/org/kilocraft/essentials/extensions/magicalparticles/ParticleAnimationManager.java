@@ -359,15 +359,15 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
         tick++;
         if (tick > config.getPps() && uuidIdentifierMap != null && !uuidIdentifierMap.isEmpty()) {
             try {
-                uuidIdentifierMap.forEach((uuid, id) -> {
-                    final ServerPlayerEntity player = KiloServer.getServer().getPlayer(uuid);
+                for (Map.Entry<UUID, Identifier> entry : uuidIdentifierMap.entrySet()) {
+                    ServerPlayerEntity player = KiloServer.getServer().getPlayer(entry.getKey());
 
-                    if (player != null && !player.isSpectator())
-                        runAnimationFrames(KiloServer.getServer().getPlayer(uuid), id);
-                });
+                    if (player != null && !player.isSpectator()) {
+                        runAnimationFrames(player, entry.getValue());
+                    }
+                }
             } catch (Exception e) {
-                KiloEssentials.getLogger().error("Exception while processing Magical Particles");
-                KiloEssentials.getLogger().error(e.getMessage());
+                KiloEssentials.getLogger().error("Exception while processing Magical Particles", e);
             }
 
             tick = 0;
@@ -387,12 +387,14 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
         }
 
         for (ParticleFrame<?> frame : animation.getFrames()) {
-            if (frame == null)
+            if (frame == null) {
                 continue;
+            }
 
             Packet<?> packet = frame.toPacket(player.getPos(), player.bodyYaw);
-            if (packet != null)
+            if (packet != null) {
                 player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
+            }
         }
 
         animation.frames();

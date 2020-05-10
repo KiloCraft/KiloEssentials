@@ -104,14 +104,6 @@ public class ServerUser implements User {
             cacheTag.putString("ip", this.lastSocketAddress);
         }
 
-        if (this.lastDmReceptionist != null) {
-            CompoundTag lastDmTag = new CompoundTag();
-            lastDmTag.putString("name", this.lastDmReceptionist.getName());
-            NBTUtils.putUUID(lastDmTag, "id", this.lastDmReceptionist.getId());
-            cacheTag.put("dmRec", lastDmTag);
-        }
-
-        metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
         metaTag.putString("firstJoin", ModConstants.DATE_FORMAT.format(this.firstJoin));
         if (this.lastOnline != null) {
             metaTag.putString("lastOnline", ModConstants.DATE_FORMAT.format(this.lastOnline));
@@ -162,9 +154,9 @@ public class ServerUser implements User {
             this.lastDmReceptionist = new UserMessageReceptionist(lastDmTag.getString("name"), NBTUtils.getUUID(lastDmTag, "id"));
         }
 
-        this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = dateFromString(metaTag.getString("firstJoin"));
         this.lastOnline = dateFromString(metaTag.getString("lastOnline"));
+        this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
 
         if (metaTag.contains("ticksPlayed")) {
             this.ticksPlayed = metaTag.getInt("ticksPlayed");
@@ -193,6 +185,7 @@ public class ServerUser implements User {
         try {
             date = ModConstants.DATE_FORMAT.parse(stringToParse);
         } catch (ParseException ignored) {
+            this.hasJoinedBefore = false;
         }
         return date;
     }

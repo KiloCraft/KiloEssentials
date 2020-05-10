@@ -17,6 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
@@ -355,7 +356,7 @@ class RandomTeleportThread implements Runnable {
 		try {
 			RtpCommand.teleport(this.source, this.target, logger);
 		} catch (Exception e) {
-			KiloEssentials.getLogger().error("Canceled RTP for {}, Target probably left... ", target.getEntityName());
+			KiloEssentials.getLogger().error("Canceled RTP for {}, Target probably left... ", target.getEntityName(), e);
 		}
 	}
 }

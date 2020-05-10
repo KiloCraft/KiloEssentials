@@ -257,8 +257,8 @@ public final class ServerChat {
 //            target.setLastMessageSender(source.getPlayer().getUuid());
 //            online.setLastMessageSender(target.getUuid());
 //            online.setLastPrivateMessage(message);
-            target.setLastDirectMessageReceptionist(src);
-            online.setLastDirectMessageReceptionist(target);
+            online.setLastDirectMessageReceptionist(src);
+            target.setLastDirectMessageReceptionist(target);
         }
 
         if (CommandUtils.areTheSame(source, target)) {
