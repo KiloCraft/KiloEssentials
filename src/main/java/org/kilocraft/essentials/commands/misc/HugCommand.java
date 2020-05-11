@@ -45,7 +45,7 @@ public class HugCommand extends EssentialCommand {
                         target.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
                         //Sound handler.
                         target.asPlayer().playSound(
-                                SoundEvents.ENTITY_VILLAGER_CELEBRATE,
+                                SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE,
                                 SoundCategory.MASTER,
                                 1,
                                 1);
