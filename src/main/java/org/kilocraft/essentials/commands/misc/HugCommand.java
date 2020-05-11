@@ -27,13 +27,13 @@ public class HugCommand extends EssentialCommand {
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         //Get all players and testing them for the statements.
-        ctx.getSource().getMinecraftServer().getPlayerManager().getPlayerList().forEach(player -> {
+        this.server.getPlayerManager().getPlayerList().forEach(player -> {
             OnlineUser target = getOnlineUser(player);
             //Creating a box.
-            Box Ebox = new Box(src.asPlayer().getBlockPos());
-            Ebox = Ebox.expand(2, 2, 2);
+            Box eBox = new Box(src.asPlayer().getBlockPos());
+            eBox = eBox.expand(2, 2, 2);
             //Check if the players block position is contained by the box.
-            if (Ebox.contains(Vec3d.ofCenter(player.getBlockPos()))){
+            if (eBox.contains(Vec3d.ofCenter(player.getBlockPos()))){
                 //If the target is the src. Dont run.
                 if(!target.equals(src)) {
                     //If the player src has enough total experience.
