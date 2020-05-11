@@ -213,7 +213,7 @@ public class ServerUser implements User {
 
     @Override
     public boolean isOnline() {
-        return this instanceof OnlineUser || KiloServer.getServer().getUserManager().isOnline(this);
+        return this instanceof OnlineUser || manager.isOnline(this);
     }
 
     @Override
@@ -227,7 +227,7 @@ public class ServerUser implements User {
 
     @Override
     public String getFormattedDisplayName() {
-        return TextFormat.translate(getDisplayName() + "&r");
+        return TextFormat.translate(this.getDisplayName() + TextFormat.RESET.toString());
     }
 
     @Override
@@ -390,12 +390,12 @@ public class ServerUser implements User {
     }
 
     @Override
-    public MessageReceptionist getLastDirectMessageReceptionist() {
+    public MessageReceptionist getLastMessageReceptionist() {
         return this.lastDmReceptionist;
     }
 
     @Override
-    public void setLastDirectMessageReceptionist(MessageReceptionist receptionist) {
+    public void setLastMessageReceptionist(MessageReceptionist receptionist) {
         this.lastDmReceptionist = receptionist;
     }
 

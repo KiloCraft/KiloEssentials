@@ -256,9 +256,8 @@ public final class ServerChat {
             OnlineUser online = KiloServer.getServer().getOnlineUser(source.getPlayer());
 //            target.setLastMessageSender(source.getPlayer().getUuid());
 //            online.setLastMessageSender(target.getUuid());
-//            online.setLastPrivateMessage(message);
-            online.setLastDirectMessageReceptionist(src);
-            target.setLastDirectMessageReceptionist(target);
+            online.setLastMessageReceptionist(target);
+            target.setLastMessageReceptionist(online);
         }
 
         if (CommandUtils.areTheSame(source, target)) {

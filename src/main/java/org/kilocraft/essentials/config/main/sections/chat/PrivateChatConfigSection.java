@@ -13,6 +13,9 @@ public class PrivateChatConfigSection {
     @Setting(value = "meFormat")
     public String privateChatMeFormat = "&cme";
 
+    @Setting(value = "noMessageToReply")
+    public String noMessagesToReply = "&cYou don't have any messages to reply to!";
+
     @Setting(value = "sound", comment = "The sound you hear when someone messages you")
     private ChatPingSoundConfigSection chatPingSound = new ChatPingSoundConfigSection(SoundEvents.ENTITY_SILVERFISH_DEATH, 0.09, 1.05D);
 

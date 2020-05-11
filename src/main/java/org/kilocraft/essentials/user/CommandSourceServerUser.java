@@ -207,12 +207,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public MessageReceptionist getLastDirectMessageReceptionist() {
+    public MessageReceptionist getLastMessageReceptionist() {
         return null;
     }
 
     @Override
-    public void setLastDirectMessageReceptionist(MessageReceptionist receptionist) {
+    public void setLastMessageReceptionist(MessageReceptionist receptionist) {
 
     }
 

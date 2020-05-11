@@ -169,12 +169,12 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public MessageReceptionist getLastDirectMessageReceptionist() {
+    public MessageReceptionist getLastMessageReceptionist() {
         return null;
     }
 
     @Override
-    public void setLastDirectMessageReceptionist(MessageReceptionist receptionist) {
+    public void setLastMessageReceptionist(MessageReceptionist receptionist) {
 
     }
 
