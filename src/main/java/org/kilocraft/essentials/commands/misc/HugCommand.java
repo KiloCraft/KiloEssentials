@@ -32,7 +32,7 @@ public class HugCommand extends EssentialCommand {
             Ebox = Ebox.expand(2, 2, 2);
             if (Ebox.contains(Vec3d.ofCenter(player.getBlockPos()))){
                 if(!target.equals(src)) {
-                    target.sendLangMessage("command.hug.message", src.getDisplayName());
+                    target.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
                     target.asPlayer().playSound(
                             SoundEvents.ENTITY_VILLAGER_CELEBRATE,
                             SoundCategory.MASTER,
