@@ -4,17 +4,19 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.user.setting.Settings;
 
 public class SocialSpyCommand extends EssentialCommand {
+    private static final Setting<Boolean> SOCIAL_SPY = Settings.SOCIAL_SPY;
+
     public SocialSpyCommand() {
-        super("socialspy", src -> !CommandUtils.isConsole(src) && KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_CHAT));
+        super("socialspy", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_CHAT));
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -22,14 +24,16 @@ public class SocialSpyCommand extends EssentialCommand {
     }
     
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        if (ServerChat.isSocialSpy(ctx.getSource().getPlayer())) {
-            ServerChat.removeSocialSpy(ctx.getSource().getPlayer());
-            ctx.getSource().sendFeedback(new LiteralText("SocialSpy is now inactive").formatted(Formatting.YELLOW), false);
-            return SUCCESS;
+        OnlineUser src = this.getOnlineUser(ctx);
+        Boolean set = !src.getSetting(SOCIAL_SPY);
+        src.getSettings().set(SOCIAL_SPY, set);
+
+        if (set) {
+            src.sendLangMessage("command.socialspy.active");
+        } else {
+            src.sendLangMessage("command.socialspy.inactive");
         }
 
-        ServerChat.addSocialSpy(ctx.getSource().getPlayer());
-        ctx.getSource().sendFeedback(new LiteralText("SocialSpy is now active").formatted(Formatting.YELLOW), false);
-        return SUCCESS;
+        return set ? SUCCESS : AWAIT;
     }
 }

@@ -219,30 +219,6 @@ public final class ServerChat {
         }
     }
 
-    public static void addSocialSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.SOCIAL_SPY, true);
-    }
-
-    public static void removeSocialSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.SOCIAL_SPY, false);
-    }
-
-    public static boolean isSocialSpy(final ServerPlayerEntity player) {
-        return KiloServer.getServer().getOnlineUser(player).getSetting(Settings.SOCIAL_SPY);
-    }
-
-    public static void addCommandSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.COMMAND_SPY, true);
-    }
-
-    public static void removeCommandSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.COMMAND_SPY, false);
-    }
-
-    public static boolean isCommandSpy(final ServerPlayerEntity player) {
-        return KiloServer.getServer().getOnlineUser(player).getSetting(Settings.COMMAND_SPY);
-    }
-
     public static int sendDirectMessage(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
         CommandSourceUser src = KiloServer.getServer().getCommandSourceUser(source);
 
@@ -254,8 +230,6 @@ public final class ServerChat {
 
         if  (!CommandUtils.isConsole(source)) {
             OnlineUser online = KiloServer.getServer().getOnlineUser(source.getPlayer());
-//            target.setLastMessageSender(source.getPlayer().getUuid());
-//            online.setLastMessageSender(target.getUuid());
             online.setLastMessageReceptionist(target);
             target.setLastMessageReceptionist(online);
         }
