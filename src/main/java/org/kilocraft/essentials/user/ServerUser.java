@@ -52,6 +52,7 @@ import java.util.*;
  */
 
 public class ServerUser implements User {
+    public static final int SYS_MESSAGE_COOL_DOWN = 400;
     protected static ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
     UUID uuid;
     String name = "";
@@ -63,6 +64,7 @@ public class ServerUser implements User {
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
     public int messageCooldown;
+    public int systemMessageCooldown;
     private MessageReceptionist lastDmReceptionist;
     boolean isStaff = false;
     String lastSocketAddress;

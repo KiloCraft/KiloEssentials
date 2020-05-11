@@ -341,9 +341,9 @@ public class RtpCommand extends EssentialCommand {
 }
 
 class RandomTeleportThread implements Runnable {
-	private Logger logger = LogManager.getLogger();
-	private ServerCommandSource source;
-	private ServerPlayerEntity target;
+	private final Logger logger = LogManager.getLogger();
+	private final ServerCommandSource source;
+	private final ServerPlayerEntity target;
 
 	public RandomTeleportThread(ServerCommandSource source, ServerPlayerEntity target) {
 		this.source = source;
@@ -356,7 +356,7 @@ class RandomTeleportThread implements Runnable {
 		try {
 			RtpCommand.teleport(this.source, this.target, logger);
 		} catch (Exception e) {
-			KiloEssentials.getLogger().error("Canceled RTP for {}, Target probably left... ", target.getEntityName(), e);
+			KiloEssentials.getLogger().error("RTP for {} failed.", target.getEntityName(), e);
 		}
 	}
 }
