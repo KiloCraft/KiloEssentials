@@ -4,13 +4,18 @@ import com.mojang.brigadier.CommandDispatcher;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class HugCommand extends EssentialCommand {
@@ -26,37 +31,36 @@ public class HugCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
-        //Get all players and testing them for the statements.
-        this.server.getPlayerManager().getPlayerList().forEach(player -> {
+        for (ServerPlayerEntity player : this.server.getPlayerManager().getPlayerList()) {
             OnlineUser target = getOnlineUser(player);
-            //Creating a box.
             Box eBox = new Box(src.asPlayer().getBlockPos());
             eBox = eBox.expand(2, 2, 2);
-            //Check if the players block position is contained by the box.
-            if (eBox.contains(Vec3d.ofCenter(player.getBlockPos()))){
-                //If the target is the src. Dont run.
-                if(!target.equals(src)) {
-                    //If the player src has enough total experience.
-                    if(src.asPlayer().totalExperience >= 16) {
-                        //Experience handling.
-                        src.asPlayer().addExperience(-16);
-                        target.asPlayer().addExperience(8);
-                        //Message handler.
-                        target.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
-                        //Sound handler.
-                        target.asPlayer().playSound(
-                                SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE,
-                                SoundCategory.MASTER,
-                                1,
-                                1);
-                    } else {
-                        src.sendLangMessage("command.hug.xp");
-                    }
+
+            if (!target.equals(src)) {
+
+                if (!eBox.contains(Vec3d.ofCenter(player.getBlockPos()))) {
+                    return FAILED;
                 }
-            } else {
-                src.sendLangMessage("command.hug.notclose");
+
+                if (src.asPlayer().totalExperience < 16) {
+                    src.sendLangMessage("command.hug.xp");
+                    return FAILED;
+                }
+
+                src.asPlayer().addExperience(-16);
+                player.addExperience(8);
+
+                target.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
+
+                player.playSound(
+                        SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE,
+                        SoundCategory.MASTER,
+                        1,
+                        1
+                );
             }
-        });
-        return 1;
+            return SUCCESS;
+        }
+        return SUCCESS;
     }
 }
