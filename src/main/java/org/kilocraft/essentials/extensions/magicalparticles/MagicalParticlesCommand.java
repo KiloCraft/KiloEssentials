@@ -123,15 +123,15 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
     private CompletableFuture<Suggestions> particleIdSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(context);
-        List<Identifier> identifiers = new ArrayList<>();
+        List<String> usableAnimations = new ArrayList<>();
         for (Map.Entry<Identifier, ParticleAnimation> entry : map.entrySet()) {
             ParticleAnimation animation = entry.getValue();
 
             if (animation.predicate() == null || (animation.predicate() != null && animation.predicate().test(user))) {
-                identifiers.add(entry.getKey());
+                usableAnimations.add(entry.getKey().getPath());
             }
         }
-        return CommandSource.suggestIdentifiers(identifiers, builder);
+        return CommandSource.suggestMatching(usableAnimations, builder);
     }
 
 }

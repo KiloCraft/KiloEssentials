@@ -380,7 +380,7 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
     public void onTick() {
         //Tick counter logic, only shows the animations once in 4 ticks
         tick++;
-        if (tick > config.getPps() && uuidIdentifierMap != null && !uuidIdentifierMap.isEmpty()) {
+        if (tick > config.getPps() && !uuidIdentifierMap.isEmpty()) {
             try {
                 for (Map.Entry<UUID, Identifier> entry : uuidIdentifierMap.entrySet()) {
                     ServerPlayerEntity player = KiloServer.getServer().getPlayer(entry.getKey());

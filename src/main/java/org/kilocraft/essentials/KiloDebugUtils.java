@@ -25,17 +25,13 @@ import java.io.File;
 public class KiloDebugUtils {
     public static KiloDebugUtils INSTANCE;
     private static boolean wasEnabled = false;
-    private KiloEssentials ess;
-    private Server server;
-    private MinecraftServer minecraftServer;
+    private final MinecraftServer minecraftServer;
     private CommandBossBar bossBar;
-    private Identifier DEBUG_BAR = new Identifier("kiloessentials", "debug_bar");
+    private final Identifier DEBUG_BAR = new Identifier("kiloessentials", "debug_bar");
 
-    public KiloDebugUtils(KiloEssentials ess) {
+    public KiloDebugUtils() {
         INSTANCE = this;
-        this.ess = ess;
-        this.server = KiloServer.getServer();
-        this.minecraftServer = server.getVanillaServer();
+        this.minecraftServer = KiloServer.getServer().getVanillaServer();
 
         setupBossBar();
     }
@@ -43,9 +39,9 @@ public class KiloDebugUtils {
     public static void validateDebugMode(boolean reload) {
         File debugFile = new File(KiloEssentials.getWorkingDirectory() + "/kiloessentials.debug");
         if (debugFile.exists()) {
-            if (reload) {
-                INSTANCE = new KiloDebugUtils(KiloEssentials.getInstance());
-            }
+//            if (reload) {
+//                INSTANCE = new KiloDebugUtils();
+//            }
 
             KiloEssentials.getServer().getLogger().warn("**** SERVER IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
             KiloEssentials.getServer().getLogger().warn("     To change this simply remove the \"kiloessentials.debug\" file and reload");
