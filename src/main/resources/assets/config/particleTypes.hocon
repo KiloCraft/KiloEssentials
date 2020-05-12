@@ -26,6 +26,10 @@ types {
         offset="0.5 0 0.5"
         pos="0 0 0"
         speed=0
+        requires=[
+            op=2
+            perm="custom.permission"
+        ]
       }
     ]
   }

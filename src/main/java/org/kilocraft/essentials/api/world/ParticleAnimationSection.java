@@ -7,9 +7,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.KiloEssentials;
 
-public class ParticleFrame<P extends ParticleEffect> {
+public class ParticleAnimationSection<P extends ParticleEffect> {
     private P effect;
     private boolean longDistance;
     private RelativePosition relativePosition;
@@ -19,11 +18,11 @@ public class ParticleFrame<P extends ParticleEffect> {
     private Type type;
     private boolean relative;
 
-    public ParticleFrame(P effect,
-                         boolean longDistance,
-                         RelativePosition relPos,
-                         double offsetX, double offsetY, double offsetZ,
-                         double speed, int count, boolean relative) {
+    public ParticleAnimationSection(P effect,
+                                    boolean longDistance,
+                                    RelativePosition relPos,
+                                    double offsetX, double offsetY, double offsetZ,
+                                    double speed, int count, boolean relative) {
 
         this.effect = effect;
         this.longDistance = longDistance;
@@ -79,7 +78,7 @@ public class ParticleFrame<P extends ParticleEffect> {
         return count;
     }
 
-    public ParticleFrame.Type getType() {
+    public ParticleAnimationSection.Type getType() {
         return type;
     }
 

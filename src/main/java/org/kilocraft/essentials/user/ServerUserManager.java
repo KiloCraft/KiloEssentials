@@ -377,6 +377,8 @@ public class ServerUserManager implements UserManager, TickListener {
                     user.sendMessage(KiloConfig.main().chat().spamWarning);
                 }
             }
+
+            return;
         }
 
         if (string.startsWith("/")) {

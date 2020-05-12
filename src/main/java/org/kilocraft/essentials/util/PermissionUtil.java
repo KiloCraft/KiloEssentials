@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.Locale;
 
 public class PermissionUtil {
+    private static final Logger logger = (Logger) KiloEssentials.getLogger();
     private static final List<String> pendingPermissions = new ArrayList<>();
     private boolean present;
     private Manager manager;
 
     public PermissionUtil() {
-        Logger logger = (Logger) KiloEssentials.getLogger();
         logger.info("Setting up Permissions...");
         this.manager = Manager.fromString(KiloConfig.main().permissionManager());
 
@@ -36,18 +36,18 @@ public class PermissionUtil {
             return;
         }
 
-        logger.info("Checking " + manager.getName() + " for Availability");
+        logger.info("Checking {} for Availability", manager.getName());
 
         this.present = this.checkPresent();
 
         if (!this.present) {
-            logger.warn("**** " + manager.getName() + " is not present! Switching to vanilla operator system");
+            logger.warn("**** {} is not present! Switching to vanilla operator system", manager.getName());
             logger.warn("     You need to install either LuckPerms for Fabric Or Thimble to manage the permissions");
             this.manager = Manager.NONE;
             return;
         }
 
-        logger.info("Using " + manager.getName() + " as the Permission Manager");
+        logger.info("Using {} as the Permission Manager", manager.getName());
 
         if (manager == Manager.THIMBLE) {
             Thimble.permissionWriters.add((map, server) -> {

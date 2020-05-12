@@ -16,6 +16,9 @@ import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -24,6 +27,7 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
@@ -65,11 +69,18 @@ public class MagicalParticlesCommand extends EssentialCommand {
             identifier = new Identifier(identifier.toString().replaceFirst("--s", ""));
         }
 
-        if (!isValidId(identifier))
+        if (!isValidId(identifier)) {
             identifier = getIdFromPath(identifier.getPath());
+        }
 
-        if (!isValidId(identifier))
+        if (!isValidId(identifier)) {
             throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Particle animation").create();
+        }
+
+        if (!canUse(this.getOnlineUser(player), identifier)) {
+            KiloChat.sendMessageTo(player, KiloCommands.getPermissionError("?"));
+            return FAILED;
+        }
 
         addPlayer(player.getUuid(), identifier);
         player.sendMessage(LangText.getFormatter(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
@@ -110,10 +121,17 @@ public class MagicalParticlesCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private CompletableFuture<Suggestions> particleIdSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        List<String> strings = new ArrayList<>();
-        map.forEach((id, animation) -> strings.add(id.getPath()));
-        return CommandSource.suggestMatching(strings, builder);
+    private CompletableFuture<Suggestions> particleIdSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+        OnlineUser user = this.getOnlineUser(context);
+        List<Identifier> identifiers = new ArrayList<>();
+        for (Map.Entry<Identifier, ParticleAnimation> entry : map.entrySet()) {
+            ParticleAnimation animation = entry.getValue();
+
+            if (animation.predicate() == null || (animation.predicate() != null && animation.predicate().test(user))) {
+                identifiers.add(entry.getKey());
+            }
+        }
+        return CommandSource.suggestIdentifiers(identifiers, builder);
     }
 
 }

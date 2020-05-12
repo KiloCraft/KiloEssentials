@@ -232,6 +232,21 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public void sendSystemMessage(Object sysMessage) {
+        try {
+            this.getUser().sendSystemMessage(sysMessage);
+        } catch (CommandSyntaxException ignored) {
+            if (sysMessage instanceof String) {
+                this.sendMessage((String) sysMessage);
+            } else if (sysMessage instanceof Text) {
+                this.sendMessage((Text) sysMessage);
+            } else {
+                this.sendMessage(String.valueOf(sysMessage));
+            }
+        }
+    }
+
+    @Override
     public void teleport(@NotNull Location loc, boolean sendTicket) {
     }
 
@@ -356,7 +371,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public @Nullable OnlineUser getUser() throws CommandSyntaxException {
+    public OnlineUser getUser() throws CommandSyntaxException {
         return KiloServer.getServer().getOnlineUser(source.getPlayer());
     }
 
