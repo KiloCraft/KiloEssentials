@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.md_5.bungee.api.connection.Server;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -47,13 +48,32 @@ public class HugCommand extends EssentialCommand {
                 validTargets.add(player);
             }
         }
-        getClosest(validTargets, src);
+        ServerPlayerEntity mainTarget = getClosest(validTargets, src);
+
+        Box eBox = new Box(src.asPlayer().getBlockPos());
+        eBox = eBox.expand(2, 2, 2);
+
+        if (!eBox.contains(Vec3d.ofCenter(mainTarget.getBlockPos()))) {
+            src.sendLangMessage("command.hug.notclose");
+            return FAILED;
+        }
+
+        OnlineUser onlineTarget  = getOnlineUser(mainTarget);
+
+        src.asPlayer().addExperience(-16);
+
+        mainTarget.addExperience(8);
+        onlineTarget.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
+        mainTarget.playSound(
+                SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE,
+                SoundCategory.MASTER,
+                1,
+                1
+        );
         return SUCCESS;
     }
 
-    private int getClosest(ArrayList<ServerPlayerEntity> validTargets, OnlineUser src) {
-        Box eBox = new Box(src.asPlayer().getBlockPos());
-        eBox = eBox.expand(2, 2, 2);
+    private ServerPlayerEntity getClosest(ArrayList<ServerPlayerEntity> validTargets, OnlineUser src) {
 
         double srcLocation = src.asPlayer().getX();
         double distance = Math.abs(validTargets.get(0).getX() - srcLocation);
@@ -68,23 +88,6 @@ public class HugCommand extends EssentialCommand {
             }
         }
 
-        if (!eBox.contains(Vec3d.ofCenter(validTargets.get(id).getBlockPos()))) {
-            src.sendLangMessage("command.hug.notclose");
-            return FAILED;
-        }
-
-        OnlineUser mainTarget  = getOnlineUser(validTargets.get(id));
-
-        src.asPlayer().addExperience(-16);
-
-        mainTarget.asPlayer().addExperience(8);
-        mainTarget.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
-        mainTarget.asPlayer().playSound(
-                SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE,
-                SoundCategory.MASTER,
-                1,
-                1
-        );
-        return SUCCESS;
+        return validTargets.get(id);
     }
 }
