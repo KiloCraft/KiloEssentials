@@ -11,7 +11,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-
+import java.util.ArrayList;
 
 
 
@@ -27,6 +27,7 @@ public class HugCommand extends EssentialCommand {
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        ArrayList<ServerPlayerEntity> validTargets = new ArrayList<>();
         OnlineUser src = this.getOnlineUser(ctx);
         for (ServerPlayerEntity player : this.server.getPlayerManager().getPlayerList()) {
             OnlineUser target = getOnlineUser(player);
@@ -45,20 +46,36 @@ public class HugCommand extends EssentialCommand {
                     return FAILED;
                 }
 
-                src.asPlayer().addExperience(-16);
-                player.addExperience(8);
+                validTargets.add(player);
 
-                target.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
-
-                player.playSound(
-                        SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE,
-                        SoundCategory.MASTER,
-                        1,
-                        1
-                );
-                return SUCCESS;
             }
         }
+        OnlineUser mainTarget = getOnlineUser(getClosest(validTargets, src));
+        src.asPlayer().addExperience(-16);
+        mainTarget.asPlayer().addExperience(8);
+
+        mainTarget.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
+
+        mainTarget.asPlayer().playSound(
+                SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE,
+                SoundCategory.MASTER,
+                1,
+                1
+        );
         return SUCCESS;
+    }
+
+    private ServerPlayerEntity getClosest(ArrayList<ServerPlayerEntity> validTargets, OnlineUser src) {
+        double srcLocation = src.asPlayer().getX();
+        double distance = Math.abs(validTargets.get(0).getX() - srcLocation);
+        int id = 0;
+        for(int c = 1; c < validTargets.size(); c++){
+            double cDistance = Math.abs(validTargets.get(c).getX() - srcLocation);
+            if(cDistance < distance) {
+                id = c;
+                distance = cDistance;
+            }
+        }
+        return validTargets.get(id);
     }
 }
