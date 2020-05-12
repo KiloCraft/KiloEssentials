@@ -1,10 +1,8 @@
 package org.kilocraft.essentials.commands.misc;
 
 import com.mojang.brigadier.CommandDispatcher;
-
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -14,8 +12,7 @@ import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 public class HugCommand extends EssentialCommand {
@@ -39,6 +36,7 @@ public class HugCommand extends EssentialCommand {
             if (!target.equals(src)) {
 
                 if (!eBox.contains(Vec3d.ofCenter(player.getBlockPos()))) {
+                    src.sendLangMessage("command.hug.notclose");
                     return FAILED;
                 }
 
@@ -58,8 +56,8 @@ public class HugCommand extends EssentialCommand {
                         1,
                         1
                 );
+                return SUCCESS;
             }
-            return SUCCESS;
         }
         return SUCCESS;
     }
