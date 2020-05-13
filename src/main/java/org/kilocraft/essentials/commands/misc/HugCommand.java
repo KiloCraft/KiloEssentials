@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.md_5.bungee.api.connection.Server;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -41,20 +40,26 @@ public class HugCommand extends EssentialCommand {
             if (!target.equals(src)) {
 
                 if (src.asPlayer().totalExperience < 16) {
-                    src.sendLangMessage("command.hug.xp");
+                    src.sendLangMessage("command.hug.no_player_nearby");
                     return FAILED;
                 }
 
                 validTargets.add(player);
             }
         }
+
+        if (validTargets.isEmpty()) {
+            src.sendLangError("");
+            return FAILED;
+        }
+
         ServerPlayerEntity mainTarget = getClosest(validTargets, src);
 
         Box eBox = new Box(src.asPlayer().getBlockPos());
         eBox = eBox.expand(2, 2, 2);
 
         if (!eBox.contains(Vec3d.ofCenter(mainTarget.getBlockPos()))) {
-            src.sendLangMessage("command.hug.notclose");
+            src.sendLangMessage("command.hug.no_player_nearby");
             return FAILED;
         }
 
