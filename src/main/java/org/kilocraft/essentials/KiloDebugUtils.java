@@ -8,17 +8,21 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
+import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.util.text.Texter;
 
+import java.awt.*;
 import java.io.File;
 
 public class KiloDebugUtils {
@@ -27,9 +31,11 @@ public class KiloDebugUtils {
     private final MinecraftServer minecraftServer;
     private CommandBossBar bossBar;
     private final Identifier DEBUG_BAR = new Identifier("kiloessentials", "debug_bar");
-    private static boolean rainbowMode = false;
     private static boolean barVisible = true;
     private static final String DEBUG_FORMAT = ModConstants.getProperties().getProperty("debug_bar_text");
+    private static final MutableText DEBUG_TEXT = new LiteralText("[").formatted(Formatting.WHITE)
+            .append(new LiteralText("Debug").styled(style -> style.withColor(TextColor.parse("#fefe16"))))
+            .append("] ").formatted(Formatting.WHITE).formatted(Formatting.BOLD);
 
     public KiloDebugUtils() {
         INSTANCE = this;
@@ -40,13 +46,11 @@ public class KiloDebugUtils {
 
     public static void validateDebugMode(boolean reload) {
         File debugFile = new File(KiloEssentials.getWorkingDirectory() + "/kiloessentials.debug");
-        File coolDebugFile = new File(KiloEssentials.getWorkingDirectory() + "/kiloessentials_cool.debug");
 
-        if (debugFile.exists() || coolDebugFile.exists()) {
+        if (debugFile.exists()) {
             KiloEssentials.getServer().getLogger().warn("**** SERVER IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
             KiloEssentials.getServer().getLogger().warn("     To change this simply remove the \"kiloessentials.debug\" file and reload");
 
-            rainbowMode = coolDebugFile.exists();
             setDebugMode(true);
         } else {
             setDebugMode(false);
@@ -62,6 +66,11 @@ public class KiloDebugUtils {
 
     public static void setDebugMode(boolean set) {
         SharedConstants.isDevelopment = set;
+
+        if (set && !wasEnabled && INSTANCE != null) {
+            INSTANCE.setupBossBar();
+            wasEnabled = true;
+        }
     }
 
     public static void setDebugBarVisible(boolean set) {
@@ -71,7 +80,11 @@ public class KiloDebugUtils {
         }
     }
 
-    public void onScheduledUpdate() {
+    public static boolean shouldTick() {
+        return INSTANCE != null && barVisible;
+    }
+
+    public void onTick() {
         if (SharedConstants.isDevelopment) {
             update();
         } else {
@@ -88,10 +101,9 @@ public class KiloDebugUtils {
         BossBarManager manager = minecraftServer.getBossBarManager();
         bossBar = manager.add(DEBUG_BAR, new LiteralText("DebugBar"));
         bossBar.setMaxValue(20);
-        bossBar.setOverlay(BossBar.Style.NOTCHED_20);
+        bossBar.setOverlay(BossBar.Style.PROGRESS);
     }
 
-    private static int colorMultiplier = 0;
     public void update() {
         int loadedChunks = 0;
         int entities = 0;
@@ -101,51 +113,34 @@ public class KiloDebugUtils {
             entities = entities + moWorld.loadedEntities();
         }
 
-        int tps = (int) TPSTracker.tps1.getAverage();
-        bossBar.setValue(tps);
+        TPSTracker.tps1.getAverage();
 
         String debugText = String.format(DEBUG_FORMAT,
-                TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()), tps, entities, loadedChunks, ModConstants.getVersionInt()
+                TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()),
+                TPSTracker.tps1.getShortAverage(),
+                TPSTracker.MillisecondPerTick.getShortAverage(), entities, loadedChunks,
+                ModConstants.getVersionInt(), ModConstants.getVersionNick()
         );
 
-        MutableText text = getDebugText();
-        if (rainbowMode) {
-            MutableText mutable = Texter.newText();
-            char[] chars = TextFormat.clearColorCodes(debugText).toCharArray();
+        bossBar.setName(Texter.newText().append(DEBUG_TEXT).append(Texter.newText(debugText)));
 
-            for (int i = 0; i < chars.length; i++) {
-                int color = ((i + 500) * 10) + colorMultiplier;
-                mutable.append(new LiteralText(String.valueOf(chars[i])).styled(style -> style.withColor(TextColor.parse("#" + Integer.toHexString(color)))));
-            }
-
-            text.append(mutable);
-            colorMultiplier++;
-
-            if (colorMultiplier >= 100) {
-                colorMultiplier = 0;
-            }
-        } else {
-            text.append(Texter.newText(debugText));
-        }
+        int tps = (int) TPSTracker.tps1.getAverage();
+        bossBar.setValue(tps);
 
         if (tps > 15) {
             bossBar.setColor(BossBar.Color.GREEN);
         } else if (tps > 10) {
             bossBar.setColor(BossBar.Color.YELLOW);
-        } else {
+        } else if (tps < 10) {
             bossBar.setColor(BossBar.Color.RED);
+        } else {
+            bossBar.setColor(BossBar.Color.PURPLE);
         }
 
-        bossBar.setName(text);
         if (minecraftServer.getPlayerManager().getPlayerList() != null) {
             bossBar.addPlayers(minecraftServer.getPlayerManager().getPlayerList());
         }
     }
 
-    private MutableText getDebugText() {
-        return new LiteralText("[").formatted(Formatting.WHITE)
-                .append(new LiteralText("Debug").styled(style -> style.withColor(TextColor.parse("#fefe16"))))
-                .append("] ").formatted(Formatting.WHITE).formatted(Formatting.BOLD);
-    }
 
 }
