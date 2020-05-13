@@ -13,6 +13,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 
 public class HugCommand extends EssentialCommand {
     public HugCommand() {
-        super("hug");
+        super("hug", CommandPermission.HUG);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class HugCommand extends EssentialCommand {
         ArrayList<ServerPlayerEntity> validTargets = new ArrayList<>();
         OnlineUser src = this.getOnlineUser(ctx);
 
-        if (src.asPlayer().experienceLevel < 2) {
+        if (src.asPlayer().totalExperience < 16) {
             src.sendLangMessage("command.hug.xp");
             return FAILED;
         }
@@ -62,12 +63,20 @@ public class HugCommand extends EssentialCommand {
 
         OnlineUser onlineTarget  = getOnlineUser(mainTarget);
 
-        src.asPlayer().experienceLevel -= 2;
-
-
+        src.asPlayer().addExperience(-16);
         mainTarget.addExperience(8);
-        onlineTarget.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
-        mainTarget.playSound(SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE, SoundCategory.MASTER, 1, 1);
+
+        src.sendLangMessage("command.hug.sent", onlineTarget.getFormattedDisplayName());
+        onlineTarget.sendLangMessage("command.hug.recived", src.getFormattedDisplayName());
+        src.asPlayer().getEntityWorld().playSound(
+                null,
+                src.asPlayer().getBlockPos(),
+                SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE,
+                SoundCategory.MASTER,
+                1f,
+                1f
+        );
+
         return SUCCESS;
     }
 
