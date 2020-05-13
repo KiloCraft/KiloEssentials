@@ -20,7 +20,7 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
     public void handle(ServerScheduledUpdateEvent event) {
         KiloServer.getServer().getMetaManager().updateAll();
 
-        if (SharedConstants.isDevelopment) {
+        if (KiloDebugUtils.INSTANCE != null) {
             KiloDebugUtils.INSTANCE.onScheduledUpdate();
         }
 

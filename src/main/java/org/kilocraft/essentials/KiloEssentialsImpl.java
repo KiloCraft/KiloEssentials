@@ -107,7 +107,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		*/
 
 		if (SharedConstants.isDevelopment) {
-			new KiloDebugUtils(this);
+			new KiloDebugUtils();
 		}
 
 		ServerChat.load();

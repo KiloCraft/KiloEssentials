@@ -8,14 +8,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.util.text.Texter;
@@ -28,6 +27,9 @@ public class KiloDebugUtils {
     private final MinecraftServer minecraftServer;
     private CommandBossBar bossBar;
     private final Identifier DEBUG_BAR = new Identifier("kiloessentials", "debug_bar");
+    private static boolean rainbowMode = false;
+    private static boolean barVisible = true;
+    private static final String DEBUG_FORMAT = ModConstants.getProperties().getProperty("debug_bar_text");
 
     public KiloDebugUtils() {
         INSTANCE = this;
@@ -38,13 +40,13 @@ public class KiloDebugUtils {
 
     public static void validateDebugMode(boolean reload) {
         File debugFile = new File(KiloEssentials.getWorkingDirectory() + "/kiloessentials.debug");
-        if (debugFile.exists()) {
-//            if (reload) {
-//                INSTANCE = new KiloDebugUtils();
-//            }
+        File coolDebugFile = new File(KiloEssentials.getWorkingDirectory() + "/kiloessentials_cool.debug");
 
+        if (debugFile.exists() || coolDebugFile.exists()) {
             KiloEssentials.getServer().getLogger().warn("**** SERVER IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
             KiloEssentials.getServer().getLogger().warn("     To change this simply remove the \"kiloessentials.debug\" file and reload");
+
+            rainbowMode = coolDebugFile.exists();
             setDebugMode(true);
         } else {
             setDebugMode(false);
@@ -60,12 +62,18 @@ public class KiloDebugUtils {
 
     public static void setDebugMode(boolean set) {
         SharedConstants.isDevelopment = set;
-        wasEnabled = set;
+    }
+
+    public static void setDebugBarVisible(boolean set) {
+        barVisible = set;
+        if (INSTANCE != null) {
+            INSTANCE.bossBar.setVisible(set);
+        }
     }
 
     public void onScheduledUpdate() {
         if (SharedConstants.isDevelopment) {
-            updateBossbar();
+            update();
         } else {
             removeBossBar();
         }
@@ -83,7 +91,8 @@ public class KiloDebugUtils {
         bossBar.setOverlay(BossBar.Style.NOTCHED_20);
     }
 
-    public void updateBossbar() {
+    private static int colorMultiplier = 0;
+    public void update() {
         int loadedChunks = 0;
         int entities = 0;
         for (ServerWorld world : minecraftServer.getWorlds()) {
@@ -95,12 +104,29 @@ public class KiloDebugUtils {
         int tps = (int) TPSTracker.tps1.getAverage();
         bossBar.setValue(tps);
 
-        String debugText = String.format(
-                ModConstants.getProperties().getProperty("debug_bar_text"),
+        String debugText = String.format(DEBUG_FORMAT,
                 TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()), tps, entities, loadedChunks, ModConstants.getVersionInt()
         );
 
-        MutableText text = ((MutableText)getDebugText()).append(Texter.newText(debugText));
+        MutableText text = getDebugText();
+        if (rainbowMode) {
+            MutableText mutable = Texter.newText();
+            char[] chars = TextFormat.clearColorCodes(debugText).toCharArray();
+
+            for (int i = 0; i < chars.length; i++) {
+                int color = ((i + 500) * 10) + colorMultiplier;
+                mutable.append(new LiteralText(String.valueOf(chars[i])).styled(style -> style.withColor(TextColor.parse("#" + Integer.toHexString(color)))));
+            }
+
+            text.append(mutable);
+            colorMultiplier++;
+
+            if (colorMultiplier >= 100) {
+                colorMultiplier = 0;
+            }
+        } else {
+            text.append(Texter.newText(debugText));
+        }
 
         if (tps > 15) {
             bossBar.setColor(BossBar.Color.GREEN);
@@ -116,9 +142,10 @@ public class KiloDebugUtils {
         }
     }
 
-    private Text getDebugText() {
-        return new LiteralText("[").formatted(Formatting.WHITE).append(new LiteralText("Debug")
-                .formatted(Formatting.YELLOW)).append("] ").formatted(Formatting.WHITE).formatted(Formatting.BOLD);
+    private MutableText getDebugText() {
+        return new LiteralText("[").formatted(Formatting.WHITE)
+                .append(new LiteralText("Debug").styled(style -> style.withColor(TextColor.parse("#fefe16"))))
+                .append("] ").formatted(Formatting.WHITE).formatted(Formatting.BOLD);
     }
 
 }

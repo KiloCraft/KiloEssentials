@@ -137,7 +137,6 @@ public class KiloCommands {
             this.add(new SocialSpyCommand());
             this.add(new CommandSpyCommand());
             this.add(new BackCommand());
-            //this.add(new ShootCommand());
             this.add(new ModsCommand());
             this.add(new TpsCommand());
             this.add(new LocateCommand());
