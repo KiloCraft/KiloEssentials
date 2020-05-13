@@ -99,6 +99,8 @@ public enum CommandPermission {
     TELEPORTREQUEST("teleportrequest"),
     LASTSEEN("lastseen"),
     CALCULATE("calculate"),
+    HUG("hug"),
+    HUG_BYPASS("hug.bypass"),
     ;
 
     private String node;
