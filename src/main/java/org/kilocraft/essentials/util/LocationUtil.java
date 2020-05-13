@@ -61,7 +61,7 @@ public class LocationUtil {
         BlockState state;
         int tries = 0;
         boolean hasAirSpace;
-        boolean isNether = world.dimension.isNether();
+        boolean isNether = world.getDimension().getType() == DimensionType.THE_NETHER;
         boolean safe;
 
         do {

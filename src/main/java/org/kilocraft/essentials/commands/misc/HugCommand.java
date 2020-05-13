@@ -31,15 +31,16 @@ public class HugCommand extends EssentialCommand {
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ArrayList<ServerPlayerEntity> validTargets = new ArrayList<>();
         OnlineUser src = this.getOnlineUser(ctx);
+
+        if (src.asPlayer().experienceLevel < 2) {
+            src.sendLangMessage("command.hug.xp");
+            return FAILED;
+        }
+
         for (ServerPlayerEntity player : this.server.getPlayerManager().getPlayerList()) {
             OnlineUser target = getOnlineUser(player);
 
             if (!target.equals(src)) {
-                if (src.asPlayer().totalExperience < 16) {
-                    src.sendLangMessage("command.hug.xp");
-                    return FAILED;
-                }
-
                 validTargets.add(player);
             }
         }
@@ -61,7 +62,8 @@ public class HugCommand extends EssentialCommand {
 
         OnlineUser onlineTarget  = getOnlineUser(mainTarget);
 
-        src.asPlayer().addExperience(-16);
+        src.asPlayer().experienceLevel -= 2;
+
 
         mainTarget.addExperience(8);
         onlineTarget.sendLangMessage("command.hug.message", src.getFormattedDisplayName());
