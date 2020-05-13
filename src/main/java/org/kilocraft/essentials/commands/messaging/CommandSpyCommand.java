@@ -4,17 +4,19 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.user.setting.Settings;
 
 public class CommandSpyCommand extends EssentialCommand {
+    private static final Setting<Boolean> COMMAND_SPY = Settings.COMMAND_SPY;
+
     public CommandSpyCommand() {
-        super("commandspy", src -> !CommandUtils.isConsole(src) && KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_COMMAND));
+        super("commandspy", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_COMMAND));
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -22,14 +24,16 @@ public class CommandSpyCommand extends EssentialCommand {
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        if (ServerChat.isCommandSpy(ctx.getSource().getPlayer())) {
-            ServerChat.removeCommandSpy(ctx.getSource().getPlayer());
-            ctx.getSource().sendFeedback(new LiteralText("CommandSpy is now inactive").formatted(Formatting.YELLOW), false);
-            return SUCCESS;
+        OnlineUser src = this.getOnlineUser(ctx);
+        Boolean set = !src.getSetting(COMMAND_SPY);
+        src.getSettings().set(COMMAND_SPY, set);
+
+        if (set) {
+            src.sendLangMessage("command.commandspy.active");
+        } else {
+            src.sendLangMessage("command.commandspy.inactive");
         }
 
-        ServerChat.addCommandSpy(ctx.getSource().getPlayer());
-        ctx.getSource().sendFeedback(new LiteralText("CommandSpy is now active").formatted(Formatting.YELLOW), false);
-        return SUCCESS;
+        return set ? SUCCESS : AWAIT;
     }
 }

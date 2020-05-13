@@ -207,12 +207,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public MessageReceptionist getLastDirectMessageReceptionist() {
+    public MessageReceptionist getLastMessageReceptionist() {
         return null;
     }
 
     @Override
-    public void setLastDirectMessageReceptionist(MessageReceptionist receptionist) {
+    public void setLastMessageReceptionist(MessageReceptionist receptionist) {
 
     }
 
@@ -229,6 +229,21 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public ServerCommandSource getCommandSource() {
         return this.source;
+    }
+
+    @Override
+    public void sendSystemMessage(Object sysMessage) {
+        try {
+            this.getUser().sendSystemMessage(sysMessage);
+        } catch (CommandSyntaxException ignored) {
+            if (sysMessage instanceof String) {
+                this.sendMessage((String) sysMessage);
+            } else if (sysMessage instanceof Text) {
+                this.sendMessage((Text) sysMessage);
+            } else {
+                this.sendMessage(String.valueOf(sysMessage));
+            }
+        }
     }
 
     @Override
@@ -356,7 +371,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public @Nullable OnlineUser getUser() throws CommandSyntaxException {
+    public OnlineUser getUser() throws CommandSyntaxException {
         return KiloServer.getServer().getOnlineUser(source.getPlayer());
     }
 

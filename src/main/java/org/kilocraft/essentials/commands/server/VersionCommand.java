@@ -20,10 +20,10 @@ public class VersionCommand extends EssentialCommand {
 
     private int executeVersion(CommandContext<ServerCommandSource> ctx) {
         GameVersion gameVersion = MinecraftVersion.create();
-        String permManager = essentials.getPermissionUtil().managerPresent() ? essentials.getPermissionUtil().getManager().getName() : "Vanilla";
 
         KiloChat.sendLangMessageTo(ctx.getSource(), "command.info.version",
                 ModConstants.getVersionInt(),
+                ModConstants.getVersionNick(),
                 ModConstants.getBuildType(),
                 ModConstants.getGitHash(),
                 ModConstants.getGitBranch(),
@@ -33,7 +33,7 @@ public class VersionCommand extends EssentialCommand {
                 gameVersion.isStable() ? "release" : "snapshot",
                 gameVersion.getReleaseTarget(),
                 gameVersion.getWorldVersion(),
-                permManager
+                essentials.getPermissionUtil().toString()
         );
 
         return SUCCESS;

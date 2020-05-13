@@ -21,7 +21,7 @@ public class ConfigurableFeatures {
         try {
             if (KiloConfig.getMainNode().getNode("features").getNode(configKey).getBoolean()) {
                 if (SharedConstants.isDevelopment) {
-                    KiloEssentialsImpl.getLogger().info("Initialing \"" + feature.getClass().getName() + "\"");
+                    KiloEssentialsImpl.getLogger().info("Initialing {}", feature.getClass().getName());
                 }
 
                 if (feature instanceof TickListener) {
@@ -40,7 +40,11 @@ public class ConfigurableFeatures {
     public void loadAll() {
         for (ConfigurableFeature feature : features) {
             if (feature instanceof RelodableConfigurableFeature) {
-                ((RelodableConfigurableFeature) feature).load();
+                try {
+                    ((RelodableConfigurableFeature) feature).load();
+                } catch (Exception e) {
+                    KiloEssentials.getLogger().fatal("Can not load the feature " + feature.getClass().getSimpleName(), e);
+                }
             }
         }
     }
@@ -50,7 +54,7 @@ public class ConfigurableFeatures {
             try {
                 listener.onTick();
             } catch (Exception e) {
-                e.printStackTrace();
+                KiloEssentials.getLogger().fatal("An unexpected error occurred while processing a Tick Event", e);
             }
         }
     }

@@ -48,6 +48,20 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
+    public void sendSystemMessage(Object sysMessage) {
+        super.systemMessageCooldown += 20;
+        if (super.systemMessageCooldown > ServerUser.SYS_MESSAGE_COOL_DOWN) {
+            if (sysMessage instanceof String) {
+                this.sendMessage((String) sysMessage);
+            } else if (sysMessage instanceof Text) {
+                this.sendMessage((Text) sysMessage);
+            } else {
+                this.sendMessage(String.valueOf(sysMessage));
+            }
+        }
+    }
+
+    @Override
     public void teleport(@NotNull final Location loc, final boolean sendTicket) {
         if (sendTicket) {
             loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 1, this.asPlayer().getEntityId());
@@ -225,7 +239,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
         }
 
-        messageCooldown = 0;
+        super.messageCooldown = 0;
+        super.systemMessageCooldown = 0;
 
         GameMode gameMode = super.getSetting(Settings.GAME_MODE);
         if (gameMode == GameMode.NOT_SET) {
@@ -260,9 +275,13 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             --messageCooldown;
         }
 
+        if (systemMessageCooldown > 0) {
+            --systemMessageCooldown;
+        }
+
         if (tick >= 20) {
             tick = 0;
-            //super.location = Vec3dLocation.of(this.asPlayer());
+            super.location = Vec3dLocation.of(this.asPlayer());
 
             if (PlaytimeCommands.isEnabled()) {
                 PlaytimeCommands.getInstance().onUserPlaytimeUp(this, ticksPlayed);

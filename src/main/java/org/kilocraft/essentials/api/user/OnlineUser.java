@@ -18,6 +18,8 @@ public interface OnlineUser extends User, OnlineMessageReceptionist {
 
     ServerCommandSource getCommandSource();
 
+    void sendSystemMessage(Object sysMessage);
+
     void teleport(@NotNull final Location loc, boolean sendTicket);
 
     void teleport(@NotNull final OnlineUser user);

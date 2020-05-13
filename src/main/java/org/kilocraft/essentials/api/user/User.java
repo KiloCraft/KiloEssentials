@@ -225,8 +225,8 @@ public interface User extends MessageReceptionist, NBTSerializable {
      */
     boolean ignored(UUID uuid);
 
-    MessageReceptionist getLastDirectMessageReceptionist();
+    MessageReceptionist getLastMessageReceptionist();
 
-    void setLastDirectMessageReceptionist(MessageReceptionist receptionist);
+    void setLastMessageReceptionist(MessageReceptionist receptionist);
 
 }
