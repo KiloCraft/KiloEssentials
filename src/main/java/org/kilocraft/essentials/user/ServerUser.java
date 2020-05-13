@@ -52,6 +52,7 @@ import java.util.*;
  */
 
 public class ServerUser implements User {
+    public static final int SYS_MESSAGE_COOL_DOWN = 400;
     protected static ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
     UUID uuid;
     String name = "";
@@ -63,6 +64,7 @@ public class ServerUser implements User {
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
     public int messageCooldown;
+    public int systemMessageCooldown;
     private MessageReceptionist lastDmReceptionist;
     boolean isStaff = false;
     String lastSocketAddress;
@@ -104,14 +106,6 @@ public class ServerUser implements User {
             cacheTag.putString("ip", this.lastSocketAddress);
         }
 
-        if (this.lastDmReceptionist != null) {
-            CompoundTag lastDmTag = new CompoundTag();
-            lastDmTag.putString("name", this.lastDmReceptionist.getName());
-            NBTUtils.putUUID(lastDmTag, "id", this.lastDmReceptionist.getId());
-            cacheTag.put("dmRec", lastDmTag);
-        }
-
-        metaTag.putBoolean("hasJoinedBefore", this.hasJoinedBefore);
         metaTag.putString("firstJoin", ModConstants.DATE_FORMAT.format(this.firstJoin));
         if (this.lastOnline != null) {
             metaTag.putString("lastOnline", ModConstants.DATE_FORMAT.format(this.lastOnline));
@@ -162,9 +156,9 @@ public class ServerUser implements User {
             this.lastDmReceptionist = new UserMessageReceptionist(lastDmTag.getString("name"), NBTUtils.getUUID(lastDmTag, "id"));
         }
 
-        this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
         this.firstJoin = dateFromString(metaTag.getString("firstJoin"));
         this.lastOnline = dateFromString(metaTag.getString("lastOnline"));
+        this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
 
         if (metaTag.contains("ticksPlayed")) {
             this.ticksPlayed = metaTag.getInt("ticksPlayed");
@@ -193,6 +187,7 @@ public class ServerUser implements User {
         try {
             date = ModConstants.DATE_FORMAT.parse(stringToParse);
         } catch (ParseException ignored) {
+            this.hasJoinedBefore = false;
         }
         return date;
     }
@@ -220,7 +215,7 @@ public class ServerUser implements User {
 
     @Override
     public boolean isOnline() {
-        return this instanceof OnlineUser || KiloServer.getServer().getUserManager().isOnline(this);
+        return this instanceof OnlineUser || manager.isOnline(this);
     }
 
     @Override
@@ -234,7 +229,7 @@ public class ServerUser implements User {
 
     @Override
     public String getFormattedDisplayName() {
-        return TextFormat.translate(getDisplayName() + "&r");
+        return TextFormat.translate(this.getDisplayName() + TextFormat.RESET.toString());
     }
 
     @Override
@@ -397,12 +392,12 @@ public class ServerUser implements User {
     }
 
     @Override
-    public MessageReceptionist getLastDirectMessageReceptionist() {
+    public MessageReceptionist getLastMessageReceptionist() {
         return this.lastDmReceptionist;
     }
 
     @Override
-    public void setLastDirectMessageReceptionist(MessageReceptionist receptionist) {
+    public void setLastMessageReceptionist(MessageReceptionist receptionist) {
         this.lastDmReceptionist = receptionist;
     }
 

@@ -373,8 +373,12 @@ public class ServerUserManager implements UserManager, TickListener {
             if (KiloConfig.main().chat().kickForSpamming) {
                 player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
             } else {
-                user.sendLangError("channel.spam");
+                if (((ServerUser) user).systemMessageCooldown > 400) {
+                    user.sendMessage(KiloConfig.main().chat().spamWarning);
+                }
             }
+
+            return;
         }
 
         if (string.startsWith("/")) {

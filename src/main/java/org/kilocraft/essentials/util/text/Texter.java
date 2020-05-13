@@ -52,15 +52,15 @@ public class Texter {
     }
 
     public static MutableText getButton(String title, String command, MutableText hoverText) {
-        return Texter.newText(title).styled((style) -> {
-            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
-            style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
-            return style;
-        });
+        return newText(title).styled((style) -> style.setHoverEvent(Events.onHover(hoverText)).withClickEvent(Events.onClickRun(command)));
+    }
+
+    public static MutableText getButton(String title, String command, String string) {
+        return newText(title).styled((style) -> style.setHoverEvent(Events.onHover(string)).withClickEvent(Events.onClickRun(command)));
     }
 
     public static MutableText confirmationMessage(String langKey, MutableText button) {
-        return new LiteralText("")
+        return newText()
                 .append(LangText.getFormatter(true, langKey))
                 .append(" ")
                 .append(button);

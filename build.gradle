@@ -24,8 +24,8 @@ details.branchName // is null if the repository in detached HEAD mode
 details.isCleanTag
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version as Object
-def buildType = details.isCleanTag ? "stable" : "dirty"
+version = "${project.mod_version as Object}-${project.mod_version_nick}-${project.minecraft_version}"
+def buildType = details.isCleanTag ? "release" : "beta"
 
 def gitVersion = "${version}-${buildType}+git.${details.branchName}-${details.gitHash}"
 def buildTime = new Date();
@@ -81,7 +81,7 @@ processResources {
 		include "fabric.mod.json", "mod.properties"
 		expand "version": gitVersion, "version_int": project.mod_version, "built_at": buildTime, "fabric_loader_version": project.loader_version,
 				"fabric_yarn_mappings": project.yarn_mappings, "mc_version": project.minecraft_version,
-				"git_hash": details.gitHash, "git_hash_full": details.gitHashFull, "git_branch": details.branchName, "build_type": buildType
+				"git_hash": details.gitHash, "git_hash_full": details.gitHashFull, "git_branch": details.branchName, "build_type": buildType, "version_nick" : project.mod_version_nick
 	}
 
 	from(sourceSets.main.resources.srcDirs) {

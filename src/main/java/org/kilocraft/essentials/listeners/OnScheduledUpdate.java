@@ -20,14 +20,13 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
     public void handle(ServerScheduledUpdateEvent event) {
         KiloServer.getServer().getMetaManager().updateAll();
 
-        if (SharedConstants.isDevelopment) {
-            KiloDebugUtils.INSTANCE.onScheduledUpdate();
+        if (KiloDebugUtils.shouldTick()) {
+            KiloDebugUtils.INSTANCE.onTick();
         }
 
         for (ServerPlayerEntity player : KiloServer.getServer().getPlayerManager().getPlayerList()) {
             processDimension(player);
         }
-
     }
 
     private void processDimension(ServerPlayerEntity player) {

@@ -2,6 +2,7 @@ package org.kilocraft.essentials.extensions.customcommands.config.sections;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.kilocraft.essentials.config.main.sections.PermissionRequirementConfigSection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,6 @@ public class CustomCommandConfigSection {
     }};
 
     @Setting("requires")
-    public CCReqConfigSection reqSection = new CCReqConfigSection();
+    public PermissionRequirementConfigSection reqSection = new PermissionRequirementConfigSection();
 
 }
