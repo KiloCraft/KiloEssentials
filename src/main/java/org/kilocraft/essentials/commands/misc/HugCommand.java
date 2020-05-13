@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class HugCommand extends EssentialCommand {
     public HugCommand() {
-        super("hug", CommandPermission.HUG);
+        super("hug", CommandPermission.HUG_USE);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class HugCommand extends EssentialCommand {
         ArrayList<ServerPlayerEntity> validTargets = new ArrayList<>();
         OnlineUser src = this.getOnlineUser(ctx);
 
-        if (src.asPlayer().totalExperience < 16) {
+        if (src.asPlayer().totalExperience < 16 && !src.hasPermission(CommandPermission.HUG_BYPASS)) {
             src.sendLangMessage("command.hug.xp");
             return FAILED;
         }
@@ -63,8 +63,10 @@ public class HugCommand extends EssentialCommand {
 
         OnlineUser onlineTarget  = getOnlineUser(mainTarget);
 
-        src.asPlayer().addExperience(-16);
-        mainTarget.addExperience(8);
+        if(!src.hasPermission(CommandPermission.HUG_BYPASS)) {
+            src.asPlayer().addExperience(-16);
+            mainTarget.addExperience(8);
+        }
 
         src.sendLangMessage("command.hug.sent", onlineTarget.getFormattedDisplayName());
         onlineTarget.sendLangMessage("command.hug.recived", src.getFormattedDisplayName());
