@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DebugEssentialsCommand extends EssentialCommand {
     public DebugEssentialsCommand() {
-        super("debug");
+        super("debug", src -> src.hasPermissionLevel(3));
     }
 
     @Override
