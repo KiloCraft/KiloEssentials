@@ -28,7 +28,7 @@ types {
         speed=0
         requires {
             op=2
-            perm="myserver.custom.permission.node"
+            perm="kilocraft.magicparticles.advanced"
         }
       }
     ]

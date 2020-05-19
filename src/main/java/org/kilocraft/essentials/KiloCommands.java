@@ -166,6 +166,7 @@ public class KiloCommands {
             this.add(new InventoryCommand());
             this.add(new CalculateCommand());
             this.add(new HugCommand());
+            this.add(new GlowCommand());
         }};
 
         this.commands.addAll(commandsList);
