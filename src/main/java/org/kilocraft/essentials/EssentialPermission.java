@@ -26,6 +26,7 @@ public enum EssentialPermission {
     RTP_OTHERDIMENSIONS("rtp.otherdimensions"),
     RTP_MANAGE("rtp.manage"),
     MAGIC_PARTICLES_SELF("magicparticles"),
+    MAGIC_PARTICLES_ADVANCED("magicparticles.advanced"),
     SIT_SELF("sit.self"),
     SIT_OTHERS("sit.others"),
     IGNORE_COMMAND_EVENTS("ignore_command_events"),
