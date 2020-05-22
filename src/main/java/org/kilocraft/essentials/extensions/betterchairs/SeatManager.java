@@ -86,7 +86,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                 ServerWorld world = RegistryUtils.toServerWorld(RegistryUtils.toDimension(dim));
 
                 if (user != null) {
-                    if (world.getBlockState(stand.getBlockPos().up().up()).getBlock() == Blocks.AIR) {
+                    if (world.getBlockState(stand.getBlockPos().up()).getBlock() == Blocks.AIR) {
                         unseat(user);
                     }
 
@@ -170,7 +170,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
 
         if (swingHand) {
-            player.swingHand(Hand.MAIN_HAND, true);
+            player.swingHand(player.preferredHand, true);
         }
 
         stand.setInvisible(true);

@@ -45,7 +45,7 @@ public class EventRegistryImpl implements EventRegistry {
                     logger.info(
                             "Registering callback \"{}\" for event {}",
                             handlerClass.getClass().getSimpleName(),
-                            genericType.getTypeName().substring(genericType.getTypeName().lastIndexOf('.'))
+                            genericType.getTypeName().substring(genericType.getTypeName().lastIndexOf('.') + 1)
                     );
                 }
             }

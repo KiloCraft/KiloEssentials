@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Hand;
 import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.util.player.UserUtils;
 
 public class NbtCommands {
     public static boolean fromRightClick(PlayerEntity player, Hand hand) {
@@ -26,19 +27,20 @@ public class NbtCommands {
 
         ListTag listTag = tag.getList("NBTCommands", 8);
 
-        int executed = 0;
+        int succeededExecutions = 0;
         for (int i = 0; i < listTag.size(); i++) {
-            int value = CommandUtils.runRespectingConventions(player.getCommandSource(), listTag.getString(i));
+            int value = CommandUtils.runCommandWithFormatting(player.getCommandSource(), listTag.getString(i));
             if (value >= 1) {
-                executed++;
+                succeededExecutions++;
             }
         }
 
-        if (executed >= 1 && swingHand) {
-            player.swingHand(Hand.MAIN_HAND, true);
+        if (succeededExecutions >= 1 && swingHand) {
+            UserUtils.Animate.swingHand(player);
+        } else {
+            UserUtils.Animate.showBobbing(player);
         }
 
-        player.getMainHandStack().setCount(player.getMainHandStack().getCount());
         return true;
     }
 

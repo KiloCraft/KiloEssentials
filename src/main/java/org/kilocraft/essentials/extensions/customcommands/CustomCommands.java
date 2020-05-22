@@ -134,7 +134,7 @@ public class CustomCommands implements RelodableConfigurableFeature {
         }
 
         for (String s : commands) {
-            CommandUtils.runRespectingConventions(src, s);
+            CommandUtils.runCommandWithFormatting(src, s);
             var++;
         }
 

@@ -75,7 +75,7 @@ public class PlaytimeCommands implements RelodableConfigurableFeature {
                 .replace("${user.displayname}", user.getFormattedDisplayName())
                 .replace("${user.ranked_displayname}", Texter.Legacy.toFormattedString(user.getRankedDisplayName()));
 
-        CommandUtils.runRespectingConventions(user.getCommandSource(), cmd);
+        CommandUtils.runCommandWithFormatting(user.getCommandSource(), cmd);
     }
 
     public static PlaytimeCommands getInstance() {

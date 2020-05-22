@@ -4,9 +4,12 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.query.QueryOptions;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -134,6 +137,21 @@ public class UserUtils {
                 return manager.getTeleportRequestsMap().containsKey(user.getUuid());
             }
 
+        }
+    }
+
+    public static class Animate {
+        public static void swingHand(PlayerEntity player) {
+            player.swingHand(player.preferredHand, true);
+        }
+
+        public static void swingHand(PlayerEntity player, Hand hand) {
+            player.swingHand(hand, true);
+        }
+
+        public static void showBobbing(PlayerEntity player) {
+            player.inventory.selectedSlot += 1;
+            player.inventory.selectedSlot -= 1;
         }
     }
 }
