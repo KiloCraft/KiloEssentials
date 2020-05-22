@@ -11,6 +11,7 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.KiloCommands;
@@ -19,6 +20,7 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -77,7 +79,9 @@ public class ArgumentCompletions {
 
     public static CompletableFuture<Suggestions> dimensions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         final List<String> dims = new ArrayList<>();
-        Registry.DIMENSION_TYPE.forEach(dimType -> dims.add(Objects.requireNonNull(DimensionType.getId(dimType)).getPath()));
+        for (RegistryKey<DimensionType> dimensionKey : RegistryUtils.getDimensionKeys()) {
+            dims.add(dimensionKey.getValue().getPath());
+        }
         return CommandSource.suggestMatching(dims.stream(), builder);
     }
 
@@ -92,7 +96,7 @@ public class ArgumentCompletions {
         );
     }
 
-    public static CompletableFuture<Suggestions> textformatChars(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
+    public static CompletableFuture<Suggestions> textFormatChars(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         return ArgumentCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()).filter(it -> context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)) == '&'), context);
     }
 

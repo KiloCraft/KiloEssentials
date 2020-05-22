@@ -23,7 +23,7 @@ public class FormatPreviewCommand extends EssentialCommand {
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = argument("string", greedyString())
-                .suggests(ArgumentCompletions::textformatChars)
+                .suggests(ArgumentCompletions::textFormatChars)
                 .executes(FormatPreviewCommand::execute);
 
         commandNode.addChild(stringArgument.build());

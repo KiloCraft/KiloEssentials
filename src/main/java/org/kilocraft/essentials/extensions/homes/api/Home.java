@@ -14,6 +14,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.util.LocationUtil;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.UUID;
 
@@ -82,11 +83,12 @@ public class Home {
 
     public static void teleportTo(OnlineUser user, Home home) {
         ServerPlayerEntity player = user.asPlayer();
-        DimensionType type = DimensionType.byId(home.getLocation().getDimension());
-        if (type == null)
+        DimensionType type = RegistryUtils.toDimension(home.getLocation().getDimension());
+        if (type == null) {
             return;
+        }
 
-        ServerWorld destinationWorld = KiloServer.getServer().getVanillaServer().getWorld(type);
+        ServerWorld destinationWorld = KiloServer.getServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(type));
         Vec3d destination = new Vec3d(home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ());
         user.saveLocation();
         destinationWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getEntityId()); // Lag reduction magic
@@ -95,7 +97,7 @@ public class Home {
     }
 
     public boolean shouldTeleport() {
-        return !LocationUtil.isDimensionValid(this.location.getDimensionType());
+        return LocationUtil.shouldBlockAccessTo(this.location.getDimensionType());
     }
 
 }

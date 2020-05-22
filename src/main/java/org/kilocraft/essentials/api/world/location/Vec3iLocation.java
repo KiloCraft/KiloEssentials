@@ -47,7 +47,7 @@ public class Vec3iLocation implements Location {
     }
 
     public static Vec3iLocation of(ServerPlayerEntity player) {
-        return new Vec3iLocation((int) player.getX(), (int) player.getY(), (int) player.getZ(), player.yaw, player.pitch, RegistryUtils.toIdentifier(player.dimension));
+        return new Vec3iLocation((int) player.getX(), (int) player.getY(), (int) player.getZ(), player.yaw, player.pitch, RegistryUtils.toIdentifier(player.getServerWorld().getDimension()));
     }
 
     public static Vec3iLocation of(OnlineUser user) {
@@ -76,7 +76,7 @@ public class Vec3iLocation implements Location {
 
     @Override
     public DimensionType getDimensionType() {
-        return Registry.DIMENSION_TYPE.get(dimension);
+        return RegistryUtils.toDimension(this.dimension);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class Vec3iLocation implements Location {
 
     @Override
     public ServerWorld getWorld() {
-        return KiloServer.getServer().getVanillaServer().getWorld(RegistryUtils.toDimension(dimension));
+        return KiloServer.getServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(this.getDimensionType()));
     }
 
     @Override

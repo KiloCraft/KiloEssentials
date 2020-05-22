@@ -81,7 +81,7 @@ public class StatusCommand extends EssentialCommand {
             MonitorableWorld monitoredWorld = (MonitorableWorld) world;
 
             if (monitoredWorld.totalLoadedChunks() != 0) {
-                builder.append("\n&7* ").append(RegistryUtils.dimensionToName(world.getDimension().getType())).append("&8: ");
+                builder.append("\n&7* ").append(RegistryUtils.dimensionToName(world.getDimension())).append("&8: ");
                 builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.cachedChunks(), monitoredWorld.loadedEntities(), monitoredWorld.players()));
             }
         }

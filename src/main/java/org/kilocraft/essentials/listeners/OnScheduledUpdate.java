@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.listeners;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
@@ -14,6 +13,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.LocationUtil;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEvent> {
     @Override
@@ -32,9 +32,9 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
     private void processDimension(ServerPlayerEntity player) {
         boolean kickFromDim = KiloConfig.main().world().kickFromDimension;
 
-        if (kickFromDim && !LocationUtil.isDimensionValid(player.dimension) && player.getServer() != null) {
+        if (kickFromDim && LocationUtil.shouldBlockAccessTo(player.getServerWorld().getDimension()) && player.getServer() != null) {
             BlockPos pos = player.getSpawnPointPosition();
-            DimensionType dim = player.getSpawnPointDimension();
+            DimensionType dim = RegistryUtils.toDimension(player.getSpawnPointDimension());
 
             if (pos == null) {
                 OnlineUser user = KiloServer.getServer().getOnlineUser(player);
@@ -42,7 +42,8 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
                     pos = user.getLastSavedLocation().toPos();
                     if (pos == null) {
                         UserHomeHandler homeHandler = user.getHomesHandler();
-                        if (homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.dimension) {
+                        assert homeHandler != null;
+                        if (homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getServerWorld().getDimension()) {
                             pos = user.getHomesHandler().getHomes().get(0).getLocation().toPos();
                         }
                     }
@@ -50,8 +51,8 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
             }
 
             if (pos != null) {
-                player.teleport(player.getServer().getWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch);
-                KiloChat.sendMessageTo(player, new TextMessage(String.format(KiloConfig.main().world().kickOutMessage, player.dimension.toString()), true));
+                player.teleport(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch);
+                KiloChat.sendMessageTo(player, new TextMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getServerWorld().getDimension())), true));
             }
         }
 

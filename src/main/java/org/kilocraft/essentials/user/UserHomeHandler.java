@@ -22,6 +22,7 @@ import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
 import org.kilocraft.essentials.extensions.homes.commands.HomesCommand;
 import org.kilocraft.essentials.extensions.homes.commands.SethomeCommand;
 import org.kilocraft.essentials.util.LocationUtil;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +122,7 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
         if (user.isOnline()) {
-            ServerWorld world = Objects.requireNonNull(user.asPlayer().getServer()).getWorld(DimensionType.byId(home.getLocation().getDimension()));
+            ServerWorld world = Objects.requireNonNull(user.asPlayer().getServer()).getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
 
             if (world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);

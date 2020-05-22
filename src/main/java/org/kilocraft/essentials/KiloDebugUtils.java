@@ -8,21 +8,17 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.util.text.Texter;
 
-import java.awt.*;
 import java.io.File;
 
 public class KiloDebugUtils {
@@ -39,7 +35,7 @@ public class KiloDebugUtils {
 
     public KiloDebugUtils() {
         INSTANCE = this;
-        this.minecraftServer = KiloServer.getServer().getVanillaServer();
+        this.minecraftServer = KiloServer.getServer().getMinecraftServer();
 
         setupBossBar();
     }

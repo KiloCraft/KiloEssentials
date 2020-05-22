@@ -42,7 +42,7 @@ public class SudoCommand extends EssentialCommand {
     }
 
     private static SingleRedirectModifier<ServerCommandSource> serverRedirectModifier() {
-        return context -> KiloServer.getServer().getVanillaServer().getCommandSource();
+        return context -> KiloServer.getServer().getMinecraftServer().getCommandSource();
     }
 
 }

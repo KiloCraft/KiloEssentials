@@ -17,7 +17,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
@@ -235,7 +234,7 @@ public class RtpCommand extends EssentialCommand {
 		}
 
 		//Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-		if (!target.dimension.equals(DimensionType.OVERWORLD) && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
+		if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != DimensionType.OVERWORLD_REGISTRY_KEY && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
 			targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
 			return;
 		}
@@ -256,7 +255,7 @@ public class RtpCommand extends EssentialCommand {
 		BlockState state;
 		int tries = 0;
 		boolean hasAirSpace;
-		boolean isNether = world.getDimension().getType() == DimensionType.THE_NETHER;
+		boolean isNether = RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) == DimensionType.THE_NETHER_REGISTRY_KEY;
 		boolean safe;
 
 		do {
@@ -278,7 +277,7 @@ public class RtpCommand extends EssentialCommand {
 
 			if (cfg.showTries && target.networkHandler != null) {
 				int finalTries = tries;
-				KiloServer.getServer().getVanillaServer().execute(() -> {
+				KiloServer.getServer().getMinecraftServer().execute(() -> {
 					target.networkHandler.sendPacket(
 							new TitleS2CPacket(
 									TitleS2CPacket.Action.ACTIONBAR,
@@ -336,7 +335,7 @@ public class RtpCommand extends EssentialCommand {
 		int randX = ThreadLocalRandom.current().nextInt(minX, maxX + 1);
 		int randZ = ThreadLocalRandom.current().nextInt(minZ, maxZ + 1);
 
-		return Vec3dLocation.of(randX, height, randZ, 0, 0, RegistryUtils.toIdentifier(world.getDimension().getType()));
+		return Vec3dLocation.of(randX, height, randZ, 0, 0, RegistryUtils.toIdentifier(world.getDimension()));
 	}
 }
 

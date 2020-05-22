@@ -16,11 +16,11 @@ public class BrandedServer {
 
     public static void load() {
         set();
-        KiloServer.getServer().sendGlobalPacket(getPacket());
+        KiloServer.getServer().sendGlobalPacket(toPacket());
     }
 
     public static void provide(ServerPlayerEntity player) {
-        player.networkHandler.sendPacket(getPacket());
+        player.networkHandler.sendPacket(toPacket());
     }
 
     private static String getFinalBrandName() {
@@ -31,10 +31,11 @@ public class BrandedServer {
                 String.format(ModConstants.getProperties().getProperty("server.brand.custom"), configBrand + "&r"));
     }
 
-    private static CustomPayloadS2CPacket getPacket() {
+    private static CustomPayloadS2CPacket toPacket() {
         return new CustomPayloadS2CPacket(
                 CustomPayloadS2CPacket.BRAND,
-                (new PacketByteBuf(Unpooled.buffer())).writeString(getFinalBrandName()));
+                (new PacketByteBuf(Unpooled.buffer())).writeString(getFinalBrandName())
+        );
     }
 
 }

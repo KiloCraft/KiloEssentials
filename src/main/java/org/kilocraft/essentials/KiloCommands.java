@@ -413,7 +413,7 @@ public class KiloCommands {
             reader.skip();
         }
 
-        getServer().getVanillaServer().getProfiler().push(cmd);
+        getServer().getMinecraftServer().getProfiler().push(cmd);
 
         byte var = 0;
         try {
@@ -484,7 +484,7 @@ public class KiloCommands {
             return (byte) 0;
 
         } finally {
-            getServer().getVanillaServer().getProfiler().pop();
+            getServer().getMinecraftServer().getProfiler().pop();
         }
 
         return var;

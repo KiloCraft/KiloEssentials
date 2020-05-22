@@ -14,7 +14,7 @@ public abstract class MixinMinecraftServer$OnSave {
     @Inject(method = "save", at = @At(value = "HEAD", target = "Lnet/minecraft/server/MinecraftServer;save(ZZZ)Z"))
 
     private void modify(boolean bl, boolean bl2, boolean bl3, CallbackInfoReturnable<Boolean> cir) {
-        KiloServer.getServer().triggerEvent(new ServerSaveEventImpl(KiloServer.getServer().getVanillaServer()));
+        KiloServer.getServer().triggerEvent(new ServerSaveEventImpl(KiloServer.getServer().getMinecraftServer()));
     }
 
 }

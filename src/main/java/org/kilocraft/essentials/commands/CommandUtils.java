@@ -10,6 +10,7 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CommandUtils {
@@ -114,7 +115,7 @@ public class CommandUtils {
     private static CommandOutput commandOutput(ServerCommandSource src) {
         return new CommandOutput() {
             @Override
-            public void sendSystemMessage(Text text) {
+            public void sendSystemMessage(Text text, UUID uUID) {
                 src.sendFeedback(text, false);
             }
 

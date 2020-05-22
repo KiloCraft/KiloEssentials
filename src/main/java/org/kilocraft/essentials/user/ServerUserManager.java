@@ -106,7 +106,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     private CompletableFuture<Optional<User>> getUserAsync(String username) {
         CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() ->
-                KiloServer.getServer().getVanillaServer().getUserCache().findByName(username)
+                KiloServer.getServer().getMinecraftServer().getUserCache().findByName(username)
         ); // This is hacky and probably doesn't work. //CODY_AI: But it works!
 
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
