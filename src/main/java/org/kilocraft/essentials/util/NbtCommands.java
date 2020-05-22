@@ -1,12 +1,10 @@
 package org.kilocraft.essentials.util;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Hand;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.commands.CommandUtils;
 
 public class NbtCommands {
@@ -30,7 +28,7 @@ public class NbtCommands {
 
         int executed = 0;
         for (int i = 0; i < listTag.size(); i++) {
-            int value = CommandUtils.run(player.getCommandSource(), listTag.getString(i));
+            int value = CommandUtils.runRespectingConventions(player.getCommandSource(), listTag.getString(i));
             if (value >= 1) {
                 executed++;
             }

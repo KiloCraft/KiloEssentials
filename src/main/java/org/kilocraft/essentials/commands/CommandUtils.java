@@ -97,7 +97,7 @@ public class CommandUtils {
         return isConsole(source) ? source.getName() : source.getPlayer().getDisplayName().asString();
     }
 
-    public static int run(ServerCommandSource src, String cmd) {
+    public static int runRespectingConventions(ServerCommandSource src, String cmd) {
         if (cmd.startsWith("!")) {
             return server.execute(operatorSource(src), cmd.replace("!", ""));
         } else if (cmd.startsWith("?")) {

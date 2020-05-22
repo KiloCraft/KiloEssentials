@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerCommandOutput.class)
 public abstract class ServerCommandOutputMixin {
-
     @Inject(at = @At("RETURN"), method = "<init>")
     private void kilo$init(MinecraftServer minecraftServer, CallbackInfo ci) {
         new ModConstants().loadConstants();

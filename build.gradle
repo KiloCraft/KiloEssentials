@@ -11,11 +11,11 @@ plugins {
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+//sourceCompatibility = JavaVersion.VERSION_1_8
+//targetCompatibility = JavaVersion.VERSION_1_8
 
-version gitVersion()
-def details = versionDetails()
+version gitVersion
+def details = versionDetails as Object
 details.lastTag
 details.commitDistance
 details.gitHash
@@ -55,7 +55,6 @@ dependencies {
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation "com.github.OnBlock:Thimble-Permissions:${project.thimble_permissions_version}"
-	//modImplementation "com.github.voidpointerdev:Thimble-Permissions:${project.thimble_permissions_version}"
 	implementation "com.github.KiloCraft:KiloEssentialsBungee:${project.ke_bungee_version}"
 
 	compile "org.spongepowered:configurate-hocon:${project.configurate_version}"
@@ -63,12 +62,10 @@ dependencies {
 	compile group: 'com.google.inject', name: 'guice', version: '4.0'
 	shadow group: 'com.google.inject', name: 'guice', version: '4.0'
 	compile "net.luckperms:api:${project.luckperms_version}"
-	//shadow "net.luckperms:api:${project.luckperms_version}"
 	compile group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
-	//shadow group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
 }
 
-tasks.jar.archiveClassifier = "compile"
+tasks.jar.archiveClassifier = "compile" as Property<String>
 
 task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
 	from zipTree(shadowJar.archiveFile) dependsOn shadowJar
