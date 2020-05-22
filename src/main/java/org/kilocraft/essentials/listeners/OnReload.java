@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.listeners;
 
+import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.KiloEssentialsImpl;
@@ -14,7 +15,7 @@ import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 
 public class OnReload implements EventHandler<ServerReloadEvent> {
     @Override
-    public void handle(ServerReloadEvent event) {
+    public void handle(@NotNull ServerReloadEvent event) {
         try {
             KiloConfig.reload();
             BrandedServer.load();

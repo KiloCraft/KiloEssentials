@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.Properties;
 
 public class ModConstants {
-    private static final Logger logger = LogManager.getFormatterLogger();
     private static final Properties properties = new Properties();
     private static final Properties lang = new Properties();
     private static MessageUtil messageUtil;
@@ -42,10 +41,6 @@ public class ModConstants {
 
     public static InputStream getResourceAsStream(final String path) {
         return ModConstants.class.getClassLoader().getResourceAsStream(path);
-    }
-
-    public static Logger getLogger() {
-        return ModConstants.logger;
     }
 
     public static MessageUtil getMessageUtil() {

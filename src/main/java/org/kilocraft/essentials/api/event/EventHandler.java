@@ -1,13 +1,20 @@
 package org.kilocraft.essentials.api.event;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * This is the event handler class all your event handlers should implement.
  * See {@link EventRegistry} for information on how to use event handlers
  *
- * @param <T> The event you want to handle
+ * @param <E> The event you want to handle
  */
-public interface EventHandler<T> {
+public interface EventHandler<E extends Event> {
 
-    void handle(T event);
+    /**
+     * Handle the event
+     *
+     * @param event the event that's gonna be handled
+     */
+    void handle(@NotNull final E event);
 
 }

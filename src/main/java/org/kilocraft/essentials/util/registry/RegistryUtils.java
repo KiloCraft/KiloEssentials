@@ -45,7 +45,7 @@ public class RegistryUtils {
             assert key != null;
         }
 
-        return key == DimensionType.OVERWORLD_REGISTRY_KEY ? "Over world"
+        return key == DimensionType.OVERWORLD_REGISTRY_KEY ? "Overworld"
                 : key == DimensionType.THE_END_REGISTRY_KEY ? "The End"
                 : key == DimensionType.THE_NETHER_REGISTRY_KEY ? "The Nether"
                 : StringUtils.normalizeCapitalization(key.getValue().getPath());

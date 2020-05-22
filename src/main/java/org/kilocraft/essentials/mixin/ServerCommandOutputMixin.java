@@ -34,6 +34,6 @@ public abstract class ServerCommandOutputMixin {
                 )
         );
 
-        ModConstants.getLogger().info("Server set: " + brand);
+        KiloServer.getLogger().info("Server set: " + brand);
     }
 }
