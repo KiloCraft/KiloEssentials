@@ -14,8 +14,8 @@ apply plugin: 'java'
 //sourceCompatibility = JavaVersion.VERSION_1_8
 //targetCompatibility = JavaVersion.VERSION_1_8
 
-version gitVersion
-def details = versionDetails as Object
+version gitVersion()
+def details = versionDetails()
 details.lastTag
 details.commitDistance
 details.gitHash
@@ -65,7 +65,7 @@ dependencies {
 	compile group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
 }
 
-tasks.jar.archiveClassifier = "compile" as Property<String>
+tasks.jar.archiveClassifier = "compile"
 
 task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
 	from zipTree(shadowJar.archiveFile) dependsOn shadowJar
