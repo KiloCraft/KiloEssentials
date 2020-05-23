@@ -396,7 +396,11 @@ public class ServerUserManager implements UserManager, TickListener {
                 continue;
             }
 
-            ((OnlineServerUser) user).onTick();
+            try {
+                ((OnlineServerUser) user).onTick();
+            } catch (Exception e) {
+                KiloEssentials.getLogger().fatal("DEBUG: ServerUserManager.onTick() -> user.onTick()", e);
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package org.kilocraft.essentials.events;
 import net.minecraft.SharedConstants;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 public class EventRegistryImpl implements EventRegistry {
     private final Map<String, List<EventHandler<?>>> handlers = new HashMap<>();
-    private final Logger logger = LogManager.getLogger("KiloEssentials|EventRegistry");
+    private final Logger logger = KiloDebugUtils.getLogger();
 
     @Override
     public <E extends EventHandler<?>> void register(@NotNull final E handlerClass) {

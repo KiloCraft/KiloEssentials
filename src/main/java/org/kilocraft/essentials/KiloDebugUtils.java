@@ -11,6 +11,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -22,6 +24,7 @@ import org.kilocraft.essentials.util.text.Texter;
 import java.io.File;
 
 public class KiloDebugUtils {
+    private static final Logger LOGGER = LogManager.getLogger("KiloEssentials|Debug");
     public static KiloDebugUtils INSTANCE;
     private static boolean wasEnabled = false;
     private final MinecraftServer minecraftServer;
@@ -138,5 +141,8 @@ public class KiloDebugUtils {
         }
     }
 
+    public static Logger getLogger() {
+        return LOGGER;
+    }
 
 }

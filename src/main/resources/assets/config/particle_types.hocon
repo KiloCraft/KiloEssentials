@@ -45,4 +45,30 @@ types {
       }
     ]
   }
+  "kilocraft:red_heart" {
+          frames=[
+              {
+                  count=1
+                  dustProperties {
+                      rgb="1 0 0"
+                      scale=1
+                  }
+                  effect=dust
+                  longDistance=true
+                  offset="0 0 0"
+                  pos="^0 0 -0.4"
+                  shapeProperties {
+                      bezierProperties {
+                          controlPoints="0 0 0 0 0 0 -1 1 0 0 2 0 0 2 0 1 1 0 0 0 0 0 0 0"
+                          points="0 0 0 -1 1 0 0 1 0 1 1 0 0 0 0"
+                      }
+                      shape=bezier
+                      size=2
+                      spacing=0.011
+                  }
+                  speed=0
+              }
+          ]
+          name="Red Heart"
+      }
 }

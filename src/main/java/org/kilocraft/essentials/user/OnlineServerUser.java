@@ -281,7 +281,9 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         if (tick >= 20) {
             tick = 0;
-            super.location = Vec3dLocation.of(this.asPlayer());
+            if (this.asPlayer() != null) {
+                super.location = Vec3dLocation.of(this.asPlayer());
+            }
 
             if (PlaytimeCommands.isEnabled()) {
                 PlaytimeCommands.getInstance().onUserPlaytimeUp(this, ticksPlayed);
