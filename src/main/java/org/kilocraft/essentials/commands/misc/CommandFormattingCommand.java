@@ -10,7 +10,7 @@ import org.kilocraft.essentials.util.text.Texter;
 
 public class CommandFormattingCommand extends EssentialCommand {
     private static final MutableText text = Texter.InfoBlockStyle.of(tl("command.commandformatting.title"))
-            .newLine().append(tl("command.commandformatting.info"))
+            .newLine().append(tl("command.commandformatting.info")).newLine()
             .build();
 
     public CommandFormattingCommand() {

@@ -158,11 +158,12 @@ public class CommandUtils {
         }
 
         public String getFormat() {
-            return "${" + this.format + "}";
+            return "\\$\\{" + this.format + "\\}";
         }
 
         public static String format(@NotNull final String cmd, @NotNull final ServerCommandSource src) {
             String string = cmd;
+            String[] strings = cmd.split(" ");
             for (Formatting value : values()) {
                 final String formatting = value.getFormat();
                 if (!string.contains(formatting)) {
@@ -175,7 +176,17 @@ public class CommandUtils {
                 } catch (Exception e) {
                     var = String.valueOf(null);
                 }
-                string = string.replaceAll(formatting, var);
+
+                StringBuilder builder = new StringBuilder();
+                for (String s : strings) {
+                    if (s.equals(formatting)) {
+                        builder.append(s.replace(formatting, var));
+                    } else {
+                        builder.append(s);
+                    }
+                }
+
+                string = builder.toString();
             }
 
             return string;

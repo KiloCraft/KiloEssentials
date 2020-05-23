@@ -15,7 +15,7 @@ public class TextFormattingCommand extends EssentialCommand {
 							'~',
 							"~0&0Black ~1&1Dark Blue ~2&2Dark Green ~3&3Dark Aqua ~4&4Dark Red ~5&5Dark Purple " +
 									"~6&6Gold ~7&7Gray ~8&8Dark Gray ~9&9Blue ~a&aGreen ~b&bAqua ~c&cRed ~d&dPurple ~e&eYellow ~f&fWhite\n\n" +
-									"~f~lFormatting codes:\n~r~f~l&lBold ~r~f~o&o Italic ~r~f~n&nUnderline ~r~f~m&m Strike through ~r~f&k Obfuscated" +
+									"~f~lFormatting codes:\n~r~f&l ~lBold ~r&o~r~f~oItalic ~r&n~r~f ~nUnderline ~r&m~r~f~m Strike through ~r~f&k (Obfuscated) " +
 									"~kKiloEssentials! ~f&r Reset!"
 					)
 			)
