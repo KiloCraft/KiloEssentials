@@ -5,13 +5,17 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandUtils {
     private static final Server server = KiloServer.getServer();
@@ -97,17 +101,19 @@ public class CommandUtils {
         return isConsole(source) ? source.getName() : source.getPlayer().getDisplayName().asString();
     }
 
-    public static int runCommandWithFormatting(ServerCommandSource src, String cmd) {
-        if (cmd.contains("${source.name}")) {
-            cmd = cmd.replaceAll("\\$\\{source.name}", src.getName());
+    public static int runCommandWithFormatting(@NotNull final ServerCommandSource src, @NotNull final String cmd) {
+        String s = cmd;
+        Matcher matcher = Formatting.PATTERN.matcher(cmd);
+        if (matcher.find()) {
+            s = Formatting.format(cmd, src);
         }
 
-        if (cmd.startsWith("!")) {
-            return server.execute(operatorSource(src), cmd.replace("!", ""));
-        } else if (cmd.startsWith("?")) {
-            return server.execute(cmd.replaceFirst("\\?", ""));
+        if (s.startsWith("!")) {
+            return server.execute(operatorSource(src), s.replace("!", ""));
+        } else if (s.startsWith("?")) {
+            return server.execute(s.replaceFirst("\\?", ""));
         } else {
-            return server.execute(src, cmd);
+            return server.execute(src, s);
         }
     }
 
@@ -138,6 +144,48 @@ public class CommandUtils {
                 return false;
             }
         };
+    }
+
+    public enum Formatting {
+        SRC_NAME("source.name", ServerCommandSource::getName),
+        SRC_UUID("source.uuid", (src) -> Objects.requireNonNull(src.getEntity()).getUuid().toString());
+
+        final String format;
+        final FormatterFunction<String, ServerCommandSource> function;
+        Formatting(String format, FormatterFunction<String, ServerCommandSource> function) {
+            this.format = format;
+            this.function = function;
+        }
+
+        public String getFormat() {
+            return "${" + this.format + "}";
+        }
+
+        public static String format(@NotNull final String cmd, @NotNull final ServerCommandSource src) {
+            String string = cmd;
+            for (Formatting value : values()) {
+                final String formatting = value.getFormat();
+                if (!string.contains(formatting)) {
+                    continue;
+                }
+
+                String var;
+                try {
+                    var = value.function.accept(src);
+                } catch (Exception e) {
+                    var = String.valueOf(null);
+                }
+                string = string.replaceAll(formatting, var);
+            }
+
+            return string;
+        }
+
+        private interface FormatterFunction<T, U> {
+            T accept(U u);
+        }
+
+        public static final Pattern PATTERN = Pattern.compile("\\$\\{[a-zA-Z][a-zA-Z0-9-_.]{0,32}}");
     }
 
 }
