@@ -165,7 +165,7 @@ public class CommandUtils {
             String string = cmd;
             for (Formatting value : values()) {
                 final String formatting = value.getFormat();
-                if (!string.contains(value.getFormat())) {
+                if (!string.contains(formatting)) {
                     continue;
                 }
 
