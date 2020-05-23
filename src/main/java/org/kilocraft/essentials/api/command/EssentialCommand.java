@@ -181,6 +181,10 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return KiloEssentials.hasPermissionNode(src, essPerm, minOpLevel);
     }
 
+    public void sendMessage(final CommandContext<ServerCommandSource> ctx, final Text text) {
+        ctx.getSource().sendFeedback(text, false);
+    }
+
     public void sendMessage(final CommandContext<ServerCommandSource> ctx, final String key, final Object... objects) {
         sendMessage(ctx.getSource(), key, objects);
     }
@@ -277,7 +281,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return AWAIT;
     }
 
-    public String tl(final String key) {
+    public static String tl(final String key) {
         return ModConstants.translation(key);
     }
 

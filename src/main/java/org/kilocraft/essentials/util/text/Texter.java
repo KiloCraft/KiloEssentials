@@ -459,6 +459,13 @@ public class Texter {
             return this;
         }
 
+        public InfoBlockStyle appendRaw(Object obj) {
+            TypeFormat typeFormat = TypeFormat.getByClazz(obj.getClass());
+            this.text.append(new LiteralText(String.valueOf(obj))
+                    .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary));
+            return this;
+        }
+
         public InfoBlockStyle append(String title, Object obj) {
             return this.append(true, true, title, obj);
         }

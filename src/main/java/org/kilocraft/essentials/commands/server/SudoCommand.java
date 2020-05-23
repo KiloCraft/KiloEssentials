@@ -43,7 +43,7 @@ public class SudoCommand extends EssentialCommand {
                 .build();
 
         LiteralCommandNode<ServerCommandSource> asArg = literal("as")
-                .then(argument("target", EntityArgumentType.entities())
+                .then(argument("targets", EntityArgumentType.entities())
                         .then(argument("commandWithFormatting", StringArgumentType.greedyString())
                                 .executes(SudoCommand::executeAs)))
                 .build();

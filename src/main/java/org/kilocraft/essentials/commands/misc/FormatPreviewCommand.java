@@ -22,18 +22,18 @@ public class FormatPreviewCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = argument("string", greedyString())
-                .suggests(ArgumentCompletions::textFormatChars)
+        RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = argument("text", greedyString())
+                .suggests(FormatPreviewCommand::staticSuggestion)
                 .executes(FormatPreviewCommand::execute);
 
         commandNode.addChild(stringArgument.build());
     }
 
     private static int execute(CommandContext<ServerCommandSource> ctx) {
-        String arg = getString(ctx, "string");
-        KiloChat.sendMessageToSource(ctx.getSource(), new TextMessage("&eString preview:\n" + arg, true));
+        String text = getString(ctx, "text");
+        KiloChat.sendMessageToSource(ctx.getSource(), new TextMessage("&eText preview:&r\n" + text, true));
 
-        return SUCCESS;
+        return text.length();
     }
 
     private static CompletableFuture<Suggestions> staticSuggestion(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

@@ -54,12 +54,18 @@ public class Vec3dLocation implements Location {
     }
 
     public static Vec3dLocation of(ServerPlayerEntity player) {
-        Identifier dim = player.getServerWorld().getDimension() != null ? RegistryUtils.toIdentifier(player.getServerWorld().getDimension()) : null;
+        Identifier dim = null;
+        if (player.getServerWorld() != null && player.getServerWorld().getDimension() != null) {
+            dim = RegistryUtils.toIdentifier(player.getServerWorld().getDimension());
+        }
         return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, dim);
     }
 
     public static Vec3dLocation of(Entity entity) {
-        Identifier dim = entity.getEntityWorld().getDimension() != null ? RegistryUtils.toIdentifier(entity.getEntityWorld().getDimension()) : null;
+        Identifier dim = null;
+        if (entity.getEntityWorld() != null && entity.getEntityWorld().getDimension() != null) {
+            dim = RegistryUtils.toIdentifier(entity.getEntityWorld().getDimension());
+        }
         return new Vec3dLocation(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch, dim);
     }
 

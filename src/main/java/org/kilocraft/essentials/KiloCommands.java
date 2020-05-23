@@ -117,7 +117,8 @@ public class KiloCommands {
             this.add(new HatCommand());
             this.add(new VersionCommand());
             this.add(new ReloadCommand());
-            this.add(new ColorsCommand());
+            this.add(new TextFormattingCommand());
+            this.add(new CommandFormattingCommand());
             this.add(new GamemodeCommand());
             this.add(new RtpCommand());
             this.add(new BroadcastCommand());
