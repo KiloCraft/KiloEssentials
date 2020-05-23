@@ -15,6 +15,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
+import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -191,25 +192,30 @@ public class KiloCommands {
     private <C extends IEssentialCommand> void registerCommand(@NotNull final C c) {
         EssentialCommand command = (EssentialCommand) c;
         command.register(this.dispatcher);
-        KiloCommands.rootNode.addChild(command.getArgumentBuilder().build());
-        KiloCommands.rootNode.addChild(command.getCommandNode());
 
-        if (command.getAlias() != null) {
-            for (String alias : command.getAlias()) {
-                LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
-                        .requires(command.getRootPermissionPredicate())
-                        .executes(command.getArgumentBuilder().getCommand());
-
-                for (CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
-                    argumentBuilder.then(child);
-                }
-
-                this.dispatcher.register(argumentBuilder);
-            }
+        if (command.getForkType() == IEssentialCommand.ForkType.DEFAULT || command.getForkType() == IEssentialCommand.ForkType.SUB_ONLY) {
+            KiloCommands.rootNode.addChild(command.getArgumentBuilder().build());
+            KiloCommands.rootNode.addChild(command.getCommandNode());
         }
 
-        this.dispatcher.getRoot().addChild(command.getCommandNode());
-        this.dispatcher.register(command.getArgumentBuilder());
+        if (command.getForkType().shouldRegisterOnMain()) {
+            if (command.getAlias() != null) {
+                for (String alias : command.getAlias()) {
+                    LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
+                            .requires(command.getRootPermissionPredicate())
+                            .executes(command.getArgumentBuilder().getCommand());
+
+                    for (CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
+                        argumentBuilder.then(child);
+                    }
+
+                    this.dispatcher.register(argumentBuilder);
+                }
+            }
+
+            this.dispatcher.getRoot().addChild(command.getCommandNode());
+            this.dispatcher.register(command.getArgumentBuilder());
+        }
     }
 
     public static CompletableFuture<Suggestions> toastSuggestions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {

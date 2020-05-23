@@ -10,6 +10,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 public class DebugEssentialsCommand extends EssentialCommand {
     public DebugEssentialsCommand() {
         super("debug", src -> src.hasPermissionLevel(3));
+        this.withForkType(ForkType.MAIN_ONLY);
     }
 
     @Override
