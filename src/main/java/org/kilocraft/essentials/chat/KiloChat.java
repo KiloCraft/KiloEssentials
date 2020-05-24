@@ -18,8 +18,8 @@ import org.kilocraft.essentials.user.ServerUser;
 import static org.kilocraft.essentials.api.KiloServer.getServer;
 
 public class KiloChat {
-	private static ChatConfigSection config = KiloConfig.main().chat();
-	private static Messages messages = KiloConfig.messages();
+	private static final ChatConfigSection config = KiloConfig.main().chat();
+	private static final Messages messages = KiloConfig.messages();
 
 	public static String getFormattedLang(String key) {
 		return getFormattedString(ModConstants.getLang().getProperty(key), (Object) null);

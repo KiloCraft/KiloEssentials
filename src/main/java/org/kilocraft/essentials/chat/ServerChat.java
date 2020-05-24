@@ -2,6 +2,7 @@ package org.kilocraft.essentials.chat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import net.minecraft.SharedConstants;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -81,12 +83,13 @@ public final class ServerChat {
         try {
             send(sender, message, channel);
         } catch (Exception e) {
-            sender.getCommandSource().sendError(
-                    Texter.newText("an unexpected exception occurred while processing the message")
-                            .append("\n").append(Util.getInnermostMessage(e))
-            );
+            MutableText text = Texter.newTranslatable("command.failed");
+            if (SharedConstants.isDevelopment) {
+                text.append("\n").append(Util.getInnermostMessage(e));
+                KiloDebugUtils.getLogger().error("Processing a chat message throw an exception", e);
+            }
 
-            KiloEssentials.getLogger().error("Processing a chat message throw an exception", e);
+            sender.getCommandSource().sendError(text);
         }
     }
 
@@ -280,7 +283,7 @@ public final class ServerChat {
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
-                KiloChat.sendMessageTo(user.asPlayer(), new LiteralText(new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+                user.sendMessage(new TextMessage(toSpy, true).toComponent().formatted(Formatting.GRAY));
             }
         }
 

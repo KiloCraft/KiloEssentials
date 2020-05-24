@@ -405,7 +405,13 @@ public class KiloCommands {
         String cmd = command;
 
         if (!command.endsWith("--push") && !src.hasPermission(EssentialPermission.IGNORE_COMMAND_EVENTS)) {
-            KiloServer.getServer().triggerEvent(event);
+            try {
+                KiloServer.getServer().triggerEvent(event);
+            } catch (Exception e) {
+                if (SharedConstants.isDevelopment) {
+                    KiloDebugUtils.getLogger().fatal("Expected error while triggering an Event", e);
+                }
+            }
         } else {
             cmd = command.replace(" --push", "");
         }

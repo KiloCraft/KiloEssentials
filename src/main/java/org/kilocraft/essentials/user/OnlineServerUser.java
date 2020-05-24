@@ -122,7 +122,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(final Text text) {
-        KiloChat.sendMessageTo(this.asPlayer(), text);
+        this.asPlayer().sendMessage(text, false);
     }
 
     @Override

@@ -13,9 +13,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
@@ -35,7 +37,9 @@ import org.kilocraft.essentials.util.CacheManager;
 import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.player.UserUtils;
+import org.kilocraft.essentials.util.text.Texter;
 
+import javax.swing.tree.MutableTreeNode;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -381,10 +385,20 @@ public class ServerUserManager implements UserManager, TickListener {
             return;
         }
 
-        if (string.startsWith("/")) {
-            KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
-        } else {
-            ServerChat.sendSafely(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
+        try {
+            if (string.startsWith("/")) {
+                KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
+            } else {
+                ServerChat.send(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
+            }
+        } catch (Exception e) {
+            MutableText text = Texter.newTranslatable("command.failed");
+            if (SharedConstants.isDevelopment) {
+                text.append("\n").append(Util.getInnermostMessage(e));
+                KiloDebugUtils.getLogger().error("Processing a chat message throw an exception", e);
+            }
+
+            user.getCommandSource().sendError(text);
         }
 
     }

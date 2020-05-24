@@ -16,6 +16,10 @@ public class Texter {
         return new LiteralText(TextFormat.translate(str));
     }
 
+    public static TranslatableText newTranslatable(String key, Object... objects) {
+        return new TranslatableText(key, objects);
+    }
+
     public static MutableText newText() {
         return new LiteralText("");
     }
