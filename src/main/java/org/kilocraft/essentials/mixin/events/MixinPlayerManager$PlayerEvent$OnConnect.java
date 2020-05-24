@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.mixin.events;
 
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.MessageType;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -16,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.UUID;
 
 @Mixin(PlayerManager.class)
 public abstract class MixinPlayerManager$PlayerEvent$OnConnect {
@@ -39,8 +42,8 @@ public abstract class MixinPlayerManager$PlayerEvent$OnConnect {
         PlayerConnectedEventImpl e = KiloServer.getServer().triggerEvent(new PlayerConnectedEventImpl(connection, playerEntity));
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/text/Text;)V"), method = "onPlayerConnect")
-    private void oky$onPlayerConnect$sendToAll(PlayerManager playerManager, Text text_1) {
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "onPlayerConnect")
+    private void oky$onPlayerConnect$sendToAll(PlayerManager playerManager, Text text, MessageType messageType, UUID uUID) {
         //Ignored
     }
 

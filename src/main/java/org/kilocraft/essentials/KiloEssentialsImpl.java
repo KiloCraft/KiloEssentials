@@ -220,7 +220,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 			} catch (Exception e) {
 				requester.sendError(new LiteralText(e.getMessage()).formatted(Formatting.RED));
 			}
-		}, KiloServer.getServer().getVanillaServer());
+		}, KiloServer.getServer().getMinecraftServer());
 
 		return optionalCompletableFuture;
 	}
@@ -251,7 +251,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 			} catch (Exception e) {
 				requester.sendError(e.getMessage());
 			}
-		}, KiloServer.getServer().getVanillaServer());
+		}, KiloServer.getServer().getMinecraftServer());
 
 		if (!optionalCompletableFuture.isDone())
 			loadingText.start();
@@ -279,7 +279,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 			} catch (Exception e) {
 				requester.sendError(e.getMessage());
 			}
-		}, KiloServer.getServer().getVanillaServer());
+		}, KiloServer.getServer().getMinecraftServer());
 
 		if (!optionalCompletableFuture.isDone())
 			loadingText.start();

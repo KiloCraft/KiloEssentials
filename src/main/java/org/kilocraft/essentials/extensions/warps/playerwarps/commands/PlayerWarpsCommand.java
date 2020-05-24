@@ -116,14 +116,13 @@ public class PlayerWarpsCommand extends EssentialCommand {
                 MutableText text = new LiteralText("");
                 text.append(new LiteralText((index) + ".").formatted(Formatting.GOLD));
                 text.append(" ");
-                text.append(new LiteralText(warp.getName()).formatted(Formatting.WHITE)).styled((style) -> {
-                    return style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText("")
-                            .append(new LiteralText("By ").formatted(Formatting.WHITE))
-                            .append(new LiteralText(ownerName))
-                            .append("\n")
-                            .append(new LiteralText("In ").formatted(Formatting.WHITE))
-                            .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())))));
-                });
+                text.append(new LiteralText(warp.getName()).formatted(Formatting.WHITE)).styled((style) ->
+                        style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText("")
+                        .append(new LiteralText("By ").formatted(Formatting.WHITE))
+                        .append(new LiteralText(ownerName))
+                        .append("\n")
+                        .append(new LiteralText("In ").formatted(Formatting.WHITE))
+                        .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType()))))));
                 text.append(new LiteralText(" (").formatted(Formatting.DARK_GRAY));
                 text.append(new LiteralText(warp.getType()).formatted(Formatting.LIGHT_PURPLE));
                 text.append(new LiteralText(") ").formatted(Formatting.DARK_GRAY));
@@ -139,9 +138,9 @@ public class PlayerWarpsCommand extends EssentialCommand {
                 String desc = warp.getDescription();
                 String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
 
-                MutableText description = Texter.newText(TextFormat.clearColorCodes(shortenedDesc)).formatted(Formatting.WHITE).styled((style) -> {
-                    return style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText(desc).formatted(Formatting.WHITE)));
-                });
+                MutableText description = Texter.newText(TextFormat.clearColorCodes(shortenedDesc)).formatted(Formatting.WHITE).styled((style) ->
+                        style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText(desc).formatted(Formatting.WHITE)))
+                );
 
                 if (desc.length() > maxLength) {
                     description.append("...");

@@ -20,6 +20,7 @@ import org.kilocraft.essentials.util.player.PlayerRotation;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.text.DecimalFormat;
+import java.util.Objects;
 
 public class Vec3dLocation implements Location {
     private static DecimalFormat decimalFormat = new DecimalFormat("##.##");
@@ -53,12 +54,18 @@ public class Vec3dLocation implements Location {
     }
 
     public static Vec3dLocation of(ServerPlayerEntity player) {
-        Identifier dim = player.dimension != null ? RegistryUtils.toIdentifier(player.dimension) : null;
+        Identifier dim = null;
+        if (player.getServerWorld() != null && player.getServerWorld().getDimension() != null) {
+            dim = RegistryUtils.toIdentifier(player.getServerWorld().getDimension());
+        }
         return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch, dim);
     }
 
     public static Vec3dLocation of(Entity entity) {
-        Identifier dim = entity.dimension != null ? RegistryUtils.toIdentifier(entity.dimension) : null;
+        Identifier dim = null;
+        if (entity.getEntityWorld() != null && entity.getEntityWorld().getDimension() != null) {
+            dim = RegistryUtils.toIdentifier(entity.getEntityWorld().getDimension());
+        }
         return new Vec3dLocation(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch, dim);
     }
 
@@ -90,7 +97,7 @@ public class Vec3dLocation implements Location {
     @Nullable
     @Override
     public DimensionType getDimensionType() {
-        return Registry.DIMENSION_TYPE.get(dimension);
+        return RegistryUtils.toDimension(this.dimension);
     }
 
     @Override
@@ -100,7 +107,7 @@ public class Vec3dLocation implements Location {
 
     @Override
     public ServerWorld getWorld() {
-        return KiloServer.getServer().getVanillaServer().getWorld(RegistryUtils.toDimension(dimension));
+        return KiloServer.getServer().getMinecraftServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(Objects.requireNonNull(this.getDimensionType(), "Null Dimension")));
     }
 
     @Override

@@ -76,17 +76,17 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
         tick = 0;
         stands.forEach((dim, uuid) -> {
-            ArmorStandEntity stand = (ArmorStandEntity) KiloServer.getServer().getVanillaServer().getWorld(RegistryUtils.toDimension(dim)).getEntity(uuid);
+            ArmorStandEntity stand = (ArmorStandEntity) RegistryUtils.toServerWorld(RegistryUtils.toDimension(dim)).getEntity(uuid);
             if (stand == null) {
                 return;
             }
 
             if (stand.hasPlayerRider() && stand.hasPassengerType(PlayerEntity.class) && stand.getPassengerList().get(0) instanceof PlayerEntity) {
                 OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) stand.getPassengerList().get(0));
-                ServerWorld world = KiloServer.getServer().getVanillaServer().getWorld(RegistryUtils.toDimension(dim));
+                ServerWorld world = RegistryUtils.toServerWorld(RegistryUtils.toDimension(dim));
 
                 if (user != null) {
-                    if (world.getBlockState(stand.getBlockPos().up().up()).getBlock() == Blocks.AIR) {
+                    if (world.getBlockState(stand.getBlockPos().up()).getBlock() == Blocks.AIR) {
                         unseat(user);
                     }
 
@@ -133,7 +133,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
 
         Vec3dLocation vec3dLoc = Vec3dLocation.of(pos.getX(), pos.getY() + 1, pos.getZ(),
-                player.yaw, player.pitch, RegistryUtils.toIdentifier(world.getDimension().getType()));
+                player.yaw, player.pitch, RegistryUtils.toIdentifier(world.getDimension()));
 
         if (state.getBlock() instanceof StairsBlock && state.get(Properties.BLOCK_HALF) == BlockHalf.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.40D);
@@ -170,7 +170,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
 
         if (swingHand) {
-            player.swingHand(Hand.MAIN_HAND, true);
+            player.swingHand(player.preferredHand, true);
         }
 
         stand.setInvisible(true);
@@ -206,7 +206,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                 stand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())
         ) {
             player.sendMessage(LangText.get(true, "sit.stop_riding"), true);
-            stands.remove(RegistryUtils.toIdentifier(stand.dimension), stand.getUuid());
+            stands.remove(RegistryUtils.toIdentifier(stand.getEntityWorld().getDimension()), stand.getUuid());
             stand.kill();
         }
 
@@ -214,7 +214,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
     public void killAll() {
         stands.forEach((dim, uuid) -> {
-            ArmorStandEntity armorStand = (ArmorStandEntity) KiloServer.getServer().getVanillaServer().getWorld(RegistryUtils.toDimension(dim)).getEntity(uuid);
+            ArmorStandEntity armorStand = (ArmorStandEntity) RegistryUtils.toServerWorld(RegistryUtils.toDimension(dim)).getEntity(uuid);
             if (armorStand != null && !armorStand.hasPlayerRider()) {
                 armorStand.kill();
             }

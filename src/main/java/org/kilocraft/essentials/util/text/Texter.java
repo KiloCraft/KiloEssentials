@@ -16,6 +16,10 @@ public class Texter {
         return new LiteralText(TextFormat.translate(str));
     }
 
+    public static TranslatableText newTranslatable(String key, Object... objects) {
+        return new TranslatableText(key, objects);
+    }
+
     public static MutableText newText() {
         return new LiteralText("");
     }
@@ -455,6 +459,13 @@ public class Texter {
         public InfoBlockStyle append(Object obj) {
             TypeFormat typeFormat = TypeFormat.getByClazz(obj.getClass());
             this.text.append(new LiteralText(TextFormat.translate(String.valueOf(obj)))
+                    .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary));
+            return this;
+        }
+
+        public InfoBlockStyle appendRaw(Object obj) {
+            TypeFormat typeFormat = TypeFormat.getByClazz(obj.getClass());
+            this.text.append(new LiteralText(String.valueOf(obj))
                     .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary));
             return this;
         }

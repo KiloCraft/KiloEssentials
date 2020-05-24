@@ -78,11 +78,9 @@ public class TimeCommand extends EssentialCommand {
     }
 
     public static int executeSet(CommandContext<ServerCommandSource> context, int time, String timeName){
-        Iterator<ServerWorld> iterator = context.getSource().getMinecraftServer().getWorlds().iterator();
 
-        while (iterator.hasNext()) {
-            ServerWorld world = (ServerWorld) iterator.next();
-                world.setTimeOfDay(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);
+        for (ServerWorld world : context.getSource().getMinecraftServer().getWorlds()) {
+            world.method_29199(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);
         }
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", timeName + " &8(&d" + time + "&8)&r");
@@ -91,20 +89,12 @@ public class TimeCommand extends EssentialCommand {
     }
 
     public static int executeAdd(CommandContext<ServerCommandSource> context, int timeToAdd) {
-        Iterator<ServerWorld> iterator = context.getSource().getMinecraftServer().getWorlds().iterator();
-
-        while (iterator.hasNext()) {
-            ServerWorld world = (ServerWorld) iterator.next();
-            world.setTimeOfDay(world.getTimeOfDay() + timeToAdd);
+        for (ServerWorld world : context.getSource().getMinecraftServer().getWorlds()) {
+            world.method_29199(world.getTimeOfDay() + timeToAdd);
         }
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", context.getSource().getWorld().getTimeOfDay());
         return SUCCESS;
-    }
-
-    public static int executeGet(CommandContext<ServerCommandSource> context, int time) throws CommandSyntaxException {
-        context.getSource().getPlayer().sendMessage(LangText.getFormatter(true, "command.time.get",time), false);
-        return time;
     }
 
 }

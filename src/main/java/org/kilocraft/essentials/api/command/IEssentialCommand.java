@@ -25,4 +25,14 @@ public interface IEssentialCommand {
     String[] getAlias();
 
     void register(CommandDispatcher<ServerCommandSource> dispatcher);
+
+    enum ForkType {
+        DEFAULT,
+        SUB_ONLY,
+        MAIN_ONLY;
+
+        public boolean shouldRegisterOnMain() {
+            return this == DEFAULT || this == MAIN_ONLY;
+        }
+    }
 }

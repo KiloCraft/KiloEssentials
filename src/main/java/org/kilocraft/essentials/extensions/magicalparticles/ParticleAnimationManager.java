@@ -59,10 +59,10 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
 
     private static void loadConfig() {
         try {
-            KiloFile CONFIG_FILE = new KiloFile("particleTypes.hocon", KiloEssentials.getEssentialsPath());
+            KiloFile CONFIG_FILE = new KiloFile("particle_types.hocon", KiloEssentials.getEssentialsPath());
             if (!CONFIG_FILE.exists()) {
                 CONFIG_FILE.createFile();
-                CONFIG_FILE.pasteFromResources("assets/config/particleTypes.hocon");
+                CONFIG_FILE.pasteFromResources("assets/config/particle_types.hocon");
             }
 
             ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()

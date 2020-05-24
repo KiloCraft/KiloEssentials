@@ -2,9 +2,9 @@ package org.kilocraft.essentials.util;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.biome.Biome;
@@ -17,15 +17,14 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.text.Texter;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 public class LocationUtil {
-    public static int MAX_WORLD_HEIGHT = KiloServer.getServer().getVanillaServer().getWorldHeight();
+    public static int MAX_WORLD_HEIGHT = KiloServer.getServer().getMinecraftServer().getWorldHeight();
 
-    public static boolean isDimensionValid(DimensionType type) {
-        return type == DimensionType.OVERWORLD ||
-                ((type == DimensionType.THE_NETHER && KiloConfig.main().world().allowTheNether) ||
-                        type == DimensionType.THE_END && KiloConfig.main().world().allowTheEnd);
+    public static boolean shouldBlockAccessTo(DimensionType type) {
+        return KiloConfig.main().world().disabledDimensions.contains(RegistryUtils.toIdentifier(type).toString()) ||
+                KiloConfig.main().world().disabledDimensions.contains(RegistryUtils.toIdentifier(type).getPath());
     }
 
     public static boolean isBlockSafeFor(OnlineUser user, final Location loc) {
@@ -39,7 +38,7 @@ public class LocationUtil {
     public static boolean canBlockDamage(final Location loc) {
         BlockState state = loc.getWorld().getBlockState(loc.toPos());
 
-        if (!KiloServer.getServer().getVanillaServer().getGameRules().getBoolean(GameRules.FIRE_DAMAGE)) {
+        if (!KiloServer.getServer().getMinecraftServer().getGameRules().getBoolean(GameRules.FIRE_DAMAGE)) {
             return false;
         }
 
@@ -61,7 +60,7 @@ public class LocationUtil {
         BlockState state;
         int tries = 0;
         boolean hasAirSpace;
-        boolean isNether = world.getDimension().getType() == DimensionType.THE_NETHER;
+        boolean isNether = RegistryUtils.dimensionTypeToRegistryKey(loc.getDimensionType()) == DimensionType.THE_NETHER_REGISTRY_KEY;
         boolean safe;
 
         do {

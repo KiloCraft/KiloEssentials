@@ -26,18 +26,21 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.commands.debug.DebugEssentialsCommand;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
-import org.kilocraft.essentials.commands.inventory.*;
+import org.kilocraft.essentials.commands.inventory.AnvilCommand;
+import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
+import org.kilocraft.essentials.commands.inventory.InventoryCommand;
+import org.kilocraft.essentials.commands.inventory.WorkbenchCommand;
 import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
@@ -48,7 +51,9 @@ import org.kilocraft.essentials.commands.moderation.IpInfoCommand;
 import org.kilocraft.essentials.commands.moderation.KickCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
-import org.kilocraft.essentials.commands.teleport.*;
+import org.kilocraft.essentials.commands.teleport.BackCommand;
+import org.kilocraft.essentials.commands.teleport.RtpCommand;
+import org.kilocraft.essentials.commands.teleport.TeleportCommands;
 import org.kilocraft.essentials.commands.teleport.tpr.*;
 import org.kilocraft.essentials.commands.user.LastSeenCommand;
 import org.kilocraft.essentials.commands.user.SilenceCommand;
@@ -59,10 +64,10 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
-import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.CommandMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -117,7 +122,8 @@ public class KiloCommands {
             this.add(new HatCommand());
             this.add(new VersionCommand());
             this.add(new ReloadCommand());
-            this.add(new ColorsCommand());
+            this.add(new TextFormattingCommand());
+            this.add(new CommandFormattingCommand());
             this.add(new GamemodeCommand());
             this.add(new RtpCommand());
             this.add(new BroadcastCommand());
@@ -190,25 +196,30 @@ public class KiloCommands {
     private <C extends IEssentialCommand> void registerCommand(@NotNull final C c) {
         EssentialCommand command = (EssentialCommand) c;
         command.register(this.dispatcher);
-        KiloCommands.rootNode.addChild(command.getArgumentBuilder().build());
-        KiloCommands.rootNode.addChild(command.getCommandNode());
 
-        if (command.getAlias() != null) {
-            for (String alias : command.getAlias()) {
-                LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
-                        .requires(command.getRootPermissionPredicate())
-                        .executes(command.getArgumentBuilder().getCommand());
-
-                for (CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
-                    argumentBuilder.then(child);
-                }
-
-                this.dispatcher.register(argumentBuilder);
-            }
+        if (command.getForkType() == IEssentialCommand.ForkType.DEFAULT || command.getForkType() == IEssentialCommand.ForkType.SUB_ONLY) {
+            KiloCommands.rootNode.addChild(command.getArgumentBuilder().build());
+            KiloCommands.rootNode.addChild(command.getCommandNode());
         }
 
-        this.dispatcher.getRoot().addChild(command.getCommandNode());
-        this.dispatcher.register(command.getArgumentBuilder());
+        if (command.getForkType().shouldRegisterOnMain()) {
+            if (command.getAlias() != null) {
+                for (String alias : command.getAlias()) {
+                    LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
+                            .requires(command.getRootPermissionPredicate())
+                            .executes(command.getArgumentBuilder().getCommand());
+
+                    for (CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
+                        argumentBuilder.then(child);
+                    }
+
+                    this.dispatcher.register(argumentBuilder);
+                }
+            }
+
+            this.dispatcher.getRoot().addChild(command.getCommandNode());
+            this.dispatcher.register(command.getArgumentBuilder());
+        }
     }
 
     public static CompletableFuture<Suggestions> toastSuggestions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
@@ -394,7 +405,13 @@ public class KiloCommands {
         String cmd = command;
 
         if (!command.endsWith("--push") && !src.hasPermission(EssentialPermission.IGNORE_COMMAND_EVENTS)) {
-            KiloServer.getServer().triggerEvent(event);
+            try {
+                KiloServer.getServer().triggerEvent(event);
+            } catch (Exception e) {
+                if (SharedConstants.isDevelopment) {
+                    KiloDebugUtils.getLogger().fatal("Expected error while triggering an Event", e);
+                }
+            }
         } else {
             cmd = command.replace(" --push", "");
         }
@@ -413,7 +430,7 @@ public class KiloCommands {
             reader.skip();
         }
 
-        getServer().getVanillaServer().getProfiler().push(cmd);
+        getServer().getMinecraftServer().getProfiler().push(cmd);
 
         byte var = 0;
         try {
@@ -484,7 +501,7 @@ public class KiloCommands {
             return (byte) 0;
 
         } finally {
-            getServer().getVanillaServer().getProfiler().pop();
+            getServer().getMinecraftServer().getProfiler().pop();
         }
 
         return var;

@@ -4,7 +4,6 @@ import com.google.common.reflect.TypeToken;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
@@ -135,7 +134,7 @@ public class CustomCommands implements RelodableConfigurableFeature {
         }
 
         for (String s : commands) {
-            CommandUtils.run(src, s);
+            CommandUtils.runCommandWithFormatting(src, s);
             var++;
         }
 

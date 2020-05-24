@@ -6,8 +6,8 @@ import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 
 public class OnCommandExecutionEventImpl implements OnCommandExecutionEvent {
 
-    private ServerCommandSource source;
-    private String command;
+    private final ServerCommandSource source;
+    private final String command;
     private boolean isCanceled;
 
     public OnCommandExecutionEventImpl(ServerCommandSource source, String command) {
