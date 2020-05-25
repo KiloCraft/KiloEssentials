@@ -69,14 +69,13 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	private final List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private final Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	KiloEssentialsImpl(final KiloEvents events, final KiloConfig config) {
+	KiloEssentialsImpl(final KiloEvents events) {
 		KiloEssentialsImpl.instance = this;
 		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
+		KiloConfig.load();
 		this.commands = new KiloCommands();
-
-		KiloServer.getServer().setName(KiloConfig.main().server().name);
 
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done

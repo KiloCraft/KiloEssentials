@@ -60,8 +60,8 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         }
     }
 
-    @Redirect(at = @At(value = "HEAD"), method = "onDisconnected")
-    private void ke$triggerEvent$onDisconnect() {
+    @Inject(at = @At(value = "HEAD"), method = "onDisconnected")
+    private void ke$triggerEvent$onDisconnect(Text text, CallbackInfo ci) {
         KiloServer.getServer().triggerEvent(new PlayerDisconnectEventImpl(this.player));
     }
 

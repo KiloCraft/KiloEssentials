@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user.setting;
 
+import com.google.common.collect.Maps;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -10,21 +11,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ServerUserSettings implements UserSettings {
-    private Map<String, Object> map;
+    private final Map<String, Object> SETTINGS;
 
     public ServerUserSettings() {
-        this.map = new HashMap<>();
+        this.SETTINGS = Maps.newHashMap();
     }
 
     @Override
     public <T> void set(Setting<T> setting, T value) {
-        this.map.remove(setting.getId());
-        this.map.put(setting.getId(), value);
+        this.SETTINGS.remove(setting.getId());
+        this.SETTINGS.put(setting.getId(), value);
     }
 
     @Override
     public <T> T get(Setting<T> setting) {
-        return (T) this.map.getOrDefault(setting.getId(), setting.getDefault());
+        return (T) this.SETTINGS.getOrDefault(setting.getId(), setting.getDefault());
     }
 
     @Override
@@ -35,7 +36,7 @@ public class ServerUserSettings implements UserSettings {
     @Override
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
-        for (Map.Entry<String, Object> entry : this.map.entrySet()) {
+        for (Map.Entry<String, Object> entry : this.SETTINGS.entrySet()) {
             Setting<?> setting = Settings.getById(entry.getKey());
             if (setting != null) {
                 try {
@@ -55,7 +56,7 @@ public class ServerUserSettings implements UserSettings {
             Setting<?> setting = Settings.getById(key);
             if (setting != null) {
                 try {
-                    this.map.put(setting.getId(), setting.fromTag(tag));
+                    this.SETTINGS.put(setting.getId(), setting.fromTag(tag));
                 } catch (IllegalArgumentException e) {
                     KiloEssentials.getLogger().fatal("Exception while de-serializing a User Setting: Using Default Value", e);
                 }

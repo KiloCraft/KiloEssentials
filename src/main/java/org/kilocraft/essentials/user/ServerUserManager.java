@@ -62,10 +62,9 @@ public class ServerUserManager implements UserManager, TickListener {
     private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
     private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
     private final Map<UUID, SimpleProcess<?>> inProcessUsers = new HashMap<>();
-    private final String NICKNAME_CACHE = "nicknames";
     private Map<UUID, String> cachedNicknames = new HashMap<>();
 
-    private PunishmentManager punishManager;
+    private final PunishmentManager punishManager;
 
     public ServerUserManager(PlayerManager manager) {
         this.punishManager = new PunishmentManager(manager);
@@ -114,7 +113,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private CompletableFuture<Optional<User>> getUserAsync(String username) {
         CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() ->
                 KiloServer.getServer().getMinecraftServer().getUserCache().findByName(username)
-        ); // This is hacky and probably doesn't work. //CODY_AI: But it works!
+        );
 
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
     }
@@ -128,7 +127,6 @@ public class ServerUserManager implements UserManager, TickListener {
         if (handler.userExists(uuid)) {
             ServerUser serverUser = new ServerUser(uuid);
             serverUser.name = username;
-
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
@@ -142,8 +140,7 @@ public class ServerUserManager implements UserManager, TickListener {
             return CompletableFuture.completedFuture(Optional.of(online));
 
         if (handler.userExists(uuid)) {
-            ServerUser serverUser = new ServerUser(uuid).withCachedName();
-
+            ServerUser serverUser = new ServerUser(uuid).useSavedName();
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
@@ -238,22 +235,22 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     public void saveAllUsers() {
         if (SharedConstants.isDevelopment) {
-            KiloEssentials.getLogger().info("Saving users data, this may take a while...");
+            KiloDebugUtils.getLogger().info("Saving users data, this may take a while...");
         }
 
         for (OnlineServerUser user : onlineUsers.values()) {
             try {
                 if (SharedConstants.isDevelopment) {
-                    KiloEssentials.getLogger().info("Saving user \"{}\"", user.getUsername());
+                    KiloDebugUtils.getLogger().info("Saving user \"{}\"", user.getUsername());
                 }
                 this.handler.save(user);
             } catch (IOException e) {
-                KiloEssentials.getLogger().error("An unexpected exception occurred when saving a user's data!", e);
+                KiloEssentials.getLogger().fatal("An unexpected exception occurred when saving a user's data!", e);
             }
         }
 
         if (SharedConstants.isDevelopment) {
-            KiloEssentials.getLogger().info("Saved the users data!");
+            KiloDebugUtils.getLogger().info("Saved the users data!");
         }
     }
 
@@ -275,6 +272,7 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     public boolean shouldNotUseNickname(OnlineUser user, String rawNickname) {
+        String NICKNAME_CACHE = "nicknames";
         if (!CacheManager.shouldUse(NICKNAME_CACHE)) {
             Map<UUID, String> map = new HashMap<>();
             KiloEssentials.getInstance().getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
@@ -349,7 +347,7 @@ public class ServerUserManager implements UserManager, TickListener {
         try {
             this.handler.save(user);
         } catch (IOException e) {
-            e.printStackTrace();
+            KiloEssentials.getLogger().fatal("Failed to Save User Data [" + player.getEntityName() + "/" + player.getUuidAsString() + "]", e);
         }
 
         this.onlineUsers.remove(player.getUuid());
@@ -384,12 +382,12 @@ public class ServerUserManager implements UserManager, TickListener {
             }
         }
 
-        ((OnlineServerUser) user).messageCooldown += 20;
-        if (((ServerUser) user).messageCooldown > 200 && !user.hasPermission(EssentialPermission.CHAT_BYPASS)) {
+        ((OnlineServerUser) user).messageCoolDown += 20;
+        if (((ServerUser) user).messageCoolDown > 200 && !user.hasPermission(EssentialPermission.CHAT_BYPASS)) {
             if (KiloConfig.main().chat().kickForSpamming) {
                 player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
             } else {
-                if (((ServerUser) user).systemMessageCooldown > 400) {
+                if (((ServerUser) user).systemMessageCoolDown > 400) {
                     user.sendMessage(KiloConfig.main().chat().spamWarning);
                 }
             }
@@ -448,6 +446,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public static class LoadingText {
         private AnimatedText animatedText;
+
         public LoadingText(ServerPlayerEntity player) {
             this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
                     .append(LangText.get(true, "general.wait_server.frame1"))
@@ -484,7 +483,7 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     public void appendCachedName(ServerUser user) {
-        user.name = user.cachedName;
+        user.name = user.savedName;
     }
 
 }

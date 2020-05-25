@@ -53,18 +53,18 @@ import java.util.*;
 
 public class ServerUser implements User {
     public static final int SYS_MESSAGE_COOL_DOWN = 400;
-    protected static ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
-    UUID uuid;
+    protected static final ServerUserManager MANAGER = (ServerUserManager) KiloServer.getServer().getUserManager();
+    final UUID uuid;
+    private final ServerUserSettings settings;
     String name = "";
-    String cachedName = "";
-    private ServerUserSettings settings;
+    String savedName = "";
     private UserHomeHandler homeHandler;
     Vec3dLocation location;
     private Vec3dLocation lastLocation;
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
-    public int messageCooldown;
-    public int systemMessageCooldown;
+    public int messageCoolDown;
+    public int systemMessageCoolDown;
     private MessageReceptionist lastDmReceptionist;
     boolean isStaff = false;
     String lastSocketAddress;
@@ -80,7 +80,7 @@ public class ServerUser implements User {
         }
 
         try {
-            manager.getHandler().handleUser(this);
+            MANAGER.getHandler().handleUser(this);
         } catch (IOException e) {
             KiloEssentials.getLogger().fatal("Failed to Load User Data [" + uuid.toString() + "]", e);
         }
@@ -172,7 +172,7 @@ public class ServerUser implements User {
             this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         }
 
-        this.cachedName = compoundTag.getString("name");
+        this.savedName = compoundTag.getString("name");
         this.settings.fromTag(compoundTag.getCompound("settings"));
     }
 
@@ -215,7 +215,7 @@ public class ServerUser implements User {
 
     @Override
     public boolean isOnline() {
-        return this instanceof OnlineUser || manager.isOnline(this);
+        return this instanceof OnlineUser || MANAGER.isOnline(this);
     }
 
     @Override
@@ -344,7 +344,7 @@ public class ServerUser implements User {
     @Override
     public void saveData() throws IOException {
         if (!this.isOnline())
-            manager.getHandler().save(this);
+            MANAGER.getHandler().save(this);
     }
 
     @Override
@@ -364,21 +364,6 @@ public class ServerUser implements User {
             this.isStaff = KiloEssentials.hasPermissionNode(((OnlineUser) this).getCommandSource(), EssentialPermission.STAFF);
 
         return this.isStaff;
-    }
-
-    @SuppressWarnings({"untested"})
-    public void clear() {
-        if (this.isOnline())
-            return;
-
-        manager = null;
-        uuid = null;
-        name = null;
-        homeHandler = null;
-        location = null;
-        lastLocation = null;
-        firstJoin = null;
-        settings = null;
     }
 
     @Override
@@ -413,8 +398,8 @@ public class ServerUser implements User {
         return !this.getSetting(Settings.DON_NOT_DISTURB);
     }
 
-    public ServerUser withCachedName() {
-        this.name = this.cachedName;
+    public ServerUser useSavedName() {
+        this.name = this.savedName;
         return this;
     }
 

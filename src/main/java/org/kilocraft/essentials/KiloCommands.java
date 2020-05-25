@@ -178,7 +178,7 @@ public class KiloCommands {
         this.commands.addAll(commandsList);
 
         for (final IEssentialCommand command : this.commands) {
-            this.registerCommand(command);
+            this.register(command);
         }
 
         this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
@@ -189,11 +189,7 @@ public class KiloCommands {
         TeleportCommands.register(this.dispatcher);
     }
 
-    public <C extends IEssentialCommand> void register(final C c) {
-        this.registerCommand(c);
-    }
-
-    private <C extends IEssentialCommand> void registerCommand(@NotNull final C c) {
+    public <C extends IEssentialCommand> void register(@NotNull final C c) {
         EssentialCommand command = (EssentialCommand) c;
         command.register(this.dispatcher);
 
@@ -222,6 +218,7 @@ public class KiloCommands {
         }
     }
 
+    @Deprecated
     public static CompletableFuture<Suggestions> toastSuggestions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         final List<String> suggestions = new ArrayList<>();
 
@@ -230,7 +227,7 @@ public class KiloCommands {
         }
 
         KiloCommands.getDispatcher().getRoot().getChildren().stream().filter(child ->
-                  child instanceof LiteralCommandNode && canSourceUse(child, context.getSource()) &&
+                child instanceof LiteralCommandNode && canSourceUse(child, context.getSource()) &&
                         !isVanillaCommand(child.getName()) && shouldUse(child.getName()))
                 .map(CommandNode::getName).forEach(suggestions::add);
 
@@ -238,15 +235,16 @@ public class KiloCommands {
         return CommandSource.suggestMatching(suggestions, builder);
     }
 
-    public static int executeUsageFor(final String langKey, final ServerCommandSource source) {
+    @Deprecated
+    public static void executeUsageFor(final String langKey, final ServerCommandSource source) {
         final String fromLang = ModConstants.getLang().getProperty(langKey);
         if (fromLang != null)
             KiloChat.sendMessageToSource(source, new TextMessage("&6Command usage:\n" + fromLang, true));
         else
             KiloChat.sendLangMessageTo(source, "general.usage.help");
-        return 1;
     }
 
+    @Deprecated
     public static int executeSmartUsage(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final String command = ctx.getInput().replace("/", "");
         final ParseResults<ServerCommandSource> parseResults = KiloCommands.getDispatcher().parse(command, ctx.getSource());
@@ -267,12 +265,13 @@ public class KiloCommands {
         return 1;
     }
 
-    public static int executeSmartUsageFor(final String command, final ServerCommandSource source) throws CommandSyntaxException {
+    @Deprecated
+    public static void executeSmartUsageFor(final String command, final ServerCommandSource source) throws CommandSyntaxException {
         final ParseResults<ServerCommandSource> parseResults = KiloCommands.getDispatcher().parse(command, source);
         if (parseResults.getContext().getNodes().isEmpty())
             throw KiloCommands.getException(ExceptionMessageNode.UNKNOWN_COMMAND_EXCEPTION).create();
 
-        final Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = KiloCommands.getDispatcher().getSmartUsage(((ParsedCommandNode)Iterables.getLast(parseResults.getContext().getNodes())).getNode(), source);
+        final Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = KiloCommands.getDispatcher().getSmartUsage(((ParsedCommandNode) Iterables.getLast(parseResults.getContext().getNodes())).getNode(), source);
         final Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
         int usages = 0;
@@ -288,9 +287,10 @@ public class KiloCommands {
             KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), usage);
         }
 
-        if (usages == 0) KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
+        if (usages == 0)
+            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
 
-        return commandNodeStringMap.size();
+        commandNodeStringMap.size();
     }
 
     private int sendInfo(final CommandContext<ServerCommandSource> ctx) {
@@ -300,39 +300,42 @@ public class KiloCommands {
                         .append("\n")
                         .append(new LiteralText("GitHub: ").formatted(Formatting.GRAY))
                         .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/")
-                                .styled(style -> style.withFormatting(Formatting.GOLD).withClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/")).setHoverEvent(Texter.Events.onHover("&eClick to open"))))), false);
+                                .styled(style -> style.withFormatting(Formatting.GOLD)
+                                        .withClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"))
+                                        .setHoverEvent(Texter.Events.onHover("&eClick to open"))
+                                )
+                        )), false);
 
         return 1;
     }
 
+    @Deprecated
     public static LiteralText getPermissionError(final String hoverText) {
         final LiteralText literalText = LangText.get(true, "command.exception.permission");
         literalText.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW))));
         return literalText;
     }
 
+    @Deprecated
     public static void sendPermissionError(final ServerCommandSource source) {
         KiloChat.sendMessageToSource(source, new TextMessage(
                 KiloConfig.messages().commands().context().permissionException
-                ,true));
+                , true));
     }
 
+    @Deprecated
     public static SimpleCommandExceptionType getException(final ExceptionMessageNode node, final Object... objects) {
         final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
         return KiloCommands.commandException(
                 new LiteralText(objects != null ? String.format(message, objects) : message).formatted(Formatting.RED));
     }
 
-    public static SimpleCommandExceptionType getException(final CommandMessageNode node, final Object... objects) {
-        final String message = ModConstants.getMessageUtil().fromCommandNode(node);
-        return KiloCommands.commandException(
-                new LiteralText(objects != null ? String.format(message, objects) : message).formatted(Formatting.RED));
-    }
-
+    @Deprecated
     public static SimpleCommandExceptionType commandException(final Text text) {
         return new SimpleCommandExceptionType(text);
     }
 
+    @Deprecated
     public static SimpleCommandExceptionType getArgException(final ArgExceptionMessageNode node, final Object... objects) {
         final String message = ModConstants.getMessageUtil().fromArgumentExceptionNode(node);
         return KiloCommands.commandException(
@@ -350,7 +353,6 @@ public class KiloCommands {
         IEssentialCommand esscommand = null;
 
         for (final IEssentialCommand command : this.commands) {
-
             if (command.getLabel().equalsIgnoreCase(label) || command.getLabel().equalsIgnoreCase("ke_" + label)) {
                 esscommand = command;
             }
@@ -359,6 +361,7 @@ public class KiloCommands {
                 for (final String alias : command.getAlias()) {
                     if (alias.equalsIgnoreCase(label)) {
                         esscommand = command;
+                        break;
                     }
                 }
             }
@@ -368,6 +371,7 @@ public class KiloCommands {
         return esscommand;
     }
 
+    @Deprecated
     public final void sendUsage(final ServerCommandSource source, final EssentialCommand command) {
         if (!command.hasUsage()) {
             source.sendError(new LiteralText("No Usage!"));

@@ -29,7 +29,6 @@ import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
-import org.kilocraft.essentials.util.player.UserUtils;
 
 import java.net.SocketAddress;
 import java.util.Date;
@@ -49,8 +48,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendSystemMessage(Object sysMessage) {
-        super.systemMessageCooldown += 20;
-        if (super.systemMessageCooldown > ServerUser.SYS_MESSAGE_COOL_DOWN) {
+        super.systemMessageCoolDown += 20;
+        if (super.systemMessageCoolDown > ServerUser.SYS_MESSAGE_COOL_DOWN) {
             if (sysMessage instanceof String) {
                 this.sendMessage((String) sysMessage);
             } else if (sysMessage instanceof Text) {
@@ -163,11 +162,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public static OnlineServerUser of(final UUID uuid) {
-        return (OnlineServerUser) ServerUser.manager.getOnline(uuid);
+        return (OnlineServerUser) ServerUser.MANAGER.getOnline(uuid);
     }
 
     public static OnlineServerUser of(final String name) {
-        return (OnlineServerUser) ServerUser.manager.getOnline(name);
+        return (OnlineServerUser) ServerUser.MANAGER.getOnline(name);
     }
 
     public static OnlineServerUser of(final GameProfile profile) {
@@ -239,8 +238,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
         }
 
-        super.messageCooldown = 0;
-        super.systemMessageCooldown = 0;
+        super.messageCoolDown = 0;
+        super.systemMessageCoolDown = 0;
 
         GameMode gameMode = super.getSetting(Settings.GAME_MODE);
         if (gameMode == GameMode.NOT_SET) {
@@ -271,12 +270,12 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         tick++;
         ticksPlayed++;
 
-        if (messageCooldown > 0) {
-            --messageCooldown;
+        if (messageCoolDown > 0) {
+            --messageCoolDown;
         }
 
-        if (systemMessageCooldown > 0) {
-            --systemMessageCooldown;
+        if (systemMessageCoolDown > 0) {
+            --systemMessageCoolDown;
         }
 
         if (tick >= 20) {
