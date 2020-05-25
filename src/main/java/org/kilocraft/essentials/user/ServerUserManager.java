@@ -20,6 +20,7 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.LangText;
@@ -31,6 +32,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.CacheManager;
@@ -357,8 +359,13 @@ public class ServerUserManager implements UserManager, TickListener {
         ServerPlayerEntity player = user.asPlayer();
         NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
 
+        PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(player, packet.getChatMessage()));
+        if (event.isCancelled()) {
+            return;
+        }
+
         player.updateLastActionTime();
-        String string = StringUtils.normalizeSpace(packet.getChatMessage());
+        String string = StringUtils.normalizeSpace(event.getMessage());
 
         for (int i = 0; i < string.length(); ++i) {
             if (!SharedConstants.isValidChar(string.charAt(i))) {

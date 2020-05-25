@@ -399,7 +399,7 @@ public class KiloCommands {
         source.sendFeedback(Texter.newText(builder.toString()), false);
     }
 
-    public int execute(final ServerCommandSource executor, final String command) {
+    public int execute(@NotNull final ServerCommandSource executor, @NotNull final String command) {
         CommandSourceUser src = KiloServer.getServer().getCommandSourceUser(executor);
         OnCommandExecutionEvent event = new OnCommandExecutionEventImpl(executor, command);
         String cmd = command;

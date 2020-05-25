@@ -1,7 +1,9 @@
 package org.kilocraft.essentials.events.player;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerDeathEvent;
+import org.kilocraft.essentials.api.user.OnlineUser;
 
 public class PlayerDeathEventImpl implements PlayerDeathEvent {
 
@@ -25,6 +27,11 @@ public class PlayerDeathEventImpl implements PlayerDeathEvent {
     @Override
     public void setCancelled(boolean set) {
         this.cancelled = set;
+    }
+
+    @Override
+    public OnlineUser getUser() {
+        return KiloServer.getServer().getOnlineUser(this.player);
     }
 }
 

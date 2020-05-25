@@ -3,7 +3,9 @@ package org.kilocraft.essentials.events.player;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerInteractBlockEvent;
+import org.kilocraft.essentials.api.user.OnlineUser;
 
 public class PlayerInteractBlockEventImpl implements PlayerInteractBlockEvent {
     private boolean cancelled = false;
@@ -40,5 +42,10 @@ public class PlayerInteractBlockEventImpl implements PlayerInteractBlockEvent {
     @Override
     public void setCancelled(boolean isCancelled) {
         this.cancelled = isCancelled;
+    }
+
+    @Override
+    public OnlineUser getUser() {
+        return KiloServer.getServer().getOnlineUser(this.player);
     }
 }
