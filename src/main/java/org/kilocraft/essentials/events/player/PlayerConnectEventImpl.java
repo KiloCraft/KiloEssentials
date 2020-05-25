@@ -4,7 +4,9 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerConnectEvent;
+import org.kilocraft.essentials.api.user.OnlineUser;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -66,5 +68,10 @@ public class PlayerConnectEventImpl implements PlayerConnectEvent {
     @Override
     public MinecraftServer getServer() {
         return player.getServer();
+    }
+
+    @Override
+    public OnlineUser getUser() {
+        return KiloServer.getServer().getOnlineUser(this.player);
     }
 }

@@ -7,7 +7,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerInteractItem;
+import org.kilocraft.essentials.api.user.OnlineUser;
 
 public class PlayerInteractItemEventImpl implements PlayerInteractItem {
     private boolean cancelled = false;
@@ -62,5 +64,10 @@ public class PlayerInteractItemEventImpl implements PlayerInteractItem {
     @Override
     public ActionResult getReturnValue() {
         return this.actionResult;
+    }
+
+    @Override
+    public OnlineUser getUser() {
+        return KiloServer.getServer().getOnlineUser((ServerPlayerEntity) this.player);
     }
 }

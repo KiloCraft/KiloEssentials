@@ -60,6 +60,11 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         }
     }
 
+    @Redirect(at = @At(value = "HEAD"), method = "onDisconnected")
+    private void ke$triggerEvent$onDisconnect() {
+        KiloServer.getServer().triggerEvent(new PlayerDisconnectEventImpl(this.player));
+    }
+
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "onDisconnected")
     private void ke$remove$sendToAll(PlayerManager playerManager, Text text, MessageType messageType, UUID uUID) {
         //Ignored
