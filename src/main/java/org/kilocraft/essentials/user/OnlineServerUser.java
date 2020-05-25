@@ -107,7 +107,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public void sendLangError(String key, Object... objects) {
+    public void sendLangError(@NotNull String key, Object... objects) {
         this.sendError(ModConstants.translation(key, objects));
     }
 
@@ -131,7 +131,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public void sendLangMessage(final String key, final Object... objects) {
+    public void sendLangMessage(final @NotNull String key, final Object... objects) {
         KiloChat.sendLangMessageTo(this.asPlayer(), key, objects);
     }
 

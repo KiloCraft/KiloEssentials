@@ -280,7 +280,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void sendLangError(String key, Object... objects) {
+    public void sendLangError(@NotNull String key, Object... objects) {
         this.sendError(ModConstants.translation(key, objects));
     }
 
@@ -304,7 +304,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void sendLangMessage(String key, Object... objects) {
+    public void sendLangMessage(@NotNull String key, Object... objects) {
         KiloChat.sendLangMessageTo(this.source, key, objects);
     }
 

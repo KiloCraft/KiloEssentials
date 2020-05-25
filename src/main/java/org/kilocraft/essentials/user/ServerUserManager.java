@@ -10,7 +10,9 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.*;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
@@ -21,14 +23,14 @@ import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
-import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.util.Cached;
-import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.feature.TickListener;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -36,12 +38,11 @@ import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.CacheManager;
-import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.player.UserUtils;
+import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.text.Texter;
 
-import javax.swing.tree.MutableTreeNode;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -361,6 +362,10 @@ public class ServerUserManager implements UserManager, TickListener {
 
         PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(player, packet.getChatMessage()));
         if (event.isCancelled()) {
+            if (event.getCancelReason() != null) {
+                user.sendError(event.getCancelReason());
+            }
+
             return;
         }
 
