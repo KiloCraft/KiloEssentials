@@ -1,76 +1,86 @@
 package org.kilocraft.essentials.util.registry;
 
-import com.google.common.collect.Lists;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.util.StringUtils;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class RegistryUtils {
-    private static final List<RegistryKey<DimensionType>> registryKeys = Lists.newArrayList();
+    private static final MinecraftServer server = KiloServer.getServer().getMinecraftServer();
+    private static final RegistryKey<World> DEFAULT_WORLD_KEY = Worlds.OVERWORLD;
 
-    public static ServerWorld toServerWorld(DimensionType type) {
-        return KiloServer.getServer().getWorld(dimensionTypeToRegistryKey(type));
+    public static ServerWorld toServerWorld(@NotNull final DimensionType type) {
+        return server.getWorld(toWorldKey(type));
     }
 
-    public static Identifier toIdentifier(DimensionType type) {
-        RegistryKey<DimensionType> key = dimensionTypeToRegistryKey(type);
-        return key == null ? Objects.requireNonNull(dimensionTypeToRegistryKey(DimensionType.getDefaultDimensionType())).getValue() : key.getValue();
+    public static Identifier toIdentifier(@NotNull final DimensionType type) {
+        RegistryKey<World> key = dimensionTypeToRegistryKey(type);
+        return key == null ? Objects.requireNonNull(dimensionTypeToRegistryKey(toDimension(DEFAULT_WORLD_KEY))).getValue() : key.getValue();
     }
 
-    public static DimensionType toDimension(Identifier identifier) {
-        return KiloServer.getServer().getMinecraftServer().method_29174().getRegistry().get(identifier);
+    public static RegistryKey<World> toWorldKey(@NotNull final DimensionType type) {
+        return toServerWorld(type).method_27983();
     }
 
-    public static DimensionType toDimension(RegistryKey<DimensionType> key) {
-        return KiloServer.getServer().getMinecraftServer().method_29174().getRegistry().get(key);
-    }
-
-    public static String dimensionToName(Identifier identifier) {
-        return dimensionToName(toDimension(identifier));
-    }
-
-    public static String dimensionToName(DimensionType type) {
-        RegistryKey<DimensionType> key = dimensionTypeToRegistryKey(type);
-        if (key == null) {
-            key = dimensionTypeToRegistryKey(DimensionType.getDefaultDimensionType());
-            assert key != null;
-        }
-
-        return key == DimensionType.OVERWORLD_REGISTRY_KEY ? "Overworld"
-                : key == DimensionType.THE_END_REGISTRY_KEY ? "The End"
-                : key == DimensionType.THE_NETHER_REGISTRY_KEY ? "The Nether"
-                : StringUtils.normalizeCapitalization(key.getValue().getPath());
-    }
-
-    @Nullable
-    public static RegistryKey<DimensionType> dimensionTypeToRegistryKey(@NotNull final DimensionType type) {
-        for (RegistryKey<DimensionType> registryKey : registryKeys) {
-            DimensionType dim = KiloServer.getServer().getWorld(registryKey).getDimension();
-            if (dim.equals(type)) {
-                return registryKey;
+    public static DimensionType toDimension(@NotNull final Identifier identifier) {
+        for (RegistryKey<World> worldRegistryKey : getWorldsKeySet()) {
+            if (worldRegistryKey.getValue().equals(identifier)) {
+                return toDimension(worldRegistryKey);
             }
         }
 
         return null;
     }
 
-    public static List<RegistryKey<DimensionType>> getDimensionKeys() {
-        return registryKeys;
+    public static DimensionType toDimension(@NotNull final RegistryKey<World> key) {
+        return server.getWorld(key).getDimension();
     }
 
-    static {
-        for (Identifier id : KiloServer.getServer().getMinecraftServer().method_29174().getRegistry().getIds()) {
-            registryKeys.add(RegistryKey.of(Registry.DIMENSION_TYPE_KEY, id));
+    public static String dimensionToName(@NotNull final Identifier identifier) {
+        return dimensionToName(toDimension(identifier));
+    }
+
+    public static String dimensionToName(@NotNull final DimensionType type) {
+        RegistryKey<World> key = dimensionTypeToRegistryKey(type);
+        if (key == null) {
+            return String.valueOf((Object) null);
         }
+
+        return key == World.field_25179 ? "Overworld"
+                : key == World.field_25180 ? "The Nether"
+                : key == World.field_25181 ? "The End"
+                : StringUtils.normalizeCapitalization(key.getValue().getPath());
     }
 
+    @Nullable
+    public static RegistryKey<World> dimensionTypeToRegistryKey(@NotNull final DimensionType type) {
+        for (RegistryKey<World> worldRegistryKey : getWorldsKeySet()) {
+            final DimensionType dim = server.getWorld(worldRegistryKey).getDimension();
+            if (dim.equals(type)) {
+                return worldRegistryKey;
+            }
+        }
+
+        return null;
+    }
+
+    public static Set<RegistryKey<World>> getWorldsKeySet() {
+        return server.method_29435();
+    }
+
+    public static class Worlds {
+        public static final RegistryKey<World> OVERWORLD = World.field_25179;
+        public static final RegistryKey<World> THE_NETHER = World.field_25180;
+        public static final RegistryKey<World> THE_END = World.field_25181;
+    }
 }

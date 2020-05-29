@@ -30,6 +30,7 @@ import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.HashMap;
@@ -86,7 +87,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                 ServerWorld world = RegistryUtils.toServerWorld(RegistryUtils.toDimension(dim));
 
                 if (user != null) {
-                    if (world.getBlockState(stand.getBlockPos().up()).getBlock() == Blocks.AIR) {
+                    if (world.getBlockState(stand.getBlockPos().add(0, 1.25D, 0)).getBlock() == Blocks.AIR) {
                         unseat(user);
                     }
 
@@ -170,7 +171,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
 
         if (swingHand) {
-            player.swingHand(player.preferredHand, true);
+            UserUtils.Animate.swingHand(player);
         }
 
         stand.setInvisible(true);

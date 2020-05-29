@@ -15,9 +15,7 @@ public class CacheManager {
     }
 
     public static void cache(Cached<?>... cached) {
-        Objects.requireNonNull(cached, "Cache entry must not be null!");
-
-        for (Cached<?> c : cached) {
+        for (Cached<?> c : Objects.requireNonNull(cached, "Cache entry must not be null!")) {
             map.put(c.getId(), c);
         }
     }

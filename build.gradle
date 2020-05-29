@@ -25,6 +25,7 @@ details.isCleanTag
 
 archivesBaseName = project.archives_base_name
 version = "${project.mod_version as Object}-${project.mod_version_nick}-${project.minecraft_version}"
+if (project.build != 0) version += "-b${project.build}"
 def buildType = details.isCleanTag ? "release" : "beta"
 
 def gitVersion = "${version}-${buildType}+git.${details.branchName}-${details.gitHash}"

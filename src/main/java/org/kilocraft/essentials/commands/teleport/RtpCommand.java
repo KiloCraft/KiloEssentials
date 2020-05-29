@@ -234,7 +234,7 @@ public class RtpCommand extends EssentialCommand {
 		}
 
 		//Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-		if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != DimensionType.OVERWORLD_REGISTRY_KEY && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
+		if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != RegistryUtils.Worlds.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
 			targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
 			return;
 		}
@@ -255,7 +255,7 @@ public class RtpCommand extends EssentialCommand {
 		BlockState state;
 		int tries = 0;
 		boolean hasAirSpace;
-		boolean isNether = RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) == DimensionType.THE_NETHER_REGISTRY_KEY;
+		boolean isNether = target.getServerWorld().getDimension().isNether();
 		boolean safe;
 
 		do {

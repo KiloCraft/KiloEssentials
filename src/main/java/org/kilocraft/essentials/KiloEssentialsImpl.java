@@ -54,7 +54,6 @@ import java.util.function.Consumer;
 
 public final class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
-	private static final String KE_PREFIX = "[KiloEssentials] ";
 	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials");
 	private static KiloEssentialsImpl instance;
 	private PermissionUtil permUtil;
@@ -351,25 +350,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	@Override
 	public PermissionUtil getPermissionUtil() {
 		return this.permUtil;
-	}
-
-	private static MessageFactory massageFactory() {
-		return new MessageFactory() {
-			@Override
-			public Message newMessage(final Object message) {
-				return new SimpleMessage(KiloEssentialsImpl.KE_PREFIX + message);
-			}
-
-			@Override
-			public Message newMessage(final String message) {
-				return new SimpleMessage(KiloEssentialsImpl.KE_PREFIX + message);
-			}
-
-			@Override
-			public Message newMessage(final String message, final Object... params) {
-				return new SimpleMessage(message);
-			}
-		};
 	}
 
 	public void onServerStop() {

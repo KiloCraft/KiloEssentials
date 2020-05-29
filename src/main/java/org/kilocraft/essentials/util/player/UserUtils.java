@@ -9,6 +9,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -142,7 +143,7 @@ public class UserUtils {
 
     public static class Animate {
         public static void swingHand(PlayerEntity player) {
-            player.swingHand(player.preferredHand, true);
+            swingHand(player, Hand.MAIN_HAND);
         }
 
         public static void swingHand(PlayerEntity player, Hand hand) {

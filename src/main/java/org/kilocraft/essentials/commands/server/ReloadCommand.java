@@ -7,7 +7,9 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.user.CommandSourceServerUser;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
@@ -22,14 +24,20 @@ public class ReloadCommand extends EssentialCommand {
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
+        final CommandSourceUser src = this.getServerUser(ctx);
         StopWatch watch = new StopWatch();
         KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.start");
 
         watch.start();
-        server.reload();
-        watch.stop();
+        server.reload((throwable) -> {
+            watch.stop();
+            String str = tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
+            logger.error(str);
+            src.sendMessage(str);
+        });
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.end", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
-        return SUCCESS;
+        watch.stop();
+        src.sendLangMessage("command.reload.end", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
+        return AWAIT;
     }
 }

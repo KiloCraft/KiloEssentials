@@ -88,7 +88,7 @@ public class Home {
             return;
         }
 
-        ServerWorld destinationWorld = KiloServer.getServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(type));
+        ServerWorld destinationWorld = RegistryUtils.toServerWorld(type);
         Vec3d destination = new Vec3d(home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ());
         user.saveLocation();
         destinationWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getEntityId()); // Lag reduction magic
