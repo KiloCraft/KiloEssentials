@@ -23,6 +23,7 @@ public class VersionCommand extends EssentialCommand {
 
         KiloChat.sendLangMessageTo(ctx.getSource(), "command.info.version",
                 ModConstants.getVersionInt(),
+                ModConstants.getBuild(),
                 ModConstants.getBuildType(),
                 ModConstants.getVersionNick(),
                 ModConstants.getGitHash(),

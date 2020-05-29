@@ -93,7 +93,6 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                 OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) stand.getPassengerList().get(0));
 
                 if (user != null) {
-                    System.out.println(world.getBlockState(stand.getBlockPos().up(2)).getBlock().toString());
                     if (world.getBlockState(stand.getBlockPos().up(2)).getBlock() == Blocks.AIR) {
                         this.unseat(user);
                     }
