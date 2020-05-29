@@ -20,6 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
@@ -35,12 +36,13 @@ import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class SeatManager implements ConfigurableFeature, TickListener {
     private static SeatManager INSTANCE;
     private static boolean enabled = false;
-    private HashMap<Identifier, UUID> stands = new HashMap<>();
+    private final HashMap<ServerWorld, UUID> stands = new HashMap<>();
 
     @Override
     public boolean register() {
@@ -68,6 +70,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     }
 
     private static int tick = 0;
+
     @Override
     public void onTick() {
         tick++;
@@ -77,19 +80,22 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
 
         tick = 0;
-        stands.forEach((dim, uuid) -> {
-            ArmorStandEntity stand = (ArmorStandEntity) RegistryUtils.toServerWorld(RegistryUtils.toDimension(dim)).getEntity(uuid);
+        for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
+            ServerWorld world = entry.getKey();
+            UUID uuid = entry.getValue();
+
+            ArmorStandEntity stand = (ArmorStandEntity) world.getEntity(uuid);
             if (stand == null) {
-                return;
+                continue;
             }
 
             if (stand.hasPlayerRider() && stand.hasPassengerType(PlayerEntity.class) && stand.getPassengerList().get(0) instanceof PlayerEntity) {
                 OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) stand.getPassengerList().get(0));
-                ServerWorld world = RegistryUtils.toServerWorld(RegistryUtils.toDimension(dim));
 
                 if (user != null) {
-                    if (world.getBlockState(stand.getBlockPos().add(0, 1.25D, 0)).getBlock() == Blocks.AIR) {
-                        unseat(user);
+                    System.out.println(world.getBlockState(stand.getBlockPos().up(2)).getBlock().toString());
+                    if (world.getBlockState(stand.getBlockPos().up(2)).getBlock() == Blocks.AIR) {
+                        this.unseat(user);
                     }
 
                     if (user.getSetting(Settings.SITTING_TYPE) == SummonType.INTERACT_SLAB) {
@@ -97,12 +103,10 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                         stand.yaw = user.asPlayer().bodyYaw;
                     }
                 }
-            }
-
-            if (!stand.hasPlayerRider()) {
+            } else {
                 stand.kill();
             }
-        });
+        }
     }
 
     public boolean onInteractBlock(@NotNull final ServerPlayerEntity player,
@@ -192,16 +196,12 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         loc.getWorld().spawnEntity(stand);
 
         player.startRiding(stand, true);
-        stands.put(loc.getDimension(), stand.getUuid());
+        stands.put(loc.getWorld(), stand.getUuid());
 
         return true;
     }
 
     public void unseat(@NotNull final OnlineUser user) {
-        if (user == null) {
-            return;
-        }
-
         ServerPlayerEntity player = user.asPlayer();
 
         if (player == null || !player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity)) {
@@ -209,24 +209,20 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
 
         ArmorStandEntity stand = (ArmorStandEntity) player.getVehicle();
-        if (
-                stand != null &&
-                stand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())
-        ) {
+        if (stand != null && stand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
             player.sendMessage(LangText.get(true, "sit.stop_riding"), true);
-            stands.remove(RegistryUtils.toIdentifier(stand.getEntityWorld().getDimension()), stand.getUuid());
+            stands.remove(RegistryUtils.toServerWorld(stand.getEntityWorld().getDimension()), stand.getUuid());
             stand.kill();
         }
-
     }
 
     public void killAll() {
-        stands.forEach((dim, uuid) -> {
-            ArmorStandEntity armorStand = (ArmorStandEntity) RegistryUtils.toServerWorld(RegistryUtils.toDimension(dim)).getEntity(uuid);
+        for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
+            ArmorStandEntity armorStand = (ArmorStandEntity) entry.getKey().getEntity(entry.getValue());
             if (armorStand != null && !armorStand.hasPlayerRider()) {
                 armorStand.kill();
             }
-        });
+        }
     }
 
     public boolean isSitting(@NotNull final ServerPlayerEntity player) {
