@@ -20,6 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -62,7 +63,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         return enabled;
     }
 
-    private boolean hasPermission(ServerPlayerEntity player) {
+    private boolean hasPermission(@NotNull final ServerPlayerEntity player) {
         return KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.SIT_SELF);
     }
 
@@ -104,7 +105,8 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         });
     }
 
-    public boolean onInteractBlock(ServerPlayerEntity player, BlockHitResult hitResult, Hand hand) {
+    public boolean onInteractBlock(@NotNull final ServerPlayerEntity player,
+                                   @NotNull final BlockHitResult hitResult, @NotNull final Hand hand) {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
 
         if (
@@ -149,11 +151,15 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         return false;
     }
 
-    public boolean seat(OnlineUser user, Vec3dLocation loc, SummonType summonType, boolean swingHand) {
+    public boolean seat(@NotNull final OnlineUser user,
+                        @NotNull final Vec3dLocation loc,
+                        @NotNull final SummonType summonType, boolean swingHand) {
         return seat(user, loc, summonType, swingHand, user.asPlayer().bodyYaw);
     }
 
-    public boolean seat(OnlineUser user, Vec3dLocation loc, SummonType summonType, boolean swingHand, float yaw) {
+    public boolean seat(@NotNull final OnlineUser user,
+                        @NotNull final Vec3dLocation loc,
+                        @NotNull final SummonType summonType, boolean swingHand, float yaw) {
         ServerPlayerEntity player = user.asPlayer();
 
         if (player.isSpectator() || isSitting(player)) {
@@ -182,6 +188,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         user.getSettings().set(Settings.SITTING_TYPE, summonType);
         stand.bodyYaw = yaw;
         stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
+        assert loc.getWorld() != null;
         loc.getWorld().spawnEntity(stand);
 
         player.startRiding(stand, true);
@@ -190,7 +197,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         return true;
     }
 
-    public void unseat(OnlineUser user) {
+    public void unseat(@NotNull final OnlineUser user) {
         if (user == null) {
             return;
         }
@@ -222,7 +229,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         });
     }
 
-    public boolean isSitting(ServerPlayerEntity player) {
+    public boolean isSitting(@NotNull final ServerPlayerEntity player) {
         if (!player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity)) {
             return false;
         }
@@ -231,7 +238,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         return stand != null && stand.hasPlayerRider() && stand.getScoreboardTags().contains("KE$SitStand#" + player.getEntityName());
     }
 
-    private Vec3dLocation getPosForStair(final BlockState state, final Vec3dLocation loc) {
+    private Vec3dLocation getPosForStair(@NotNull final BlockState state, @NotNull final Vec3dLocation loc) {
         Direction direction = state.get(Properties.HORIZONTAL_FACING);
         double offset = 0.205D;
 
@@ -254,7 +261,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         return loc;
     }
 
-    private float getYawForStand(final BlockState state) {
+    private float getYawForStand(@NotNull final BlockState state) {
         Direction direction = state.get(Properties.HORIZONTAL_FACING).getOpposite();
 
         if (direction == Direction.NORTH) {
@@ -278,7 +285,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         INTERACT_SLAB,
         NONE;
 
-        @Nullable
+        @NotNull
         public static SummonType getByName(String name) {
             for (SummonType value : values()) {
                 if (value.toString().equalsIgnoreCase(name)) {
@@ -286,7 +293,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                 }
             }
 
-            return null;
+            return NONE;
         }
     }
 

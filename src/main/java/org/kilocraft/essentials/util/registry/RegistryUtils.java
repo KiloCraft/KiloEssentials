@@ -19,8 +19,15 @@ public class RegistryUtils {
     private static final MinecraftServer server = KiloServer.getServer().getMinecraftServer();
     private static final RegistryKey<World> DEFAULT_WORLD_KEY = Worlds.OVERWORLD;
 
+    @Nullable
     public static ServerWorld toServerWorld(@NotNull final DimensionType type) {
-        return server.getWorld(toWorldKey(type));
+        for (ServerWorld world : server.getWorlds()) {
+            if (world.getDimension() == type) {
+                return world;
+            }
+        }
+
+        return null;
     }
 
     public static Identifier toIdentifier(@NotNull final DimensionType type) {
@@ -28,8 +35,9 @@ public class RegistryUtils {
         return key == null ? Objects.requireNonNull(dimensionTypeToRegistryKey(toDimension(DEFAULT_WORLD_KEY))).getValue() : key.getValue();
     }
 
+    @Nullable
     public static RegistryKey<World> toWorldKey(@NotNull final DimensionType type) {
-        return toServerWorld(type).method_27983();
+        return toServerWorld(type) == null ? null : Objects.requireNonNull(toServerWorld(type)).method_27983();
     }
 
     public static DimensionType toDimension(@NotNull final Identifier identifier) {
@@ -50,15 +58,15 @@ public class RegistryUtils {
         return dimensionToName(toDimension(identifier));
     }
 
-    public static String dimensionToName(@NotNull final DimensionType type) {
-        RegistryKey<World> key = dimensionTypeToRegistryKey(type);
+    public static String dimensionToName(@Nullable final DimensionType type) {
+        RegistryKey<World> key = type == null ? null : dimensionTypeToRegistryKey(type);
         if (key == null) {
             return String.valueOf((Object) null);
         }
 
-        return key == World.field_25179 ? "Overworld"
-                : key == World.field_25180 ? "The Nether"
-                : key == World.field_25181 ? "The End"
+        return key == Worlds.OVERWORLD ? "Overworld"
+                : key == Worlds.THE_NETHER ? "The Nether"
+                : key == Worlds.THE_END ? "The End"
                 : StringUtils.normalizeCapitalization(key.getValue().getPath());
     }
 
