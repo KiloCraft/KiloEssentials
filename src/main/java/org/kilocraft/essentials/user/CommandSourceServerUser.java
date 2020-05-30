@@ -234,7 +234,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public void sendSystemMessage(Object sysMessage) {
         try {
-            this.getUser().sendSystemMessage(sysMessage);
+            Objects.requireNonNull(this.getUser()).sendSystemMessage(sysMessage);
         } catch (CommandSyntaxException ignored) {
             if (sysMessage instanceof String) {
                 this.sendMessage((String) sysMessage);

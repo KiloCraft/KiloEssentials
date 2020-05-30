@@ -12,7 +12,7 @@ import java.util.*;
 public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
 
-    public static MutableText newText(String str) {
+    public static MutableText newText(final String str) {
         return new LiteralText(TextFormat.translate(str));
     }
 
@@ -20,8 +20,20 @@ public class Texter {
         return new TranslatableText(key, objects);
     }
 
-    public static MutableText newText() {
-        return new LiteralText("");
+    public static MutableText newText(@Nullable final String... strings) {
+        if (strings == null) {
+            return new LiteralText("");
+        }
+
+        MutableText text = newText();
+        for (String string : strings) {
+            text.append(string);
+        }
+        return text;
+    }
+
+    public static MutableText newRawText(final String string) {
+        return new LiteralText(string);
     }
 
     public static MutableText exceptionToText(Exception e, boolean requireDevMode) {

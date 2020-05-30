@@ -83,12 +83,10 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
             ServerWorld world = entry.getKey();
             UUID uuid = entry.getValue();
-
             ArmorStandEntity stand = (ArmorStandEntity) world.getEntity(uuid);
             if (stand == null) {
                 continue;
             }
-
             if (stand.hasPlayerRider() && stand.hasPassengerType(PlayerEntity.class) && stand.getPassengerList().get(0) instanceof PlayerEntity) {
                 OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) stand.getPassengerList().get(0));
 
@@ -114,13 +112,13 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
         if (
                 user == null ||
-                hand != Hand.MAIN_HAND ||
-                !player.getMainHandStack().equals(ItemStack.EMPTY) ||
-                player.getVehicle() != null ||
-                !hasPermission(player) ||
-                player.shouldCancelInteraction() ||
-                hitResult.getSide() == Direction.DOWN ||
-                !user.getSetting(Settings.CAN_SEAT)
+                        hand != Hand.MAIN_HAND ||
+                        !player.getMainHandStack().equals(ItemStack.EMPTY) ||
+                        player.getVehicle() != null ||
+                        !hasPermission(player) ||
+                        player.shouldCancelInteraction() ||
+                        hitResult.getSide() == Direction.DOWN ||
+                        !user.getSetting(Settings.CAN_SEAT)
         ) {
             return false;
         }
