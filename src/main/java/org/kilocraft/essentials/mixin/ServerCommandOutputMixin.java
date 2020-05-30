@@ -14,11 +14,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerCommandOutput.class)
 public abstract class ServerCommandOutputMixin {
-
     @Inject(at = @At("RETURN"), method = "<init>")
     private void kilo$init(MinecraftServer minecraftServer, CallbackInfo ci) {
         new ModConstants().loadConstants();
-        String brand = ModConstants.getProperties().getProperty("server.brand");
+        String brand = String.format(
+                ModConstants.getProperties().getProperty("server.brand.full"),
+                ModConstants.getMinecraftVersion(),
+                ModConstants.getLoaderVersion(),
+                ModConstants.getMappingsVersion(),
+                ModConstants.getVersion()
+        );
 
         KiloServer.setServer(
                 new ServerImpl(
@@ -29,11 +34,6 @@ public abstract class ServerCommandOutputMixin {
                 )
         );
 
-        ModConstants.getLogger().info("Server set: " + String.format(
-                ModConstants.getProperties().getProperty("server.brand.full"),
-                ModConstants.getVersion(),
-                ModConstants.getLoaderVersion(),
-                ModConstants.getMappingsVersion())
-        );
+        KiloServer.getLogger().info("Server set: " + brand);
     }
 }

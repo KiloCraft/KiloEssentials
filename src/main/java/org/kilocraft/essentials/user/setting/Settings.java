@@ -31,7 +31,7 @@ public class Settings {
     public static final Setting<SeatManager.SummonType> SITTING_TYPE = new Setting<SeatManager.SummonType>(
             "sitting_type", SeatManager.SummonType.NONE,
             (fun) -> {
-                if (fun.value() != SeatManager.SummonType.NONE) {
+                if (fun.value() != null && fun.value() != SeatManager.SummonType.NONE) {
                     fun.tag().putString(fun.setting().getId(), fun.value().toString().toLowerCase(Locale.ROOT));
                 }
             },

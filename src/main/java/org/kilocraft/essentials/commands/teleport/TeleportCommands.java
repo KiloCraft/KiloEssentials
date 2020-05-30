@@ -14,6 +14,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import static net.minecraft.command.arguments.DimensionArgumentType.dimension;
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
@@ -108,7 +109,7 @@ public class TeleportCommands {
     }
 
     private static int teleportIn(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
-        ServerWorld targetWorld = KiloServer.getServer().getVanillaServer().getWorld(DimensionArgumentType.getDimensionArgument(ctx, "dimension"));
+        ServerWorld targetWorld = KiloServer.getServer().getMinecraftServer().getWorld(DimensionArgumentType.getDimensionArgument(ctx, "dimension"));
         Vec3d vec = getVec3(ctx, "pos");
 
         KiloServer.getServer().getOnlineUser(target).saveLocation();
@@ -129,9 +130,7 @@ public class TeleportCommands {
                 Math.round(target.getPos().getX()),
                 Math.round(target.getPos().getY()),
                 Math.round(target.getPos().getZ()),
-                ((target.dimension.getRawId() == 0) ? "Overworld" :
-                        (target.dimension.getRawId() == -1) ? "The Nether" :
-                                (target.dimension.getRawId() == 1) ? "The End" : "NULL")
+                RegistryUtils.dimensionToName(target.getServerWorld().getDimension())
         );
     }
 

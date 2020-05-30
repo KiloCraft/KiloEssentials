@@ -15,6 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -51,6 +52,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     protected transient int MIN_OP_LEVEL;
     private transient String descriptionId = null;
     private transient String[] usageArguments = null;
+    private transient ForkType forkType;
 
     public EssentialCommand(final String label) {
         this.label = label;
@@ -153,12 +155,20 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.descriptionId = identifier;
     }
 
+    public final void withForkType(@Nullable final ForkType type) {
+        this.forkType = type;
+    }
+
     public final String[] getUsageArguments() {
         return this.usageArguments;
     }
 
     public final String getDescriptionId() {
         return this.descriptionId;
+    }
+
+    public final ForkType getForkType() {
+        return this.forkType == null ? ForkType.DEFAULT : this.forkType;
     }
 
     public final boolean hasUsage() {
@@ -179,6 +189,10 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public boolean hasPermission(final ServerCommandSource src, final EssentialPermission essPerm, final int minOpLevel) {
         return KiloEssentials.hasPermissionNode(src, essPerm, minOpLevel);
+    }
+
+    public void sendMessage(final CommandContext<ServerCommandSource> ctx, final Text text) {
+        ctx.getSource().sendFeedback(text, false);
     }
 
     public void sendMessage(final CommandContext<ServerCommandSource> ctx, final String key, final Object... objects) {
@@ -277,7 +291,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return AWAIT;
     }
 
-    public String tl(final String key) {
+    public static String tl(final String key) {
         return ModConstants.translation(key);
     }
 

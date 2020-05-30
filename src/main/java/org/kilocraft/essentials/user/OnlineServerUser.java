@@ -29,7 +29,6 @@ import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
-import org.kilocraft.essentials.util.player.UserUtils;
 
 import java.net.SocketAddress;
 import java.util.Date;
@@ -45,6 +44,20 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public ServerCommandSource getCommandSource() {
         return this.asPlayer().getCommandSource();
+    }
+
+    @Override
+    public void sendSystemMessage(Object sysMessage) {
+        super.systemMessageCoolDown += 20;
+        if (super.systemMessageCoolDown > ServerUser.SYS_MESSAGE_COOL_DOWN) {
+            if (sysMessage instanceof String) {
+                this.sendMessage((String) sysMessage);
+            } else if (sysMessage instanceof Text) {
+                this.sendMessage((Text) sysMessage);
+            } else {
+                this.sendMessage(String.valueOf(sysMessage));
+            }
+        }
     }
 
     @Override
@@ -93,7 +106,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public void sendLangError(String key, Object... objects) {
+    public void sendLangError(@NotNull String key, Object... objects) {
         this.sendError(ModConstants.translation(key, objects));
     }
 
@@ -108,7 +121,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(final Text text) {
-        KiloChat.sendMessageTo(this.asPlayer(), text);
+        this.asPlayer().sendMessage(text, false);
     }
 
     @Override
@@ -117,7 +130,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public void sendLangMessage(final String key, final Object... objects) {
+    public void sendLangMessage(final @NotNull String key, final Object... objects) {
         KiloChat.sendLangMessageTo(this.asPlayer(), key, objects);
     }
 
@@ -149,11 +162,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public static OnlineServerUser of(final UUID uuid) {
-        return (OnlineServerUser) ServerUser.manager.getOnline(uuid);
+        return (OnlineServerUser) ServerUser.MANAGER.getOnline(uuid);
     }
 
     public static OnlineServerUser of(final String name) {
-        return (OnlineServerUser) ServerUser.manager.getOnline(name);
+        return (OnlineServerUser) ServerUser.MANAGER.getOnline(name);
     }
 
     public static OnlineServerUser of(final GameProfile profile) {
@@ -225,7 +238,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
         }
 
-        messageCooldown = 0;
+        super.messageCoolDown = 0;
+        super.systemMessageCoolDown = 0;
 
         GameMode gameMode = super.getSetting(Settings.GAME_MODE);
         if (gameMode == GameMode.NOT_SET) {
@@ -256,13 +270,19 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         tick++;
         ticksPlayed++;
 
-        if (messageCooldown > 0) {
-            --messageCooldown;
+        if (messageCoolDown > 0) {
+            --messageCoolDown;
+        }
+
+        if (systemMessageCoolDown > 0) {
+            --systemMessageCoolDown;
         }
 
         if (tick >= 20) {
             tick = 0;
-            //super.location = Vec3dLocation.of(this.asPlayer());
+            if (this.asPlayer() != null) {
+                super.location = Vec3dLocation.of(this.asPlayer());
+            }
 
             if (PlaytimeCommands.isEnabled()) {
                 PlaytimeCommands.getInstance().onUserPlaytimeUp(this, ticksPlayed);

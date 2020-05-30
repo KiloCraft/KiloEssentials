@@ -1,5 +1,8 @@
 package org.kilocraft.essentials.api.event;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,9 +16,9 @@ public interface EventRegistry {
     /**
      * This method registers your events to this event manager
      *
-     * @param eventClass Your event handler class
+     * @param handlerClass Your event handler class
      */
-    void register(EventHandler eventClass);
+    <E extends EventHandler<?>> void register(@NotNull final E handlerClass);
 
     /**
      * Trigger an event.
@@ -27,6 +30,6 @@ public interface EventRegistry {
      */
     <E extends Event> E trigger(E e);
 
-    Map getHandlers();
+    Map<String, List<EventHandler<?>>> getHandlers();
 
 }

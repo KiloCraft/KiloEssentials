@@ -6,11 +6,18 @@
   "name": "KiloEssentials",
   "description": "Server management made easy with this mod",
   "authors": [
-    "CODY_AI",
+    {
+      "name": "ItsIlya",
+      "minecraft": "bf651b48-7395-4988-ae47-07f8f6b72a22",
+      "contact": {
+        "github": "https://github.com/OnBlock"
+      }
+    },
     "MCrafterzz",
     "GiantNuker",
     "i509VCB",
-    "Thanks to DrexHD"
+    "DrexHD",
+    "Hansi132"
   ],
 
   "license": "MIT",

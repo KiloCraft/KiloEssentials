@@ -2,7 +2,7 @@ package org.kilocraft.essentials.chat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.datafixers.kinds.IdF;
+import net.minecraft.SharedConstants;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -38,7 +39,6 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.rmi.UnexpectedException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -83,12 +83,13 @@ public final class ServerChat {
         try {
             send(sender, message, channel);
         } catch (Exception e) {
-            sender.getCommandSource().sendError(
-                    Texter.toText("an unexpected exception occurred while processing the message")
-                            .append("\n").append(Util.getInnermostMessage(e))
-            );
+            MutableText text = Texter.newTranslatable("command.failed");
+            if (SharedConstants.isDevelopment) {
+                text.append("\n").append(Util.getInnermostMessage(e));
+                KiloDebugUtils.getLogger().error("Processing a chat message throw an exception", e);
+            }
 
-            KiloEssentials.getLogger().error("Processing a chat message throw an exception", e);
+            sender.getCommandSource().sendError(text);
         }
     }
 
@@ -221,30 +222,6 @@ public final class ServerChat {
         }
     }
 
-    public static void addSocialSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.SOCIAL_SPY, true);
-    }
-
-    public static void removeSocialSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.SOCIAL_SPY, false);
-    }
-
-    public static boolean isSocialSpy(final ServerPlayerEntity player) {
-        return KiloServer.getServer().getOnlineUser(player).getSetting(Settings.SOCIAL_SPY);
-    }
-
-    public static void addCommandSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.COMMAND_SPY, true);
-    }
-
-    public static void removeCommandSpy(final ServerPlayerEntity player) {
-        KiloServer.getServer().getOnlineUser(player).getSettings().set(Settings.COMMAND_SPY, false);
-    }
-
-    public static boolean isCommandSpy(final ServerPlayerEntity player) {
-        return KiloServer.getServer().getOnlineUser(player).getSetting(Settings.COMMAND_SPY);
-    }
-
     public static int sendDirectMessage(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
         CommandSourceUser src = KiloServer.getServer().getCommandSourceUser(source);
 
@@ -256,11 +233,8 @@ public final class ServerChat {
 
         if  (!CommandUtils.isConsole(source)) {
             OnlineUser online = KiloServer.getServer().getOnlineUser(source.getPlayer());
-//            target.setLastMessageSender(source.getPlayer().getUuid());
-//            online.setLastMessageSender(target.getUuid());
-//            online.setLastPrivateMessage(message);
-            target.setLastDirectMessageReceptionist(src);
-            online.setLastDirectMessageReceptionist(target);
+            online.setLastMessageReceptionist(target);
+            target.setLastMessageReceptionist(online);
         }
 
         if (CommandUtils.areTheSame(source, target)) {
@@ -309,7 +283,7 @@ public final class ServerChat {
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
-                KiloChat.sendMessageTo(user.asPlayer(), new LiteralText(new TextMessage(toSpy, true).getFormattedMessage()).formatted(Formatting.GRAY));
+                user.sendMessage(new TextMessage(toSpy, true).toComponent().formatted(Formatting.GRAY));
             }
         }
 
@@ -320,7 +294,7 @@ public final class ServerChat {
         String format = ServerChat.config.commandSpyFormat;
         String shortenedCommand = command.substring(0, Math.min(command.length(), COMMAND_MAX_LENGTH));
         String toSpy = format.replace("%SOURCE%", source.getName()).replace("%COMMAND%",  shortenedCommand);
-        MutableText text = Texter.toText(toSpy).formatted(Formatting.GRAY);
+        MutableText text = Texter.newText(toSpy).formatted(Formatting.GRAY);
 
         if (command.length() > COMMAND_MAX_LENGTH) {
             text.append("...");

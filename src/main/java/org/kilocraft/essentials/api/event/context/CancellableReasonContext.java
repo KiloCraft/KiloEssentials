@@ -25,5 +25,4 @@ public interface CancellableReasonContext extends Cancellable, Contextual {
      * @param reason The cancellation reason
      */
     void setCancelReason(String reason);
-
 }

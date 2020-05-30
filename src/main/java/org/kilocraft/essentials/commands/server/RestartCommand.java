@@ -13,6 +13,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -33,7 +34,7 @@ public class RestartCommand {
 
     private static int execute(ServerCommandSource source, String args) {
         boolean confirmed = args.contains("-confirmed");
-        boolean scriptPresent = KiloEssentials.getInstance().getStartupScript().exists();
+        boolean scriptPresent = KiloConfig.main().startupScript().enabled && KiloEssentials.getInstance().getStartupScript().exists();
 
         if (!confirmed && !KiloServer.getServer().getCommandSourceUser(source).isConsole()) {
             if (!scriptPresent) {

@@ -56,7 +56,7 @@ public class InventoryCommand extends EssentialCommand {
                 Text translatable =  new TranslatableText("container.inventory");
 
                 if (src.equals(target)) {
-                    text = Texter.toText().append(translatable).append(" ").append(target.getFormattedDisplayName());
+                    text = Texter.newText().append(translatable).append(" ").append(target.getFormattedDisplayName());
                 } else {
                     text = translatable;
                 }

@@ -52,7 +52,7 @@ public class LocateStructureCommand {
         if (structure == null)
             throw KiloCommands.getException(ExceptionMessageNode.INCORRECT_IDENTIFIER, "structure").create();
 
-        StructureLocatorThread locatorThread = new StructureLocatorThread(source, structure.getName());
+        StructureLocatorThread locatorThread = new StructureLocatorThread(source, structure);
         Thread thread = new Thread(locatorThread, "Structure locator thread");
         thread.start();
 
@@ -62,11 +62,11 @@ public class LocateStructureCommand {
     static class StructureLocatorThread implements Runnable {
         private Logger logger = LogManager.getLogger();
         private ServerCommandSource source;
-        private String structure;
+        private StructureFeature<?> structure;
 
-        public StructureLocatorThread(ServerCommandSource source, String structure) {
+        public StructureLocatorThread(ServerCommandSource source, StructureFeature<?> structureFeature) {
             this.source = source;
-            this.structure = structure;
+            this.structure = structureFeature;
         }
 
         @Override

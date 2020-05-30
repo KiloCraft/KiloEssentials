@@ -99,7 +99,7 @@ public enum CommandPermission {
     TELEPORTREQUEST("teleportrequest"),
     LASTSEEN("lastseen"),
     CALCULATE("calculate"),
-    ;
+    GLOW("glow");
 
     private String node;
     CommandPermission(String string) {

@@ -708,7 +708,7 @@ public class Pager {
             String SEPARATOR = "-----------------------------------------------------";
             MutableText header =  new LiteralText("")
                     .append(new LiteralText("- [ ").formatted(f3))
-                    .append(Texter.toText(title).formatted(f1))
+                    .append(Texter.newText(title).formatted(f1))
                     .append(" ] ")
                     .append(SEPARATOR.substring(TextFormat.removeAlternateColorCodes('&', title).length() + 4))
                     .formatted(f3);
@@ -720,24 +720,18 @@ public class Pager {
             MutableText button_prev = new LiteralText("")
                     .append(new LiteralText("<-").formatted(Formatting.WHITE, Formatting.BOLD))
                     .append(" ").append(new LiteralText("Prev").formatted(f1))
-                    .styled((style) -> {
-                        if (prevPage > 0) {
-                            style.withClickEvent(Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(prevPage))));
-                        }
-
-                        return style.setHoverEvent(Texter.Events.onHover(new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)));
-                    });
+                    .styled((style) ->
+                            style.setHoverEvent(Texter.Events.onHover(new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)))
+                            .withClickEvent(prevPage > 0 ? Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(prevPage))) : null)
+                    );
 
             MutableText button_next = new LiteralText("")
                     .append(new LiteralText("Next").formatted(f1))
                     .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
-                    .styled((style) -> {
-                        if (nextPage < maxPages) {
-                            style.withClickEvent(Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(nextPage))));
-                        }
-
-                        return style.setHoverEvent(Texter.Events.onHover(new LiteralText((nextPage < maxPages) ? ">>>" : ">|").formatted(f3)));
-                    });
+                    .styled((style) ->
+                            style.setHoverEvent(Texter.Events.onHover(new LiteralText((nextPage < maxPages) ? ">>>" : ">|").formatted(f3)))
+                            .withClickEvent(nextPage < maxPages ? Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(nextPage))) : null)
+                    );
 
             MutableText buttons = new LiteralText("")
                     .append(new LiteralText("[ ").formatted(Formatting.GRAY))

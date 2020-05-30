@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.listeners;
 
+import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
@@ -9,7 +10,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 
 public class OnCommand implements EventHandler<OnCommandExecutionEvent> {
     @Override
-    public void handle(OnCommandExecutionEvent event) {
+    public void handle(@NotNull OnCommandExecutionEvent event) {
         if (CommandUtils.isPlayer(event.getExecutor())) {
             String command = event.getCommand().startsWith("/") ? event.getCommand().substring(1) : event.getCommand();
 

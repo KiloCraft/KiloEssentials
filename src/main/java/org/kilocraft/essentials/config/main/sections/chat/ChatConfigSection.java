@@ -11,7 +11,6 @@ public class ChatConfigSection {
     @Setting(value = "socialSpyFormat", comment = "Set the format of social spy messages")
     public String socialSpyFormat = "&7[%SOURCE%&r&3 -> &7%TARGET%&r&7]&7 %MESSAGE%";
 
-
     @Setting(value = "useVanillaChat", comment = "If set to true the KiloEssentials Chat will be disabled")
     public boolean useVanillaChat = false;
 
@@ -20,6 +19,9 @@ public class ChatConfigSection {
 
     @Setting(value = "kickForSpamming", comment = "Kicks a player if they try to spam the chat\nIf set to false they will only get a warning")
     public boolean kickForSpamming = true;
+
+    @Setting(value = "spamWarning", comment = "Send this message to the player if they are trying to spam")
+    public String spamWarning = "&cDon't spam!";
 
     @Setting(value = "itemFormat", comment = "The format someone has to use to show an Item (Main hand) in chat")
     public String itemFormat = "[item]";

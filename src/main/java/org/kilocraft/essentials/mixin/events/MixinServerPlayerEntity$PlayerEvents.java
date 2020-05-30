@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinServerPlayerEntity$PlayerEvents {
 
     @Inject(at = @At("HEAD"), method = "onDeath")
-    private void oky$death(DamageSource damageSource_1, CallbackInfo ci) {
+    private void ke$triggerEvent$onDeath(DamageSource damageSource, CallbackInfo ci) {
         KiloServer.getServer().triggerEvent(new PlayerDeathEventImpl((ServerPlayerEntity) (Object) this));
     }
 
@@ -24,8 +24,9 @@ public abstract class MixinServerPlayerEntity$PlayerEvents {
         PlayerStopRidingEvent event = new PlayerStopRidingEventImpl((ServerPlayerEntity) (Object) this);
         KiloServer.getServer().triggerEvent(event);
 
-        if (event.isCancelled())
+        if (event.isCancelled()) {
             ci.cancel();
+        }
     }
 
 }

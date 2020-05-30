@@ -81,6 +81,7 @@ public class Config {
         this.add("staffmsg");
         this.add("sm");
         this.add("buildermsg");
+        this.add("hug");
     }};
 
     @Setting(value = "nicknameMaxLength", comment = "The maximum length for a nickname")

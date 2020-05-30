@@ -7,6 +7,6 @@ public class KiloEssentialsMod implements DedicatedServerModInitializer {
 	@Override
     public void onInitializeServer() {
 	    KiloDebugUtils.validateDebugMode(false);
-        new KiloEssentialsImpl(new KiloEvents(), new KiloConfig());
+        new KiloEssentialsImpl(new KiloEvents());
     }
 }
