@@ -1,6 +1,9 @@
 package org.kilocraft.essentials.util.math;
 
+import org.kilocraft.essentials.api.ModConstants;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 public class RollingAverage {
@@ -46,11 +49,10 @@ public class RollingAverage {
     }
 
     public double getAverage() {
-        return total.divide(dec(time), 30, java.math.RoundingMode.HALF_UP).doubleValue();
+        return total.divide(dec(time), 30, RoundingMode.HALF_UP).doubleValue();
     }
 
     public String getShortAverage() {
-        DecimalFormat decimalFormat = new DecimalFormat("##.##");
-        return decimalFormat.format(getAverage());
+        return ModConstants.DECIMAL_FORMAT.format(getAverage());
     }
 }

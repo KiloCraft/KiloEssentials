@@ -1,7 +1,9 @@
 package org.kilocraft.essentials.api.feature;
 
 import net.minecraft.SharedConstants;
+import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.KiloEssentialsImpl;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
@@ -20,15 +22,14 @@ public class ConfigurableFeatures {
         try {
             if (KiloConfig.getMainNode().getNode("features").getNode(configKey).getBoolean()) {
                 if (SharedConstants.isDevelopment) {
-                    KiloEssentialsImpl.getLogger().info("Initialing \"" + feature.getClass().getName() + "\"");
+                    KiloDebugUtils.getLogger().info("Initialing {}", feature.getClass().getName());
                 }
 
                 if (feature instanceof TickListener) {
                     tickListeners.add((TickListener) feature);
-                } else {
-                    features.add(feature);
                 }
 
+                features.add(feature);
                 feature.register();
             }
         } catch (NullPointerException ignored) {
@@ -40,7 +41,11 @@ public class ConfigurableFeatures {
     public void loadAll() {
         for (ConfigurableFeature feature : features) {
             if (feature instanceof RelodableConfigurableFeature) {
-                ((RelodableConfigurableFeature) feature).load();
+                try {
+                    ((RelodableConfigurableFeature) feature).load();
+                } catch (Exception e) {
+                    KiloEssentials.getLogger().fatal("Can not load the feature " + feature.getClass().getSimpleName(), e);
+                }
             }
         }
     }
@@ -50,7 +55,7 @@ public class ConfigurableFeatures {
             try {
                 listener.onTick();
             } catch (Exception e) {
-                e.printStackTrace();
+                KiloEssentials.getLogger().fatal("An unexpected error occurred while processing a Tick Event", e);
             }
         }
     }

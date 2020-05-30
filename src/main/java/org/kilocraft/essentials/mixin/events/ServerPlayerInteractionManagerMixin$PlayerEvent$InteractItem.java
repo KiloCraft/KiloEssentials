@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.mixin.events;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -23,15 +23,17 @@ public abstract class ServerPlayerInteractionManagerMixin$PlayerEvent$InteractIt
 
     @Inject(method = "interactItem", cancellable = true,
             at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayerInteractionManager;interactItem(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;"))
-    private void onInteractItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        PlayerInteractItem event = new PlayerInteractItemEventImpl(playerEntity, world, hand, itemStack);
+    private void onInteractItem(ServerPlayerEntity serverPlayerEntity, World world, ItemStack itemStack, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        PlayerInteractItem event = new PlayerInteractItemEventImpl(serverPlayerEntity, world, hand, itemStack);
         KiloServer.getServer().triggerEvent(event);
 
-        if (event.getReturnValue() != null)
+        if (event.getReturnValue() != null) {
             cir.setReturnValue(event.getReturnValue());
+        }
 
-        if (event.isCancelled())
+        if (event.isCancelled()) {
             cir.cancel();
+        }
     }
 
 }

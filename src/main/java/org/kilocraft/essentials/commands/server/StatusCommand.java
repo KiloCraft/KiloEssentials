@@ -6,6 +6,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -55,7 +56,7 @@ public class StatusCommand extends EssentialCommand {
         double ramUsage = SystemMonitor.getRamUsedPercentage();
         double cpuUsage = SystemMonitor.getCpuLoadPercentage();
         return "&eGeneral status:&r\n" +
-                "&7Platform: &6" + bean.getArch() + " &d" + System.getProperty("os.name") +
+                "&7Platform: &6" + bean.getArch() + " &d" + Util.getOperatingSystem().name().toLowerCase() +
                 "\n&7Server uptime: &6" + TimeDifferenceUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()) +
                 "\n&7TPS:" +
                 String.format("&%s %s&8,&8(&75m&8/&715m&8/&730m&8&8/&71h&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
@@ -69,7 +70,7 @@ public class StatusCommand extends EssentialCommand {
                 TextFormat.getFormattedPercentage(ramUsage, true) + ramUsage + "% " +
                 "&8(&b" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&7" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
-                "\n&7Worlds&8:&e" +
+                "\n&7Dimensions&8:&e" +
                 addWorldInfo();
     }
 
@@ -81,7 +82,7 @@ public class StatusCommand extends EssentialCommand {
             MonitorableWorld monitoredWorld = (MonitorableWorld) world;
 
             if (monitoredWorld.totalLoadedChunks() != 0) {
-                builder.append("\n&7* ").append(RegistryUtils.dimensionToName(world.dimension.getType())).append("&8: ");
+                builder.append("\n&7* ").append(RegistryUtils.dimensionToName(world.getDimension())).append("&8: ");
                 builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.cachedChunks(), monitoredWorld.loadedEntities(), monitoredWorld.players()));
             }
         }

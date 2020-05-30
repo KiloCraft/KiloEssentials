@@ -21,8 +21,8 @@ import java.util.Objects;
 
 public class LocateBiomeProvided implements Command {
     private static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType((object) -> new TranslatableText("commands.locatebiome.notFound", new Object[]{object}));
-    private static List<Thread> threads = new ArrayList<>();
-    private Biome biome;
+    private static final List<Thread> threads = new ArrayList<>();
+    private final Biome biome;
 
     public LocateBiomeProvided(Biome biome) {
         this.biome = biome;

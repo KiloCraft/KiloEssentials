@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ServerMetaManager {
-    private ServerMetadata metadata;
+    private final ServerMetadata metadata;
 
     public ServerMetaManager(ServerMetadata metadata) {
         this.metadata = metadata;

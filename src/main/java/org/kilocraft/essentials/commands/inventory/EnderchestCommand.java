@@ -43,7 +43,7 @@ public class EnderchestCommand extends EssentialCommand {
         Text translatable =  new TranslatableText("container.enderchest");
 
         if (sender.equals(target)) {
-            text = Texter.toText().append(translatable).append(" ").append(targetUser.getFormattedDisplayName());
+            text = Texter.newText().append(translatable).append(" ").append(targetUser.getFormattedDisplayName());
         } else {
             text = translatable;
         }

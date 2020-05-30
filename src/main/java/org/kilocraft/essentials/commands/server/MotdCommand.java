@@ -68,7 +68,7 @@ public class MotdCommand extends EssentialCommand {
         }
 
         try {
-            this.server.getMetaManager().setDescription(Texter.toText(finalmotd));
+            this.server.getMetaManager().setDescription(Texter.newText(finalmotd));
         } catch (final IOException e) {
             this.getServerUser(ctx).sendError("Can not save the value \"motd\" in server.properties\n" + e.getMessage());
 

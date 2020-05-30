@@ -6,7 +6,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerInteractItemStartEvent;
+import org.kilocraft.essentials.api.user.OnlineUser;
 
 public class PlayerInteractItemStartEventImpl implements PlayerInteractItemStartEvent {
     private boolean cancelled = false;
@@ -52,4 +54,8 @@ public class PlayerInteractItemStartEventImpl implements PlayerInteractItemStart
         return this.hand;
     }
 
+    @Override
+    public OnlineUser getUser() {
+        return KiloServer.getServer().getOnlineUser((ServerPlayerEntity) this.player);
+    }
 }

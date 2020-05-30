@@ -3,6 +3,7 @@ package org.kilocraft.essentials.mixin;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
@@ -13,6 +14,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.EssentialPermission;
@@ -57,10 +59,10 @@ public abstract class ServerPlayNetworkHandlerMixin {
         }
     }
 
-    @Redirect(method = "onGameMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Z)V"))
-    private void redirect(PlayerManager playerManager, Text text, boolean bl) {
-        playerManager.broadcastChatMessage(new LiteralText(TextFormat.translate(Texter.Legacy.toFormattedString(text))), false);
-    }
+//    @Redirect(method = "onGameMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Z)V"))
+//    private void redirect(PlayerManager playerManager, Text text, boolean bl) {
+//        playerManager.broadcastChatMessage(new LiteralText(TextFormat.translate(Texter.Legacy.toFormattedString(text))), MessageType.CHAT, Util.field_25140);
+//    }
 
     @Inject(
             method = "onSignUpdate", cancellable = true,

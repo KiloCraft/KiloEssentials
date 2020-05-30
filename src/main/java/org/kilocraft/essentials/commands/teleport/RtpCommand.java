@@ -180,7 +180,7 @@ public class RtpCommand extends EssentialCommand {
 	private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		Text text = Texter.confirmationMessage(
 				"command.rtp.confirm",
-				Texter.getButton("&8[&aClick Here to perform&8]", "/rtp perform", Texter.toText("&dConfirm"))
+				Texter.getButton("&8[&aClick Here to perform&8]", "/rtp perform", Texter.newText("&dConfirm"))
 		);
 		this.getOnlineUser(ctx).sendMessage(text);
 		return SUCCESS;
@@ -234,7 +234,7 @@ public class RtpCommand extends EssentialCommand {
 		}
 
 		//Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-		if (!target.dimension.equals(DimensionType.OVERWORLD) && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
+		if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != RegistryUtils.Worlds.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
 			targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
 			return;
 		}
@@ -255,7 +255,7 @@ public class RtpCommand extends EssentialCommand {
 		BlockState state;
 		int tries = 0;
 		boolean hasAirSpace;
-		boolean isNether = world.dimension.isNether();
+		boolean isNether = target.getServerWorld().getDimension().isNether();
 		boolean safe;
 
 		do {
@@ -277,11 +277,11 @@ public class RtpCommand extends EssentialCommand {
 
 			if (cfg.showTries && target.networkHandler != null) {
 				int finalTries = tries;
-				KiloServer.getServer().getVanillaServer().execute(() -> {
+				KiloServer.getServer().getMinecraftServer().execute(() -> {
 					target.networkHandler.sendPacket(
 							new TitleS2CPacket(
 									TitleS2CPacket.Action.ACTIONBAR,
-									Texter.toText(String.format(ACTION_MSG, finalTries, cfg.maxTries))
+									Texter.newText(String.format(ACTION_MSG, finalTries, cfg.maxTries))
 							)
 					);
 				});
@@ -316,7 +316,7 @@ public class RtpCommand extends EssentialCommand {
 					.append(new LiteralText("You've been teleported to this ").formatted(Formatting.YELLOW))
 					.append(translatable.formatted(Formatting.GOLD))
 					.append(new LiteralText(" biome!").formatted(Formatting.YELLOW))
-					.append("\n").append(Texter.toText(cfgMessage));
+					.append("\n").append(Texter.newText(cfgMessage));
 
 			targetUser.sendMessage(text);
 			if (!sourceUser.equals(targetUser)) {
@@ -335,14 +335,14 @@ public class RtpCommand extends EssentialCommand {
 		int randX = ThreadLocalRandom.current().nextInt(minX, maxX + 1);
 		int randZ = ThreadLocalRandom.current().nextInt(minZ, maxZ + 1);
 
-		return Vec3dLocation.of(randX, height, randZ, 0, 0, RegistryUtils.toIdentifier(world.getDimension().getType()));
+		return Vec3dLocation.of(randX, height, randZ, 0, 0, RegistryUtils.toIdentifier(world.getDimension()));
 	}
 }
 
 class RandomTeleportThread implements Runnable {
-	private Logger logger = LogManager.getLogger();
-	private ServerCommandSource source;
-	private ServerPlayerEntity target;
+	private final Logger logger = LogManager.getLogger();
+	private final ServerCommandSource source;
+	private final ServerPlayerEntity target;
 
 	public RandomTeleportThread(ServerCommandSource source, ServerPlayerEntity target) {
 		this.source = source;
@@ -355,7 +355,7 @@ class RandomTeleportThread implements Runnable {
 		try {
 			RtpCommand.teleport(this.source, this.target, logger);
 		} catch (Exception e) {
-			KiloEssentials.getLogger().error("Canceled RTP for {}, Target probably left... ", target.getEntityName());
+			KiloEssentials.getLogger().error("RTP for {} failed.", target.getEntityName(), e);
 		}
 	}
 }

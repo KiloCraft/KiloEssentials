@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TextColor;
 import net.minecraft.text.Texts;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -18,6 +19,8 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public class TpaCommand extends EssentialCommand {
     public static final CommandPermission PERMISSION = CommandPermission.TELEPORTREQUEST;
+    public static final TextColor GREEN_COLOR = TextColor.parse("EF2828");
+    public static final TextColor RED_COLOR = TextColor.parse("38F71A");
 
     public TpaCommand() {
         super("tpa", PERMISSION, new String[]{"tpr"});
@@ -52,17 +55,32 @@ public class TpaCommand extends EssentialCommand {
         UserUtils.TpaRequests.add(src, target, false);
 
         src.sendMessage(
-                Texter.toText(tl("command.tpa.sent", target.getFormattedDisplayName()))
+                Texter.newText(tl("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.toText("&cCancel"))))
+                        .append(
+                                Texts.bracketed(
+                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText(tl("general.click_cancel")))
+                                                .styled(style -> style.withColor(RED_COLOR))
+                                )
+                        )
         );
 
         target.sendMessage(
-                Texter.toText(tl("command.tpa.receive", src.getFormattedDisplayName()))
+                Texter.newText(tl("command.tpa.receive", src.getFormattedDisplayName()))
                         .append(" ")
-                            .append(Texts.bracketed(Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.toText("&aClick to accept"))))
+                        .append(
+                                Texts.bracketed(
+                                        Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText(tl("general.click_accept")))
+                                                .styled(style -> style.withColor(GREEN_COLOR))
+                                )
+                        )
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.toText("&cClick to deny"))))
+                        .append(
+                                Texts.bracketed(
+                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText(tl("general.click_deny")))
+                                                .styled(style -> style.withColor(RED_COLOR))
+                                )
+                        )
         );
 
         if (target.getSetting(Settings.SOUNDS)) {

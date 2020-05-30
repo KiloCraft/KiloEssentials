@@ -54,7 +54,6 @@ import java.util.function.Consumer;
 
 public final class KiloEssentialsImpl implements KiloEssentials {
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
-	private static final String KE_PREFIX = "[KiloEssentials] ";
 	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials");
 	private static KiloEssentialsImpl instance;
 	private PermissionUtil permUtil;
@@ -69,14 +68,13 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	private final List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private final Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	KiloEssentialsImpl(final KiloEvents events, final KiloConfig config) {
+	KiloEssentialsImpl(final KiloEvents events) {
 		KiloEssentialsImpl.instance = this;
 		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
+		KiloConfig.load();
 		this.commands = new KiloCommands();
-
-		KiloServer.getServer().setName(KiloConfig.main().server().name);
 
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
@@ -107,7 +105,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		*/
 
 		if (SharedConstants.isDevelopment) {
-			new KiloDebugUtils(this);
+			new KiloDebugUtils();
 		}
 
 		ServerChat.load();
@@ -220,7 +218,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 			} catch (Exception e) {
 				requester.sendError(new LiteralText(e.getMessage()).formatted(Formatting.RED));
 			}
-		}, KiloServer.getServer().getVanillaServer());
+		}, KiloServer.getServer().getMinecraftServer());
 
 		return optionalCompletableFuture;
 	}
@@ -251,7 +249,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 			} catch (Exception e) {
 				requester.sendError(e.getMessage());
 			}
-		}, KiloServer.getServer().getVanillaServer());
+		}, KiloServer.getServer().getMinecraftServer());
 
 		if (!optionalCompletableFuture.isDone())
 			loadingText.start();
@@ -279,7 +277,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 			} catch (Exception e) {
 				requester.sendError(e.getMessage());
 			}
-		}, KiloServer.getServer().getVanillaServer());
+		}, KiloServer.getServer().getMinecraftServer());
 
 		if (!optionalCompletableFuture.isDone())
 			loadingText.start();
@@ -352,25 +350,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	@Override
 	public PermissionUtil getPermissionUtil() {
 		return this.permUtil;
-	}
-
-	private static MessageFactory massageFactory() {
-		return new MessageFactory() {
-			@Override
-			public Message newMessage(final Object message) {
-				return new SimpleMessage(KiloEssentialsImpl.KE_PREFIX + message);
-			}
-
-			@Override
-			public Message newMessage(final String message) {
-				return new SimpleMessage(KiloEssentialsImpl.KE_PREFIX + message);
-			}
-
-			@Override
-			public Message newMessage(final String message, final Object... params) {
-				return new SimpleMessage(message);
-			}
-		};
 	}
 
 	public void onServerStop() {

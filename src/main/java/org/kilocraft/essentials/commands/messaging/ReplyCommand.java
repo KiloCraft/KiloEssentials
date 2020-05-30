@@ -8,17 +8,12 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
-
-import java.util.UUID;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -40,10 +35,11 @@ public class ReplyCommand extends EssentialCommand {
     private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getUserManager().getOnline(ctx.getSource());
         String message = getString(ctx, "message");
-        MessageReceptionist lastReceptionist = user.getLastDirectMessageReceptionist();
+        MessageReceptionist lastReceptionist = user.getLastMessageReceptionist();
 
         if (lastReceptionist == null || lastReceptionist.getId() == null) {
-            throw ReplyCommand.NO_MESSAGES_EXCEPTION.create();
+            user.sendConfigMessage("chat.privateChat.noMessageToReply");
+            return FAILED;
         }
 
         OnlineUser target = KiloServer.getServer().getOnlineUser(lastReceptionist.getId());
@@ -54,6 +50,4 @@ public class ReplyCommand extends EssentialCommand {
 
         return ServerChat.sendDirectMessage(ctx.getSource(), target, message);
     }
-
-    private static final SimpleCommandExceptionType NO_MESSAGES_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("You don't have any messages to reply to!"));
 }

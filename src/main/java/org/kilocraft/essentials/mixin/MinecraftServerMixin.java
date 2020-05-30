@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
@@ -32,13 +33,14 @@ public abstract class MinecraftServerMixin implements Brandable {
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
-    private void onTick(BooleanSupplier booleanSupplier, CallbackInfo ci) {
+    private void ke$onTickStart(BooleanSupplier booleanSupplier, CallbackInfo ci) {
+        TPSTracker.MillisecondPerTick.onStart();
         long i = ((currentTime = System.nanoTime()) / (1000L * 1000L)) - this.timeReference;
 
         if (++currentTick % RollingAverage.SAMPLE_INTERVAL == 0) {
             final long diff = currentTime - tickSection;
 
-            BigDecimal currentTps = RollingAverage.TPS_BASE.divide(new BigDecimal(diff), 30, java.math.RoundingMode.HALF_UP);
+            BigDecimal currentTps = RollingAverage.TPS_BASE.divide(new BigDecimal(diff), 30, RoundingMode.HALF_UP);
             TPSTracker.tps1.add(currentTps, diff);
             TPSTracker.tps5.add(currentTps, diff);
             TPSTracker.tps15.add(currentTps, diff);
@@ -48,6 +50,11 @@ public abstract class MinecraftServerMixin implements Brandable {
         }
 
         KiloServer.getServer().triggerEvent(new ServerTickEventImpl((MinecraftServer) (Object) this));
+    }
+
+    @Inject(at = @At("RETURN"), method = "tick")
+    private void ke$onTickReturn(BooleanSupplier booleanSupplier, CallbackInfo ci) {
+        TPSTracker.MillisecondPerTick.onEnd();
     }
 
     @Override

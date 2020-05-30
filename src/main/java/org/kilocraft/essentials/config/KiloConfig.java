@@ -30,7 +30,28 @@ public class KiloConfig {
     private static ConfigurationNode mainNode;
     private static ConfigurationNode messagesNode;
 
-    public KiloConfig() {
+    public static Config main() {
+        return config;
+    }
+
+    public static Messages messages() {
+        return messages;
+    }
+
+    public static ConfigurationNode getMainNode() {
+        return mainNode;
+    }
+
+    public static ConfigurationNode getMessagesNode() {
+        return messagesNode;
+    }
+
+    public static String getMessage(String key, Object... objects) {
+        String msg = messagesNode.getNode((Object) key.split("\\.")).getString();
+        return objects.length == 0 ? msg : msg != null ? String.format(msg, objects) : "Null<" + key + "?>";
+    }
+
+    public static void load() {
         try {
             KiloFile CONFIG_FILE = new KiloFile("config.hocon", KiloEssentials.getEssentialsPath());
             KiloFile MESSAGES_FILE = new KiloFile("messages.hocon", KiloEssentials.getEssentialsPath());
@@ -55,32 +76,6 @@ public class KiloConfig {
             KiloEssentials.getLogger().error("Exception handling a configuration file! " + KiloConfig.class.getName());
             e.printStackTrace();
         }
-
-    }
-
-    public static Config main() {
-        return config;
-    }
-
-    public static Messages messages() {
-        return messages;
-    }
-
-    public static ConfigurationNode getMainNode() {
-        return mainNode;
-    }
-
-    public static ConfigurationNode getMessagesNode() {
-        return messagesNode;
-    }
-
-    public static String getMessage(String key, Object... objects) {
-        String msg = messagesNode.getNode((Object) key.split(".")).getString();
-        return objects.length == 0 ? msg : msg != null ? String.format(msg, objects) : "Null<" + key + "?>";
-    }
-
-    public static void reload() {
-        new KiloConfig();
     }
 
     public static ConfigurationOptions configurationOptions() {

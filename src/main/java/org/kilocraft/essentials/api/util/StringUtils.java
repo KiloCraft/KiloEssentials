@@ -26,6 +26,26 @@ public class StringUtils {
         return string.replaceAll("[^a-zA-Z0-9_]", "");
     }
 
+    public static String normalizeCapitalization(@NotNull final String string) {
+        StringBuilder builder = new StringBuilder();
+        String[] strings = string.split(" ");
+        int index = 0;
+        for (String str : strings) {
+            builder.append(
+                    String.valueOf(str.charAt(0)).toUpperCase(Locale.ROOT)
+            ).append(
+                    str.substring(1)
+            );
+
+            index++;
+            if (index != strings.length) {
+                builder.append(" ");
+            }
+        }
+
+        return builder.toString();
+    }
+
     public static class Calculator implements Comparable<Double> {
         private String input;
         private double output;
