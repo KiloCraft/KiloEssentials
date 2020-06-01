@@ -38,6 +38,7 @@ import java.util.*;
 /**
  * Main User Implementation
  *
+ * @author CODY_AI (OnBlock)
  * @see User
  * @see ServerUserManager
  * @see UserHomeHandler
@@ -48,24 +49,23 @@ import java.util.*;
  * @see net.minecraft.entity.player.PlayerEntity
  * @see net.minecraft.server.network.ServerPlayerEntity
  * @since 1.5
- * @author CODY_AI (OnBlock)
  */
 
 public class ServerUser implements User {
     public static final int SYS_MESSAGE_COOL_DOWN = 400;
     protected static final ServerUserManager MANAGER = (ServerUserManager) KiloServer.getServer().getUserManager();
-    final UUID uuid;
     private final ServerUserSettings settings;
-    String name = "";
-    String savedName = "";
     private UserHomeHandler homeHandler;
-    Vec3dLocation location;
     private Vec3dLocation lastLocation;
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
     public int messageCoolDown;
     public int systemMessageCoolDown;
     private MessageReceptionist lastDmReceptionist;
+    final UUID uuid;
+    String name = "";
+    String savedName = "";
+    Vec3dLocation location;
     boolean isStaff = false;
     String lastSocketAddress;
     int ticksPlayed = 0;
@@ -133,7 +133,7 @@ public class ServerUser implements User {
     }
 
     public void fromTag(@NotNull CompoundTag compoundTag) {
-    	CompoundTag metaTag = compoundTag.getCompound("meta");
+        CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
         if (cacheTag.contains("lastLoc")) {
@@ -142,9 +142,9 @@ public class ServerUser implements User {
         }
 
         if (compoundTag.contains("loc")) {
-        	this.location = Vec3dLocation.dummy();
-        	this.location.fromTag(compoundTag.getCompound("loc"));
-        	this.location.shortDecimals();
+            this.location = Vec3dLocation.dummy();
+            this.location.fromTag(compoundTag.getCompound("loc"));
+            this.location.shortDecimals();
         }
 
         if (cacheTag.contains("cIp")) {

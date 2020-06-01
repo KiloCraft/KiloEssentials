@@ -32,7 +32,7 @@ import java.util.UUID;
  * @since 1.5
  * @author CODY_AI (OnBlock)
  */
-public interface User extends MessageReceptionist, NBTSerializable, EntityIdentifiable {
+public interface User extends EntityIdentifiable, NBTSerializable, MessageReceptionist{
     /**
      * Gets the Unique Unified Identifier of this User
      * @return UUID of this user
