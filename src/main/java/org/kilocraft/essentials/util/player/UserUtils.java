@@ -156,17 +156,4 @@ public class UserUtils {
         }
     }
 
-    public static EntityIdentifiable toEntity(final User user) {
-        return new EntityIdentifiable() {
-            @Override
-            public UUID getId() {
-                return user.getId();
-            }
-
-            @Override
-            public String getName() {
-                return user.getName();
-            }
-        };
-    }
 }
