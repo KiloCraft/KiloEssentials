@@ -90,6 +90,7 @@ public class KiloCommands {
         this.simpleCommandManager = new SimpleCommandManager(KiloServer.getServer(), this.dispatcher);
         this.commands = new ArrayList<>();
         KiloCommands.rootNode = literal("essentials").executes(this::sendInfo).build();
+        registerDefaults();
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {
@@ -104,7 +105,7 @@ public class KiloCommands {
         return KiloEssentials.getInstance().getPermissionUtil().hasPermission(src, cmdPerm, minOpLevel);
     }
 
-    public void registerDefaults() {
+    private void registerDefaults() {
         this.register(new DebugEssentialsCommand());
         this.register(new LightningCommand());
         this.register(new NicknameCommand());

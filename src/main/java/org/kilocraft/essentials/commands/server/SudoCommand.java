@@ -26,7 +26,7 @@ import static net.minecraft.command.arguments.EntityArgumentType.player;
 public class SudoCommand extends EssentialCommand {
 
     public SudoCommand() {
-        super("sudo", CommandPermission.SUDO_OTHERS, 4);
+        super("sudo", (src) -> CommandUtils.isConsole(src) || KiloCommands.hasPermission(src, CommandPermission.SUDO_OTHERS));
         this.withUsage("command.sudo.usage", "target", "command");
     }
 
