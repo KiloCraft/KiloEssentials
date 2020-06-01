@@ -1,6 +1,7 @@
 package org.kilocraft.essentials;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
@@ -78,18 +79,19 @@ import static org.kilocraft.essentials.api.KiloEssentials.getServer;
 import static org.kilocraft.essentials.commands.LiteralCommandModified.*;
 
 public class KiloCommands {
-    private static final List<String> initializedPerms = new ArrayList<>();
+    private static final List<String> initializedPerms = Lists.newArrayList();
+    private static SimpleCommandManager simpleCommandManager;
     private final List<IEssentialCommand> commands;
     private final CommandDispatcher<ServerCommandSource> dispatcher;
-    private final SimpleCommandManager simpleCommandManager;
+
     static final String PERMISSION_PREFIX = "kiloessentials.command.";
     private static LiteralCommandNode<ServerCommandSource> rootNode;
 
-    public KiloCommands() {
-        this.dispatcher = KiloEssentialsImpl.commandDispatcher;
-        this.simpleCommandManager = new SimpleCommandManager(KiloServer.getServer(), this.dispatcher);
-        this.commands = new ArrayList<>();
+    public KiloCommands(@NotNull final CommandDispatcher<ServerCommandSource> dispatcher) {
+        this.dispatcher = dispatcher;
+        this.commands = Lists.newArrayList();
         KiloCommands.rootNode = literal("essentials").executes(this::sendInfo).build();
+        this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
         registerDefaults();
     }
 
@@ -167,8 +169,6 @@ public class KiloCommands {
         this.register(new CalculateCommand());
         this.register(new HugCommand());
         this.register(new GlowCommand());
-
-        this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
 
         StopCommand.register(this.dispatcher);
         RestartCommand.register(this.dispatcher);
@@ -500,7 +500,7 @@ public class KiloCommands {
     }
 
     public static CommandDispatcher<ServerCommandSource> getDispatcher() {
-        return KiloEssentialsImpl.commandDispatcher;
+        return KiloServer.getServer().getMinecraftServer().getCommandManager().getDispatcher();
     }
 
     private boolean isCommand(final String literal) {
@@ -514,6 +514,11 @@ public class KiloCommands {
     @Deprecated
     public static int SUCCESS() {
         return 1;
+    }
+
+    public static void onServerReady() {
+        simpleCommandManager = new SimpleCommandManager(KiloServer.getServer());
+
     }
 
 }
