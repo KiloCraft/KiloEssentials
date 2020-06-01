@@ -1,12 +1,10 @@
 package org.kilocraft.essentials.api.user.settting;
 
-import com.google.inject.internal.asm.$Label;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.user.setting.Settings;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class Setting<T> {
@@ -57,7 +55,7 @@ public class Setting<T> {
         } else if (value instanceof Byte) {
             tag.putByte(this.id, (Byte) value);
         } else {
-            throw new IllegalArgumentException("UnSupported Data value Type! [" + value.toString() + "] is not supported");
+            throw new IllegalArgumentException(this.getSerializeExceptionMessage());
         }
     }
 
@@ -81,7 +79,7 @@ public class Setting<T> {
         } else if (this.defaultValue instanceof Byte) {
             return tag.getByte(this.id);
         } else {
-            throw new IllegalArgumentException("UnSupported Data value Type! [" + this.defaultValue.toString() + "] is not supported");
+            throw new IllegalArgumentException(this.getSerializeExceptionMessage());
         }
     }
 
@@ -111,5 +109,9 @@ public class Setting<T> {
         public void set(T value) {
             this.value = value;
         }
+    }
+
+    private String getSerializeExceptionMessage() {
+        return "Un-supported Data value Type! \"" + this.defaultValue + "\" is not supported! You need a custom Serializer function for this";
     }
 }

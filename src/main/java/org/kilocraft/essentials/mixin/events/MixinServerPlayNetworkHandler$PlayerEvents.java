@@ -47,9 +47,12 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     @Shadow
     public ServerPlayerEntity player;
 
-    @Shadow @Final private MinecraftServer server;
+    @Shadow
+    @Final
+    private MinecraftServer server;
 
-    @Shadow private Vec3d requestedTeleportPos;
+    @Shadow
+    private Vec3d requestedTeleportPos;
 
     private static boolean shouldContinueUsingItem(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
         if (itemStack.isEmpty()) {
@@ -82,10 +85,10 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
 
         if (!itemStack.isEmpty()) {
             PlayerInteractItemStartEvent event = new PlayerInteractItemStartEventImpl(
-                    player, player.getEntityWorld(), playerInteractItemC2SPacket.getHand(), player.getStackInHand(playerInteractItemC2SPacket.getHand()));
-            KiloServer.getServer().triggerEvent(event);
+                    player, player.getEntityWorld(), playerInteractItemC2SPacket.getHand(), player.getStackInHand(playerInteractItemC2SPacket.getHand())
+            );
 
-            if (event.isCancelled()) {
+            if (KiloServer.getServer().triggerEvent(event).isCancelled()) {
                 this.player.updateLastActionTime();
                 this.player.inventory.updateItems();
             } else {
@@ -111,7 +114,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         KiloServer.getServer().triggerEvent(event);
         if (!event.isCancelled()) {
             if (blockPos.getY() < this.server.getWorldHeight()) {
-                if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D) < 64.0D && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
+                if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double) blockPos.getX() + 0.5D, (double) blockPos.getY() + 0.5D, (double) blockPos.getZ() + 0.5D) < 64.0D && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
                     ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
                     if (direction == Direction.UP && actionResult != ActionResult.SUCCESS && blockPos.getY() >= this.server.getWorldHeight() - 1 && shouldContinueUsingItem(this.player, itemStack)) {
                         Text text = (new TranslatableText("build.tooHigh", this.server.getWorldHeight())).formatted(Formatting.RED);
@@ -133,10 +136,9 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
     @Inject(method = "onClientCommand", cancellable = true,
             at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V"))
     private void modifyOnClientCommand(ClientCommandC2SPacket clientCommandC2SPacket, CallbackInfo ci) {
-        PlayerClientCommandEvent event = new PlayerClientCommandEventImpl(player, clientCommandC2SPacket.getMode());
-        KiloServer.getServer().triggerEvent(event);
-        if (event.isCancelled())
+        if (KiloServer.getServer().triggerEvent(new PlayerClientCommandEventImpl(this.player, clientCommandC2SPacket.getMode())).isCancelled()) {
             ci.cancel();
+        }
     }
 
 }

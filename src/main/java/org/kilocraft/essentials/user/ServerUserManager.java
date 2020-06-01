@@ -17,6 +17,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloDebugUtils;
@@ -26,8 +27,10 @@ import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
@@ -37,7 +40,9 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.util.Action;
 import org.kilocraft.essentials.util.CacheManager;
+import org.kilocraft.essentials.util.MutedPlayerList;
 import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.AnimatedText;
@@ -56,6 +61,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private static final Pattern UUID_PATTERN = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
     private static final Pattern USER_FILE_NAME = Pattern.compile(UUID_PATTERN + "\\.dat");
     private final UserHandler handler = new UserHandler();
+    private final ServerPunishmentManager punishmentManager = new ServerPunishmentManager();
     private final List<OnlineUser> users = new ArrayList<>();
     private final Map<String, UUID> nicknameToUUID = new HashMap<>();
     private final Map<String, UUID> usernameToUUID = new HashMap<>();
@@ -63,11 +69,9 @@ public class ServerUserManager implements UserManager, TickListener {
     private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
     private final Map<UUID, SimpleProcess<?>> inProcessUsers = new HashMap<>();
     private Map<UUID, String> cachedNicknames = new HashMap<>();
-
-    private final PunishmentManager punishManager;
+    private final MutedPlayerList mutedPlayerList = new MutedPlayerList(KiloEssentials.getDataDirPath().toFile());
 
     public ServerUserManager(PlayerManager manager) {
-        this.punishManager = new PunishmentManager(manager);
     }
 
     @Override
@@ -271,6 +275,16 @@ public class ServerUserManager implements UserManager, TickListener {
         }
     }
 
+    @Override
+    public PunishmentManager getPunishmentManager() {
+        return this.punishmentManager;
+    }
+
+    @Override
+    public void performPunishment(@NotNull Punishment punishment, Punishment.@NotNull Type type, @NotNull Action<Punishment.ActionResult> action) {
+
+    }
+
     public boolean shouldNotUseNickname(OnlineUser user, String rawNickname) {
         String NICKNAME_CACHE = "nicknames";
         if (!CacheManager.shouldUse(NICKNAME_CACHE)) {
@@ -438,10 +452,6 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public UserHandler getHandler() {
         return this.handler;
-    }
-
-    public PunishmentManager getPunishmentManager() {
-        return this.punishManager;
     }
 
     public static class LoadingText {

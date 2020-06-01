@@ -313,7 +313,7 @@ public class ServerUser implements User {
     @Override
     public void clearNickname() {
         KiloServer.getServer().getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
-        this.getSettings().set(Settings.NICK, Optional.empty());
+        this.getSettings().reset(Settings.NICK);
     }
 
     @Override

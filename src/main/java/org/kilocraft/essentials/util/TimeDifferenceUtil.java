@@ -21,8 +21,8 @@ import java.util.stream.Stream;
 import static org.kilocraft.essentials.api.ModConstants.*;
 
 public class TimeDifferenceUtil {
-    private static Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
-    private static final int maxYears = 100000;
+    private static final Pattern TIME_PATTERN = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
+    private static final int MAX_YEARS = 100000;
 
     public static String convertSecondsToString(int seconds, char numFormat, char typeFormat) {
         int day = seconds / (24 * 3600);
@@ -39,12 +39,12 @@ public class TimeDifferenceUtil {
     }
 
     public static String removeTimePattern(String input) {
-        return timePattern.matcher(input).replaceFirst("").trim();
+        return TIME_PATTERN.matcher(input).replaceFirst("").trim();
     }
 
     public static long parse(String time, boolean future) throws CommandSyntaxException {
         Date date = new Date();
-        Matcher matcher = timePattern.matcher(time);
+        Matcher matcher = TIME_PATTERN.matcher(time);
         int years = 0;
         int months = 0;
         int weeks = 0;
@@ -94,8 +94,8 @@ public class TimeDifferenceUtil {
 
         Calendar c = new GregorianCalendar();
         if (years > 0) {
-            if (years > maxYears) {
-                years = maxYears;
+            if (years > MAX_YEARS) {
+                years = MAX_YEARS;
             }
             c.add(Calendar.YEAR, years * (future ? 1 : -1));
         }
@@ -135,9 +135,8 @@ public class TimeDifferenceUtil {
 
         int fromYear = fromDate.get(year);
         int toYear = toDate.get(year);
-        if (Math.abs(fromYear - toYear) > maxYears) {
-            toDate.set(year, fromYear +
-                    (future ? maxYears : -maxYears));
+        if (Math.abs(fromYear - toYear) > MAX_YEARS) {
+            toDate.set(year, fromYear + (future ? MAX_YEARS : -MAX_YEARS));
         }
 
         int diff = 0;
@@ -192,13 +191,12 @@ public class TimeDifferenceUtil {
     }
 
     public static CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        Stream<String> stream = Arrays.stream(VALID_UNITS).filter((it) ->{
+        Stream<String> stream = Arrays.stream(VALID_UNITS).filter((it) -> {
             String inputChar = String.valueOf(context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)));
             boolean containsValidUnit = it.equals(inputChar);
 
             return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
         });
-
 
 
 //        return ArgumentCompletions.suggestAtCursor(

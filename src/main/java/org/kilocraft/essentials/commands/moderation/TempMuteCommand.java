@@ -13,10 +13,10 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 
-public class MuteCommand extends EssentialCommand {
+public class TempMuteCommand extends EssentialCommand {
     private static final PunishmentManager MANAGER = KiloServer.getServer().getUserManager().getPunishmentManager();
 
-    public MuteCommand() {
+    public TempMuteCommand() {
         super("mute", CommandPermission.MUTE);
     }
 
@@ -24,6 +24,7 @@ public class MuteCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("victim")
                 .executes(ctx -> this.execute(ctx, null));
+
         final RequiredArgumentBuilder<ServerCommandSource, String> reasonArgument = argument("reason", StringArgumentType.greedyString())
                 .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "reason")));
 

@@ -19,7 +19,6 @@ public class ServerUserSettings implements UserSettings {
 
     @Override
     public <T> void set(Setting<T> setting, T value) {
-        this.SETTINGS.remove(setting.getId());
         this.SETTINGS.put(setting.getId(), value);
     }
 
@@ -30,7 +29,7 @@ public class ServerUserSettings implements UserSettings {
 
     @Override
     public <T> void reset(Setting<T> setting) {
-        this.set(setting, setting.getDefault());
+        this.SETTINGS.remove(setting.getId());
     }
 
     @Override

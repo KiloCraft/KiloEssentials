@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands.debug;
+package org.kilocraft.essentials.commands.server;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

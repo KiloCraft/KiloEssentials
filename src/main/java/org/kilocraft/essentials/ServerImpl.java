@@ -77,15 +77,8 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void reload() {
-        this.reload((throwable) -> {
-            KiloEssentials.getLogger().warn("Failed to reload the server", throwable);
-        });
-    }
-
-    @Override
     public void reload(Action<Throwable> fallback) {
-        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl());
+        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl(this.server));
 
         ResourcePackManager<?> resourcePackManager = this.getMinecraftServer().getDataPackManager();
         SaveProperties saveProperties = this.getMinecraftServer().method_27728();

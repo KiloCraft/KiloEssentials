@@ -11,8 +11,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class KiloFile {
-    private File file;
-    private File dir;
+    private final File file;
+    private final File dir;
     private String name;
 
     public KiloFile(String name, String path) {
@@ -32,15 +32,15 @@ public class KiloFile {
     }
 
     public void createFile() {
-        if (this.file.exists())
+        if (this.file.exists()) {
             return;
+        }
 
         try {
             this.dir.mkdirs();
             this.file.createNewFile();
         } catch (IOException e) {
-            KiloEssentials.getLogger().error("Exception while creating the file " + this.file.getName() + ": " + this.file.getPath());
-            e.printStackTrace();
+            KiloEssentials.getLogger().error("Exception while creating the file " + this.file.getName() + ": " + this.file.getPath(), e);
         }
     }
 
@@ -59,6 +59,7 @@ public class KiloFile {
     public void pasteFromResources(String resourcesPath) {
         try {
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcesPath);
+            assert inputStream != null;
             Files.copy(inputStream, Paths.get(this.file.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();

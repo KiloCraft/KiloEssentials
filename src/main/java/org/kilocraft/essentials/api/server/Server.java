@@ -47,11 +47,6 @@ public interface Server {
 
     /**
      * Reloads the server
-     */
-    void reload();
-
-    /**
-     * Reloads the server
      * @param fallback the action to perform if the execution fails
      */
     void reload(Action<Throwable> fallback);
@@ -140,7 +135,7 @@ public interface Server {
     /**
      * Gets a world
      *
-     * @param type Dimension
+     * @param key the World Registry Key
      * @return ServerWorld
      */
     ServerWorld getWorld(RegistryKey<World> key);

@@ -46,6 +46,7 @@ public abstract class CommandManagerMixin {
     @Inject(method = "<init>", at = {@At("RETURN")})
     private void CommandManager(boolean boolean_1, CallbackInfo ci) {
         KiloEssentialsImpl.commandDispatcher = this.dispatcher;
+        KiloEssentials.getInstance().getCommandHandler().registerDefaults();
     }
 
     @Redirect(method = "makeTreeForSource", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/tree/CommandNode;canUse(Ljava/lang/Object;)Z"))

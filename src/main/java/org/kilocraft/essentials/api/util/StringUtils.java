@@ -47,7 +47,7 @@ public class StringUtils {
     }
 
     public static class Calculator implements Comparable<Double> {
-        private String input;
+        private final String input;
         private double output;
 
         public Calculator(@NotNull final String input) {

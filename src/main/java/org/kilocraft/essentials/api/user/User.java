@@ -9,6 +9,7 @@ import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.util.UserEntity;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
@@ -31,7 +32,7 @@ import java.util.UUID;
  * @since 1.5
  * @author CODY_AI (OnBlock)
  */
-public interface User extends MessageReceptionist, NBTSerializable {
+public interface User extends MessageReceptionist, NBTSerializable, UserEntity {
     /**
      * Gets the Unique Unified Identifier of this User
      * @return UUID of this user

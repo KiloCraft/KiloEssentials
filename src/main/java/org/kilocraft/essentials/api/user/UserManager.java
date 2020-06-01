@@ -4,15 +4,18 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.user.OnlineServerUser;
-import org.kilocraft.essentials.user.PunishmentManager;
+import org.kilocraft.essentials.util.Action;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public interface UserManager {
 
@@ -118,13 +121,11 @@ public interface UserManager {
      */
     boolean isOnline(User user);
 
-    /**
-     * Gets the PunishmentManager
-     * @return instance of PunishmentManager
-     */
-    PunishmentManager getPunishmentManager();
-
     void saveAllUsers();
 
     void onChangeNickname(User user, String oldNick);
+
+    PunishmentManager getPunishmentManager();
+
+    void performPunishment(@NotNull final Punishment punishment, @NotNull final Punishment.Type type, @NotNull Action<Punishment.ActionResult> action);
 }

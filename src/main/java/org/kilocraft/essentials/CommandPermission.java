@@ -93,15 +93,16 @@ public enum CommandPermission {
     PLAYTIME_MODIFY("playtime.modify"),
     PLAYTIMETOP("playtimetop"),
     IGNORELIST_OTHERS("ignorelist.others"),
-    BAN_IP("ban.ip"),
-    BAN_PROFILE("ban.profile"),
+    BAN("ban"),
+    MUTE("mute"),
     KICK("kick"),
     TELEPORTREQUEST("teleportrequest"),
     LASTSEEN("lastseen"),
     CALCULATE("calculate"),
     GLOW("glow");
 
-    private String node;
+    private final String node;
+
     CommandPermission(String string) {
         this.node = string;
     }
@@ -113,8 +114,9 @@ public enum CommandPermission {
     @Nullable
     public static CommandPermission byName(String name) {
         for (CommandPermission value : CommandPermission.values()) {
-            if (name.toLowerCase().equals(value.node.toLowerCase()))
+            if (name.toLowerCase().equals(value.node.toLowerCase())) {
                 return value;
+            }
         }
 
         return null;

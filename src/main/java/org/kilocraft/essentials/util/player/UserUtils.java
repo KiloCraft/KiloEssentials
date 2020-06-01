@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.util.UserEntity;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.SimpleProcess;
@@ -154,5 +156,19 @@ public class UserUtils {
             player.inventory.selectedSlot += 1;
             player.inventory.selectedSlot -= 1;
         }
+    }
+
+    public static UserEntity toEntity(final User user) {
+        return new UserEntity() {
+            @Override
+            public UUID getId() {
+                return user.getId();
+            }
+
+            @Override
+            public String getName() {
+                return user.getName();
+            }
+        };
     }
 }
