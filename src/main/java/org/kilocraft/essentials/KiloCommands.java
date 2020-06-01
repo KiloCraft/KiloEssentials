@@ -518,7 +518,6 @@ public class KiloCommands {
 
     public static void onServerReady() {
         simpleCommandManager = new SimpleCommandManager(KiloServer.getServer());
-
     }
 
 }

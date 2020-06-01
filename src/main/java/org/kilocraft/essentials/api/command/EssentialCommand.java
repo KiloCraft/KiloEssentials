@@ -212,17 +212,17 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     @Override
     public OnlineUser getOnlineUser(final String name) {
-        return this.server.getOnlineUser(name);
+        return server.getOnlineUser(name);
     }
 
     @Override
     public OnlineUser getOnlineUser(final ServerCommandSource source) throws CommandSyntaxException {
-        return this.server.getOnlineUser(source.getPlayer());
+        return server.getOnlineUser(source.getPlayer());
     }
 
     @Override
     public OnlineUser getOnlineUser(UUID uuid) throws CommandSyntaxException {
-        return this.server.getOnlineUser(uuid);
+        return server.getOnlineUser(uuid);
     }
 
     public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -230,11 +230,11 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public OnlineUser getOnlineUser(final ServerPlayerEntity player) {
-        return this.server.getOnlineUser(player);
+        return server.getOnlineUser(player);
     }
 
     public CommandSourceUser getServerUser(final CommandContext<ServerCommandSource> ctx) {
-        return this.server.getCommandSourceUser(ctx.getSource());
+        return server.getCommandSourceUser(ctx.getSource());
     }
 
     public String getUserArgumentInput(final CommandContext<ServerCommandSource> ctx, final String label) {
@@ -252,23 +252,23 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public CompletableFuture<Optional<User>> getUser(final GameProfile profile) {
-        return this.server.getUserManager().getOffline(profile);
+        return server.getUserManager().getOffline(profile);
     }
 
     public CompletableFuture<Optional<User>> getUser(final String name) {
-        return this.server.getUserManager().getOffline(name);
+        return server.getUserManager().getOffline(name);
     }
 
     public boolean isOnline(final User user) {
-        return this.server.getUserManager().isOnline(user);
+        return server.getUserManager().isOnline(user);
     }
 
     public boolean isOnline(final UUID uuid) {
-        return this.server.getUserManager().getOnline(uuid) != null;
+        return server.getUserManager().getOnline(uuid) != null;
     }
 
     public boolean isOnline(final String name) {
-        return this.server.getUserManager().getOnline(name) != null;
+        return server.getUserManager().getOnline(name) != null;
     }
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(final String label) {

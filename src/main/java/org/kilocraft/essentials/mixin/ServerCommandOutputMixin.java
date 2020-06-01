@@ -2,10 +2,7 @@ package org.kilocraft.essentials.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.ServerCommandOutput;
-import org.kilocraft.essentials.KiloDebugUtils;
-import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.KiloEvents;
-import org.kilocraft.essentials.ServerImpl;
+import org.kilocraft.essentials.*;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.events.EventRegistryImpl;
@@ -37,6 +34,7 @@ public abstract class ServerCommandOutputMixin {
         );
 
         KiloServer.getLogger().info("Server set: " + brand);
+        KiloCommands.onServerReady();
 
         KiloDebugUtils.validateDebugMode(false);
         new KiloEssentialsImpl(new KiloEvents());
