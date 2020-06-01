@@ -2,24 +2,24 @@ package org.kilocraft.essentials.api.user.punishment;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.util.UserEntity;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
 public abstract class PunishmentEntry {
-    private final UserEntity arbiter, victim;
+    private final EntityIdentifiable arbiter, victim;
     private @Nullable
     final String reason;
 
-    public PunishmentEntry(@NotNull final UserEntity arbiter, @NotNull final UserEntity victim, @Nullable final String reason) {
+    public PunishmentEntry(@NotNull final EntityIdentifiable arbiter, @NotNull final EntityIdentifiable victim, @Nullable final String reason) {
         this.arbiter = arbiter;
         this.victim = victim;
         this.reason = reason;
     }
 
-    public UserEntity getArbiter() {
+    public EntityIdentifiable getArbiter() {
         return this.arbiter;
     }
 
-    public UserEntity getVictim() {
+    public EntityIdentifiable getVictim() {
         return this.victim;
     }
 

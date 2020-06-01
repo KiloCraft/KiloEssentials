@@ -6,10 +6,8 @@ import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.query.QueryOptions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +16,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.util.UserEntity;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.SimpleProcess;
@@ -28,11 +26,11 @@ import java.util.Date;
 import java.util.UUID;
 
 public class UserUtils {
-    private static final ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
-    private static PermissionUtil.Manager permManager = KiloEssentials.getInstance().getPermissionUtil().getManager();
+    private static final ServerUserManager USER_MANAGER = (ServerUserManager) KiloServer.getServer().getUserManager();
+    private static final PermissionUtil.Manager PERM_MANAGER = KiloEssentials.getInstance().getPermissionUtil().getManager();
 
     public static MutableText getDisplayNameWithMeta(OnlineUser user, boolean nickName) {
-        if (permManager == PermissionUtil.Manager.LUCKPERMS) {
+        if (PERM_MANAGER == PermissionUtil.Manager.LUCKPERMS) {
             StringBuilder builder = new StringBuilder();
             CachedMetaData metaData = getLuckyMetaData(user.getUuid());
             String prefix = metaData.getPrefix();
@@ -67,24 +65,24 @@ public class UserUtils {
 
     public static class Process {
         public static boolean isIn(@NotNull final OnlineUser user, String processId) {
-            return manager.getInProcessUsers().containsKey(user.getUuid()) && manager.getInProcessUsers().get(user.getUuid()).getId().equals(processId);
+            return USER_MANAGER.getInProcessUsers().containsKey(user.getUuid()) && USER_MANAGER.getInProcessUsers().get(user.getUuid()).getId().equals(processId);
         }
 
         public static void add(@NotNull final OnlineUser user, SimpleProcess<?> process) {
-            manager.getInProcessUsers().put(user.getUuid(), process);
+            USER_MANAGER.getInProcessUsers().put(user.getUuid(), process);
         }
 
         public static void remove(@NotNull final OnlineUser user) {
-            manager.getInProcessUsers().remove(user.getUuid());
+            USER_MANAGER.getInProcessUsers().remove(user.getUuid());
         }
 
         public static boolean isInAny(@NotNull final OnlineUser user) {
-            return manager.getInProcessUsers().containsKey(user.getUuid());
+            return USER_MANAGER.getInProcessUsers().containsKey(user.getUuid());
         }
 
         @Nullable
         public static <T> SimpleProcess<T> get(@NotNull final OnlineUser user) {
-            return (SimpleProcess<T>) manager.getInProcessUsers().get(user.getUuid());
+            return (SimpleProcess<T>) USER_MANAGER.getInProcessUsers().get(user.getUuid());
         }
     }
 
@@ -115,7 +113,7 @@ public class UserUtils {
         }
 
         public static void add(@NotNull final OnlineUser src, @NotNull final OnlineUser target, boolean here) {
-            manager.getTeleportRequestsMap().put(
+            USER_MANAGER.getTeleportRequestsMap().put(
                     src.getUuid(),
                     new Pair<>(
                             new Pair<>(
@@ -129,15 +127,15 @@ public class UserUtils {
 
         private static class PairMap {
             private static Pair<Pair<UUID, Boolean>, Long> get(@NotNull final OnlineUser user) {
-                return manager.getTeleportRequestsMap().get(user.getUuid());
+                return USER_MANAGER.getTeleportRequestsMap().get(user.getUuid());
             }
 
             private static void remove(@NotNull final OnlineUser user) {
-                manager.getTeleportRequestsMap().remove(user.getUuid());
+                USER_MANAGER.getTeleportRequestsMap().remove(user.getUuid());
             }
 
             private static boolean isInMap(@NotNull final OnlineUser user) {
-                return manager.getTeleportRequestsMap().containsKey(user.getUuid());
+                return USER_MANAGER.getTeleportRequestsMap().containsKey(user.getUuid());
             }
 
         }
@@ -158,8 +156,8 @@ public class UserUtils {
         }
     }
 
-    public static UserEntity toEntity(final User user) {
-        return new UserEntity() {
+    public static EntityIdentifiable toEntity(final User user) {
+        return new EntityIdentifiable() {
             @Override
             public UUID getId() {
                 return user.getId();
