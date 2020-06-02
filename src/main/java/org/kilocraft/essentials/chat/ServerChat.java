@@ -159,19 +159,21 @@ public final class ServerChat {
         }
 
         for (OnlineUser target : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-            String format = senderFormat.replace(" %PLAYER_NAME% ", target.getUsername());
-            if (!message.getOriginal().contains(format) || !KiloEssentials.hasPermissionNode(target.getCommandSource(), EssentialPermission.CHAT_GET_PINGED)) {
+            String nameFormat = senderFormat.replace("%PLAYER_NAME%", target.getUsername());
+            String nickFormat = senderFormat.replace("%PLAYER_NAME%", target.getDisplayName());
+            if ((!message.getOriginal().contains(nameFormat) && !message.getOriginal().contains(nickFormat)) || !KiloEssentials.hasPermissionNode(target.getCommandSource(), EssentialPermission.CHAT_GET_PINGED)) {
                 continue;
             }
 
             boolean canPing = target.getSetting(Settings.CHAT_CHANNEL) == channel;
             String formattedPing = canPing ? displayFormat : pingFailedDisplayFormat;
+            String format = message.getOriginal().contains(nameFormat) ? nameFormat : nickFormat;
 
             message.setMessage(
                     message.getFormattedMessage().replaceAll(
                             format,
                             formattedPing.replaceAll("%PLAYER_DISPLAYNAME%", target.getFormattedDisplayName() + "&r")
-                    )
+                    ).replaceAll("%", "")
             );
 
             if (pingSoundEnabled && canPing) {
