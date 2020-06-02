@@ -10,6 +10,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
@@ -105,9 +107,10 @@ public class Vec3dLocation implements Location {
         return rotation;
     }
 
+    @Nullable
     @Override
     public ServerWorld getWorld() {
-        return KiloServer.getServer().getMinecraftServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(Objects.requireNonNull(this.getDimensionType(), "Null Dimension")));
+        return this.dimension == null ? null : RegistryUtils.toServerWorld(Objects.requireNonNull(this.getDimensionType(), "Null dimension provided"));
     }
 
     @Override

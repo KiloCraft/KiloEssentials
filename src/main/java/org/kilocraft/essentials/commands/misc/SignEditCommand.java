@@ -38,6 +38,7 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.mixin.accessor.SignBlockEntityAccessor;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -161,15 +162,16 @@ public class SignEditCommand extends EssentialCommand {
         }
 
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
+        SignBlockEntityAccessor signText = ((SignBlockEntityAccessor) sign);
 
         if (input.equals("reset")) {
-            Text text = ((MutableText)sign.getTextOnRow(line)).styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "")));
+            Text text = ((MutableText) signText.getTexts()[line]).styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "")));
             sign.setTextOnRow(line, text);
             KiloChat.sendLangMessageTo(player, "command.signedit.reset_command", line + 1);
             return SUCCESS;
         }
 
-        Text text = ((MutableText)sign.getTextOnRow(line)).styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, input)));
+        Text text = ((MutableText) signText.getTexts()[line]).styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, input)));
         sign.setTextOnRow(line, text);
         updateSign(sign, player.getServerWorld(), blockEntity.getPos());
         KiloChat.sendLangMessageTo(player, "command.signedit.set_command", line + 1, input);
@@ -248,7 +250,7 @@ public class SignEditCommand extends EssentialCommand {
 
         SignBlockEntity newSign = new SignBlockEntity();
         for (int i = 0; i < 4; i++) {
-            newSign.setTextOnRow(i, sign.getTextOnRow(i));
+            newSign.setTextOnRow(i, ((SignBlockEntityAccessor) sign).getTexts()[i]);
         }
         newSign.setLocation(player.getEntityWorld(), sign.getPos());
         if (sign.getTextColor() != DyeColor.BLACK)
@@ -295,7 +297,7 @@ public class SignEditCommand extends EssentialCommand {
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
         if (blockEntity != null) {
             SignBlockEntity sign = (SignBlockEntity) blockEntity;
-            strings.add(TextFormat.reverseTranslate(Texter.Legacy.toFormattedString(sign.getTextOnRow(line)), '&'));
+            strings.add(TextFormat.reverseTranslate(Texter.Legacy.toFormattedString(((SignBlockEntityAccessor) sign).getTexts()[line]), '&'));
             return CommandSource.suggestMatching(strings, builder);
         }
 
@@ -311,7 +313,7 @@ public class SignEditCommand extends EssentialCommand {
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
         if (blockEntity != null) {
             SignBlockEntity sign = (SignBlockEntity) blockEntity;
-            ClickEvent clickEvent = sign.getTextOnRow(line).getStyle().getClickEvent();
+            ClickEvent clickEvent = ((SignBlockEntityAccessor) sign).getTexts()[line].getStyle().getClickEvent();
 
             if (clickEvent != null && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
                 strings.add(clickEvent.getValue());

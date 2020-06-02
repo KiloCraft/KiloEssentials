@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands.debug;
+package org.kilocraft.essentials.commands.server;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.chat.TextMessage;
 
 public class DebugEssentialsCommand extends EssentialCommand {
     public DebugEssentialsCommand() {

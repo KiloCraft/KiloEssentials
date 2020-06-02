@@ -60,7 +60,7 @@ public class LocationUtil {
         BlockState state;
         int tries = 0;
         boolean hasAirSpace;
-        boolean isNether = RegistryUtils.dimensionTypeToRegistryKey(loc.getDimensionType()) == DimensionType.THE_NETHER_REGISTRY_KEY;
+        boolean isNether = loc.getDimensionType().isNether();
         boolean safe;
 
         do {

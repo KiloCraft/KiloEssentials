@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class NBTUtils {
     public static void putUUID(CompoundTag tag, String key, UUID uuid) {
-        tag.putUuidNew(key, uuid);
+        tag.putUuid(key, uuid);
     }
 
     public static UUID getUUID(CompoundTag tag, String key) {
@@ -23,7 +23,7 @@ public class NBTUtils {
         if (tag.contains(key + "Most") && tag.contains(key + "Least")) {
             uuid = new UUID(tag.getLong(key + "Most"), tag.getLong(key + "Least"));
         } else {
-            uuid = tag.getUuidNew(key);
+            uuid = tag.getUuid(key);
         }
 
         return uuid;

@@ -12,7 +12,7 @@ import java.util.*;
 public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
 
-    public static MutableText newText(String str) {
+    public static MutableText newText(final String str) {
         return new LiteralText(TextFormat.translate(str));
     }
 
@@ -22,6 +22,18 @@ public class Texter {
 
     public static MutableText newText() {
         return new LiteralText("");
+    }
+
+    public static MutableText newText(@Nullable final String... strings) {
+        MutableText text = newText();
+        for (String string : strings) {
+            text.append(string);
+        }
+        return text;
+    }
+
+    public static MutableText newRawText(final String string) {
+        return new LiteralText(string);
     }
 
     public static MutableText exceptionToText(Exception e, boolean requireDevMode) {
@@ -169,7 +181,7 @@ public class Texter {
     }
 
     public static class ArrayStyle {
-        private List<Object> list;
+        private final List<Object> list;
         private boolean nextColor = false;
         private final Formatting aFormat;
         private final Formatting bFormat;
@@ -228,12 +240,12 @@ public class Texter {
 
     public static class ListStyle {
         private MutableText title;
-        private MutableText text;
-        private Formatting primary;
-        private Formatting aFormat;
-        private Formatting bFormat;
-        private Formatting borders;
-        private List<Object> list;
+        private final MutableText text;
+        private final Formatting primary;
+        private final Formatting aFormat;
+        private final Formatting bFormat;
+        private final Formatting borders;
+        private final List<Object> list;
         private int size;
         private boolean nextColor = false;
 
@@ -309,11 +321,11 @@ public class Texter {
     }
 
     public static class InfoBlockStyle {
-        private MutableText header;
-        private MutableText text;
-        private Formatting primary;
-        private Formatting secondary;
-        private Formatting borders;
+        private final MutableText header;
+        private final MutableText text;
+        private final Formatting primary;
+        private final Formatting secondary;
+        private final Formatting borders;
         private MutableText lineStarter;
         private MutableText valueObjectSeparator;
         private boolean useLineStarter = false;
@@ -523,9 +535,9 @@ public class Texter {
         LIST("List", List.class, Formatting.WHITE),
         MAP("Map", Map.class, Formatting.WHITE);
 
-        private String name;
-        private Class<?> clazz;
-        private Formatting defaultFormat;
+        private final String name;
+        private final Class<?> clazz;
+        private final Formatting defaultFormat;
         TypeFormat(String name, Class<?> clazz, Formatting formatting) {
             this.name = name;
             this.clazz = clazz;

@@ -38,6 +38,7 @@ import java.util.*;
 /**
  * Main User Implementation
  *
+ * @author CODY_AI (OnBlock)
  * @see User
  * @see ServerUserManager
  * @see UserHomeHandler
@@ -48,24 +49,23 @@ import java.util.*;
  * @see net.minecraft.entity.player.PlayerEntity
  * @see net.minecraft.server.network.ServerPlayerEntity
  * @since 1.5
- * @author CODY_AI (OnBlock)
  */
 
 public class ServerUser implements User {
     public static final int SYS_MESSAGE_COOL_DOWN = 400;
-    protected static ServerUserManager manager = (ServerUserManager) KiloServer.getServer().getUserManager();
-    UUID uuid;
-    String name = "";
-    String cachedName = "";
-    private ServerUserSettings settings;
+    protected static final ServerUserManager MANAGER = (ServerUserManager) KiloServer.getServer().getUserManager();
+    private final ServerUserSettings settings;
     private UserHomeHandler homeHandler;
-    Vec3dLocation location;
     private Vec3dLocation lastLocation;
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
-    public int messageCooldown;
-    public int systemMessageCooldown;
+    public int messageCoolDown;
+    public int systemMessageCoolDown;
     private MessageReceptionist lastDmReceptionist;
+    final UUID uuid;
+    String name = "";
+    String savedName = "";
+    Vec3dLocation location;
     boolean isStaff = false;
     String lastSocketAddress;
     int ticksPlayed = 0;
@@ -80,7 +80,7 @@ public class ServerUser implements User {
         }
 
         try {
-            manager.getHandler().handleUser(this);
+            MANAGER.getHandler().handleUser(this);
         } catch (IOException e) {
             KiloEssentials.getLogger().fatal("Failed to Load User Data [" + uuid.toString() + "]", e);
         }
@@ -133,7 +133,7 @@ public class ServerUser implements User {
     }
 
     public void fromTag(@NotNull CompoundTag compoundTag) {
-    	CompoundTag metaTag = compoundTag.getCompound("meta");
+        CompoundTag metaTag = compoundTag.getCompound("meta");
         CompoundTag cacheTag = compoundTag.getCompound("cache");
 
         if (cacheTag.contains("lastLoc")) {
@@ -142,9 +142,9 @@ public class ServerUser implements User {
         }
 
         if (compoundTag.contains("loc")) {
-        	this.location = Vec3dLocation.dummy();
-        	this.location.fromTag(compoundTag.getCompound("loc"));
-        	this.location.shortDecimals();
+            this.location = Vec3dLocation.dummy();
+            this.location.fromTag(compoundTag.getCompound("loc"));
+            this.location.shortDecimals();
         }
 
         if (cacheTag.contains("cIp")) {
@@ -172,7 +172,7 @@ public class ServerUser implements User {
             this.homeHandler.deserialize(compoundTag.getCompound("homes"));
         }
 
-        this.cachedName = compoundTag.getString("name");
+        this.savedName = compoundTag.getString("name");
         this.settings.fromTag(compoundTag.getCompound("settings"));
     }
 
@@ -215,7 +215,7 @@ public class ServerUser implements User {
 
     @Override
     public boolean isOnline() {
-        return this instanceof OnlineUser || manager.isOnline(this);
+        return this instanceof OnlineUser || MANAGER.isOnline(this);
     }
 
     @Override
@@ -313,7 +313,7 @@ public class ServerUser implements User {
     @Override
     public void clearNickname() {
         KiloServer.getServer().getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
-        this.getSettings().set(Settings.NICK, Optional.empty());
+        this.getSettings().reset(Settings.NICK);
     }
 
     @Override
@@ -344,7 +344,7 @@ public class ServerUser implements User {
     @Override
     public void saveData() throws IOException {
         if (!this.isOnline())
-            manager.getHandler().save(this);
+            MANAGER.getHandler().save(this);
     }
 
     @Override
@@ -364,21 +364,6 @@ public class ServerUser implements User {
             this.isStaff = KiloEssentials.hasPermissionNode(((OnlineUser) this).getCommandSource(), EssentialPermission.STAFF);
 
         return this.isStaff;
-    }
-
-    @SuppressWarnings({"untested"})
-    public void clear() {
-        if (this.isOnline())
-            return;
-
-        manager = null;
-        uuid = null;
-        name = null;
-        homeHandler = null;
-        location = null;
-        lastLocation = null;
-        firstJoin = null;
-        settings = null;
     }
 
     @Override
@@ -413,8 +398,8 @@ public class ServerUser implements User {
         return !this.getSetting(Settings.DON_NOT_DISTURB);
     }
 
-    public ServerUser withCachedName() {
-        this.name = this.cachedName;
+    public ServerUser useSavedName() {
+        this.name = this.savedName;
         return this;
     }
 

@@ -86,7 +86,7 @@ public class Vec3iLocation implements Location {
 
     @Override
     public ServerWorld getWorld() {
-        return KiloServer.getServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(this.getDimensionType()));
+        return RegistryUtils.toServerWorld(this.getDimensionType());
     }
 
     @Override

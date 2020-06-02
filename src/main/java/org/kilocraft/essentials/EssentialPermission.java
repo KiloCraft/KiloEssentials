@@ -32,7 +32,8 @@ public enum EssentialPermission {
     IGNORE_COMMAND_EVENTS("ignore_command_events"),
     ;
 
-    private String node;
+    private final String node;
+
     EssentialPermission(String node) {
         this.node = node;
     }
@@ -43,8 +44,9 @@ public enum EssentialPermission {
 
     public static EssentialPermission byName(String name) {
         for (EssentialPermission value : EssentialPermission.values()) {
-            if (value.node.equals(name.toUpperCase()))
+            if (value.node.equals(name.toUpperCase())) {
                 return value;
+            }
         }
 
         return null;

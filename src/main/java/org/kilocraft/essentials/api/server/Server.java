@@ -11,6 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
+import org.kilocraft.essentials.util.Action;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -44,9 +46,10 @@ public interface Server {
     PlayerManager getPlayerManager();
 
     /**
-     * Reloads the Server
+     * Reloads the server
+     * @param fallback the action to perform if the execution fails
      */
-    void reload();
+    void reload(Action<Throwable> fallback);
 
     /**
      * Gets the KiloServer's UserManager
@@ -132,10 +135,10 @@ public interface Server {
     /**
      * Gets a world
      *
-     * @param type Dimension
+     * @param key the World Registry Key
      * @return ServerWorld
      */
-    ServerWorld getWorld(RegistryKey<DimensionType> key);
+    ServerWorld getWorld(RegistryKey<World> key);
 
     /**
      * Checks if we are running inside the Server's main thread

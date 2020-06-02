@@ -17,7 +17,7 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
     @Override
     public void handle(@NotNull ServerReloadEvent event) {
         try {
-            KiloConfig.reload();
+            KiloConfig.load();
             BrandedServer.load();
             KiloServer.getServer().getMetaManager().load();
             KiloServer.getServer().getMetaManager().updateAll();
@@ -29,6 +29,7 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
             NBTStorageUtil.onSave();
 
             KiloDebugUtils.validateDebugMode(true);
+            KiloServer.getServer().setName(KiloConfig.main().server().name);
         } catch (Exception e) {
             KiloEssentials.getLogger().error("An unexpected error occurred while reloading the server!", e);
         }

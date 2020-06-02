@@ -10,38 +10,44 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.*;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
-import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.util.Cached;
-import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.feature.TickListener;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.api.user.punishment.Punishment;
+import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.util.Action;
 import org.kilocraft.essentials.util.CacheManager;
-import org.kilocraft.essentials.util.text.AnimatedText;
+import org.kilocraft.essentials.util.MutedPlayerList;
 import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.player.UserUtils;
+import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.text.Texter;
 
-import javax.swing.tree.MutableTreeNode;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -55,19 +61,17 @@ public class ServerUserManager implements UserManager, TickListener {
     private static final Pattern UUID_PATTERN = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
     private static final Pattern USER_FILE_NAME = Pattern.compile(UUID_PATTERN + "\\.dat");
     private final UserHandler handler = new UserHandler();
+    private final ServerPunishmentManager punishmentManager = new ServerPunishmentManager();
     private final List<OnlineUser> users = new ArrayList<>();
     private final Map<String, UUID> nicknameToUUID = new HashMap<>();
     private final Map<String, UUID> usernameToUUID = new HashMap<>();
     private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
     private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
     private final Map<UUID, SimpleProcess<?>> inProcessUsers = new HashMap<>();
-    private final String NICKNAME_CACHE = "nicknames";
     private Map<UUID, String> cachedNicknames = new HashMap<>();
-
-    private PunishmentManager punishManager;
+    private final MutedPlayerList mutedPlayerList = new MutedPlayerList(KiloEssentials.getDataDirPath().toFile());
 
     public ServerUserManager(PlayerManager manager) {
-        this.punishManager = new PunishmentManager(manager);
     }
 
     @Override
@@ -113,7 +117,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private CompletableFuture<Optional<User>> getUserAsync(String username) {
         CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() ->
                 KiloServer.getServer().getMinecraftServer().getUserCache().findByName(username)
-        ); // This is hacky and probably doesn't work. //CODY_AI: But it works!
+        );
 
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
     }
@@ -127,7 +131,6 @@ public class ServerUserManager implements UserManager, TickListener {
         if (handler.userExists(uuid)) {
             ServerUser serverUser = new ServerUser(uuid);
             serverUser.name = username;
-
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
@@ -141,8 +144,7 @@ public class ServerUserManager implements UserManager, TickListener {
             return CompletableFuture.completedFuture(Optional.of(online));
 
         if (handler.userExists(uuid)) {
-            ServerUser serverUser = new ServerUser(uuid).withCachedName();
-
+            ServerUser serverUser = new ServerUser(uuid).useSavedName();
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
@@ -237,22 +239,22 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     public void saveAllUsers() {
         if (SharedConstants.isDevelopment) {
-            KiloEssentials.getLogger().info("Saving users data, this may take a while...");
+            KiloDebugUtils.getLogger().info("Saving users data, this may take a while...");
         }
 
         for (OnlineServerUser user : onlineUsers.values()) {
             try {
                 if (SharedConstants.isDevelopment) {
-                    KiloEssentials.getLogger().info("Saving user \"{}\"", user.getUsername());
+                    KiloDebugUtils.getLogger().info("Saving user \"{}\"", user.getUsername());
                 }
                 this.handler.save(user);
             } catch (IOException e) {
-                KiloEssentials.getLogger().error("An unexpected exception occurred when saving a user's data!", e);
+                KiloEssentials.getLogger().fatal("An unexpected exception occurred when saving a user's data!", e);
             }
         }
 
         if (SharedConstants.isDevelopment) {
-            KiloEssentials.getLogger().info("Saved the users data!");
+            KiloDebugUtils.getLogger().info("Saved the users data!");
         }
     }
 
@@ -273,7 +275,18 @@ public class ServerUserManager implements UserManager, TickListener {
         }
     }
 
+    @Override
+    public PunishmentManager getPunishmentManager() {
+        return this.punishmentManager;
+    }
+
+    @Override
+    public void performPunishment(@NotNull Punishment punishment, Punishment.@NotNull Type type, @NotNull Action<Punishment.ActionResult> action) {
+
+    }
+
     public boolean shouldNotUseNickname(OnlineUser user, String rawNickname) {
+        String NICKNAME_CACHE = "nicknames";
         if (!CacheManager.shouldUse(NICKNAME_CACHE)) {
             Map<UUID, String> map = new HashMap<>();
             KiloEssentials.getInstance().getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
@@ -348,7 +361,7 @@ public class ServerUserManager implements UserManager, TickListener {
         try {
             this.handler.save(user);
         } catch (IOException e) {
-            e.printStackTrace();
+            KiloEssentials.getLogger().fatal("Failed to Save User Data [" + player.getEntityName() + "/" + player.getUuidAsString() + "]", e);
         }
 
         this.onlineUsers.remove(player.getUuid());
@@ -361,6 +374,10 @@ public class ServerUserManager implements UserManager, TickListener {
 
         PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(player, packet.getChatMessage()));
         if (event.isCancelled()) {
+            if (event.getCancelReason() != null) {
+                user.sendError(event.getCancelReason());
+            }
+
             return;
         }
 
@@ -379,12 +396,12 @@ public class ServerUserManager implements UserManager, TickListener {
             }
         }
 
-        ((OnlineServerUser) user).messageCooldown += 20;
-        if (((ServerUser) user).messageCooldown > 200 && !user.hasPermission(EssentialPermission.CHAT_BYPASS)) {
+        ((OnlineServerUser) user).messageCoolDown += 20;
+        if (((ServerUser) user).messageCoolDown > 200 && !user.hasPermission(EssentialPermission.CHAT_BYPASS)) {
             if (KiloConfig.main().chat().kickForSpamming) {
                 player.networkHandler.disconnect(new TranslatableText("disconnect.spam"));
             } else {
-                if (((ServerUser) user).systemMessageCooldown > 400) {
+                if (((ServerUser) user).systemMessageCoolDown > 400) {
                     user.sendMessage(KiloConfig.main().chat().spamWarning);
                 }
             }
@@ -437,12 +454,9 @@ public class ServerUserManager implements UserManager, TickListener {
         return this.handler;
     }
 
-    public PunishmentManager getPunishmentManager() {
-        return this.punishManager;
-    }
-
     public static class LoadingText {
         private AnimatedText animatedText;
+
         public LoadingText(ServerPlayerEntity player) {
             this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
                     .append(LangText.get(true, "general.wait_server.frame1"))
@@ -479,7 +493,7 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     public void appendCachedName(ServerUser user) {
-        user.name = user.cachedName;
+        user.name = user.savedName;
     }
 
 }

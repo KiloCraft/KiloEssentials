@@ -12,6 +12,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.KiloCommands;
@@ -79,8 +80,8 @@ public class ArgumentCompletions {
 
     public static CompletableFuture<Suggestions> dimensions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         final List<String> dims = new ArrayList<>();
-        for (RegistryKey<DimensionType> dimensionKey : RegistryUtils.getDimensionKeys()) {
-            dims.add(dimensionKey.getValue().getPath());
+        for (RegistryKey<World> worldRegistryKey : RegistryUtils.getWorldsKeySet()) {
+            dims.add(worldRegistryKey.getValue().getPath());
         }
         return CommandSource.suggestMatching(dims.stream(), builder);
     }

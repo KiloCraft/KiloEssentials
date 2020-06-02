@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -20,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ServerPlayerEntityMixin {
 
     @Inject(method = "changeDimension", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayerEntity;changeDimension(Lnet/minecraft/world/dimension/DimensionType;)Lnet/minecraft/entity/Entity;"))
-    private void modify(RegistryKey<DimensionType> registryKey, CallbackInfoReturnable<Entity> cir) {
+    private void modify(RegistryKey<World> registryKey, CallbackInfoReturnable<Entity> cir) {
         if (LocationUtil.shouldBlockAccessTo(RegistryUtils.toDimension(registryKey))) {
             cir.cancel();
             KiloChat.sendLangMessageTo((ServerPlayerEntity) (Object) this, "general.dimension_not_allowed", RegistryUtils.dimensionToName(registryKey.getValue()));

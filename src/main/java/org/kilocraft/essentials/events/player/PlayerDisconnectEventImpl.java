@@ -8,7 +8,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 
 public class PlayerDisconnectEventImpl implements PlayerDisconnectEvent {
 
-    private ServerPlayerEntity player;
+    private final ServerPlayerEntity player;
 
     public PlayerDisconnectEventImpl(ServerPlayerEntity playerEntity) {
         this.player = playerEntity;

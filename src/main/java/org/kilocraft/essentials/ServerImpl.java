@@ -1,9 +1,11 @@
 package org.kilocraft.essentials;
 
+import com.google.common.collect.Lists;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
+import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -13,7 +15,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.SaveProperties;
+import net.minecraft.world.World;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -32,10 +35,14 @@ import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
+import org.kilocraft.essentials.util.Action;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.UUID;
 
 public class ServerImpl implements Server {
     private final MinecraftServer server;
@@ -70,10 +77,27 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void reload() {
-        this.server.reload();
-        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl());
+    public void reload(Action<Throwable> fallback) {
+        KiloServer.getServer().triggerEvent(new ServerReloadEventImpl(this.server));
+
+        ResourcePackManager<?> resourcePackManager = this.getMinecraftServer().getDataPackManager();
+        SaveProperties saveProperties = this.getMinecraftServer().method_27728();
+        Collection<String> collection = resourcePackManager.method_29210();
+
+        Collection<String> modifiedCollection = Lists.newArrayList(collection);
+        resourcePackManager.scanPacks();
+        for (String string : resourcePackManager.method_29206()) {
+            if (!saveProperties.getDisabledDataPacks().contains(string) && !modifiedCollection.contains(string)) {
+                modifiedCollection.add(string);
+            }
+        }
+
+        this.getMinecraftServer().method_29439(collection).exceptionally((throwable) -> {
+            fallback.perform(throwable);
+            return null;
+        });
     }
+
 
     @Override
     public UserManager getUserManager() {
@@ -151,7 +175,7 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public ServerWorld getWorld(RegistryKey<DimensionType> key) {
+    public ServerWorld getWorld(RegistryKey<World> key) {
         return this.server.getWorld(key);
     }
 
@@ -260,7 +284,7 @@ public class ServerImpl implements Server {
 
     @Override
     public void kickAll(Text reason) {
-        for(ServerPlayerEntity player : getPlayerManager().getPlayerList()) {
+        for (ServerPlayerEntity player : getPlayerManager().getPlayerList()) {
             player.networkHandler.disconnect(reason);
         }
 

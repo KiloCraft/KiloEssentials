@@ -2,7 +2,7 @@ package org.kilocraft.essentials.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.ServerCommandOutput;
-import org.kilocraft.essentials.ServerImpl;
+import org.kilocraft.essentials.*;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.events.EventRegistryImpl;
@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerCommandOutputMixin {
     @Inject(at = @At("RETURN"), method = "<init>")
     private void kilo$init(MinecraftServer minecraftServer, CallbackInfo ci) {
-        new ModConstants().loadConstants();
         String brand = String.format(
                 ModConstants.getProperties().getProperty("server.brand.full"),
                 ModConstants.getMinecraftVersion(),
@@ -35,5 +34,9 @@ public abstract class ServerCommandOutputMixin {
         );
 
         KiloServer.getLogger().info("Server set: " + brand);
+        KiloCommands.onServerReady();
+
+        KiloDebugUtils.validateDebugMode(false);
+        new KiloEssentialsImpl(new KiloEvents());
     }
 }

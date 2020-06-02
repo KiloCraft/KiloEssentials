@@ -10,7 +10,9 @@
   "server": [
     "MinecraftServerAccessor",
     "EntityRaytraceAccessor",
-    "EntityAccessor"
+    "EntityAccessor",
+    "SignBlockEntityAccessor",
+    "ServerConfigEntryAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

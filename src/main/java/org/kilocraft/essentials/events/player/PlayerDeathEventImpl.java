@@ -7,7 +7,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 
 public class PlayerDeathEventImpl implements PlayerDeathEvent {
 
-    private ServerPlayerEntity player;
+    private final ServerPlayerEntity player;
     private boolean cancelled;
 
     public PlayerDeathEventImpl(ServerPlayerEntity playerEntity) {

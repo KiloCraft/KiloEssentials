@@ -6,7 +6,5 @@ import org.kilocraft.essentials.api.server.Server;
 
 @FunctionalInterface
 public interface SimpleExecutableCommand {
-    int SINGLE_SUCCESS = 1;
-
     int execute(ServerCommandSource source, String[] args, Server server) throws CommandSyntaxException;
 }
