@@ -11,11 +11,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.message.SimpleMessage;
-import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.*;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -55,13 +53,14 @@ import java.util.function.Consumer;
  */
 
 public final class KiloEssentialsImpl implements KiloEssentials {
+	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials");
+	private static KiloEssentialsImpl instance;
+	private PermissionUtil permUtil;
 	private static final ModConstants constants = new ModConstants();
 	public static final String PERMISSION_PREFIX = "kiloessentials.";
-	private static KiloEssentialsImpl instance;
-	private static KiloCommands commandHandler;
-	private PermissionUtil permUtil;
 	private final ConfigurableFeatures FEATURES;
+	private final KiloCommands commands;
 	private final List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
 	private final Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
 	private StartupScript startupScript;
@@ -69,11 +68,13 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	private final List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
 	private final Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
 
-	public KiloEssentialsImpl(final KiloEvents events) {
+	KiloEssentialsImpl(final KiloEvents events) {
 		KiloEssentialsImpl.instance = this;
 		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
+		KiloConfig.load();
+		this.commands = new KiloCommands();
 
 		/*
 		// TODO i509VCB: Uncomment when new feature system is done
@@ -162,7 +163,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 	@Override
 	public KiloCommands getCommandHandler() {
-		return commandHandler;
+		return this.commands;
 	}
 
 	@Override
@@ -359,16 +360,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 	public void onServerLoad() {
 		this.permUtil = new PermissionUtil();
-		EssentialCommand.onServerReady();
-	}
-
-	public static void firstInitialization(@NotNull final CommandDispatcher<ServerCommandSource> dispatcher) {
-		new ModConstants().loadConstants();
-		KiloConfig.load();
-
-		if (commandHandler == null) {
-			commandHandler = new KiloCommands(dispatcher);
-		}
 	}
 
 }

@@ -20,7 +20,6 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.server.Server;
@@ -41,12 +40,12 @@ import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
 public abstract class EssentialCommand implements IEssentialCommand {
-    protected static transient KiloEssentials essentials;
-    protected static transient Server server;
     private final String label;
     protected transient String[] alias;
+    protected transient KiloEssentials essentials = KiloEssentials.getInstance();
     protected transient LiteralArgumentBuilder<ServerCommandSource> argumentBuilder;
     protected transient LiteralCommandNode<ServerCommandSource> commandNode;
+    protected transient Server server;
     protected static final transient Logger logger = LogManager.getLogger();
     protected transient Predicate<ServerCommandSource> PERMISSION_CHECK_ROOT;
     protected transient CommandPermission permission;
@@ -60,6 +59,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.PERMISSION_CHECK_ROOT = src -> true;
         this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
     }
 
     public EssentialCommand(final String label, final String[] alias) {
@@ -68,6 +68,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.PERMISSION_CHECK_ROOT = src -> true;
         this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
     }
 
     public EssentialCommand(final String label, final Predicate<ServerCommandSource> predicate) {
@@ -75,6 +76,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.PERMISSION_CHECK_ROOT = predicate;
         this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
     }
 
     public EssentialCommand(final String label, final Predicate<ServerCommandSource> predicate, final String[] alias) {
@@ -83,6 +85,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.alias = alias;
         this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
     }
 
     public EssentialCommand(final String label, final CommandPermission permission) {
@@ -90,6 +93,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.PERMISSION_CHECK_ROOT = src -> KiloCommands.hasPermission(src, permission);
         this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
         this.permission = permission;
     }
 
@@ -98,6 +102,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.PERMISSION_CHECK_ROOT = src -> KiloCommands.hasPermission(src, permission, minOpLevel);
         this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
         this.permission = permission;
         this.MIN_OP_LEVEL = minOpLevel;
     }
@@ -108,6 +113,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.PERMISSION_CHECK_ROOT = src -> KiloCommands.hasPermission(src, permission);
         this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
         this.permission = permission;
     }
 
@@ -117,6 +123,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.PERMISSION_CHECK_ROOT = src -> KiloCommands.hasPermission(src, permission, minOpLevel);
         this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
+        this.server = KiloEssentials.getServer();
         this.permission = permission;
         this.MIN_OP_LEVEL = minOpLevel;
     }
@@ -296,8 +303,4 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public Messages messages = KiloConfig.messages();
 
-    public static void onServerReady() {
-        essentials = KiloEssentials.getInstance();
-        server = KiloServer.getServer();
-    }
 }
