@@ -359,6 +359,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 	public void onServerLoad() {
 		this.permUtil = new PermissionUtil();
+		EssentialCommand.onServerReady();
 	}
 
 	public static void firstInitialization(@NotNull final CommandDispatcher<ServerCommandSource> dispatcher) {
