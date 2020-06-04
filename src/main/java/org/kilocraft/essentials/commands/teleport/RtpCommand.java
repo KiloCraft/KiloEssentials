@@ -20,7 +20,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
-import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,7 +43,8 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.*;
+import org.kilocraft.essentials.util.LocationUtil;
+import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -234,7 +234,7 @@ public class RtpCommand extends EssentialCommand {
         }
 
         //Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-        if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != RegistryUtils.Worlds.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
+        if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
             targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
             return;
         }

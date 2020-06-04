@@ -18,8 +18,6 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.feature.FeatureType;
-import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -158,11 +156,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public @Nullable Date getLastOnline() {
-        return null;
-    }
-
-    @Override
-    public <F extends UserProvidedFeature> F feature(FeatureType<F> type) {
         return null;
     }
 

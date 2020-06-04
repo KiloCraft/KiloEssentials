@@ -39,7 +39,7 @@ public enum EssentialPermission {
     }
 
     public String getNode() {
-        return KiloEssentialsImpl.PERMISSION_PREFIX + this.node;
+        return KiloCommands.PERMISSION_PREFIX + this.node;
     }
 
     public static EssentialPermission byName(String name) {

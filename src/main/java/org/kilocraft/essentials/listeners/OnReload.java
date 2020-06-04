@@ -23,7 +23,6 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
             KiloServer.getServer().getMetaManager().updateAll();
             ServerChat.load();
 
-            KiloEssentials.getInstance().getFeatures().loadAll();
             KiloEssentialsImpl.getInstance().onServerLoad();
 
             NBTStorageUtil.onSave();

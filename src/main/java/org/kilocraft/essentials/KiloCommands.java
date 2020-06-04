@@ -78,7 +78,6 @@ import static org.kilocraft.essentials.api.KiloEssentials.getServer;
 import static org.kilocraft.essentials.commands.LiteralCommandModified.*;
 
 public class KiloCommands {
-    private static final List<String> initializedPerms = new ArrayList<>();
     private final List<IEssentialCommand> commands;
     private final CommandDispatcher<ServerCommandSource> dispatcher;
     private final SimpleCommandManager simpleCommandManager;
