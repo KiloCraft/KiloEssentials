@@ -25,7 +25,7 @@ public abstract class MinecraftServerMixin implements Brandable {
 
     @Shadow private long timeReference;
 
-    @Inject(at = @At(value = "HEAD"), method = "run")
+    @Inject(at = @At(value = "HEAD"), method = "method_29741")
     private void kilo$run(CallbackInfo ci) {
         long start = System.nanoTime();
 

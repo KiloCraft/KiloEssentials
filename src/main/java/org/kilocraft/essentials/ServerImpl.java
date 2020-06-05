@@ -87,12 +87,12 @@ public class ServerImpl implements Server {
         Collection<String> modifiedCollection = Lists.newArrayList(collection);
         resourcePackManager.scanPacks();
         for (String string : resourcePackManager.method_29206()) {
-            if (!saveProperties.getDisabledDataPacks().contains(string) && !modifiedCollection.contains(string)) {
+            if (!resourcePackManager.method_29210().contains(string) && !modifiedCollection.contains(string)) {
                 modifiedCollection.add(string);
             }
         }
 
-        this.getMinecraftServer().method_29439(collection).exceptionally((throwable) -> {
+        this.getMinecraftServer().reloadResources(collection).exceptionally((throwable) -> {
             fallback.perform(throwable);
             return null;
         });

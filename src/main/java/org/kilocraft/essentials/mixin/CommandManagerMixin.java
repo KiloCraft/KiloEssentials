@@ -43,7 +43,7 @@ public abstract class CommandManagerMixin {
     }
 
     @Inject(method = "<init>", at = {@At("RETURN")})
-    private void CommandManager(boolean boolean_1, CallbackInfo ci) {
+    private void CommandManager(CommandManager.class_5364 args, CallbackInfo ci) {
         KiloEssentialsImpl.firstInitialization(this.dispatcher);
     }
 
