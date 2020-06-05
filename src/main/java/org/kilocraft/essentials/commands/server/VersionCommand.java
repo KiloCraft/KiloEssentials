@@ -33,7 +33,6 @@ public class VersionCommand extends EssentialCommand {
                 ModConstants.getMinecraftVersion(),
                 gameVersion.isStable() ? "release" : "snapshot",
                 gameVersion.getReleaseTarget(),
-                gameVersion.getWorldVersion(),
                 essentials.getPermissionUtil().toString()
         );
 

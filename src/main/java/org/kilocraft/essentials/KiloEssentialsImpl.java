@@ -8,6 +8,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -64,7 +65,12 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 
-	public KiloEssentialsImpl() {
+	public static void onServerSet(@NotNull final Server server) {
+		KiloDebugUtils.validateDebugMode(false);
+		new KiloEssentialsImpl();
+	}
+
+	KiloEssentialsImpl() {
 		if (running) {
 			throw new RuntimeException("KiloEssentialsImpl is already running!");
 		} else {
@@ -74,7 +80,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		KiloEssentialsImpl.instance = this;
 		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
-		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
 		KiloConfig.load();
 		new KiloEvents();
 		this.commands = new KiloCommands();

@@ -329,9 +329,9 @@ public class KiloCommands {
                 new LiteralText(objects != null ? String.format(message, objects) : message).formatted(Formatting.RED));
     }
 
-    public static void updateCommandTreeForEveryone() {
-        for (final ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-            KiloServer.getServer().getPlayerManager().sendCommandTree(playerEntity);
+    public static void updateGlobalCommandTree() {
+        for (ServerPlayerEntity player : KiloServer.getServer().getPlayerManager().getPlayerList()) {
+            KiloServer.getServer().getPlayerManager().sendCommandTree(player);
         }
     }
 

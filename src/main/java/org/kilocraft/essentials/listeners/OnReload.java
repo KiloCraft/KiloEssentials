@@ -33,6 +33,6 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
             KiloEssentials.getLogger().error("An unexpected error occurred while reloading the server!", e);
         }
 
-        KiloCommands.updateCommandTreeForEveryone();
+        KiloCommands.updateGlobalCommandTree();
     }
 }

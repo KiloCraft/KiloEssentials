@@ -44,7 +44,7 @@ public abstract class CommandManagerMixin {
     }
 
     @Inject(method = "<init>", at = {@At("RETURN")})
-    private void CommandManager(CommandManager.class_5364 arg, CallbackInfo ci) {
+    private void CommandManager(CommandManager.RegistrationEnvironment registrationEnvironment, CallbackInfo ci) {
         KiloEssentialsImpl.commandDispatcher = this.dispatcher;
     }
 

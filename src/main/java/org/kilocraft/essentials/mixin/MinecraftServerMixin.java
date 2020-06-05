@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Util;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Brandable;
 import org.kilocraft.essentials.events.server.ServerTickEventImpl;
@@ -10,10 +11,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
@@ -27,6 +30,7 @@ public abstract class MinecraftServerMixin implements Brandable {
 
     @Inject(at = @At(value = "RETURN"), method = "<init>")
     private void kilo$run(CallbackInfo ci) {
+        KiloServer.setupServer((MinecraftServer) (Object) this);
         tickSection = System.nanoTime();
     }
 

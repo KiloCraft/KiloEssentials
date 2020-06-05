@@ -10,7 +10,6 @@
     "ForgingScreenHandlerMixin",
     "AnvilScreenHandlerMixin",
     "MinecraftServerMixin",
-    "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
