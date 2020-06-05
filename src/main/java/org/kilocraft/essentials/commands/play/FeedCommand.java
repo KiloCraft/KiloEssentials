@@ -39,7 +39,7 @@ public class FeedCommand extends EssentialCommand {
                 KiloChat.sendMessageTo(player, LangText.get(true, "command.feed.self"));
             }
         } else {
-            if (player.getHealth() == player.getMaximumHealth()) {
+            if (player.getHealth() == player.getMaxHealth()) {
                 KiloChat.sendMessageTo(source, LangText.getFormatter(true, "command.feed.exception.others", player.getName().asString()));
             } else {
                 KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.feed.announce", source.getName()));

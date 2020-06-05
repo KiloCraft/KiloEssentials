@@ -81,7 +81,7 @@ public class ServerImpl implements Server {
         KiloServer.getServer().triggerEvent(new ServerReloadEventImpl(this.server));
 
         ResourcePackManager<?> resourcePackManager = this.getMinecraftServer().getDataPackManager();
-        SaveProperties saveProperties = this.getMinecraftServer().method_27728();
+        SaveProperties saveProperties = this.getMinecraftServer().getSaveProperties();
         Collection<String> collection = resourcePackManager.method_29210();
 
         Collection<String> modifiedCollection = Lists.newArrayList(collection);

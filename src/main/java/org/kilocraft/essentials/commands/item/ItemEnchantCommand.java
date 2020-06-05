@@ -110,7 +110,7 @@ public class ItemEnchantCommand {
             return -1;
         }
 
-        int finalLevel = level == -1 ? enchantment.getMinimumLevel() : level;
+        int finalLevel = level == -1 ? enchantment.getMinLevel() : level;
         itemStack.addEnchantment(enchantment, finalLevel);
 
         KiloChat.sendLangMessageTo(source, "command.item.enchant.add", getEnchantmentName(enchantment), finalLevel);
