@@ -37,7 +37,7 @@ public class RegistryUtils {
 
     @Nullable
     public static RegistryKey<World> toWorldKey(@NotNull final DimensionType type) {
-        return toServerWorld(type) == null ? null : Objects.requireNonNull(toServerWorld(type)).method_27983();
+        return toServerWorld(type) == null ? null : Objects.requireNonNull(toServerWorld(type)).getRegistryKey();
     }
 
     public static DimensionType toDimension(@NotNull final Identifier identifier) {
@@ -83,12 +83,12 @@ public class RegistryUtils {
     }
 
     public static Set<RegistryKey<World>> getWorldsKeySet() {
-        return server.method_29435();
+        return server.getWorldRegistryKeys();
     }
 
     public static class Worlds {
-        public static final RegistryKey<World> OVERWORLD = World.field_25179;
-        public static final RegistryKey<World> THE_NETHER = World.field_25180;
-        public static final RegistryKey<World> THE_END = World.field_25181;
+        public static final RegistryKey<World> OVERWORLD = World.OVERWORLD;
+        public static final RegistryKey<World> THE_NETHER = World.NETHER;
+        public static final RegistryKey<World> THE_END = World.END;
     }
 }
