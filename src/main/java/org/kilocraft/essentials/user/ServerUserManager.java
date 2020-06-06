@@ -7,7 +7,7 @@ import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.PlayerManager;
+import net.minecraft.server.*;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -36,20 +36,19 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.Action;
-import org.kilocraft.essentials.util.CacheManager;
-import org.kilocraft.essentials.util.MutedPlayerList;
-import org.kilocraft.essentials.util.SimpleProcess;
+import org.kilocraft.essentials.util.*;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -68,8 +67,8 @@ public class ServerUserManager implements UserManager, TickListener {
     private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
     private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
     private final Map<UUID, SimpleProcess<?>> inProcessUsers = new HashMap<>();
+    private final MutedPlayerList mutedPlayerList = new MutedPlayerList(new File(KiloEssentials.getDataDirPath() + "/mutes.json"));
     private Map<UUID, String> cachedNicknames = new HashMap<>();
-    private final MutedPlayerList mutedPlayerList = new MutedPlayerList(KiloEssentials.getDataDirPath().toFile());
 
     public ServerUserManager(PlayerManager manager) {
     }
@@ -281,8 +280,55 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     @Override
-    public void performPunishment(@NotNull Punishment punishment, Punishment.@NotNull Type type, @NotNull Action<Punishment.ActionResult> action) {
+    public MutedPlayerList getMutedPlayerList() {
+        return this.mutedPlayerList;
+    }
 
+    @Override
+    public void performPunishment(@NotNull Punishment punishment, Punishment.@NotNull Type type, @NotNull Action<Punishment.ActionResult> action) {
+        MinecraftServer server = KiloServer.getServer().getMinecraftServer();
+        String victimIP = punishment.getVictimIP();
+        String source = punishment.getArbiter().getName();
+        String reason = punishment.getReason();
+        Date date = new Date();
+        Date expiry = punishment.getExpiry();
+        if (type == Punishment.Type.DENY_ACCESS) {
+            GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
+            if (victim != null) action.perform(Punishment.ActionResult.FAILED);
+            ServerChat.Channel.STAFF.sendLangMessage("command.ban.staff", source, victim, reason, TimeDifferenceUtil.formateDateDiff(date, expiry));
+            BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(victim, date, source, expiry, reason);
+            server.getPlayerManager().getUserBanList().add(bannedPlayerEntry);
+            ServerPlayerEntity serverPlayerEntity = server.getPlayerManager().getPlayer(victim.getId());
+            if (serverPlayerEntity != null) {
+                serverPlayerEntity.networkHandler.disconnect(new TextMessage(replaceBanVariables(KiloConfig.main().moderation().disconnectReasons().permBan, bannedPlayerEntry)).toText());
+            }
+            action.perform(Punishment.ActionResult.SUCCESS);
+        } else if (type == Punishment.Type.DENY_ACCESS_IP) {
+            String target = punishment.getVictim() == null ? victimIP : victimIP + " (" + punishment.getVictim().getName() + ")";
+            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formateDateDiff(date, expiry);
+            ServerChat.Channel.STAFF.sendLangMessage("command.ipban.staff", source, target, reason, time);
+            BannedIpEntry bannedIpEntry = new BannedIpEntry(victimIP, date, source, expiry, reason);
+            server.getPlayerManager().getIpBanList().add(bannedIpEntry);
+            List<ServerPlayerEntity> list = server.getPlayerManager().getPlayersByIp(victimIP);
+            for (ServerPlayerEntity serverPlayerEntity : list) {
+                serverPlayerEntity.networkHandler.disconnect(new TextMessage(replaceBanVariables(KiloConfig.main().moderation().disconnectReasons().permIpBan, bannedIpEntry)).toText());
+            }
+            action.perform(Punishment.ActionResult.SUCCESS);
+        } else {
+            GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
+            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formateDateDiff(date, expiry);
+            ServerChat.Channel.STAFF.sendLangMessage("command.mute.staff", source, victim.getName(), reason, time);
+            mutedPlayerList.add(new MutedPlayerEntry(victim, date, source, expiry, reason));
+            action.perform(Punishment.ActionResult.SUCCESS);
+        }
+    }
+
+    public String replaceBanVariables(final String str, final BanEntry banEntry) {
+        return new ConfigObjectReplacerUtil("ban", str, true)
+                .append("reason", banEntry.getReason())
+                .append("expiry", banEntry.getExpiryDate().toString())
+                .append("source", banEntry.getSource())
+                .toString();
     }
 
     public boolean shouldNotUseNickname(OnlineUser user, String rawNickname) {
@@ -381,8 +427,14 @@ public class ServerUserManager implements UserManager, TickListener {
             return;
         }
 
-        player.updateLastActionTime();
+
         String string = StringUtils.normalizeSpace(event.getMessage());
+        if (punishmentManager.isMuted(user) && !string.startsWith("/")) {
+            GameProfile gameProfile = KiloServer.getServer().getMinecraftServer().getUserCache().getByUuid(user.getId());
+            user.sendLangError("mute.reason", mutedPlayerList.get(gameProfile).getReason(), TimeDifferenceUtil.formateDateDiff(new Date(), mutedPlayerList.get(gameProfile).getExpiryDate()));
+            return;
+        }
+        player.updateLastActionTime();
 
         for (int i = 0; i < string.length(); ++i) {
             if (!SharedConstants.isValidChar(string.charAt(i))) {
@@ -454,6 +506,16 @@ public class ServerUserManager implements UserManager, TickListener {
         return this.handler;
     }
 
+    public void onServerReady() {
+        if (KiloConfig.main().autoUserUpgrade) {
+            this.handler.upgrade();
+        }
+    }
+
+    public void appendCachedName(ServerUser user) {
+        user.name = user.savedName;
+    }
+
     public static class LoadingText {
         private AnimatedText animatedText;
 
@@ -484,16 +546,6 @@ public class ServerUserManager implements UserManager, TickListener {
             this.animatedText.remove();
             this.animatedText = null;
         }
-    }
-
-    public void onServerReady() {
-        if (KiloConfig.main().autoUserUpgrade) {
-            this.handler.upgrade();
-        }
-    }
-
-    public void appendCachedName(ServerUser user) {
-        user.name = user.savedName;
     }
 
 }

@@ -1,17 +1,12 @@
 package org.kilocraft.essentials.chat;
 
-import com.google.common.collect.Lists;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.util.text.Texter;
-
-import java.util.List;
 
 public class TextMessage {
     private String original;

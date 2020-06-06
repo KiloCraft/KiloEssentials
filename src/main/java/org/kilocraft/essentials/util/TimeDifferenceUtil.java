@@ -151,6 +151,14 @@ public class TimeDifferenceUtil {
         return diff;
     }
 
+    public static String formateDateDiff(Date from, Date to) {
+        Calendar fromC = new GregorianCalendar();
+        Calendar toC = new GregorianCalendar();
+        fromC.setTime(from);
+        toC.setTime(to);
+        return formatDateDiff(fromC, toC);
+    }
+
     public static String formatDateDiff(long date) {
         Calendar c = new GregorianCalendar();
         c.setTimeInMillis(date);

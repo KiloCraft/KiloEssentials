@@ -51,6 +51,9 @@ public class Config {
     @Setting(value = "rtpSpecs", comment = "Configure the RTP range")
     private RtpSpecsConfigSection rtpSpecs = new RtpSpecsConfigSection();
 
+    @Setting(value = "motd", comment = "Configure the RTP range")
+    private MotdConfigSection motd = new MotdConfigSection();
+
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")
     public int homesLimit = 10;
 
@@ -125,5 +128,7 @@ public class Config {
     public RtpSpecsConfigSection rtpSpecs() {
         return rtpSpecs;
     }
+
+    public MotdConfigSection motd() { return motd; }
 
 }

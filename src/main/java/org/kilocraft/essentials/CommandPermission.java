@@ -94,6 +94,7 @@ public enum CommandPermission {
     PLAYTIMETOP("playtimetop"),
     IGNORELIST_OTHERS("ignorelist.others"),
     BAN("ban"),
+    IPBAN("ipban"),
     MUTE("mute"),
     KICK("kick"),
     TELEPORTREQUEST("teleportrequest"),

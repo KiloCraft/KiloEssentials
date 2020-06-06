@@ -8,18 +8,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.util.Date;
 
-public class MuteCommand extends EssentialCommand {
-    public MuteCommand() {
-        super("mute", CommandPermission.MUTE);
+public class BanCommand extends EssentialCommand {
+    public BanCommand() {
+        super("ke_ban", CommandPermission.BAN);
     }
 
     @Override
@@ -48,10 +46,9 @@ public class MuteCommand extends EssentialCommand {
                     reason,
                     expiry
             );
-
-            this.server.getUserManager().performPunishment(punishment, Punishment.Type.MUTE, (result) -> { });
+            this.server.getUserManager().performPunishment(punishment, Punishment.Type.DENY_ACCESS, (result) -> {
+            });
         });
-
         return AWAIT;
     }
 }
