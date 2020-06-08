@@ -48,7 +48,8 @@ public class ModerationConfigSection {
 
     @ConfigSerializable
     public static class Meta {
-
+        @Setting(value = "broadcast", comment = "defines whether bans should be announced in global or only in staff chat")
+        public boolean broadcast = false;
     }
 
 }

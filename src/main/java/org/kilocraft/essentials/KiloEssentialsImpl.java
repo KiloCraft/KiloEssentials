@@ -88,7 +88,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
         try {
             getServer().getUserManager().getMutedPlayerList().load();
         } catch (IOException e) {
-            e.printStackTrace();
+            KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
         }
         new KiloEvents();
 		this.commands = new KiloCommands();

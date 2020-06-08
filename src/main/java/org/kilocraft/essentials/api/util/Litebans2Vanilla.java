@@ -8,6 +8,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class Litebans2Vanilla {
             e.printStackTrace();
         }
         JSONArray jsonArray = (JSONArray) object;
-        KiloServer.getLogger().info("Converting " + jsonArray.size() + " users!");
+        KiloEssentials.getLogger().info("Converting " + jsonArray.size() + " users!");
         PlayerManager playerManager = KiloServer.getServer().getMinecraftServer().getPlayerManager();
         int i = 0;
         for (Object o : jsonArray) {
@@ -49,18 +50,18 @@ public class Litebans2Vanilla {
             String reason = ((JSONObject) o).get("reason").toString();
             String ip = ((JSONObject)o).get("ip").toString();
             if(ip.equalsIgnoreCase("#imported#")){
-                KiloServer.getLogger().info("Converting " + id);
+                KiloEssentials.getLogger().info("Converting " + id);
                 BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(gameProfile, time, source, until, reason);
                 KiloServer.getServer().getMinecraftServer().getPlayerManager().getUserBanList().add(bannedPlayerEntry);
                 i++;
             } else {
-                KiloServer.getLogger().info("Converting " + ip);
+                KiloEssentials.getLogger().info("Converting " + ip);
                 BannedIpEntry bannedIpEntry = new BannedIpEntry(ip, time, source, until, reason);
                 playerManager.getIpBanList().add(bannedIpEntry);
                 i++;
             }
         }
-        KiloServer.getLogger().info("Converted " + i + " users!");
+        KiloEssentials.getLogger().info("Converted " + i + " users!");
     }
 
 }
