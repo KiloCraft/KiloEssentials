@@ -1,6 +1,7 @@
 package org.kilocraft.essentials;
 
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.util.PermissionUtil;
 
 public enum CommandPermission {
     PING_SELF("ping.self"),
@@ -111,7 +112,7 @@ public enum CommandPermission {
     }
 
     public String getNode() {
-        return KiloCommands.PERMISSION_PREFIX + node;
+        return PermissionUtil.COMMAND_PERMISSION_PREFIX + node;
     }
 
     @Nullable

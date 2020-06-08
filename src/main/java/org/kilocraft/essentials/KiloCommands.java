@@ -80,7 +80,6 @@ public class KiloCommands {
     private final List<IEssentialCommand> commands;
     private final CommandDispatcher<ServerCommandSource> dispatcher;
     private final SimpleCommandManager simpleCommandManager;
-    static final String PERMISSION_PREFIX = "kiloessentials.command.";
     private static LiteralCommandNode<ServerCommandSource> rootNode;
 
     public KiloCommands() {
