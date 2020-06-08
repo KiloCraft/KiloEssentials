@@ -48,7 +48,6 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketAddress;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -295,7 +294,11 @@ public class ServerUserManager implements UserManager, TickListener {
         if (type == Punishment.Type.DENY_ACCESS) {
             GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
             if (victim != null) action.perform(Punishment.ActionResult.FAILED);
-            ServerChat.Channel.STAFF.sendLangMessage("command.ban.staff", source, victim, reason, TimeDifferenceUtil.formateDateDiff(date, expiry));
+            if (KiloConfig.main().moderation().meta().broadcast) {
+                ServerChat.Channel.PUBLIC.sendLangMessage("command.ban.staff", source, victim, reason, TimeDifferenceUtil.formatDateDiff(date, expiry));
+            } else {
+                ServerChat.Channel.STAFF.sendLangMessage("command.ban.staff", source, victim, reason, TimeDifferenceUtil.formatDateDiff(date, expiry));
+            }
             BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(victim, date, source, expiry, reason);
             server.getPlayerManager().getUserBanList().add(bannedPlayerEntry);
             ServerPlayerEntity serverPlayerEntity = server.getPlayerManager().getPlayer(victim.getId());
@@ -305,7 +308,7 @@ public class ServerUserManager implements UserManager, TickListener {
             action.perform(Punishment.ActionResult.SUCCESS);
         } else if (type == Punishment.Type.DENY_ACCESS_IP) {
             String target = punishment.getVictim() == null ? victimIP : victimIP + " (" + punishment.getVictim().getName() + ")";
-            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formateDateDiff(date, expiry);
+            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
             ServerChat.Channel.STAFF.sendLangMessage("command.ipban.staff", source, target, reason, time);
             BannedIpEntry bannedIpEntry = new BannedIpEntry(victimIP, date, source, expiry, reason);
             server.getPlayerManager().getIpBanList().add(bannedIpEntry);
@@ -316,7 +319,7 @@ public class ServerUserManager implements UserManager, TickListener {
             action.perform(Punishment.ActionResult.SUCCESS);
         } else {
             GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
-            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formateDateDiff(date, expiry);
+            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
             ServerChat.Channel.STAFF.sendLangMessage("command.mute.staff", source, victim.getName(), reason, time);
             mutedPlayerList.add(new MutedPlayerEntry(victim, date, source, expiry, reason));
             action.perform(Punishment.ActionResult.SUCCESS);
@@ -326,7 +329,7 @@ public class ServerUserManager implements UserManager, TickListener {
     public String replaceBanVariables(final String str, final BanEntry banEntry) {
         return new ConfigObjectReplacerUtil("ban", str, true)
                 .append("reason", banEntry.getReason())
-                .append("expiry", banEntry.getExpiryDate().toString())
+                .append("expiry", banEntry.getExpiryDate() == null ? "Error, please report to administrator" : banEntry.getExpiryDate().toString())
                 .append("source", banEntry.getSource())
                 .toString();
     }
@@ -431,7 +434,7 @@ public class ServerUserManager implements UserManager, TickListener {
         String string = StringUtils.normalizeSpace(event.getMessage());
         if (punishmentManager.isMuted(user) && !string.startsWith("/")) {
             GameProfile gameProfile = KiloServer.getServer().getMinecraftServer().getUserCache().getByUuid(user.getId());
-            user.sendLangError("mute.reason", mutedPlayerList.get(gameProfile).getReason(), TimeDifferenceUtil.formateDateDiff(new Date(), mutedPlayerList.get(gameProfile).getExpiryDate()));
+            user.sendLangError("mute.reason", mutedPlayerList.get(gameProfile).getReason(), TimeDifferenceUtil.formatDateDiff(new Date(), mutedPlayerList.get(gameProfile).getExpiryDate()));
             return;
         }
         player.updateLastActionTime();

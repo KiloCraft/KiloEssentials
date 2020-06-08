@@ -99,7 +99,7 @@ public abstract class MixinPlayerManager {
     public String replaceVariables(final String str, final BanEntry banEntry) {
         String string = new ConfigObjectReplacerUtil("ban", str, true)
                 .append("reason", banEntry.getReason())
-                .append("expiry", banEntry.getExpiryDate().toString() == null ? "Error, please report to administrator" : banEntry.getExpiryDate())
+                .append("expiry", banEntry.getExpiryDate() == null ? "Error, please report to administrator" : banEntry.getExpiryDate().toString())
                 .append("source", banEntry.getSource())
                 .toString();
         return string;
