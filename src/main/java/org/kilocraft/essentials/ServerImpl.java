@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -80,19 +81,19 @@ public class ServerImpl implements Server {
     public void reload(Action<Throwable> fallback) {
         KiloServer.getServer().triggerEvent(new ServerReloadEventImpl(this.server));
 
-        ResourcePackManager<?> resourcePackManager = this.getMinecraftServer().getDataPackManager();
+        ResourcePackManager<ResourcePackProfile> resourcePackManager = this.server.getDataPackManager();
         SaveProperties saveProperties = this.getMinecraftServer().getSaveProperties();
         Collection<String> collection = resourcePackManager.method_29210();
 
         Collection<String> modifiedCollection = Lists.newArrayList(collection);
         resourcePackManager.scanPacks();
         for (String string : resourcePackManager.method_29206()) {
-            if (!saveProperties.getDisabledDataPacks().contains(string) && !modifiedCollection.contains(string)) {
+            if (!saveProperties.method_29589().method_29550().contains(string) && !modifiedCollection.contains(string)) {
                 modifiedCollection.add(string);
             }
         }
 
-        this.getMinecraftServer().method_29439(collection).exceptionally((throwable) -> {
+        this.server.reloadResources(collection).exceptionally((throwable) -> {
             fallback.perform(throwable);
             return null;
         });

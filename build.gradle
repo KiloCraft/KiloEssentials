@@ -64,6 +64,8 @@ dependencies {
 	shadow group: 'com.google.inject', name: 'guice', version: '4.0'
 	compile "net.luckperms:api:${project.luckperms_version}"
 	compile group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    shadow group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 }
 
 tasks.jar.archiveClassifier = "compile"
@@ -77,7 +79,7 @@ processResources {
 
 	from(sourceSets.main.resources.srcDirs) {
 		include "fabric.mod.json", "mod.properties"
-		expand "version": gitVersion, "version_int": project.mod_version, "built_at": buildTime, "fabric_loader_version": project.loader_version,
+		expand "version": version, "version_int": project.mod_version, "built_at": buildTime, "fabric_loader_version": project.loader_version,
 				"fabric_yarn_mappings": project.yarn_mappings, "mc_version": project.minecraft_version,
 				"git_hash": details.gitHash, "git_hash_full": details.gitHashFull, "git_branch": details.branchName, "build_type": buildType, "version_nick" : project.mod_version_nick,
 				"build": project.build

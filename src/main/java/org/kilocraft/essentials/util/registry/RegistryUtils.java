@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class RegistryUtils {
     private static final MinecraftServer server = KiloServer.getServer().getMinecraftServer();
-    private static final RegistryKey<World> DEFAULT_WORLD_KEY = Worlds.OVERWORLD;
+    private static final RegistryKey<World> DEFAULT_WORLD_KEY = World.OVERWORLD;
 
     @Nullable
     public static ServerWorld toServerWorld(@NotNull final DimensionType type) {
@@ -64,9 +64,9 @@ public class RegistryUtils {
             return String.valueOf((Object) null);
         }
 
-        return key == Worlds.OVERWORLD ? "Overworld"
-                : key == Worlds.THE_NETHER ? "The Nether"
-                : key == Worlds.THE_END ? "The End"
+        return key == World.OVERWORLD ? "Overworld"
+                : key == World.NETHER ? "The Nether"
+                : key == World.END ? "The End"
                 : StringUtils.normalizeCapitalization(key.getValue().getPath());
     }
 
@@ -84,11 +84,5 @@ public class RegistryUtils {
 
     public static Set<RegistryKey<World>> getWorldsKeySet() {
         return server.getWorldRegistryKeys();
-    }
-
-    public static class Worlds {
-        public static final RegistryKey<World> OVERWORLD = World.OVERWORLD;
-        public static final RegistryKey<World> THE_NETHER = World.NETHER;
-        public static final RegistryKey<World> THE_END = World.END;
     }
 }

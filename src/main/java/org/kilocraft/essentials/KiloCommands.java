@@ -1,7 +1,6 @@
 package org.kilocraft.essentials;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
@@ -35,6 +34,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
+import org.kilocraft.essentials.commands.moderation.*;
 import org.kilocraft.essentials.commands.server.DebugEssentialsCommand;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
@@ -46,8 +46,6 @@ import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
-import org.kilocraft.essentials.commands.moderation.ClearChatCommand;
-import org.kilocraft.essentials.commands.moderation.IpInfoCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -79,19 +77,16 @@ import static org.kilocraft.essentials.api.KiloEssentials.getServer;
 import static org.kilocraft.essentials.commands.LiteralCommandModified.*;
 
 public class KiloCommands {
-    private static final List<String> initializedPerms = Lists.newArrayList();
-    private static SimpleCommandManager simpleCommandManager;
     private final List<IEssentialCommand> commands;
     private final CommandDispatcher<ServerCommandSource> dispatcher;
-
-    static final String PERMISSION_PREFIX = "kiloessentials.command.";
+    private final SimpleCommandManager simpleCommandManager;
     private static LiteralCommandNode<ServerCommandSource> rootNode;
 
-    public KiloCommands(@NotNull final CommandDispatcher<ServerCommandSource> dispatcher) {
-        this.dispatcher = dispatcher;
-        this.commands = Lists.newArrayList();
+    public KiloCommands() {
+        this.dispatcher = KiloEssentialsImpl.commandDispatcher;
+        this.simpleCommandManager = new SimpleCommandManager(KiloServer.getServer(), this.dispatcher);
+        this.commands = new ArrayList<>();
         KiloCommands.rootNode = literal("essentials").executes(this::sendInfo).build();
-        this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
         registerDefaults();
     }
 
@@ -169,6 +164,11 @@ public class KiloCommands {
         this.register(new CalculateCommand());
         this.register(new HugCommand());
         this.register(new GlowCommand());
+        this.register(new BanCommand());
+        this.register(new MuteCommand());
+        this.register(new IpBanCommand());
+
+        this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
 
         StopCommand.register(this.dispatcher);
         RestartCommand.register(this.dispatcher);
@@ -330,9 +330,9 @@ public class KiloCommands {
                 new LiteralText(objects != null ? String.format(message, objects) : message).formatted(Formatting.RED));
     }
 
-    public static void updateCommandTreeForEveryone() {
-        for (final ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-            KiloServer.getServer().getPlayerManager().sendCommandTree(playerEntity);
+    public static void updateGlobalCommandTree() {
+        for (ServerPlayerEntity player : KiloServer.getServer().getPlayerManager().getPlayerList()) {
+            KiloServer.getServer().getPlayerManager().sendCommandTree(player);
         }
     }
 
@@ -500,7 +500,7 @@ public class KiloCommands {
     }
 
     public static CommandDispatcher<ServerCommandSource> getDispatcher() {
-        return KiloServer.getServer().getMinecraftServer().getCommandManager().getDispatcher();
+        return KiloEssentialsImpl.commandDispatcher;
     }
 
     private boolean isCommand(final String literal) {
@@ -514,10 +514,6 @@ public class KiloCommands {
     @Deprecated
     public static int SUCCESS() {
         return 1;
-    }
-
-    public static void onServerReady() {
-        simpleCommandManager = new SimpleCommandManager(KiloServer.getServer());
     }
 
 }

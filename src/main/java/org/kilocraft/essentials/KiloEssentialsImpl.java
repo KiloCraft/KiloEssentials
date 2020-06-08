@@ -8,20 +8,17 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.Message;
-import org.apache.logging.log4j.message.MessageFactory;
-import org.apache.logging.log4j.message.SimpleMessage;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.feature.*;
+import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.util.Litebans2Vanilla;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
@@ -35,12 +32,17 @@ import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.MutedPlayerList;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -48,60 +50,48 @@ import java.util.function.Consumer;
  * Main Implementation
  *
  * @see KiloEssentials
- * @author CODY_AI
+ * @author ItsIlya
  * @author MCRafterzz
  * @author I509VCB
  * @since KE 1.6
  */
 
 public final class KiloEssentialsImpl implements KiloEssentials {
+	private static boolean running = false;
 	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials");
-	private static final ModConstants constants = new ModConstants();
-	public static final String PERMISSION_PREFIX = "kiloessentials.";
 	private static KiloEssentialsImpl instance;
-	private static KiloCommands commandHandler;
-	private PermissionUtil permUtil;
+
 	private final ConfigurableFeatures FEATURES;
-	private final List<FeatureType<?>> configurableFeatureRegistry = new ArrayList<>();
-	private final Map<FeatureType<?>, ConfigurableFeature> proxyFeatureList = new HashMap<>();
+	private final KiloCommands commands;
+
+	private PermissionUtil permUtil;
 	private StartupScript startupScript;
 
-	private final List<FeatureType<SingleInstanceConfigurableFeature>> singleInstanceConfigurationRegistry = new ArrayList<>();
-	private final Map<FeatureType<? extends SingleInstanceConfigurableFeature>, SingleInstanceConfigurableFeature> proxySingleInstanceFeatures = new HashMap<>();
+	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 
-	public KiloEssentialsImpl(final KiloEvents events) {
+	public static void onServerSet(@NotNull final Server server) {
+		KiloDebugUtils.validateDebugMode(false);
+		new KiloEssentialsImpl();
+	}
+
+	KiloEssentialsImpl() {
+		if (running) {
+			throw new RuntimeException("KiloEssentialsImpl is already running!");
+		} else {
+			running = true;
+		}
+
 		KiloEssentialsImpl.instance = this;
 		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
-		// ConfigDataFixer.getInstance(); // i509VCB: TODO Uncomment when I finish DataFixers.
-
-		/*
-		// TODO i509VCB: Uncomment when new feature system is done
-		FeatureTypes.init(); // Register the built in feature types
-
-		for(KiloHook hook : FabricLoader.getInstance().getEntrypoints(featureEntry("hook"), KiloHook.class)) { // Allow registration of extra features to be done via entrypoint.
-			hook.hook(this);
-		}
-
-		for(FeatureType<?> type : configurableFeatureRegistry) {
-			List<ConfigurableFeature> entrypoints = FabricLoader.getInstance().getEntrypoints(featureEntry(type.getId()), ConfigurableFeature.class);
-			if(entrypoints.size()>1) {
-				// We don't allow more than one entry point per feature type.
-				continue;
-			}
-
-			for(ConfigurableFeature feature : entrypoints) {
-				if(feature.getClass().isAssignableFrom(type.getType())) { // We check if it's the right type, otherwise don't load it.
-					if (!feature.register()) { // Config checks should be in register
-						continue;
-					}
-					this.proxyFeatureList.put(type, feature);
-				} else {
-					logger.error("Mismatched type: " + type.getId());
-				}
-			}
-		}
-		*/
+		KiloConfig.load();
+        try {
+            getServer().getUserManager().getMutedPlayerList().load();
+        } catch (IOException e) {
+            KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
+        }
+        new KiloEvents();
+		this.commands = new KiloCommands();
 
 		if (SharedConstants.isDevelopment) {
 			new KiloDebugUtils();
@@ -125,6 +115,8 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		}
 
 		this.permUtil = new PermissionUtil();
+
+
 	}
 
 	public static Logger getLogger() {
@@ -162,7 +154,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 	@Override
 	public KiloCommands getCommandHandler() {
-		return commandHandler;
+		return this.commands;
 	}
 
 	@Override
@@ -318,37 +310,14 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		return optionalCompletableFuture;
 	}
 
-
 	@Override
-	public <F extends ConfigurableFeature> FeatureType<F> registerFeature(final FeatureType<F> featureType) {
-		if(featureType.getType().isAssignableFrom(SingleInstanceConfigurableFeature.class)) {
-			this.singleInstanceConfigurationRegistry.add((FeatureType<SingleInstanceConfigurableFeature>) featureType);
-			return featureType;
-		}
-
-		this.configurableFeatureRegistry.add(featureType);
-		return featureType;
-	}
-
-	@Override
-	public <F extends SingleInstanceConfigurableFeature> F getFeature(final FeatureType<F> type) throws FeatureNotPresentException {
-		final F ft = (F) this.proxySingleInstanceFeatures.get(type);
-
-		if (ft == null) {
-			throw new FeatureNotPresentException();
-		}
-
-		return ft;
+	public PermissionUtil getPermissionUtil() {
+		return this.permUtil;
 	}
 
 	@Override
 	public ConfigurableFeatures getFeatures() {
 		return this.FEATURES;
-	}
-
-	@Override
-	public PermissionUtil getPermissionUtil() {
-		return this.permUtil;
 	}
 
 	public void onServerStop() {
@@ -359,15 +328,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 	public void onServerLoad() {
 		this.permUtil = new PermissionUtil();
-	}
-
-	public static void firstInitialization(@NotNull final CommandDispatcher<ServerCommandSource> dispatcher) {
-		new ModConstants().loadConstants();
-		KiloConfig.load();
-
-		if (commandHandler == null) {
-			commandHandler = new KiloCommands(dispatcher);
-		}
 	}
 
 }

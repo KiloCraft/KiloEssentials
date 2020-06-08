@@ -50,6 +50,6 @@ public class HealCommand extends EssentialCommand {
         player.setHealth(player.getMaxHealth());
         player.getHungerManager().setFoodLevel(20);
 
-        return 1;
+        return SUCCESS;
     }
 }

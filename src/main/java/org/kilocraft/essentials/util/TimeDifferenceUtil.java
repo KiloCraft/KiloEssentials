@@ -18,11 +18,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static org.kilocraft.essentials.api.ModConstants.*;
+import static org.kilocraft.essentials.api.ModConstants.translation;
 
 public class TimeDifferenceUtil {
     private static final Pattern TIME_PATTERN = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
     private static final int MAX_YEARS = 100000;
+    private static final String[] VALID_UNITS = new String[]{"s", "m", "h", "d", "mo", "y"};
 
     public static String convertSecondsToString(int seconds, char numFormat, char typeFormat) {
         int day = seconds / (24 * 3600);
@@ -151,6 +152,14 @@ public class TimeDifferenceUtil {
         return diff;
     }
 
+    public static String formatDateDiff(Date from, Date to) {
+        Calendar fromC = new GregorianCalendar();
+        Calendar toC = new GregorianCalendar();
+        fromC.setTime(from);
+        toC.setTime(to);
+        return formatDateDiff(fromC, toC);
+    }
+
     public static String formatDateDiff(long date) {
         Calendar c = new GregorianCalendar();
         c.setTimeInMillis(date);
@@ -218,6 +227,4 @@ public class TimeDifferenceUtil {
                 context
         );
     }
-
-    private static final String[] VALID_UNITS = new String[]{"s", "m", "h", "d", "mo", "y"};
 }

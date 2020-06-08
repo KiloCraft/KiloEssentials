@@ -15,7 +15,6 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.extensions.warps.Warp;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 
@@ -147,7 +146,7 @@ public class WarpCommand {
 
         KiloChat.sendLangMessageTo(source, "command.warp.set", name);
         registerAliases();
-        KiloCommands.updateCommandTreeForEveryone();
+        KiloCommands.updateGlobalCommandTree();
         return 1;
     }
 

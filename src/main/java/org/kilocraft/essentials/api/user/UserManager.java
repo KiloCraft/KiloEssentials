@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.util.Action;
+import org.kilocraft.essentials.util.MutedPlayerList;
 
 import java.util.List;
 import java.util.Map;
@@ -126,6 +127,8 @@ public interface UserManager {
     void onChangeNickname(User user, String oldNick);
 
     PunishmentManager getPunishmentManager();
+
+    MutedPlayerList getMutedPlayerList();
 
     void performPunishment(@NotNull final Punishment punishment, @NotNull final Punishment.Type type, @NotNull Action<Punishment.ActionResult> action);
 }

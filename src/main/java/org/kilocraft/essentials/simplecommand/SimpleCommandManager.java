@@ -22,11 +22,11 @@ import java.util.function.Predicate;
 
 public class SimpleCommandManager {
     private static SimpleCommandManager INSTANCE;
-    private final List<SimpleCommand> commands;
-    private final List<String> byId;
-    private final Server server;
+    private List<SimpleCommand> commands;
+    private List<String> byId;
+    private Server server;
 
-    public SimpleCommandManager(Server server) {
+    public SimpleCommandManager(Server server, CommandDispatcher<ServerCommandSource> dispatcher) {
         INSTANCE = this;
         this.server = server;
         this.commands = new ArrayList<>();
@@ -65,7 +65,7 @@ public class SimpleCommandManager {
     }
 
     public static void unregister(String id) {
-        if (INSTANCE != null && getCommand(id) != null) {
+        if (INSTANCE != null &&  getCommand(id) != null) {
             unregister(getCommand(id));
         }
     }
@@ -112,8 +112,7 @@ public class SimpleCommandManager {
                     return true;
                 }
             }
-        } catch (final ArrayIndexOutOfBoundsException ignored) {
-        }
+        } catch (final ArrayIndexOutOfBoundsException ignored) {}
 
         return false;
     }
