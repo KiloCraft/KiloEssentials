@@ -108,12 +108,10 @@ public final class ServerChat {
             processWords = KiloConfig.messages().censorList().censorPrivateChannels;
         }
 
-        message.setMessage(message.getFormattedMessage(), KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR));
-
         try {
             message.setMessage(
                     processWords ? processWords(sender, message.getOriginal()) : message.getOriginal(),
-                    true
+                    KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR)
             );
         } catch (Exception e) {
             return;
