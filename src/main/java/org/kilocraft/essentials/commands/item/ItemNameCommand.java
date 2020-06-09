@@ -47,7 +47,7 @@ public class ItemNameCommand {
 		ItemStack item = context.getSource().getPlayer().getMainHandStack();
 		List<String> list = new ArrayList<String>(){{ add("reset"); }};
 		if (!item.isEmpty()) {
-			list.add(TextFormat.reverseTranslate(Texter.Legacy.toFormattedString(item.getName()), '&'));
+			list.add(TextFormat.reverseTranslate(item.getName().getString(), '&'));
 		}
 		return CommandSource.suggestMatching(list, builder);
 	}
