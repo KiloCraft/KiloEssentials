@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "kilo_essentials",
+  "version": "${version}",
+
+  "name": "KiloEssentials",
+  "description": "Server management made easy with this mod",
+  "authors": [
+    {
+      "name": "ItsIlya",
+      "minecraft": "bf651b48-7395-4988-ae47-07f8f6b72a22",
+      "contact": {
+        "github": "https://github.com/OnBlock"
+      }
+    },
+    "MCrafterzz",
+    "GiantNuker",
+    "i509VCB",
+    "DrexHD",
+    "Hansi132"
+  ],
+
+  "license": "MIT",
+
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "org.kilocraft.essentials.KiloEssentialsMod"
+    ]
+  },
+  "mixins": [
+    "kiloessentials.events.mixins.json",
+    "kiloessentials.mixins.json",
+    "kiloessentials.accessors.mixins.json",
+    "kiloessentials.patch.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.1+build.174"
+  },
+  "suggests": {
+    "luckperms": "*",
+    "thimble": "*"
+  }
+}
