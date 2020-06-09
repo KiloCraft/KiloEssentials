@@ -10,12 +10,12 @@
     "ForgingScreenHandlerMixin",
     "AnvilScreenHandlerMixin",
     "MinecraftServerMixin",
-    "ServerCommandOutputMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
     "CraftingScreenHandlerMixin",
-    "PlayerListS2CPacketMixin"
+    "PlayerListS2CPacketMixin",
+    "QueryResponseS2CPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1

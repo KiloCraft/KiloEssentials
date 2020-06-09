@@ -23,7 +23,6 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
             KiloServer.getServer().getMetaManager().updateAll();
             ServerChat.load();
 
-            KiloEssentials.getInstance().getFeatures().loadAll();
             KiloEssentialsImpl.getInstance().onServerLoad();
 
             NBTStorageUtil.onSave();
@@ -34,6 +33,6 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
             KiloEssentials.getLogger().error("An unexpected error occurred while reloading the server!", e);
         }
 
-        KiloCommands.updateCommandTreeForEveryone();
+        KiloCommands.updateGlobalCommandTree();
     }
 }

@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
@@ -59,7 +58,7 @@ public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
 
         if (warp.addCommand()) {
             SimpleCommandManager.unregister("server_warp:" + warp.getName().toLowerCase(Locale.ROOT));
-            KiloCommands.updateCommandTreeForEveryone();
+            KiloCommands.updateGlobalCommandTree();
         }
     }
 

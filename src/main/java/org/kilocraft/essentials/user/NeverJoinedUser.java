@@ -4,8 +4,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.feature.FeatureType;
-import org.kilocraft.essentials.api.feature.UserProvidedFeature;
 import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.settting.Setting;
@@ -120,11 +118,6 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
 
     @Override
     public @Nullable Date getLastOnline() {
-        return null;
-    }
-
-    @Override
-    public <F extends UserProvidedFeature> F feature(FeatureType<F> type) {
         return null;
     }
 

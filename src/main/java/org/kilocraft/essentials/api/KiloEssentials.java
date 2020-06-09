@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.KiloEssentialsImpl;
-import org.kilocraft.essentials.api.feature.*;
+import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -90,21 +90,9 @@ public interface KiloEssentials {
 
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor);
 
-    <F extends ConfigurableFeature> FeatureType<F> registerFeature(FeatureType<F> featureType);
-
-    /**
-     * Gets a SingleInstanceConfigurableFeature from the instance of the mod.
-     * <p> NOTE: If you are looking for where Homes and Particles are handled, see {@link User#feature(FeatureType)}
-     * @param type The FeatureType of the feature.
-     * @param <F> The generic type of the feature being obtained.
-     * @return The instance of the feature.
-     * @throws FeatureNotPresentException If the feature type is disabled, not present or not a SingleInstanceConfigurableFeature.
-     */
-    <F extends SingleInstanceConfigurableFeature> F getFeature(FeatureType<F> type) throws FeatureNotPresentException;
+    PermissionUtil getPermissionUtil();
 
     ConfigurableFeatures getFeatures();
-
-    PermissionUtil getPermissionUtil();
 
     static String getWorkingDirectory() {
         return System.getProperty("user.dir");
