@@ -6,7 +6,6 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
-
 import java.util.*;
 
 public class Texter {
@@ -91,6 +90,7 @@ public class Texter {
         public static String toFormattedString(Text text) {
             StringBuilder builder = new StringBuilder();
             String main = "";
+
             for (Text sibling : text.getSiblings()) {
                 String str_1 = sibling.asString();
                 if (!str_1.isEmpty()) {
