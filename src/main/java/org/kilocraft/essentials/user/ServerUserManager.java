@@ -150,9 +150,10 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     @Override
+    @Nullable
     public CompletableFuture<Optional<User>> getOffline(GameProfile profile) {
-        profileSanityCheck(profile);
-        return getOffline(profile.getId(), profile.getName());
+        if(profileHasID(profile)) return getOffline(profile.getId(), profile.getName());
+        return CompletableFuture.completedFuture(Optional.empty());
     }
 
     @Override
@@ -168,8 +169,8 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     @Nullable
     public OnlineUser getOnline(GameProfile profile) {
-        profileSanityCheck(profile);
-        return getOnline(profile.getId());
+        if(profileIsComplete(profile)) return getOnline(profile.getId());
+        return null;
     }
 
     @Override
@@ -294,10 +295,11 @@ public class ServerUserManager implements UserManager, TickListener {
         if (type == Punishment.Type.DENY_ACCESS) {
             GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
             if (victim != null) action.perform(Punishment.ActionResult.FAILED);
+            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
             if (KiloConfig.main().moderation().meta().broadcast) {
-                ServerChat.Channel.PUBLIC.sendLangMessage("command.ban.staff", source, victim, reason, TimeDifferenceUtil.formatDateDiff(date, expiry));
+                ServerChat.Channel.PUBLIC.sendLangMessage("command.ban.staff", source, victim.getName(), reason, time);
             } else {
-                ServerChat.Channel.STAFF.sendLangMessage("command.ban.staff", source, victim, reason, TimeDifferenceUtil.formatDateDiff(date, expiry));
+                ServerChat.Channel.STAFF.sendLangMessage("command.ban.staff", source, victim.getName(), reason, time);
             }
             BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(victim, date, source, expiry, reason);
             server.getPlayerManager().getUserBanList().add(bannedPlayerEntry);
@@ -371,9 +373,26 @@ public class ServerUserManager implements UserManager, TickListener {
         return !canUse.get();
     }
 
+    private boolean profileIsComplete(GameProfile profile) {
+        if (profile != null) {
+            return profile.isComplete();
+        }
+        return false;
+    }
+    private boolean profileHasID(GameProfile profile) {
+        if (profile != null) {
+            return !(profile.getId() == null);
+        }
+        return false;
+    }
+
     private void profileSanityCheck(GameProfile profile) {
-        if (!profile.isComplete() && profile.getId() == null) {
-            throw new IllegalArgumentException("Cannot use GameProfile with missing username to get an OfflineUser");
+        if (profile != null) {
+            if (!profile.isComplete() && profile.getId() == null) {
+                throw new IllegalArgumentException("Cannot use GameProfile with missing username to get an OfflineUser");
+            }
+        } else {
+            throw new NullPointerException("GameProfile is null");
         }
     }
 
