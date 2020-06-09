@@ -52,6 +52,17 @@ public interface Server {
     void reload(Action<Throwable> fallback);
 
     /**
+     * Reloads the MinecraftServer
+     * @param fallback the action to perform if the execution fails
+     */
+    void reloadMinecraftServer(Action<Throwable> fallback);
+
+    /**
+     * Reloads kiloessentials data
+     */
+    void reloadKiloEssentials();
+
+    /**
      * Gets the KiloServer's UserManager
      *
      * @return instance of UserManager

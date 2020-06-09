@@ -15,19 +15,20 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.Date;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class IpBanCommand extends EssentialCommand {
-    public static final Pattern PATTERN = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+    public static final Pattern IP_PATTERN = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
     private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.banip.invalid"));
 
     public IpBanCommand() {
@@ -50,41 +51,26 @@ public class IpBanCommand extends EssentialCommand {
     private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable String reason, String expiryString) throws CommandSyntaxException {
         final CommandSourceUser src = this.getServerUser(ctx);
         final String input = this.getUserArgumentInput(ctx, "victim");
-        final String ip = getIP(input);
-        Date expiry = expiryString == null ? null : new Date(TimeDifferenceUtil.parse(expiryString, true));
-        Punishment punishment = new Punishment(src, null, ip, reason, expiry);
-        this.server.getUserManager().performPunishment(punishment, Punishment.Type.DENY_ACCESS_IP, (result) -> {
-        });
+        final Date expiry = expiryString == null ? null : new Date(TimeDifferenceUtil.parse(expiryString, true));
+        Matcher matcher = IP_PATTERN.matcher(input);
+        Punishment punishment;
+        if (matcher.matches()) {
+            punishment = new Punishment(src, null, input, reason, expiry);
+        } else {
+            AtomicReference<String> ip = new AtomicReference<>();
+            AtomicReference<User> victim = new AtomicReference<>();
+            this.getUser(input).join().ifPresent(user -> {
+                ip.set(user.getLastSocketAddress());
+                victim.set(user);
+            });
+            if(ip.get() == null) {
+                throw INVALID_IP_EXCEPTION.create();
+            } else {
+                punishment = new Punishment(src, victim.get(), ip.get().split(":")[0], reason, expiry);
+            }
+        }
+        this.server.getUserManager().performPunishment(punishment, Punishment.Type.DENY_ACCESS_IP, (result) -> { });
         return AWAIT;
     }
 
-    private String getIP(String target) throws CommandSyntaxException {
-        KiloEssentials.getLogger().info("Input: " + target);
-        Matcher matcher = PATTERN.matcher(target);
-        if (matcher.matches()) {
-            return target;
-        } else {
-            GameProfile gameProfile = this.server.getMinecraftServer().getUserCache().findByName(target);
-            if(gameProfile != null) {
-                KiloEssentials.getLogger().info("UUID: " + gameProfile.getId());
-                InetSocketAddress socketAddress = (InetSocketAddress) GlobalUtils.getSocketAddress(gameProfile.getId());
-                if(socketAddress != null) {
-                    String ip = socketAddress.getAddress().toString();
-                    ip = ip.substring(1);
-                    KiloEssentials.getLogger().info("IP: " + ip);
-                    return ip;
-                } else {
-                    KiloEssentials.getLogger().info("Couldn't find IP adress");
-                }
-            } else {
-                KiloEssentials.getLogger().info("Couldn't find GameProfile");
-            }
-            ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(target);
-            if (serverPlayerEntity != null) {
-                return serverPlayerEntity.getIp();
-            } else {
-                throw INVALID_IP_EXCEPTION.create();
-            }
-        }
-    }
 }
