@@ -199,6 +199,14 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     }
 
     public void unseat(@NotNull final OnlineUser user) {
+        if(user == null) {
+            KiloEssentials.getLogger().error("Seatmanager: OnlineUser is null");
+            return;
+        }
+        if(user.asPlayer() == null) {
+            KiloEssentials.getLogger().error("Seatmanager: OnlineUser.asPlayer() is null");
+            return;
+        }
         ServerPlayerEntity player = user.asPlayer();
 
         if (player == null || !player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity)) {

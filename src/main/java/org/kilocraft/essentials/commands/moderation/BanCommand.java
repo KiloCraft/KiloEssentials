@@ -5,21 +5,27 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MuteCommand extends EssentialCommand {
-    public MuteCommand() {
-        super("mute", CommandPermission.MUTE);
+public class BanCommand extends EssentialCommand {
+    private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("commands.banip.invalid"));
+
+    public BanCommand() {
+        super("ke_ban", CommandPermission.BAN);
     }
 
     @Override
@@ -39,8 +45,8 @@ public class MuteCommand extends EssentialCommand {
         final CommandSourceUser src = this.getServerUser(ctx);
         final String input = this.getUserArgumentInput(ctx, "victim");
         Date expiry = expiryString == null ? null : new Date(TimeDifferenceUtil.parse(expiryString, true));
-
-        this.essentials.getUserThenAcceptAsync(src, input, (victim) -> {
+        AtomicBoolean success = new AtomicBoolean(false);
+        this.getUser(input).join().ifPresent(victim -> {
             Punishment punishment = new Punishment(
                     src,
                     victim,
@@ -48,10 +54,13 @@ public class MuteCommand extends EssentialCommand {
                     reason,
                     expiry
             );
-
-            this.server.getUserManager().performPunishment(punishment, Punishment.Type.MUTE, (result) -> { });
+            this.server.getUserManager().performPunishment(punishment, Punishment.Type.DENY_ACCESS, (result) -> {
+            });
+            success.set(true);
         });
-
+        if (!success.get()) {
+            throw KiloCommands.getException(ExceptionMessageNode.USER_NOT_FOUND).create();
+        }
         return AWAIT;
     }
 }

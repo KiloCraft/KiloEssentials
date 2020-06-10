@@ -18,6 +18,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.util.Litebans2Vanilla;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
@@ -31,11 +32,14 @@ import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.MutedPlayerList;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -81,7 +85,12 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		KiloConfig.load();
-		new KiloEvents();
+        try {
+            getServer().getUserManager().getMutedPlayerList().load();
+        } catch (IOException e) {
+            KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
+        }
+        new KiloEvents();
 		this.commands = new KiloCommands();
 
 		if (SharedConstants.isDevelopment) {
@@ -106,6 +115,8 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		}
 
 		this.permUtil = new PermissionUtil();
+
+
 	}
 
 	public static Logger getLogger() {

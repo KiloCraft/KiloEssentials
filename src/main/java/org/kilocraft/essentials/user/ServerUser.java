@@ -136,7 +136,7 @@ public class ServerUser implements User {
 
         if (cacheTag.contains("lastLoc")) {
             this.lastLocation = Vec3dLocation.dummy();
-            this.lastLocation.fromTag(cacheTag.getCompound("cIp"));
+            this.lastLocation.fromTag(cacheTag.getCompound("lastLoc"));
         }
 
         if (compoundTag.contains("loc")) {
@@ -145,9 +145,10 @@ public class ServerUser implements User {
             this.location.shortDecimals();
         }
 
-        if (cacheTag.contains("cIp")) {
+        if (cacheTag.contains("ip")) {
             this.lastSocketAddress = cacheTag.getString("ip");
         }
+
 
         if (cacheTag.contains("dmRec")) {
             CompoundTag lastDmTag = cacheTag.getCompound("dmRec");
@@ -171,6 +172,10 @@ public class ServerUser implements User {
         }
 
         this.savedName = compoundTag.getString("name");
+        if (cacheTag.contains("IIP")) {
+            this.lastSocketAddress = cacheTag.getString("IIP");
+            KiloEssentials.getLogger().info("Updating ip for " + savedName);
+        }
         this.settings.fromTag(compoundTag.getCompound("settings"));
     }
 

@@ -380,7 +380,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public String getName() {
-        return null;
+        return this.source.getName();
     }
 
     @Override

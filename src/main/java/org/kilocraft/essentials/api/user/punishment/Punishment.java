@@ -4,27 +4,40 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
+import java.net.SocketAddress;
 import java.util.Date;
 
 public class Punishment extends PunishmentEntry {
     private @Nullable final Date expiry;
 
     public Punishment(@NotNull final EntityIdentifiable arbiter,
-                      @NotNull final EntityIdentifiable victim) {
-        this(arbiter, victim, null, null);
+                      @Nullable final EntityIdentifiable victim) {
+        this(arbiter, victim, null, null, null);
     }
 
     public Punishment(@NotNull final EntityIdentifiable arbiter,
-                      @NotNull final EntityIdentifiable victim,
+                      @Nullable final String victimIP) {
+        this(arbiter, null, victimIP, null, null);
+    }
+
+    public Punishment(@NotNull final EntityIdentifiable arbiter,
+                      @Nullable final EntityIdentifiable victim,
                       @Nullable final String reason) {
-        this(arbiter, victim, reason, null);
+        this(arbiter, victim, null, reason, null);
     }
 
     public Punishment(@NotNull final EntityIdentifiable arbiter,
-                      @NotNull final EntityIdentifiable victim,
+                      @Nullable final String victimIP,
+                      @Nullable final String reason) {
+        this(arbiter, null, victimIP, reason, null);
+    }
+
+    public Punishment(@NotNull final EntityIdentifiable arbiter,
+                      @Nullable final EntityIdentifiable victim,
+                      @Nullable final String victimIP,
                       @Nullable final String reason,
                       @Nullable final Date expiry) {
-        super(arbiter, victim, reason);
+        super(arbiter, victim, victimIP, reason);
         this.expiry = expiry;
     }
 
@@ -34,6 +47,7 @@ public class Punishment extends PunishmentEntry {
     }
 
     public enum Type {
+        DENY_ACCESS_IP,
         DENY_ACCESS,
         MUTE
     }

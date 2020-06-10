@@ -8,6 +8,7 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.core.Logger;
@@ -24,6 +25,8 @@ import java.util.Locale;
 public class PermissionUtil {
     private static final Logger logger = (Logger) KiloEssentials.getLogger();
     private static final List<String> pendingPermissions = new ArrayList<>();
+    public static String COMMAND_PERMISSION_PREFIX = "kiloessentials.command.";
+    public static String PERMISSION_PREFIX = "kiloessentials.";
     private boolean present;
     private Manager manager;
 
@@ -59,12 +62,14 @@ public class PermissionUtil {
 
                 for (final EssentialPermission perm : EssentialPermission.values()) {
                     if (!map.permissionExists(perm.getNode())) {
+                        if(SharedConstants.isDevelopment) KiloEssentials.getLogger().info("Registering: " + perm.getNode());
                         map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
                     }
                 }
 
                 for (final CommandPermission perm : CommandPermission.values()) {
                     if (!map.permissionExists(perm.getNode())) {
+                        if(SharedConstants.isDevelopment) KiloEssentials.getLogger().info("Registering: " + perm.getNode());
                         map.registerPermission(perm.getNode(), PermChangeBehavior.UPDATE_COMMAND_TREE);
                     }
                 }
@@ -73,6 +78,7 @@ public class PermissionUtil {
                     for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
                         String perm = CommandPermission.HOME_LIMIT.getNode() + "." + i;
                         if (!map.permissionExists(perm)) {
+                            if(SharedConstants.isDevelopment) KiloEssentials.getLogger().info("Registering: " + perm);
                             map.registerPermission(perm, PermChangeBehavior.UPDATE_COMMAND_TREE);
                         }
                     }
@@ -82,6 +88,7 @@ public class PermissionUtil {
                     for (int i = 1; i <= KiloConfig.main().playerWarpsLimit; i++) {
                         String perm = CommandPermission.PLAYER_WARP_LIMIT.getNode() + "." + i;
                         if (!map.permissionExists(perm)) {
+                            if(SharedConstants.isDevelopment) KiloEssentials.getLogger().info("Registering: " + perm);
                             map.registerPermission(perm, PermChangeBehavior.UPDATE_COMMAND_TREE);
                         }
                     }

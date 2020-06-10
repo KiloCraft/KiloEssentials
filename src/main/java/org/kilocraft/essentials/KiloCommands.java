@@ -34,6 +34,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
+import org.kilocraft.essentials.commands.moderation.*;
 import org.kilocraft.essentials.commands.server.DebugEssentialsCommand;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
@@ -45,8 +46,6 @@ import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
-import org.kilocraft.essentials.commands.moderation.ClearChatCommand;
-import org.kilocraft.essentials.commands.moderation.IpInfoCommand;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -81,7 +80,6 @@ public class KiloCommands {
     private final List<IEssentialCommand> commands;
     private final CommandDispatcher<ServerCommandSource> dispatcher;
     private final SimpleCommandManager simpleCommandManager;
-    static final String PERMISSION_PREFIX = "kiloessentials.command.";
     private static LiteralCommandNode<ServerCommandSource> rootNode;
 
     public KiloCommands() {
@@ -166,6 +164,9 @@ public class KiloCommands {
         this.register(new CalculateCommand());
         this.register(new HugCommand());
         this.register(new GlowCommand());
+        this.register(new BanCommand());
+        this.register(new MuteCommand());
+        this.register(new IpBanCommand());
 
         this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
 

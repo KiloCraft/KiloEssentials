@@ -48,6 +48,9 @@ public class LiteralCommandModified {
         add("time");
         add("enchant");
         add("locatebiome");
+        add("ban");
+        add("ban-ip");
+        add("seed");
     }};
 
     public static String normalizeName(String name) {
