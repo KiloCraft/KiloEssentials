@@ -93,12 +93,12 @@ public class ServerImpl implements Server {
     public void reloadMinecraftServer(Action<Throwable> fallback) {
         ResourcePackManager<ResourcePackProfile> resourcePackManager = this.server.getDataPackManager();
         SaveProperties saveProperties = this.getMinecraftServer().getSaveProperties();
-        Collection<String> collection = resourcePackManager.method_29210();
+        Collection<String> collection = resourcePackManager.getEnabledNames();
 
         Collection<String> modifiedCollection = Lists.newArrayList(collection);
         resourcePackManager.scanPacks();
-        for (String string : resourcePackManager.method_29206()) {
-            if (!saveProperties.method_29589().method_29550().contains(string) && !modifiedCollection.contains(string)) {
+        for (String string : resourcePackManager.getNames()) {
+            if (!saveProperties.method_29589().getDisabled().contains(string) && !modifiedCollection.contains(string)) {
                 modifiedCollection.add(string);
             }
         }

@@ -85,4 +85,17 @@ public class RegistryUtils {
     public static Set<RegistryKey<World>> getWorldsKeySet() {
         return server.getWorldRegistryKeys();
     }
+
+    public static boolean isOverworld(@NotNull final DimensionType type) {
+        return type.equals(toDimension(DimensionType.OVERWORLD_REGISTRY_KEY.getValue()));
+    }
+
+    public static boolean isNether(@NotNull final DimensionType type) {
+        return type.equals(toDimension(DimensionType.THE_NETHER_REGISTRY_KEY.getValue()));
+    }
+
+    public static boolean isEnd(@NotNull final DimensionType type) {
+        return type.equals(toDimension(DimensionType.THE_END_REGISTRY_KEY.getValue()));
+    }
+
 }

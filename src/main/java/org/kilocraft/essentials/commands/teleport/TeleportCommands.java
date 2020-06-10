@@ -109,7 +109,7 @@ public class TeleportCommands {
     }
 
     private static int teleportIn(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
-        ServerWorld targetWorld = KiloServer.getServer().getMinecraftServer().getWorld(DimensionArgumentType.getDimensionArgument(ctx, "dimension"));
+        ServerWorld targetWorld = KiloServer.getServer().getMinecraftServer().getWorld(RegistryUtils.toWorldKey(DimensionArgumentType.getDimensionArgument(ctx, "dimension").getDimension()));
         Vec3d vec = getVec3(ctx, "pos");
 
         KiloServer.getServer().getOnlineUser(target).saveLocation();
