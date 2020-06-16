@@ -9,6 +9,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -56,7 +57,7 @@ public class UserHomeHandler implements ConfigurableFeature {
         }};
 
         for (final EssentialCommand command : commands) {
-            KiloEssentials.getInstance().getCommandHandler().register(command);
+            KiloCommands.getInstance().register(command);
         }
 
         return true;

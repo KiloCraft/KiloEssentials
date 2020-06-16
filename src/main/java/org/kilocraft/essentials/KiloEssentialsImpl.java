@@ -12,13 +12,13 @@ import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.util.Litebans2Vanilla;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.commands.misc.DiscordCommand;
@@ -32,13 +32,11 @@ import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.util.MutedPlayerList;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -57,66 +55,44 @@ import java.util.function.Consumer;
  */
 
 public final class KiloEssentialsImpl implements KiloEssentials {
-	private static boolean running = false;
+	public static boolean running = false;
 	private static final Logger LOGGER = LogManager.getLogger("KiloEssentials");
 	private static KiloEssentialsImpl instance;
 
-	private final ConfigurableFeatures FEATURES;
-	private final KiloCommands commands;
-
-	private PermissionUtil permUtil;
+    private PermissionUtil permUtil;
 	private StartupScript startupScript;
 
 	public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 
-	public static void onServerSet(@NotNull final Server server) {
+	public static void onServerSet(final Server server) {
 		KiloDebugUtils.validateDebugMode(false);
-		new KiloEssentialsImpl();
-	}
-
-	KiloEssentialsImpl() {
-		if (running) {
-			throw new RuntimeException("KiloEssentialsImpl is already running!");
-		} else {
-			running = true;
-		}
-
-		KiloEssentialsImpl.instance = this;
-		KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
-
-		KiloConfig.load();
         try {
             getServer().getUserManager().getMutedPlayerList().load();
         } catch (IOException e) {
             KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
         }
         new KiloEvents();
-		this.commands = new KiloCommands();
+    }
+
+
+
+	public KiloEssentialsImpl() {
+        if (running) {
+            throw new RuntimeException("KiloEssentialsImpl is already running!");
+        } else {
+            running = true;
+        }
+        KiloEssentialsImpl.instance = this;
+        KiloEssentialsImpl.LOGGER.info("Running KiloEssentials version " + ModConstants.getVersion());
 
 		if (SharedConstants.isDevelopment) {
 			new KiloDebugUtils();
 		}
-
 		ServerChat.load();
-
-		FEATURES = new ConfigurableFeatures();
-		FEATURES.tryToRegister(new UserHomeHandler(), "playerHomes");
-		FEATURES.tryToRegister(new ServerWarpManager(), "serverWideWarps");
-		FEATURES.tryToRegister(new PlayerWarpsManager(), "playerWarps");
-		FEATURES.tryToRegister(new SeatManager(), "betterChairs");
-		FEATURES.tryToRegister(new CustomCommands(), "customCommands");
-		FEATURES.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
-		FEATURES.tryToRegister(new DiscordCommand(), "discordCommand");
-		FEATURES.tryToRegister(new VoteCommand(), "voteCommand");
-		FEATURES.tryToRegister(new PlaytimeCommands(), "playtimeCommands");
-
 		if (KiloConfig.main().startupScript().enabled) {
 			this.startupScript = new StartupScript();
 		}
-
 		this.permUtil = new PermissionUtil();
-
-
 	}
 
 	public static Logger getLogger() {
@@ -140,7 +116,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 		if (KiloEssentialsImpl.instance != null) {
 			return KiloEssentialsImpl.instance;
 		}
-
 		throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
     }
 
@@ -154,7 +129,8 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 	@Override
 	public KiloCommands getCommandHandler() {
-		return this.commands;
+	    return KiloCommands.getInstance();
+//		return this.commands;
 	}
 
 	@Override
@@ -317,7 +293,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 	@Override
 	public ConfigurableFeatures getFeatures() {
-		return this.FEATURES;
+		return ConfigurableFeatures.getInstance();
 	}
 
 	public void onServerStop() {
@@ -327,6 +303,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 	}
 
 	public void onServerLoad() {
+	    new KiloCommands();
 		this.permUtil = new PermissionUtil();
 	}
 

@@ -20,7 +20,8 @@ public class KiloServer {
      */
     public static Server getServer() {
         if (server == null) {
-            throw new RuntimeException("Server isn't set!");
+            return null;
+//            throw new RuntimeException("Server isn't set!");
         }
 
         return server;
@@ -33,7 +34,6 @@ public class KiloServer {
      * @param minecraftServer Server instance
      */
     public static void setupServer(@NotNull final MinecraftServer minecraftServer) {
-        new ModConstants().loadConstants();
         String brand = String.format(
                 ModConstants.getProperties().getProperty("server.brand.full"),
                 ModConstants.getMinecraftVersion(),

@@ -40,7 +40,7 @@ public class MuteCommand extends EssentialCommand {
         final String input = this.getUserArgumentInput(ctx, "victim");
         Date expiry = expiryString == null ? null : new Date(TimeDifferenceUtil.parse(expiryString, true));
 
-        this.essentials.getUserThenAcceptAsync(src, input, (victim) -> {
+        this.getEssentials().getUserThenAcceptAsync(src, input, (victim) -> {
             Punishment punishment = new Punishment(
                     src,
                     victim,
@@ -49,7 +49,7 @@ public class MuteCommand extends EssentialCommand {
                     expiry
             );
 
-            this.server.getUserManager().performPunishment(punishment, Punishment.Type.MUTE, (result) -> { });
+            this.getServer().getUserManager().performPunishment(punishment, Punishment.Type.MUTE, (result) -> { });
         });
 
         return AWAIT;

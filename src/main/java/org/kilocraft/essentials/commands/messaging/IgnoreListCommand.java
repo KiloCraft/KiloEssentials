@@ -33,7 +33,7 @@ public class IgnoreListCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx, String target) throws CommandSyntaxException {
         OnlineUser src = getOnlineUser(ctx);
-        essentials.getUserThenAcceptAsync(src, target, (user) -> {
+        getEssentials().getUserThenAcceptAsync(src, target, (user) -> {
             Map<String, UUID> ignoreList = user.getSetting(Settings.IGNORE_LIST);
 
             if (ignoreList.isEmpty()) {

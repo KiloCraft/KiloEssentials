@@ -10,6 +10,7 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.TextMessage;
@@ -18,17 +19,14 @@ import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class SimpleCommandManager {
     private static SimpleCommandManager INSTANCE;
     private List<SimpleCommand> commands;
     private List<String> byId;
-    private Server server;
 
-    public SimpleCommandManager(Server server, CommandDispatcher<ServerCommandSource> dispatcher) {
+    public SimpleCommandManager() {
         INSTANCE = this;
-        this.server = server;
         this.commands = new ArrayList<>();
         this.byId = new ArrayList<>();
     }
@@ -131,7 +129,7 @@ public class SimpleCommandManager {
                     return 0;
                 }
 
-                var = command.executable.execute(source, args, this.server);
+                var = command.executable.execute(source, args, KiloEssentials.getServer());
             }
         } catch (CommandSyntaxException e) {
             if (e.getRawMessage().getString().equals("Unknown command")) {
