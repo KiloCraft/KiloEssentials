@@ -54,7 +54,7 @@ public class BanCommand extends EssentialCommand {
                     reason,
                     expiry
             );
-            this.server.getUserManager().performPunishment(punishment, Punishment.Type.DENY_ACCESS, (result) -> {
+            this.getServer().getUserManager().performPunishment(punishment, Punishment.Type.DENY_ACCESS, (result) -> {
             });
             success.set(true);
         });

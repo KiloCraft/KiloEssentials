@@ -14,8 +14,10 @@ import java.util.Map;
 public class ConfigurableFeatures {
     private static List<ConfigurableFeature> features = new ArrayList<>();;
     private static List<TickListener> tickListeners = new ArrayList<>();
+    private static ConfigurableFeatures INSTANCE;
     public ConfigurableFeatures() {
         KiloEssentialsImpl.getLogger().info("Registering the Configurable Features...");
+        INSTANCE = this;
     }
 
     public <F extends ConfigurableFeature> void tryToRegister(F feature, String configKey) {
@@ -35,7 +37,6 @@ public class ConfigurableFeatures {
         } catch (NullPointerException ignored) {
             //Don't enable the feature:: PASS
         }
-
     }
 
     public void loadAll() {
@@ -58,5 +59,8 @@ public class ConfigurableFeatures {
                 KiloEssentials.getLogger().fatal("An unexpected error occurred while processing a Tick Event", e);
             }
         }
+    }
+    public static ConfigurableFeatures getInstance() {
+        return INSTANCE;
     }
 }

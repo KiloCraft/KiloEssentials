@@ -99,7 +99,7 @@ public class HomeCommand extends EssentialCommand {
         final OnlineUser source = this.getOnlineUser(player);
         final String inputName = StringArgumentType.getString(ctx, "user");
 
-        this.essentials.getUserThenAcceptAsync(source, inputName, user -> {
+        this.getEssentials().getUserThenAcceptAsync(source, inputName, user -> {
             final UserHomeHandler homeHandler = user.getHomesHandler();
             if (!homeHandler.hasHome(name)) {
                 source.sendConfigMessage("commands.playerHomes.invalid_home");

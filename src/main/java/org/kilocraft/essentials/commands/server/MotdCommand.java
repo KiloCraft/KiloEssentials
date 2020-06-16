@@ -45,7 +45,7 @@ public class MotdCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx) {
-        final Text description = this.server.getMetaManager().getDescription();
+        final Text description = this.getServer().getMetaManager().getDescription();
         final String[] lines = Texter.Legacy.toFormattedString(description).split("\n");
 
         this.getServerUser(ctx).sendLangMessage("command.motd", (lines.length >= 0) ? lines[0] : "", lines.length >= 1 ? lines[1] : "");
@@ -54,7 +54,7 @@ public class MotdCommand extends EssentialCommand {
 
     private int setMotd(final CommandContext<ServerCommandSource> ctx) {
         final int line = IntegerArgumentType.getInteger(ctx, "line");
-        final Text description = this.server.getMetaManager().getDescription();
+        final Text description = this.getServer().getMetaManager().getDescription();
         final String input = MotdCommand.COMPILE.matcher(TextFormat.translate(StringArgumentType.getString(ctx, "text"))).replaceAll("");
 
         @NonNls String finalmotd = null;
@@ -68,7 +68,7 @@ public class MotdCommand extends EssentialCommand {
         }
 
         try {
-            this.server.getMetaManager().setDescription(Texter.newText(finalmotd));
+            this.getServer().getMetaManager().setDescription(Texter.newText(finalmotd));
         } catch (final IOException e) {
             this.getServerUser(ctx).sendError("Can not save the value \"motd\" in server.properties\n" + e.getMessage());
 
@@ -76,7 +76,7 @@ public class MotdCommand extends EssentialCommand {
             e.printStackTrace();
         }
 
-        final String[] motd = Texter.Legacy.toFormattedString(this.server.getMetaManager().getDescription()).split(MotdCommand.COMPILE.pattern());
+        final String[] motd = Texter.Legacy.toFormattedString(this.getServer().getMetaManager().getDescription()).split(MotdCommand.COMPILE.pattern());
 
         ctx.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.set", TextFormat.translate(motd[0]), TextFormat.translate(motd[1])), true);
         return this.SUCCESS;
@@ -90,7 +90,7 @@ public class MotdCommand extends EssentialCommand {
 
             try {
                 @NonNls final String desc = TextFormat.reverseTranslate(
-                        Texter.Legacy.toFormattedString(this.server.getMetaManager().getDescription()).split(MotdCommand.COMPILE.pattern())[line - 1], '&');
+                        Texter.Legacy.toFormattedString(this.getServer().getMetaManager().getDescription()).split(MotdCommand.COMPILE.pattern())[line - 1], '&');
                 builder.suggest('"' + desc + '"');
             } catch (final ArrayIndexOutOfBoundsException ignored) {}
 

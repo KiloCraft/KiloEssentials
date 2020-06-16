@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.chat.LangText;
@@ -48,7 +49,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     public boolean register() {
         INSTANCE = this;
         enabled = true;
-        KiloEssentials.getInstance().getCommandHandler().register(new SitCommand());
+        KiloCommands.getInstance().register(new SitCommand());
 
         return true;
     }

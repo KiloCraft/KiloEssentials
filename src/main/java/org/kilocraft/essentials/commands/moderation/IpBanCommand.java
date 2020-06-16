@@ -69,7 +69,7 @@ public class IpBanCommand extends EssentialCommand {
                 punishment = new Punishment(src, victim.get(), ip.get().split(":")[0], reason, expiry);
             }
         }
-        this.server.getUserManager().performPunishment(punishment, Punishment.Type.DENY_ACCESS_IP, (result) -> { });
+        this.getServer().getUserManager().performPunishment(punishment, Punishment.Type.DENY_ACCESS_IP, (result) -> { });
         return AWAIT;
     }
 

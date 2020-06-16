@@ -67,7 +67,7 @@ public class PlaytimeTopCommand extends EssentialCommand {
             }
         }
 
-        this.essentials.getAllUsersThenAcceptAsync(src, "general.wait_users", list -> {
+        this.getEssentials().getAllUsersThenAcceptAsync(src, "general.wait_users", list -> {
             final HashMap<String, Integer> map = new HashMap<>();
             long totalTicks = 0L;
 

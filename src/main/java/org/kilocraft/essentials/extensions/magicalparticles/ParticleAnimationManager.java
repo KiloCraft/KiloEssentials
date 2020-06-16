@@ -46,7 +46,7 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
     @Override
     public boolean register() {
         NBTStorageUtil.addCallback(this);
-        KiloEssentials.getInstance().getCommandHandler().register(new MagicalParticlesCommand());
+        KiloCommands.getInstance().register(new MagicalParticlesCommand());
         load();
         return true;
     }

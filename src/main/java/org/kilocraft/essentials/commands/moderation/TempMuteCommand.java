@@ -36,14 +36,14 @@ public class TempMuteCommand extends EssentialCommand {
         final CommandSourceUser src = this.getServerUser(ctx);
         final String input = this.getUserArgumentInput(ctx, "victim");
 
-        this.essentials.getUserThenAcceptAsync(src, input, (victim) -> {
+        this.getEssentials().getUserThenAcceptAsync(src, input, (victim) -> {
             Punishment punishment = new Punishment(
                     src,
                     victim,
                     reason
             );
 
-            this.server.getUserManager().performPunishment(punishment, Punishment.Type.MUTE, (result) -> {});
+            this.getServer().getUserManager().performPunishment(punishment, Punishment.Type.MUTE, (result) -> {});
         });
 
         return AWAIT;

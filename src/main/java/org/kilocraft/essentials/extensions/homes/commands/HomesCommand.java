@@ -45,7 +45,7 @@ public class HomesCommand extends EssentialCommand {
         OnlineUser source = getOnlineUser(player);
         String inputName = getString(ctx, "user");
 
-        essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
+        getEssentials().getUserThenAcceptAsync(player, inputName, (user) -> {
             sendInfo(source, user);
         });
 

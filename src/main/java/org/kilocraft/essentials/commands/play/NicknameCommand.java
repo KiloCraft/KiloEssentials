@@ -98,7 +98,7 @@ public class NicknameCommand extends EssentialCommand {
 
         String finalFormattedNickname = formattedNickname;
         KiloEssentials.getInstance().getUserThenAcceptAsync(src, src.getUsername(), (user) -> {
-            if (((ServerUserManager) server.getUserManager()).shouldNotUseNickname(src, nickname)) {
+            if (((ServerUserManager) this.getServer().getUserManager()).shouldNotUseNickname(src, nickname)) {
                 src.sendLangMessage("command.nickname.already_taken");
                 return;
             }
@@ -126,9 +126,9 @@ public class NicknameCommand extends EssentialCommand {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
         }
 
-        essentials.getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
+        getEssentials().getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
             String formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
-            if (((ServerUserManager) server.getUserManager()).shouldNotUseNickname(src, nickname)) {
+            if (((ServerUserManager) this.getServer().getUserManager()).shouldNotUseNickname(src, nickname)) {
                 src.sendLangMessage("command.nickname.already_taken");
                 return;
             }
@@ -171,7 +171,7 @@ public class NicknameCommand extends EssentialCommand {
     private int resetOther(CommandContext<ServerCommandSource> ctx) {
         CommandSourceUser source = getServerUser(ctx);
 
-        essentials.getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
+        getEssentials().getUserThenAcceptAsync(source, getUserArgumentInput(ctx, "user"), (user) -> {
             user.clearNickname();   /* This is an Optional.ofNullable, so the DataTracker will
                                    just reset the name without any other magic since TrackedData
                                    is always and automatically synchronized with the client. */
