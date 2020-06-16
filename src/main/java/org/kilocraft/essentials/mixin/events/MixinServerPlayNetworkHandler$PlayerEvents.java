@@ -105,12 +105,12 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         ServerWorld serverWorld = this.player.getServerWorld();
         Hand hand = playerInteractBlockC2SPacket.getHand();
         ItemStack itemStack = this.player.getStackInHand(hand);
-        BlockHitResult blockHitResult = playerInteractBlockC2SPacket.getHitY();
+        BlockHitResult blockHitResult = playerInteractBlockC2SPacket.getBlockHitResult();
         BlockPos blockPos = blockHitResult.getBlockPos();
         Direction direction = blockHitResult.getSide();
         this.player.updateLastActionTime();
 
-        PlayerInteractBlockEvent event = new PlayerInteractBlockEventImpl(player, playerInteractBlockC2SPacket.getHitY(), hand);
+        PlayerInteractBlockEvent event = new PlayerInteractBlockEventImpl(player, playerInteractBlockC2SPacket.getBlockHitResult(), hand);
         KiloServer.getServer().triggerEvent(event);
         if (!event.isCancelled()) {
             if (blockPos.getY() < this.server.getWorldHeight()) {
