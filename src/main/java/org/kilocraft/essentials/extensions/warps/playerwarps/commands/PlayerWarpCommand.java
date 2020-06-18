@@ -206,7 +206,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             return SUCCESS;
         }
 
-        this.essentials.getUserThenAcceptAsync(src, inputName, (user) -> {
+        this.getEssentials().getUserThenAcceptAsync(src, inputName, (user) -> {
             this.sendList(src.getCommandSource(), user, page);
         });
 
@@ -229,7 +229,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             return SUCCESS;
         }
 
-        this.essentials.getUserThenAcceptAsync(src, warp.getOwner(), (user) -> {
+        this.getEssentials().getUserThenAcceptAsync(src, warp.getOwner(), (user) -> {
             sendInfo(src, warp, user);
         });
 

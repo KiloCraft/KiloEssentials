@@ -84,7 +84,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
                     }
                 }
 
-                this.essentials.getUserThenAcceptAsync(owner, (optionalUser) -> {
+                this.getEssentials().getUserThenAcceptAsync(owner, (optionalUser) -> {
                     if (optionalUser.isPresent()) {
                         map.put(optionalUser.get().getFormattedDisplayName(), warps);
                     } else {

@@ -29,6 +29,8 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
+import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
+import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
@@ -59,8 +61,15 @@ import org.kilocraft.essentials.commands.user.WhoWasCommand;
 import org.kilocraft.essentials.commands.world.TimeCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.commands.OnCommandExecutionEventImpl;
+import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
+import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
+import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
+import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
+import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
+import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
+import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
@@ -79,15 +88,32 @@ import static org.kilocraft.essentials.commands.LiteralCommandModified.*;
 public class KiloCommands {
     private final List<IEssentialCommand> commands;
     private final CommandDispatcher<ServerCommandSource> dispatcher;
-    private final SimpleCommandManager simpleCommandManager;
+    private SimpleCommandManager simpleCommandManager;
     private static LiteralCommandNode<ServerCommandSource> rootNode;
+    private static KiloCommands instance;
+
 
     public KiloCommands() {
+        KiloCommands.instance = this;
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
-        this.simpleCommandManager = new SimpleCommandManager(KiloServer.getServer(), this.dispatcher);
         this.commands = new ArrayList<>();
         KiloCommands.rootNode = literal("essentials").executes(this::sendInfo).build();
+        this.simpleCommandManager = new SimpleCommandManager();
         registerDefaults();
+        registerFeatures();
+    }
+
+    public void registerFeatures() {
+        ConfigurableFeatures FEATURES = new ConfigurableFeatures();
+        FEATURES.tryToRegister(new UserHomeHandler(), "playerHomes");
+        FEATURES.tryToRegister(new ServerWarpManager(), "serverWideWarps");
+        FEATURES.tryToRegister(new PlayerWarpsManager(), "playerWarps");
+        FEATURES.tryToRegister(new SeatManager(), "betterChairs");
+        FEATURES.tryToRegister(new CustomCommands(), "customCommands");
+        FEATURES.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
+        FEATURES.tryToRegister(new DiscordCommand(), "discordCommand");
+        FEATURES.tryToRegister(new VoteCommand(), "voteCommand");
+        FEATURES.tryToRegister(new PlaytimeCommands(), "playtimeCommands");
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {
@@ -501,6 +527,13 @@ public class KiloCommands {
 
     public static CommandDispatcher<ServerCommandSource> getDispatcher() {
         return KiloEssentialsImpl.commandDispatcher;
+    }
+
+    public static KiloCommands getInstance() {
+        if (KiloCommands.instance != null) {
+            return KiloCommands.instance;
+        }
+        throw new RuntimeException("Its too early to get a static instance of KiloCommands!");
     }
 
     private boolean isCommand(final String literal) {

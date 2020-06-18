@@ -82,7 +82,7 @@ public class GamemodeCommand extends EssentialCommand {
         }
 
         AtomicInteger atomicInteger = new AtomicInteger(IEssentialCommand.AWAIT);
-        this.essentials.getUserThenAcceptAsync(sourceUser, selection, user -> {
+        this.getEssentials().getUserThenAcceptAsync(sourceUser, selection, user -> {
             try {
                 user.getSettings().set(Settings.GAME_MODE, selectedMode);
 

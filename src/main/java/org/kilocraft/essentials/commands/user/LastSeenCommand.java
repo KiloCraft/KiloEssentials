@@ -27,7 +27,7 @@ public class LastSeenCommand extends EssentialCommand {
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
 
-        essentials.getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {
+        getEssentials().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {
             if (user.isOnline()) {
                 src.sendLangError("command.lastseen.online", user.getFormattedDisplayName());
                 return;

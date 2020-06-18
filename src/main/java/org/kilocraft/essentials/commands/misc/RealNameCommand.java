@@ -31,15 +31,7 @@ public class RealNameCommand extends EssentialCommand {
 	private int execute(CommandContext<ServerCommandSource> ctx){
 		String input = getString(ctx, "nickname");
 
-		// Allow for spaces
-		if (input.chars().filter(ch -> ch == '"').count() >= 2) {
-			int firstIndex = input.indexOf("\"");
-			input = input.substring(0, firstIndex) + input.substring(firstIndex + 1);
-			int lastIndex = input.lastIndexOf("\"");
-			input = input.substring(0, lastIndex) + input.substring(lastIndex + 1);
-		}
-
-		for (OnlineUser user : server.getUserManager().getOnlineUsersAsList()) {
+		for (OnlineUser user : this.getServer().getUserManager().getOnlineUsersAsList()) {
 			String nick = TextFormat.removeAlternateColorCodes('&', user.getDisplayName());
 			if (input.equalsIgnoreCase(nick) || input.equals(user.getUsername())) {
 				KiloChat.sendLangMessageTo(ctx.getSource(), "command.realname.success", user.getFormattedDisplayName(), user.getUsername());
