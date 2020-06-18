@@ -2,13 +2,20 @@ package org.kilocraft.essentials.extensions.warps.playerwarps.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.command.arguments.DimensionArgumentType;
+import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
@@ -40,12 +47,39 @@ public class PlayerWarpsCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = argument("page", IntegerArgumentType.integer(1))
                 .executes((ctx) -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), false));
+
+        LiteralArgumentBuilder<ServerCommandSource> nameLiteral = literal("name");
+        RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", StringArgumentType.string())
+                .executes((ctx) -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), true, StringArgumentType.getString(ctx, "name"), null, null));
+
+        LiteralArgumentBuilder<ServerCommandSource> dimensionLiteral = literal("dimension");
+        RequiredArgumentBuilder<ServerCommandSource, Identifier> dimensionArgument = argument("dimension", DimensionArgumentType.dimension())
+                .executes((ctx) -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), true, null, DimensionArgumentType.getDimensionArgument(ctx, "dimension"), null));
+
+        LiteralArgumentBuilder<ServerCommandSource> categoryLiteral = literal("category");
+        RequiredArgumentBuilder<ServerCommandSource, String> categoryArgument = argument("category", StringArgumentType.string())
+                .executes((ctx) -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), true, null, null, StringArgumentType.getString(ctx, "category")))
+                .suggests(this::typeSuggestions);
+
         LiteralArgumentBuilder<ServerCommandSource> forceArgument = literal("force")
                 .executes((ctx) -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), true));
+
+        nameLiteral.then(nameArgument);
+        pageArgument.then(nameLiteral);
+
+        dimensionLiteral.then(dimensionArgument);
+        pageArgument.then(dimensionLiteral);
+
+        categoryLiteral.then(categoryArgument);
+        pageArgument.then(categoryLiteral);
 
         pageArgument.then(forceArgument);
         commandNode.addChild(pageArgument.build());
         argumentBuilder.executes(this::execute);
+    }
+
+    private CompletableFuture<Suggestions> typeSuggestions(CommandContext<ServerCommandSource> serverCommandSourceCommandContext, SuggestionsBuilder suggestionsBuilder) {
+        return CommandSource.suggestMatching(new ArrayList<>(PlayerWarp.Type.getTypes()), suggestionsBuilder);
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -53,6 +87,10 @@ public class PlayerWarpsCommand extends EssentialCommand {
     }
 
     private int send(CommandContext<ServerCommandSource> ctx, int page, boolean force) throws CommandSyntaxException {
+        return send(ctx, page, false, null, null, null);
+    }
+
+    private int send(CommandContext<ServerCommandSource> ctx, int page, boolean force, String name, ServerWorld dimension, String category) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
 
         if (PlayerWarpsManager.getWarps().isEmpty()) {
@@ -75,6 +113,20 @@ public class PlayerWarpsCommand extends EssentialCommand {
 
             for (UUID owner : PlayerWarpsManager.getOwners()) {
                 List<PlayerWarp> warps = PlayerWarpsManager.getWarps(owner);
+
+                // Sort away incorrect ones
+                // Don't waste time trying to sort if there's nothing to sort
+                if (name != null || dimension != null || category != null) {
+                    for (int i = warps.size() - 1; i >= 0; i--) {
+                        if (name != null && !warps.get(i).getName().contains(name)) {
+                            warps.remove(i);
+                        } else if (dimension != null && warps.get(i).getLocation().getWorld() != dimension) {
+                            warps.remove(i);
+                        } else if (category != null && !warps.get(i).getType().equals(category)) {
+                            warps.remove(i);
+                        }
+                    }
+                }
 
                 if (this.isOnline(owner)) {
                     try {
@@ -156,5 +208,4 @@ public class PlayerWarpsCommand extends EssentialCommand {
         paged.send(src.getCommandSource(), "Player Warps (" + index + ")", "/playerwarps %page%");
         return SUCCESS;
     }
-
 }
