@@ -8,11 +8,11 @@ import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.util.MutedPlayerList;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class ServerPunishmentManager implements PunishmentManager {
 
     public ServerPunishmentManager() {
-
     }
 
     @Override
@@ -20,12 +20,15 @@ public class ServerPunishmentManager implements PunishmentManager {
         MutedPlayerList mutedPlayerList = KiloServer.getServer().getUserManager().getMutedPlayerList();
         MinecraftServer server = KiloServer.getServer().getMinecraftServer();
         GameProfile victim = server.getUserCache().getByUuid(user.getId());
-        if(victim == null){
+        if (victim == null) {
             return false;
         }
-        if (mutedPlayerList.contains(victim)) {
-            Date expiry = mutedPlayerList.get(victim).getExpiryDate();
-            if(expiry != null) { return new Date().before(expiry); }
+
+        if (mutedPlayerList.contains(victim) && mutedPlayerList.get(victim) != null) {
+            Date expiry = Objects.requireNonNull(mutedPlayerList.get(victim)).getExpiryDate();
+            if (expiry != null) {
+                return new Date().before(expiry);
+            }
         }
         return false;
     }

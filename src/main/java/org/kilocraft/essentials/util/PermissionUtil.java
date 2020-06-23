@@ -116,16 +116,14 @@ public class PermissionUtil {
     }
 
     public enum Manager {
-        NONE("none", ""),
-        VANILLA("Vanilla", ""),
-        LUCKPERMS("LuckPerms", "net.luckperms.api.LuckPerms");
+        NONE("none"),
+        VANILLA("Vanilla"),
+        LUCKPERMS("LuckPerms");
 
         private final String name;
-        private final String classPath;
 
-        Manager(final String name, final String classPath) {
+        Manager(final String name) {
             this.name = name;
-            this.classPath = classPath;
         }
 
         public String getName() {
