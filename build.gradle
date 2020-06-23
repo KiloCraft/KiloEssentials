@@ -25,8 +25,7 @@ details.isCleanTag
 
 archivesBaseName = project.archives_base_name
 version = "${project.mod_version as Object}-${project.mod_version_nick}-${project.minecraft_version}"
-if (project.build != 0) version += "+build.${project.build}"
-def buildType = details.isCleanTag ? "release" : "beta"
+def buildType = details.isCleanTag ? "clean" : "dirty"
 
 def gitVersion = "${version}-${buildType}+git.${details.branchName}-${details.gitHash}"
 def buildTime = new Date();
@@ -81,7 +80,7 @@ processResources {
 		expand "version": version, "version_int": project.mod_version, "built_at": buildTime, "fabric_loader_version": project.loader_version,
 				"fabric_yarn_mappings": project.yarn_mappings, "mc_version": project.minecraft_version,
 				"git_hash": details.gitHash, "git_hash_full": details.gitHashFull, "git_branch": details.branchName, "build_type": buildType, "version_nick" : project.mod_version_nick,
-				"build": project.build
+				"version_type": project.mod_version_type
 	}
 
 	from(sourceSets.main.resources.srcDirs) {
