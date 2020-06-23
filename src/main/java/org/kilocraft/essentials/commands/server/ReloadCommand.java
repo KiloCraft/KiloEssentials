@@ -5,14 +5,17 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.HoverEvent;
 import org.apache.commons.lang3.time.StopWatch;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ReloadCommand extends EssentialCommand {
     public ReloadCommand() {
@@ -33,7 +36,7 @@ public class ReloadCommand extends EssentialCommand {
         KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.start");
 
         watch.start();
-        server.reload((throwable) -> {
+        getServer().reload((throwable) -> {
             watch.stop();
             String str = tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
             logger.error(str);
@@ -51,15 +54,20 @@ public class ReloadCommand extends EssentialCommand {
         KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.vanilla");
 
         watch.start();
-        server.reloadMinecraftServer((throwable) -> {
+        AtomicBoolean success = new AtomicBoolean(true);
+        getServer().reloadMinecraftServer((throwable) -> {
             watch.stop();
             String str = tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
             logger.error(str);
-            src.sendMessage(str);
+            src.sendMessage(Texter.newText(tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)))).styled(style -> {
+                return style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText(throwable.getMessage())));
+            }));
+            success.set(false);
         });
-
-        watch.stop();
-        src.sendLangMessage("command.reload.end", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
+        if(success.get()) {
+            watch.stop();
+            src.sendLangMessage("command.reload.end", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
+        }
         return AWAIT;
     }
 
@@ -68,7 +76,7 @@ public class ReloadCommand extends EssentialCommand {
         StopWatch watch = new StopWatch();
         watch.start();
         KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.ke");
-        server.reloadKiloEssentials();
+        getServer().reloadKiloEssentials();
         watch.stop();
         src.sendLangMessage("command.reload.end", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
         return AWAIT;

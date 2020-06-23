@@ -26,7 +26,7 @@ import static net.minecraft.command.arguments.EntityArgumentType.player;
 public class SudoCommand extends EssentialCommand {
 
     public SudoCommand() {
-        super("sudo", (src) -> src.hasPermissionLevel(4));
+        super("sudo", source -> source.hasPermissionLevel(2));
         this.withUsage("command.sudo.usage", "target", "command");
     }
 
@@ -37,10 +37,6 @@ public class SudoCommand extends EssentialCommand {
                 .redirect(dispatcher.getRoot(), redirectModifier())
                 .build();
 
-        LiteralCommandNode<ServerCommandSource> consoleArg = literal("-server")
-                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SUDO_SERVER, 4))
-                .redirect(dispatcher.getRoot(), serverRedirectModifier())
-                .build();
 
         LiteralCommandNode<ServerCommandSource> asArg = literal("as")
                 .then(argument("targets", EntityArgumentType.entities())
@@ -49,16 +45,11 @@ public class SudoCommand extends EssentialCommand {
                 .build();
 
         commandNode.addChild(asArg);
-        commandNode.addChild(consoleArg);
         commandNode.addChild(selectorArg);
     }
 
     private static SingleRedirectModifier<ServerCommandSource> redirectModifier() {
         return context -> getPlayer(context, "target").getCommandSource();
-    }
-
-    private static SingleRedirectModifier<ServerCommandSource> serverRedirectModifier() {
-        return context -> KiloServer.getServer().getMinecraftServer().getCommandSource();
     }
 
     private static int executeAs(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

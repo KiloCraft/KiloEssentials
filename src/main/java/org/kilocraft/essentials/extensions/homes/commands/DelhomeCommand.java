@@ -79,7 +79,7 @@ public class DelhomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        essentials.getUserThenAcceptAsync(player, inputName, (user) -> {
+        getEssentials().getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
             if (!homeHandler.hasHome(name)) {

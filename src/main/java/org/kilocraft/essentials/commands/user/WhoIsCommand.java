@@ -45,7 +45,7 @@ public class WhoIsCommand extends EssentialCommand {
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) {
         CommandSourceUser src = getServerUser(ctx);
-        essentials.getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
+        getEssentials().getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
             execute(src, user);
         });
 

@@ -55,7 +55,6 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation "com.github.OnBlock:Thimble-Permissions:${project.thimble_permissions_version}"
 	implementation "com.github.KiloCraft:KiloEssentialsBungee:${project.ke_bungee_version}"
 
 	compile "org.spongepowered:configurate-hocon:${project.configurate_version}"

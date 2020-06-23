@@ -33,14 +33,14 @@ public class PlayerWarpsManager implements RelodableConfigurableFeature, NBTStor
         enabled = true;
         NBTStorageUtil.addCallback(this);
 
-        KiloEssentials.getInstance().getCommandHandler().register(
+        KiloCommands.getInstance().register(
                 new PlayerWarpCommand("playerwarp", src ->
                         KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_SELF) ||
                                 KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_OTHERS)
                         , new String[]{"pwarp"})
         );
 
-        KiloEssentials.getInstance().getCommandHandler().register(
+        KiloCommands.getInstance().register(
                 new PlayerWarpsCommand("playerwarps", CommandPermission.PLAYER_WARPS, new String[]{"pwarps"})
         );
 

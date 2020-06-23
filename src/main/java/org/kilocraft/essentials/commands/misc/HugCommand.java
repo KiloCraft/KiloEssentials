@@ -38,7 +38,7 @@ public class HugCommand extends EssentialCommand {
             return FAILED;
         }
 
-        for (ServerPlayerEntity player : this.server.getPlayerManager().getPlayerList()) {
+        for (ServerPlayerEntity player : this.getServer().getPlayerManager().getPlayerList()) {
             OnlineUser target = getOnlineUser(player);
 
             if (!target.equals(src)) {

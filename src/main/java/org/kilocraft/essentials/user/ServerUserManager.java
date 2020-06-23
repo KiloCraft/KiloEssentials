@@ -152,7 +152,7 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     @Nullable
     public CompletableFuture<Optional<User>> getOffline(GameProfile profile) {
-        if(profileHasID(profile)) return getOffline(profile.getId(), profile.getName());
+        if (profileHasID(profile)) return getOffline(profile.getId(), profile.getName());
         return CompletableFuture.completedFuture(Optional.empty());
     }
 
@@ -169,7 +169,7 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     @Nullable
     public OnlineUser getOnline(GameProfile profile) {
-        if(profileIsComplete(profile)) return getOnline(profile.getId());
+        if (profileIsComplete(profile)) return getOnline(profile.getId());
         return null;
     }
 
@@ -374,26 +374,11 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     private boolean profileIsComplete(GameProfile profile) {
-        if (profile != null) {
-            return profile.isComplete();
-        }
-        return false;
-    }
-    private boolean profileHasID(GameProfile profile) {
-        if (profile != null) {
-            return !(profile.getId() == null);
-        }
-        return false;
+        return profile != null && profile.isComplete();
     }
 
-    private void profileSanityCheck(GameProfile profile) {
-        if (profile != null) {
-            if (!profile.isComplete() && profile.getId() == null) {
-                throw new IllegalArgumentException("Cannot use GameProfile with missing username to get an OfflineUser");
-            }
-        } else {
-            throw new NullPointerException("GameProfile is null");
-        }
+    private boolean profileHasID(GameProfile profile) {
+        return profile != null && profile.getId() != null;
     }
 
     public void onJoin(ServerPlayerEntity playerEntity) {

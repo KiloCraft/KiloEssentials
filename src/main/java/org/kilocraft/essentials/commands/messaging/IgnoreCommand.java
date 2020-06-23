@@ -34,7 +34,7 @@ public class IgnoreCommand extends EssentialCommand {
         String inputName = getUserArgumentInput(ctx, "user");
 
         AtomicInteger atomicInteger = new AtomicInteger(AWAIT);
-        essentials.getUserThenAcceptAsync(src, inputName, (user) -> {
+        getEssentials().getUserThenAcceptAsync(src, inputName, (user) -> {
             if (((ServerUser) user).isStaff() || user.equals(src)) {
                 src.sendLangMessage("command.ignore.error");
                 return;
