@@ -3,6 +3,7 @@ package org.kilocraft.essentials.user;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.kilocraft.essentials.api.KiloEssentials;
 
@@ -73,7 +74,6 @@ public class UserHandler {
         return KiloEssentials.getDataDirPath().resolve("users").toFile().listFiles();
     }
 
-
     public void upgrade() {
         File[] files = getUserFiles();
         if (files == null || files.length <= 0) {
@@ -95,7 +95,7 @@ public class UserHandler {
         }
     }
 
-    private void upgradeAll() {
+    void upgradeAll() {
         int updated = 0;
         StopWatch watch = new StopWatch();
         watch.start();
@@ -151,5 +151,13 @@ public class UserHandler {
         }
 
         return false;
+    }
+
+    void backupFiles() throws Exception {
+        if (saveDir.renameTo(KiloEssentials.getDataDirPath().resolve("users_backup").toFile())) {
+            FileUtils.copyDirectory(saveDir, KiloEssentials.getDataDirPath().toFile());
+        } else {
+            throw new Exception("Couldn't rename file");
+        }
     }
 }

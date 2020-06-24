@@ -35,10 +35,10 @@ public class PermissionUtil {
     private Manager manager;
 
     public PermissionUtil() {
-        logger.info("Setting up Permissions...");
         this.manager = Manager.fromString(KiloConfig.main().permissionManager());
 
-        if (manager == Manager.VANILLA) {
+        if (manager == Manager.VANILLA || manager == Manager.NONE) {
+            logger.info("Using vanilla permission system");
             this.present = false;
             return;
         }
