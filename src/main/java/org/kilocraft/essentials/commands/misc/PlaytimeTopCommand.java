@@ -15,7 +15,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.util.CacheManager;
-import org.kilocraft.essentials.util.text.Pager;
+import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.util.ArrayList;
@@ -111,7 +111,7 @@ public class PlaytimeTopCommand extends EssentialCommand {
             input.append(String.format(LINE_FORMAT, i + 1, entry.getKey(), pt));
         }
 
-        Pager.Page paged = Pager.getPageFromStrings(Pager.Options.builder().setPageIndex(page - 1).build(), input.getLines());
+        ListedText.Page paged = ListedText.getPageFromStrings(ListedText.Options.builder().setPageIndex(page - 1).build(), input.getLines());
 
         String pt = TimeDifferenceUtil.convertSecondsToString(src.getTicksPlayed() / 20, 'b', '3');
         paged.setStickyFooter(String.format(ModConstants.translation("command.playtimetop.format.self"), rank + 1, src.getFormattedDisplayName(), pt));

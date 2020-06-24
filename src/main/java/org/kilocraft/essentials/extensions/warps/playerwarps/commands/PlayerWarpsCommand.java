@@ -26,7 +26,7 @@ import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.util.CacheManager;
-import org.kilocraft.essentials.util.text.Pager;
+import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -203,7 +203,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
             }
         }
 
-        Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
+        ListedText.Page paged = ListedText.getPageFromText(ListedText.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
 
         paged.send(src.getCommandSource(), "Player Warps (" + index + ")", "/playerwarps %page%");
         return SUCCESS;

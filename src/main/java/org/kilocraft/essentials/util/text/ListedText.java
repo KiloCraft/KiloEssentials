@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
-public class Pager {
+public class ListedText {
 
     /**
      * Returns the wanted page.
@@ -656,12 +656,12 @@ public class Pager {
             return maxPages;
         }
 
-        public Pager.Page setStickyHeader(String string) {
+        public ListedText.Page setStickyHeader(String string) {
             this.stickyHeader = string;
             return this;
         }
 
-        public Pager.Page setStickyFooter(String string) {
+        public ListedText.Page setStickyFooter(String string) {
             this.stickyFooter = string;
             return this;
         }

@@ -17,7 +17,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.*;
-import org.kilocraft.essentials.util.text.Pager;
+import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
@@ -137,7 +137,7 @@ public class WhoWasCommand extends EssentialCommand {
             input.append(Texter.newText(String.format(LINE_FORMAT, i, entry.getPlayerName())).append(" ").append(dateText));
         }
 
-        Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
+        ListedText.Page paged = ListedText.getPageFromText(ListedText.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
 
         paged.send(src.getCommandSource(), "Name history of " + name + " (&e" + i + "&6)", "/whowas " + name + " %page%");
         return SUCCESS;
