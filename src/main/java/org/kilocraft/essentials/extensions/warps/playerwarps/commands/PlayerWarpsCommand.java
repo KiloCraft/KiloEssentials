@@ -204,6 +204,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
         }
 
         ListedText.Page paged = ListedText.getPageFromText(ListedText.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
+        paged.setFormattings(Formatting.DARK_GRAY, Formatting.GOLD, Formatting.YELLOW);
 
         paged.send(src.getCommandSource(), "Player Warps (" + index + ")", "/playerwarps %page%");
         return SUCCESS;

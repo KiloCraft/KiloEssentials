@@ -566,6 +566,7 @@ public class ListedText {
         private List<MutableText> textEntries;
         private String stickyHeader;
         private String stickyFooter;
+        private Formatting[] formattings;
 
         /**
          * The language Keys can be found in the
@@ -666,6 +667,13 @@ public class ListedText {
             return this;
         }
 
+        public ListedText.Page setFormattings(@NotNull Formatting borders, @NotNull Formatting primary, @NotNull Formatting secondary) {
+            this.formattings = new Formatting[]{borders, primary, secondary};
+            return this;
+        }
+
+
+
         /**
          * Sends the page
          * <ul>
@@ -729,7 +737,7 @@ public class ListedText {
                     .append(new LiteralText("Next").formatted(f1))
                     .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
                     .styled((style) ->
-                            style.setHoverEvent(Texter.Events.onHover(new LiteralText((nextPage < maxPages) ? ">>>" : ">|").formatted(f3)))
+                            style.setHoverEvent(Texter.Events.onHover(new LiteralText((nextPage <= maxPages) ? ">>>" : ">|").formatted(f3)))
                             .withClickEvent(nextPage <= maxPages ? Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(nextPage))) : null)
                     );
 
