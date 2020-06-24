@@ -72,16 +72,6 @@ public class ServerUserManager implements UserManager, TickListener {
     public ServerUserManager(PlayerManager manager) {
     }
 
-    public void forceUpgrade() {
-        KiloEssentials.getLogger().info("**** Force updating the user data!");
-        try {
-            this.handler.backupFiles();
-            this.handler.upgradeAll();
-        } catch (Exception e) {
-            KiloEssentials.getLogger().error("Couldn't back up the user data files!", e);
-        }
-    }
-
     @Override
     public CompletableFuture<List<User>> getAll() {
         List<User> users = new ArrayList<>();

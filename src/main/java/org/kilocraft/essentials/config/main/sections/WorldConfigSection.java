@@ -15,7 +15,7 @@ public class WorldConfigSection {
     @Setting(value = "disabledDimensions", comment = "Put the identifier of a dimension here to disable it!")
     public List<String> disabledDimensions = Lists.newArrayList("myserver:custom_dimension");
 
-    @Setting(value = "kickFromDimensionIfNotAllowed", comment = "If set to true and if a player is inside of a disallowed dimension then they'll get\nteleported back to their Spawn Point")
+    @Setting(value = "kickFromDimensionIfNotAllowed", comment = "If set to true and if a player is inside of a disallowed dimension then they'll get kicked back to their spawnpoint")
     public boolean kickFromDimension = true;
 
     @Setting(value = "kickOutMessage", comment = "Set the message for when a player gets kicked back to their spawn point If the dimension is disallowed, Values: %s")
