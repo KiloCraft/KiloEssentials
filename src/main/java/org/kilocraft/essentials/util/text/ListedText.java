@@ -26,8 +26,7 @@ public class ListedText {
      * {@link Page#send(ServerCommandSource, String, String)}
      *
      * @param options The options.
-     * @param all All the Strings
-     *
+     * @param all     All the Strings
      * @return The resulting page
      */
     @NotNull
@@ -53,8 +52,7 @@ public class ListedText {
      * {@link Page#send(ServerCommandSource, String, String)}
      *
      * @param options The options.
-     * @param all All the Strings
-     *
+     * @param all     All the Strings
      * @return The resulting page
      */
     @SuppressWarnings("WeakerAccess")
@@ -78,11 +76,10 @@ public class ListedText {
     /**
      * Returns the page out of the list.
      *
-     * @param all All of the Strings
+     * @param all            All of the Strings
      * @param entriesPerPage The entries per page
-     * @param pageIndex Zero based page number. Will be corrected if too small
-     * or big.
-     *
+     * @param pageIndex      Zero based page number. Will be corrected if too small
+     *                       or big.
      * @return The resulting page
      */
     @NotNull
@@ -135,8 +132,7 @@ public class ListedText {
 
     /**
      * @param options The options to use
-     * @param all All the {@link PagerFilterable} to filter
-     *
+     * @param all     All the {@link PagerFilterable} to filter
      * @return The filtered list
      */
     @NotNull
@@ -165,7 +161,6 @@ public class ListedText {
     public interface PagerFilterable {
         /**
          * @param options The options to use
-         *
          * @return True if this object should pass
          */
         boolean accepts(Options options);
@@ -180,7 +175,6 @@ public class ListedText {
     public interface MutableTextPagerFilterable {
         /**
          * @param options The options to use
-         *
          * @return True if this object should pass
          */
         boolean accepts(Options options);
@@ -295,9 +289,7 @@ public class ListedText {
          * Checks if the String is accepted by the search pattern
          *
          * @param test The String to test
-         *
          * @return True if the string matched one (or more) pattern(s)
-         *
          * @throws NullPointerException if <code>test</code> is null
          */
         public boolean matchesPattern(String test) {
@@ -347,7 +339,6 @@ public class ListedText {
              * The entries per page
              *
              * @param entriesPerPage The entries per page
-             *
              * @return This Builder
              */
             @SuppressWarnings("unused")
@@ -362,7 +353,6 @@ public class ListedText {
              * The index of the page. 0 - max pages
              *
              * @param pageIndex The page index
-             *
              * @return This Builder
              */
             @SuppressWarnings("unused")
@@ -378,9 +368,7 @@ public class ListedText {
              * shown.
              *
              * @param searchModes The {@link SearchMode}s. Must not be empty.
-             *
              * @return This Builder
-             *
              * @throws IllegalArgumentException if searchModes is empty.
              * @throws NullPointerException     if searchModes is null
              */
@@ -401,10 +389,8 @@ public class ListedText {
              * shown.
              *
              * @param first The first search mode
-             * @param rest The other search modes
-             *
+             * @param rest  The other search modes
              * @return This Builder
-             *
              * @throws NullPointerException if first or rest is null
              * @see #setSearchModes(Set)
              */
@@ -424,9 +410,7 @@ public class ListedText {
              * shown.
              *
              * @param mode The {@link SearchMode} to add
-             *
              * @return This Builder
-             *
              * @throws NullPointerException if mode is null
              */
             @SuppressWarnings("unused")
@@ -444,7 +428,6 @@ public class ListedText {
              * {@link SearchMode}s
              *
              * @param searchPattern The pattern to search
-             *
              * @return This Builder
              */
             @SuppressWarnings("unused")
@@ -532,7 +515,7 @@ public class ListedText {
 
         /**
          * @param accept Whether the String is accepted, using the second param
-         * as pattern
+         *               as pattern
          */
         SearchMode(BiFunction<String, String, Boolean> accept) {
             this.accept = accept;
@@ -541,11 +524,9 @@ public class ListedText {
         /**
          * Checks if this {@link SearchMode} matches a String
          *
-         * @param string The String to test
+         * @param string  The String to test
          * @param pattern The pattern to match against
-         *
          * @return True if it matches using this {@link SearchMode}
-         *
          * @throws NullPointerException if any parameter is null
          */
         public boolean accepts(@NotNull String string, @NotNull String pattern) {
@@ -572,10 +553,9 @@ public class ListedText {
          * The language Keys can be found in the
          * {@link #send(ServerCommandSource, String, String)}
          *
-         * @param maxPages The amount of pages it would give, at this depth
+         * @param maxPages  The amount of pages it would give, at this depth
          * @param pageIndex The page number of this page
-         * @param entries The entries of this page
-         *
+         * @param entries   The entries of this page
          * @throws NullPointerException if any parameter is null
          * @see #Page(int, int, List, String, String) #Page(int, int, List,
          * String, String) with the default header and footer
@@ -592,12 +572,11 @@ public class ListedText {
          * The language Keys can be found in the
          * {@link #send(ServerCommandSource, String, String)}
          *
-         * @param maxPages The amount of pages it would give, at this depth
+         * @param maxPages  The amount of pages it would give, at this depth
          * @param pageIndex The page number of this page
-         * @param entries The entries of this page
+         * @param entries   The entries of this page
          * @param headerKey The language key for the header. Null for default.
          * @param footerKey The language key for the footer. Null for default.
-         *
          * @throws NullPointerException if any parameter is null
          */
         private Page(int maxPages, int pageIndex, @NotNull List<String> entries, @NotNull String headerKey, @NotNull
@@ -613,7 +592,7 @@ public class ListedText {
             this.stickyFooter = footerKey;
         }
 
-        private Page(@NotNull List<MutableText> entries,int maxPages, int pageIndex, @NotNull String headerKey, @NotNull
+        private Page(@NotNull List<MutableText> entries, int maxPages, int pageIndex, @NotNull String headerKey, @NotNull
                 String footerKey) {
             Objects.requireNonNull(entries, "Entries can not be null");
             Objects.requireNonNull(headerKey, "The header key can not be null");
@@ -672,8 +651,6 @@ public class ListedText {
             return this;
         }
 
-
-
         /**
          * Sends the page
          * <ul>
@@ -700,7 +677,6 @@ public class ListedText {
          * </ul>
          *
          * @param source The {@link ServerCommandSource} to send to
-         *
          * @throws NullPointerException if sender or language is null
          */
 
@@ -714,7 +690,7 @@ public class ListedText {
             int nextPage = pageIndex + 2;
 
             String SEPARATOR = "-----------------------------------------------------";
-            MutableText header =  new LiteralText("")
+            MutableText header = new LiteralText("")
                     .append(new LiteralText("- [ ").formatted(f3))
                     .append(Texter.newText(title).formatted(f1))
                     .append(" ] ")
@@ -730,7 +706,7 @@ public class ListedText {
                     .append(" ").append(new LiteralText("Prev").formatted(f1))
                     .styled((style) ->
                             style.setHoverEvent(Texter.Events.onHover(new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)))
-                            .withClickEvent(prevPage > 0 ? Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(prevPage))) : null)
+                                    .withClickEvent(prevPage > 0 ? Texter.Events.onClickRun(command.replace("%page%", String.valueOf(prevPage))) : null)
                     );
 
             MutableText button_next = new LiteralText("")
@@ -738,7 +714,7 @@ public class ListedText {
                     .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
                     .styled((style) ->
                             style.setHoverEvent(Texter.Events.onHover(new LiteralText((nextPage <= maxPages) ? ">>>" : ">|").formatted(f3)))
-                            .withClickEvent(nextPage <= maxPages ? Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(nextPage))) : null)
+                                    .withClickEvent(nextPage <= maxPages ? Texter.Events.onClickRun(command.replace("%page%", String.valueOf(nextPage))) : null)
                     );
 
             MutableText buttons = new LiteralText("")
