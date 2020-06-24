@@ -35,7 +35,7 @@ public class PermissionUtil {
     private Manager manager;
 
     public PermissionUtil() {
-        logger.info("Setting up Permissions...");
+        logger.info("Setting up permissions...");
         this.manager = Manager.fromString(KiloConfig.main().permissionManager());
 
         if (manager == Manager.VANILLA) {
@@ -52,15 +52,6 @@ public class PermissionUtil {
             logger.warn("     You need to install LuckPerms for Fabric to manage the permissions");
             this.manager = Manager.NONE;
             return;
-        }
-
-        if (this.manager == Manager.LUCKPERMS) {
-            LuckPermsProvider.get().getEventBus().subscribe(UserTrackEvent.class, event -> {
-                OnlineUser user = KiloEssentials.getServer().getOnlineUser(event.getUser().getUniqueId());
-                if (user != null) {
-                    KiloEssentials.getServer().getPlayerManager().sendCommandTree(user.asPlayer());
-                }
-            });
         }
 
         logger.info("Using {} as the Permission Manager", manager.getName());
