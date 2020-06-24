@@ -730,7 +730,7 @@ public class Pager {
                     .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
                     .styled((style) ->
                             style.setHoverEvent(Texter.Events.onHover(new LiteralText((nextPage < maxPages) ? ">>>" : ">|").formatted(f3)))
-                            .withClickEvent(nextPage < maxPages ? Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(nextPage))) : null)
+                            .withClickEvent(nextPage <= maxPages ? Texter.Events.onClickRun(command.replace("%page%",  String.valueOf(nextPage))) : null)
                     );
 
             MutableText buttons = new LiteralText("")
