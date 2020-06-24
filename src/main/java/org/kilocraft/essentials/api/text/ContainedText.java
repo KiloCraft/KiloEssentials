@@ -1,18 +1,17 @@
 package org.kilocraft.essentials.api.text;
 
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 
 import java.util.List;
 
-public interface IText {
+public interface ContainedText {
     String asString();
 
     List<String> getLines();
 
     List<MutableText> getTextLines();
 
-    IText append(String... strings);
+    ContainedText append(String... strings);
 
-    IText append(MutableText... texts);
+    ContainedText append(MutableText... texts);
 }

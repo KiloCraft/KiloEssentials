@@ -1,13 +1,12 @@
 package org.kilocraft.essentials.api.text;
 
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TextInput implements IText {
+public class TextInput implements ContainedText {
     private List<String> lines;
     private List<MutableText> textLines;
 
@@ -46,13 +45,13 @@ public class TextInput implements IText {
     }
 
     @Override
-    public IText append(String... strings) {
+    public ContainedText append(String... strings) {
         lines.addAll(Arrays.asList(strings));
         return this;
     }
 
     @Override
-    public IText append(MutableText... texts) {
+    public ContainedText append(MutableText... texts) {
         textLines.addAll(Arrays.asList(texts));
         return this;
     }
