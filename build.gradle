@@ -65,6 +65,8 @@ dependencies {
 	compile group: 'net.md-5', name: 'bungeecord-api', version: "${project.bungeecord_version}"
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     shadow group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
+
 }
 
 tasks.jar.archiveClassifier = "compile"

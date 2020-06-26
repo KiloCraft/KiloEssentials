@@ -51,8 +51,11 @@ public class Config {
     @Setting(value = "rtpSpecs", comment = "Configure the RTP range")
     private RtpSpecsConfigSection rtpSpecs = new RtpSpecsConfigSection();
 
-    @Setting(value = "motd", comment = "Configure the RTP range")
+    @Setting(value = "motd", comment = "Configure the server motd")
     private MotdConfigSection motd = new MotdConfigSection();
+
+    @Setting(value = "votifier", comment = "Configure the Votifier")
+    private VotifierConfigSection votifier = new VotifierConfigSection();
 
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")
     public int homesLimit = 10;
@@ -130,5 +133,7 @@ public class Config {
     }
 
     public MotdConfigSection motd() { return motd; }
+
+    public VotifierConfigSection votifier() { return votifier; }
 
 }

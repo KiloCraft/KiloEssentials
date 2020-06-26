@@ -6,6 +6,7 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.core.Logger;
@@ -57,7 +58,7 @@ public class PermissionUtil {
     public boolean hasPermission(ServerCommandSource src, String permission, int opLevel) {
         if (this.present) {
             if (manager == Manager.LUCKPERMS) {
-                KiloServer.getLogger().info("Checking permission " + permission + "(result: " + fromLuckPerms(src, permission, opLevel) + ")");
+                if(SharedConstants.isDevelopment) KiloServer.getLogger().info("Checking permission " + permission + "(result: " + fromLuckPerms(src, permission, opLevel) + ")");
                 return fromLuckPerms(src, permission, opLevel);
             }
         }

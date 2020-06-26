@@ -36,6 +36,7 @@ import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.votifier.Votifier;
 
 import java.io.IOException;
 import java.util.List;
@@ -72,6 +73,8 @@ public final class KiloEssentialsImpl implements KiloEssentials {
             KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
         }
         new KiloEvents();
+        if(KiloConfig.main().votifier().enabled)
+        new Votifier().onEnable();
     }
 
 
