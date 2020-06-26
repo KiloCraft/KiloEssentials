@@ -31,12 +31,17 @@ public class PermissionUtil {
     private static final List<String> pendingPermissions = new ArrayList<>();
     public static String COMMAND_PERMISSION_PREFIX = "kiloessentials.command.";
     public static String PERMISSION_PREFIX = "kiloessentials.";
-    private boolean present;
+    private final boolean present;
     private Manager manager;
 
     public PermissionUtil() {
         logger.info("Setting up permissions...");
-        this.manager = Manager.fromString(KiloConfig.main().permissionManager());
+        String inputName = KiloConfig.main().permissionManager();
+        this.manager = Manager.fromString(inputName);
+
+        if (this.manager == Manager.NONE) {
+            logger.error("Invalid permission manager! \"{}\" is not a valid permission manager for KiloEssentials", inputName);
+        }
 
         if (manager == Manager.VANILLA) {
             this.present = false;
@@ -60,14 +65,11 @@ public class PermissionUtil {
     }
 
     public boolean hasPermission(ServerCommandSource src, String permission, int opLevel) {
-        if (this.present) {
-            if (manager == Manager.LUCKPERMS) {
-                KiloServer.getLogger().info("Checking permission " + permission + "(result: " + fromLuckPerms(src, permission, opLevel) + ")");
-                return fromLuckPerms(src, permission, opLevel);
-            }
+        if (this.present && this.manager == Manager.LUCKPERMS) {
+            return fromLuckPerms(src, permission, opLevel);
         }
 
-        return src.hasPermissionLevel(opLevel);
+        return fallbackPermissionCheck(src, opLevel);
     }
 
     public static void registerNode(final String node) {
@@ -89,7 +91,7 @@ public class PermissionUtil {
         } catch (CommandSyntaxException ignored) {
         }
 
-        return src.hasPermissionLevel(op);
+        return fallbackPermissionCheck(src, op);
     }
 
     private boolean checkPresent() {
@@ -110,6 +112,10 @@ public class PermissionUtil {
         } catch (Exception ignored) {
             return false;
         }
+    }
+
+    private boolean fallbackPermissionCheck(ServerCommandSource src, int minOpLevel) {
+        return src.hasPermissionLevel(minOpLevel);
     }
 
     public boolean managerPresent() {
