@@ -41,6 +41,8 @@ public class PermissionUtil {
 
         if (this.manager == Manager.NONE) {
             logger.error("Invalid permission manager! \"{}\" is not a valid permission manager for KiloEssentials", inputName);
+            logger.info("Switching to vanilla permission system");
+            this.manager = Manager.VANILLA;
         }
 
         if (manager == Manager.VANILLA) {

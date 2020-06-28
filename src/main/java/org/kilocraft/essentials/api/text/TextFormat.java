@@ -14,6 +14,10 @@ import org.kilocraft.essentials.commands.CommandUtils;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * @deprecated use {@link TextFormatPalette} instead
+ */
+@Deprecated
 public enum TextFormat {
     /**
      * Represents black
