@@ -14,10 +14,6 @@ import org.kilocraft.essentials.commands.CommandUtils;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * @deprecated use {@link TextFormatPalette} instead
- */
-@Deprecated
 public enum TextFormat {
     /**
      * Represents black
@@ -166,7 +162,7 @@ public enum TextFormat {
         return TextFormat.list();
     }
 
-    public Formatting getFormattingByChar(char code) {
+    public Formatting getFormatting() {
         return formatting;
     }
 
@@ -417,6 +413,16 @@ public enum TextFormat {
 
     public static char getFormattedPercentage(double percentage, boolean reverse) {
         return percentage > 80 ? (reverse ? 'c' : 'a') : percentage < 40 ? (reverse ? 'a' : 'c') : 'e';
+    }
+
+    public static String getCodeByFormatting(Formatting formatting) {
+        for (TextFormat value : values()) {
+            if (value.formatting == formatting) {
+                return String.valueOf(value.code);
+            }
+        }
+
+        return null;
     }
 
     static {

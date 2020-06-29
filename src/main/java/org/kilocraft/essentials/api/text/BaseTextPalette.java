@@ -1,26 +1,53 @@
 package org.kilocraft.essentials.api.text;
 
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.TextColor;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BaseTextPalette implements TextFormatPalette {
-    private final String name;
+    private final Identifier id;
     private final String code;
     private final int intCode;
-    private final boolean modifier;
+    private final int rgb;
+    private final FormatterFunction<BaseTextPalette> formatterFunction;
 
-    public BaseTextPalette(@NotNull final String name,
-                           @NotNull final String code,
-                           final int intCode,
-                           final boolean isModifier) {
-        this.name = name;
-        this.code = code;
-        this.intCode = intCode;
-        this.modifier = isModifier;
+    public BaseTextPalette(@NotNull Identifier id, @NotNull String code, int intCode, @NotNull String hex)
+            throws NumberFormatException {
+        this(id, code, intCode, hex, null);
     }
 
+    public BaseTextPalette(@NotNull Identifier id,
+                           @NotNull String code,
+                           int intCode,
+                           @NotNull String hex,
+                           @Nullable FormatterFunction<BaseTextPalette> formatterFunction)
+            throws NumberFormatException {
+        this(id, code, intCode, hexToRgb(hex), formatterFunction);
+    }
+
+    public BaseTextPalette(@NotNull Identifier id, @NotNull String code, int intCode, @NotNull Integer rgb) {
+        this(id, code, intCode, rgb, null);
+    }
+
+    public BaseTextPalette(@NotNull Identifier id,
+                           @NotNull String code,
+                           int intCode,
+                           @NotNull Integer rgb,
+                           @Nullable FormatterFunction<BaseTextPalette> formatterFunction) {
+        this.id = id;
+        this.code = code;
+        this.intCode = intCode;
+        this.rgb = rgb;
+        this.formatterFunction = formatterFunction;
+    }
+
+
     @Override
-    public String name() {
-        return this.name;
+    public Identifier getId() {
+        return this.id;
     }
 
     @Override
@@ -30,11 +57,29 @@ public class BaseTextPalette implements TextFormatPalette {
 
     @Override
     public boolean isModifier() {
-        return this.modifier;
+        return false;
     }
 
     @Override
-    public int iniCode() {
+    public int intCode() {
         return this.intCode;
+    }
+
+    @Nullable
+    @Override
+    public Integer getRgb() {
+        return this.rgb;
+    }
+
+    public MutableText apply(@NotNull final String string) {
+        if (this.formatterFunction != null) {
+            return this.formatterFunction.apply(this, string);
+        }
+
+        return new LiteralText(string).styled((style) -> style.withColor(TextColor.fromRgb(this.rgb)));
+    }
+
+    public static int hexToRgb(@NotNull final String hex) {
+        return Integer.parseInt(hex.substring(1), 17);
     }
 }
