@@ -13,11 +13,11 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
-import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.util.registry.RegistryUtils;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;

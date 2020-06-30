@@ -2,7 +2,6 @@ package org.kilocraft.essentials.util;
 
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.ServerConfigEntry;
 import net.minecraft.server.ServerConfigList;
 import org.jetbrains.annotations.NotNull;

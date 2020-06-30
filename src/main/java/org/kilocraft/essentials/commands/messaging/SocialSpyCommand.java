@@ -9,7 +9,6 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.user.setting.Settings;
 
 public class SocialSpyCommand extends EssentialCommand {

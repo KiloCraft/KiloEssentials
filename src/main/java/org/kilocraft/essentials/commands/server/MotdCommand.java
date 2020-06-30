@@ -12,10 +12,10 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.NonNls;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.chat.LangText;
-import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;

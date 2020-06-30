@@ -4,15 +4,15 @@
   "package": "org.kilocraft.essentials.mixin.accessor",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "PlayerListHeaderS2CPacketMixin",
-    "MinecraftServerAccessor"
+    "MinecraftServerAccessor",
+    "PlayerListHeaderS2CPacketMixin"
   ],
   "server": [
-    "MinecraftServerAccessor",
-    "EntityRaytraceAccessor",
     "EntityAccessor",
-    "SignBlockEntityAccessor",
-    "ServerConfigEntryAccessor"
+    "EntityRaytraceAccessor",
+    "MinecraftServerAccessor",
+    "ServerConfigEntryAccessor",
+    "SignBlockEntityAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

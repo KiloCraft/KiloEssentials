@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.api.event.context;
 
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
 /**

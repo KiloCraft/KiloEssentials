@@ -7,14 +7,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.api.util.StringUtils;
-import org.kilocraft.essentials.util.text.Texter;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -25,8 +21,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import static org.kilocraft.essentials.util.text.Texter.exceptionToText;
 
 public class CalculateCommand extends EssentialCommand {
     public CalculateCommand() {

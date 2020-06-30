@@ -4,7 +4,6 @@ import org.kilocraft.essentials.api.ModConstants;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 
 public class RollingAverage {
     public static final int SAMPLE_INTERVAL = 20;

@@ -2,7 +2,6 @@ package org.kilocraft.essentials.extensions.magicalparticles.config;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.config.main.sections.PermissionRequirementConfigSection;
 
 import java.util.ArrayList;

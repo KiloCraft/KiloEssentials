@@ -7,7 +7,6 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.settting.Setting;
 import org.kilocraft.essentials.api.user.settting.UserSettings;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class ServerUserSettings implements UserSettings {

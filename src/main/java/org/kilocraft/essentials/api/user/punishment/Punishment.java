@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
-import java.net.SocketAddress;
 import java.util.Date;
 
 public class Punishment extends PunishmentEntry {

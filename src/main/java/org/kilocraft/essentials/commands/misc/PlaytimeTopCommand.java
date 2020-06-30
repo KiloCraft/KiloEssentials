@@ -15,8 +15,8 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.util.CacheManager;
-import org.kilocraft.essentials.util.text.Pager;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
+import org.kilocraft.essentials.util.text.Pager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
