@@ -18,7 +18,6 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
@@ -27,7 +26,6 @@ import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.util.LocationUtil;
 
 public class HomeCommand extends EssentialCommand {
     private static final SimpleCommandExceptionType MISSING_DIMENSION = new SimpleCommandExceptionType(new LiteralText("The Dimension this home exists in no longer exists"));

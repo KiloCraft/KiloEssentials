@@ -9,8 +9,8 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.util.math.RollingAverage;
 import org.kilocraft.essentials.util.TPSTracker;
+import org.kilocraft.essentials.util.math.RollingAverage;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
 import java.io.FileInputStream;

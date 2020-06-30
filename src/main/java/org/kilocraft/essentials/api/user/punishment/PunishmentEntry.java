@@ -4,8 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
-import java.net.SocketAddress;
-
 public abstract class PunishmentEntry {
     private @Nullable final EntityIdentifiable victim;
     private final EntityIdentifiable arbiter;

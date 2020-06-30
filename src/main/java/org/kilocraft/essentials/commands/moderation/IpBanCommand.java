@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.commands.moderation;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -8,21 +7,16 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
-import org.kilocraft.essentials.util.GlobalUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
-import java.net.InetSocketAddress;
 import java.util.Date;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -4,12 +4,9 @@ import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketMixin;
-import org.kilocraft.essentials.util.TPSTracker;
-import org.kilocraft.essentials.util.monitor.SystemMonitor;
 import org.kilocraft.essentials.util.text.Texter;
 
 public class PlayerListMeta {

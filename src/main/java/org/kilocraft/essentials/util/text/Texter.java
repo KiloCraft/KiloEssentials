@@ -4,8 +4,9 @@ import net.minecraft.SharedConstants;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.chat.LangText;
+
 import java.util.*;
 
 public class Texter {

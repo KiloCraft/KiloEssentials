@@ -1,13 +1,13 @@
 package org.kilocraft.essentials.votifier;
 
-import java.io.*;
-import java.security.KeyPair;
-
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.votifier.crypto.RSAIO;
 import org.kilocraft.essentials.votifier.crypto.RSAKeygen;
+
+import java.io.*;
+import java.security.KeyPair;
 
 /**
  * The main Votifier plugin class.

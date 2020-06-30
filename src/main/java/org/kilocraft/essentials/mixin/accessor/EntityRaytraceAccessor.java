@@ -1,11 +1,11 @@
 package org.kilocraft.essentials.mixin.accessor;
 
-import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
+import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;

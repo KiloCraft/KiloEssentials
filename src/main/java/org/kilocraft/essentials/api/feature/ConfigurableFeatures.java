@@ -7,9 +7,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ConfigurableFeatures {
     private static List<ConfigurableFeature> features = new ArrayList<>();;

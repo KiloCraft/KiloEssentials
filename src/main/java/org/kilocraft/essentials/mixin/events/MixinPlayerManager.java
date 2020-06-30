@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.mixin.events;
 
 import com.mojang.authlib.GameProfile;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.BanEntry;
@@ -11,19 +10,13 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
-import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.player.PlayerConnectEventImpl;
 import org.kilocraft.essentials.events.player.PlayerConnectedEventImpl;
-import org.kilocraft.essentials.extensions.homes.api.Home;
-import org.kilocraft.essentials.util.text.Texter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
