@@ -150,10 +150,6 @@ public class UserUtils {
             player.swingHand(hand, true);
         }
 
-        public static void showBobbing(PlayerEntity player) {
-            player.inventory.selectedSlot += 1;
-            player.inventory.selectedSlot -= 1;
-        }
     }
 
 }

@@ -1,9 +1,6 @@
 package org.kilocraft.essentials.extensions.betterchairs;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
@@ -92,7 +89,10 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                 OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) stand.getPassengerList().get(0));
 
                 if (user != null) {
-                    if (world.getBlockState(stand.getBlockPos().up(2)).getBlock() == Blocks.AIR) {
+                    SummonType summonType = user.getSetting(Settings.SITTING_TYPE);
+                    BlockPos pos = summonType == SummonType.COMMAND ? stand.getBlockPos().up() : stand.getBlockPos().up(2);
+
+                    if (world.getBlockState(pos).getBlock() == Blocks.AIR) {
                         this.unseat(user);
                     }
 
@@ -137,17 +137,19 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             return false;
         }
 
+        UserUtils.Animate.swingHand(player);
+
         Vec3dLocation vec3dLoc = Vec3dLocation.of(pos.getX(), pos.getY() + 1, pos.getZ(),
                 player.yaw, player.pitch, RegistryUtils.toIdentifier(world.getDimension()));
 
         if (state.getBlock() instanceof StairsBlock && state.get(Properties.BLOCK_HALF) == BlockHalf.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.40D);
-            return seat(user, getPosForStair(state, vec3dLoc.center()), SummonType.INTERACT_STAIR, true, getYawForStand(state));
+            return seat(user, getPosForStair(state, vec3dLoc.center()), SummonType.INTERACT_STAIR, getYawForStand(state));
         }
 
         if (state.getBlock() instanceof SlabBlock && state.get(Properties.SLAB_TYPE) == SlabType.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.45D);
-            return seat(user, vec3dLoc.center(), SummonType.INTERACT_SLAB, true);
+            return seat(user, vec3dLoc.center(), SummonType.INTERACT_SLAB);
         }
 
         return false;
@@ -155,13 +157,13 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
     public boolean seat(@NotNull final OnlineUser user,
                         @NotNull final Vec3dLocation loc,
-                        @NotNull final SummonType summonType, boolean swingHand) {
-        return seat(user, loc, summonType, swingHand, user.asPlayer().bodyYaw);
+                        @NotNull final SummonType summonType) {
+        return seat(user, loc, summonType, user.asPlayer().bodyYaw);
     }
 
     public boolean seat(@NotNull final OnlineUser user,
                         @NotNull final Vec3dLocation loc,
-                        @NotNull final SummonType summonType, boolean swingHand, float yaw) {
+                        @NotNull final SummonType summonType, float yaw) {
         ServerPlayerEntity player = user.asPlayer();
 
         if (player.isSpectator() || isSitting(player)) {
@@ -176,10 +178,6 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
         if (stand == null) {
             return false;
-        }
-
-        if (swingHand) {
-            UserUtils.Animate.swingHand(player);
         }
 
         stand.setInvisible(true);
