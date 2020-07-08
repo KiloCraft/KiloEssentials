@@ -342,12 +342,10 @@ public class ServerUserManager implements UserManager, TickListener {
             Map<UUID, String> map = new HashMap<>();
             KiloEssentials.getInstance().getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
                 for (User victim : list) {
-                    victim.getNickname().ifPresent(nick -> {
-                        map.put(
-                                victim.getUuid(),
-                                org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT)
-                        );
-                    });
+                    victim.getNickname().ifPresent(nick -> map.put(
+                            victim.getUuid(),
+                            org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT)
+                    ));
 
                     map.put(victim.getUuid(), org.kilocraft.essentials.api.util.StringUtils.uniformNickname(victim.getUsername()).toLowerCase(Locale.ROOT));
                 }

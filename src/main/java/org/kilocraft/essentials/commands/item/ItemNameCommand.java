@@ -30,58 +30,65 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class ItemNameCommand {
-	private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_NAME);
-	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralCommandNode<ServerCommandSource> rootCommand = literal("name")
-				.requires(PERMISSION_CHECK).build();
-		RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", greedyString())
-				.suggests(ItemNameCommand::itemNameSuggestions)
-				.executes(ItemNameCommand::execute);
+    private static final Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_NAME);
 
-		rootCommand.addChild(nameArgument.build());
-		builder.then(rootCommand);
-		dispatcher.register(literal("rename").requires(PERMISSION_CHECK).redirect(rootCommand));
-	}
+    public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
+        LiteralCommandNode<ServerCommandSource> rootCommand = literal("name")
+                .requires(PERMISSION_CHECK).build();
+        RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", greedyString())
+                .suggests(ItemNameCommand::itemNameSuggestions)
+                .executes(ItemNameCommand::execute);
 
-	private static CompletableFuture<Suggestions> itemNameSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-		ItemStack item = context.getSource().getPlayer().getMainHandStack();
-		List<String> list = new ArrayList<String>(){{ add("reset"); }};
-		if (!item.isEmpty()) {
-			list.add(TextFormat.reverseTranslate(item.getName().getString(), '&'));
-		}
-		return CommandSource.suggestMatching(list, builder);
-	}
+        rootCommand.addChild(nameArgument.build());
+        builder.then(rootCommand);
+        dispatcher.register(literal("rename").requires(PERMISSION_CHECK).redirect(rootCommand));
+    }
 
-	private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-		ServerPlayerEntity player = ctx.getSource().getPlayer();
-		String inputString = getString(ctx, "name");
-		ItemStack item = player.getMainHandStack();
+    private static CompletableFuture<Suggestions> itemNameSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+        ItemStack item = context.getSource().getPlayer().getMainHandStack();
+        List<String> list = new ArrayList<String>() {{
+            add("reset");
+        }};
+        if (!item.isEmpty()) {
+            list.add(TextFormat.reverseTranslate(item.getName().getString(), '&'));
+        }
+        return CommandSource.suggestMatching(list, builder);
+    }
 
-		if (inputString.length() >= 90) {
-			KiloChat.sendLangMessageTo(player, "command.item.too_long");
-			return 0;
-		}
+    private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        String inputString = getString(ctx, "name");
+        ItemStack item = player.getMainHandStack();
 
-		if (item.isEmpty()) {
-			KiloChat.sendLangMessageTo(player, "general.no_item");
-			return 0;
-		}
+        if (inputString.length() >= 90) {
+            KiloChat.sendLangMessageTo(player, "command.item.too_long");
+            return 0;
+        }
 
-		if (!player.isCreative())
-			player.addExperienceLevels(-1);
+        if (item.isEmpty()) {
+            KiloChat.sendLangMessageTo(player, "general.no_item");
+            return 0;
+        }
 
-		if (inputString.equalsIgnoreCase("reset")) {
-			item.removeCustomName();
-			KiloChat.sendLangMessageTo(player, "command.item.reset", "name", Texter.Legacy.toFormattedString(item.getName()));
-
-			return 1;
+        if (player.experienceLevel < 1 && !player.isCreative()) {
+			KiloChat.sendLangMessageTo(player, "command.item.no_exp");
+        	return 0;
 		}
 
-		String nameToSet = TextFormat.translate(inputString, KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING));
-		KiloChat.sendLangMessageTo(player, "command.item.set", "name", nameToSet);
-		item.setCustomName(new LiteralText(nameToSet));
+		player.addExperienceLevels(-1);
 
-		return 1;
-	}
+        if (inputString.equalsIgnoreCase("reset")) {
+            item.removeCustomName();
+            KiloChat.sendLangMessageTo(player, "command.item.reset", "name", Texter.Legacy.toFormattedString(item.getName()));
+
+            return 1;
+        }
+
+        String nameToSet = TextFormat.translate(inputString, KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING));
+        KiloChat.sendLangMessageTo(player, "command.item.set", "name", nameToSet);
+        item.setCustomName(new LiteralText(nameToSet));
+
+        return 1;
+    }
 
 }

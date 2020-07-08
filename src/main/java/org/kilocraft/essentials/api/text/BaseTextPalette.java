@@ -12,7 +12,7 @@ public class BaseTextPalette implements TextFormatPalette {
     private final String code;
     private final int intCode;
     private final int rgb;
-    private final FormatterFunction<BaseTextPalette> formatterFunction;
+    final transient FormatterFunction<BaseTextPalette> formatterFunction;
 
     public BaseTextPalette(@NotNull Identifier id, @NotNull String code, int intCode, @NotNull String hex)
             throws NumberFormatException {

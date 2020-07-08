@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.api.text;
 
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +55,16 @@ public class ModifierTextPalette extends BaseTextPalette {
                                @Nullable FormatterFunction<BaseTextPalette> formatterFunction) {
         super(id, code, intCode, rgb, formatterFunction);
         this.font = font == null ? Style.DEFAULT_FONT_ID : font;
+    }
+
+
+    @Override
+    public MutableText apply(@NotNull String string) {
+        if (super.formatterFunction != null) {
+            return super.formatterFunction.apply(this, string);
+        }
+
+        return new LiteralText(string).styled((style) -> style.withFont(this.font));
     }
 
     public Identifier getFont() {
