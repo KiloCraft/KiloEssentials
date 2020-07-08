@@ -160,8 +160,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
 
         int index = 0;
         for (Map.Entry<String, List<PlayerWarp>> entry : list) {
-            String ownerName = entry.getKey().isEmpty() ? "&c&o?" : entry.getKey();
-
+            String ownerName = entry.getKey() != null ? entry.getKey() : "";
             List<PlayerWarp> warps = entry.getValue();
             for (PlayerWarp warp : warps) {
                 index++;
@@ -170,11 +169,11 @@ public class PlayerWarpsCommand extends EssentialCommand {
                 text.append(" ");
                 text.append(new LiteralText(warp.getName()).formatted(Formatting.WHITE)).styled((style) ->
                         style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText("")
-                        .append(new LiteralText("By ").formatted(Formatting.WHITE))
-                        .append(new LiteralText(ownerName))
-                        .append("\n")
-                        .append(new LiteralText("In ").formatted(Formatting.WHITE))
-                        .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType()))))));
+                                .append(new LiteralText("By ").formatted(Formatting.WHITE))
+                                .append(new LiteralText(ownerName.isEmpty() ? "&c&o?" : ownerName))
+                                .append("\n")
+                                .append(new LiteralText("In ").formatted(Formatting.WHITE))
+                                .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType()))))));
                 text.append(new LiteralText(" (").formatted(Formatting.DARK_GRAY));
                 text.append(new LiteralText(warp.getType()).formatted(Formatting.LIGHT_PURPLE));
                 text.append(new LiteralText(") ").formatted(Formatting.DARK_GRAY));

@@ -69,7 +69,7 @@ public class SitCommand extends EssentialCommand {
             return FAILED;
         }
 
-        SeatManager.getInstance().seat(user, user.getLocationAsVector(), SeatManager.SummonType.COMMAND, false);
+        SeatManager.getInstance().seat(user, user.getLocationAsVector(), SeatManager.SummonType.COMMAND);
         return SUCCESS;
     }
 
