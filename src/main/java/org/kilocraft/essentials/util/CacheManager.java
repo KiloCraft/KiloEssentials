@@ -22,23 +22,20 @@ public class CacheManager {
 
     public static <T> Cached<T> get(String id) {
         return (Cached<T>) map.get(id);
-    }
+    }   
 
-    public static boolean isCached(String id) {
-        return map.containsKey(id);
-    }
-
-    public static boolean shouldUse(String id) {
-        boolean should = isCached(id) && get(id).isValid();
+    public static boolean isPresent(String id) {
+        boolean should = map.containsKey(id) && get(id).isValid();
         if (!should) {
             map.remove(id);
         }
         return should;
     }
 
-    public static <T> void getAndRun(String id, Consumer<Cached<T>> consumer) {
-        Cached<T> cached = get(id);
-        consumer.accept(cached);
+    public static <T> void ifPresent(String id, Consumer<T> consumer) {
+        if (isPresent(id)) {
+            consumer.accept((T) get(id).get());
+        }
     }
 
 }

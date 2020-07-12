@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 /**
@@ -266,13 +267,40 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
 	@Override
 	public CompletableFuture<Optional<User>> getUserThenAcceptAsync(UUID uuid, Consumer<? super Optional<User>> action) {
-		if (getServer().getUserManager().getOnline(uuid) != null) {
-			return CompletableFuture.completedFuture(Optional.ofNullable(getServer().getUserManager().getOnline(uuid)));
+		User trUser = getServer().getUserManager().getOnline(uuid);
+		if (trUser != null) {
+			Optional<User> optionalUser = Optional.of(trUser);
+			action.accept(optionalUser);
+			return CompletableFuture.completedFuture(optionalUser);
 		}
 
 		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(uuid);
 		optionalCompletableFuture.thenAcceptAsync(action);
 		return optionalCompletableFuture;
+	}
+
+	@Override
+	public Optional<User> getUserThenAccept(UUID uuid, Consumer<? super Optional<User>> action) {
+		User user = getServer().getUserManager().getOnline(uuid);
+		if (user != null) {
+			Optional<User> optionalUser = Optional.of(user);
+			action.accept(optionalUser);
+			return optionalUser;
+		}
+
+		final CompletableFuture<Optional<User>> optionalCompletableFuture = KiloEssentialsImpl.getServer().getUserManager().getOffline(uuid);
+		try {
+			action.accept(optionalCompletableFuture.get());
+		} catch (InterruptedException | ExecutionException ignored) {
+			action.accept(Optional.empty());
+		}
+
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<User> getUser(UUID uuid) {
+		return getServer().getUserManager().getOffline(uuid).getNow(Optional.empty());
 	}
 
 	@Override

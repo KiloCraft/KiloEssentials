@@ -31,6 +31,7 @@ import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
+import org.kilocraft.essentials.util.CacheManager;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.text.Texter;
@@ -125,6 +126,11 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         if (warp != null && !warp.getOwner().equals(user.getUuid())) {
             user.sendLangMessage(messages.commands().playerWarp().nameAlreadyTaken);
+            return FAILED;
+        }
+
+        if (name.length() > 20) {
+            user.sendLangMessage("command.playerwarp.name_too_long");
             return FAILED;
         }
 

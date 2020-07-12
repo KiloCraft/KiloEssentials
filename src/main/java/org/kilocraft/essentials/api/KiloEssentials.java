@@ -88,6 +88,10 @@ public interface KiloEssentials {
 
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(UUID uuid, Consumer<? super Optional<User>> action);
 
+    Optional<User> getUserThenAccept(UUID uuid, Consumer<? super Optional<User>> action);
+
+    Optional<User> getUser(UUID uuid);
+
     CompletableFuture<Optional<User>> getUserThenAcceptAsync(String username, Consumer<? super Optional<User>> action, Executor executor);
 
     PermissionUtil getPermissionUtil();

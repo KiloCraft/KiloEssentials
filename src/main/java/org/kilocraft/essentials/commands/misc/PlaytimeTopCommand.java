@@ -55,12 +55,12 @@ public class PlaytimeTopCommand extends EssentialCommand {
     private int send(final CommandContext<ServerCommandSource> ctx, int page, boolean force) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
 
-        if (!force && CacheManager.shouldUse(CACHE_ID)) {
+        if (!force && CacheManager.isPresent(CACHE_ID)) {
             AtomicReference<List<Map.Entry<String, Integer>>> sortedList = new AtomicReference<>();
             AtomicLong totalTicks = new AtomicLong();
 
-            CacheManager.getAndRun(CACHE_ID, (cached) -> sortedList.set((List<Map.Entry<String, Integer>>) cached.get()));
-            CacheManager.getAndRun(TICKS_CACHE_ID, (cached) -> totalTicks.set((Long) cached.get()));
+            CacheManager.ifPresent(CACHE_ID, (cached) -> sortedList.set((List<Map.Entry<String, Integer>>) cached));
+            CacheManager.ifPresent(TICKS_CACHE_ID, (cached) -> totalTicks.set((Long) cached));
 
             if (sortedList.get() != null) {
                 return send(src, page, sortedList.get(), totalTicks.get());

@@ -55,7 +55,7 @@ public class LocateBiomeProvided implements Command {
         }
 
         Thread.currentThread().interrupt();
-        return LocateCommand.sendCoordinates(source, biome.getName().getString(), pos, biomePos, "commands.locatebiome.success");
+        return LocateCommand.sendCoordinates(source, null, pos, biomePos, "commands.locatebiome.success");
     }
 
     public static String getBiomeId(Biome biome) {

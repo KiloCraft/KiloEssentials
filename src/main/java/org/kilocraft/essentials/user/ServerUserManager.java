@@ -338,7 +338,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public boolean shouldNotUseNickname(OnlineUser user, String rawNickname) {
         String NICKNAME_CACHE = "nicknames";
-        if (!CacheManager.shouldUse(NICKNAME_CACHE)) {
+        if (!CacheManager.isPresent(NICKNAME_CACHE)) {
             Map<UUID, String> map = new HashMap<>();
             KiloEssentials.getInstance().getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
                 for (User victim : list) {

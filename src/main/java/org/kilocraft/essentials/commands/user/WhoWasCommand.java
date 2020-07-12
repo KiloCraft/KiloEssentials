@@ -94,9 +94,9 @@ public class WhoWasCommand extends EssentialCommand {
             return FAILED;
         }
 
-        if (CacheManager.shouldUse(getCacheId(uuid))) {
+        if (CacheManager.isPresent(getCacheId(uuid))) {
             AtomicReference<NameLookup.PreviousPlayerNameEntry[]> reference = new AtomicReference<>();
-            CacheManager.getAndRun(getCacheId(uuid), (cached) -> reference.set((NameLookup.PreviousPlayerNameEntry[]) cached.get()));
+            CacheManager.ifPresent(getCacheId(uuid), (cached) -> reference.set((NameLookup.PreviousPlayerNameEntry[]) cached));
             return send(src, name, page, reference.get());
         }
 
