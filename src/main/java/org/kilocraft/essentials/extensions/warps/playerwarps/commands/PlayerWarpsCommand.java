@@ -111,7 +111,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
                     style.setHoverEvent(Texter.Events.onHover(
                             Texter.newText()
                                     .append(new LiteralText("By ").formatted(Formatting.WHITE))
-                                    .append(Texter.newText(name))
+                                    .append(Texter.newText(name.isEmpty() ? "&c?" : name))
                                     .append("\n")
                                     .append(new LiteralText("In ").formatted(Formatting.GRAY))
                                     .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())))

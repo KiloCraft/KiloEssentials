@@ -150,6 +150,10 @@ public class Texter {
     }
 
     public static class Events {
+        public static ClickEvent onClickCopy(String string) {
+            return new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, string);
+        }
+
         public static ClickEvent onClickSuggest(String command) {
             return new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command);
         }

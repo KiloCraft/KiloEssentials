@@ -4,10 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.text.Texter;
 
 public class IpInfoCommand extends EssentialCommand {
     public IpInfoCommand() {
@@ -31,7 +33,14 @@ public class IpInfoCommand extends EssentialCommand {
                 return;
             }
 
-            source.sendLangMessage("command.ipinfo", user.getUsername(), user.getLastSocketAddress());
+            source.sendMessage(
+                    Texter.newText(tl("command.ipinfo", user.getUsername()))
+                            .append(Texter.newRawText(user.getLastSocketAddress()).styled((style) ->
+                                    style.withFormatting(Formatting.GOLD)
+                                            .setHoverEvent(Texter.Events.onHover(tl("general.click_copy")))
+                                            .withClickEvent(Texter.Events.onClickCopy(user.getLastSocketAddress()))
+                            ))
+            );
         });
 
         return SUCCESS;
