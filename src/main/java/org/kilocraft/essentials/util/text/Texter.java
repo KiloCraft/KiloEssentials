@@ -518,7 +518,7 @@ public class Texter {
         }
 
         public MutableText build() {
-            return new LiteralText("").append(header).append(this.text).append(new LiteralText(SEPARATOR).formatted(borders));
+            return new LiteralText("").append(header).append(this.text.append("\n")).append(new LiteralText(SEPARATOR).formatted(borders));
         }
     }
 

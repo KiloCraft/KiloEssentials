@@ -15,14 +15,11 @@ import net.minecraft.text.TextColor;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.Cached;
-import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.util.CacheManager;
@@ -30,8 +27,9 @@ import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.text.Texter;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -71,44 +69,39 @@ public class PlayerWarpsCommand extends EssentialCommand {
         }
 
         if (!forced && CacheManager.isPresent(CACHE_KEY)) {
-            Map<PlayerWarp, String> map = (Map<PlayerWarp, String>) CacheManager.get(CACHE_KEY).get();
-            return send(ctx.getSource(), page, map);
+            List<Map.Entry<PlayerWarp, String>> list = (List<Map.Entry<PlayerWarp, String>>) CacheManager.get(CACHE_KEY).get();
+            return send(ctx.getSource(), page, list);
         }
 
-        CompletableFuture.runAsync(() -> {
-            Map<PlayerWarp, String> map = Maps.newHashMap();
+        Map<PlayerWarp, String> map = Maps.newHashMap();
 
-            for (UUID owner : PlayerWarpsManager.getOwners()) {
-                AtomicReference<String> name = new AtomicReference<>("");
+        for (UUID owner : PlayerWarpsManager.getOwners()) {
+            AtomicReference<String> name = new AtomicReference<>("");
 
-                this.getEssentials().getUserThenAcceptAsync(owner, (optional) -> {
-                    System.out.println("Got user!");
-                    if (optional.isPresent() && optional.get().getFormattedDisplayName() != null) {
-                        name.set(optional.get().getFormattedDisplayName());
-                    }
-                }).join();
+            this.getEssentials().getUserThenAcceptAsync(owner, (optional) ->
+                    optional.ifPresent((user) -> name.set(user.getFormattedDisplayName()))
+            ).join();
 
-                for (PlayerWarp warp : PlayerWarpsManager.getWarps(owner)) {
-                    map.put(warp, name.get());
-                }
+            for (PlayerWarp warp : PlayerWarpsManager.getWarps(owner)) {
+                map.put(warp, name.get());
             }
+        }
 
-            ArrayList<Map.Entry<PlayerWarp, String>> entries = Lists.newArrayList(map.entrySet());
-            entries.sort(Map.Entry.comparingByKey());
-            CacheManager.cache(new Cached<>(CACHE_KEY, 10, TimeUnit.MINUTES, map));
-            send(ctx.getSource(), page, map);
-        });
+        List<Map.Entry<PlayerWarp, String>> entries = Lists.newArrayList(map.entrySet());
+        entries.sort(Map.Entry.comparingByKey());
+        CacheManager.cache(new Cached<>(CACHE_KEY, 10, TimeUnit.MINUTES, entries));
+        send(ctx.getSource(), page, entries);
 
         return AWAIT;
     }
 
-    private int send(final ServerCommandSource src, final int page, final Map<PlayerWarp, String> map) {
+    private int send(final ServerCommandSource src, final int page, final List<Map.Entry<PlayerWarp, String>> list) {
         TextInput input = new TextInput();
         int index = 0;
 
-        for (Map.Entry<PlayerWarp, String> entry : map.entrySet()) {
-            PlayerWarp warp = entry.getKey();
-            String name = entry.getValue();
+        for (Map.Entry<PlayerWarp, String> entry : list) {
+            final String name = entry.getValue();
+            final PlayerWarp warp = entry.getKey();
 
             index++;
             MutableText text = Texter.newText();
@@ -118,9 +111,9 @@ public class PlayerWarpsCommand extends EssentialCommand {
                     style.setHoverEvent(Texter.Events.onHover(
                             Texter.newText()
                                     .append(new LiteralText("By ").formatted(Formatting.WHITE))
-                                    .append(Texter.newText(name.isEmpty() ? "&c?" : name))
+                                    .append(Texter.newText(name))
                                     .append("\n")
-                                    .append(new LiteralText("In ").formatted(Formatting.DARK_GRAY))
+                                    .append(new LiteralText("In ").formatted(Formatting.GRAY))
                                     .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())))
                     ))
             );

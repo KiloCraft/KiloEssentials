@@ -230,15 +230,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        if (this.isOnline(warp.getOwner())) {
-            sendInfo(src, warp, this.getOnlineUser(warp.getOwner()));
-            return SUCCESS;
-        }
-
-        this.getEssentials().getUserThenAcceptAsync(src, warp.getOwner(), (user) -> {
-            sendInfo(src, warp, user);
-        });
-
+        this.getEssentials().getUserThenAcceptAsync(src, warp.getOwner(), (user) -> sendInfo(src, warp, user));
         return AWAIT;
     }
 
