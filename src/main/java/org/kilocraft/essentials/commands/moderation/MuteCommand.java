@@ -49,7 +49,6 @@ public class MuteCommand extends EssentialCommand {
                     expiry
             );
 
-            this.getServer().getUserManager().performPunishment(punishment, Punishment.Type.MUTE, (result) -> { });
         });
 
         return AWAIT;

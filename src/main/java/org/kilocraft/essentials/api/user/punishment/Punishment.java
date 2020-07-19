@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
-import java.net.SocketAddress;
 import java.util.Date;
+import java.util.Locale;
 
 public class Punishment extends PunishmentEntry {
     private @Nullable final Date expiry;
@@ -46,14 +46,22 @@ public class Punishment extends PunishmentEntry {
         return this.expiry;
     }
 
-    public enum Type {
-        DENY_ACCESS_IP,
-        DENY_ACCESS,
-        MUTE
+    public boolean isPermanent() {
+        return this.expiry == null;
     }
 
-    public enum ActionResult {
+    public enum Type {
+        BAN_IP,
+        BAN,
+        MUTE;
+    }
+
+    public enum ResultAction {
         SUCCESS,
         FAILED;
+
+        public String getName() {
+            return this.name().toLowerCase(Locale.ROOT);
+        }
     }
 }

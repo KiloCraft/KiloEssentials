@@ -10,7 +10,7 @@ public abstract class PunishmentEntry {
     private @Nullable final EntityIdentifiable victim;
     private final EntityIdentifiable arbiter;
     private @Nullable final String reason;
-    private @Nullable String victimIP;
+    private @Nullable final String victimIP;
 
     public PunishmentEntry(@NotNull final EntityIdentifiable arbiter, @Nullable final EntityIdentifiable victim, @Nullable final String victimIP, @Nullable final String reason) {
         this.arbiter = arbiter;

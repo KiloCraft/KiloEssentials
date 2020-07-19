@@ -30,7 +30,6 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
-import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
@@ -190,9 +189,13 @@ public class KiloCommands {
         this.register(new CalculateCommand());
         this.register(new HugCommand());
         this.register(new GlowCommand());
+//        this.register(new BanCommandOLD());
+//        this.register(new MuteCommand());
+//        this.register(new IpBanCommand());
         this.register(new BanCommand());
-        this.register(new MuteCommand());
-        this.register(new IpBanCommand());
+        this.register(new TempBanCommand());
+        this.register(new BanIpCommand());
+        this.register(new TempBanIpCommand());
 
         this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
 
@@ -349,7 +352,6 @@ public class KiloCommands {
         return new SimpleCommandExceptionType(text);
     }
 
-    @Deprecated
     public static SimpleCommandExceptionType getArgException(final ArgExceptionMessageNode node, final Object... objects) {
         final String message = ModConstants.getMessageUtil().fromArgumentExceptionNode(node);
         return KiloCommands.commandException(

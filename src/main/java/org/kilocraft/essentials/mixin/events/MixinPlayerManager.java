@@ -4,10 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
-import net.minecraft.server.BanEntry;
-import net.minecraft.server.BannedIpEntry;
-import net.minecraft.server.BannedPlayerEntry;
-import net.minecraft.server.PlayerManager;
+import net.minecraft.server.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -20,9 +17,11 @@ import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.player.PlayerConnectEventImpl;
 import org.kilocraft.essentials.events.player.PlayerConnectedEventImpl;
 import org.kilocraft.essentials.extensions.homes.api.Home;
+import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.text.Texter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.net.SocketAddress;
+import java.util.Date;
 import java.util.UUID;
 
 @Mixin(PlayerManager.class)
@@ -42,6 +42,21 @@ public abstract class MixinPlayerManager {
     @Shadow
     @Final
     private static Logger LOGGER;
+
+    @Shadow
+    @Final
+    private BannedPlayerList bannedProfiles;
+
+    @Shadow
+    @Final
+    private BannedIpList bannedIps;
+
+    @Shadow
+    private boolean whitelistEnabled;
+
+    @Shadow
+    @Final
+    private Whitelist whitelist;
 
     @Inject(at = @At("HEAD"), method = "onPlayerConnect", cancellable = true)
     private void oky$onPlayerConnect(ClientConnection connection, ServerPlayerEntity playerEntity, CallbackInfo ci) {
@@ -73,36 +88,49 @@ public abstract class MixinPlayerManager {
     }
 
     @Inject(method = "checkCanJoin", at = @At(value = "HEAD"), cancellable = true)
-    private void disconnectMessage(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Text> cir) {
-        PlayerManager playerManager = KiloServer.getServer().getMinecraftServer().getPlayerManager();
-        BannedPlayerEntry bannedPlayerEntry = playerManager.getUserBanList().get(gameProfile);
-        BannedIpEntry bannedIpEntry = playerManager.getIpBanList().get(socketAddress);
-        if (bannedPlayerEntry != null) {
-            if (bannedPlayerEntry.getExpiryDate() != null) {
-                cir.setReturnValue(new TextMessage(replaceVariables(KiloConfig.main().moderation().disconnectReasons().tempBan, bannedPlayerEntry)).toText());
+    private void override$checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Text> cir) {
+        TextMessage message = null;
+        ModerationConfigSection.DisconnectReasons disconnectReasons = KiloConfig.main().moderation().disconnectReasons();
+        if (this.bannedProfiles.contains(gameProfile)) {
+            BannedPlayerEntry entry = this.bannedProfiles.get(gameProfile);
+            assert entry != null;
+            if (entry.getExpiryDate() == null) {
+                message = new TextMessage(replaceVariables(disconnectReasons.permBan, entry, true));
             } else {
-                cir.setReturnValue(new TextMessage(replaceVariables(KiloConfig.main().moderation().disconnectReasons().permBan, bannedPlayerEntry)).toText());
+                message = new TextMessage(replaceVariables(disconnectReasons.tempBan, entry, false));
             }
-        } else if(playerManager.getIpBanList().isBanned(socketAddress)) {
-            if (bannedIpEntry.getExpiryDate() != null) {
-                cir.setReturnValue(new TextMessage(replaceVariables(KiloConfig.main().moderation().disconnectReasons().tempIpBan, bannedIpEntry)).toText());
+        } else if (this.bannedIps.isBanned(socketAddress)) {
+            BannedIpEntry entry = this.bannedIps.get(socketAddress);
+            assert entry != null;
+            if (entry.getExpiryDate() == null) {
+                message = new TextMessage(replaceVariables(disconnectReasons.permIpBan, entry, true));
             } else {
-                cir.setReturnValue(new TextMessage(replaceVariables(KiloConfig.main().moderation().disconnectReasons().permIpBan, bannedIpEntry)).toText());
+                message = new TextMessage(replaceVariables(disconnectReasons.tempIpBan, entry, false));
             }
-        } else if(!playerManager.isWhitelisted(gameProfile)) {
-            cir.setReturnValue(new TextMessage("You are not white-listed on this server!").toText());
-        } else {
-            cir.setReturnValue(playerManager.getCurrentPlayerCount() >= playerManager.getMaxPlayerCount() && !playerManager.canBypassPlayerLimit(gameProfile) ? new TextMessage("The server is full!").toText() : null);
+        } else if (this.whitelistEnabled && !this.whitelist.isAllowed(gameProfile)) {
+            if (disconnectReasons.whitelist.isEmpty()) {
+                cir.setReturnValue(new TranslatableText("multiplayer.disconnect.not_whitelisted"));
+            } else {
+                message = new TextMessage(disconnectReasons.whitelist);
+            }
+        }
+
+        if (message != null) {
+            cir.setReturnValue(message.toText());
         }
     }
 
-    public String replaceVariables(final String str, final BanEntry banEntry) {
-        String string = new ConfigObjectReplacerUtil("ban", str, true)
-                .append("reason", banEntry.getReason())
-                .append("expiry", banEntry.getExpiryDate() == null ? "Error, please report to administrator" : banEntry.getExpiryDate().toString())
-                .append("source", banEntry.getSource())
-                .toString();
-        return string;
+    public String replaceVariables(final String str, final BanEntry<?> entry, final boolean permanent) {
+        ConfigObjectReplacerUtil replacer = new ConfigObjectReplacerUtil("ban", str, true)
+                .append("reason", entry.getReason())
+                .append("source", entry.getSource());
+
+        if (!permanent) {
+            replacer.append("expiry", entry.getExpiryDate().toString())
+                    .append("left", TimeDifferenceUtil.formatDateDiff(new Date(), entry.getExpiryDate()));
+        }
+
+        return replacer.toString();
     }
 
 

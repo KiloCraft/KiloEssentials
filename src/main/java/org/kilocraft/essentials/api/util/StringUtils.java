@@ -12,7 +12,8 @@ import java.util.regex.Pattern;
 public class StringUtils {
     public static final String EMPTY_STRING = "";
     private static final Pattern INVALID_FILE_CHARS = Pattern.compile("[^a-z0-9-]");
-    private static final Pattern USERNAME = Pattern.compile("/[a-zA-Z][a-zA-Z0-9-_]/gi");
+    public static final Pattern USERNAME_PATTERN = Pattern.compile("/[a-zA-Z][a-zA-Z0-9-_]/gi");
+    public static final Pattern UUID_PATTERN = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
 
     public static String sanitizeFileName(final String name) {
         return INVALID_FILE_CHARS.matcher(name.toLowerCase(Locale.ENGLISH)).replaceAll("_");

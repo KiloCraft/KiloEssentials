@@ -334,8 +334,7 @@ public final class ServerChat {
             if (lowerCased.contains(s)) {
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < s.length(); i++) {
-                    builder.append(KiloConfig.messages().censorList().alternateChar);
-                }
+                    builder.append(KiloConfig.messages().censorList().alternateChar);           }
 
                 msg = msg.replaceAll(("(?i)" + s), Matcher.quoteReplacement(builder.toString()));
                 index++;

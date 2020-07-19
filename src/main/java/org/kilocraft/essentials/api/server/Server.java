@@ -35,6 +35,7 @@ public interface Server {
      *
      * @return instance of MinecraftServer
      */
+    @NotNull
     MinecraftServer getMinecraftServer();
 
     /**

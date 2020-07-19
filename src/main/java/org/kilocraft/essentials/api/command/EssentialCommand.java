@@ -7,8 +7,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,22 +28,30 @@ import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.Config;
 import org.kilocraft.essentials.config.messages.Messages;
+import org.kilocraft.essentials.util.NameLookup;
+import org.kilocraft.essentials.util.text.Texter;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
 public abstract class EssentialCommand implements IEssentialCommand {
     protected static final transient Logger logger = LogManager.getLogger();
+    private static final DynamicCommandExceptionType PROFILE_RESOLVE_EXCEPTION = new DynamicCommandExceptionType((obj) -> Texter.newText("Unexpected error while resolving the requested profile\n" + obj));
     private final String label;
     public Config config = KiloConfig.main();
     public Messages messages = KiloConfig.messages();
@@ -228,7 +239,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     @Override
-    public OnlineUser getOnlineUser(UUID uuid) throws CommandSyntaxException {
+    public OnlineUser getOnlineUser(UUID uuid) {
         return this.getServer().getOnlineUser(uuid);
     }
 
@@ -288,6 +299,52 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getOnlineUserArgument(final String label) {
         return this.argument(label, string()).suggests(ArgumentCompletions::users);
+    }
+
+    public CompletableFuture<GameProfile> resolveAndGetProfileAsync(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
+        return CompletableFuture.completedFuture(resolveAndGetProfile(ctx, label));
+    }
+
+    public GameProfile resolveAndGetProfile(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
+        try {
+            final String input = ctx.getArgument(label, String.class);
+            Matcher idMatcher = StringUtils.UUID_PATTERN.matcher(input);
+            if (idMatcher.matches()) {
+                UUID uuid = UUID.fromString(input);
+                if (this.isOnline(uuid)) {
+                    return this.getOnlineUser(uuid).asPlayer().getGameProfile();
+                }
+
+                try {
+                    String name = NameLookup.getPlayerName(input);
+                    return new GameProfile(uuid, name);
+                } catch (IOException e) {
+                    throw PROFILE_RESOLVE_EXCEPTION.create(e.getMessage());
+                }
+            }
+
+            if (this.isOnline(input)) {
+                return this.getOnlineUser(input).asPlayer().getGameProfile();
+            }
+
+            Matcher nameMatcher = StringUtils.USERNAME_PATTERN.matcher(input);
+            if (nameMatcher.matches()) {
+                try {
+                    String id = NameLookup.getPlayerUUID(input);
+                    if (id == null) {
+                        throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
+                    }
+                    UUID uuid = UUID.fromString(id);
+                    return new GameProfile(uuid, id);
+                } catch (IOException e) {
+                    throw PROFILE_RESOLVE_EXCEPTION.create(e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
     }
 
     public int sendUsage(CommandContext<ServerCommandSource> ctx, String key, Object... objects) {

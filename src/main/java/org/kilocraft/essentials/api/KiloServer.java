@@ -18,7 +18,7 @@ public class KiloServer {
      *
      * @return The server instance
      */
-    public static Server getServer() {
+    public @NotNull static Server getServer() {
         if (server == null) {
             return null;
 //            throw new RuntimeException("Server isn't set!");
@@ -45,7 +45,7 @@ public class KiloServer {
         server = new ServerImpl(
                 minecraftServer,
                 new EventRegistryImpl(),
-                new ServerUserManager(minecraftServer.getPlayerManager()),
+                new ServerUserManager(),
                 brand
         );
 

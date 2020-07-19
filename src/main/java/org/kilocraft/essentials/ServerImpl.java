@@ -68,7 +68,7 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public MinecraftServer getMinecraftServer() {
+    public @NotNull MinecraftServer getMinecraftServer() {
         return this.server;
     }
 

@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user;
 
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.SharedConstants;
@@ -25,12 +26,14 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import org.kilocraft.essentials.api.feature.TickListener;
+import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
+import org.kilocraft.essentials.api.user.punishment.PunishmentEntry;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
@@ -38,6 +41,7 @@ import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.setting.Settings;
@@ -56,8 +60,7 @@ import java.util.regex.Pattern;
 
 public class ServerUserManager implements UserManager, TickListener {
     private static final Pattern DAT_FILE_PATTERN = Pattern.compile(".dat");
-    private static final Pattern UUID_PATTERN = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
-    private static final Pattern USER_FILE_NAME = Pattern.compile(UUID_PATTERN + "\\.dat");
+    private static final Pattern USER_FILE_NAME = Pattern.compile(org.kilocraft.essentials.api.util.StringUtils.UUID_PATTERN + "\\.dat");
     private final UserHandler handler = new UserHandler();
     private final ServerPunishmentManager punishmentManager = new ServerPunishmentManager();
     private final List<OnlineUser> users = new ArrayList<>();
@@ -69,7 +72,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private final MutedPlayerList mutedPlayerList = new MutedPlayerList(new File(KiloEssentials.getDataDirPath() + "/mutes.json"));
     private Map<UUID, String> cachedNicknames = new HashMap<>();
 
-    public ServerUserManager(PlayerManager manager) {
+    public ServerUserManager() {
     }
 
     @Override
@@ -132,7 +135,7 @@ public class ServerUserManager implements UserManager, TickListener {
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
-        return CompletableFuture.completedFuture(Optional.of(new NeverJoinedUser()));
+        return CompletableFuture.completedFuture(Optional.empty());
     }
 
     @Override
@@ -146,7 +149,7 @@ public class ServerUserManager implements UserManager, TickListener {
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
-        return CompletableFuture.completedFuture(Optional.of(new NeverJoinedUser()));
+        return CompletableFuture.completedFuture(Optional.empty());
     }
 
     @Override
@@ -285,16 +288,33 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     @Override
-    public void performPunishment(@NotNull Punishment punishment, Punishment.@NotNull Type type, @NotNull Action<Punishment.ActionResult> action) {
+    public void onPunishmentPerformed(OnlineUser src, PunishmentEntry entry, Punishment.Type type, @Nullable String expiry) {
+        final ModerationConfigSection config = KiloConfig.main().moderation();
+        assert entry.getVictim() != null;
+        final String message = config.meta().message
+                .replace("{TYPE}", type == Punishment.Type.MUTE ? config.meta().wordMuted : config.meta().wordBanned)
+                .replace("{SOURCE}", src.getName())
+                .replace("{VICTIM}", entry.getVictim().getName())
+                .replace("{REASON}", entry.getReason() == null ? type == Punishment.Type.MUTE ? config.defaults().mute : config.defaults().ban : entry.getReason())
+                .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
+
+        if (config.meta().broadcast) {
+            KiloChat.broadCast(new TextMessage(message));
+        } else {
+            ServerChat.Channel.STAFF.send(new TextMessage(message).toText());
+        }
+    }
+
+    public void performPunishmentOLD(@NotNull Punishment punishment, Punishment.@NotNull Type type, @NotNull Action<Punishment.ResultAction> action) {
         MinecraftServer server = KiloServer.getServer().getMinecraftServer();
         String victimIP = punishment.getVictimIP();
         String source = punishment.getArbiter().getName();
         String reason = punishment.getReason();
         Date date = new Date();
         Date expiry = punishment.getExpiry();
-        if (type == Punishment.Type.DENY_ACCESS) {
+        if (type == Punishment.Type.BAN) {
             GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
-            if (victim != null) action.perform(Punishment.ActionResult.FAILED);
+            if (victim != null) action.perform(Punishment.ResultAction.FAILED);
             String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
             if (KiloConfig.main().moderation().meta().broadcast) {
                 ServerChat.Channel.PUBLIC.sendLangMessage("command.ban.staff", source, victim.getName(), reason, time);
@@ -307,8 +327,8 @@ public class ServerUserManager implements UserManager, TickListener {
             if (serverPlayerEntity != null) {
                 serverPlayerEntity.networkHandler.disconnect(new TextMessage(replaceBanVariables(KiloConfig.main().moderation().disconnectReasons().permBan, bannedPlayerEntry)).toText());
             }
-            action.perform(Punishment.ActionResult.SUCCESS);
-        } else if (type == Punishment.Type.DENY_ACCESS_IP) {
+            action.perform(Punishment.ResultAction.SUCCESS);
+        } else if (type == Punishment.Type.BAN_IP) {
             String target = punishment.getVictim() == null ? victimIP : victimIP + " (" + punishment.getVictim().getName() + ")";
             String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
             ServerChat.Channel.STAFF.sendLangMessage("command.ipban.staff", source, target, reason, time);
@@ -318,17 +338,17 @@ public class ServerUserManager implements UserManager, TickListener {
             for (ServerPlayerEntity serverPlayerEntity : list) {
                 serverPlayerEntity.networkHandler.disconnect(new TextMessage(replaceBanVariables(KiloConfig.main().moderation().disconnectReasons().permIpBan, bannedIpEntry)).toText());
             }
-            action.perform(Punishment.ActionResult.SUCCESS);
+            action.perform(Punishment.ResultAction.SUCCESS);
         } else {
             GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
             String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
             ServerChat.Channel.STAFF.sendLangMessage("command.mute.staff", source, victim.getName(), reason, time);
             mutedPlayerList.add(new MutedPlayerEntry(victim, date, source, expiry, reason));
-            action.perform(Punishment.ActionResult.SUCCESS);
+            action.perform(Punishment.ResultAction.SUCCESS);
         }
     }
 
-    public String replaceBanVariables(final String str, final BanEntry banEntry) {
+    public static String replaceBanVariables(final String str, final BanEntry<?> banEntry) {
         return new ConfigObjectReplacerUtil("ban", str, true)
                 .append("reason", banEntry.getReason())
                 .append("expiry", banEntry.getExpiryDate() == null ? "Error, please report to administrator" : banEntry.getExpiryDate().toString())
