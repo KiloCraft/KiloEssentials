@@ -80,7 +80,7 @@ public class TimeCommand extends EssentialCommand {
     public static int executeSet(CommandContext<ServerCommandSource> context, int time, String timeName){
 
         for (ServerWorld world : context.getSource().getMinecraftServer().getWorlds()) {
-            world.method_29199(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);
+            world.setTimeOfDay(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);
         }
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", timeName + " &8(&d" + time + "&8)&r");
@@ -90,7 +90,7 @@ public class TimeCommand extends EssentialCommand {
 
     public static int executeAdd(CommandContext<ServerCommandSource> context, int timeToAdd) {
         for (ServerWorld world : context.getSource().getMinecraftServer().getWorlds()) {
-            world.method_29199(world.getTimeOfDay() + timeToAdd);
+            world.setTimeOfDay(world.getTimeOfDay() + timeToAdd);
         }
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", context.getSource().getWorld().getTimeOfDay());

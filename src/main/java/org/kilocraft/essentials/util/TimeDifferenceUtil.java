@@ -46,9 +46,6 @@ public class TimeDifferenceUtil {
     public static long parse(String time, boolean future) throws CommandSyntaxException {
         Date date = new Date();
         Matcher matcher = TIME_PATTERN.matcher(time);
-        if (!matcher.matches()) {
-            throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_INVALID, time).create();
-        }
         int years = 0;
         int months = 0;
         int weeks = 0;

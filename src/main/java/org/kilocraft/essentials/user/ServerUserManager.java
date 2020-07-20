@@ -24,6 +24,7 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.server.Server;
@@ -52,6 +53,7 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -305,57 +307,6 @@ public class ServerUserManager implements UserManager, TickListener {
         }
     }
 
-    public void performPunishmentOLD(@NotNull Punishment punishment, Punishment.@NotNull Type type, @NotNull Action<Punishment.ResultAction> action) {
-        MinecraftServer server = KiloServer.getServer().getMinecraftServer();
-        String victimIP = punishment.getVictimIP();
-        String source = punishment.getArbiter().getName();
-        String reason = punishment.getReason();
-        Date date = new Date();
-        Date expiry = punishment.getExpiry();
-        if (type == Punishment.Type.BAN) {
-            GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
-            if (victim != null) action.perform(Punishment.ResultAction.FAILED);
-            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
-            if (KiloConfig.main().moderation().meta().broadcast) {
-                ServerChat.Channel.PUBLIC.sendLangMessage("command.ban.staff", source, victim.getName(), reason, time);
-            } else {
-                ServerChat.Channel.STAFF.sendLangMessage("command.ban.staff", source, victim.getName(), reason, time);
-            }
-            BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(victim, date, source, expiry, reason);
-            server.getPlayerManager().getUserBanList().add(bannedPlayerEntry);
-            ServerPlayerEntity serverPlayerEntity = server.getPlayerManager().getPlayer(victim.getId());
-            if (serverPlayerEntity != null) {
-                serverPlayerEntity.networkHandler.disconnect(new TextMessage(replaceBanVariables(KiloConfig.main().moderation().disconnectReasons().permBan, bannedPlayerEntry)).toText());
-            }
-            action.perform(Punishment.ResultAction.SUCCESS);
-        } else if (type == Punishment.Type.BAN_IP) {
-            String target = punishment.getVictim() == null ? victimIP : victimIP + " (" + punishment.getVictim().getName() + ")";
-            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
-            ServerChat.Channel.STAFF.sendLangMessage("command.ipban.staff", source, target, reason, time);
-            BannedIpEntry bannedIpEntry = new BannedIpEntry(victimIP, date, source, expiry, reason);
-            server.getPlayerManager().getIpBanList().add(bannedIpEntry);
-            List<ServerPlayerEntity> list = server.getPlayerManager().getPlayersByIp(victimIP);
-            for (ServerPlayerEntity serverPlayerEntity : list) {
-                serverPlayerEntity.networkHandler.disconnect(new TextMessage(replaceBanVariables(KiloConfig.main().moderation().disconnectReasons().permIpBan, bannedIpEntry)).toText());
-            }
-            action.perform(Punishment.ResultAction.SUCCESS);
-        } else {
-            GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
-            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
-            ServerChat.Channel.STAFF.sendLangMessage("command.mute.staff", source, victim.getName(), reason, time);
-            mutedPlayerList.add(new MutedPlayerEntry(victim, date, source, expiry, reason));
-            action.perform(Punishment.ResultAction.SUCCESS);
-        }
-    }
-
-    public static String replaceBanVariables(final String str, final BanEntry<?> banEntry) {
-        return new ConfigObjectReplacerUtil("ban", str, true)
-                .append("reason", banEntry.getReason())
-                .append("expiry", banEntry.getExpiryDate() == null ? "Error, please report to administrator" : banEntry.getExpiryDate().toString())
-                .append("source", banEntry.getSource())
-                .toString();
-    }
-
     public boolean shouldNotUseNickname(OnlineUser user, String rawNickname) {
         String NICKNAME_CACHE = "nicknames";
         if (!CacheManager.isPresent(NICKNAME_CACHE)) {
@@ -571,6 +522,21 @@ public class ServerUserManager implements UserManager, TickListener {
             this.animatedText.remove();
             this.animatedText = null;
         }
+    }
+
+    public static String replaceVariables(final String str, final BanEntry<?> entry, final boolean permanent) {
+        ConfigObjectReplacerUtil replacer = new ConfigObjectReplacerUtil("ban", str, true)
+                .append("reason", entry.getReason())
+                .append("source", entry.getSource());
+
+        if (!permanent) {
+            SimpleDateFormat dateFormat = ModConstants.DATE_FORMAT;
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            replacer.append("expiry", dateFormat.format(entry.getExpiryDate()))
+                    .append("left", TimeDifferenceUtil.formatDateDiff(new Date(), entry.getExpiryDate()));
+        }
+
+        return replacer.toString();
     }
 
 }

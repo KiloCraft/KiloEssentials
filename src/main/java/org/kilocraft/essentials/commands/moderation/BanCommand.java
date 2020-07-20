@@ -16,6 +16,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.user.ServerUserManager;
 
 import java.util.Date;
 
@@ -48,14 +49,12 @@ public class BanCommand extends EssentialCommand {
             if (super.isOnline(victim.getId())) {
                 super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
                         new TextMessage(
-                                super.config.moderation().disconnectReasons().permBan
-                                .replace("{BAN_SOURCE}", entry.getSource())
-                                .replace("{BAN_REASON}", entry.getReason())
+                                ServerUserManager.replaceVariables(super.config.moderation().disconnectReasons().permBan, entry, true)
                         ).toText()
                 );
             }
 
-            this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN_IP, null);
+            this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, null);
         });
 
         return AWAIT;

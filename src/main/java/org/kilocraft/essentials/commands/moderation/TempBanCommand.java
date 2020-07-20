@@ -17,6 +17,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.util.Date;
@@ -53,18 +54,14 @@ public class TempBanCommand extends EssentialCommand {
             super.getServer().getMinecraftServer().getPlayerManager().getUserBanList().add(entry);
 
             if (super.isOnline(victim.getId())) {
-                String banExpiry = TimeDifferenceUtil.formatDateDiff(new Date(), entry.getExpiryDate());
                 super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
                         new TextMessage(
-                                super.config.moderation().disconnectReasons().permBan
-                                        .replace("{BAN_SOURCE}", entry.getSource())
-                                        .replace("{BAN_REASON}", entry.getReason())
-                                        .replace("{BAN_EXPIRY}", banExpiry)
+                                ServerUserManager.replaceVariables(super.config.moderation().disconnectReasons().tempBan, entry, false)
                         ).toText()
                 );
             }
 
-            this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN_IP, time);
+            this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time);
 
         });
 

@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.mixin.events;
 
 import com.mojang.authlib.GameProfile;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.*;
@@ -11,18 +10,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.TextMessage;
-import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
-import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.player.PlayerConnectEventImpl;
 import org.kilocraft.essentials.events.player.PlayerConnectedEventImpl;
-import org.kilocraft.essentials.extensions.homes.api.Home;
-import org.kilocraft.essentials.util.TimeDifferenceUtil;
-import org.kilocraft.essentials.util.text.Texter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,8 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.net.SocketAddress;
-import java.util.Date;
 import java.util.UUID;
+
+import static org.kilocraft.essentials.user.ServerUserManager.replaceVariables;
 
 @Mixin(PlayerManager.class)
 public abstract class MixinPlayerManager {
@@ -89,49 +82,38 @@ public abstract class MixinPlayerManager {
 
     @Inject(method = "checkCanJoin", at = @At(value = "HEAD"), cancellable = true)
     private void override$checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Text> cir) {
-        TextMessage message = null;
-        ModerationConfigSection.DisconnectReasons disconnectReasons = KiloConfig.main().moderation().disconnectReasons();
-        if (this.bannedProfiles.contains(gameProfile)) {
-            BannedPlayerEntry entry = this.bannedProfiles.get(gameProfile);
-            assert entry != null;
-            if (entry.getExpiryDate() == null) {
-                message = new TextMessage(replaceVariables(disconnectReasons.permBan, entry, true));
-            } else {
-                message = new TextMessage(replaceVariables(disconnectReasons.tempBan, entry, false));
+        try {
+            System.out.println("Ip Banned " + this.bannedIps.isBanned(socketAddress));
+            TextMessage message = null;
+            ModerationConfigSection.DisconnectReasons disconnectReasons = KiloConfig.main().moderation().disconnectReasons();
+            if (this.bannedProfiles.contains(gameProfile)) {
+                BannedPlayerEntry entry = this.bannedProfiles.get(gameProfile);
+                assert entry != null;
+                if (entry.getExpiryDate() == null) {
+                    message = new TextMessage(replaceVariables(disconnectReasons.permBan, entry, true));
+                } else {
+                    message = new TextMessage(replaceVariables(disconnectReasons.tempBan, entry, false));
+                }
+            } else if (this.bannedIps.isBanned(socketAddress)) {
+                BannedIpEntry entry = this.bannedIps.get(socketAddress);
+                assert entry != null;
+                if (entry.getExpiryDate() == null) {
+                    message = new TextMessage(replaceVariables(disconnectReasons.permIpBan, entry, true));
+                } else {
+                    message = new TextMessage(replaceVariables(disconnectReasons.tempIpBan, entry, false));
+                }
+            } else if (this.whitelistEnabled && !this.whitelist.isAllowed(gameProfile)) {
+                if (disconnectReasons.whitelist.isEmpty()) {
+                    cir.setReturnValue(new TranslatableText("multiplayer.disconnect.not_whitelisted"));
+                } else {
+                    message = new TextMessage(disconnectReasons.whitelist);
+                }
             }
-        } else if (this.bannedIps.isBanned(socketAddress)) {
-            BannedIpEntry entry = this.bannedIps.get(socketAddress);
-            assert entry != null;
-            if (entry.getExpiryDate() == null) {
-                message = new TextMessage(replaceVariables(disconnectReasons.permIpBan, entry, true));
-            } else {
-                message = new TextMessage(replaceVariables(disconnectReasons.tempIpBan, entry, false));
-            }
-        } else if (this.whitelistEnabled && !this.whitelist.isAllowed(gameProfile)) {
-            if (disconnectReasons.whitelist.isEmpty()) {
-                cir.setReturnValue(new TranslatableText("multiplayer.disconnect.not_whitelisted"));
-            } else {
-                message = new TextMessage(disconnectReasons.whitelist);
-            }
-        }
 
-        if (message != null) {
-            cir.setReturnValue(message.toText());
+            cir.setReturnValue(message == null ? null : message.toText());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-
-    public String replaceVariables(final String str, final BanEntry<?> entry, final boolean permanent) {
-        ConfigObjectReplacerUtil replacer = new ConfigObjectReplacerUtil("ban", str, true)
-                .append("reason", entry.getReason())
-                .append("source", entry.getSource());
-
-        if (!permanent) {
-            replacer.append("expiry", entry.getExpiryDate().toString())
-                    .append("left", TimeDifferenceUtil.formatDateDiff(new Date(), entry.getExpiryDate()));
-        }
-
-        return replacer.toString();
-    }
-
 
 }

@@ -7,6 +7,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.BannedIpEntry;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
@@ -14,9 +16,11 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.Date;
+import java.util.List;
 
 public class BanIpCommand extends EssentialCommand {
     public BanIpCommand() {
@@ -48,14 +52,13 @@ public class BanIpCommand extends EssentialCommand {
             BannedIpEntry entry = new BannedIpEntry(victim.getLastSocketAddress(), date, src.getName(), null, reason);
             super.getServer().getMinecraftServer().getPlayerManager().getIpBanList().add(entry);
 
-            if (super.isOnline(victim.getId())) {
-                super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
-                        new TextMessage(
-                                super.config.moderation().disconnectReasons().permIpBan
-                                        .replace("{BAN_SOURCE}", entry.getSource())
-                                        .replace("{BAN_REASON}", entry.getReason())
-                        ).toText()
-                );
+            MutableText text = new TextMessage(
+                    ServerUserManager.replaceVariables(super.config.moderation().disconnectReasons().permIpBan, entry, true)
+            ).toText();
+
+            List<ServerPlayerEntity> players = super.getServer().getPlayerManager().getPlayersByIp(victim.getLastSocketAddress());
+            for (ServerPlayerEntity player : players) {
+                player.networkHandler.disconnect(text);
             }
 
             this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, victim, reason), Punishment.Type.BAN_IP, null);
