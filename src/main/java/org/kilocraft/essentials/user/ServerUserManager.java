@@ -290,17 +290,17 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     @Override
-    public void onPunishmentPerformed(OnlineUser src, PunishmentEntry entry, Punishment.Type type, @Nullable String expiry) {
+    public void onPunishmentPerformed(OnlineUser src, PunishmentEntry entry, Punishment.Type type, @Nullable String expiry, boolean silent) {
         final ModerationConfigSection config = KiloConfig.main().moderation();
         assert entry.getVictim() != null;
         final String message = config.meta().message
                 .replace("{TYPE}", type == Punishment.Type.MUTE ? config.meta().wordMuted : config.meta().wordBanned)
                 .replace("{SOURCE}", src.getName())
                 .replace("{VICTIM}", entry.getVictim().getName())
-                .replace("{REASON}", entry.getReason() == null ? type == Punishment.Type.MUTE ? config.defaults().mute : config.defaults().ban : entry.getReason())
+                .replace("{REASON}", entry.getReason() == null ? config.defaults().ban : entry.getReason())
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
-        if (config.meta().broadcast) {
+        if (config.meta().broadcast && !silent) {
             KiloChat.broadCast(new TextMessage(message));
         } else {
             ServerChat.Channel.STAFF.send(new TextMessage(message).toText());

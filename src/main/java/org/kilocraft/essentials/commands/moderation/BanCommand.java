@@ -2,10 +2,10 @@ package org.kilocraft.essentials.commands.moderation;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Nullable;
@@ -29,22 +29,26 @@ public class BanCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> victim = argument("profile", StringArgumentType.string())
                 .suggests(ArgumentCompletions::allPlayers)
-                .executes((ctx) -> this.execute(ctx, null));
+                .executes((ctx) -> this.execute(ctx, null, false));
 
         RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
-                .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason")));
+                .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), false));
 
+        LiteralArgumentBuilder<ServerCommandSource> silent = literal("silent")
+                .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), true));
+
+        reason.then(silent);
         victim.then(reason);
         this.argumentBuilder.then(victim);
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable final String reason) throws CommandSyntaxException {
+    private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         Date date = new Date();
 
         super.resolveAndGetProfileAsync(ctx, "profile").thenAcceptAsync((victim) -> {
             BannedPlayerEntry entry = new BannedPlayerEntry(victim, date, src.getName(), null, reason);
-            super.getServer().getMinecraftServer().getPlayerManager().getUserBanList().add(entry);
+            super.getServer().getPlayerManager().getUserBanList().add(entry);
 
             if (super.isOnline(victim.getId())) {
                 super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
@@ -54,7 +58,7 @@ public class BanCommand extends EssentialCommand {
                 );
             }
 
-            this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, null);
+            this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, null, silent);
         });
 
         return AWAIT;

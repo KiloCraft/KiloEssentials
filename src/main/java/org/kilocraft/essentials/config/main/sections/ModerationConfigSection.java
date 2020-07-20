@@ -29,8 +29,8 @@ public class ModerationConfigSection {
 
     @ConfigSerializable
     public static class Defaults {
-        @Setting(value = "mute", comment = "The Default kick reason")
-        public String mute = "Muted by an operator";
+        @Setting(value = "mute")
+        public String mute = "";
 
         @Setting(value = "ban", comment = "The Default kick reason")
         public String ban = "Banned by an operator";
