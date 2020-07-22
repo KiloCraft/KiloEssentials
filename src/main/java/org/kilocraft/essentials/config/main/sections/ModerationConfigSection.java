@@ -66,7 +66,7 @@ public class ModerationConfigSection {
         public boolean broadcast = true;
 
         @Setting(value = "performedMessage", comment = "Sets the broadcast message")
-        public String performed = "&4[ &c{SOURCE} &4]&c {VICTIM} was {TYPE} because \"{REASON}\" &7(&c{LENGTH}&7)";
+        public String performed = "{VICTIM} was {TYPE} by {SOURCE} for \"{REASON}\" &7(&c{LENGTH}&7)";
 
         @Setting(value = "revokedMessage")
         public String revoked = "&c{VICTIM} was Un-{TYPE} by {SOURCE}";

@@ -44,6 +44,11 @@ public class UnIpBanCommand extends EssentialCommand {
                 return;
             }
 
+            if (!super.getServer().getPlayerManager().getIpBanList().isBanned(user.getLastSocketAddress())) {
+                src.sendLangError("command.unban.not_banned", user.getName());
+                return;
+            }
+
             super.getServer().getPlayerManager().getIpBanList().remove(user.getLastSocketAddress());
             this.getServer().getUserManager().onPunishmentRevoked(src, new Punishment(src, user), Punishment.Type.BAN_IP, null, silent);
         });

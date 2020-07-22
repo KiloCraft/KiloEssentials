@@ -70,8 +70,7 @@ public class BanCommand extends EssentialCommand {
 
         this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, null, silent);
 
-
-        return AWAIT;
+        return SUCCESS;
     }
 
 
