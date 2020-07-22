@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -24,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GUIBuilder {
-    private NamedScreenHandlerFactory factory;
-    private Map<Integer, GUIButton> buttons;
+    private final Map<Integer, GUIButton> buttons;
     private int rows;
     private Text title;
     private ItemStack background;
@@ -56,6 +56,10 @@ public class GUIBuilder {
         return this;
     }
 
+    public GUIBuilder titled(@NotNull final String string) {
+        return this.titled(Texter.newText(string));
+    }
+
     public GUIBuilder titled(@NotNull final Text title) {
         Validate.notNull(title, "The title for a GUI cannot be null!");
         this.title = title;
@@ -68,7 +72,7 @@ public class GUIBuilder {
     }
 
     public NamedScreenHandlerFactory build() {
-        this.factory = new NamedScreenHandlerFactory() {
+        return new NamedScreenHandlerFactory() {
             @Override
             public Text getDisplayName() {
                 return title;
@@ -79,8 +83,6 @@ public class GUIBuilder {
                 return createMenuScreen(i, playerInventory, buttons);
             }
         };
-
-        return this.factory;
     }
 
     private GUIScreen createMenuScreen(int sync, PlayerInventory inv, Map<Integer, GUIButton> buttons) {
@@ -106,9 +108,9 @@ public class GUIBuilder {
                 break;
         }
 
-        GUIScreen screen = new GUIScreen(ScreenHandlerType.GENERIC_9X1, sync, inv, new SimpleInventory(rows * 9), rows, buttons);
+        GUIScreen screen = new GUIScreen(handlerType, sync, inv, new SimpleInventory(rows * 9), rows, buttons);
 
-        for (int i = 0; i < screen.slots.size(); i++) {
+        for (int i = 0; i < screen.slots.size() - 36; i++) {
             screen.setStackInSlot(i, this.background);
         }
 
@@ -171,8 +173,16 @@ public class GUIBuilder {
     public static class Icon {
         private final ItemStack icon;
 
+        public Icon(@NotNull final Item icon) {
+            this(new ItemStack(icon));
+        }
+
         public Icon(@NotNull final ItemStack icon) {
             this.icon = icon;
+        }
+
+        public Icon titled(@Nullable final String title) {
+            return this.titled(Texter.newText(title));
         }
 
         public Icon titled(@Nullable final Text title) {
@@ -194,6 +204,7 @@ public class GUIBuilder {
         }
 
         public Icon withLore(final int line, @Nullable final Text text) {
+            final int ln = line - 1;
             CompoundTag tag = icon.getTag();
             if (tag == null) {
                 tag = new CompoundTag();
@@ -208,13 +219,13 @@ public class GUIBuilder {
                 lore = new ListTag();
             }
 
-            if (line > lore.size() - 1) {
-                for (int i = lore.size(); i <= line; i++) {
+            if (ln > lore.size() - 1) {
+                for (int i = lore.size(); i <= ln; i++) {
                     lore.add(StringTag.of(Text.Serializer.toJson(Texter.newText())));
                 }
             }
 
-            lore.set(line, StringTag.of(Text.Serializer.toJson(text)));
+            lore.set(ln, StringTag.of(Text.Serializer.toJson(text)));
             tag.getCompound("display").put("Lore", lore);
             this.icon.setTag(tag);
 

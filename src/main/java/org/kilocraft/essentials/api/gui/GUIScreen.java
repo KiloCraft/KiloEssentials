@@ -58,14 +58,16 @@ public class GUIScreen extends ScreenHandler {
     }
 
     @Override
-    public ItemStack onSlotClick(int i, int j, SlotActionType slotActionType, PlayerEntity playerEntity) {
-        if (buttons.containsKey(i)) {
-
+    public ItemStack onSlotClick(int slot, int clickData, SlotActionType slotActionType, PlayerEntity playerEntity) {
+        if (buttons.containsKey(slot)) {
+            this.buttons.get(slot).onAction(slotActionType);
         }
+
         this.inv.markDirty();
         ((ServerPlayerEntity) playerEntity).networkHandler.sendPacket(
                 new InventoryS2CPacket(syncId, playerEntity.currentScreenHandler.getStacks())
         );
+
         this.sendContentUpdates();
         return ItemStack.EMPTY;
     }

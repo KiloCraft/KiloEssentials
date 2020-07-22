@@ -4,12 +4,18 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.gui.GUIBuilder;
+import org.kilocraft.essentials.api.gui.GUIButton;
+import org.kilocraft.essentials.api.gui.GUIScreen;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -37,7 +43,7 @@ public class HomesCommand extends EssentialCommand {
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
-        return sendInfo(user, user);
+        return openScreen(user, user);
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -46,7 +52,8 @@ public class HomesCommand extends EssentialCommand {
         String inputName = getString(ctx, "user");
 
         getEssentials().getUserThenAcceptAsync(player, inputName, (user) -> {
-            sendInfo(source, user);
+//            sendInfo(source, user);
+            openScreen(source, user);
         });
 
         return AWAIT;
@@ -56,7 +63,7 @@ public class HomesCommand extends EssentialCommand {
         boolean areTheSame = CommandUtils.areTheSame(source, user);
         assert user.getHomesHandler() != null;
         if (user.getHomesHandler().homes() == 0) {
-             source.sendMessage(areTheSame ? KiloConfig.messages().commands().playerHomes().noHome :
+            source.sendMessage(areTheSame ? KiloConfig.messages().commands().playerHomes().noHome :
                     KiloConfig.messages().commands().playerHomes().admin().noHome.replace("{TARGET_TAG}", user.getNameTag()));
 
             return FAILED;
@@ -81,4 +88,34 @@ public class HomesCommand extends EssentialCommand {
         source.sendMessage(text.build());
         return SUCCESS;
     }
+
+    private int openScreen(final OnlineUser src, User user) {
+        GUIBuilder builder = new GUIBuilder()
+                .titled(src.equals(user) ? "Homes" : user.getFormattedDisplayName() + "'s Homes")
+                .setRows(3);
+
+        assert user.getHomesHandler() != null;
+        for (int i = 0; i < user.getHomesHandler().getHomes().size(); i++) {
+            Home home = user.getHomesHandler().getHomes().get(i);
+            ItemStack icon = new GUIBuilder.Icon(Items.WHITE_WOOL)
+                    .titled(home.getName())
+                    .withLore(1, Texter.newText("Click to teleport!"))
+                    .build();
+
+            builder.addButton(
+                    new GUIBuilder.Button(i,
+                            new GUIBuilder.Icon(Items.WHITE_WOOL)
+                                    .titled(home.getName())
+                                    .withLore(1, Texter.newText("Click to teleport!"))
+                                    .build()
+                    )
+                            .setEventAction(SlotActionType.PICKUP, () -> Home.teleportTo(src, home))
+                            .build()
+            );
+        }
+
+        src.asPlayer().openHandledScreen(builder.build());
+        return SUCCESS;
+    }
+
 }

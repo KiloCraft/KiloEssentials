@@ -68,18 +68,6 @@ public class HomeCommand extends EssentialCommand {
             return IEssentialCommand.FAILED;
         }
 
-
-        Home home = homeHandler.getHome(name);
-
-//        try {
-//            LocationUtil.validateIsSafe(home.getLocation());
-//        } catch (InsecureDestinationException e) {
-//            if (!input.startsWith("-confirmed")) {
-//                user.sendMessage(getTeleportConfirmationText(name, ""));
-//                return FAILED;
-//            }
-//        }
-
         try {
             homeHandler.teleportToHome(user, name);
         } catch (final UnsafeHomeException e) {
