@@ -13,12 +13,10 @@ import net.minecraft.text.MutableText;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.chat.TextMessage;
-import org.kilocraft.essentials.mixin.ServerPlayerEntityMixin;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -26,9 +24,9 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import java.util.Date;
 import java.util.List;
 
-public class TempBanIpCommand extends EssentialCommand {
-    public TempBanIpCommand() {
-        super("tempban_ip", CommandPermission.BAN);
+public class TempIpBanCommand extends EssentialCommand {
+    public TempIpBanCommand() {
+        super("tempip_ban", CommandPermission.BAN);
     }
 
     @Override
@@ -42,12 +40,13 @@ public class TempBanIpCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("silent")
+        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true));
 
-        reason.then(silent);
         time.then(reason);
         victim.then(time);
+        silent.then(victim);
+        this.argumentBuilder.then(silent);
         this.argumentBuilder.then(victim);
     }
 
@@ -66,7 +65,7 @@ public class TempBanIpCommand extends EssentialCommand {
             super.getServer().getMinecraftServer().getPlayerManager().getIpBanList().add(entry);
 
             MutableText text = new TextMessage(
-                    ServerUserManager.replaceVariables(super.config.moderation().disconnectReasons().tempIpBan, entry, false)
+                    ServerUserManager.replaceVariables(super.config.moderation().messages().tempIpBan, entry, false)
             ).toText();
 
             List<ServerPlayerEntity> players = super.getServer().getPlayerManager().getPlayersByIp(victim.getLastSocketAddress());

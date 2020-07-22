@@ -6,10 +6,10 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class ChatConfigSection {
     @Setting(value = "commandSpyFormat", comment = "Set the format of command spy messages")
-    public String commandSpyFormat = "&r&7%SOURCE% &3->&r /%COMMAND%";
+    public String commandSpyFormat = "&8[&5Spy&8] &r&7%SOURCE% &3->&r /%COMMAND%";
 
     @Setting(value = "socialSpyFormat", comment = "Set the format of social spy messages")
-    public String socialSpyFormat = "&7[%SOURCE%&r&3 -> &7%TARGET%&r&7]&7 %MESSAGE%";
+    public String socialSpyFormat = "&8[&5Spy&8] &7[%SOURCE%&r&3 -> &7%TARGET%&r&7]&7 %MESSAGE%";
 
     @Setting(value = "useVanillaChat", comment = "If set to true the KiloEssentials Chat will be disabled")
     public boolean useVanillaChat = false;

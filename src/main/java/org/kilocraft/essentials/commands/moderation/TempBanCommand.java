@@ -1,16 +1,19 @@
 package org.kilocraft.essentials.commands.moderation;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -19,7 +22,9 @@ import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
+import java.util.Collection;
 import java.util.Date;
 
 public class TempBanCommand extends EssentialCommand {
@@ -29,7 +34,7 @@ public class TempBanCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> victim = argument("profile", StringArgumentType.string())
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> victim = argument("profile", GameProfileArgumentType.gameProfile())
                 .suggests(ArgumentCompletions::allPlayers);
 
         RequiredArgumentBuilder<ServerCommandSource, String> time = argument("time", StringArgumentType.word())
@@ -39,12 +44,13 @@ public class TempBanCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("silent")
+        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true));
 
-        reason.then(silent);
         time.then(reason);
         victim.then(time);
+        silent.then(victim);
+        this.argumentBuilder.then(silent);
         this.argumentBuilder.then(victim);
     }
 
@@ -52,22 +58,25 @@ public class TempBanCommand extends EssentialCommand {
         OnlineUser src = this.getOnlineUser(ctx);
         Date date = new Date();
         Date expiry = new Date(TimeDifferenceUtil.parse(time, true));
+        Collection<GameProfile> gameProfiles = GameProfileArgumentType.getProfileArgument(ctx, "profile");
+        if (gameProfiles.size() > 1) {
+            throw KiloCommands.getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
+        }
+        GameProfile victim = gameProfiles.iterator().next();
 
-        super.resolveAndGetProfileAsync(ctx, "profile").thenAcceptAsync((victim) -> {
-            BannedPlayerEntry entry = new BannedPlayerEntry(victim, date, src.getName(), expiry, reason);
-            super.getServer().getMinecraftServer().getPlayerManager().getUserBanList().add(entry);
+        BannedPlayerEntry entry = new BannedPlayerEntry(victim, date, src.getName(), expiry, reason);
+        super.getServer().getMinecraftServer().getPlayerManager().getUserBanList().add(entry);
 
-            if (super.isOnline(victim.getId())) {
-                super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
-                        new TextMessage(
-                                ServerUserManager.replaceVariables(super.config.moderation().disconnectReasons().tempBan, entry, false)
-                        ).toText()
-                );
-            }
+        if (super.isOnline(victim.getId())) {
+            super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
+                    new TextMessage(
+                            ServerUserManager.replaceVariables(super.config.moderation().messages().tempBan, entry, false)
+                    ).toText()
+            );
+        }
 
-            this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
+        this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
 
-        });
 
         return AWAIT;
     }

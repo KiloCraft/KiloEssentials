@@ -29,27 +29,27 @@ public class TempMuteCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> user = this.getUserArgument("victim");
 
         RequiredArgumentBuilder<ServerCommandSource, String> time = argument("time", StringArgumentType.word())
-                .suggests(TimeDifferenceUtil::listSuggestions)
+                .suggests(TimeDifferenceUtil::listSuggestions);
+
+        RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
                 .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), false));
 
-        RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.string())
-                .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), false));
-
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("silent")
+        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
                 .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true));
 
-        reason.then(silent);
-        user.then(reason);
+        time.then(reason);
+        user.then(time);
+        silent.then(user);
+        this.argumentBuilder.then(silent);
         this.argumentBuilder.then(user);
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @NotNull String time, @Nullable String reason, boolean silent) throws CommandSyntaxException {
         CommandSourceUser src = this.getServerUser(ctx);
-        String input = this.getUserArgumentInput(ctx, "victim");
         Date date = new Date();
         Date expiry = new Date(TimeDifferenceUtil.parse(time, true));
 
-        super.resolveAndGetProfileAsync(ctx, input).thenAcceptAsync((victim) -> {
+        super.resolveAndGetProfileAsync(ctx, "victim").thenAcceptAsync((victim) -> {
             MutedPlayerEntry entry = new MutedPlayerEntry(victim, date, src.getName(), expiry, reason);
             super.getServer().getUserManager().getMutedPlayerList().add(entry);
             this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.MUTE, time, silent);

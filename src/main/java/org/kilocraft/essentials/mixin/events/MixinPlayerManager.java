@@ -83,30 +83,29 @@ public abstract class MixinPlayerManager {
     @Inject(method = "checkCanJoin", at = @At(value = "HEAD"), cancellable = true)
     private void override$checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Text> cir) {
         try {
-            System.out.println("Ip Banned " + this.bannedIps.isBanned(socketAddress));
             TextMessage message = null;
-            ModerationConfigSection.DisconnectReasons disconnectReasons = KiloConfig.main().moderation().disconnectReasons();
+            ModerationConfigSection.Messages messages = KiloConfig.main().moderation().messages();
             if (this.bannedProfiles.contains(gameProfile)) {
                 BannedPlayerEntry entry = this.bannedProfiles.get(gameProfile);
                 assert entry != null;
                 if (entry.getExpiryDate() == null) {
-                    message = new TextMessage(replaceVariables(disconnectReasons.permBan, entry, true));
+                    message = new TextMessage(replaceVariables(messages.permBan, entry, true));
                 } else {
-                    message = new TextMessage(replaceVariables(disconnectReasons.tempBan, entry, false));
+                    message = new TextMessage(replaceVariables(messages.tempBan, entry, false));
                 }
             } else if (this.bannedIps.isBanned(socketAddress)) {
                 BannedIpEntry entry = this.bannedIps.get(socketAddress);
                 assert entry != null;
                 if (entry.getExpiryDate() == null) {
-                    message = new TextMessage(replaceVariables(disconnectReasons.permIpBan, entry, true));
+                    message = new TextMessage(replaceVariables(messages.permIpBan, entry, true));
                 } else {
-                    message = new TextMessage(replaceVariables(disconnectReasons.tempIpBan, entry, false));
+                    message = new TextMessage(replaceVariables(messages.tempIpBan, entry, false));
                 }
             } else if (this.whitelistEnabled && !this.whitelist.isAllowed(gameProfile)) {
-                if (disconnectReasons.whitelist.isEmpty()) {
+                if (messages.whitelist.isEmpty()) {
                     cir.setReturnValue(new TranslatableText("multiplayer.disconnect.not_whitelisted"));
                 } else {
-                    message = new TextMessage(disconnectReasons.whitelist);
+                    message = new TextMessage(messages.whitelist);
                 }
             }
 

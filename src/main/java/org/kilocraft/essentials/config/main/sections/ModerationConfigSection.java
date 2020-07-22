@@ -10,7 +10,7 @@ public class ModerationConfigSection {
     private Defaults defaults = new Defaults();
 
     @Setting("disconnectReasons")
-    private DisconnectReasons disconnectReasons = new DisconnectReasons();
+    private Messages messages = new Messages();
 
     @Setting("meta")
     private Meta meta = new Meta();
@@ -19,8 +19,8 @@ public class ModerationConfigSection {
         return defaults;
     }
 
-    public DisconnectReasons disconnectReasons() {
-        return disconnectReasons;
+    public Messages messages() {
+        return messages;
     }
 
     public Meta meta() {
@@ -30,14 +30,14 @@ public class ModerationConfigSection {
     @ConfigSerializable
     public static class Defaults {
         @Setting(value = "mute")
-        public String mute = "";
+        public String mute = "Muted by an operator";
 
         @Setting(value = "ban", comment = "The Default kick reason")
         public String ban = "Banned by an operator";
     }
 
     @ConfigSerializable
-    public static class DisconnectReasons {
+    public static class Messages {
         @Setting(value = "ban", comment = "Disconnect message for permanent bans")
         public String permBan = "&c&lYou have been banned!\n\n&cReason: &f{BAN_REASON}\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
@@ -52,6 +52,12 @@ public class ModerationConfigSection {
 
         @Setting(value = "whitelist", comment = "Disconnect message for not being whitelisted, leave it empty to use the default in-game translation")
         public String whitelist = "You are not white-listed on this server!";
+
+        @Setting(value = "mute")
+        public String mute = "&cYou are muted because of \"{MUTE_REASON}\"";
+
+        @Setting(value = "tempMute")
+        public String tempMute = "&cYou are muted for {MUTE_LEFT} because of \"{MUTE_REASON}\"";
     }
 
     @ConfigSerializable
@@ -59,8 +65,14 @@ public class ModerationConfigSection {
         @Setting(value = "broadcast", comment = "Defines whether bans should be announced in global or only in staff chat")
         public boolean broadcast = true;
 
-        @Setting(value = "message", comment = "Sets the broadcast message")
-        public String message = "&4[ &c{SOURCE} &4]&c {VICTIM} was {TYPE} because \"{REASON}\" &7(&c{LENGTH}&7)";
+        @Setting(value = "performedMessage", comment = "Sets the broadcast message")
+        public String performed = "&4[ &c{SOURCE} &4]&c {VICTIM} was {TYPE} because \"{REASON}\" &7(&c{LENGTH}&7)";
+
+        @Setting(value = "revokedMessage")
+        public String revoked = "&c{VICTIM} was Un-{TYPE} by {SOURCE}";
+
+        @Setting(value = "silentPrefix")
+        public String silentPrefix = "&f[&7Silent&f]";
 
         @Setting(value = "wordBanned")
         public String wordBanned = "Banned";

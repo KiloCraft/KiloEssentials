@@ -131,4 +131,6 @@ public interface UserManager {
     MutedPlayerList getMutedPlayerList();
 
     void onPunishmentPerformed(OnlineUser src, PunishmentEntry entry, Punishment.Type type, @Nullable String expiry, boolean silent);
+
+    void onPunishmentRevoked(OnlineUser src, PunishmentEntry entry, Punishment.Type type, @Nullable String expiry, boolean silent);
 }

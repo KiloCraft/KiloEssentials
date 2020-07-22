@@ -31,6 +31,7 @@ import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.config.main.sections.chat.ChatPingSoundConfigSection;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
+import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.setting.Settings;
 import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -257,8 +258,16 @@ public final class ServerChat {
         String me_format = ServerChat.config.privateChat().privateChatMeFormat;
         String sourceName = source.getName();
 
-        if (CommandUtils.isPlayer(source) && target.ignored(source.getPlayer().getUuid())) {
-            throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
+        if (CommandUtils.isPlayer(source)) {
+            OnlineUser user = KiloServer.getServer().getOnlineUser(source.getPlayer());
+            if (KiloServer.getServer().getUserManager().getMutedPlayerList().contains(user.asPlayer().getGameProfile())) {
+                KiloChat.sendMessageTo(source, new TextMessage(ServerUserManager.getMuteMessage(user)));
+                return;
+            }
+
+            if (target.ignored(source.getPlayer().getUuid())) {
+                throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
+            }
         }
 
         String toSource = format.replace("%SOURCE%", me_format)
