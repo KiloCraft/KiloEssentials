@@ -4,25 +4,29 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.ItemTags;
+import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.gui.GUIBuilder;
-import org.kilocraft.essentials.api.gui.GUIButton;
-import org.kilocraft.essentials.api.gui.GUIScreen;
+import org.kilocraft.essentials.api.containergui.ScreenGUIBuilder;
+import org.kilocraft.essentials.api.containergui.buttons.GUIButton;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
+import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.text.Texter;
+
+import java.util.List;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 
@@ -43,7 +47,7 @@ public class HomesCommand extends EssentialCommand {
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
-        return openScreen(user, user);
+        return sendInfo(user, user);
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -51,11 +55,7 @@ public class HomesCommand extends EssentialCommand {
         OnlineUser source = getOnlineUser(player);
         String inputName = getString(ctx, "user");
 
-        getEssentials().getUserThenAcceptAsync(player, inputName, (user) -> {
-//            sendInfo(source, user);
-            openScreen(source, user);
-        });
-
+        super.getEssentials().getUserThenAcceptAsync(player, inputName, (user) -> sendInfo(source, user));
         return AWAIT;
     }
 
@@ -90,31 +90,35 @@ public class HomesCommand extends EssentialCommand {
     }
 
     private int openScreen(final OnlineUser src, User user) {
-        GUIBuilder builder = new GUIBuilder()
-                .titled(src.equals(user) ? "Homes" : user.getFormattedDisplayName() + "'s Homes")
-                .setRows(3);
+        UserHomeHandler homeHandler = user.getHomesHandler();
+        assert homeHandler != null;
 
-        assert user.getHomesHandler() != null;
-        for (int i = 0; i < user.getHomesHandler().getHomes().size(); i++) {
-            Home home = user.getHomesHandler().getHomes().get(i);
-            ItemStack icon = new GUIBuilder.Icon(Items.WHITE_WOOL)
-                    .titled(home.getName())
-                    .withLore(1, Texter.newText("Click to teleport!"))
-                    .build();
+        if (homeHandler.getHomes().size() == 0) {
+            src.sendLangError("command.home.no_home");
+            return FAILED;
+        }
 
+        ScreenGUIBuilder builder = new ScreenGUIBuilder()
+                .titled(src.equals(user) ? "Homes" : user.getFormattedDisplayName() + "'s Homes");
+
+        List<Item> wools = ItemTags.WOOL.values();
+        int iconIndex = 0;
+        for (int i = 0; i < homeHandler.getHomes().size(); i++) {
+            Home home = homeHandler.getHomes().get(i);
+
+            iconIndex = iconIndex > wools.size() ? 0 : iconIndex + 1;
             builder.addButton(
-                    new GUIBuilder.Button(i,
-                            new GUIBuilder.Icon(Items.WHITE_WOOL)
+                    new ScreenGUIBuilder.Button(
+                            new ScreenGUIBuilder.Icon(wools.get(iconIndex))
                                     .titled(home.getName())
-                                    .withLore(1, Texter.newText("Click to teleport!"))
-                                    .build()
+                                    .addLore(Texter.newRawText("Click to Teleport!").formatted(Formatting.GREEN)).build()
                     )
-                            .setEventAction(SlotActionType.PICKUP, () -> Home.teleportTo(src, home))
+                            .withClickAction(GUIButton.ClickAction.CLICK, () -> Home.teleportTo(src, home))
                             .build()
             );
         }
 
-        src.asPlayer().openHandledScreen(builder.build());
+        builder.handleFor(src.asPlayer());
         return SUCCESS;
     }
 

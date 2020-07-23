@@ -4,6 +4,10 @@ public interface Action<T> {
 
     void perform(T t);
 
+    interface Ie<T> {
+        T perform();
+    }
+
     interface Returnable<T, R> {
         R perform(T t);
     }

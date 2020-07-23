@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.api.gui;
+package org.kilocraft.essentials.api.containergui;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -11,12 +11,12 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.api.containergui.buttons.GUIButton;
 
 import java.util.Map;
 
 public class GUIScreen extends ScreenHandler {
     private final Inventory inv;
-    private final int rows;
     private final Map<Integer, GUIButton> buttons;
 
     protected GUIScreen(@NotNull final ScreenHandlerType<?> screenHandlerType,
@@ -28,14 +28,13 @@ public class GUIScreen extends ScreenHandler {
         super(screenHandlerType, syncId);
         checkSize(inv, rows * 9);
         this.inv = inv;
-        this.rows = rows;
         this.buttons = buttons;
         inv.onOpen(playerInv.player);
-        int i = (this.rows - 4) * 18;
+        int i = (rows - 4) * 18;
         int n;
         int m;
 
-        for (n = 0; n < this.rows; ++n) {
+        for (n = 0; n < rows; ++n) {
             for (m = 0; m < 9; ++m) {
                 this.addSlot(new Slot(inv, m + n * 9, 8 + m * 18, 18 + n * 18));
             }
@@ -60,7 +59,7 @@ public class GUIScreen extends ScreenHandler {
     @Override
     public ItemStack onSlotClick(int slot, int clickData, SlotActionType slotActionType, PlayerEntity playerEntity) {
         if (buttons.containsKey(slot)) {
-            this.buttons.get(slot).onAction(slotActionType);
+            this.buttons.get(slot).onClick(GUIButton.ClickAction.getBySlotActionType(slotActionType));
         }
 
         this.inv.markDirty();
@@ -71,4 +70,5 @@ public class GUIScreen extends ScreenHandler {
         this.sendContentUpdates();
         return ItemStack.EMPTY;
     }
+
 }
