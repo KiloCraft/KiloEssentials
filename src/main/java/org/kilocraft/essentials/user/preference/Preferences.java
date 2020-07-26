@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.user.setting;
+package org.kilocraft.essentials.user.preference;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -7,32 +7,25 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.text.MessageReceptionist;
-import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.api.util.StringUtils;
+import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.UserMessageReceptionist;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
-import org.kilocraft.essentials.user.ServerUser;
-import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
-import org.kilocraft.essentials.util.nbt.NBTUtils;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class Settings {
+public class Preferences {
     @NotNull
-    public static final List<Setting<?>> list = new ArrayList<>();
+    public static final List<Preference<?>> list = new ArrayList<>();
 
-    public static final Setting<Boolean> CAN_FLY = new Setting<>("can_fly", false);
-    public static final Setting<Boolean> INVULNERABLE = new Setting<>("invulnerable", false);
-    public static final Setting<Boolean> SOCIAL_SPY = new Setting<>("social_spy", false);
-    public static final Setting<Boolean> COMMAND_SPY = new Setting<>("command_spy", false);
-    public static final Setting<Boolean> CAN_SEAT = new Setting<>("can_seat", false);
-    public static final Setting<SeatManager.SummonType> SITTING_TYPE = new Setting<SeatManager.SummonType>(
+    public static final Preference<Boolean> CAN_FLY = new Preference<>("can_fly", false);
+    public static final Preference<Boolean> INVULNERABLE = new Preference<>("invulnerable", false);
+    public static final Preference<Boolean> SOCIAL_SPY = new Preference<>("social_spy", false);
+    public static final Preference<Boolean> COMMAND_SPY = new Preference<>("command_spy", false);
+    public static final Preference<Boolean> CAN_SEAT = new Preference<>("can_seat", false);
+    public static final Preference<SeatManager.SummonType> SITTING_TYPE = new Preference<SeatManager.SummonType>(
             "sitting_type", SeatManager.SummonType.NONE,
             (fun) -> {
                 if (fun.value() != null && fun.value() != SeatManager.SummonType.NONE) {
@@ -44,12 +37,12 @@ public class Settings {
                     fun.set(SeatManager.SummonType.getByName(fun.tag().getString(fun.setting().getId())));
                 }
             });
-    public static final Setting<GameMode> GAME_MODE = new Setting<GameMode>(
+    public static final Preference<GameMode> GAME_MODE = new Preference<GameMode>(
             "gamemode", GameMode.NOT_SET,
             (fun) -> fun.tag().putInt(fun.setting().getId(), fun.value().getId()),
             (fun) -> fun.set(GameMode.byId(fun.tag().getInt(fun.setting().getId())))
     );
-    public static final Setting<Map<String, UUID>> IGNORE_LIST = new Setting<Map<String, UUID>>(
+    public static final Preference<Map<String, UUID>> IGNORE_LIST = new Preference<Map<String, UUID>>(
             "ignored", Maps.newHashMap(),
             (fun) -> {
                 if (!fun.value().isEmpty()) {
@@ -74,7 +67,7 @@ public class Settings {
                 }
             }
     );
-    public static final Setting<Optional<String>> NICK = new Setting<Optional<String>>(
+    public static final Preference<Optional<String>> NICK = new Preference<Optional<String>>(
             "nickname", Optional.empty(),
             (fun) -> fun.value().ifPresent((nickname) -> fun.tag().putString(fun.setting().getId(), nickname)),
             (fun) -> {
@@ -83,7 +76,7 @@ public class Settings {
                 }
             }
     );
-    public static final Setting<ServerChat.Channel> CHAT_CHANNEL = new Setting<ServerChat.Channel>(
+    public static final Preference<ServerChat.Channel> CHAT_CHANNEL = new Preference<ServerChat.Channel>(
             "chat_channel", ServerChat.Channel.PUBLIC,
             (fun) -> {
                 if (!fun.value().equals(ServerChat.Channel.PUBLIC)) {
@@ -97,9 +90,9 @@ public class Settings {
                 }
             }
     );
-    public static final Setting<Integer> RANDOM_TELEPORTS_LEFT = new Setting<>("rtps_left", KiloConfig.main().rtpSpecs().defaultRTPs);
-    public static final Setting<Boolean> DON_NOT_DISTURB = new Setting<>("do_not_disturb", false);
-    public static final Setting<List<String>> FAVIORATE_PLAYER_WARPS = new Setting<List<String>>(
+    public static final Preference<Integer> RANDOM_TELEPORTS_LEFT = new Preference<>("rtps_left", KiloConfig.main().rtpSpecs().defaultRTPs);
+    public static final Preference<Boolean> DON_NOT_DISTURB = new Preference<>("do_not_disturb", false);
+    public static final Preference<List<String>> FAVIORATE_PLAYER_WARPS = new Preference<List<String>>(
             "fav_pwarps", Collections.emptyList(),
             (fun) -> {
                 if (!fun.value().isEmpty()) {
@@ -125,8 +118,8 @@ public class Settings {
                 }
             }
     );
-    public static final Setting<Boolean> SOUNDS = new Setting<>("sounds", true);
-    public static final Setting<List<String>> PENDING_COMMANDS = new Setting<List<String>>(
+    public static final Preference<Boolean> SOUNDS = new Preference<>("sounds", true);
+    public static final Preference<List<String>> PENDING_COMMANDS = new Preference<List<String>>(
             "pending_commands", Collections.emptyList(),
             (fun) -> {
                 if (!fun.value().isEmpty()) {
@@ -151,7 +144,7 @@ public class Settings {
                     fun.set(strings);
                 }
     });
-    public static final Setting<List<ServerChat.Channel>> DISABLED_CHATS = new Setting<List<ServerChat.Channel>>(
+    public static final Preference<List<ServerChat.Channel>> DISABLED_CHATS = new Preference<List<ServerChat.Channel>>(
             "enabled_chats", Lists.newArrayList(),
             (fun) -> {
                 if (!fun.value().equals(fun.setting().getDefault())) {
@@ -178,7 +171,7 @@ public class Settings {
                 }
             }
     );
-    public static final Setting<ServerChat.VisibilityPreference> CHAT_VISIBILITY = new Setting<ServerChat.VisibilityPreference>(
+    public static final Preference<ServerChat.VisibilityPreference> CHAT_VISIBILITY = new Preference<ServerChat.VisibilityPreference>(
             "chat_visibility", ServerChat.VisibilityPreference.ALL,
             (fun) -> {
                 if (!fun.value().equals(fun.setting().getDefault())) {
@@ -195,10 +188,10 @@ public class Settings {
     );
 
     @Nullable
-    public static Setting<?> getById(String id) {
-        for (Setting<?> setting : list) {
-            if (setting.getId().equalsIgnoreCase(id)) {
-                return setting;
+    public static Preference<?> getById(String id) {
+        for (Preference<?> preference : list) {
+            if (preference.getId().equalsIgnoreCase(id)) {
+                return preference;
             }
         }
 

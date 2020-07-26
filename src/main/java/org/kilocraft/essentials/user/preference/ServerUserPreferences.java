@@ -1,45 +1,44 @@
-package org.kilocraft.essentials.user.setting;
+package org.kilocraft.essentials.user.preference;
 
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.user.preference.Preference;
+import org.kilocraft.essentials.api.user.preference.UserPreferences;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class ServerUserSettings implements UserSettings {
+public class ServerUserPreferences implements UserPreferences {
     private final Map<String, Object> SETTINGS;
 
-    public ServerUserSettings() {
+    public ServerUserPreferences() {
         this.SETTINGS = Maps.newHashMap();
     }
 
     @Override
-    public <T> void set(Setting<T> setting, T value) {
-        this.SETTINGS.put(setting.getId(), value);
+    public <T> void set(Preference<T> preference, T value) {
+        this.SETTINGS.put(preference.getId(), value);
     }
 
     @Override
-    public <T> T get(Setting<T> setting) {
-        return (T) this.SETTINGS.getOrDefault(setting.getId(), setting.getDefault());
+    public <T> T get(Preference<T> preference) {
+        return (T) this.SETTINGS.getOrDefault(preference.getId(), preference.getDefault());
     }
 
     @Override
-    public <T> void reset(Setting<T> setting) {
-        this.SETTINGS.remove(setting.getId());
+    public <T> void reset(Preference<T> preference) {
+        this.SETTINGS.remove(preference.getId());
     }
 
     @Override
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
         for (Map.Entry<String, Object> entry : this.SETTINGS.entrySet()) {
-            Setting<?> setting = Settings.getById(entry.getKey());
-            if (setting != null) {
+            Preference<?> preference = Preferences.getById(entry.getKey());
+            if (preference != null) {
                 try {
-                    setting.toTag(tag, entry.getValue());
+                    preference.toTag(tag, entry.getValue());
                 } catch (IllegalArgumentException e) {
                     KiloEssentials.getLogger().fatal("Exception while serializing a User Setting: Can not save the Value", e);
                 }
@@ -52,10 +51,10 @@ public class ServerUserSettings implements UserSettings {
     @Override
     public void fromTag(@NotNull final CompoundTag tag) {
         for (String key : tag.getKeys()) {
-            Setting<?> setting = Settings.getById(key);
-            if (setting != null) {
+            Preference<?> preference = Preferences.getById(key);
+            if (preference != null) {
                 try {
-                    this.SETTINGS.put(setting.getId(), setting.fromTag(tag));
+                    this.SETTINGS.put(preference.getId(), preference.fromTag(tag));
                 } catch (IllegalArgumentException e) {
                     KiloEssentials.getLogger().fatal("Exception while de-serializing a User Setting: Using Default Value", e);
                 }

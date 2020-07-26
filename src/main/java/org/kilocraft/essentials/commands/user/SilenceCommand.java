@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 public class SilenceCommand extends EssentialCommand {
     public SilenceCommand() {
@@ -20,8 +20,8 @@ public class SilenceCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(ctx);
-        boolean set = !user.getSetting(Settings.SOUNDS);
-        user.getSettings().set(Settings.SOUNDS, set);
+        boolean set = !user.getPreference(Preferences.SOUNDS);
+        user.getPreferences().set(Preferences.SOUNDS, set);
 
         if (set) {
             user.sendLangMessage("command.silence.off");

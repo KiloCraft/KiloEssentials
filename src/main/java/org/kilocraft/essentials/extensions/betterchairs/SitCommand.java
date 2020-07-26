@@ -12,7 +12,7 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.mixin.accessor.EntityAccessor;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
 import static net.minecraft.command.arguments.EntityArgumentType.player;
@@ -45,9 +45,9 @@ public class SitCommand extends EssentialCommand {
 
     private int set(CommandContext<ServerCommandSource> ctx, boolean enable) throws CommandSyntaxException {
         OnlineUser user = getOnlineUser(ctx.getSource());
-        user.getSettings().set(Settings.CAN_SEAT, enable);
+        user.getPreferences().set(Preferences.CAN_SEAT, enable);
 
-        if (user.getSetting(Settings.CAN_SEAT)) {
+        if (user.getPreference(Preferences.CAN_SEAT)) {
             user.sendLangMessage("command.sit.enabled");
         } else {
             user.sendLangMessage("command.sit.disabled");
@@ -76,7 +76,7 @@ public class SitCommand extends EssentialCommand {
     private int setOthers(CommandContext<ServerCommandSource> ctx, boolean set) throws CommandSyntaxException {
         OnlineUser target = getOnlineUser(getPlayer(ctx, "target").getCommandSource());
 
-        target.getSettings().set(Settings.CAN_SEAT, set);
+        target.getPreferences().set(Preferences.CAN_SEAT, set);
         KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "canSit", set, target.getUsername());
         return SUCCESS;
     }

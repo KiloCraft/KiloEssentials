@@ -8,12 +8,11 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.api.user.preference.Preference;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 public class SocialSpyCommand extends EssentialCommand {
-    private static final Setting<Boolean> SOCIAL_SPY = Settings.SOCIAL_SPY;
+    private static final Preference<Boolean> SOCIAL_SPY = Preferences.SOCIAL_SPY;
 
     public SocialSpyCommand() {
         super("socialspy", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_CHAT));
@@ -25,8 +24,8 @@ public class SocialSpyCommand extends EssentialCommand {
     
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
-        Boolean set = !src.getSetting(SOCIAL_SPY);
-        src.getSettings().set(SOCIAL_SPY, set);
+        Boolean set = !src.getPreference(SOCIAL_SPY);
+        src.getPreferences().set(SOCIAL_SPY, set);
 
         if (set) {
             src.sendLangMessage("command.socialspy.active");

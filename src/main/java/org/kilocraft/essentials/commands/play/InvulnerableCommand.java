@@ -12,7 +12,7 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
@@ -47,7 +47,7 @@ public class InvulnerableCommand extends EssentialCommand {
         KiloChat.sendLangMessageTo(source, "template.#1", "Invulnerable", set, player.getName().asString());
 
         OnlineUser user = KiloServer.getServer().getUserManager().getOnline(player);
-        user.getSettings().set(Settings.INVULNERABLE, set);
+        user.getPreferences().set(Preferences.INVULNERABLE, set);
         
         if (!CommandUtils.areTheSame(source, player))
             KiloChat.sendLangMessageTo(player, "template.#1.announce", source.getName(), "Invulnerable", set);

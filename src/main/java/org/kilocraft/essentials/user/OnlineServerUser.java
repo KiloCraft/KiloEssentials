@@ -26,7 +26,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.net.SocketAddress;
@@ -194,7 +194,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void setFlight(final boolean set) {
-        super.getSettings().set(Settings.CAN_FLY, true);
+        super.getPreferences().set(Preferences.CAN_FLY, true);
         this.asPlayer().abilities.allowFlying = set;
         this.asPlayer().abilities.flying = set;
         this.asPlayer().sendAbilitiesUpdate();
@@ -230,7 +230,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public void onJoined() {
-        this.setFlight(super.getSetting(Settings.CAN_FLY));
+        this.setFlight(super.getPreference(Preferences.CAN_FLY));
 
         SocketAddress socketAddress = this.getConnection().getAddress();
         if (socketAddress != null) {
@@ -240,13 +240,13 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         super.messageCoolDown = 0;
         super.systemMessageCoolDown = 0;
 
-        GameMode gameMode = super.getSetting(Settings.GAME_MODE);
+        GameMode gameMode = super.getPreference(Preferences.GAME_MODE);
         if (gameMode == GameMode.NOT_SET) {
             gameMode = this.asPlayer().interactionManager.getGameMode();
         }
 
         this.setGameMode(gameMode);
-        super.getSettings().set(Settings.GAME_MODE, gameMode);
+        super.getPreferences().set(Preferences.GAME_MODE, gameMode);
 
         if (ticksPlayed <= 0) {
             ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));

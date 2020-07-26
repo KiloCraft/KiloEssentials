@@ -23,8 +23,8 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.user.preference.Preference;
+import org.kilocraft.essentials.api.user.preference.UserPreferences;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -65,12 +65,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public UserSettings getSettings() {
+    public UserPreferences getPreferences() {
         return null;
     }
 
     @Override
-    public <T> T getSetting(Setting<T> setting) {
+    public <T> T getPreference(Preference<T> preference) {
         return null;
     }
 

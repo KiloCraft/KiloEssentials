@@ -15,11 +15,11 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.user.preference.UserPreferences;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -85,11 +85,11 @@ public class WhoIsCommand extends EssentialCommand {
                 )
         );
 
-        UserSettings settings = target.getSettings();
+        UserPreferences settings = target.getPreferences();
         text.append("Status",
                 new String[]{"Invulnerable", "GameMode", "Online"},
-                settings.get(Settings.INVULNERABLE),
-                settings.get(Settings.GAME_MODE).getName(),
+                settings.get(Preferences.INVULNERABLE),
+                settings.get(Preferences.GAME_MODE).getName(),
                 target.isOnline()
         );
 
@@ -106,8 +106,8 @@ public class WhoIsCommand extends EssentialCommand {
         text.append("Artifacts",
                 new String[]{"IsStaff", "May Fly", "May Sit"},
                 ((ServerUser) target).isStaff(),
-                settings.get(Settings.CAN_FLY),
-                settings.get(Settings.CAN_SEAT)
+                settings.get(Preferences.CAN_FLY),
+                settings.get(Preferences.CAN_SEAT)
         );
 
         if (target.getTicksPlayed() >= 0) {
@@ -127,12 +127,12 @@ public class WhoIsCommand extends EssentialCommand {
 
         text.append("Meta", new String[]{"Homes", "RTP", "Selected channel"},
                 UserHomeHandler.isEnabled() ? target.getHomesHandler().homes() : 0,
-                target.getSetting(Settings.RANDOM_TELEPORTS_LEFT),
-                target.getSetting(Settings.CHAT_CHANNEL).getId());
+                target.getPreference(Preferences.RANDOM_TELEPORTS_LEFT),
+                target.getPreference(Preferences.CHAT_CHANNEL).getId());
 
         text.append("Is Spying", new String[]{"On Commands", "On Social"},
-                target.getSetting(Settings.COMMAND_SPY),
-                target.getSetting(Settings.SOCIAL_SPY));
+                target.getPreference(Preferences.COMMAND_SPY),
+                target.getPreference(Preferences.SOCIAL_SPY));
 
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         assert vec.getDimension() != null;

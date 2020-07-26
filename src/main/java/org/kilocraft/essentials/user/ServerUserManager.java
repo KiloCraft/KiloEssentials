@@ -43,7 +43,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.*;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.AnimatedText;
@@ -456,7 +456,7 @@ public class ServerUserManager implements UserManager, TickListener {
                     return;
                 }
 
-                ServerChat.send(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
+                ServerChat.send(user, new TextMessage(string), user.getPreference(Preferences.CHAT_CHANNEL));
             }
         } catch (Exception e) {
             MutableText text = Texter.newTranslatable("command.failed");

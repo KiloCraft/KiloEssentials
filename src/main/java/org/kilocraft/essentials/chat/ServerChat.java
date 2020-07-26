@@ -32,7 +32,7 @@ import org.kilocraft.essentials.config.main.sections.chat.ChatPingSoundConfigSec
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
@@ -98,7 +98,7 @@ public final class ServerChat {
         }
 
         if (channel == null) {
-            sender.getSettings().set(Settings.CHAT_CHANNEL, Channel.PUBLIC);
+            sender.getPreferences().set(Preferences.CHAT_CHANNEL, Channel.PUBLIC);
             throw new NullPointerException("Channel must not be Null! channel set to Public");
         }
 
@@ -150,7 +150,7 @@ public final class ServerChat {
             message.setMessage(message.getFormattedMessage().replaceAll(pingEveryoneTemplate, everyoneDisplayFormat + "&r"));
 
             for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-                if (user.getSetting(Settings.CHAT_CHANNEL) == channel) {
+                if (user.getPreference(Preferences.CHAT_CHANNEL) == channel) {
                     ServerChat.pingPlayer(user.asPlayer(), config.ping().pingSound());
                 }
             }
@@ -163,7 +163,7 @@ public final class ServerChat {
                 continue;
             }
 
-            boolean canPing = target.getSetting(Settings.CHAT_CHANNEL) == channel;
+            boolean canPing = target.getPreference(Preferences.CHAT_CHANNEL) == channel;
             String formattedPing = canPing ? displayFormat : pingFailedDisplayFormat;
             String format = message.getOriginal().contains(nameFormat) ? nameFormat : nickFormat;
 
@@ -285,7 +285,7 @@ public final class ServerChat {
                 .replace("%TARGET%", target.getUsername() + "&r")
                 .replace("%MESSAGE%", message);
 
-        if (target.getSetting(Settings.SOUNDS)) {
+        if (target.getPreference(Preferences.SOUNDS)) {
             pingPlayer(target.asPlayer(), MentionTypes.PRIVATE);
         }
 
@@ -293,7 +293,7 @@ public final class ServerChat {
         KiloChat.sendMessageTo(target.asPlayer(), new TextMessage(toTarget, true).toText().formatted(Formatting.WHITE));
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.getSetting(Settings.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
+            if (user.getPreference(Preferences.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
                 user.sendMessage(new TextMessage(toSpy, true).toComponent().formatted(Formatting.GRAY));
             }
         }
@@ -314,7 +314,7 @@ public final class ServerChat {
         text.styled((style) -> style.setHoverEvent(Texter.Events.onHover(commandSpyHoverStyle)).withClickEvent(Texter.Events.onClickSuggest("/" + command)));
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
-            if (user.getSetting(Settings.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {
+            if (user.getPreference(Preferences.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {
                 user.sendMessage(text);
             }
         }
@@ -434,7 +434,7 @@ public final class ServerChat {
             switch (this) {
                 case PUBLIC:
                     for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-                        VisibilityPreference preference = user.getSetting(Settings.CHAT_VISIBILITY);
+                        VisibilityPreference preference = user.getPreference(Preferences.CHAT_VISIBILITY);
                         if (preference == VisibilityPreference.ALL || (preference == VisibilityPreference.MENTIONS && mentions)) {
                             user.sendMessage(message);
                         }

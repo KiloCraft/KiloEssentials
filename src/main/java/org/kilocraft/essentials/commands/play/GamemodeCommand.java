@@ -21,7 +21,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,7 +84,7 @@ public class GamemodeCommand extends EssentialCommand {
         AtomicInteger atomicInteger = new AtomicInteger(IEssentialCommand.AWAIT);
         this.getEssentials().getUserThenAcceptAsync(sourceUser, selection, user -> {
             try {
-                user.getSettings().set(Settings.GAME_MODE, selectedMode);
+                user.getPreferences().set(Preferences.GAME_MODE, selectedMode);
 
                 if (user.isOnline()) {
                     ((OnlineUser) user).setGameMode(selectedMode);

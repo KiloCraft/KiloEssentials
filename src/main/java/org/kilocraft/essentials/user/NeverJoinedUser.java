@@ -6,8 +6,8 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.user.preference.Preference;
+import org.kilocraft.essentials.api.user.preference.UserPreferences;
 import org.kilocraft.essentials.api.world.location.Location;
 
 import java.io.IOException;
@@ -27,12 +27,12 @@ public class NeverJoinedUser implements org.kilocraft.essentials.api.user.NeverJ
     }
 
     @Override
-    public UserSettings getSettings() {
+    public UserPreferences getPreferences() {
         return null;
     }
 
     @Override
-    public <T> T getSetting(Setting<T> setting) {
+    public <T> T getPreference(Preference<T> preference) {
         return null;
     }
 

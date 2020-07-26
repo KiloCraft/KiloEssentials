@@ -12,7 +12,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -37,7 +37,7 @@ public class ToggleChatCommand extends EssentialCommand {
             return FAILED;
         }
 
-        src.getSettings().set(Settings.CHAT_VISIBILITY, preference);
+        src.getPreferences().set(Preferences.CHAT_VISIBILITY, preference);
         src.sendLangMessage("command.togglechat.set", preference.toString());
         return SUCCESS;
     }

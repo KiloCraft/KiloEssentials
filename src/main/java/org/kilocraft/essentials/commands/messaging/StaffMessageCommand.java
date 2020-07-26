@@ -2,7 +2,6 @@ package org.kilocraft.essentials.commands.messaging;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
@@ -18,7 +17,7 @@ import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class StaffMessageCommand extends EssentialCommand {
 
     private int on(ServerCommandSource source, ServerPlayerEntity player) {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
-        user.getSettings().set(Settings.CHAT_CHANNEL, ServerChat.Channel.STAFF);
+        user.getPreferences().set(Preferences.CHAT_CHANNEL, ServerChat.Channel.STAFF);
 
         user.sendLangMessage("channel.on", "staff");
         return SUCCESS;
@@ -63,7 +62,7 @@ public class StaffMessageCommand extends EssentialCommand {
 
     private int off(ServerCommandSource source, ServerPlayerEntity player) {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
-        user.getSettings().reset(Settings.CHAT_CHANNEL);
+        user.getPreferences().reset(Preferences.CHAT_CHANNEL);
 
         user.sendLangMessage("channel.off", "staff");
         return SUCCESS;
@@ -71,7 +70,7 @@ public class StaffMessageCommand extends EssentialCommand {
 
     private int toggle(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(ctx);
-        List<ServerChat.Channel> disabled = user.getSetting(Settings.DISABLED_CHATS);
+        List<ServerChat.Channel> disabled = user.getPreference(Preferences.DISABLED_CHATS);
         if (disabled.contains(THIS_CHANNEL)) {
             disabled.remove(THIS_CHANNEL);
             user.sendLangMessage("channel.toggle.enabled", THIS_CHANNEL.getId());
@@ -80,7 +79,7 @@ public class StaffMessageCommand extends EssentialCommand {
             user.sendLangMessage("channel.toggle.disabled", THIS_CHANNEL.getId());
         }
 
-        user.getSettings().set(Settings.DISABLED_CHATS, disabled);
+        user.getPreferences().set(Preferences.DISABLED_CHATS, disabled);
         return SUCCESS;
     }
 

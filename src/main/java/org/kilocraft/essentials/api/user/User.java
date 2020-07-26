@@ -5,8 +5,8 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.NBTSerializable;
 import org.kilocraft.essentials.api.text.MessageReceptionist;
-import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.user.preference.Preference;
+import org.kilocraft.essentials.api.user.preference.UserPreferences;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -45,18 +45,18 @@ public interface User extends EntityIdentifiable, NBTSerializable, MessageRecept
 
     /**
      * Gets the Settings for this user
-     * @return UserSettings
+     * @return UserPreference
      */
-    UserSettings getSettings();
+    UserPreferences getPreferences();
 
     /**
      * Get a Setting for this user
      *
-     * @param setting The Setting to Get
-     * @param <T> Type of the Setting (value)
-     * @return the value of that Setting (T)
+     * @param preference The Preference to Get
+     * @param <T> Type of the Preference (value)
+     * @return the value of that Preference (T)
      */
-    <T> T getSetting(Setting<T> setting);
+    <T> T getPreference(Preference<T> preference);
 
     /**
      * Checks if the user is online or not

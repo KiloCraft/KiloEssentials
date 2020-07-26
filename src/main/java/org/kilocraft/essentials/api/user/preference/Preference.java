@@ -1,28 +1,28 @@
-package org.kilocraft.essentials.api.user.settting;
+package org.kilocraft.essentials.api.user.preference;
 
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.util.function.Consumer;
 
-public class Setting<T> {
+public class Preference<T> {
     private final String id;
     private final T defaultValue;
     private Consumer<SerializerFunction> serializer;
     private Consumer<SerializerFunction> deserializer;
     private boolean hasCustomSerializer;
 
-    public Setting(@NotNull final String id, @Nullable final T defaultValue) {
+    public Preference(@NotNull final String id, @Nullable final T defaultValue) {
         this.id = id;
         this.defaultValue = defaultValue;
-        Settings.list.add(this);
+        Preferences.list.add(this);
     }
 
-    public Setting(@NotNull final String id, @Nullable final T defaultValue,
-                   @NotNull final Consumer<SerializerFunction> serializer,
-                   @NotNull final Consumer<SerializerFunction> deserializer) {
+    public Preference(@NotNull final String id, @Nullable final T defaultValue,
+                      @NotNull final Consumer<SerializerFunction> serializer,
+                      @NotNull final Consumer<SerializerFunction> deserializer) {
         this(id, defaultValue);
         this.serializer = serializer;
         this.deserializer = deserializer;
@@ -86,12 +86,12 @@ public class Setting<T> {
     public class SerializerFunction {
         private final CompoundTag tag;
         private T value;
-        private final Setting<T> setting;
+        private final Preference<T> preference;
 
-        public SerializerFunction(@NotNull final CompoundTag tag, @NotNull final T value, @NotNull final Setting<T> setting) {
+        public SerializerFunction(@NotNull final CompoundTag tag, @NotNull final T value, @NotNull final Preference<T> preference) {
             this.tag = tag;
             this.value = value;
-            this.setting = setting;
+            this.preference = preference;
         }
 
         public CompoundTag tag() {
@@ -102,8 +102,8 @@ public class Setting<T> {
             return this.value;
         }
 
-        public Setting<T> setting() {
-            return this.setting;
+        public Preference<T> setting() {
+            return this.preference;
         }
 
         public void set(T value) {

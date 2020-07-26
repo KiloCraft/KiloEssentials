@@ -9,11 +9,10 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.ServerUser;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class IgnoreCommand extends EssentialCommand {
     public IgnoreCommand() {
@@ -39,7 +38,7 @@ public class IgnoreCommand extends EssentialCommand {
                 return;
             }
 
-            Map<String, UUID> ignoreList = src.getSetting(Settings.IGNORE_LIST);
+            Map<String, UUID> ignoreList = src.getPreference(Preferences.IGNORE_LIST);
             if (ignoreList.containsValue(user.getUuid())) {
                 ignoreList.remove(user.getUsername(), user.getUuid());
                 src.sendLangMessage("command.ignore.remove", user.getNameTag());
@@ -47,7 +46,7 @@ public class IgnoreCommand extends EssentialCommand {
             }
 
             ignoreList.put(user.getUsername(), user.getUuid());
-            src.getSettings().set(Settings.IGNORE_LIST, ignoreList);
+            src.getPreferences().set(Preferences.IGNORE_LIST, ignoreList);
             src.sendLangMessage("command.ignore.add", user.getNameTag());
         });
 
