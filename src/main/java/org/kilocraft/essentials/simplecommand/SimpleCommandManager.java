@@ -2,7 +2,9 @@ package org.kilocraft.essentials.simplecommand;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
@@ -36,16 +38,14 @@ public class SimpleCommandManager {
             INSTANCE.commands.add(command);
             INSTANCE.byId.add(command.id);
 
-            KiloCommands.getDispatcher().register(CommandManager.literal(command.getLabel())
-                    .requires(
-                            src -> canUse(src, command)
-                    )
-                    .then(
-                            CommandManager.argument("args", StringArgumentType.greedyString())
-                                    .requires(src -> INSTANCE.byId.contains(command.id))
-                                    .suggests(ArgumentCompletions::noSuggestions)
-                    )
-            );
+            LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal(command.getLabel())
+                    .requires(src -> canUse(src, command));
+
+            if (command.hasArgs) {
+                builder.then(CommandManager.argument("args", StringArgumentType.greedyString())
+                        .requires(src -> INSTANCE.byId.contains(command.id))
+                        .suggests(ArgumentCompletions::noSuggestions));
+            }
         }
     }
 
@@ -63,7 +63,7 @@ public class SimpleCommandManager {
     }
 
     public static void unregister(String id) {
-        if (INSTANCE != null &&  getCommand(id) != null) {
+        if (INSTANCE != null && getCommand(id) != null) {
             unregister(getCommand(id));
         }
     }
@@ -110,7 +110,8 @@ public class SimpleCommandManager {
                     return true;
                 }
             }
-        } catch (final ArrayIndexOutOfBoundsException ignored) {}
+        } catch (final ArrayIndexOutOfBoundsException ignored) {
+        }
 
         return false;
     }

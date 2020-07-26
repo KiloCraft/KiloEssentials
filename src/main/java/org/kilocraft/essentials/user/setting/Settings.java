@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user.setting;
 
+import com.google.common.collect.Maps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.GameMode;
@@ -46,27 +47,25 @@ public class Settings {
             (fun) -> fun.set(GameMode.byId(fun.tag().getInt(fun.setting().getId())))
     );
     public static final Setting<Map<String, UUID>> IGNORE_LIST = new Setting<Map<String, UUID>>(
-            "ignored", new HashMap<>(),
+            "ignored", Maps.newHashMap(),
             (fun) -> {
                 if (!fun.value().isEmpty()) {
                     ListTag list = new ListTag();
                     for (Map.Entry<String, UUID> entry : fun.value().entrySet()) {
-                        CompoundTag ignored = new CompoundTag();
-                        ignored.putString("name", entry.getKey());
-                        NBTUtils.putUUID(ignored, "uuid", entry.getValue());
-
-                        list.add(ignored);
+                        CompoundTag tag = new CompoundTag();
+                        tag.putString("name", entry.getKey());
+                        tag.putUuid("id", entry.getValue());
+                        list.add(tag);
                     }
-
                     fun.tag().put(fun.setting().getId(), list);
                 }
             }, (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {
-                    ListTag list = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
-                    Map<String, UUID> map = new HashMap<>();
-                    for (int i = 0; i < list.size(); i++) {
-                        CompoundTag tag = list.getCompound(i);
-                        map.put(tag.getString("name"), NBTUtils.getUUID(tag, "uuid"));
+                    ListTag listTag = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
+                    Map<String, UUID> map = Maps.newHashMap();
+                    for (int i = 0; i < listTag.size(); i++) {
+                        CompoundTag tag = listTag.getCompound(i);
+                        map.put(tag.getString("name"), tag.getUuid("id"));
                     }
                     fun.set(map);
                 }

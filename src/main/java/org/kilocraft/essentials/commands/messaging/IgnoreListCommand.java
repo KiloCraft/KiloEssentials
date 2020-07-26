@@ -56,11 +56,9 @@ public class IgnoreListCommand extends EssentialCommand {
 
                 Formatting thisFormat = nextColor[0] ? Formatting.WHITE : Formatting.GRAY;
 
-                thisIgnored.append(new LiteralText(name).styled((style) -> {
-                    return style.withFormatting(thisFormat).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                            new LiteralText("[i] ").formatted(Formatting.YELLOW)
-                                    .append(new LiteralText("Click to remove!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ignore " + name));
-                }));
+                thisIgnored.append(new LiteralText(name).styled((style) -> style.withFormatting(thisFormat).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new LiteralText("[i] ").formatted(Formatting.YELLOW)
+                                .append(new LiteralText("Click to remove!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ignore " + name))));
 
                 if (listSize != i[0])
                     thisIgnored.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
