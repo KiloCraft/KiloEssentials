@@ -17,9 +17,9 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.concurrent.CompletableFuture;
 
-public class UnIpBanCommand extends EssentialCommand {
-    public UnIpBanCommand() {
-        super("unip_ban", CommandPermission.IPBAN);
+public class UnBanIpCommand extends EssentialCommand {
+    public UnBanIpCommand() {
+        super("unban-ip", CommandPermission.IPBAN);
     }
 
     @Override

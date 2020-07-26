@@ -191,12 +191,12 @@ public class KiloCommands {
         this.register(new GlowCommand());
         this.register(new BanCommand());
         this.register(new TempBanCommand());
-        this.register(new IpBanCommand());
-        this.register(new TempIpBanCommand());
+        this.register(new BanIpCommand());
+        this.register(new TempBanIpCommand());
         this.register(new MuteCommand());
         this.register(new TempMuteCommand());
         this.register(new UnBanCommand());
-        this.register(new UnIpBanCommand());
+        this.register(new UnBanIpCommand());
         this.register(new UnMuteCommand());
 
         this.dispatcher.getRoot().addChild(KiloCommands.rootNode);

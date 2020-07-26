@@ -11,29 +11,29 @@ import org.kilocraft.essentials.util.text.Texter;
 public class TextMessage {
     private String original;
     private String formatted;
-    private boolean formatText;
+    private boolean allowFormats;
 
     public TextMessage(String message) {
         this(message, true);
     }
 
-    public TextMessage(String message, boolean formatText) {
+    public TextMessage(String message, boolean allowFormats) {
         this.original = message;
-        this.formatText = formatText;
-        this.formatted = formatText ?
+        this.allowFormats = allowFormats;
+        this.formatted = allowFormats ?
                 TextFormat.translateAlternateColorCodes('&', message) :
                 TextFormat.removeAlternateColorCodes('&', message);
     }
 
     public TextMessage(String message, User user) {
         this.original = ConfigVariableFactory.replaceUserVariables(message, user);
-        this.formatText = true;
+        this.allowFormats = true;
         this.formatted = TextFormat.translateAlternateColorCodes('&', original);
     }
 
     public TextMessage(String message, OnlineUser user) {
         this.original = ConfigVariableFactory.replaceOnlineUserVariables(message, user);
-        this.formatText = true;
+        this.allowFormats = true;
         this.formatted = TextFormat.translateAlternateColorCodes('&', message);
     }
 
@@ -47,7 +47,7 @@ public class TextMessage {
 
     public void setMessage(String string, boolean format) {
         this.original = string;
-        this.formatText = format;
+        this.allowFormats = format;
         formatMessage();
     }
 
@@ -65,7 +65,7 @@ public class TextMessage {
     }
 
     private void formatMessage() {
-        this.formatted = this.formatText ?
+        this.formatted = this.allowFormats ?
                 TextFormat.translateAlternateColorCodes('&', this.original) :
                 TextFormat.removeAlternateColorCodes('&', this.original);
     }

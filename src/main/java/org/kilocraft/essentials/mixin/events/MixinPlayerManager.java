@@ -85,7 +85,7 @@ public abstract class MixinPlayerManager {
         try {
             TextMessage message = null;
             ModerationConfigSection.Messages messages = KiloConfig.main().moderation().messages();
-            if (this.bannedProfiles.contains(gameProfile)) {
+            if (this.bannedProfiles.get(gameProfile) != null) {
                 BannedPlayerEntry entry = this.bannedProfiles.get(gameProfile);
                 assert entry != null;
                 if (entry.getExpiryDate() == null) {
@@ -93,7 +93,7 @@ public abstract class MixinPlayerManager {
                 } else {
                     message = new TextMessage(replaceVariables(messages.tempBan, entry, false));
                 }
-            } else if (this.bannedIps.isBanned(socketAddress)) {
+            } else if (this.bannedIps.get(socketAddress) != null) {
                 BannedIpEntry entry = this.bannedIps.get(socketAddress);
                 assert entry != null;
                 if (entry.getExpiryDate() == null) {

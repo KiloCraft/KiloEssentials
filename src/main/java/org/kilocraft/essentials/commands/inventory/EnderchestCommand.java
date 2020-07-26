@@ -37,12 +37,11 @@ public class EnderchestCommand extends EssentialCommand {
     }
 
     private int execute(ServerPlayerEntity sender, ServerPlayerEntity target) {
-        OnlineUser src = this.getOnlineUser(sender);
         OnlineUser targetUser = this.getOnlineUser(target);
         Text text;
         Text translatable =  new TranslatableText("container.enderchest");
 
-        if (sender.equals(target)) {
+        if (!sender.equals(target)) {
             text = Texter.newText().append(translatable).append(" ").append(targetUser.getFormattedDisplayName());
         } else {
             text = translatable;
@@ -52,12 +51,6 @@ public class EnderchestCommand extends EssentialCommand {
         sender.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, pInv, pEntity) ->
                 GenericContainerScreenHandler.createGeneric9x3(syncId, pInv, enderChestInventory), text)
         );
-
-        if (CommandUtils.areTheSame(sender, target)) {
-            src.sendLangMessage("general.open_screen", "Ender Chest");
-        } else {
-            src.sendLangMessage("general.seek_screen", target.getEntityName(), "Ender Chest");
-        }
 
         return SUCCESS;
     }

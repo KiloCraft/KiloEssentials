@@ -28,12 +28,11 @@ public class WorkbenchCommand extends EssentialCommand {
 
     private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        KiloChat.sendLangMessageTo(context.getSource(), "general.open_screen", "CraftingTable");
 
         player.openHandledScreen(new SimpleNamedScreenHandlerFactory(WorkbenchCommand::createContainer, new TranslatableText("container.crafting")));
         player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 
-        return 1;
+        return SUCCESS;
     }
 
     public static CraftingScreenHandler createContainer(int syncId, PlayerInventory inventory, PlayerEntity player) {

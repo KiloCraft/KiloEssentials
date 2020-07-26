@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.BannedIpEntry;
+import net.minecraft.server.BannedIpList;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -16,6 +17,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
@@ -23,10 +25,11 @@ import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
 
-public class TempIpBanCommand extends EssentialCommand {
-    public TempIpBanCommand() {
-        super("tempip_ban", CommandPermission.BAN);
+public class TempBanIpCommand extends EssentialCommand {
+    public TempBanIpCommand() {
+        super("tempban-ip", CommandPermission.BAN);
     }
 
     @Override
@@ -52,31 +55,48 @@ public class TempIpBanCommand extends EssentialCommand {
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @NotNull final String time, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
-        Date date = new Date();
-        Date expiry = new Date(TimeDifferenceUtil.parse(time, true));
+        String input = this.getUserArgumentInput(ctx, "user");
+        Matcher matcher = BanIpCommand.PATTERN.matcher(input);
+        if (matcher.matches()) {
+            return tempBanIp(src, null, input, time, reason, silent);
+        } else {
+            this.getEssentials().getUserThenAcceptAsync(src, input, (victim) -> {
+                if (victim.getLastSocketAddress() == null) {
+                    src.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress");
+                    return;
+                }
 
-        this.getEssentials().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (victim) -> {
-            if (victim.getLastSocketAddress() == null) {
-                src.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress");
-                return;
-            }
+                try {
+                    tempBanIp(src, victim, victim.getLastSocketAddress(), time, reason, silent);
+                } catch (CommandSyntaxException e) {
+                    src.sendError(e.getMessage());
+                }
+            });
 
-            BannedIpEntry entry = new BannedIpEntry(victim.getLastSocketAddress(), date, src.getName(), expiry, reason);
-            super.getServer().getMinecraftServer().getPlayerManager().getIpBanList().add(entry);
-
-            MutableText text = new TextMessage(
-                    ServerUserManager.replaceVariables(super.config.moderation().messages().tempIpBan, entry, false)
-            ).toText();
-
-            List<ServerPlayerEntity> players = super.getServer().getPlayerManager().getPlayersByIp(victim.getLastSocketAddress());
-            for (ServerPlayerEntity player : players) {
-                player.networkHandler.disconnect(text);
-            }
-
-            this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, victim, reason), Punishment.Type.BAN_IP, time, silent);
-        });
+        }
 
         return AWAIT;
+    }
+
+    private int tempBanIp(final OnlineUser src, @Nullable final EntityIdentifiable victim, @NotNull String ip, @NotNull final String time, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
+        Date date = new Date();
+        Date expiry = new Date(TimeDifferenceUtil.parse(time, true));
+        BannedIpList bannedIpList = super.getServer().getMinecraftServer().getPlayerManager().getIpBanList();
+        List<ServerPlayerEntity> players = super.getServer().getPlayerManager().getPlayersByIp(ip);
+
+        BannedIpEntry entry = new BannedIpEntry(ip, date, src.getName(), expiry, reason);
+        bannedIpList.add(entry);
+
+        MutableText text = new TextMessage(
+                ServerUserManager.replaceVariables(super.config.moderation().messages().permIpBan, entry, true)
+        ).toText();
+
+        for (ServerPlayerEntity player : players) {
+            player.networkHandler.disconnect(text);
+        }
+
+        this.getServer().getUserManager().onPunishmentPerformed(src, victim == null ? new Punishment(src, null, ip, reason, expiry) : new Punishment(src, victim, ip, reason, expiry), Punishment.Type.BAN_IP, time, silent);
+        return players.size();
     }
 
 
