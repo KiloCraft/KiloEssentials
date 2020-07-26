@@ -121,7 +121,7 @@ public final class ServerChat {
         TextMessage prefix = new TextMessage(ConfigVariableFactory.replaceUserVariables(channel.getPrefix(), sender)
                 .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().getString()));
 
-        processPings(sender, message, channel);
+        boolean mentions = processPings(sender, message, channel);
 
         Text component = ServerChat.stringToMessageComponent(
                 message.getFormattedMessage(),
@@ -137,14 +137,15 @@ public final class ServerChat {
         ).append(" ").append(component);
 
         KiloServer.getServer().sendMessage(text.getString());
-        channel.send(text);
+        channel.send(text, mentions);
     }
 
-    private static void processPings(final OnlineUser sender, final TextMessage message, final Channel channel) {
+    private static boolean processPings(final OnlineUser sender, final TextMessage message, final Channel channel) {
         if (!pingEnabled && !KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_PING_OTHER)) {
-            return;
+            return false;
         }
 
+        boolean contains = false;
         if (message.getOriginal().contains(pingEveryoneTemplate) && KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_PING_EVERYONE)) {
             message.setMessage(message.getFormattedMessage().replaceAll(pingEveryoneTemplate, everyoneDisplayFormat + "&r"));
 
@@ -174,9 +175,12 @@ public final class ServerChat {
             );
 
             if (pingSoundEnabled && canPing) {
-                pingPlayer(target.asPlayer(), PingType.PUBLIC);
+                contains = true;
+                pingPlayer(target.asPlayer(), MentionTypes.PUBLIC);
             }
         }
+
+        return contains;
     }
 
     private static HoverEvent hoverEvent(final OnlineUser user, Channel channel) {
@@ -194,7 +198,7 @@ public final class ServerChat {
         return Texter.Events.onClickSuggest("/msg " + user.getUsername() + " ");
     }
 
-    public static void pingPlayer(final ServerPlayerEntity target, final PingType type) {
+    public static void pingPlayer(final ServerPlayerEntity target, final MentionTypes type) {
         ChatPingSoundConfigSection cfg = null;
         switch (type) {
             case PUBLIC:
@@ -282,7 +286,7 @@ public final class ServerChat {
                 .replace("%MESSAGE%", message);
 
         if (target.getSetting(Settings.SOUNDS)) {
-            pingPlayer(target.asPlayer(), PingType.PRIVATE);
+            pingPlayer(target.asPlayer(), MentionTypes.PRIVATE);
         }
 
         KiloChat.sendMessageToSource(source, new TextMessage(toSource, true).toText().formatted(Formatting.WHITE));
@@ -426,10 +430,15 @@ public final class ServerChat {
             return this.id;
         }
 
-        public void send(Text message) {
+        public void send(Text message, boolean mentions) {
             switch (this) {
                 case PUBLIC:
-                    KiloChat.broadCast(message);
+                    for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+                        VisibilityPreference preference = user.getSetting(Settings.CHAT_VISIBILITY);
+                        if (preference == VisibilityPreference.ALL || (preference == VisibilityPreference.MENTIONS && mentions)) {
+                            user.sendMessage(message);
+                        }
+                    }
                     break;
                 case STAFF:
                     ServerChat.send(message, EssentialPermission.STAFF);
@@ -467,9 +476,39 @@ public final class ServerChat {
         }
     }
 
-    public enum PingType {
+    public enum MentionTypes {
         PUBLIC,
         PRIVATE,
         EVERYONE;
+    }
+
+    public enum VisibilityPreference {
+        ALL,
+        MENTIONS,
+        NONE;
+
+        @Nullable
+        public static VisibilityPreference getByName(final String name) {
+            for (VisibilityPreference value : values()) {
+                if (value.name().equalsIgnoreCase(name)) {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
+        public static String[] names() {
+            String[] strings = new String[values().length];
+            for (int i = 0; i < values().length; i++) {
+                strings[i] = values()[i].toString();
+            }
+            return strings;
+        }
+
+        @Override
+        public String toString() {
+            return this.name().toLowerCase(Locale.ROOT);
+        }
     }
 }

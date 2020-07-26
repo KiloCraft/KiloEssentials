@@ -64,7 +64,7 @@ public class TpaHereCommand extends EssentialCommand {
         );
 
         if (target.getSetting(Settings.SOUNDS)) {
-            ServerChat.pingPlayer(target.asPlayer(), ServerChat.PingType.PRIVATE);
+            ServerChat.pingPlayer(target.asPlayer(), ServerChat.MentionTypes.PRIVATE);
         }
         return SUCCESS;
     }

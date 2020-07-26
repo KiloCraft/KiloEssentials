@@ -19,9 +19,12 @@ import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.user.setting.Settings;
 
+import java.util.List;
+
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
 public class BuilderMsgCommand extends EssentialCommand {
+    private static final ServerChat.Channel THIS_CHANNEL = ServerChat.Channel.BUILDER;
     public BuilderMsgCommand() {
         super("buildermsg", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_BUILDERMSG));
     }
@@ -37,11 +40,15 @@ public class BuilderMsgCommand extends EssentialCommand {
                 .then(argument("player", EntityArgumentType.player()).suggests(ArgumentCompletions::allPlayers)
                         .executes(ctx -> off(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
+        LiteralCommandNode<ServerCommandSource> toggleArg = literal("toggle")
+                .executes(this::toggle).build();
+
         ArgumentCommandNode<ServerCommandSource, String> sendArg = argument("message", greedyString())
                 .executes(this::send).build();
 
         commandNode.addChild(joinArg);
         commandNode.addChild(leaveArg);
+        commandNode.addChild(toggleArg);
         commandNode.addChild(sendArg);
     }
 
@@ -58,6 +65,21 @@ public class BuilderMsgCommand extends EssentialCommand {
         user.getSettings().reset(Settings.CHAT_CHANNEL);
 
         user.sendLangMessage("channel.off", "builder");
+        return SUCCESS;
+    }
+
+    private int toggle(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        OnlineUser user = this.getOnlineUser(ctx);
+        List<ServerChat.Channel> disabled = user.getSetting(Settings.DISABLED_CHATS);
+        if (disabled.contains(THIS_CHANNEL)) {
+            disabled.remove(THIS_CHANNEL);
+            user.sendLangMessage("channel.toggle.enabled", THIS_CHANNEL.getId());
+        } else {
+            disabled.add(THIS_CHANNEL);
+            user.sendLangMessage("channel.toggle.disabled", THIS_CHANNEL.getId());
+        }
+
+        user.getSettings().set(Settings.DISABLED_CHATS, disabled);
         return SUCCESS;
     }
 

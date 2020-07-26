@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user.setting;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,7 +19,9 @@ import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
 import org.kilocraft.essentials.util.nbt.NBTUtils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class Settings {
     @NotNull
@@ -148,6 +151,48 @@ public class Settings {
                     fun.set(strings);
                 }
     });
+    public static final Setting<List<ServerChat.Channel>> DISABLED_CHATS = new Setting<List<ServerChat.Channel>>(
+            "enabled_chats", Lists.newArrayList(),
+            (fun) -> {
+                if (!fun.value().equals(fun.setting().getDefault())) {
+                    ListTag list = new ListTag();
+                    for (ServerChat.Channel channel : fun.value()) {
+                        CompoundTag tag = new CompoundTag();
+                        tag.putString("id", channel.getId());
+                        list.add(tag);
+                    }
+                    fun.tag().put(fun.setting().getId(), list);
+                }
+            }, (fun) -> {
+                if (fun.tag().contains(fun.setting().getId())) {
+                    List<ServerChat.Channel> channels = Lists.newArrayList();
+                    ListTag list = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
+                    for (int i = 0; i < list.size(); i++) {
+                        CompoundTag tag = list.getCompound(i);
+                        ServerChat.Channel channel = ServerChat.Channel.getById(tag.getString("id"));
+                        if (channel != null) {
+                            channels.add(channel);
+                        }
+                    }
+                    fun.set(channels);
+                }
+            }
+    );
+    public static final Setting<ServerChat.VisibilityPreference> CHAT_VISIBILITY = new Setting<ServerChat.VisibilityPreference>(
+            "chat_visibility", ServerChat.VisibilityPreference.ALL,
+            (fun) -> {
+                if (!fun.value().equals(fun.setting().getDefault())) {
+                    fun.tag().putString("visibility", fun.value().toString());
+                }
+            }, (fun) -> {
+                if (fun.tag().contains("visibility")) {
+                    ServerChat.VisibilityPreference preference = ServerChat.VisibilityPreference.getByName(fun.tag().getString("visibility"));
+                    if (preference != null) {
+                        fun.set(preference);
+                    }
+                }
+            }
+    );
 
     @Nullable
     public static Setting<?> getById(String id) {

@@ -198,6 +198,7 @@ public class KiloCommands {
         this.register(new UnBanCommand());
         this.register(new UnBanIpCommand());
         this.register(new UnMuteCommand());
+        this.register(new ToggleChatCommand());
 
         this.dispatcher.getRoot().addChild(KiloCommands.rootNode);
 
