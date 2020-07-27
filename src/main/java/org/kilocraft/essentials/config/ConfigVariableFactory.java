@@ -51,8 +51,8 @@ public class ConfigVariableFactory {
     public static String replaceServerVariables(String str) {
         Validate.notNull(str, "String must not be null!");
         return new ConfigObjectReplacerUtil("server", str)
-                .append("tps", TPSTracker.tps1.getShortAverage())
-                .append("formatted_tps", TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()) + TPSTracker.tps1.getShortAverage())
+                .append("tps", TPSTracker.tps.getShortAverage())
+                .append("formatted_tps", TextFormat.getFormattedTPS(TPSTracker.tps.getAverage()) + TPSTracker.tps.getShortAverage())
                 .append("playerCount", server.getPlayerManager().getCurrentPlayerCount())
                 .append("maxPlayers", server.getPlayerManager().getMaxPlayerCount())
                 .append("name", KiloConfig.main().server().name)

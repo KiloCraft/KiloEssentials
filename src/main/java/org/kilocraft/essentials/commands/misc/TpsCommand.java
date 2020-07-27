@@ -22,15 +22,15 @@ public class TpsCommand extends EssentialCommand {
 
     private int run(CommandContext<ServerCommandSource> ctx) {
         KiloChat.sendMessageToSource(ctx.getSource(), new TextMessage(String.format(
-                "&6TPS&%s %s&7 &8(&7%s ms&8) &8(&75m&8/&715m&8/&730m&8/&71h&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
-                TextFormat.getFormattedTPS(tps1.getAverage()), tps1.getShortAverage(),
+                "&6TPS&%s %s&7 &8(&7%s ms&8) &8(&75m&8/&715m&8/&71h&8/&71d&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
+                TextFormat.getFormattedTPS(tps.getAverage()), tps.getShortAverage(),
                 TPSTracker.MillisecondPerTick.getShortAverage(),
                 TextFormat.getFormattedTPS(tps5.getAverage()), tps5.getShortAverage(),
                 TextFormat.getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(),
-                TextFormat.getFormattedTPS(tps30.getAverage()), tps30.getShortAverage(),
-                TextFormat.getFormattedTPS(tps60.getAverage()), tps60.getShortAverage()), true));
+                TextFormat.getFormattedTPS(tps60.getAverage()), tps60.getShortAverage(),
+                TextFormat.getFormattedTPS(tps1440.getAverage()), tps1440.getShortAverage()), true));
 
-        return (int) Math.floor(tps1.getAverage());
+        return (int) Math.floor(tps.getAverage());
     }
 
 }

@@ -40,11 +40,11 @@ public abstract class MinecraftServerMixin implements Brandable {
             final long diff = currentTime - tickSection;
 
             BigDecimal currentTps = RollingAverage.TPS_BASE.divide(new BigDecimal(diff), 30, RoundingMode.HALF_UP);
-            TPSTracker.tps1.add(currentTps, diff);
+            TPSTracker.tps.add(currentTps, diff);
             TPSTracker.tps5.add(currentTps, diff);
             TPSTracker.tps15.add(currentTps, diff);
-            TPSTracker.tps30.add(currentTps, diff);
             TPSTracker.tps60.add(currentTps, diff);
+            TPSTracker.tps1440.add(currentTps, diff);
             tickSection = currentTime;
         }
 

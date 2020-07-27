@@ -112,18 +112,18 @@ public class KiloDebugUtils {
             entities = entities + moWorld.loadedEntities();
         }
 
-        TPSTracker.tps1.getAverage();
+        TPSTracker.tps.getAverage();
 
         String debugText = String.format(DEBUG_FORMAT,
-                TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()),
-                TPSTracker.tps1.getShortAverage(),
+                TextFormat.getFormattedTPS(TPSTracker.tps.getAverage()),
+                TPSTracker.tps.getShortAverage(),
                 TPSTracker.MillisecondPerTick.getShortAverage(), entities, loadedChunks,
                 ModConstants.getVersionInt(), ModConstants.getVersionNick()
         );
 
         bossBar.setName(Texter.newText().append(DEBUG_TEXT).append(Texter.newText(debugText)));
 
-        int tps = (int) TPSTracker.tps1.getAverage();
+        int tps = (int) TPSTracker.tps.getAverage();
         bossBar.setValue(tps);
 
         if (tps > 15) {

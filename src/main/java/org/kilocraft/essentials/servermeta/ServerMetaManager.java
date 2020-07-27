@@ -37,7 +37,7 @@ public class ServerMetaManager {
 
 
             Server server = KiloServer.getServer();
-            RollingAverage tps = TPSTracker.tps1;
+            RollingAverage tps = TPSTracker.tps;
             double memoryUsedPercentage = SystemMonitor.getRamUsedPercentage();
 
             PlayerListMeta.serverName = server.getName();
