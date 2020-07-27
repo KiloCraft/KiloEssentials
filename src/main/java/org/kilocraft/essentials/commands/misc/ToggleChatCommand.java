@@ -25,18 +25,33 @@ public class ToggleChatCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> type = argument("type", StringArgumentType.word())
                 .suggests(this::listSuggestions)
-                .executes(this::execute);
+                .executes((ctx) -> execute(ctx, StringArgumentType.getString(ctx, "type")));
+
+        this.argumentBuilder.then(type);
+        this.argumentBuilder.executes(this::toggle);
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
-        String input = StringArgumentType.getString(ctx, "type");
+        if (src.getPreference(Preferences.CHAT_VISIBILITY) == ServerChat.VisibilityPreference.ALL) {
+            return set(src, ServerChat.VisibilityPreference.MENTIONS);
+        } else {
+            return set(src, ServerChat.VisibilityPreference.ALL);
+        }
+    }
+
+    private int execute(final CommandContext<ServerCommandSource> ctx, final String input) throws CommandSyntaxException {
+        OnlineUser src = this.getOnlineUser(ctx);
         ServerChat.VisibilityPreference preference = ServerChat.VisibilityPreference.getByName(input);
         if (preference == null) {
             src.sendLangError("command.togglechat.invalid_type", input);
             return FAILED;
         }
 
+        return set(src, preference);
+    }
+
+    private int set(final OnlineUser src, final ServerChat.VisibilityPreference preference) {
         src.getPreferences().set(Preferences.CHAT_VISIBILITY, preference);
         src.sendLangMessage("command.togglechat.set", preference.toString());
         return SUCCESS;

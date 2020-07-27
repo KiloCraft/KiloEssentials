@@ -22,6 +22,7 @@ import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandUtils;
@@ -136,7 +137,11 @@ public final class ServerChat {
                         .styled((style) -> style.setHoverEvent(hoverEvent(sender, channel)).withClickEvent(clickEvent(sender)))
         ).append(" ").append(component);
 
-        KiloServer.getServer().sendMessage(text.getString());
+        if (sender.getPreference(Preferences.CHAT_VISIBILITY) == VisibilityPreference.MENTIONS) {
+            sender.sendMessage(text);
+        }
+
+        KiloServer.getServer().sendMessage(TextFormat.clearColorCodes(text.getString()));
         channel.send(text, mentions);
     }
 
@@ -430,6 +435,9 @@ public final class ServerChat {
             return this.id;
         }
 
+        public void send(Text message) {
+            send(message, true);
+        }
         public void send(Text message, boolean mentions) {
             switch (this) {
                 case PUBLIC:
@@ -484,8 +492,7 @@ public final class ServerChat {
 
     public enum VisibilityPreference {
         ALL,
-        MENTIONS,
-        NONE;
+        MENTIONS;
 
         @Nullable
         public static VisibilityPreference getByName(final String name) {
