@@ -34,7 +34,7 @@ public class TempBanIpCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> victim = this.getUserArgument("user");
+        RequiredArgumentBuilder<ServerCommandSource, String> victim = this.getUserArgument("target");
 
         RequiredArgumentBuilder<ServerCommandSource, String> time = argument("time", StringArgumentType.word())
                 .suggests(TimeDifferenceUtil::listSuggestions)
@@ -55,19 +55,19 @@ public class TempBanIpCommand extends EssentialCommand {
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @NotNull final String time, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
-        String input = this.getUserArgumentInput(ctx, "user");
+        String input = this.getUserArgumentInput(ctx, "target");
         Matcher matcher = BanIpCommand.PATTERN.matcher(input);
         if (matcher.matches()) {
             return tempBanIp(src, null, input, time, reason, silent);
         } else {
             this.getEssentials().getUserThenAcceptAsync(src, input, (victim) -> {
-                if (victim.getLastSocketAddress() == null) {
+                if (victim.getLastIp() == null) {
                     src.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress");
                     return;
                 }
 
                 try {
-                    tempBanIp(src, victim, victim.getLastSocketAddress(), time, reason, silent);
+                    tempBanIp(src, victim, victim.getLastIp(), time, reason, silent);
                 } catch (CommandSyntaxException e) {
                     src.sendError(e.getMessage());
                 }
@@ -88,7 +88,7 @@ public class TempBanIpCommand extends EssentialCommand {
         bannedIpList.add(entry);
 
         MutableText text = new TextMessage(
-                ServerUserManager.replaceVariables(super.config.moderation().messages().permIpBan, entry, true)
+                ServerUserManager.replaceVariables(super.config.moderation().messages().tempIpBan, entry, false)
         ).toText();
 
         for (ServerPlayerEntity player : players) {

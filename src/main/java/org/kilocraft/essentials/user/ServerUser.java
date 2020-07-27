@@ -19,6 +19,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.api.user.preference.UserPreferences;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.UserMessageReceptionist;
@@ -204,6 +205,12 @@ public class ServerUser implements User {
     @Override
     public String getLastSocketAddress() {
         return this.lastSocketAddress;
+    }
+
+    @Nullable
+    @Override
+    public String getLastIp() {
+        return StringUtils.socketAddressToIp(this.lastSocketAddress);
     }
 
     @Override

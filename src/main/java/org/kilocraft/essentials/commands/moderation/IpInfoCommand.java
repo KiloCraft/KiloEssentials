@@ -8,6 +8,7 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -33,13 +34,22 @@ public class IpInfoCommand extends EssentialCommand {
                 return;
             }
 
+            String address = user.getLastIp();
+
             source.sendMessage(
                     Texter.newText(tl("command.ipinfo", user.getUsername()))
-                            .append(Texter.newRawText(user.getLastSocketAddress()).styled((style) ->
+                            .append(Texter.newRawText(address).styled((style) ->
                                     style.withFormatting(Formatting.GOLD)
                                             .setHoverEvent(Texter.Events.onHover(tl("general.click_copy")))
-                                            .withClickEvent(Texter.Events.onClickCopy(user.getLastSocketAddress()))
-                            ))
+                                            .withClickEvent(Texter.Events.onClickCopy(address))
+                            )).append(" ").append(
+                            Texter.newText().append(StringUtils.socketAddressToPort(user.getLastSocketAddress()))
+                                    .styled((style) ->
+                                            style.withFormatting(Formatting.AQUA)
+                                                    .setHoverEvent(Texter.Events.onHover(tl("general.click_copy")))
+                                                    .withClickEvent(Texter.Events.onClickCopy(user.getLastSocketAddress()))
+                                    )
+                    )
             );
         });
 

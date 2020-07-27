@@ -13,6 +13,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
@@ -20,6 +21,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -222,6 +224,17 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         }
 
         return super.lastSocketAddress;
+    }
+
+    @Nullable
+    @Override
+    public String getLastIp() {
+        String last = this.getLastSocketAddress();
+        if (last == null) {
+            return null;
+        }
+
+        return StringUtils.socketAddressToIp(this.getLastSocketAddress());
     }
 
     @Deprecated

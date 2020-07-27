@@ -186,6 +186,13 @@ public interface User extends EntityIdentifiable, NBTSerializable, MessageRecept
     String getLastSocketAddress();
 
     /**
+     * The last saved Ip Address of this user
+     * @return last Ip Address as String
+     */
+    @Nullable
+    String getLastIp();
+
+    /**
      * Gets the amount of playtime as ticks
      * @return ticks played
      */

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.TextFormat;
 
+import java.net.SocketAddress;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -45,6 +46,20 @@ public class StringUtils {
         }
 
         return builder.toString();
+    }
+
+    public static String socketAddressToIp(@NotNull final String address) {
+        String string = address;
+        string = string.substring(string.indexOf("/") + 1);
+        string = string.substring(0, string.indexOf(":"));
+        return string;
+    }
+
+    public static String socketAddressToPort(@NotNull final String address) {
+        String string = address;
+        string = string.substring(string.indexOf("/") + 1);
+        string = string.substring(string.indexOf(":") + 1);
+        return string;
     }
 
     public static class Calculator implements Comparable<Double> {

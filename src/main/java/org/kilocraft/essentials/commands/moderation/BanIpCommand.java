@@ -36,7 +36,7 @@ public class BanIpCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> victim = this.getUserArgument("user")
+        RequiredArgumentBuilder<ServerCommandSource, String> victim = this.getUserArgument("target")
                 .executes((ctx) -> this.execute(ctx, null, false));
 
         RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
@@ -53,18 +53,18 @@ public class BanIpCommand extends EssentialCommand {
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
-        String input = this.getUserArgumentInput(ctx, "user");
+        String input = this.getUserArgumentInput(ctx, "target");
         Matcher matcher = PATTERN.matcher(input);
         if (matcher.matches()) {
             return banIp(src, null, input, reason, silent);
         } else {
             this.getEssentials().getUserThenAcceptAsync(src, input, (victim) -> {
-                if (victim.getLastSocketAddress() == null) {
+                if (victim.getLastIp() == null) {
                     src.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress");
                     return;
                 }
 
-                banIp(src, victim, victim.getLastSocketAddress(), reason, silent);
+                banIp(src, victim, victim.getLastIp(), reason, silent);
             });
 
         }

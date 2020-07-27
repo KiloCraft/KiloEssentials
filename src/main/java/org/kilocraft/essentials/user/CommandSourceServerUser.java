@@ -170,6 +170,11 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public @Nullable String getLastIp() {
+        return null;
+    }
+
+    @Override
     public int getTicksPlayed() {
         return 0;
     }
