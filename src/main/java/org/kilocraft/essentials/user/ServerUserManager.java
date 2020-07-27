@@ -294,7 +294,7 @@ public class ServerUserManager implements UserManager, TickListener {
         final String message = config.meta().performed
                 .replace("{TYPE}", type == Punishment.Type.MUTE ? config.meta().wordMuted : config.meta().wordBanned)
                 .replace("{SOURCE}", src.getName())
-                .replace("{VICTIM}", entry.getVictim().getName())
+                .replace("{VICTIM}", entry.getVictim() == null ? entry.getVictimIP() == null ? "INVALID" : entry.getVictimIP() : entry.getVictim().getName())
                 .replace("{REASON}", entry.getReason() == null ? config.defaults().ban : entry.getReason())
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
@@ -312,7 +312,7 @@ public class ServerUserManager implements UserManager, TickListener {
         final String message = config.meta().revoked
                 .replace("{TYPE}", type == Punishment.Type.MUTE ? config.meta().wordMuted : config.meta().wordBanned)
                 .replace("{SOURCE}", src.getName())
-                .replace("{VICTIM}", entry.getVictim().getName())
+                .replace("{VICTIM}", entry.getVictim() == null ? entry.getVictimIP() == null ? "INVALID" : entry.getVictimIP() : entry.getVictim().getName())
                 .replace("{REASON}", entry.getReason() == null ? config.defaults().ban : entry.getReason())
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
