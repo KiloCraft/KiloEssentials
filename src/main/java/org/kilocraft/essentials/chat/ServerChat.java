@@ -22,6 +22,7 @@ import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -30,6 +31,7 @@ import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.config.main.sections.chat.ChatPingSoundConfigSection;
+import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
@@ -48,7 +50,7 @@ import java.util.regex.Pattern;
 
 public final class ServerChat {
     private static final String DEBUG_EXCEPTION = "--texc";
-    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
     private static final int LINK_MAX_LENGTH = 20;
     private static final int COMMAND_MAX_LENGTH = 45;
@@ -94,7 +96,7 @@ public final class ServerChat {
     }
 
     public static void send(final OnlineUser sender, final TextMessage message, final Channel channel) throws Exception {
-        if (message.getOriginal().startsWith(DEBUG_EXCEPTION)) {
+        if (message.getOriginal().startsWith(DEBUG_EXCEPTION) && SharedConstants.isDevelopment) {
             throw new UnexpectedException("Debug exception thrown by " + sender.getUsername() + message.getOriginal().replaceFirst(DEBUG_EXCEPTION, ""));
         }
 
@@ -136,6 +138,15 @@ public final class ServerChat {
                 prefix.toComponent()
                         .styled((style) -> style.setHoverEvent(hoverEvent(sender, channel)).withClickEvent(clickEvent(sender)))
         ).append(" ").append(component);
+
+        PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(sender.asPlayer(), component.getString()));
+        if (event.isCancelled()) {
+            if (event.getCancelReason() != null) {
+                sender.sendError(event.getCancelReason());
+            }
+
+            return;
+        }
 
         if (sender.getPreference(Preferences.CHAT_VISIBILITY) == VisibilityPreference.MENTIONS) {
             sender.sendMessage(text);
@@ -352,7 +363,8 @@ public final class ServerChat {
             if (lowerCased.contains(s)) {
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < s.length(); i++) {
-                    builder.append(KiloConfig.messages().censorList().alternateChar);           }
+                    builder.append(KiloConfig.messages().censorList().alternateChar);
+                }
 
                 msg = msg.replaceAll(("(?i)" + s), Matcher.quoteReplacement(builder.toString()));
                 index++;
@@ -438,6 +450,7 @@ public final class ServerChat {
         public void send(Text message) {
             send(message, true);
         }
+
         public void send(Text message, boolean mentions) {
             switch (this) {
                 case PUBLIC:
@@ -456,6 +469,7 @@ public final class ServerChat {
                     break;
             }
         }
+
         public void sendLangMessage(String key, Object... objects) {
             switch (this) {
                 case PUBLIC:

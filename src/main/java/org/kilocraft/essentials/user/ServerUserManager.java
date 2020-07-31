@@ -410,16 +410,7 @@ public class ServerUserManager implements UserManager, TickListener {
         ServerPlayerEntity player = user.asPlayer();
         NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
 
-        PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(player, packet.getChatMessage()));
-        if (event.isCancelled()) {
-            if (event.getCancelReason() != null) {
-                user.sendError(event.getCancelReason());
-            }
-
-            return;
-        }
-
-        String string = StringUtils.normalizeSpace(event.getMessage());
+        String string = StringUtils.normalizeSpace(packet.getChatMessage());
         player.updateLastActionTime();
 
         for (int i = 0; i < string.length(); ++i) {
