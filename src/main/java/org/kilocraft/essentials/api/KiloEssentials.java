@@ -34,6 +34,7 @@ import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.util.LuckPermsCompatibility;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
@@ -114,4 +115,5 @@ public interface KiloEssentials {
         return new File(KiloEssentials.getWorkingDirectory()).toPath().resolve("server.properties");
     }
 
+    Optional<LuckPermsCompatibility> getLuckPermsCompatibility();
 }

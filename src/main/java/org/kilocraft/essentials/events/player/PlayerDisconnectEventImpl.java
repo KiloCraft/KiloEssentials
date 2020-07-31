@@ -2,16 +2,17 @@ package org.kilocraft.essentials.events.player;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerDisconnectEvent;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
 public class PlayerDisconnectEventImpl implements PlayerDisconnectEvent {
 
     private final ServerPlayerEntity player;
+    private final OnlineUser user;
 
-    public PlayerDisconnectEventImpl(ServerPlayerEntity playerEntity) {
+    public PlayerDisconnectEventImpl(ServerPlayerEntity playerEntity, OnlineUser user) {
         this.player = playerEntity;
+        this.user = user;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class PlayerDisconnectEventImpl implements PlayerDisconnectEvent {
 
     @Override
     public OnlineUser getUser() {
-        return KiloServer.getServer().getOnlineUser(this.player);
+        return this.user;
     }
 }
 

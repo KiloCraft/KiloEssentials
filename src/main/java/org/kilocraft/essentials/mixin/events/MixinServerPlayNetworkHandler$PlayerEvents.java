@@ -65,7 +65,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
 
     @Inject(at = @At(value = "HEAD"), method = "onDisconnected")
     private void ke$triggerEvent$onDisconnect(Text text, CallbackInfo ci) {
-        KiloServer.getServer().triggerEvent(new PlayerDisconnectEventImpl(this.player));
+        KiloServer.getServer().triggerEvent(new PlayerDisconnectEventImpl(this.player, KiloServer.getServer().getOnlineUser(this.player.getUuid())));
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "onDisconnected")

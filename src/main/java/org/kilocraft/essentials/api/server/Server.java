@@ -164,7 +164,7 @@ public interface Server {
      *
      * @param e event to register
      */
-    void registerEvent(final EventHandler<?> e);
+    <E extends Event> void registerEvent(final EventHandler<E> e);
 
     /**
      * Gets the EventRegistry

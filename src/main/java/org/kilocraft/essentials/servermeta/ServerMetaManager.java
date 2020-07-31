@@ -35,7 +35,6 @@ public class ServerMetaManager {
                 continue;
             }
 
-
             Server server = KiloServer.getServer();
             RollingAverage tps = TPSTracker.tps;
             double memoryUsedPercentage = SystemMonitor.getRamUsedPercentage();
@@ -71,7 +70,7 @@ public class ServerMetaManager {
 
         final Properties properties = new Properties();
         properties.load(new FileInputStream(KiloEssentials.getServerProperties().toFile()));
-        properties.setProperty("motd", TextFormat.translate(((MutableText)description).getString()));
+        properties.setProperty("motd", TextFormat.translate(description.getString()));
         properties.store(new FileOutputStream(KiloEssentials.getServerProperties().toFile()), "");
     }
 

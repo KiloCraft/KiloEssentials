@@ -271,6 +271,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             isStaff = true;
         }
 
+        KiloEssentials.getInstance().getLuckPermsCompatibility().ifPresent((it) -> it.onUserJoin(this));
     }
 
     public void onLeave() {

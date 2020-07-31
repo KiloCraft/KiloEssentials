@@ -197,7 +197,7 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void registerEvent(EventHandler e) {
+    public <E extends Event> void registerEvent(EventHandler<E> e) {
         eventRegistry.register(e);
     }
 
@@ -207,7 +207,7 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public <E extends Event> E triggerEvent(E e) {
+    public <E extends Event> E triggerEvent(@NotNull E e) {
         return eventRegistry.trigger(e);
     }
 

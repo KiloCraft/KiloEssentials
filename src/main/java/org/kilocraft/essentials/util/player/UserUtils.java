@@ -47,7 +47,8 @@ public class UserUtils {
             return Texter.newText(builder.toString());
         }
 
-        return Team.modifyText(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
+        return user.asPlayer().getScoreboardTeam() == null ? Texter.newText(user.getFormattedDisplayName()) :
+                Team.modifyText(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
     }
 
     private static net.luckperms.api.model.user.User getLuckyUser(UUID uuid) {

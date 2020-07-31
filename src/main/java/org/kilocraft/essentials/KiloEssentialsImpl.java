@@ -22,6 +22,7 @@ import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.ServerUserManager;
+import org.kilocraft.essentials.util.LuckPermsCompatibility;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
@@ -53,8 +54,10 @@ public final class KiloEssentialsImpl implements KiloEssentials {
 
     private PermissionUtil permUtil;
     private StartupScript startupScript;
+    private LuckPermsCompatibility luckPermsCompatibility;
 
     public static CommandDispatcher<ServerCommandSource> commandDispatcher;
+
 
     public static void onServerSet(final Server server) {
         KiloDebugUtils.validateDebugMode(false);
@@ -84,6 +87,9 @@ public final class KiloEssentialsImpl implements KiloEssentials {
             this.startupScript = new StartupScript();
         }
         this.permUtil = new PermissionUtil();
+        if (permUtil.getManager() == PermissionUtil.Manager.LUCKPERMS) {
+            this.luckPermsCompatibility = new LuckPermsCompatibility();
+        }
     }
 
     public static Logger getLogger() {
@@ -312,6 +318,11 @@ public final class KiloEssentialsImpl implements KiloEssentials {
     @Override
     public ConfigurableFeatures getFeatures() {
         return ConfigurableFeatures.getInstance();
+    }
+
+    @Override
+    public Optional<LuckPermsCompatibility> getLuckPermsCompatibility() {
+        return Optional.ofNullable(this.luckPermsCompatibility);
     }
 
     public void onServerStop() {

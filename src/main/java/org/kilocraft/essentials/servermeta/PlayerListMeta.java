@@ -42,19 +42,19 @@ public class PlayerListMeta {
 
     private static String getFormattedStringFor(ServerPlayerEntity player, String string) {
         OnlineUser user = KiloServer.getServer().getOnlineUser(player);
-        return string.replaceAll("%PLAYER_NAME%", player.getEntityName())
-                .replaceAll("%PLAYER_DISPLAYNAME%", Texter.Legacy.toFormattedString(player.getDisplayName()))
-                .replaceAll("%PLAYER_PING%", String.valueOf(player.pingMilliseconds))
-                .replaceAll("%PLAYER_FORMATTED_PING%", TextFormat.getFormattedPing(player.pingMilliseconds))
-                .replaceAll("%USER_DISPLAYNAME%", user.getFormattedDisplayName())
-                .replaceAll("%SERVER_NAME%", serverName)
-                .replaceAll("%SERVER_TPS%", serverTps)
-                .replaceAll("%SERVER_FORMATTED_TPS%", serverFormattedTps)
-                .replaceAll("%SERVER_PLAYER_COUNT%", serverPlayerCount)
-                .replaceAll("%SERVER_MEMORY_MAX%", serverMemoryMax)
-                .replaceAll("%SERVER_MEMORY_USAGE_PERCENTAGE%", serverMemoryPercentage)
-                .replaceAll("%SERVER_FORMATTED_MEMORY_USAGE_PERCENTAGE%", serverFormattedMemoryPercentage)
-                .replaceAll("%SERVER_MEMORY_USAGE_MB%", serverMemoryUsageMB);
+        return string.replace("%PLAYER_NAME%", player.getEntityName())
+                .replace("%PLAYER_DISPLAYNAME%", Texter.Legacy.toFormattedString(player.getDisplayName()))
+                .replace("%PLAYER_PING%", String.valueOf(player.pingMilliseconds))
+                .replace("%PLAYER_FORMATTED_PING%", TextFormat.getFormattedPing(player.pingMilliseconds))
+                .replace("%USER_DISPLAYNAME%", user.getFormattedDisplayName())
+                .replace("%SERVER_NAME%", serverName)
+                .replace("%SERVER_TPS%", serverTps)
+                .replace("%SERVER_FORMATTED_TPS%", serverFormattedTps)
+                .replace("%SERVER_PLAYER_COUNT%", serverPlayerCount)
+                .replace("%SERVER_MEMORY_MAX%", serverMemoryMax)
+                .replace("%SERVER_MEMORY_USAGE_PERCENTAGE%", serverMemoryPercentage)
+                .replace("%SERVER_FORMATTED_MEMORY_USAGE_PERCENTAGE%", serverFormattedMemoryPercentage)
+                .replace("%SERVER_MEMORY_USAGE_MB%", serverMemoryUsageMB);
     }
 
 }
