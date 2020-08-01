@@ -29,24 +29,24 @@ public class LuckPermsCompatibility {
         this.scoreboard = server.getMinecraftServer().getScoreboard();
 
         for (Group group : api.getGroupManager().getLoadedGroups()) {
-            if (!group.getWeight().isPresent()) {
-                continue;
-            }
-            String string = group.getWeight().getAsInt() + "_" + group.getName();
-            String name = string.length() > 16 ? string.substring(0, 16) : string;
-
-            if (scoreboard.getTeam(name) != null) {
-                continue;
-            }
-
-            Team team = scoreboard.addTeam(name);
-
-            if (group.getDisplayName() != null) {
-                team.setDisplayName(Texter.newText(group.getDisplayName()));
-            }
-
-            teams.put(group.getIdentifier().toString(), team);
+            addTeam(group);
         }
+    }
+
+    private Team addTeam(@NotNull final Group group) {
+        String name = groupToTeam(group);
+        if (name == null || scoreboard.getTeam(name) != null) {
+            return null;
+        }
+
+        Team team = scoreboard.addTeam(name);
+
+        if (group.getDisplayName() != null) {
+            team.setDisplayName(Texter.newText(group.getDisplayName()));
+        }
+
+        teams.put(group.getIdentifier().toString(), team);
+        return team;
     }
 
     public void onUserJoin(final OnlineServerUser user) {
@@ -59,12 +59,25 @@ public class LuckPermsCompatibility {
             return;
         }
 
-        if (teams.containsKey(luckUser.getPrimaryGroup())) {
-            Team team = teams.get(luckUser.getPrimaryGroup());
+        Group group = api.getGroupManager().getGroup(luckUser.getPrimaryGroup());
+        if (teams.containsKey(luckUser.getPrimaryGroup()) && group != null) {
+            Team team = teams.get(groupToTeam(group));
+            if (team == null) {
+                team = addTeam(group);
+            }
+
             if (team != null) {
                 this.scoreboard.addPlayerToTeam(user.asPlayer().getGameProfile().getName(), team);
             }
         }
+    }
+
+    private static String groupToTeam(@NotNull final Group group) {
+        if (!group.getWeight().isPresent()) {
+            return null;
+        }
+        String string = group.getWeight().getAsInt() + "_" + group.getName();
+        return string.length() > 16 ? string.substring(0, 16) : string;
     }
 
 }

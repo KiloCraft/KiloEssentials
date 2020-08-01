@@ -139,7 +139,7 @@ public final class ServerChat {
                         .styled((style) -> style.setHoverEvent(hoverEvent(sender, channel)).withClickEvent(clickEvent(sender)))
         ).append(" ").append(component);
 
-        PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(sender.asPlayer(), component.getString()));
+        PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(sender.asPlayer(), component.getString(), channel));
         if (event.isCancelled()) {
             if (event.getCancelReason() != null) {
                 sender.sendError(event.getCancelReason());

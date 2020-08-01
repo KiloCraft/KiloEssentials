@@ -61,7 +61,9 @@ public class Preferences {
                     Map<String, UUID> map = Maps.newHashMap();
                     for (int i = 0; i < listTag.size(); i++) {
                         CompoundTag tag = listTag.getCompound(i);
-                        map.put(tag.getString("name"), tag.getUuid("id"));
+                        if (tag.contains("name") && tag.contains("id")) {
+                            map.put(tag.getString("name"), tag.getUuid("id"));
+                        }
                     }
                     fun.set(map);
                 }

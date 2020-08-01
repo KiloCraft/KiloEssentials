@@ -43,7 +43,6 @@ public class SimpleCommandManager {
 
             if (command.hasArgs) {
                 builder.then(CommandManager.argument("args", StringArgumentType.greedyString())
-                        .requires(src -> INSTANCE.byId.contains(command.id))
                         .suggests(ArgumentCompletions::noSuggestions));
             }
         }
