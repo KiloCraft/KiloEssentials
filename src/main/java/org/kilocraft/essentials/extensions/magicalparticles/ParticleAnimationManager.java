@@ -21,7 +21,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTStorage;
-import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
+import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ParticleAnimationManager implements RelodableConfigurableFeature, TickListener, NBTStorage {
+public class ParticleAnimationManager implements ReloadableConfigurableFeature, TickListener, NBTStorage {
     static Map<Identifier, ParticleAnimation> map = new HashMap<>();
     private static final Map<UUID, Identifier> uuidIdentifierMap = new HashMap<>();
     private static ParticleTypesConfig config;

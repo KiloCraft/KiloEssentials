@@ -64,6 +64,7 @@ import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
+import org.kilocraft.essentials.extensions.votifier.Votifier;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
@@ -113,6 +114,7 @@ public class KiloCommands {
         FEATURES.tryToRegister(new DiscordCommand(), "discordCommand");
         FEATURES.tryToRegister(new VoteCommand(), "voteCommand");
         FEATURES.tryToRegister(new PlaytimeCommands(), "playtimeCommands");
+        FEATURES.tryToRegister(new Votifier(), "votifier");
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {

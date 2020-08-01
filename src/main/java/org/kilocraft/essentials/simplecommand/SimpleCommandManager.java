@@ -24,8 +24,8 @@ import java.util.List;
 
 public class SimpleCommandManager {
     private static SimpleCommandManager INSTANCE;
-    private List<SimpleCommand> commands;
-    private List<String> byId;
+    private final List<SimpleCommand> commands;
+    private final List<String> byId;
 
     public SimpleCommandManager() {
         INSTANCE = this;
@@ -58,6 +58,7 @@ public class SimpleCommandManager {
             canUse = canUse || KiloCommands.hasPermission(src, command.permReq, command.opReq == 0 ? 2 : command.opReq);
         }
 
+        System.out.println("canUse: " + (canUse && getCommand(command.getId()) != null));
         return canUse && getCommand(command.getId()) != null;
     }
 

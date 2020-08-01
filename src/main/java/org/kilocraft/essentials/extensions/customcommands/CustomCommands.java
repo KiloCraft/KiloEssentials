@@ -19,7 +19,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.chat.LangText;
-import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
+import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class CustomCommands implements RelodableConfigurableFeature {
+public class CustomCommands implements ReloadableConfigurableFeature {
     public static boolean enabled = false;
     static Map<Identifier, SimpleCommand> map = new HashMap<>();
     private static ConfigurationNode configNode;

@@ -51,6 +51,9 @@ public class Config {
     @Setting(value = "rtpSpecs", comment = "Configure the RTP range")
     private RtpSpecsConfigSection rtpSpecs = new RtpSpecsConfigSection();
 
+    @Setting(value = "votifier", comment = "Configure the Votifier")
+    private VotifierConfigSection votifier = new VotifierConfigSection();
+
     @Setting(value = "motd", comment = "Configure the RTP range")
     private MotdConfigSection motd = new MotdConfigSection();
 
@@ -128,6 +131,8 @@ public class Config {
     public RtpSpecsConfigSection rtpSpecs() {
         return rtpSpecs;
     }
+
+    public VotifierConfigSection votifier() { return votifier; }
 
     public MotdConfigSection motd() { return motd; }
 
