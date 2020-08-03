@@ -24,6 +24,7 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
             ServerChat.load();
 
             KiloEssentialsImpl.getInstance().onServerLoad();
+            KiloEssentials.getInstance().getFeatures().loadAll(true);
 
             NBTStorageUtil.onSave();
 

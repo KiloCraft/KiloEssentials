@@ -1,10 +1,8 @@
 package org.kilocraft.essentials.simplecommand;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
@@ -14,9 +12,8 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentCompletions;
-import org.kilocraft.essentials.api.server.Server;
-import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
@@ -45,6 +42,8 @@ public class SimpleCommandManager {
                 builder.then(CommandManager.argument("args", StringArgumentType.greedyString())
                         .suggests(ArgumentCompletions::noSuggestions));
             }
+
+            KiloCommands.getDispatcher().register(builder);
         }
     }
 

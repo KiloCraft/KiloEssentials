@@ -46,6 +46,7 @@ public class Votifier implements ReloadableConfigurableFeature {
         version = "1.0";
 
 
+
         /*
          * Use IP address from server.properties as a default for
          * configurations. Do not use InetAddress.getLocalHost() as it most
@@ -62,8 +63,6 @@ public class Votifier implements ReloadableConfigurableFeature {
          * keys.
          */
         File rsaDirectory = KiloEssentials.getEssentialsPath().resolve("votifier").toFile();
-        LOGGER.info(rsaDirectory.getAbsolutePath());
-        System.out.println(rsaDirectory.getAbsolutePath());
         try {
             if (!rsaDirectory.exists()) {
                 rsaDirectory.mkdir();
@@ -90,7 +89,6 @@ public class Votifier implements ReloadableConfigurableFeature {
             LOGGER.info("Votifier enabled.");
         } catch (Exception ex) {
             gracefulExit();
-            return;
         }
     }
 
@@ -147,13 +145,16 @@ public class Votifier implements ReloadableConfigurableFeature {
 
     @Override
     public boolean register() {
-        new Votifier().onEnable();
         return true;
     }
 
     @Override
-    public void load() {
-        if (!ConfigurableFeatures.getInstance().isLoaded(this) && Votifier.instance != null) {
+    public void load(boolean reload) {
+        boolean loaded = ConfigurableFeatures.getInstance().isLoaded(this);
+        if (loaded && reload) {
+            this.onDisable();
+            new Votifier().onEnable();
+        } else if (!loaded && reload) {
             this.onDisable();
         }
     }

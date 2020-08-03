@@ -47,7 +47,6 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     public boolean register() {
         NBTStorageUtil.addCallback(this);
         KiloCommands.getInstance().register(new MagicalParticlesCommand());
-        load();
         return true;
     }
 

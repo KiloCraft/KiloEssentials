@@ -41,8 +41,6 @@ public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTSto
         KiloCommands.getInstance().register(
                 new PlayerWarpsCommand("playerwarps", CommandPermission.PLAYER_WARPS, new String[]{"pwarps"})
         );
-
-        load();
         return true;
     }
 

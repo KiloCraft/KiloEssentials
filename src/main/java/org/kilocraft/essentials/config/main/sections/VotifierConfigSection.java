@@ -9,9 +9,6 @@ import java.util.List;
 @ConfigSerializable
 public class VotifierConfigSection {
 
-    @Setting(value = "enabled")
-    public boolean enabled = false;
-
     @Setting(value = "port", comment = "Votifier port")
     public int port = 8192;
 

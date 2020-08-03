@@ -105,16 +105,16 @@ public class KiloCommands {
 
     public void registerFeatures() {
         ConfigurableFeatures FEATURES = new ConfigurableFeatures();
-        FEATURES.tryToRegister(new UserHomeHandler(), "playerHomes");
-        FEATURES.tryToRegister(new ServerWarpManager(), "serverWideWarps");
-        FEATURES.tryToRegister(new PlayerWarpsManager(), "playerWarps");
-        FEATURES.tryToRegister(new SeatManager(), "betterChairs");
-        FEATURES.tryToRegister(new CustomCommands(), "customCommands");
-        FEATURES.tryToRegister(new ParticleAnimationManager(), "magicalParticles");
-        FEATURES.tryToRegister(new DiscordCommand(), "discordCommand");
-        FEATURES.tryToRegister(new VoteCommand(), "voteCommand");
-        FEATURES.tryToRegister(new PlaytimeCommands(), "playtimeCommands");
-        FEATURES.tryToRegister(new Votifier(), "votifier");
+        FEATURES.register(new UserHomeHandler(), "playerHomes");
+        FEATURES.register(new ServerWarpManager(), "serverWideWarps");
+        FEATURES.register(new PlayerWarpsManager(), "playerWarps");
+        FEATURES.register(new SeatManager(), "betterChairs");
+        FEATURES.register(new CustomCommands(), "customCommands");
+        FEATURES.register(new ParticleAnimationManager(), "magicalParticles");
+        FEATURES.register(new DiscordCommand(), "discordCommand");
+        FEATURES.register(new VoteCommand(), "voteCommand");
+        FEATURES.register(new PlaytimeCommands(), "playtimeCommands");
+        FEATURES.register(new Votifier(), "votifier");
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {

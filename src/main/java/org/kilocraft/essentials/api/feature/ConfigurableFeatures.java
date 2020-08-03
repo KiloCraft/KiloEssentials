@@ -23,7 +23,7 @@ public class ConfigurableFeatures {
         return features.contains(feature);
     }
 
-    public <F extends ConfigurableFeature> void tryToRegister(F feature, String configKey) {
+    public <F extends ConfigurableFeature> void register(F feature, String configKey) {
         try {
             if (KiloConfig.getMainNode().getNode("features").getNode(configKey).getBoolean()) {
                 if (SharedConstants.isDevelopment) {
@@ -42,11 +42,12 @@ public class ConfigurableFeatures {
         }
     }
 
-    public void loadAll() {
+    public void loadAll(boolean reload) {
         for (ConfigurableFeature feature : features) {
             if (feature instanceof ReloadableConfigurableFeature) {
                 try {
                     ((ReloadableConfigurableFeature) feature).load();
+                    ((ReloadableConfigurableFeature) feature).load(reload);
                 } catch (Exception e) {
                     KiloEssentials.getLogger().fatal("Can not load the feature " + feature.getClass().getSimpleName(), e);
                 }
