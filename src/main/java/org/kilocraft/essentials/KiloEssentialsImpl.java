@@ -19,17 +19,9 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.commands.misc.DiscordCommand;
-import org.kilocraft.essentials.commands.misc.VoteCommand;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
-import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
-import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
-import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
-import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
-import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.LuckPermsCompatibility;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
@@ -95,7 +87,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
         if (KiloConfig.main().startupScript().enabled) {
             this.startupScript = new StartupScript();
         }
-
         this.permUtil = new PermissionUtil();
         if (permUtil.getManager() == PermissionUtil.Manager.LUCKPERMS) {
             this.luckPermsCompatibility = new LuckPermsCompatibility();

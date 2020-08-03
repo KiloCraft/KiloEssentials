@@ -92,6 +92,7 @@ public class KiloCommands {
     private static LiteralCommandNode<ServerCommandSource> rootNode;
     private static KiloCommands instance;
 
+
     public KiloCommands() {
         KiloCommands.instance = this;
         this.dispatcher = KiloEssentialsImpl.commandDispatcher;
@@ -99,6 +100,21 @@ public class KiloCommands {
         KiloCommands.rootNode = literal("essentials").executes(this::sendInfo).build();
         this.simpleCommandManager = new SimpleCommandManager();
         registerDefaults();
+        registerFeatures();
+    }
+
+    public void registerFeatures() {
+        ConfigurableFeatures FEATURES = new ConfigurableFeatures();
+        FEATURES.register(new UserHomeHandler(), "playerHomes");
+        FEATURES.register(new ServerWarpManager(), "serverWideWarps");
+        FEATURES.register(new PlayerWarpsManager(), "playerWarps");
+        FEATURES.register(new SeatManager(), "betterChairs");
+        FEATURES.register(new CustomCommands(), "customCommands");
+        FEATURES.register(new ParticleAnimationManager(), "magicalParticles");
+        FEATURES.register(new DiscordCommand(), "discordCommand");
+        FEATURES.register(new VoteCommand(), "voteCommand");
+        FEATURES.register(new PlaytimeCommands(), "playtimeCommands");
+        FEATURES.register(new Votifier(), "votifier");
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {

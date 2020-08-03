@@ -53,9 +53,9 @@ public class Votifier implements ReloadableConfigurableFeature {
          * likely will return the main server address instead of the address
          * assigned to the server.
          */
-        String hostAddress = KiloEssentials.getServer().getMinecraftServer().getServerIp();
-        if (hostAddress == null || hostAddress.length() == 0) {
-            hostAddress = "0.0.0.0";
+        String hostAddr = KiloEssentials.getServer().getMinecraftServer().getServerIp();
+        if (hostAddr == null || hostAddr.length() == 0) {
+            hostAddr = "0.0.0.0";
         }
 
         /*
@@ -78,7 +78,7 @@ public class Votifier implements ReloadableConfigurableFeature {
         }
 
         // Initialize the receiver.
-        String host = hostAddress;
+        String host = hostAddr;
         /*TODO Add to config*/
         int port = KiloConfig.main().votifier().port;
 
@@ -145,12 +145,21 @@ public class Votifier implements ReloadableConfigurableFeature {
 
     @Override
     public boolean register() {
-        this.onEnable();
         return true;
     }
 
     @Override
-    public void unload() {
-        this.onDisable();
+    public void load(boolean reload) {
+        boolean enabled = ConfigurableFeatures.getInstance().isEnabled(this);
+        if (!enabled) {
+            this.onEnable();
+        }
+
+        if (enabled && reload) {
+            this.onEnable();
+            this.onDisable();
+        } else if (!enabled && reload) {
+            this.onDisable();
+        }
     }
 }
