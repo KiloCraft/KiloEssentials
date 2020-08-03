@@ -8,6 +8,7 @@ import net.luckperms.api.model.user.User;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.user.OnlineServerUser;
@@ -60,15 +61,20 @@ public class LuckPermsCompatibility {
         }
 
         Group group = api.getGroupManager().getGroup(luckUser.getPrimaryGroup());
-        if (teams.containsKey(luckUser.getPrimaryGroup()) && group != null) {
-            Team team = teams.get(groupToTeam(group));
-            if (team == null) {
-                team = addTeam(group);
-            }
+        if (group == null) {
+            return;
+        }
 
-            if (team != null) {
-                this.scoreboard.addPlayerToTeam(user.asPlayer().getGameProfile().getName(), team);
-            }
+        String name = groupToTeam(group);
+        Team team = teams.containsKey(name) ? teams.get(name) : addTeam(group);
+
+        if (team != null) {
+            this.scoreboard.addPlayerToTeam(user.asPlayer().getGameProfile().getName(), team);
+        } else {
+            KiloEssentials.getLogger().warn(
+                    "LuckPermsCompatibility: Cannot add Player {} to the team {} for group {}",
+                    user.getName(), name, group.getName()
+            );
         }
     }
 

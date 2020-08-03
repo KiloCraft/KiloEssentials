@@ -104,17 +104,16 @@ public class KiloCommands {
     }
 
     public void registerFeatures() {
-        ConfigurableFeatures FEATURES = new ConfigurableFeatures();
-        FEATURES.register(new UserHomeHandler(), "playerHomes");
-        FEATURES.register(new ServerWarpManager(), "serverWideWarps");
-        FEATURES.register(new PlayerWarpsManager(), "playerWarps");
-        FEATURES.register(new SeatManager(), "betterChairs");
-        FEATURES.register(new CustomCommands(), "customCommands");
-        FEATURES.register(new ParticleAnimationManager(), "magicalParticles");
-        FEATURES.register(new DiscordCommand(), "discordCommand");
-        FEATURES.register(new VoteCommand(), "voteCommand");
-        FEATURES.register(new PlaytimeCommands(), "playtimeCommands");
-        FEATURES.register(new Votifier(), "votifier");
+        ConfigurableFeatures features = new ConfigurableFeatures();
+        features.register(new UserHomeHandler(), "playerHomes");
+        features.register(new ServerWarpManager(), "serverWideWarps");
+        features.register(new PlayerWarpsManager(), "playerWarps");
+        features.register(new SeatManager(), "betterChairs");
+        features.register(new CustomCommands(), "customCommands");
+        features.register(new ParticleAnimationManager(), "magicalParticles");
+        features.register(new DiscordCommand(), "discordCommand");
+        features.register(new VoteCommand(), "voteCommand");
+        features.register(new PlaytimeCommands(), "playtimeCommands");
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {

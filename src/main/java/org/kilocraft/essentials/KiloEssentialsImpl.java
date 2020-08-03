@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -91,6 +92,8 @@ public final class KiloEssentialsImpl implements KiloEssentials {
         if (permUtil.getManager() == PermissionUtil.Manager.LUCKPERMS) {
             this.luckPermsCompatibility = new LuckPermsCompatibility();
         }
+
+        ConfigurableFeatures.getInstance().register(new Votifier(), "votifier");
     }
 
     public static Logger getLogger() {

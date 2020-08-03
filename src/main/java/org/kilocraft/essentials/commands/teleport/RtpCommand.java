@@ -194,7 +194,6 @@ public class RtpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        UserUtils.Process.add(user, PROCESS);
         return execute(ctx.getSource(), ctx.getSource().getPlayer());
     }
 
@@ -206,7 +205,6 @@ public class RtpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        UserUtils.Process.add(target, PROCESS);
         return execute(ctx.getSource(), target.asPlayer());
     }
 
@@ -222,6 +220,7 @@ public class RtpCommand extends EssentialCommand {
     static void teleport(ServerCommandSource src, ServerPlayerEntity target, Logger logger) {
         OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
         CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(src);
+        UserUtils.Process.add(targetUser, PROCESS);
 
         if (targetUser.getPreference(RTP_LEFT) < 0) {
             targetUser.getPreferences().set(RTP_LEFT, 0);
@@ -247,7 +246,6 @@ public class RtpCommand extends EssentialCommand {
         if (!cfg.broadcastMessage.isEmpty()) {
             KiloChat.broadCast(new TextMessage(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName())));
         }
-
 
         ServerWorld world = target.getServerWorld();
         Vec3dLocation loc;

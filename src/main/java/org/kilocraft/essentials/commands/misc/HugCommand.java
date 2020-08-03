@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.commands.misc;
 
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -30,7 +31,7 @@ public class HugCommand extends EssentialCommand {
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ArrayList<ServerPlayerEntity> validTargets = new ArrayList<>();
+        ArrayList<ServerPlayerEntity> validTargets = Lists.newArrayList();
         OnlineUser src = this.getOnlineUser(ctx);
 
         if (src.asPlayer().totalExperience < 16 && !src.hasPermission(CommandPermission.HUG_BYPASS)) {
@@ -61,9 +62,9 @@ public class HugCommand extends EssentialCommand {
             return FAILED;
         }
 
-        OnlineUser onlineTarget  = getOnlineUser(mainTarget);
+        OnlineUser onlineTarget = getOnlineUser(mainTarget);
 
-        if(!src.hasPermission(CommandPermission.HUG_BYPASS)) {
+        if (!src.hasPermission(CommandPermission.HUG_BYPASS)) {
             src.asPlayer().addExperience(-16);
             mainTarget.addExperience(8);
         }
