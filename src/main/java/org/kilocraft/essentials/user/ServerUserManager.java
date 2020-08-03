@@ -298,10 +298,10 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{REASON}", entry.getReason() == null ? config.defaults().ban : entry.getReason())
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
-        if (config.meta().broadcast && !silent) {
+        if (silent) {
+            ServerChat.Channel.STAFF.send(new TextMessage(config.meta().silentPrefix + " " + message).toText());
+        } else if (config.meta().broadcast) {
             KiloChat.broadCast(new TextMessage(message));
-        } else {
-            ServerChat.Channel.STAFF.send(new TextMessage(config.meta().silentPrefix + " " +  message).toText());
         }
     }
 
@@ -316,10 +316,10 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{REASON}", entry.getReason() == null ? config.defaults().ban : entry.getReason())
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
-        if (config.meta().broadcast && !silent) {
+        if (silent) {
+            ServerChat.Channel.STAFF.send(new TextMessage(config.meta().silentPrefix + " " + message).toText());
+        } else if (config.meta().broadcast) {
             KiloChat.broadCast(new TextMessage(message));
-        } else {
-            ServerChat.Channel.STAFF.send(new TextMessage(config.meta().silentPrefix + " " +  message).toText());
         }
     }
 

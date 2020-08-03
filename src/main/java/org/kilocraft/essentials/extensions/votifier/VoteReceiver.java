@@ -4,6 +4,8 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.util.Vote;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -17,8 +19,6 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The vote receiving server.
@@ -31,9 +31,7 @@ public class VoteReceiver extends Thread {
     /**
      * The logger instance.
      */
-    private static final Logger LOG = Logger.getLogger("Votifier");
-
-    private final Votifier plugin;
+    private static final Logger LOGGER = KiloEssentials.getLogger();
 
     /**
      * The host to listen on.
@@ -61,9 +59,8 @@ public class VoteReceiver extends Thread {
      * @param host The host to listen on
      * @param port The port to listen on
      */
-    public VoteReceiver(final Votifier plugin, String host, int port)
+    public VoteReceiver(String host, int port)
             throws Exception {
-        this.plugin = plugin;
         this.host = host;
         this.port = port;
 
@@ -75,13 +72,11 @@ public class VoteReceiver extends Thread {
             server = new ServerSocket();
             server.bind(new InetSocketAddress(host, port));
         } catch (Exception ex) {
-            LOG.log(Level.SEVERE,
-                    "Error initializing vote receiver. Please verify that the configured");
-            LOG.log(Level.SEVERE,
-                    "IP address and port are not already in use. This is a common problem");
-            LOG.log(Level.SEVERE,
-                    "with hosting services and, if so, you should check with your hosting provider.",
-                    ex);
+            LOGGER.info(
+                    "Error initializing vote receiver. Please verify that the configured\n" +
+                            "IP address and port are not already in use. This is a common problem\n" +
+                            "with hosting services and, if so, you should check with your hosting provider."
+            );
             throw new Exception(ex);
         }
     }
@@ -96,7 +91,7 @@ public class VoteReceiver extends Thread {
         try {
             server.close();
         } catch (Exception ex) {
-            LOG.log(Level.WARNING, "Unable to shut down vote receiver cleanly.");
+            LOGGER.error("Unable to shut down vote receiver cleanly.");
         }
     }
 
@@ -151,13 +146,17 @@ public class VoteReceiver extends Thread {
                 vote.setAddress(address);
                 vote.setTimeStamp(timeStamp);
 
-                if (SharedConstants.isDevelopment)
-                    LOG.info("Received vote record -> " + vote);
+                if (SharedConstants.isDevelopment) {
+                    LOGGER.info("Received vote record -> " + vote);
+                }
 
                 MinecraftServer server = KiloEssentials.getServer().getMinecraftServer();
                 ServerCommandSource source = server.getCommandSource();
                 for (String command : KiloConfig.main().votifier().commands) {
                     GameProfile gameProfile = server.getUserCache().findByName(vote.getUsername());
+                    if (gameProfile == null) {
+                        continue;
+                    }
                     String name = gameProfile.isComplete() ? gameProfile.getName() : vote.getUsername();
                     command = command.replace("%PLAYER%", name)
                             .replace("%SERVICE%", vote.getServiceName())
@@ -172,17 +171,13 @@ public class VoteReceiver extends Thread {
                 in.close();
                 socket.close();
             } catch (SocketException ex) {
-                LOG.log(Level.WARNING, "Protocol error. Ignoring packet - "
-                        + ex.getLocalizedMessage());
+                LOGGER.error("Protocol error. Ignoring packet - {}", ex.getLocalizedMessage());
             } catch (BadPaddingException ex) {
-                LOG.log(Level.WARNING,
-                        "Unable to decrypt vote record. Make sure that that your public key");
-                LOG.log(Level.WARNING,
-                        "matches the one you gave the server list.", ex);
+                LOGGER.error(
+                        "Unable to decrypt vote record. Make sure that that your public key matches the one you gave the server list.", ex
+                );
             } catch (Exception ex) {
-                LOG.log(Level.WARNING,
-                        "Exception caught while receiving a vote notification",
-                        ex);
+                LOGGER.error("Exception caught while receiving a vote notification", ex);
             }
         }
     }

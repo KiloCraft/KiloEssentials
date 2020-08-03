@@ -19,7 +19,7 @@ public class ConfigurableFeatures {
         INSTANCE = this;
     }
 
-    public <F extends ConfigurableFeature> boolean isLoaded(F feature) {
+    public <F extends ConfigurableFeature> boolean isEnabled(F feature) {
         return features.contains(feature);
     }
 

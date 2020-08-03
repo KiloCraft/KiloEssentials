@@ -83,10 +83,10 @@ public class Votifier implements ReloadableConfigurableFeature {
         int port = KiloConfig.main().votifier().port;
 
         try {
-            voteReceiver = new VoteReceiver(this, host, port);
+            voteReceiver = new VoteReceiver(host, port);
             voteReceiver.start();
 
-            LOGGER.info("Votifier enabled.");
+            LOGGER.info("Starting up Votifier...");
         } catch (Exception ex) {
             gracefulExit();
         }
@@ -150,11 +150,15 @@ public class Votifier implements ReloadableConfigurableFeature {
 
     @Override
     public void load(boolean reload) {
-        boolean loaded = ConfigurableFeatures.getInstance().isLoaded(this);
-        if (loaded && reload) {
+        boolean enabled = ConfigurableFeatures.getInstance().isEnabled(this);
+        if (!enabled) {
+            this.onEnable();
+        }
+
+        if (enabled && reload) {
+            this.onEnable();
             this.onDisable();
-            new Votifier().onEnable();
-        } else if (!loaded && reload) {
+        } else if (!enabled && reload) {
             this.onDisable();
         }
     }
