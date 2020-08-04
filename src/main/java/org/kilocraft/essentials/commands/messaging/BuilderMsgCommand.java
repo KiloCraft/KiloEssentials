@@ -13,7 +13,7 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
@@ -32,12 +32,12 @@ public class BuilderMsgCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> joinArg = literal("on")
                 .executes(ctx -> on(ctx.getSource(), ctx.getSource().getPlayer()))
-                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentCompletions::allPlayers)
+                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentSuggestions::allPlayers)
                         .executes(ctx -> on(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
         LiteralCommandNode<ServerCommandSource> leaveArg = literal("off")
                 .executes(ctx -> off(ctx.getSource(), ctx.getSource().getPlayer()))
-                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentCompletions::allPlayers)
+                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentSuggestions::allPlayers)
                         .executes(ctx -> off(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
         LiteralCommandNode<ServerCommandSource> toggleArg = literal("toggle")

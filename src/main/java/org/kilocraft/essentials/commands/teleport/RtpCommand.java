@@ -29,7 +29,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -75,7 +75,7 @@ public class RtpCommand extends EssentialCommand {
         LiteralArgumentBuilder<ServerCommandSource> addArgument = literal("add")
                 .requires(PERMISSION_CHECK_MANAGE)
                 .then(argument("target", EntityArgumentType.player())
-                        .suggests(ArgumentCompletions::allPlayers).then(
+                        .suggests(ArgumentSuggestions::allPlayers).then(
                                 argument("amount", IntegerArgumentType.integer(1))
                                         .executes(this::executeAdd)
                         )
@@ -84,7 +84,7 @@ public class RtpCommand extends EssentialCommand {
         LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set")
                 .requires(PERMISSION_CHECK_MANAGE)
                 .then(argument("target", EntityArgumentType.player())
-                        .suggests(ArgumentCompletions::allPlayers).then(
+                        .suggests(ArgumentSuggestions::allPlayers).then(
                                 argument("amount", IntegerArgumentType.integer(1))
                                         .executes(this::executeSet)
                         )
@@ -93,7 +93,7 @@ public class RtpCommand extends EssentialCommand {
         LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove")
                 .requires(PERMISSION_CHECK_MANAGE)
                 .then(argument("target", EntityArgumentType.player())
-                        .suggests(ArgumentCompletions::allPlayers).then(
+                        .suggests(ArgumentSuggestions::allPlayers).then(
                                 argument("amount", IntegerArgumentType.integer(1))
                                         .executes(this::executeRemove)
                         )
@@ -102,7 +102,7 @@ public class RtpCommand extends EssentialCommand {
         LiteralArgumentBuilder<ServerCommandSource> sendArgument = literal("send")
                 .requires(PERMISSION_CHECK_MANAGE)
                 .then(argument("target", EntityArgumentType.player())
-                        .suggests(ArgumentCompletions::allPlayers)
+                        .suggests(ArgumentSuggestions::allPlayers)
                         .executes(this::executeOthers)
                 );
 
@@ -110,7 +110,7 @@ public class RtpCommand extends EssentialCommand {
                 .executes(this::executeLeft)
                 .then(argument("target", EntityArgumentType.player())
                         .requires(PERMISSION_CHECK_OTHERS)
-                        .suggests(ArgumentCompletions::allPlayers)
+                        .suggests(ArgumentSuggestions::allPlayers)
                         .executes(this::executeGet)
                 );
 

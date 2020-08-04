@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
 
@@ -21,7 +21,7 @@ public class UsageCommand extends EssentialCommand {
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("command", greedyString())
-                .suggests(ArgumentCompletions::usableCommands)
+                .suggests(ArgumentSuggestions::usableCommands)
                 .executes(this::execute);
 
         this.commandNode.addChild(stringArgument.build());

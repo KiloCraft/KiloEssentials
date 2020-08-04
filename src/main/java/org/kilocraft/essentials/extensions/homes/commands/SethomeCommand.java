@@ -15,7 +15,6 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;

@@ -10,7 +10,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -39,7 +39,7 @@ public class WhoWasCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> usernameArgument = getUserArgument("username")
-                .suggests(ArgumentCompletions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> executeOthers(ctx, 1));
 
         RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = argument("page", IntegerArgumentType.integer(1))

@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.command;
 
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -10,11 +11,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
@@ -27,27 +25,20 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-public class ArgumentCompletions {
-
+public class ArgumentSuggestions {
     private static final PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
 
-
     public static CompletableFuture<Suggestions> users(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        List<String> strings = new ArrayList<>();
+        List<String> list = Lists.newArrayList();
         for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
             if (user.hasNickname()) {
-                String name = TextFormat.clearColorCodes(user.getDisplayName());
-                if (name.contains(" ")) {
-                    strings.add(StringUtils.uniformNickname(user.getDisplayName()));
-                } else {
-                    strings.add(name);
-                }
+                list.add(StringUtils.uniformNickname(user.getDisplayName()));
             }
 
-            strings.add(user.getUsername());
+            list.add(user.getUsername());
         }
 
-        return CommandSource.suggestMatching(strings, builder);
+        return CommandSource.suggestMatching(list, builder);
     }
 
     public static CompletableFuture<Suggestions> noSuggestions(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
@@ -55,15 +46,16 @@ public class ArgumentCompletions {
     }
 
     public static CompletableFuture<Suggestions> allPlayers(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(ArgumentCompletions.playerManager.getPlayerList().stream()
+        return CommandSource.suggestMatching(ArgumentSuggestions.playerManager.getPlayerList().stream()
                 .map(PlayerEntity::getEntityName), builder);
     }
 
     public static CompletableFuture<Suggestions> allPlayersExceptSource(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(ArgumentCompletions.playerManager.getPlayerList().stream().filter(p -> {
+        return CommandSource.suggestMatching(ArgumentSuggestions.playerManager.getPlayerList().stream().filter(p -> {
             try {
                 return !p.equals(context.getSource().getPlayer());
-            } catch (CommandSyntaxException ignored) {}
+            } catch (CommandSyntaxException ignored) {
+            }
             return false;
         }).map(PlayerEntity::getEntityName), builder);
     }
@@ -98,15 +90,15 @@ public class ArgumentCompletions {
     }
 
     public static CompletableFuture<Suggestions> textFormatChars(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return ArgumentCompletions.suggestAtCursor(Arrays.stream(TextFormat.getList()).filter(it -> context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)) == '&'), context);
+        return ArgumentSuggestions.suggestAtCursor(Arrays.stream(TextFormat.getList()).filter(it -> context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context)) == '&'), context);
     }
 
     public static CompletableFuture<Suggestions> allNonOperators(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(ArgumentCompletions.playerManager.getPlayerList().stream().filter(p -> !ArgumentCompletions.playerManager.isOperator(p.getGameProfile())).map(PlayerEntity::getEntityName), builder);
+        return CommandSource.suggestMatching(ArgumentSuggestions.playerManager.getPlayerList().stream().filter(p -> !ArgumentSuggestions.playerManager.isOperator(p.getGameProfile())).map(PlayerEntity::getEntityName), builder);
     }
 
     public static CompletableFuture<Suggestions> allOperators(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(ArgumentCompletions.playerManager.getOpNames(), builder);
+        return CommandSource.suggestMatching(ArgumentSuggestions.playerManager.getOpNames(), builder);
     }
 
     public static SuggestionProvider<ServerCommandSource> getDateArguments = (context, builder) ->
@@ -129,23 +121,23 @@ public class ArgumentCompletions {
     }
 
     public static CompletableFuture<Suggestions> suggestAtArg(final int arg, final String[] strings, final CommandContext<ServerCommandSource> context) {
-        return ArgumentCompletions.suggestAt(ArgumentCompletions.getCursorAtArg(arg, context), strings, context);
+        return ArgumentSuggestions.suggestAt(ArgumentSuggestions.getCursorAtArg(arg, context), strings, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAtCursor(final Stream<String> stream, final CommandContext<ServerCommandSource> context) {
-        return ArgumentCompletions.suggestAt(context.getInput().length(), stream, context);
+        return ArgumentSuggestions.suggestAt(context.getInput().length(), stream, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAtCursor(final String string, final CommandContext<ServerCommandSource> context) {
-        return ArgumentCompletions.suggestAt(context.getInput().length(), new String[]{string}, context);
+        return ArgumentSuggestions.suggestAt(context.getInput().length(), new String[]{string}, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAtCursor(final String[] strings, final CommandContext<ServerCommandSource> context) {
-        return ArgumentCompletions.suggestAt(context.getInput().length(), strings, context);
+        return ArgumentSuggestions.suggestAt(context.getInput().length(), strings, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAtCursor(final Iterable<String> iterable, final CommandContext<ServerCommandSource> context) {
-        return ArgumentCompletions.suggestAt(context.getInput().length(), iterable, context);
+        return ArgumentSuggestions.suggestAt(context.getInput().length(), iterable, context);
     }
 
     public static CompletableFuture<Suggestions> suggestAt(final int position, final Stream<String> stream, final CommandContext<ServerCommandSource> context) {
@@ -173,7 +165,7 @@ public class ArgumentCompletions {
     }
 
     private static int getCursorAtArg(final int pos, final CommandContext<ServerCommandSource> context) {
-        return ArgumentCompletions.getInput(context).split(" ").length;
+        return ArgumentSuggestions.getInput(context).split(" ").length;
     }
 
     public static class Factory {

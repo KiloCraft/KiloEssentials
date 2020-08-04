@@ -17,7 +17,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -49,7 +49,7 @@ public class NicknameCommand extends EssentialCommand {
         LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
         LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
         ArgumentCommandNode<ServerCommandSource, String> target = getUserArgument("user")
-                .requires(PERMISSION_CHECK_OTHER).suggests(ArgumentCompletions::allPlayers).build();
+                .requires(PERMISSION_CHECK_OTHER).suggests(ArgumentSuggestions::allPlayers).build();
 
         ArgumentCommandNode<ServerCommandSource, String> nicknameSelf = argument("nickname", greedyString())
                 .suggests(NicknameCommand::setSelfSuggestions).executes(this::setSelf).build();

@@ -7,7 +7,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 
@@ -37,6 +37,6 @@ public class FormatPreviewCommand extends EssentialCommand {
     }
 
     private static CompletableFuture<Suggestions> staticSuggestion(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return ArgumentCompletions.suggestAtCursor("&", context);
+        return ArgumentSuggestions.suggestAtCursor("&", context);
     }
 }

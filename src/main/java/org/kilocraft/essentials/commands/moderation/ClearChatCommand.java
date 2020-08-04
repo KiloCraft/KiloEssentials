@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.TextMessage;
 
@@ -25,7 +25,7 @@ public class ClearChatCommand extends EssentialCommand {
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetsArgument = argument("targets", players())
-                .suggests(ArgumentCompletions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> executeMultiple(ctx, getPlayers(ctx, "targets"), false))
                 .then(literal("-silent")
                         .executes(ctx -> executeMultiple(ctx, getPlayers(ctx, "targets"), true)));

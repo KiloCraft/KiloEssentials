@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
 
@@ -48,13 +48,13 @@ public class ItemLoreCommand {
 
 		LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove");
 		RequiredArgumentBuilder<ServerCommandSource, Integer> removeLineArgument = argument("line", integer(1, 10))
-				.suggests(ArgumentCompletions::noSuggestions)
+				.suggests(ArgumentSuggestions::noSuggestions)
 				.executes(ItemLoreCommand::executeRemove);
 
 		LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
 
 		RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 10))
-				.suggests(ArgumentCompletions::noSuggestions);
+				.suggests(ArgumentSuggestions::noSuggestions);
 
 		RequiredArgumentBuilder<ServerCommandSource, String> textArgument = argument("text", greedyString())
 				.suggests(ItemLoreCommand::loreSuggestions)
@@ -75,7 +75,7 @@ public class ItemLoreCommand {
 
 		if (item.isEmpty() || !item.hasTag() || item.getTag() == null ||
 				!item.getTag().contains("display") || !item.getTag().getCompound("display").contains("Lore"))
-			return ArgumentCompletions.noSuggestions(context, builder);
+			return ArgumentSuggestions.noSuggestions(context, builder);
 
 		int inputLine = 0;
 

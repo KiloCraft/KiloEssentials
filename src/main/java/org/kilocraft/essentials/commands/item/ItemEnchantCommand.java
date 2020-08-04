@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class ItemEnchantCommand {
                 .executes(ctx -> addEnchantment(ctx, -1));
 
         RequiredArgumentBuilder<ServerCommandSource, Integer> levelArgument = argument("level", integer())
-                .suggests(ArgumentCompletions::noSuggestions)
+                .suggests(ArgumentSuggestions::noSuggestions)
                 .executes(ctx -> addEnchantment(ctx, getInteger(ctx, "level")));
 
         removeArgument.then(removeEnchantArgument);

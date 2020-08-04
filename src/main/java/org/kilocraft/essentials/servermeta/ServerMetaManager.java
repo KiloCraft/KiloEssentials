@@ -9,6 +9,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.math.RollingAverage;
 import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
@@ -52,12 +53,10 @@ public class ServerMetaManager {
         }
     }
 
-    public void updateDisplayName(String name) {
-        ServerPlayerEntity player = KiloServer.getServer().getPlayer(name);
-        PlayerListS2CPacket playerListPacket = new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player);
-
+    public void updateDisplayName(ServerPlayerEntity player) {
         if (player != null) {
-            KiloServer.getServer().getPlayerManager().sendToAll(playerListPacket);
+            PlayerListS2CPacket packet = new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player);
+            KiloServer.getServer().sendGlobalPacket(packet);
         }
     }
 

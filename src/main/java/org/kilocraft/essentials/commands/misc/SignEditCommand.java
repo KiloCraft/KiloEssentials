@@ -34,7 +34,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
@@ -78,7 +78,7 @@ public class SignEditCommand extends EssentialCommand {
                 .requires(src -> hasPermission(src, CommandPermission.SIGNEDIT_COLOR));
 
         RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 4))
-                .suggests(ArgumentCompletions::noSuggestions);
+                .suggests(ArgumentSuggestions::noSuggestions);
 
         RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = argument("string", greedyString())
                 .suggests(this::setTextSuggestions)
@@ -86,7 +86,7 @@ public class SignEditCommand extends EssentialCommand {
 
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> guiSelectorArgument = argument("target", player())
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_OTHERS))
-                .suggests(ArgumentCompletions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> openGui(ctx, getPlayer(ctx, "target")));
 
         RequiredArgumentBuilder<ServerCommandSource, Identifier> dyeColorArgument = argument("color", identifier())
@@ -95,7 +95,7 @@ public class SignEditCommand extends EssentialCommand {
                 .executes(this::setDyeColor);
 
         RequiredArgumentBuilder<ServerCommandSource, Integer> executesLineArgument = argument("line", integer(1, 4))
-                .suggests(ArgumentCompletions::noSuggestions);
+                .suggests(ArgumentSuggestions::noSuggestions);
 
         RequiredArgumentBuilder<ServerCommandSource, String> executesArgument = argument("command", greedyString())
                 .suggests(this::setCommandSuggestions)
@@ -301,7 +301,7 @@ public class SignEditCommand extends EssentialCommand {
             return CommandSource.suggestMatching(strings, builder);
         }
 
-        return ArgumentCompletions.noSuggestions(context, builder);
+        return ArgumentSuggestions.noSuggestions(context, builder);
     }
 
     private CompletableFuture<Suggestions> setCommandSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
@@ -321,7 +321,7 @@ public class SignEditCommand extends EssentialCommand {
             }
         }
 
-        return ArgumentCompletions.noSuggestions(context, builder);
+        return ArgumentSuggestions.noSuggestions(context, builder);
     }
 
     private CompletableFuture<Suggestions> typeSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {

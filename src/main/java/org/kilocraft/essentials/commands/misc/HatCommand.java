@@ -14,7 +14,7 @@ import net.minecraft.util.Hand;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 
@@ -30,7 +30,7 @@ public class HatCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("target", player())
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.HAT_OTHERS))
-                .suggests(ArgumentCompletions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(this::executeOthers);
 
         commandNode.addChild(targetArgument.build());

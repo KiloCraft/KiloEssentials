@@ -12,10 +12,9 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
 import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
@@ -29,7 +28,7 @@ public class EnderchestCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("target", player())
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.ENDERCHEST_OTHERS))
-                .suggests(ArgumentCompletions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> execute(ctx.getSource().getPlayer(), getPlayer(ctx, "target")));
 
         argumentBuilder.executes(ctx -> execute(ctx.getSource().getPlayer(), ctx.getSource().getPlayer()));

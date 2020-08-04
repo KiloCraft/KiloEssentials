@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.mixin.accessor.EntityAccessor;
@@ -28,14 +28,14 @@ public class SitCommand extends EssentialCommand {
                 .executes((ctx) -> set(ctx, true))
                 .then(argument("target", player())
                         .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
-                        .suggests(ArgumentCompletions::allPlayers)
+                        .suggests(ArgumentSuggestions::allPlayers)
                         .executes((ctx) -> setOthers(ctx, true)));
 
         LiteralArgumentBuilder<ServerCommandSource> disableArgument = literal("disable")
                 .executes((ctx) -> set(ctx, false))
                 .then(argument("target", player())
                         .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
-                        .suggests(ArgumentCompletions::allPlayers)
+                        .suggests(ArgumentSuggestions::allPlayers)
                         .executes((ctx) -> setOthers(ctx, false)));
 
         argumentBuilder.executes(this::seat);

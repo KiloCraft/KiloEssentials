@@ -17,7 +17,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
@@ -151,10 +151,10 @@ public class CustomCommands implements ReloadableConfigurableFeature {
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
             switch (this) {
                 case PLAYERS:
-                    return ArgumentCompletions.allPlayers(ctx, builder);
+                    return ArgumentSuggestions.allPlayers(ctx, builder);
 
                 default:
-                    return ArgumentCompletions.noSuggestions(ctx, builder);
+                    return ArgumentSuggestions.noSuggestions(ctx, builder);
             }
         }
     }

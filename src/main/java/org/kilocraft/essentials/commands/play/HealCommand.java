@@ -9,7 +9,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 
@@ -24,7 +24,7 @@ public class HealCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> KiloCommands.hasPermission(s, CommandPermission.HEAL_OTHERS))
-                .suggests(ArgumentCompletions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(context -> execute(context.getSource(), getPlayer(context, "target")));
         
         argumentBuilder.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));

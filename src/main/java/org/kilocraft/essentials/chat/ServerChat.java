@@ -167,7 +167,7 @@ public final class ServerChat {
 
             for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
                 if (user.getPreference(Preferences.CHAT_CHANNEL) == channel) {
-                    ServerChat.pingPlayer(user.asPlayer(), config.ping().pingSound());
+                    ServerChat.pingUser(user.asPlayer(), config.ping().pingSound());
                 }
             }
         }
@@ -192,7 +192,7 @@ public final class ServerChat {
 
             if (pingSoundEnabled && canPing) {
                 contains = true;
-                pingPlayer(target.asPlayer(), MentionTypes.PUBLIC);
+                pingUser(target, MentionTypes.PUBLIC);
             }
         }
 
@@ -214,7 +214,11 @@ public final class ServerChat {
         return Texter.Events.onClickSuggest("/msg " + user.getUsername() + " ");
     }
 
-    public static void pingPlayer(final ServerPlayerEntity target, final MentionTypes type) {
+    public static void pingUser(final OnlineUser target, final MentionTypes type) {
+        if (target.getPreference(Preferences.DON_NOT_DISTURB) && type != MentionTypes.EVERYONE) {
+            return;
+        }
+
         ChatPingSoundConfigSection cfg = null;
         switch (type) {
             case PUBLIC:
@@ -226,10 +230,10 @@ public final class ServerChat {
                 break;
         }
 
-        pingPlayer(target, cfg);
+        pingUser(target.asPlayer(), cfg);
     }
 
-    private static void pingPlayer(final ServerPlayerEntity target, final ChatPingSoundConfigSection cfg) {
+    private static void pingUser(final ServerPlayerEntity target, final ChatPingSoundConfigSection cfg) {
         Vec3d vec3d = target.getCommandSource().getPosition();
         if (target.networkHandler != null) {
             target.networkHandler.sendPacket(
@@ -302,7 +306,7 @@ public final class ServerChat {
                 .replace("%MESSAGE%", message);
 
         if (target.getPreference(Preferences.SOUNDS)) {
-            pingPlayer(target.asPlayer(), MentionTypes.PRIVATE);
+            pingUser(target, MentionTypes.PRIVATE);
         }
 
         KiloChat.sendMessageToSource(source, new TextMessage(toSource, true).toText().formatted(Formatting.WHITE));

@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.commands.CommandUtils;
@@ -26,7 +26,7 @@ public class BackCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("target", player())
                 .requires(src -> hasPermission(src, CommandPermission.BACK_OTHERS))
-                .suggests(ArgumentCompletions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(this::executeOthers);
 
         commandNode.addChild(selectorArgument.build());

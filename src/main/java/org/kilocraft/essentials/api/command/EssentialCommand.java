@@ -8,7 +8,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.GameProfileArgumentType;
@@ -41,9 +40,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -294,11 +291,11 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(final String label) {
-        return this.argument(label, string()).suggests(ArgumentCompletions::users);
+        return this.argument(label, string()).suggests(ArgumentSuggestions::users);
     }
 
     public RequiredArgumentBuilder<ServerCommandSource, String> getOnlineUserArgument(final String label) {
-        return this.argument(label, string()).suggests(ArgumentCompletions::users);
+        return this.argument(label, string()).suggests(ArgumentSuggestions::users);
     }
 
     public CompletableFuture<GameProfile> resolveAndGetProfileAsync(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {

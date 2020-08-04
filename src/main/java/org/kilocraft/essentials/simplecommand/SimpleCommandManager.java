@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -40,7 +40,7 @@ public class SimpleCommandManager {
 
             if (command.hasArgs) {
                 builder.then(CommandManager.argument("args", StringArgumentType.greedyString())
-                        .suggests(ArgumentCompletions::noSuggestions));
+                        .suggests(ArgumentSuggestions::noSuggestions));
             }
 
             KiloCommands.getDispatcher().register(builder);

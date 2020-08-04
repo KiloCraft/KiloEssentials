@@ -14,7 +14,7 @@ import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
@@ -46,7 +46,7 @@ public class SayAsCommand extends EssentialCommand {
                 .build();
 
         ArgumentCommandNode<ServerCommandSource, MessageFormat> messageArg = argument("message", message())
-                .suggests(ArgumentCompletions::noSuggestions)
+                .suggests(ArgumentSuggestions::noSuggestions)
                 .executes(this::execute)
                 .build();
 

@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
@@ -35,7 +35,7 @@ public class TempBanCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> victim = argument("profile", GameProfileArgumentType.gameProfile())
-                .suggests(ArgumentCompletions::allPlayers);
+                .suggests(ArgumentSuggestions::allPlayers);
 
         RequiredArgumentBuilder<ServerCommandSource, String> time = argument("time", StringArgumentType.word())
                 .suggests(TimeDifferenceUtil::listSuggestions)
