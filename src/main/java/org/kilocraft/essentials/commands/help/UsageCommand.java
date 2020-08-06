@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.ModConstants;
@@ -20,14 +21,17 @@ public class UsageCommand extends EssentialCommand {
 
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("command", greedyString())
-                .suggests(ArgumentSuggestions::usableCommands)
-                .executes(this::execute);
-
+        final RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = getCommandArgument();
         this.commandNode.addChild(stringArgument.build());
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    static RequiredArgumentBuilder<ServerCommandSource, String> getCommandArgument() {
+        return CommandManager.argument("command", greedyString())
+                .suggests(ArgumentSuggestions::usableCommands)
+                .executes(UsageCommand::execute);
+    }
+
+    static int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final String command = getString(ctx, "command");
         final String fromLang = ModConstants.getLang().getProperty("command." + command + ".usage");
 

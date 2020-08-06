@@ -153,8 +153,8 @@ public class SimpleCommandManager {
 
                     text.append(e.getInput().substring(Math.max(0, cursor - 10), cursor));
                     if (cursor < e.getInput().length()) {
-                        Text errorAtPointMesssage = (new LiteralText(e.getInput().substring(cursor))).formatted(Formatting.RED, Formatting.UNDERLINE);
-                        text.append(errorAtPointMesssage);
+                        Text errorAtPointMessage = (new LiteralText(e.getInput().substring(cursor))).formatted(Formatting.RED, Formatting.UNDERLINE);
+                        text.append(errorAtPointMessage);
                     }
 
                     text.append(new LiteralText("<--[HERE]").formatted(Formatting.RED, Formatting.ITALIC));

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.commands.misc;
+package org.kilocraft.essentials.commands.help;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -6,13 +6,15 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.commands.help.UsageCommand;
 
 public class HelpCommand extends EssentialCommand {
     public HelpCommand() {
-        super("help");
+        super("help", new String[]{"?"});
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        argumentBuilder.then(UsageCommand.getCommandArgument());
         argumentBuilder.executes(this::execute);
     }
 

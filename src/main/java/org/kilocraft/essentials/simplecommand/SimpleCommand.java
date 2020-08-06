@@ -49,5 +49,4 @@ public class SimpleCommand {
     public int getRequirementLevel() {
         return this.opReq;
     }
-
 }
