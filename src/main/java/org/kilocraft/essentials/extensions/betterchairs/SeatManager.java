@@ -134,8 +134,6 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             return false;
         }
 
-        UserUtils.Animate.swingHand(player);
-
         Vec3dLocation vec3dLoc = Vec3dLocation.of(pos.getX(), pos.getY() + 1, pos.getZ(),
                 player.yaw, player.pitch, RegistryUtils.toIdentifier(world.getDimension()));
 
@@ -177,6 +175,8 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             return false;
         }
 
+        UserUtils.Animate.swingHand(player);
+
         stand.setInvisible(true);
         stand.setNoGravity(true);
         stand.setInvulnerable(true);
@@ -195,11 +195,11 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     }
 
     public void unseat(@NotNull final OnlineUser user) {
-        if(user == null) {
+        if (user == null) {
             KiloEssentials.getLogger().error("Seatmanager: OnlineUser is null");
             return;
         }
-        if(user.asPlayer() == null) {
+        if (user.asPlayer() == null) {
             KiloEssentials.getLogger().error("Seatmanager: OnlineUser.asPlayer() is null");
             return;
         }
@@ -220,7 +220,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     public void killAll() {
         for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
             ArmorStandEntity armorStand = (ArmorStandEntity) entry.getKey().getEntity(entry.getValue());
-            if (armorStand != null && !armorStand.hasPlayerRider()) {
+            if (armorStand != null) {
                 armorStand.kill();
             }
         }

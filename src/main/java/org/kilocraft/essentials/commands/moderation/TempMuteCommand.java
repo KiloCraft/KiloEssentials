@@ -29,17 +29,24 @@ public class TempMuteCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> user = this.getUserArgument("victim");
 
         RequiredArgumentBuilder<ServerCommandSource, String> time = argument("time", StringArgumentType.word())
-                .suggests(TimeDifferenceUtil::listSuggestions);
+                .suggests(TimeDifferenceUtil::listSuggestions)
+                .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), null, false));
 
         RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
                 .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
-                .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true));
+        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent").then(
+                argument("time", StringArgumentType.word())
+                        .suggests(TimeDifferenceUtil::listSuggestions)
+                        .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), null, true))
+                        .then(
+                                argument("reason", StringArgumentType.greedyString())
+                                        .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true))
+                        )
+        );
 
         time.then(reason);
         user.then(time);
-        silent.then(user);
         this.argumentBuilder.then(silent);
         this.argumentBuilder.then(user);
     }

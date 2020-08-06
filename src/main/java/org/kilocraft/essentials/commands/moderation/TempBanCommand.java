@@ -44,12 +44,18 @@ public class TempBanCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
-                .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true));
+        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent").then(
+                argument("time", StringArgumentType.word())
+                        .suggests(TimeDifferenceUtil::listSuggestions)
+                        .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), null, true))
+                        .then(
+                                argument("reason", StringArgumentType.greedyString())
+                                        .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true))
+                        )
+        );
 
         time.then(reason);
         victim.then(time);
-        silent.then(victim);
         this.argumentBuilder.then(silent);
         this.argumentBuilder.then(victim);
     }
@@ -76,8 +82,6 @@ public class TempBanCommand extends EssentialCommand {
         }
 
         this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
-
-
         return AWAIT;
     }
 

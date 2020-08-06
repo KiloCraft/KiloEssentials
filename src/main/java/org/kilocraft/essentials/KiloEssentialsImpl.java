@@ -92,8 +92,6 @@ public final class KiloEssentialsImpl implements KiloEssentials {
         if (permUtil.getManager() == PermissionUtil.Manager.LUCKPERMS) {
             this.luckPermsCompatibility = new LuckPermsCompatibility();
         }
-
-        ConfigurableFeatures.getInstance().register(new Votifier(), "votifier");
     }
 
     public static Logger getLogger() {
@@ -332,6 +330,10 @@ public final class KiloEssentialsImpl implements KiloEssentials {
     public void onServerStop() {
         if (SeatManager.isEnabled()) {
             SeatManager.getInstance().killAll();
+        }
+
+        if (Votifier.getInstance() != null) {
+            Votifier.getInstance().onDisable();
         }
     }
 

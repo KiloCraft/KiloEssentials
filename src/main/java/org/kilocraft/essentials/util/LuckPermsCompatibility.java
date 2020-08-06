@@ -36,17 +36,20 @@ public class LuckPermsCompatibility {
 
     private Team addTeam(@NotNull final Group group) {
         String name = groupToTeam(group);
-        if (name == null || scoreboard.getTeam(name) != null) {
+        if (name == null) {
             return null;
         }
 
+        if (scoreboard.getTeam(name) != null) {
+            return scoreboard.getTeam(name);
+        }
+
         Team team = scoreboard.addTeam(name);
+        teams.put(group.getIdentifier().toString(), team);
 
         if (group.getDisplayName() != null) {
             team.setDisplayName(Texter.newText(group.getDisplayName()));
         }
-
-        teams.put(group.getIdentifier().toString(), team);
         return team;
     }
 

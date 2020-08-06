@@ -32,11 +32,14 @@ public class MuteCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
                 .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
-                .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), true));
+        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent").then(
+                this.getUserArgument("victim")
+                        .executes(ctx -> this.execute(ctx, null, true))
+                        .then(argument("reason", StringArgumentType.greedyString())
+                                .executes(ctx -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), true)))
+        );
 
         user.then(reason);
-        silent.then(user);
         this.argumentBuilder.then(silent);
         this.argumentBuilder.then(user);
     }

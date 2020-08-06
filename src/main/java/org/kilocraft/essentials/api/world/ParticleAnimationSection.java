@@ -9,14 +9,16 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class ParticleAnimationSection<P extends ParticleEffect> {
-    private P effect;
-    private boolean longDistance;
-    private RelativePosition relativePosition;
-    private double oX, oY, oZ;
-    private double speed;
-    private int count;
-    private Type type;
-    private boolean relative;
+    private final P effect;
+    private final boolean longDistance;
+    private final RelativePosition relativePosition;
+    private final double oX;
+    private final double oY;
+    private final double oZ;
+    private final double speed;
+    private final int count;
+    private final Type type;
+    private final boolean relative;
 
     public ParticleAnimationSection(P effect,
                                     boolean longDistance,
@@ -46,44 +48,8 @@ public class ParticleAnimationSection<P extends ParticleEffect> {
         return null;
     }
 
-    public ParticleEffect getParticleEffect() {
-        return effect;
-    }
-
-    public boolean isLongDistance() {
-        return longDistance;
-    }
-
-    public RelativePosition getRelativePosition() {
-        return relativePosition;
-    }
-
-    public double getOffsetX() {
-        return oX;
-    }
-
-    public double getOffsetY() {
-        return oY;
-    }
-
-    public double getOffsetZ() {
-        return oZ;
-    }
-
-    public double getSpeed() {
-        return speed;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
     public ParticleAnimationSection.Type getType() {
         return type;
-    }
-
-    public P getParticleType() {
-        return effect;
     }
 
     public boolean getRelative () {

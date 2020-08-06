@@ -42,11 +42,14 @@ public class BanIpCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
-                .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), true));
+        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent").then(
+                this.getUserArgument("target")
+                        .executes((ctx) -> this.execute(ctx, null, true))
+                        .then(argument("reason", StringArgumentType.greedyString())
+                                .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), true)))
+        );
 
         victim.then(reason);
-        silent.then(victim);
         this.argumentBuilder.then(silent);
         this.argumentBuilder.then(victim);
     }

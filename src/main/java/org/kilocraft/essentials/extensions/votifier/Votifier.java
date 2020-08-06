@@ -3,6 +3,7 @@ package org.kilocraft.essentials.extensions.votifier;
 import java.io.*;
 import java.security.KeyPair;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
@@ -17,10 +18,10 @@ import org.kilocraft.essentials.extensions.votifier.crypto.RSAKeygen;
  * @author Blake Beaupain
  * @author Kramer Campbell
  */
-public class Votifier implements ReloadableConfigurableFeature {
+public class Votifier {
 
     /** The logger instance. */
-    private static final Logger LOGGER = KiloEssentials.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger("KiloEssentials|Votifier");
 
     /** The Votifier instance. */
     private static Votifier instance;
@@ -141,25 +142,5 @@ public class Votifier implements ReloadableConfigurableFeature {
     }
 
     public Votifier() {
-    }
-
-    @Override
-    public boolean register() {
-        return true;
-    }
-
-    @Override
-    public void load(boolean reload) {
-        boolean enabled = ConfigurableFeatures.getInstance().isEnabled(this);
-        if (!enabled) {
-            this.onEnable();
-        }
-
-        if (enabled && reload) {
-            this.onEnable();
-            this.onDisable();
-        } else if (!enabled && reload) {
-            this.onDisable();
-        }
     }
 }
