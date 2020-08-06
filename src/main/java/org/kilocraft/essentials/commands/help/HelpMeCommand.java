@@ -55,7 +55,7 @@ public class HelpMeCommand extends EssentialCommand {
             src.sendLangMessage("command.helpme.sent");
         }
 
-        return SUCCESS;
+        return i;
     }
 
 }
