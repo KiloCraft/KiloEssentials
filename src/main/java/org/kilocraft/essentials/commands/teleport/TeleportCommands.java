@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.commands.teleport;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -11,9 +12,12 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import static net.minecraft.command.arguments.DimensionArgumentType.dimension;
@@ -29,7 +33,7 @@ public class TeleportCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> tpToCommand = dispatcher.register(literal("teleportto")
             .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO))
-            .then(argument("target", player()).executes(TeleportCommands::teleportTo))
+            .then(argument("user", StringArgumentType.string()).executes(TeleportCommands::teleportTo))
         );
 
         LiteralCommandNode<ServerCommandSource> tpPosCommand = dispatcher.register(literal("teleportpos")
@@ -59,19 +63,20 @@ public class TeleportCommands {
     }
 
     private static int teleportTo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity target = getPlayer(ctx, "target");
+        OnlineUser src = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
+        String input = StringArgumentType.getString(ctx, "user");
 
-        KiloServer.getServer().getOnlineUser(target).saveLocation();
-        ctx.getSource().getPlayer().teleport(
-                target.getServerWorld(),
-                target.getPos().getX(), target.getPos().getY(), target.getPos().getZ(),
-                target.yaw, target.pitch
-        );
+        KiloEssentials.getInstance().getUserThenAcceptAsync(src, input, (user) -> {
+            if (user.getLastSavedLocation() == null) {
+                src.sendLangError("command.back.no_loc");
+                return;
+            }
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "position",
-                getFormattedMessage(target), ctx.getSource().getPlayer().getName().asString());
-
-        return SUCCESS();
+            src.teleport(user.getLastSavedLocation(), true);
+            src.sendLangMessage("template.#1", "position", getFormattedMessage(src.asPlayer()), src.getName());
+        });
+        
+        return 0;
     }
 
     private static int teleportPos(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
