@@ -61,15 +61,13 @@ public interface Location {
     }
 
     default String asFormattedString() {
-        DecimalFormat decimal = new DecimalFormat("##");
         StringBuilder builder = new StringBuilder("&d");
 
         if (this.getWorld() != null) {
             builder.append(RegistryUtils.dimensionToName(this.getWorld().getDimension()));
         }
 
-        builder.append("&8/&e").append(decimal.format(this.getX())).append(", ").append(decimal.format(this.getY())).append(", ").append(decimal.format(this.getZ()));
-
+        builder.append("&8/&e").append(Math.round(this.getX())).append(", ").append(Math.round(this.getY())).append(", ").append(Math.round(this.getZ()));
         return TextFormat.translate(builder.toString());
     }
 

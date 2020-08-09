@@ -16,8 +16,8 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import static net.minecraft.command.arguments.DimensionArgumentType.dimension;
@@ -69,12 +69,12 @@ public class TeleportCommands {
         String input = StringArgumentType.getString(ctx, "user");
 
         KiloEssentials.getInstance().getUserThenAcceptAsync(src, input, (user) -> {
-            if (user.getLastSavedLocation() == null) {
+            if (user.getLocation() == null) {
                 src.sendLangError("command.back.no_loc");
                 return;
             }
 
-            src.teleport(user.getLastSavedLocation(), true);
+            src.teleport(user.getLocation(), true);
             src.sendLangMessage("template.#1", "position", getFormattedMessage(src.asPlayer()), src.getName());
         });
 
@@ -133,12 +133,7 @@ public class TeleportCommands {
     }
 
     private static String getFormattedMessage(ServerPlayerEntity target) {
-        return String.format("%s, %s, %s &8(&d%s&8)",
-                Math.round(target.getPos().getX()),
-                Math.round(target.getPos().getY()),
-                Math.round(target.getPos().getZ()),
-                RegistryUtils.dimensionToName(target.getServerWorld().getDimension())
-        );
+        return Vec3dLocation.of(target).toString();
     }
 
 
