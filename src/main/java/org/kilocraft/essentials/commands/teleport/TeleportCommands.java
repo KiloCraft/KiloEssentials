@@ -32,12 +32,14 @@ import static org.kilocraft.essentials.KiloCommands.SUCCESS;
 public class TeleportCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> tpToCommand = dispatcher.register(literal("teleportto")
-            .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO))
-            .then(argument("user", StringArgumentType.string()).executes(TeleportCommands::teleportTo))
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO))
+                .then(argument("user", StringArgumentType.string())
+                        .suggests(ArgumentSuggestions::users)
+                        .executes(TeleportCommands::teleportTo))
         );
 
         LiteralCommandNode<ServerCommandSource> tpPosCommand = dispatcher.register(literal("teleportpos")
-                .requires(src -> KiloCommands.hasPermission(src , CommandPermission.TELEPORTPOS))
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTPOS))
                 .then(argument("pos", vec3()).executes(TeleportCommands::teleportPos))
         );
 
@@ -49,10 +51,10 @@ public class TeleportCommands {
         LiteralCommandNode<ServerCommandSource> tpInCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN))
                 .then(argument("dimension", dimension()).suggests(ArgumentSuggestions::dimensions).then(argument("pos", vec3())
-                        .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
-                            .then(argument("target", player())
-                                    .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
-                    )
+                                .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
+                                .then(argument("target", player())
+                                        .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
+                        )
                 )
         );
 
@@ -75,7 +77,7 @@ public class TeleportCommands {
             src.teleport(user.getLastSavedLocation(), true);
             src.sendLangMessage("template.#1", "position", getFormattedMessage(src.asPlayer()), src.getName());
         });
-        
+
         return 0;
     }
 
