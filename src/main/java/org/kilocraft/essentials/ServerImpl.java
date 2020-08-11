@@ -91,7 +91,7 @@ public class ServerImpl implements Server {
 
     @Override
     public void reloadMinecraftServer(Action<Throwable> fallback) {
-        ResourcePackManager<ResourcePackProfile> resourcePackManager = this.server.getDataPackManager();
+        ResourcePackManager resourcePackManager = this.server.getDataPackManager();
         SaveProperties saveProperties = this.getMinecraftServer().getSaveProperties();
         Collection<String> collection = resourcePackManager.getEnabledNames();
 
