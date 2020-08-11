@@ -84,7 +84,7 @@ public class ModsCommand extends EssentialCommand {
         for (Person author : meta.getAuthors()) {
             MutableText mutable = Texter.newText(author.getName());
             mutable.styled((style) -> {
-                style.setHoverEvent(Texter.Events.onHover(tl("general.click_info")));
+                style.withHoverEvent(Texter.Events.onHover(tl("general.click_info")));
                 style.withClickEvent(Texter.Events.onClickRun("mods", meta.getId(), author.getName()));
                 return style;
             });

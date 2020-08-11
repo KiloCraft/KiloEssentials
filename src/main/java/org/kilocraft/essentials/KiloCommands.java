@@ -37,7 +37,6 @@ import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.commands.help.HelpCommand;
 import org.kilocraft.essentials.commands.moderation.*;
-import org.kilocraft.essentials.commands.server.DebugEssentialsCommand;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
@@ -323,7 +322,7 @@ public class KiloCommands {
                         .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/")
                                 .styled(style -> style.withFormatting(Formatting.GOLD)
                                         .withClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"))
-                                        .setHoverEvent(Texter.Events.onHover("&eClick to open"))
+                                        .withHoverEvent(Texter.Events.onHover("&eClick to open"))
                                 )
                         )), false);
 
@@ -333,7 +332,7 @@ public class KiloCommands {
     @Deprecated
     public static LiteralText getPermissionError(final String hoverText) {
         final LiteralText literalText = LangText.get(true, "command.exception.permission");
-        literalText.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW))));
+        literalText.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW))));
         return literalText;
     }
 
@@ -486,7 +485,7 @@ public class KiloCommands {
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         final int cursor = Math.min(e.getInput().length(), e.getCursor());
                         final MutableText text = new LiteralText("").formatted(Formatting.GRAY)
-                                .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(command).formatted(Formatting.YELLOW))));
+                                .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(command).formatted(Formatting.YELLOW))));
 
                         if (cursor > 10) text.append("...");
 
@@ -513,7 +512,7 @@ public class KiloCommands {
                 }
             }
 
-            executor.sendError(new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text))));
+            executor.sendError(new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text))));
 
             if (SharedConstants.isDevelopment) {
                 executor.sendError(new LiteralText(Util.getInnermostMessage(e)));

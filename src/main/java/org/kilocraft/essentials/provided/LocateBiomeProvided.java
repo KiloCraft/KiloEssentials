@@ -13,6 +13,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.provided.LocateBiomeProvided.BiomeLocatorThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +53,7 @@ public class LocateBiomeProvided implements Command {
 
         if (biomePos == null) {
             Thread.currentThread().interrupt();
-            throw NOT_FOUND_EXCEPTION.create(biome.getName().getString());
+            throw NOT_FOUND_EXCEPTION.create(LocateBiomeProvided.getBiomeId(biome));
         }
 
         Thread.currentThread().interrupt();
@@ -59,11 +61,11 @@ public class LocateBiomeProvided implements Command {
     }
 
     public static String getBiomeId(Biome biome) {
-        return Objects.requireNonNull(Registry.BIOME.getId(biome)).getPath();
+        return Objects.requireNonNull(KiloServer.getServer().getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY).getId(biome)).toString();
     }
 
     public static String getBiomeName(Biome biome) {
-        String s = getBiomeId(biome).replaceAll("_", " ");
+        String s = Objects.requireNonNull(KiloServer.getServer().getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY).getId(biome)).getPath();
         return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase(Locale.ROOT));
     }
 

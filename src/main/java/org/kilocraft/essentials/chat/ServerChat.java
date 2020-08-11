@@ -136,7 +136,7 @@ public final class ServerChat {
         MutableText text = new LiteralText("");
         text.append(
                 prefix.toComponent()
-                        .styled((style) -> style.setHoverEvent(hoverEvent(sender, channel)).withClickEvent(clickEvent(sender)))
+                        .styled((style) -> style.withHoverEvent(hoverEvent(sender, channel)).withClickEvent(clickEvent(sender)))
         ).append(" ").append(component);
 
         PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(sender.asPlayer(), component.getString(), channel));
@@ -331,7 +331,7 @@ public final class ServerChat {
             text.append("...");
         }
 
-        text.styled((style) -> style.setHoverEvent(Texter.Events.onHover(commandSpyHoverStyle)).withClickEvent(Texter.Events.onClickSuggest("/" + command)));
+        text.styled((style) -> style.withHoverEvent(Texter.Events.onHover(commandSpyHoverStyle)).withClickEvent(Texter.Events.onClickSuggest("/" + command)));
 
         for (OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getPreference(Preferences.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {

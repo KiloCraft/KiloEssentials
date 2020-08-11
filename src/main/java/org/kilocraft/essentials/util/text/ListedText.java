@@ -705,7 +705,7 @@ public class ListedText {
                     .append(new LiteralText("<-").formatted(Formatting.WHITE, Formatting.BOLD))
                     .append(" ").append(new LiteralText("Prev").formatted(f1))
                     .styled((style) ->
-                            style.setHoverEvent(Texter.Events.onHover(new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)))
+                            style.withHoverEvent(Texter.Events.onHover(new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)))
                                     .withClickEvent(prevPage > 0 ? Texter.Events.onClickRun(command.replace("%page%", String.valueOf(prevPage))) : null)
                     );
 
@@ -713,7 +713,7 @@ public class ListedText {
                     .append(new LiteralText("Next").formatted(f1))
                     .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
                     .styled((style) ->
-                            style.setHoverEvent(Texter.Events.onHover(new LiteralText((nextPage <= maxPages) ? ">>>" : ">|").formatted(f3)))
+                            style.withHoverEvent(Texter.Events.onHover(new LiteralText((nextPage <= maxPages) ? ">>>" : ">|").formatted(f3)))
                                     .withClickEvent(nextPage <= maxPages ? Texter.Events.onClickRun(command.replace("%page%", String.valueOf(nextPage))) : null)
                     );
 

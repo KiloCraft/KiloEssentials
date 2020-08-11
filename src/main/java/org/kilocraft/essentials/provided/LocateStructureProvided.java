@@ -22,7 +22,7 @@ public class LocateStructureProvided {
         Text coordinates = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos_2.getX(), "~", blockPos_2.getZ())
                 .styled((style) -> style.withFormatting(Formatting.GREEN)
                         .withClickEvent(Texter.Events.onClickSuggest("/tp " + source.getName() + " " + blockPos_2.getX() + " ~ " + blockPos_2.getZ()))
-                        .setHoverEvent(Texter.Events.onHover(new TranslatableText("chat.coordinates.tooltip")))
+                        .withHoverEvent(Texter.Events.onHover(new TranslatableText("chat.coordinates.tooltip")))
                 )
         );
 

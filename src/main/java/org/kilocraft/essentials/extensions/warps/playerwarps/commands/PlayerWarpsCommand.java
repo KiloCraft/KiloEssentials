@@ -108,7 +108,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
             text.append(new LiteralText(index + ".").styled((style) -> style.withColor(NUM_COLOR)));
             text.append(" ");
             text.append(warp.getName()).formatted(Formatting.WHITE).styled((style) ->
-                    style.setHoverEvent(Texter.Events.onHover(
+                    style.withHoverEvent(Texter.Events.onHover(
                             Texter.newText()
                                     .append(new LiteralText("By ").formatted(Formatting.WHITE))
                                     .append(Texter.newText(name.isEmpty() ? "&c?" : name))
@@ -143,7 +143,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
             final String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
 
             final MutableText description = Texter.newText(TextFormat.clearColorCodes(shortenedDesc)).styled((style) ->
-                    style.setHoverEvent(Texter.Events.onHover(Texter.newText(desc).formatted(Formatting.WHITE)))
+                    style.withHoverEvent(Texter.Events.onHover(Texter.newText(desc).formatted(Formatting.WHITE)))
             );
 
             if (desc.length() > maxLength) {

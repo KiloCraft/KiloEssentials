@@ -49,10 +49,10 @@ import java.util.concurrent.CompletableFuture;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
-import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
-import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
+import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
+import static net.minecraft.command.argument.EntityArgumentType.player;
+import static net.minecraft.command.argument.IdentifierArgumentType.getIdentifier;
+import static net.minecraft.command.argument.IdentifierArgumentType.identifier;
 
 public class SignEditCommand extends EssentialCommand {
     public SignEditCommand() {

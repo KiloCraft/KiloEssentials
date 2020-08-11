@@ -16,8 +16,8 @@ import org.kilocraft.essentials.user.preference.Preferences;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
-import static net.minecraft.command.arguments.EntityArgumentType.player;
+import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
+import static net.minecraft.command.argument.EntityArgumentType.player;
 
 public class InvulnerableCommand extends EssentialCommand {
     public InvulnerableCommand() {

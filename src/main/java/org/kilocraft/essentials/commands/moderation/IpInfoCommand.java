@@ -40,13 +40,13 @@ public class IpInfoCommand extends EssentialCommand {
                     Texter.newText(tl("command.ipinfo", user.getUsername()))
                             .append(Texter.newRawText(address).styled((style) ->
                                     style.withFormatting(Formatting.GOLD)
-                                            .setHoverEvent(Texter.Events.onHover(tl("general.click_copy")))
+                                            .withHoverEvent(Texter.Events.onHover(tl("general.click_copy")))
                                             .withClickEvent(Texter.Events.onClickCopy(address))
                             )).append(" ").append(
                             Texter.newText().append(StringUtils.socketAddressToPort(user.getLastSocketAddress()))
                                     .styled((style) ->
                                             style.withFormatting(Formatting.AQUA)
-                                                    .setHoverEvent(Texter.Events.onHover(tl("general.click_copy")))
+                                                    .withHoverEvent(Texter.Events.onHover(tl("general.click_copy")))
                                                     .withClickEvent(Texter.Events.onClickCopy(user.getLastSocketAddress()))
                                     )
                     )

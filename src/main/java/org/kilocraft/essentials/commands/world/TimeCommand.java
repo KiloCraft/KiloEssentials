@@ -14,7 +14,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import java.util.Iterator;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
-import static net.minecraft.command.arguments.TimeArgumentType.time;
+import static net.minecraft.command.argument.TimeArgumentType.time;
 
 public class TimeCommand extends EssentialCommand {
     public TimeCommand() {

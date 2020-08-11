@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
-import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
+import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
 
 public class RtpCommand extends EssentialCommand {
     private static final SimpleProcess<Void> PROCESS = new SimpleProcess<>("rtp_process");
@@ -309,10 +309,9 @@ public class RtpCommand extends EssentialCommand {
                     .replace("{cord.Z}", String.valueOf(loc.getZ()))
                     .replace("{ELAPSED_TIME}", timeElapsed);
 
-            TranslatableText translatable = (TranslatableText) target.getServerWorld().getBiome(target.getBlockPos()).getName();
             Text text = new LiteralText("")
                     .append(new LiteralText("You've been teleported to this ").formatted(Formatting.YELLOW))
-                    .append(translatable.formatted(Formatting.GOLD))
+                    .append(new LiteralText(biome).formatted(Formatting.GOLD))
                     .append(new LiteralText(" biome!").formatted(Formatting.YELLOW))
                     .append("\n").append(Texter.newText(cfgMessage));
 

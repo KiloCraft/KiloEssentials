@@ -147,7 +147,7 @@ public class SimpleCommandManager {
                 if (e.getInput() != null && e.getCursor() >= 0) {
                     int cursor = Math.min(e.getInput().length(), e.getCursor());
                     MutableText text = (new LiteralText("")).formatted(Formatting.GRAY)
-                            .styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(input).formatted(Formatting.YELLOW))));
+                            .styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(input).formatted(Formatting.YELLOW))));
 
                     if (cursor > 10) text.append("...");
 

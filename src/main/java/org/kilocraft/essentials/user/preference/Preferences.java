@@ -14,7 +14,6 @@ import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
 
 import java.util.*;
-import java.util.List;
 
 public class Preferences {
     @NotNull

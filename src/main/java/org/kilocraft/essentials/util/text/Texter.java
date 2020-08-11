@@ -60,18 +60,18 @@ public class Texter {
 
     public static MutableText appendButton(MutableText text, MutableText hoverText, ClickEvent.Action action, String actionValue) {
         return text.styled((style) -> {
-            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
+            style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
             style.withClickEvent(new ClickEvent(action, actionValue));
             return style;
         });
     }
 
     public static MutableText getButton(String title, String command, MutableText hoverText) {
-        return newText(title).styled((style) -> style.setHoverEvent(Events.onHover(hoverText)).withClickEvent(Events.onClickRun(command)));
+        return newText(title).styled((style) -> style.withHoverEvent(Events.onHover(hoverText)).withClickEvent(Events.onClickRun(command)));
     }
 
     public static MutableText getButton(String title, String command, String string) {
-        return newText(title).styled((style) -> style.setHoverEvent(Events.onHover(string)).withClickEvent(Events.onClickRun(command)));
+        return newText(title).styled((style) -> style.withHoverEvent(Events.onHover(string)).withClickEvent(Events.onClickRun(command)));
     }
 
     public static MutableText confirmationMessage(String langKey, MutableText button) {
@@ -288,7 +288,7 @@ public class Texter {
             MutableText text = obj instanceof MutableText ? ((MutableText) obj).formatted(formatting) :
                     Texter.newText(String.valueOf(obj)).formatted(formatting);
             if (hoverEvent != null) {
-                text.styled((style) -> style.setHoverEvent(hoverEvent));
+                text.styled((style) -> style.withHoverEvent(hoverEvent));
             }
             if (clickEvent != null) {
                 text.styled((style) -> style.withClickEvent(clickEvent));
@@ -382,7 +382,7 @@ public class Texter {
                     MutableText mutable = (MutableText) obj;
                     this.text.styled((style) -> {
                         if (mutable.getStyle().getHoverEvent() != null) {
-                            style.setHoverEvent(mutable.getStyle().getHoverEvent());
+                            style.withHoverEvent(mutable.getStyle().getHoverEvent());
                         }
 
                         if (mutable.getStyle().getClickEvent() != null) {
@@ -411,7 +411,7 @@ public class Texter {
                     MutableText objectToText = (MutableText) objects[i];
                     text.styled((style) -> {
                         if (objectToText.getStyle().getHoverEvent() != null) {
-                            style.setHoverEvent(objectToText.getStyle().getHoverEvent());
+                            style.withHoverEvent(objectToText.getStyle().getHoverEvent());
                         }
 
                         if (objectToText.getStyle().getClickEvent() != null) {

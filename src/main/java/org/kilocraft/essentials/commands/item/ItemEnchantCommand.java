@@ -29,8 +29,8 @@ import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static net.minecraft.command.arguments.ItemEnchantmentArgumentType.getEnchantment;
-import static net.minecraft.command.arguments.ItemEnchantmentArgumentType.itemEnchantment;
+import static net.minecraft.command.argument.ItemEnchantmentArgumentType.getEnchantment;
+import static net.minecraft.command.argument.ItemEnchantmentArgumentType.itemEnchantment;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 

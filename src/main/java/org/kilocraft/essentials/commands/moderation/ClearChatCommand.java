@@ -14,8 +14,8 @@ import org.kilocraft.essentials.chat.TextMessage;
 
 import java.util.Collection;
 
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
-import static net.minecraft.command.arguments.EntityArgumentType.players;
+import static net.minecraft.command.argument.EntityArgumentType.getPlayers;
+import static net.minecraft.command.argument.EntityArgumentType.players;
 import static org.kilocraft.essentials.chat.KiloChat.*;
 
 public class ClearChatCommand extends EssentialCommand {

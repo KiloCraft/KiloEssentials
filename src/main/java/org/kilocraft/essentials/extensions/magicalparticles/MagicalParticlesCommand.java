@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
-import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
+import static net.minecraft.command.argument.IdentifierArgumentType.getIdentifier;
+import static net.minecraft.command.argument.IdentifierArgumentType.identifier;
 import static org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager.*;
 
 public class MagicalParticlesCommand extends EssentialCommand {

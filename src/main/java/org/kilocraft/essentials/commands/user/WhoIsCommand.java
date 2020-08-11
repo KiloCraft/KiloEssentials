@@ -115,13 +115,13 @@ public class WhoIsCommand extends EssentialCommand {
         }
         if (target.getFirstJoin() != null) {
             text.append("First joined", Texter.newText("&e" + TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime())).styled((style) -> {
-                return style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getFirstJoin())));
+                return style.withHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getFirstJoin())));
             }));
         }
 
         if (!target.isOnline() && target.getLastOnline() != null) {
             text.append("Last Online", Texter.newText("&e" +  TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).styled((style) -> {
-                return style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getLastOnline())));
+                return style.withHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getLastOnline())));
             }));
         }
 
