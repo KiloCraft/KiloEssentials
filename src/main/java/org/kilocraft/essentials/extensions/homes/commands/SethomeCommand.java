@@ -11,6 +11,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.world.World;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.chat.LangText;
@@ -25,6 +26,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 
@@ -62,6 +64,11 @@ public class SethomeCommand extends EssentialCommand {
             return FAILED;
         }
 
+        if (World.isHeightInvalid(player.getBlockPos())) {
+            user.sendLangError("general.position_out_of_world");
+            return FAILED;
+        }
+
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
             KiloChat.sendMessageTo(player, getConfirmationText(name, ""));
             return AWAIT;
@@ -82,6 +89,11 @@ public class SethomeCommand extends EssentialCommand {
         String inputName = getString(ctx, "user");
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
+
+        if (World.isHeightInvalid(player.getBlockPos())) {
+            source.sendLangError("general.position_out_of_world");
+            return FAILED;
+        }
 
         getEssentials().getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
