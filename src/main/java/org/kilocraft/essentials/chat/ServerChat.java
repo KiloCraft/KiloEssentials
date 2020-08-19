@@ -23,6 +23,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
+import org.kilocraft.essentials.api.event.player.PlayerOnDirectMessageEvent;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -32,6 +33,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.config.main.sections.chat.ChatPingSoundConfigSection;
 import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
+import org.kilocraft.essentials.events.player.PlayerOnDirectMessageEventImpl;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
@@ -277,7 +279,7 @@ public final class ServerChat {
         return 1;
     }
 
-    public static void messagePrivately(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
+    public static void messagePrivately(final ServerCommandSource source, final OnlineUser target, final String raw) throws CommandSyntaxException {
         String format = ServerChat.config.privateChat().privateChat;
         String me_format = ServerChat.config.privateChat().privateChatMeFormat;
         String sourceName = source.getName();
@@ -293,6 +295,15 @@ public final class ServerChat {
                 throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
             }
         }
+
+        PlayerOnDirectMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnDirectMessageEventImpl(source, target, raw));
+        if (event.isCancelled()) {
+            if (event.getCancelReason() != null) {
+                source.sendError(Texter.newText(event.getCancelReason()));
+            }
+            return;
+        }
+        final String message = event.getMessage();
 
         String toSource = format.replace("%SOURCE%", me_format)
                 .replace("%TARGET%", "&r" + target.getUsername() + "&r")
