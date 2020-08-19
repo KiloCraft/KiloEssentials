@@ -79,9 +79,8 @@ public class ServerImpl implements Server {
 
     @Override
     public void reload(Action<Throwable> fallback) {
-
         this.reloadKiloEssentials();
-        this.reloadMinecraftServer(throwable -> fallback.perform(throwable));
+        this.reloadMinecraftServer(fallback);
     }
 
     @Override
@@ -98,7 +97,7 @@ public class ServerImpl implements Server {
         Collection<String> modifiedCollection = Lists.newArrayList(collection);
         resourcePackManager.scanPacks();
         for (String string : resourcePackManager.getNames()) {
-            if (!saveProperties.method_29589().getDisabled().contains(string) && !modifiedCollection.contains(string)) {
+            if (!saveProperties.getDataPackSettings().getDisabled().contains(string) && !modifiedCollection.contains(string)) {
                 modifiedCollection.add(string);
             }
         }
