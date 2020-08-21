@@ -350,10 +350,11 @@ public final class ServerChat {
                     user.sendMessage(text);
                 }
             }
+
+            KiloServer.getServer().triggerEvent(new OnSocialSpyWarningImpl(source, target, raw, markedWords));
         }
 
         KiloServer.getServer().sendMessage(text.getString());
-        KiloServer.getServer().triggerEvent(new OnSocialSpyWarningImpl(source, target, raw, markedWords));
     }
 
     public static void sendCommandSpy(final ServerCommandSource source, final String command) {
