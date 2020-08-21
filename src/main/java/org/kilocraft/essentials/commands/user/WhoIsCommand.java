@@ -130,10 +130,6 @@ public class WhoIsCommand extends EssentialCommand {
                 target.getPreference(Preferences.RANDOM_TELEPORTS_LEFT),
                 target.getPreference(Preferences.CHAT_CHANNEL).getId());
 
-        text.append("Is Spying", new String[]{"On Commands", "On Social"},
-                target.getPreference(Preferences.COMMAND_SPY),
-                target.getPreference(Preferences.SOCIAL_SPY));
-
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         assert vec.getDimension() != null;
         MutableText loc = Texter.newText(vec.asFormattedString());

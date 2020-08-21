@@ -158,7 +158,6 @@ public class KiloCommands {
         this.register(new StatusCommand());
         this.register(new StaffMessageCommand());
         this.register(new BuilderMsgCommand());
-        this.register(new SocialSpyCommand());
         this.register(new CommandSpyCommand());
         this.register(new BackCommand());
         this.register(new ModsCommand());

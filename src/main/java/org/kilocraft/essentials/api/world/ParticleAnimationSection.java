@@ -52,15 +52,11 @@ public class ParticleAnimationSection<P extends ParticleEffect> {
         return type;
     }
 
-    public boolean getRelative () {
-        return relative;
-    }
-
     @Nullable
     public ParticleS2CPacket toPacket(Vec3d vec3d, double rotation) {
         Vec3d vec = relativePosition.getRelativeVector(vec3d);
 
-        if (getRelative()) {
+        if (this.relative) {
             if (rotation < 0) {
                 rotation += 360;
             }

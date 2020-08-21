@@ -17,6 +17,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -96,7 +97,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                 if (effect == null) {
                     KiloEssentials.getLogger().error(
                             "Error identifying the Particle type while loading ParticleTypes!" +
-                            " Entered id \"{}\" is not a valid ParticleEffect!", frame.effect
+                                    " Entered id \"{}\" is not a valid ParticleEffect!", frame.effect
                     );
 
                     continue;
@@ -193,7 +194,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                                                 frame.longDistance,
                                                 new RelativePosition(x + t, y + u, z),
                                                 offsetX, offsetY, offsetZ,
-                                                frame.speed, frame.count,true)
+                                                frame.speed, frame.count, true)
                                         );
                                     }
                                 } else {
@@ -203,7 +204,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                                             frame.longDistance,
                                             new RelativePosition(x + t, y + section.size / 2, z),
                                             offsetX, offsetY, offsetZ,
-                                            frame.speed, frame.count,true)
+                                            frame.speed, frame.count, true)
                                     );
 
                                     // Below
@@ -212,7 +213,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                                             frame.longDistance,
                                             new RelativePosition(x + t, y - section.size / 2, z),
                                             offsetX, offsetY, offsetZ,
-                                            frame.speed, frame.count,true)
+                                            frame.speed, frame.count, true)
                                     );
                                 }
                             }
@@ -227,8 +228,8 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                                     realT = 360;
                                 }
 
-                                double newX = section.size / 2*Math.cos(realT) - (section.size / 2)*Math.sin(realT);
-                                double newY = section.size / 2*Math.sin(realT) + (section.size / 2)*Math.cos(realT);
+                                double newX = section.size / 2 * Math.cos(realT) - (section.size / 2) * Math.sin(realT);
+                                double newY = section.size / 2 * Math.sin(realT) + (section.size / 2) * Math.cos(realT);
 
                                 animation.append(new ParticleAnimationSection<>(
                                         particleEffect,
@@ -296,8 +297,8 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
                                 float step = 1f / distance;
 
-                                for (float t = 0; t <= 1; t+= step) {
-                                    double[] newPos = getBezierPoint(startPoint, endPoint, startTangent, endTangent, t);
+                                for (float t = 0; t <= 1; t += step) {
+                                    double[] newPos = pointToBezier(startPoint, endPoint, startTangent, endTangent, t);
 
                                     animation.append(new ParticleAnimationSection<>(
                                             particleEffect,
@@ -334,7 +335,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
         });
     }
 
-    public static double[] getBezierPoint(float[] startPoint, float[] endPoint, float[] startTangent, float[] endTangent, float t) {
+    public static double[] pointToBezier(float[] startPoint, float[] endPoint, float[] startTangent, float[] endTangent, float t) {
         double[] result = new double[3];
 
         result[0] = Math.pow(1 - t, 3) * startPoint[0] + 3 * t * Math.pow(1 - t, 2) * startTangent[0] + 3 * Math.pow(t, 2) * (1 - t) * endTangent[0] + Math.pow(t, 3) * endPoint[0];
@@ -345,7 +346,10 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
     public static boolean canUse(final OnlineUser user, final Identifier identifier) {
         ParticleAnimation animation = map.get(identifier);
-        return animation.predicate() == null || animation.predicate().test(user);
+        if (animation == null) {
+            return false;
+        }
+        return animation.predicate().test(user);
     }
 
     public static void addPlayer(UUID player, Identifier identifier) {
@@ -361,8 +365,8 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
         return uuidIdentifierMap.containsKey(player);
     }
 
-    public static boolean isValidId(Identifier id) {
-        return map.containsKey(id);
+    public static boolean isIdInvalid(Identifier id) {
+        return !map.containsKey(id);
     }
 
     public static Identifier getIdFromPath(String path) {
@@ -376,10 +380,11 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     }
 
     private static int tick = 0;
+
     public void onTick() {
         //Tick counter logic, only shows the animations once in 4 ticks
         tick++;
-        if (tick > config.getPps() && !uuidIdentifierMap.isEmpty()) {
+        if (tick > config.getPpt() && !uuidIdentifierMap.isEmpty()) {
             try {
                 for (Map.Entry<UUID, Identifier> entry : uuidIdentifierMap.entrySet()) {
                     ServerPlayerEntity player = KiloServer.getServer().getPlayer(entry.getKey());
@@ -396,8 +401,9 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
         }
     }
 
+    @Nullable
     static String getAnimationName(Identifier id) {
-        return map.get(id).getName();
+        return map.get(id) == null ? null : map.get(id).getName();
     }
 
     private static void runAnimationFrames(final ServerPlayerEntity player, Identifier id) {
@@ -408,12 +414,12 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
             return;
         }
 
-        for (ParticleAnimationSection<?> frame : animation.getFrames()) {
-            if (frame == null) {
+        for (ParticleAnimationSection<?> section : animation.getFrames()) {
+            if (section == null) {
                 continue;
             }
 
-            Packet<?> packet = frame.toPacket(player.getPos(), player.bodyYaw);
+            Packet<?> packet = section.toPacket(player.getPos(), player.bodyYaw);
             if (packet != null) {
                 player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
             }

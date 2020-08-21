@@ -26,17 +26,17 @@ public class ParticleTypesConfig {
         put("default:dragon_breath", new ParticleTypeConfigSection());
     }};
 
-    @Setting(value = "pps", comment = "Particle per second, you can set how fast you want the particles to show up\n" +
+    @Setting(value = "pps", comment = "Particle per tick, you can set how fast you want the particles to show up\n" +
             "Recommended (Default): 4, the Value must be between 0 to 20")
-    private int pps = 4;
+    private int ppt = 4;
 
-    public int getPps() {
-        if (pps < 0 || pps > 20) {
-            pps = 4;
+    public int getPpt() {
+        if (ppt < 0 || ppt > 20) {
+            ppt = 4;
             KiloEssentials.getLogger().error("Exception while loading the Particle Types, the \"pps\" Value must be between 0 to 20");
         }
 
-        return pps;
+        return ppt;
     }
 
 }
