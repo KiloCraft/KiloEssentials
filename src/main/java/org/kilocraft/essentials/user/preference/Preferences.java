@@ -21,6 +21,7 @@ public class Preferences {
 
     public static final Preference<Boolean> CAN_FLY = new Preference<>("can_fly", false);
     public static final Preference<Boolean> INVULNERABLE = new Preference<>("invulnerable", false);
+    public static final Preference<Boolean> SOCIAL_SPY = new Preference<>("social_spy", false);
     public static final Preference<Boolean> COMMAND_SPY = new Preference<>("command_spy", false);
     public static final Preference<Boolean> CAN_SEAT = new Preference<>("can_seat", false);
     public static final Preference<SeatManager.SummonType> SITTING_TYPE = new Preference<SeatManager.SummonType>(

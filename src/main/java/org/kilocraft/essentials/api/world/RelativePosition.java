@@ -4,11 +4,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class RelativePosition {
-    private final double x;
-    private final double y;
-    private final double z;
+    private double x, y, z;
 
-    public RelativePosition(final double x, final double y, final double z) {
+    public RelativePosition(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;

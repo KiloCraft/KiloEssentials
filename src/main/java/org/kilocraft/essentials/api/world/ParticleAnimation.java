@@ -34,9 +34,9 @@ public class ParticleAnimation {
         return name;
     }
 
-    @NotNull
+    @Nullable
     public Predicate<OnlineUser> predicate() {
-        return predicate == null ? user -> true : predicate;
+        return predicate;
     }
 
     public void setPredicate(@Nullable final Predicate<OnlineUser> predicate) {

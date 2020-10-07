@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.chat;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.SharedConstants;
@@ -24,6 +23,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
+import org.kilocraft.essentials.api.event.player.PlayerOnDirectMessageEvent;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -32,8 +32,8 @@ import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.config.main.sections.chat.ChatPingSoundConfigSection;
-import org.kilocraft.essentials.events.player.OnSocialSpyWarningImpl;
 import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
+import org.kilocraft.essentials.events.player.PlayerOnDirectMessageEventImpl;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
@@ -46,7 +46,6 @@ import java.rmi.UnexpectedException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,7 +54,6 @@ public final class ServerChat {
     private static final String DEBUG_EXCEPTION = "--texc";
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
-    private static final Pattern SIMPLE_LINK_PATTERN = Pattern.compile("([--:\\w?@%&+~#=]*\\.[a-z]{2,4}\\/{0,2})((?:[?&](?:\\w+)=(?:\\w+))+|[--:\\w?@%&+~#=]+)?");
     private static final int LINK_MAX_LENGTH = 20;
     private static final int COMMAND_MAX_LENGTH = 45;
     private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new SimpleCommandExceptionType(LangText.getFormatter(true, "command.message.error"));
@@ -298,12 +296,25 @@ public final class ServerChat {
             }
         }
 
+        PlayerOnDirectMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnDirectMessageEventImpl(source, target, raw));
+        if (event.isCancelled()) {
+            if (event.getCancelReason() != null) {
+                source.sendError(Texter.newText(event.getCancelReason()));
+            }
+            return;
+        }
+        final String message = event.getMessage();
+
         String toSource = format.replace("%SOURCE%", me_format)
                 .replace("%TARGET%", "&r" + target.getUsername() + "&r")
-                .replace("%MESSAGE%", raw);
+                .replace("%MESSAGE%", message);
         String toTarget = format.replace("%SOURCE%", sourceName)
                 .replace("%TARGET%", me_format)
-                .replace("%MESSAGE%", raw);
+                .replace("%MESSAGE%", message);
+
+        String toSpy = ServerChat.config.socialSpyFormat.replace("%SOURCE%", sourceName)
+                .replace("%TARGET%", target.getUsername() + "&r")
+                .replace("%MESSAGE%", message);
 
         if (target.getPreference(Preferences.SOUNDS)) {
             pingUser(target, MentionTypes.PRIVATE);
@@ -312,49 +323,19 @@ public final class ServerChat {
         KiloChat.sendMessageToSource(source, new TextMessage(toSource, true).toText().formatted(Formatting.WHITE));
         KiloChat.sendMessageTo(target.asPlayer(), new TextMessage(toTarget, true).toText().formatted(Formatting.WHITE));
 
-        final List<String> markedWords = Lists.newArrayList();
-        boolean containsUrl = false;
-
-        String toSpy = ServerChat.config.socialSpy().prefix.replace("%SOURCE%", sourceName)
-                .replace("%TARGET%", target.getUsername() + "&r");
-
-        String formatted = new TextMessage(raw).getFormattedMessage();
-        final MutableText text = Texter.newText().append(toSpy).append(" ");
-        String[] strings = raw.split(" ");
-        int index = 0;
-        for (String string : strings) {
-            index++;
-            String lowerCased = string.toLowerCase(Locale.ROOT);
-
-            Matcher linkMatcher = SIMPLE_LINK_PATTERN.matcher(string);
-            if (linkMatcher.find()) {
-                containsUrl = true;
-                text.append(Texter.newRawText(string).styled((style) ->
-                        style.withFormatting(Formatting.RED).withClickEvent(Texter.Events.onClickOpen(string))
-                ));
-            } else if (config.socialSpy().sensitiveWords.contains(lowerCased)) {
-                markedWords.add(raw.substring(formatted.indexOf(string), string.length()));
-                text.append(Texter.newRawText(string).formatted(Formatting.RED));
-            } else {
-                text.append(string);
-            }
-
-            if (index < string.length()) {
-                text.append(" ");
-            }
-        }
-
-        if (containsUrl || !markedWords.isEmpty()) {
-            for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-                if (user.hasPermission(EssentialPermission.STAFF) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
-                    user.sendMessage(text);
-                }
+        for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
+            if (user.getPreference(Preferences.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
+                user.sendMessage(new TextMessage(toSpy, true).toComponent().formatted(Formatting.GRAY));
             }
 
             KiloServer.getServer().triggerEvent(new OnSocialSpyWarningImpl(source, target, raw, markedWords));
         }
 
+<<<<<<< HEAD
         KiloServer.getServer().sendMessage(text.getString());
+=======
+        KiloServer.getServer().sendMessage(toSpy);
+>>>>>>> parent of e1f874d6... Clean ups
     }
 
     public static void sendCommandSpy(final ServerCommandSource source, final String command) {
