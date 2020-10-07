@@ -328,14 +328,10 @@ public final class ServerChat {
                 user.sendMessage(new TextMessage(toSpy, true).toComponent().formatted(Formatting.GRAY));
             }
 
-            KiloServer.getServer().triggerEvent(new OnSocialSpyWarningImpl(source, target, raw, markedWords));
+            KiloServer.getServer().triggerEvent(new PlayerOnDirectMessageEventImpl(source, target, raw));
         }
 
-<<<<<<< HEAD
-        KiloServer.getServer().sendMessage(text.getString());
-=======
         KiloServer.getServer().sendMessage(toSpy);
->>>>>>> parent of e1f874d6... Clean ups
     }
 
     public static void sendCommandSpy(final ServerCommandSource source, final String command) {
