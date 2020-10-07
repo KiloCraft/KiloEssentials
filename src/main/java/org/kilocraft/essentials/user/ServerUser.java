@@ -13,16 +13,15 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.api.user.preference.UserPreferences;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.UserMessageReceptionist;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.preference.ServerUserPreferences;
 import org.kilocraft.essentials.user.preference.Preferences;
@@ -60,7 +59,7 @@ public class ServerUser implements User {
     private Date firstJoin = new Date();
     public int messageCoolDown;
     public int systemMessageCoolDown;
-    private MessageReceptionist lastDmReceptionist;
+    private EntityIdentifiable lastDmReceptionist;
     final UUID uuid;
     String name = "";
     String savedName = "";
@@ -153,7 +152,17 @@ public class ServerUser implements User {
 
         if (cacheTag.contains("dmRec")) {
             CompoundTag lastDmTag = cacheTag.getCompound("dmRec");
-            this.lastDmReceptionist = new UserMessageReceptionist(lastDmTag.getString("name"), NBTUtils.getUUID(lastDmTag, "id"));
+            this.lastDmReceptionist = new EntityIdentifiable() {
+                @Override
+                public UUID getId() {
+                    return NBTUtils.getUUID(lastDmTag, "id");
+                }
+
+                @Override
+                public String getName() {
+                    return lastDmTag.getString("name");
+                }
+            };
         }
 
         this.firstJoin = dateFromString(metaTag.getString("firstJoin"));
@@ -382,13 +391,13 @@ public class ServerUser implements User {
     }
 
     @Override
-    public MessageReceptionist getLastMessageReceptionist() {
+    public EntityIdentifiable getLastMessageReceptionist() {
         return this.lastDmReceptionist;
     }
 
     @Override
-    public void setLastMessageReceptionist(MessageReceptionist receptionist) {
-        this.lastDmReceptionist = receptionist;
+    public void setLastMessageReceptionist(EntityIdentifiable entity) {
+        this.lastDmReceptionist = entity;
     }
 
     public static void saveLocationOf(ServerPlayerEntity player) {

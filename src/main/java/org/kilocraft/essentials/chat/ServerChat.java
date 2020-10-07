@@ -24,6 +24,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import org.kilocraft.essentials.api.event.player.PlayerOnDirectMessageEvent;
+import org.kilocraft.essentials.api.text.TextComponent;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -319,6 +320,8 @@ public final class ServerChat {
         if (target.getPreference(Preferences.SOUNDS)) {
             pingUser(target, MentionTypes.PRIVATE);
         }
+
+        TextComponent.from(TextComponent.removeEvents(TextComponent.of(toSource)));
 
         KiloChat.sendMessageToSource(source, new TextMessage(toSource, true).toText().formatted(Formatting.WHITE));
         KiloChat.sendMessageTo(target.asPlayer(), new TextMessage(toTarget, true).toText().formatted(Formatting.WHITE));

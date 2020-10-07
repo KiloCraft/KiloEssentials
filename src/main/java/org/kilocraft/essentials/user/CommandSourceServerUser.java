@@ -18,13 +18,13 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.api.user.preference.UserPreferences;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -205,13 +205,28 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public MessageReceptionist getLastMessageReceptionist() {
+    public EntityIdentifiable getLastMessageReceptionist() {
+        if (this.isOnline()) {
+            try {
+                assert this.getUser() != null;
+                return this.getUser().getLastMessageReceptionist();
+            } catch (CommandSyntaxException exception) {
+                exception.printStackTrace();
+            }
+        }
         return null;
     }
 
     @Override
-    public void setLastMessageReceptionist(MessageReceptionist receptionist) {
-
+    public void setLastMessageReceptionist(EntityIdentifiable entity) {
+        if (this.isOnline()) {
+            try {
+                assert this.getUser() != null;
+                this.getUser().setLastMessageReceptionist(entity);
+            } catch (CommandSyntaxException exception) {
+                exception.printStackTrace();
+            }
+        }
     }
 
     @Nullable

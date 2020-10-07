@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
+import net.kyori.adventure.text.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
@@ -20,6 +21,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.text.TextComponent;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
@@ -123,6 +125,11 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public void sendMessage(final Text text) {
         this.asPlayer().sendMessage(text, false);
+    }
+
+    @Override
+    public void sendMessage(@NotNull Component component) {
+        this.asPlayer().sendMessage(TextComponent.from(component), false);
     }
 
     @Override

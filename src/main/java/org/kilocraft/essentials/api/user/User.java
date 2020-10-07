@@ -4,7 +4,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.NBTSerializable;
-import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.api.user.preference.UserPreferences;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
@@ -30,7 +29,7 @@ import java.util.UUID;
  * @since 1.5
  * @author CODY_AI (OnBlock)
  */
-public interface User extends EntityIdentifiable, NBTSerializable, MessageReceptionist{
+public interface User extends EntityIdentifiable, NBTSerializable {
     /**
      * Gets the Unique Unified Identifier of this User
      * @return UUID of this user
@@ -228,8 +227,8 @@ public interface User extends EntityIdentifiable, NBTSerializable, MessageRecept
      */
     boolean ignored(UUID uuid);
 
-    MessageReceptionist getLastMessageReceptionist();
+    EntityIdentifiable getLastMessageReceptionist();
 
-    void setLastMessageReceptionist(MessageReceptionist receptionist);
+    void setLastMessageReceptionist(EntityIdentifiable entity);
 
 }
