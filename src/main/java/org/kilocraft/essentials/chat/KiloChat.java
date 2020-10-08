@@ -135,19 +135,10 @@ public class KiloChat {
 	}
 
 	public static void onUserJoin(ServerUser user) {
-		if (DISABLE_EVENT_MESSAGES)
-			return;
-
 		broadCast(new MutableTextMessage(messages.events().userJoin, user));
 	}
 
 	public static void onUserLeave(ServerUser user) {
-		if (DISABLE_EVENT_MESSAGES)
-			return;
-
 		broadCast(new MutableTextMessage(messages.events().userLeave, user));
 	}
-
-	public static boolean DISABLE_EVENT_MESSAGES = messages.events().disableOnProxyMode && KiloConfig.main().server().proxyMode;
-
 }

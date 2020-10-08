@@ -23,7 +23,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 
 import static org.kilocraft.essentials.api.text.TextFormat.getFormattedTPS;
-import static org.kilocraft.essentials.util.TPSTracker.*;
+import static org.kilocraft.essentials.util.TpsTracker.*;
 
 public class StatusCommand extends EssentialCommand {
     public StatusCommand() {

@@ -14,14 +14,14 @@ public class PlayerListConfigSection {
 
     @Setting(value = "header", comment = "Sets the (Tab) PlayerList Header")
     public List<String> header = new ArrayList<String>(){{
-        add("&aMinecraft Server");
-        add("&7Welcome &6%USER_DISPLAYNAME%&r");
+        add("<green>Minecraft Server");
+        add("<gray>Welcome <gold>%user_displayname%");
     }};
 
     @Setting(value = "footer", comment = "Sets the (Tab) PlayerList Footer")
     public List<String> footer = new ArrayList<String>(){{
-        add("&7Ping: %PLAYER_FORMATTED_PING% &8-&7 Online: &b%SERVER_PLAYER_COUNT% &8-&7 &7TPS: &r%SERVER_FORMATTED_TPS%");
-        add("&7Use &3/help&7 for more info");
+        add("<gray>Ping: %player_formatted_ping% <dark_gray>-<gray> Online: <aqua>%server_player_count% <dark_gray>-<gray> TPS: <reset>%server_formatted_tps%");
+        add("<gray>Use <green>/help<gray> for more info");
     }};
 
     public String getHeader() {

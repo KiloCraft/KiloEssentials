@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class TPSTracker {
+public class TpsTracker {
     public static final RollingAverage tps = new RollingAverage(60);
     public static final RollingAverage tps5 = new RollingAverage(60 * 5);
     public static final RollingAverage tps15 = new RollingAverage(60 * 15);

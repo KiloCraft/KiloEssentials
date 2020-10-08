@@ -3,16 +3,10 @@ package org.kilocraft.essentials.servermeta;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.util.math.RollingAverage;
-import org.kilocraft.essentials.util.TPSTracker;
-import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,20 +30,7 @@ public class ServerMetaManager {
                 continue;
             }
 
-            Server server = KiloServer.getServer();
-            RollingAverage tps = TPSTracker.tps;
-            double memoryUsedPercentage = SystemMonitor.getRamUsedPercentage();
-
-            PlayerListMeta.serverName = server.getName();
-            PlayerListMeta.serverTps = tps.getShortAverage();
-            PlayerListMeta.serverFormattedTps = "&" + TextFormat.getFormattedTPS(tps.getAverage()) + tps.getShortAverage() + "&r";
-            PlayerListMeta.serverPlayerCount = String.valueOf(server.getPlayerManager().getCurrentPlayerCount());
-            PlayerListMeta.serverMemoryMax = String.valueOf(SystemMonitor.getRamMaxMB());
-            PlayerListMeta.serverMemoryPercentage = String.valueOf(memoryUsedPercentage);
-            PlayerListMeta.serverFormattedMemoryPercentage = "&" + TextFormat.getFormattedPercentage(memoryUsedPercentage, true) + PlayerListMeta.serverMemoryPercentage + "&r";
-            PlayerListMeta.serverMemoryUsageMB = String.valueOf(SystemMonitor.getRamUsedMB());
-
-            PlayerListMeta.provideFor(playerEntity);
+            PlayerListMeta.update(playerEntity);
         }
     }
 
@@ -61,7 +42,7 @@ public class ServerMetaManager {
     }
 
     public void onPlayerJoined(ServerPlayerEntity player) {
-        PlayerListMeta.provideFor(player);
+        PlayerListMeta.update(player);
     }
 
     public final void setDescription(final Text description) throws IOException {

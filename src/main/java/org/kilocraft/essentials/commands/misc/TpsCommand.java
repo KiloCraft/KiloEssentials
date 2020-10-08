@@ -7,9 +7,9 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.util.TPSTracker;
+import org.kilocraft.essentials.util.TpsTracker;
 
-import static org.kilocraft.essentials.util.TPSTracker.*;
+import static org.kilocraft.essentials.util.TpsTracker.*;
 
 public class TpsCommand extends EssentialCommand {
     public TpsCommand() {
@@ -24,7 +24,7 @@ public class TpsCommand extends EssentialCommand {
         KiloChat.sendMessageToSource(ctx.getSource(), new MutableTextMessage(String.format(
                 "&6TPS&%s %s&7 &8(&7%s ms&8) &8(&75m&8/&715m&8/&71h&8/&71d&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
                 TextFormat.getFormattedTPS(tps.getAverage()), tps.getShortAverage(),
-                TPSTracker.MillisecondPerTick.getShortAverage(),
+                TpsTracker.MillisecondPerTick.getShortAverage(),
                 TextFormat.getFormattedTPS(tps5.getAverage()), tps5.getShortAverage(),
                 TextFormat.getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(),
                 TextFormat.getFormattedTPS(tps60.getAverage()), tps60.getShortAverage(),
