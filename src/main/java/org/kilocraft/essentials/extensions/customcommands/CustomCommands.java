@@ -18,7 +18,7 @@ import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.commands.CommandUtils;
@@ -116,7 +116,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
                 }
 
                 if (iArgs >= args.length) {
-                    throw new SimpleCommandExceptionType(LangText.getFormatter(true, "general.usage", cs.usage)
+                    throw new SimpleCommandExceptionType(StringText.of(true, "general.usage", cs.usage)
                             .formatted(Formatting.RED)).create();
                 }
 

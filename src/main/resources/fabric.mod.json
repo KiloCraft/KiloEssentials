@@ -19,14 +19,9 @@
     "DrexHD",
     "Hansi132"
   ],
-
   "license": "MIT",
-
   "environment": "server",
   "entrypoints": {
-    "server": [
-      "org.kilocraft.essentials.KiloEssentialsMod"
-    ]
   },
   "mixins": [
     "kiloessentials.events.mixins.json",

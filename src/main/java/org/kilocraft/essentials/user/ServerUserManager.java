@@ -25,7 +25,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.text.TextMessage;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.User;
@@ -34,7 +33,7 @@ import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.user.punishment.PunishmentEntry;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
@@ -501,19 +500,19 @@ public class ServerUserManager implements UserManager, TickListener {
 
         public LoadingText(ServerPlayerEntity player) {
             this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
-                    .append(LangText.get(true, "general.wait_server.frame1"))
-                    .append(LangText.get(true, "general.wait_server.frame2"))
-                    .append(LangText.get(true, "general.wait_server.frame3"))
-                    .append(LangText.get(true, "general.wait_server.frame4"))
+                    .append(StringText.of(true, "general.wait_server.frame1"))
+                    .append(StringText.of(true, "general.wait_server.frame2"))
+                    .append(StringText.of(true, "general.wait_server.frame3"))
+                    .append(StringText.of(true, "general.wait_server.frame4"))
                     .build();
         }
 
         public LoadingText(ServerPlayerEntity player, String key) {
             this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
-                    .append(LangText.get(true, key + ".frame1"))
-                    .append(LangText.get(true, key + ".frame2"))
-                    .append(LangText.get(true, key + ".frame3"))
-                    .append(LangText.get(true, key + ".frame4"))
+                    .append(StringText.of(true, key + ".frame1"))
+                    .append(StringText.of(true, key + ".frame2"))
+                    .append(StringText.of(true, key + ".frame3"))
+                    .append(StringText.of(true, key + ".frame4"))
                     .build();
         }
 

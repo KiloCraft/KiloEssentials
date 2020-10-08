@@ -21,7 +21,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.text.TextComponent;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
@@ -129,7 +129,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(@NotNull Component component) {
-        this.asPlayer().sendMessage(TextComponent.from(component), false);
+        this.asPlayer().sendMessage(ComponentText.toText(component), false);
     }
 
     @Override

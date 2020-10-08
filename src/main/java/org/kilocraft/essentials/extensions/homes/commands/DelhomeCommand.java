@@ -12,7 +12,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.MutableTextMessage;
@@ -117,7 +117,7 @@ public class DelhomeCommand extends EssentialCommand {
 
     private Text getConfirmationText(String homeName, String user) {
         return new LiteralText("")
-                .append(LangText.get(true, "command.delhome.confirmation_message")
+                .append(StringText.of(true, "command.delhome.confirmation_message")
                         .formatted(Formatting.YELLOW))
                 .append(new LiteralText(" [").formatted(Formatting.GRAY)
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))

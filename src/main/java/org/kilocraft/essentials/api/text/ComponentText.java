@@ -4,11 +4,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
-public class TextComponent {
-    public static Text from(@NotNull final Component component) {
+public class ComponentText {
+    public static Text empty() {
+        return new LiteralText("");
+    }
+
+    public static Text toText(@NotNull final Component component) {
         return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component));
     }
 

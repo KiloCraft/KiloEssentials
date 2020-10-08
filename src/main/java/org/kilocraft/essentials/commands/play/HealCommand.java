@@ -7,7 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -34,16 +34,16 @@ public class HealCommand extends EssentialCommand {
     private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
         if (CommandUtils.areTheSame(source, player)) {
             if (player.getHealth() == player.getMaxHealth()) {
-                KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.exception.self"));
+                KiloChat.sendMessageTo(player, StringText.of(true, "command.heal.exception.self"));
             } else {
-                KiloChat.sendMessageTo(player, LangText.get(true, "command.heal.self"));
+                KiloChat.sendMessageTo(player, StringText.of(true, "command.heal.self"));
             }
         } else {
             if (player.getHealth() == player.getMaxHealth()) {
-                KiloChat.sendMessageTo(source, LangText.getFormatter(true, "command.heal.exception.others", player.getName().asString()));
+                KiloChat.sendMessageTo(source, StringText.of(true, "command.heal.exception.others", player.getName().asString()));
             } else {
-                KiloChat.sendMessageTo(player, LangText.getFormatter(true, "command.heal.announce", source.getName()));
-                KiloChat.sendMessageToSource(source, LangText.getFormatter(true, "command.heal.other", player.getName().asString()));
+                KiloChat.sendMessageTo(player, StringText.of(true, "command.heal.announce", source.getName()));
+                KiloChat.sendMessageToSource(source, StringText.of(true, "command.heal.other", player.getName().asString()));
             }
         }
 

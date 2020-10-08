@@ -29,7 +29,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.Config;
 import org.kilocraft.essentials.config.messages.Messages;
@@ -212,7 +212,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public Text getLang(final String key, final Object... objects) {
-        return LangText.getFormatter(true, key, objects);
+        return StringText.of(true, key, objects);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class UsageCommand extends EssentialCommand {
 
     static int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final String command = getString(ctx, "command");
-        final String fromLang = ModConstants.getLang().getProperty("command." + command + ".usage");
+        final String fromLang = ModConstants.getStrings().getProperty("command." + command + ".usage");
 
         if (fromLang != null)
             KiloCommands.executeUsageFor("command." + command + ".usage", ctx.getSource());

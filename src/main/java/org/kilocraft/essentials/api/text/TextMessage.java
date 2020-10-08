@@ -14,11 +14,11 @@ public class TextMessage {
 
     public TextMessage(@NotNull final String raw, final boolean markdown) {
         this.original = raw;
-        this.component = TextComponent.of(raw, markdown);
+        this.component = ComponentText.of(raw, markdown);
     }
 
     public Text asText() {
-        return TextComponent.from(this.component);
+        return ComponentText.toText(this.component);
     }
 
     @Override

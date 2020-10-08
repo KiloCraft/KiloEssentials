@@ -32,7 +32,7 @@ import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.commands.help.HelpCommand;
@@ -257,7 +257,7 @@ public class KiloCommands {
 
     @Deprecated
     public static void executeUsageFor(final String langKey, final ServerCommandSource source) {
-        final String fromLang = ModConstants.getLang().getProperty(langKey);
+        final String fromLang = ModConstants.getStrings().getProperty(langKey);
         if (fromLang != null)
             KiloChat.sendMessageToSource(source, new MutableTextMessage("&6Command usage:\n" + fromLang, true));
         else
@@ -315,7 +315,7 @@ public class KiloCommands {
 
     private int sendInfo(final CommandContext<ServerCommandSource> ctx) {
         ctx.getSource().sendFeedback(
-                LangText.getFormatter(true, "command.info", ModConstants.getMinecraftVersion())
+                StringText.of(true, "command.info", ModConstants.getMinecraftVersion())
                         .formatted(Formatting.GRAY)
                         .append("\n")
                         .append(new LiteralText("GitHub: ").formatted(Formatting.GRAY))
@@ -331,7 +331,7 @@ public class KiloCommands {
 
     @Deprecated
     public static LiteralText getPermissionError(final String hoverText) {
-        final LiteralText literalText = LangText.get(true, "command.exception.permission");
+        final LiteralText literalText = StringText.of(true, "command.exception.permission");
         literalText.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW))));
         return literalText;
     }

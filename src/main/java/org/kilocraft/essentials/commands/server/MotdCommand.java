@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.NonNls;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
@@ -78,7 +78,7 @@ public class MotdCommand extends EssentialCommand {
 
         final String[] motd = Texter.Legacy.toFormattedString(this.getServer().getMetaManager().getDescription()).split(MotdCommand.COMPILE.pattern());
 
-        ctx.getSource().sendFeedback(LangText.getFormatter(true, "command.motd.set", TextFormat.translate(motd[0]), TextFormat.translate(motd[1])), true);
+        ctx.getSource().sendFeedback(StringText.of(true, "command.motd.set", TextFormat.translate(motd[0]), TextFormat.translate(motd[1])), true);
         return this.SUCCESS;
     }
 

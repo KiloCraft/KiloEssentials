@@ -21,7 +21,7 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -211,7 +211,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
         ArmorStandEntity stand = (ArmorStandEntity) player.getVehicle();
         if (stand != null && stand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
-            player.sendMessage(LangText.get(true, "sit.stop_riding"), true);
+            player.sendMessage(StringText.of(true, "sit.stop_riding"), true);
             stands.remove(RegistryUtils.toServerWorld(stand.getEntityWorld().getDimension()), stand.getUuid());
             stand.kill();
         }

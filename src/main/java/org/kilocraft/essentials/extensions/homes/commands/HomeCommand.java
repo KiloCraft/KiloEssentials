@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
@@ -140,7 +140,7 @@ public class HomeCommand extends EssentialCommand {
 
     private Text getTeleportConfirmationText(String homeName, String owner) {
         return new LiteralText("")
-                .append(LangText.get(true, "general.loc.unsafe.confirmation")
+                .append(StringText.of(true, "general.loc.unsafe.confirmation")
                         .formatted(Formatting.YELLOW))
                 .append(new LiteralText(" [").formatted(Formatting.GRAY)
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))

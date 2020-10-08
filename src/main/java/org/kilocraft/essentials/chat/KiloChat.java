@@ -22,11 +22,11 @@ public class KiloChat {
 	private static final Messages messages = KiloConfig.messages();
 
 	public static String getFormattedLang(String key) {
-		return getFormattedString(ModConstants.getLang().getProperty(key), (Object) null);
+		return getFormattedString(ModConstants.getStrings().getProperty(key), (Object) null);
 	}
 
 	public static String getFormattedLang(String key, Object... objects) {
-		return getFormattedString(ModConstants.getLang().getProperty(key), objects);
+		return getFormattedString(ModConstants.getStrings().getProperty(key), objects);
 	}
 
 	public static String getFormattedString(String string, Object... objects) {
@@ -34,11 +34,11 @@ public class KiloChat {
 	}
 
 	public static void sendMessageTo(ServerPlayerEntity player, MutableTextMessage mutableTextMessage) {
-		sendMessageTo(player, mutableTextMessage.toComponent());
+		sendMessageTo(player, mutableTextMessage.toText());
 	}
 
 	public static void sendMessageTo(ServerCommandSource source, MutableTextMessage mutableTextMessage) throws CommandSyntaxException {
-		sendMessageTo(source.getPlayer(), mutableTextMessage.toComponent());
+		sendMessageTo(source.getPlayer(), mutableTextMessage.toText());
 	}
 
 	public static void sendMessageTo(ServerPlayerEntity player, Text text) {
@@ -53,7 +53,7 @@ public class KiloChat {
 		if (CommandUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(message.getOriginal());
 		else
-			source.sendFeedback(new LiteralText(message.getFormattedMessage()), false);
+			source.sendFeedback(message.toText(), false);
 	}
 
 	public static void sendMessageToSource(ServerCommandSource source, Text text) {
@@ -67,34 +67,34 @@ public class KiloChat {
 		if (CommandUtils.isConsole(source))
 			getServer().sendMessage(getFormattedLang(key));
 		else
-			source.sendFeedback(LangText.get(true, key), false);
+			source.sendFeedback(StringText.of(key), false);
 	}
 
 	public static void sendLangCommandFeedback(ServerCommandSource source, String key, boolean sendToOPs, Object... objects) {
 		if (CommandUtils.isConsole(source))
 			getServer().sendMessage(getFormattedLang(key, objects));
 		else
-			source.sendFeedback(LangText.getFormatter(true, key, objects), sendToOPs);
+			source.sendFeedback(StringText.of(true, key, objects), sendToOPs);
 	}
 
 	public static void sendLangMessageTo(ServerPlayerEntity player, String key) {
-		sendMessageTo(player, LangText.get(true, key));
+		sendMessageTo(player, StringText.of(true, key));
 	}
 
 	public static void sendLangMessageTo(ServerPlayerEntity player, String key, Object... objects) {
-		sendMessageTo(player, LangText.getFormatter(true, key, objects));
+		sendMessageTo(player, StringText.of(true, key, objects));
 	}
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key, Object... objects) {
 		if (CommandUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(getFormattedLang(key, objects));
 		else
-			source.sendFeedback(LangText.getFormatter(true, key, objects), false);
+			source.sendFeedback(StringText.of(true, key, objects), false);
 	}
 
 	public static void broadCastExceptConsole(MutableTextMessage mutableTextMessage) {
 		for (PlayerEntity player : getServer().getPlayerList()) {
-			player.sendMessage(mutableTextMessage.toComponent(), false);
+			player.sendMessage(mutableTextMessage.toText(), false);
 		}
 	}
 
@@ -108,15 +108,15 @@ public class KiloChat {
 
 	public static void broadCastToConsole(MutableTextMessage mutableTextMessage) {
 		mutableTextMessage.setMessage(mutableTextMessage.getOriginal(), false);
-		getServer().sendMessage(mutableTextMessage.getFormattedMessage());
+		getServer().sendMessage(mutableTextMessage.toText());
 	}
 
 	public static void broadCast(MutableTextMessage mutableTextMessage) {
 		for (PlayerEntity player : getServer().getPlayerList()) {
-			player.sendMessage(mutableTextMessage.toComponent(), false);
+			player.sendMessage(mutableTextMessage.toText(), false);
 		}
 
-		getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', mutableTextMessage.getFormattedMessage()));
+		getServer().sendMessage(mutableTextMessage.toText());
 	}
 
 	public static void broadCast(Text text) {

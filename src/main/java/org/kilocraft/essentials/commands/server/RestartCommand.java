@@ -10,7 +10,7 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -38,7 +38,7 @@ public class RestartCommand {
 
         if (!confirmed && !KiloServer.getServer().getCommandSourceUser(source).isConsole()) {
             if (!scriptPresent) {
-                source.sendFeedback(LangText.getFormatter(true, "command.restart.no_script").formatted(Formatting.RED), false);
+                source.sendFeedback(StringText.of(true, "command.restart.no_script").formatted(Formatting.RED), false);
                 return 0;
             }
 

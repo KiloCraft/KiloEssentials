@@ -20,7 +20,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -82,7 +82,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
         }
 
         addPlayer(player.getUuid(), identifier);
-        player.sendMessage(LangText.getFormatter(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
+        player.sendMessage(StringText.of(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
         return SUCCESS;
     }
 

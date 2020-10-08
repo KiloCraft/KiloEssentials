@@ -25,7 +25,7 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -43,7 +43,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class PlayerWarpCommand extends EssentialCommand {
-    private static final String HEADER = ModConstants.getLang().getProperty("command.playerwarp.header");
+    private static final String HEADER = ModConstants.getStrings().getProperty("command.playerwarp.header");
     public PlayerWarpCommand(String label, Predicate<ServerCommandSource> predicate, String[] alias) {
         super(label, predicate, alias);
         this.withUsage("command.playerwarp.usage", "add", "name", "type", "description");
@@ -338,7 +338,7 @@ public class PlayerWarpCommand extends EssentialCommand {
 
     private Text getTeleportConfirmationText(String warpName) {
         return new LiteralText("")
-                .append(LangText.get(true, "general.loc.unsafe.confirmation")
+                .append(StringText.of(true, "general.loc.unsafe.confirmation")
                         .formatted(Formatting.YELLOW))
                 .append(new LiteralText(" [").formatted(Formatting.GRAY)
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))

@@ -25,7 +25,7 @@ public class ModConstants {
     public void loadConstants() {
         try {
             ModConstants.properties.load(ModConstants.class.getClassLoader().getResourceAsStream("mod.properties"));
-            ModConstants.lang.load(ModConstants.class.getClassLoader().getResourceAsStream("assets/messages/lang.properties"));
+            ModConstants.lang.load(ModConstants.class.getClassLoader().getResourceAsStream("assets/messages/strings.properties"));
             ModConstants.messageUtil = new MessageUtil();
         } catch (final IOException e) {
             e.printStackTrace();
@@ -52,7 +52,7 @@ public class ModConstants {
         return ModConstants.properties;
     }
 
-    public static Properties getLang() {
+    public static Properties getStrings() {
         return ModConstants.lang;
     }
 

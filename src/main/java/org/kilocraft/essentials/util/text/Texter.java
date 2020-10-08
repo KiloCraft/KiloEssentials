@@ -4,7 +4,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import java.util.*;
 
@@ -76,7 +76,7 @@ public class Texter {
 
     public static MutableText confirmationMessage(String langKey, MutableText button) {
         return newText()
-                .append(LangText.getFormatter(true, langKey))
+                .append(StringText.of(true, langKey))
                 .append(" ")
                 .append(button);
     }

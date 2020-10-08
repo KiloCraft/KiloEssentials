@@ -7,7 +7,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -32,12 +31,11 @@ import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.server.Server;
-import org.kilocraft.essentials.api.text.TextComponent;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
-import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.events.server.ServerReloadEventImpl;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
@@ -327,7 +325,7 @@ public class ServerImpl implements Server {
 
     @Override
     public void sendMessage(@NotNull Component component) {
-        this.sendMessage(TextComponent.from(component));
+        this.sendMessage(ComponentText.toText(component));
     }
 
     @Override

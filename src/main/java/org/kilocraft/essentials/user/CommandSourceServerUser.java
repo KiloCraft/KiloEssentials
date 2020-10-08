@@ -19,7 +19,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.text.TextComponent;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -315,7 +315,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendMessage(@NotNull Component component) {
-        this.sendMessage(TextComponent.from(component));
+        this.sendMessage(ComponentText.toText(component));
     }
 
     @Override

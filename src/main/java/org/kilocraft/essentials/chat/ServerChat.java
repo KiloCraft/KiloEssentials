@@ -23,9 +23,8 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import org.kilocraft.essentials.api.event.player.PlayerOnDirectMessageEvent;
-import org.kilocraft.essentials.api.text.TextComponent;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.text.TextMessage;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandUtils;
@@ -58,7 +57,7 @@ public final class ServerChat {
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
     private static final int LINK_MAX_LENGTH = 20;
     private static final int COMMAND_MAX_LENGTH = 45;
-    private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new SimpleCommandExceptionType(LangText.getFormatter(true, "command.message.error"));
+    private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new SimpleCommandExceptionType(StringText.of(true, "command.message.error"));
     private static ChatConfigSection config;
     private static String pingEveryoneTemplate;
     private static String senderFormat;
@@ -112,19 +111,12 @@ public final class ServerChat {
             processWords = KiloConfig.messages().censorList().censorPrivateChannels;
         }
 
-//            PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(sender.asPlayer(), raw, channel));
-//            if (event.isCancelled()) {
-//                if (event.getCancelReason() != null) {
-//                    sender.sendError(event.getCancelReason());
-//                }
-//
-//                return;
-//            }
-
         try {
-            final Text text = TextComponent.from(
-                    Component.text().content(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), sender))
-                            .append(Component.text(processWords ? processWords(sender, raw) : raw)).build()
+            final Component messageComponent = ComponentText.of(processWords ? processWords(sender, raw) : raw);
+
+            final Text text = ComponentText.toText(
+                    ComponentText.of(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), sender))
+                            .append(ComponentText.removeEvents(messageComponent))
             );
 
             if (sender.getPreference(Preferences.CHAT_VISIBILITY) == VisibilityPreference.MENTIONS) {
@@ -139,64 +131,64 @@ public final class ServerChat {
     }
 
     public static void send(final OnlineUser sender, final MutableTextMessage message, final Channel channel) throws Exception {
-        if (message.getOriginal().startsWith(DEBUG_EXCEPTION) && SharedConstants.isDevelopment) {
-            throw new UnexpectedException("Debug exception thrown by " + sender.getUsername() + message.getOriginal().replaceFirst(DEBUG_EXCEPTION, ""));
-        }
-
-        if (channel == null) {
-            sender.getPreferences().set(Preferences.CHAT_CHANNEL, Channel.PUBLIC);
-            throw new NullPointerException("Channel must not be Null! channel set to Public");
-        }
-
-        boolean processWords;
-        if (channel == Channel.PUBLIC) {
-            processWords = true;
-        } else {
-            processWords = KiloConfig.messages().censorList().censorPrivateChannels;
-        }
-
-        try {
-            message.setMessage(
-                    processWords ? processWords(sender, message.getOriginal()) : message.getOriginal(),
-                    KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR)
-            );
-        } catch (Exception e) {
-            return;
-        }
-
-        MutableTextMessage prefix = new MutableTextMessage(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), sender)
-                .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().getString()));
-
-        boolean mentions = processPings(sender, message, channel);
-
-        Text component = ServerChat.stringToMessageComponent(
-                message.getFormattedMessage(),
-                sender,
-                sender.hasPermission(EssentialPermission.CHAT_URL),
-                sender.hasPermission(EssentialPermission.CHAT_SHOW_ITEM)
-        );
-
-        MutableText text = new LiteralText("");
-        text.append(
-                prefix.toComponent()
-                        .styled((style) -> style.withHoverEvent(hoverEvent(sender, channel)).withClickEvent(clickEvent(sender)))
-        ).append(" ").append(component);
-
-        PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(sender.asPlayer(), component.getString(), channel));
-        if (event.isCancelled()) {
-            if (event.getCancelReason() != null) {
-                sender.sendError(event.getCancelReason());
-            }
-
-            return;
-        }
-
-        if (sender.getPreference(Preferences.CHAT_VISIBILITY) == VisibilityPreference.MENTIONS) {
-            sender.sendMessage(text);
-        }
-
-        KiloServer.getServer().sendMessage(TextFormat.clearColorCodes(text.getString()));
-        channel.send(text, mentions);
+//        if (message.getOriginal().startsWith(DEBUG_EXCEPTION) && SharedConstants.isDevelopment) {
+//            throw new UnexpectedException("Debug exception thrown by " + sender.getUsername() + message.getOriginal().replaceFirst(DEBUG_EXCEPTION, ""));
+//        }
+//
+//        if (channel == null) {
+//            sender.getPreferences().set(Preferences.CHAT_CHANNEL, Channel.PUBLIC);
+//            throw new NullPointerException("Channel must not be Null! channel set to Public");
+//        }
+//
+//        boolean processWords;
+//        if (channel == Channel.PUBLIC) {
+//            processWords = true;
+//        } else {
+//            processWords = KiloConfig.messages().censorList().censorPrivateChannels;
+//        }
+//
+//        try {
+//            message.setMessage(
+//                    processWords ? processWords(sender, message.getOriginal()) : message.getOriginal(),
+//                    KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_COLOR)
+//            );
+//        } catch (Exception e) {
+//            return;
+//        }
+//
+//        MutableTextMessage prefix = new MutableTextMessage(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), sender)
+//                .replace("%USER_RANKED_DISPLAYNAME%", sender.getRankedDisplayName().getString()));
+//
+//        boolean mentions = processPings(sender, message, channel);
+//
+//        Text component = ServerChat.stringToMessageComponent(
+//                message.getFormattedMessage(),
+//                sender,
+//                sender.hasPermission(EssentialPermission.CHAT_URL),
+//                sender.hasPermission(EssentialPermission.CHAT_SHOW_ITEM)
+//        );
+//
+//        MutableText text = new LiteralText("");
+//        text.append(
+//                prefix.toComponent()
+//                        .styled((style) -> style.withHoverEvent(hoverEvent(sender, channel)).withClickEvent(clickEvent(sender)))
+//        ).append(" ").append(component);
+//
+//        PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(sender.asPlayer(), component.getString(), channel));
+//        if (event.isCancelled()) {
+//            if (event.getCancelReason() != null) {
+//                sender.sendError(event.getCancelReason());
+//            }
+//
+//            return;
+//        }
+//
+//        if (sender.getPreference(Preferences.CHAT_VISIBILITY) == VisibilityPreference.MENTIONS) {
+//            sender.sendMessage(text);
+//        }
+//
+//        KiloServer.getServer().sendMessage(TextFormat.clearColorCodes(text.getString()));
+//        channel.send(text, mentions);
     }
 
     private static boolean processPings(final OnlineUser sender, final MutableTextMessage message, final Channel channel) {
@@ -361,14 +353,14 @@ public final class ServerChat {
             pingUser(target, MentionTypes.PRIVATE);
         }
 
-        TextComponent.from(TextComponent.removeEvents(TextComponent.of(toSource)));
+        ComponentText.toText(ComponentText.removeEvents(ComponentText.of(toSource)));
 
         KiloChat.sendMessageToSource(source, new MutableTextMessage(toSource, true).toText().formatted(Formatting.WHITE));
         KiloChat.sendMessageTo(target.asPlayer(), new MutableTextMessage(toTarget, true).toText().formatted(Formatting.WHITE));
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getPreference(Preferences.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
-                user.sendMessage(new MutableTextMessage(toSpy, true).toComponent().formatted(Formatting.GRAY));
+                user.sendMessage(new MutableTextMessage(toSpy, true).toText().formatted(Formatting.GRAY));
             }
 
             KiloServer.getServer().triggerEvent(new PlayerOnDirectMessageEventImpl(source, target, raw));
@@ -443,7 +435,7 @@ public final class ServerChat {
     }
 
     public static Text stringToMessageComponent(@NotNull String string, OnlineUser sender, boolean appendLinks, boolean appendItems) {
-        return TextComponent.from(TextComponent.of(string));
+        return ComponentText.toText(ComponentText.of(string));
     }
 
     public enum Channel {
