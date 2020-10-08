@@ -14,7 +14,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -37,7 +36,7 @@ import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
@@ -244,7 +243,7 @@ public class RtpCommand extends EssentialCommand {
         RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
 
         if (!cfg.broadcastMessage.isEmpty()) {
-            KiloChat.broadCast(new TextMessage(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName())));
+            KiloChat.broadCast(new MutableTextMessage(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName())));
         }
 
         ServerWorld world = target.getServerWorld();

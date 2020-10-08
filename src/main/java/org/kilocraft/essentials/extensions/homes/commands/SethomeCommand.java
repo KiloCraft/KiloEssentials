@@ -19,14 +19,13 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
-import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 
@@ -77,7 +76,7 @@ public class SethomeCommand extends EssentialCommand {
         }
 
         homeHandler.addHome(new Home(player.getUuid(), name, Vec3dLocation.of(player).shortDecimals()));
-        user.sendMessage(new TextMessage(HomeCommand.replaceVariables(
+        user.sendMessage(new MutableTextMessage(HomeCommand.replaceVariables(
                 KiloConfig.messages().commands().playerHomes().homeSet, user, user, homeHandler.getHome(name)), user));
 
         return SUCCESS;

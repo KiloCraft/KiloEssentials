@@ -13,7 +13,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
@@ -38,7 +38,7 @@ public class StatusCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
         try {
-            KiloChat.sendMessageToSource(ctx.getSource(), new TextMessage(getInfo(), true));
+            KiloChat.sendMessageToSource(ctx.getSource(), new MutableTextMessage(getInfo(), true));
         } catch (Exception e) {
             String msg = "An unexpected exception occurred when processing the cpu usage" +
                     "Please report this to a Administrator";

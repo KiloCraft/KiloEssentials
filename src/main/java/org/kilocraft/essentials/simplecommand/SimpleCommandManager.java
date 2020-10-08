@@ -13,7 +13,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
@@ -137,7 +137,7 @@ public class SimpleCommandManager {
                 if (isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
                     KiloCommands.sendPermissionError(source);
                 else
-                    KiloChat.sendMessageToSource(source, new TextMessage(
+                    KiloChat.sendMessageToSource(source, new MutableTextMessage(
                             KiloConfig.messages().commands().context().executionException
                             , true));
 

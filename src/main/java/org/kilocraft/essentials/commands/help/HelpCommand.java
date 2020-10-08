@@ -6,7 +6,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.commands.help.UsageCommand;
 
 public class HelpCommand extends EssentialCommand {
     public HelpCommand() {
@@ -20,7 +19,7 @@ public class HelpCommand extends EssentialCommand {
 
     public int execute(CommandContext<ServerCommandSource> context) {
         String message = messages.commands().helpMessage;
-        Text text = TextFormat.translateToNMSText(message);
+        Text text = TextFormat.translateJsonToText(message);
         context.getSource().sendFeedback(text, false);
 
         return SUCCESS;

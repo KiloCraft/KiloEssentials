@@ -8,16 +8,17 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.util.text.Texter;
 
-public class TextMessage {
+@Deprecated
+public class MutableTextMessage {
     private String original;
     private String formatted;
     private boolean allowFormats;
 
-    public TextMessage(String message) {
+    public MutableTextMessage(String message) {
         this(message, true);
     }
 
-    public TextMessage(String message, boolean allowFormats) {
+    public MutableTextMessage(String message, boolean allowFormats) {
         this.original = message;
         this.allowFormats = allowFormats;
         this.formatted = allowFormats ?
@@ -25,13 +26,13 @@ public class TextMessage {
                 TextFormat.removeAlternateColorCodes('&', message);
     }
 
-    public TextMessage(String message, User user) {
+    public MutableTextMessage(String message, User user) {
         this.original = ConfigVariableFactory.replaceUserVariables(message, user);
         this.allowFormats = true;
         this.formatted = TextFormat.translateAlternateColorCodes('&', original);
     }
 
-    public TextMessage(String message, OnlineUser user) {
+    public MutableTextMessage(String message, OnlineUser user) {
         this.original = ConfigVariableFactory.replaceOnlineUserVariables(message, user);
         this.allowFormats = true;
         this.formatted = TextFormat.translateAlternateColorCodes('&', message);

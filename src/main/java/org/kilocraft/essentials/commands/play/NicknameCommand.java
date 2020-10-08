@@ -7,7 +7,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -21,7 +21,7 @@ import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.player.PlayerDataModifier;
@@ -103,7 +103,7 @@ public class NicknameCommand extends EssentialCommand {
                 return;
             }
 
-            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new TextMessage(messages.commands().nickname().setSelf
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new MutableTextMessage(messages.commands().nickname().setSelf
                     .replace("{NICK}", src.getNickname().isPresent() ? src.getNickname().get() : src.getDisplayName())
                     .replace("{NICK_NEW}", nickname)
                     , true));
@@ -133,7 +133,7 @@ public class NicknameCommand extends EssentialCommand {
                 return;
             }
 
-            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new TextMessage(messages.commands().nickname().setOthers
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new MutableTextMessage(messages.commands().nickname().setOthers
                     .replace("{NICK}", user.getNickname().isPresent() ? user.getNickname().get() : user.getDisplayName())
                     .replace("{NICK_NEW}", nickname)
                     .replace("{TARGET_TAG}", user.getNameTag())
@@ -186,7 +186,7 @@ public class NicknameCommand extends EssentialCommand {
                 dataModifier.save();
             }
 
-            KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new TextMessage(messages.commands().nickname().resetOthers
+            KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendMessage(new MutableTextMessage(messages.commands().nickname().resetOthers
                     .replace("{TARGET_TAG}", user.getNameTag())
                     , true));
         });

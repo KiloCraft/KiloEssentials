@@ -16,7 +16,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.util.List;
@@ -85,7 +85,7 @@ public class StaffMessageCommand extends EssentialCommand {
 
     private int send(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String message = StringArgumentType.getString(ctx, "message");
-        ServerChat.sendSafely(this.getOnlineUser(ctx), new TextMessage(message), ServerChat.Channel.STAFF);
+        ServerChat.sendSafely(this.getOnlineUser(ctx), new MutableTextMessage(message), ServerChat.Channel.STAFF);
         return SUCCESS;
     }
 

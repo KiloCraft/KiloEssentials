@@ -2,6 +2,7 @@ package org.kilocraft.essentials;
 
 import com.google.common.collect.Lists;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.adventure.text.Component;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
@@ -14,12 +15,16 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -27,10 +32,13 @@ import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.text.TextComponent;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.events.server.ServerReloadEventImpl;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
@@ -305,6 +313,45 @@ public class ServerImpl implements Server {
         for (String s : message.split("\n")) {
             getLogger().info(TextFormat.clearColorCodes(s));
         }
+    }
+
+    @Override
+    public void sendMessage(MutableTextMessage message) {
+        this.sendMessage(message.toText());
+    }
+
+    @Override
+    public void sendMessage(Text text) {
+        this.server.sendSystemMessage(text, Util.NIL_UUID);
+    }
+
+    @Override
+    public void sendMessage(@NotNull Component component) {
+        this.sendMessage(TextComponent.from(component));
+    }
+
+    @Override
+    public void sendLangMessage(@NotNull String key, @Nullable Object... objects) {
+    }
+
+    @Override
+    public int sendError(String message) {
+        this.sendMessage(message);
+        return -1;
+    }
+
+    @Override
+    public void sendError(MutableTextMessage message) {
+        this.sendError(message.toText());
+    }
+
+    @Override
+    public void sendError(Text text) {
+        this.sendMessage(((MutableText) text).formatted(Formatting.RED));
+    }
+
+    @Override
+    public void sendLangError(@NotNull String key, @Nullable Object... objects) {
     }
 
     @Override

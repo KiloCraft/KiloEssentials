@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
+import org.kilocraft.essentials.api.text.OnlineMessageReceptionist;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
@@ -28,7 +29,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface Server {
+public interface Server extends OnlineMessageReceptionist {
 
     /**
      * Gets the Minecraft Server
@@ -265,13 +266,6 @@ public interface Server {
     void kickAll(String reason);
 
     void kickAll(Text reason);
-
-    /**
-     * Sends a message to console
-     *
-     * @param message you want to send
-     */
-    void sendMessage(String message);
 
     /**
      * Sends a warning message to console

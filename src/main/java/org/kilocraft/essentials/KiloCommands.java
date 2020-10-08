@@ -15,7 +15,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
@@ -33,7 +33,7 @@ import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.commands.help.HelpCommand;
 import org.kilocraft.essentials.commands.moderation.*;
@@ -259,7 +259,7 @@ public class KiloCommands {
     public static void executeUsageFor(final String langKey, final ServerCommandSource source) {
         final String fromLang = ModConstants.getLang().getProperty(langKey);
         if (fromLang != null)
-            KiloChat.sendMessageToSource(source, new TextMessage("&6Command usage:\n" + fromLang, true));
+            KiloChat.sendMessageToSource(source, new MutableTextMessage("&6Command usage:\n" + fromLang, true));
         else
             KiloChat.sendLangMessageTo(source, "general.usage.help");
     }
@@ -338,7 +338,7 @@ public class KiloCommands {
 
     @Deprecated
     public static void sendPermissionError(final ServerCommandSource source) {
-        KiloChat.sendMessageToSource(source, new TextMessage(
+        KiloChat.sendMessageToSource(source, new MutableTextMessage(
                 KiloConfig.messages().commands().context().permissionException
                 , true));
     }
@@ -476,7 +476,7 @@ public class KiloCommands {
                     if (this.isCommand(literalName) && reqPerm != null && !KiloCommands.hasPermission(executor, reqPerm)) {
                         KiloCommands.sendPermissionError(executor);
                     } else {
-                        KiloChat.sendMessageToSource(executor, new TextMessage(KiloConfig.messages().commands().context().executionException, true));
+                        KiloChat.sendMessageToSource(executor, new MutableTextMessage(KiloConfig.messages().commands().context().executionException, true));
                     }
 
                 } else {

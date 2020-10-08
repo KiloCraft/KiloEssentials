@@ -12,7 +12,7 @@ import org.kilocraft.essentials.util.TPSTracker;
 import org.kilocraft.essentials.util.text.Texter;
 
 public class ConfigVariableFactory {
-    private static Server server = KiloEssentials.getServer();
+    private static final Server server = KiloEssentials.getServer();
 
     public static String replaceOnlineUserVariables(String str, @NotNull final OnlineUser user) {
         Validate.notNull(user, "User most not be null!");

@@ -5,12 +5,13 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 
-public interface OnlineMessageReceptionist extends EntityIdentifiable {
+public interface OnlineMessageReceptionist {
+    @Deprecated
+    void sendMessage(final MutableTextMessage message);
+
     void sendMessage(final String message);
-
-    void sendMessage(final TextMessage message);
 
     void sendMessage(final Text text);
 
@@ -20,7 +21,7 @@ public interface OnlineMessageReceptionist extends EntityIdentifiable {
 
     int sendError(final String message);
 
-    void sendError(final TextMessage message);
+    void sendError(final MutableTextMessage message);
 
     void sendError(final Text text);
 

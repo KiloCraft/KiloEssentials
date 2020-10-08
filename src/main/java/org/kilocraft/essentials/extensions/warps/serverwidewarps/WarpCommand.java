@@ -12,7 +12,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
@@ -91,7 +91,7 @@ public class WarpCommand {
             throw WARP_NOT_FOUND_EXCEPTION.create();
             ServerWarp warp = ServerWarpManager.getWarp(name);
 
-            KiloChat.sendMessageTo(source, new TextMessage(
+            KiloChat.sendMessageTo(source, new MutableTextMessage(
                     KiloConfig.messages().commands().warp().teleportTo
                             .replace("{WARP_NAME}", name),
                     true

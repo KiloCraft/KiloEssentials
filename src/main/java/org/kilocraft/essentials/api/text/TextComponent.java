@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.api.text;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.text.Text;
@@ -29,5 +30,9 @@ public class TextComponent {
 
     public static Component removeEvents(@NotNull final Component component) {
         return component.clickEvent(null).hoverEvent(null);
+    }
+
+    public static Component removeStyle(@NotNull final Component component) {
+        return component.style(Style.empty());
     }
 }

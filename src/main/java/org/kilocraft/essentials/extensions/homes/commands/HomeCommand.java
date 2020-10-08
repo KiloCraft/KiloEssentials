@@ -18,16 +18,14 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.chat.LangText;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.util.LocationUtil;
 
 public class HomeCommand extends EssentialCommand {
     private static final SimpleCommandExceptionType MISSING_DIMENSION = new SimpleCommandExceptionType(new LiteralText("The Dimension this home exists in no longer exists"));
@@ -75,7 +73,7 @@ public class HomeCommand extends EssentialCommand {
                 throw HomeCommand.MISSING_DIMENSION.create();
         }
 
-        user.sendMessage(new TextMessage(HomeCommand.replaceVariables(
+        user.sendMessage(new MutableTextMessage(HomeCommand.replaceVariables(
                 this.messages.commands().playerHomes().teleporting, user, user, user.getHomesHandler().getHome(name)), user));
         return IEssentialCommand.SUCCESS;
     }
@@ -121,7 +119,7 @@ public class HomeCommand extends EssentialCommand {
             String message = CommandUtils.areTheSame(source, user) ? this.messages.commands().playerHomes().teleporting :
                     this.messages.commands().playerHomes().admin().teleporting;
 
-            source.sendMessage(new TextMessage(HomeCommand.replaceVariables(
+            source.sendMessage(new MutableTextMessage(HomeCommand.replaceVariables(
                     message, source, user, user.getHomesHandler().getHome(name)), user));
         });
 

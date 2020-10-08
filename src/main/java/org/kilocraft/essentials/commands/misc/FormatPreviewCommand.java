@@ -8,7 +8,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +31,7 @@ public class FormatPreviewCommand extends EssentialCommand {
 
     private static int execute(CommandContext<ServerCommandSource> ctx) {
         String text = getString(ctx, "text");
-        KiloChat.sendMessageToSource(ctx.getSource(), new TextMessage("&eText preview:&r\n" + text, true));
+        KiloChat.sendMessageToSource(ctx.getSource(), new MutableTextMessage("&eText preview:&r\n" + text, true));
 
         return text.length();
     }

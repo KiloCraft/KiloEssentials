@@ -25,6 +25,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.text.TextMessage;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.User;
@@ -35,7 +36,7 @@ import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
@@ -296,9 +297,9 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
         if (silent) {
-            ServerChat.Channel.STAFF.send(new TextMessage(config.meta().silentPrefix + " " + message).toText());
+            ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
         } else if (config.meta().broadcast) {
-            KiloChat.broadCast(new TextMessage(message));
+            KiloChat.broadCast(new MutableTextMessage(message));
         }
     }
 
@@ -314,9 +315,9 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
         if (silent) {
-            ServerChat.Channel.STAFF.send(new TextMessage(config.meta().silentPrefix + " " + message).toText());
+            ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
         } else if (config.meta().broadcast) {
-            KiloChat.broadCast(new TextMessage(message));
+            KiloChat.broadCast(new MutableTextMessage(message));
         }
     }
 
@@ -444,7 +445,7 @@ public class ServerUserManager implements UserManager, TickListener {
                     return;
                 }
 
-                ServerChat.send(user, new TextMessage(string), user.getPreference(Preferences.CHAT_CHANNEL));
+                ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
             }
         } catch (Exception e) {
             MutableText text = Texter.newTranslatable("command.failed");
