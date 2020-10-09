@@ -2,38 +2,43 @@ package org.kilocraft.essentials.commands.misc;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.MutableText;
-import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.text.TextFormat;
+import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.util.text.Texter;
+import org.kilocraft.essentials.api.text.ComponentText;
+
+import static net.kyori.adventure.text.Component.*;
 
 public class TextFormattingCommand extends EssentialCommand {
-	private static final MutableText text = Texter.InfoBlockStyle.of(tl("command.textformatting.title"))
-			.newLine().appendRaw(
-					TextFormat.translateAlternateColorCodes(
-							'~',
-							"~0&0Black ~1&1Dark Blue ~2&2Dark Green ~3&3Dark Aqua ~4&4Dark Red ~5&5Dark Purple " +
-									"~6&6Gold ~7&7Gray ~8&8Dark Gray ~9&9Blue ~a&aGreen ~b&bAqua ~c&cRed ~d&dPurple ~e&eYellow ~f&fWhite\n\n" +
-									"~f~lFormatting codes:\n~r~f&l ~lBold ~r&o~r~f~oItalic ~r&n~r~f ~nUnderline ~r&m~r~f~m Strike through ~r~f&k (Obfuscated) " +
-									"~kKiloEssentials! ~f&r Reset!"
-					)
-			)
-			.newLine().append(tl("command.textformatting.footer")).newLine()
-			.build();
+    private static final Text MESSAGE = ComponentText.toText(
+            text().append(text("Text Formats", NamedTextColor.GOLD, TextDecoration.BOLD))
+                    .append(newline())
+                    .append(
+                            text("Full details:").append(space())
+                                    .append(
+                                            text("docs.adventure.kyori.net/minimessage.html#format",
+                                                    Style.style(NamedTextColor.AQUA, TextDecoration.UNDERLINED)
+                                                            .hoverEvent(HoverEvent.showText(text("Click to open", NamedTextColor.LIGHT_PURPLE)))
+                                                            .clickEvent(ClickEvent.openUrl("https://docs.adventure.kyori.net/minimessage.html#format")))
+                                    )
+                    ).build()
+    );
 
-	public TextFormattingCommand() {
-		super("textformating", new String[]{"colours", "colors"});
-	}
+    public TextFormattingCommand() {
+        super("textformating", new String[]{"colours", "colors"});
+    }
 
-	public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		argumentBuilder.executes(this::execute);
-	}
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        argumentBuilder.executes(this::execute);
+    }
 
-	public int execute(CommandContext<ServerCommandSource> context) {
-		this.sendMessage(context, text);
-		return SUCCESS;
-	}
+    public int execute(CommandContext<ServerCommandSource> context) {
+        this.sendMessage(context, MESSAGE);
+        return SUCCESS;
+    }
 }

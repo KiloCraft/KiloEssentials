@@ -22,7 +22,7 @@ public class StringText {
         if (string == null) {
             return new LiteralText(key);
         }
-        final Component component = ComponentText.of(objects == null ? string : String.format(string, objects));
+        final Component component = ComponentText.of(objects == null ? string : String.format(string, objects), false);
         return (LiteralText) ComponentText.toText(withStyle ? component : ComponentText.removeStyle(component));
     }
 

@@ -10,9 +10,9 @@ public class EventsConfigSection {
     public boolean disableOnProxyMode = false;
 
     @Setting(value = "userJoin")
-    public String userJoin = "&e%USER_DISPLAYNAME%&e joined the game";
+    public String userJoin = "&e%user_displayname%&e joined the game";
 
     @Setting(value = "userLeave")
-    public String userLeave = "&e%USER_DISPLAYNAME%&e left the game.";
+    public String userLeave = "&e%user_displayname%&e left the game.";
 
 }

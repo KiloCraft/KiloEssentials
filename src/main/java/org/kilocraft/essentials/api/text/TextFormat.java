@@ -250,30 +250,6 @@ public enum TextFormat {
     }
 
     /**
-     * Translates a string with legacy style color codes into a Kyori Adventure style.
-     *
-     * @param altColorChar    The alternate color code character to replace. Ex: {@literal &}
-     * @param text Text containing the alternate color code character.
-     * @return String containing the new formatting code style.
-     */
-    public static String translateLegacyToKyoriStyle(final char altColorChar, @NotNull final String text) {
-        Validate.notNull(text, "Cannot translate null text");
-        String string = text;
-        final char[] b = text.toCharArray();
-        for (int i = 0; i < b.length; i++) {
-            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
-                final @Nullable TextFormat format = getByChar(b[i + 1]);
-                string = string.replace(
-                        String.valueOf(altColorChar) + b[i + 1],
-                        "<" + (format == null ? "reset" : format.name().toLowerCase(Locale.ENGLISH)) + ">"
-                );
-            }
-        }
-
-        return string;
-    }
-
-    /**
      * Translates a string using an alternate color code character into a
      * string that uses the internal ChatColor.COLOR_CODE color code
      * character. The alternate color code character will only be replaced if
