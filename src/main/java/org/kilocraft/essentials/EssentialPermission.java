@@ -9,6 +9,7 @@ public enum EssentialPermission {
     CHAT_URL("chat.url"),
     CHAT_SHOW_ITEM("chat.show_item"),
     CHAT_BYPASS("chat.bypass"),
+    CHAT_EVENTS("chat.events"),
     CHAT_GET_PINGED("chat.ping.get_pinged"),
     CHAT_PING_OTHER("chat.ping.other"),
     CHAT_PING_EVERYONE("chat.ping.everyone"),

@@ -443,7 +443,7 @@ public class ServerUserManager implements UserManager, TickListener {
                     user.sendMessage(getMuteMessage(user));
                     return;
                 }
-
+                if (!user.hasPermission(EssentialPermission.CHAT_EVENTS)) string = string.replaceAll("<\\/?(click|hover|insertion)(:.+)+>", "");
                 ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
             }
         } catch (Exception e) {

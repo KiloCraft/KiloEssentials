@@ -61,7 +61,7 @@ public class ComponentText {
     }
 
     public static Component of(@NotNull final String raw) {
-        return of(raw, true);
+        return of(raw, false);
     }
 
     public static Component of(@NotNull final String raw, final boolean markdown) {
@@ -74,7 +74,7 @@ public class ComponentText {
     }
 
     public static Component removeEvents(@NotNull final Component component) {
-        return component.clickEvent(null).hoverEvent(null);
+        return component.clickEvent(null).hoverEvent(null).insertion(null);
     }
 
     public static Component removeStyle(@NotNull final Component component) {
