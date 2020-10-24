@@ -11,6 +11,8 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -87,19 +89,21 @@ public class WarpCommand {
     }
 
     private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
-        if (!ServerWarpManager.getWarpsByName().contains(name))
+        if (!ServerWarpManager.getWarpsByName().contains(name)) {
             throw WARP_NOT_FOUND_EXCEPTION.create();
-            ServerWarp warp = ServerWarpManager.getWarp(name);
-
-            KiloChat.sendMessageTo(source, new MutableTextMessage(
-                    KiloConfig.messages().commands().warp().teleportTo
-                            .replace("{WARP_NAME}", name),
-                    true
-            ));
-
-            KiloServer.getServer().getOnlineUser(source.getPlayer()).saveLocation();
-            ServerWarpManager.teleport(source, warp);
-
+        }
+        source.getPlayer();
+        ServerWarp warp = ServerWarpManager.getWarp(name);
+        OnlineUser user = KiloServer.getServer().getOnlineUser(source.getPlayer());
+        ScheduledExecutionThread.teleport(user, () -> {
+            user.sendLangMessage("command.warp.teleport", warp.getName());
+            user.saveLocation();
+            try {
+                ServerWarpManager.teleport(user.getCommandSource(), warp);
+            } catch (CommandSyntaxException ignored) {
+                //We already have a check, which checks if the executor is a player
+            }
+        });
         return 1;
     }
 

@@ -14,10 +14,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
@@ -66,15 +68,18 @@ public class HomeCommand extends EssentialCommand {
             return IEssentialCommand.FAILED;
         }
 
-        try {
-            homeHandler.teleportToHome(user, name);
-        } catch (final UnsafeHomeException e) {
-            if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION)
-                throw HomeCommand.MISSING_DIMENSION.create();
-        }
+        ScheduledExecutionThread.teleport(user, () -> {
+            try {
+                homeHandler.teleportToHome(user, name);
+                user.sendMessage(new MutableTextMessage(HomeCommand.replaceVariables(
+                        this.messages.commands().playerHomes().teleporting, user, user, user.getHomesHandler().getHome(name)), user));
+            } catch (final UnsafeHomeException e) {
+                if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION) {
+                    user.sendError(e.getMessage());
+                }
+            }
+        });
 
-        user.sendMessage(new MutableTextMessage(HomeCommand.replaceVariables(
-                this.messages.commands().playerHomes().teleporting, user, user, user.getHomesHandler().getHome(name)), user));
         return IEssentialCommand.SUCCESS;
     }
 
