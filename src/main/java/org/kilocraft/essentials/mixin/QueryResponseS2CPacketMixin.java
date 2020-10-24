@@ -1,10 +1,12 @@
 package org.kilocraft.essentials.mixin;
 
+import net.kyori.adventure.text.Component;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.util.Rainbow;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -22,13 +24,10 @@ public class QueryResponseS2CPacketMixin {
     private ServerMetadata metadata;
 
     @Inject(method = "write", at = @At(value = "HEAD"))
-    public void setMetaData(PacketByteBuf buf, CallbackInfo ci){
+    public void setMetaData(PacketByteBuf buf, CallbackInfo ci) {
         MotdConfigSection motdConfig = KiloConfig.main().motd();
-        if(motdConfig.enabled) {
-            MutableText line1 = motdConfig.rainbow ? Rainbow.formatRainbow(TextFormat.removeAlternateColorCodes('&', motdConfig.line1), motdConfig.offset, motdConfig.ignorespaces) : TextFormat.translateToLiteralText('&', motdConfig.line1);
-            MutableText line2 = motdConfig.rainbow ? Rainbow.formatRainbow(TextFormat.removeAlternateColorCodes('&', motdConfig.line2), motdConfig.offset, motdConfig.ignorespaces) : TextFormat.translateToLiteralText('&', motdConfig.line2);
-            MutableText motd = line1.append(new LiteralText("\n").append(line2));
-            this.metadata.setDescription(motd);
+        if (motdConfig.enabled) {
+            this.metadata.setDescription(ComponentText.toText(ComponentText.of(motdConfig.line1, false).append(Component.text("\n").append(ComponentText.of(motdConfig.line2)))));
         }
     }
 }

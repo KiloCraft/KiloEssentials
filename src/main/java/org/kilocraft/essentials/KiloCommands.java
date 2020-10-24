@@ -175,7 +175,6 @@ public class KiloCommands {
         this.register(new WhoIsCommand());
         this.register(new WhoWasCommand());
         this.register(new PlaytimeCommand());
-        this.register(new MotdCommand());
         this.register(new HelpMeCommand());
         this.register(new PlaytimeTopCommand());
         this.register(new SilenceCommand());
