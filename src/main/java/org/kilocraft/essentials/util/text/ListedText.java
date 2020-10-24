@@ -4,6 +4,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.ArrayList;
@@ -698,7 +699,7 @@ public class ListedText {
                     .formatted(f3);
 
             if (!this.stickyHeader.isEmpty()) {
-                header.append("\n").append(new LiteralText(TextFormat.translate(this.stickyHeader))).append("\n");
+                header.append("\n").append(ComponentText.toText(this.stickyHeader)).append("\n");
             }
 
             MutableText button_prev = new LiteralText("")
@@ -737,7 +738,7 @@ public class ListedText {
             MutableText text = new LiteralText("");
             if (this.textEntries == null && this.entries != null) {
                 for (String entry : entries) {
-                    text.append(new LiteralText(TextFormat.translate(entry)).append("\n"));
+                    text.append(ComponentText.toText(entry)).append("\n");
                 }
             } else if (this.textEntries != null && this.entries == null) {
                 for (MutableText textEntry : this.textEntries) {
@@ -746,7 +747,7 @@ public class ListedText {
             }
 
             if (!this.stickyFooter.isEmpty()) {
-                text.append(new LiteralText(TextFormat.translate(this.stickyFooter))).append("\n");
+                text.append(ComponentText.toText(this.stickyFooter)).append("\n");
             }
             source.sendFeedback(header.append("\n").append(text).append(footer), false);
         }

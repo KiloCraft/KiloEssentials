@@ -30,6 +30,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.StringText;
@@ -416,7 +417,7 @@ public class KiloCommands {
             }
         }
 
-        source.sendFeedback(Texter.newText(builder.toString()), false);
+        source.sendFeedback(ComponentText.toText(builder.toString()), false);
     }
 
     public int execute(@NotNull final ServerCommandSource executor, @NotNull final String command) {

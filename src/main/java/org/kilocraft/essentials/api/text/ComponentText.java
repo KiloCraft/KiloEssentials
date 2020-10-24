@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -37,8 +38,11 @@ public class ComponentText {
                 );
             }
         }
-
         return string;
+    }
+
+    public static String clearColorCodes(@NotNull String textToClear) {
+        return textToClear.replaceAll("<.+:.+>", "");
     }
 
     public static Text toText(@NotNull final Component component) {
@@ -46,7 +50,7 @@ public class ComponentText {
         return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component));
     }
 
-    public static Text toText(@NotNull final String raw) {
+    public static MutableText toText(@NotNull final String raw) {
         Validate.notNull(raw, "Input must not be null!");
         return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(of(raw)));
     }

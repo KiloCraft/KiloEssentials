@@ -15,6 +15,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
@@ -24,6 +25,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUserManager;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.player.PlayerDataModifier;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -81,7 +83,7 @@ public class NicknameCommand extends EssentialCommand {
         ServerPlayerEntity self = source.getPlayer();
         int maxLength = KiloConfig.main().nicknameMaxLength;
         String nickname = getString(ctx, "nickname");
-        String unformatted = TextFormat.clearColorCodes(nickname);
+        String unformatted = TextFormat.clearColorCodes(nickname).replaceAll("<.+>", "");
 
         if (unformatted.length() > maxLength || unformatted.length() < 3) {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
@@ -119,7 +121,7 @@ public class NicknameCommand extends EssentialCommand {
         ServerCommandSource source = ctx.getSource();
         OnlineUser src = this.getOnlineUser(ctx);
         String nickname = getString(ctx, "nickname");
-        String unformatted = TextFormat.clearColorCodes(nickname);
+        String unformatted = ComponentText.clearColorCodes(TextFormat.clearColorCodes(nickname));
         int maxLength = KiloConfig.main().nicknameMaxLength;
 
         if (unformatted.length() > maxLength || unformatted.length() < 3) {
@@ -197,8 +199,8 @@ public class NicknameCommand extends EssentialCommand {
     private static CompletableFuture<Suggestions> setSelfSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         User user = KiloServer.getServer().getUserManager().getOnline(context.getSource().getPlayer());
         List<String> strings = new ArrayList<>();
-        if (user.getNickname().isPresent())
-            strings.add(user.getNickname().get());
+        if (user.getPreference(Preferences.NICK).isPresent())
+            strings.add(user.getPreference(Preferences.NICK).get());
 
         return CommandSource.suggestMatching(strings, builder);
     }
@@ -206,8 +208,8 @@ public class NicknameCommand extends EssentialCommand {
     private static CompletableFuture<Suggestions> setOthersSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         User user = KiloServer.getServer().getUserManager().getOnline(getString(context, "user"));
         List<String> strings = new ArrayList<>();
-        if (user != null && user.getNickname() != null &&  user.getNickname().isPresent())
-            strings.add(user.getNickname().get());
+        if (user != null && user.getPreference(Preferences.NICK).isPresent())
+            strings.add(user.getPreference(Preferences.NICK).get());
 
         return CommandSource.suggestMatching(strings, builder);
     }

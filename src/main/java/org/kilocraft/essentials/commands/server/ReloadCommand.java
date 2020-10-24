@@ -10,6 +10,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.text.Texter;
@@ -59,12 +60,10 @@ public class ReloadCommand extends EssentialCommand {
             watch.stop();
             String str = tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
             logger.error(str);
-            src.sendMessage(Texter.newText(tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)))).styled(style -> {
-                return style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText(throwable.getMessage())));
-            }));
+            src.sendMessage(ComponentText.toText(tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)))).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText(throwable.getMessage())))));
             success.set(false);
         });
-        if(success.get()) {
+        if (success.get()) {
             watch.stop();
             src.sendLangMessage("command.reload.end", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
         }

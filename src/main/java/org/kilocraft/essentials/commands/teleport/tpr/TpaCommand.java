@@ -10,6 +10,7 @@ import net.minecraft.text.Texts;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.preference.Preferences;
@@ -55,7 +56,7 @@ public class TpaCommand extends EssentialCommand {
         UserUtils.TpaRequests.add(src, target, false);
 
         src.sendMessage(
-                Texter.newText(tl("command.tpa.sent", target.getFormattedDisplayName()))
+                ComponentText.toText(tl("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
                         .append(
                                 Texts.bracketed(
@@ -66,7 +67,7 @@ public class TpaCommand extends EssentialCommand {
         );
 
         target.sendMessage(
-                Texter.newText(tl("command.tpa.receive", src.getFormattedDisplayName()))
+                ComponentText.toText(tl("command.tpa.receive", src.getFormattedDisplayName()))
                         .append(" ")
                         .append(
                                 Texts.bracketed(

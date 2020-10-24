@@ -108,13 +108,12 @@ public class PlaytimeTopCommand extends EssentialCommand {
             }
 
             String pt = TimeDifferenceUtil.convertSecondsToString(entry.getValue() / 20, 'e', '6');
+            System.out.println(pt);
             input.append(String.format(LINE_FORMAT, i + 1, entry.getKey(), pt));
         }
 
         ListedText.Page paged = ListedText.getPageFromStrings(ListedText.Options.builder().setPageIndex(page - 1).build(), input.getLines());
 
-        String pt = TimeDifferenceUtil.convertSecondsToString(src.getTicksPlayed() / 20, 'b', '3');
-        paged.setStickyFooter(String.format(ModConstants.translation("command.playtimetop.format.self"), rank + 1, src.getFormattedDisplayName(), pt));
         paged.send(src.getCommandSource(), "Top Play Times", "/playtimetop %page%");
         return SUCCESS;
     }
