@@ -32,6 +32,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
@@ -125,7 +126,7 @@ public class SignEditCommand extends EssentialCommand {
         int line = getInteger(ctx, "line") - 1;
         String input = getString(ctx, "string");
 
-        if (TextFormat.removeAlternateColorCodes('&', input).length() > 17)
+        if (ComponentText.clearColorCodes(TextFormat.removeAlternateColorCodes('&', input)).length() > 17)
             throw KiloCommands.getException(ExceptionMessageNode.STRING_TOO_LONG, 17).create();
 
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
@@ -143,7 +144,7 @@ public class SignEditCommand extends EssentialCommand {
             return SUCCESS;
         }
 
-        sign.setTextOnRow(line, new LiteralText(TextFormat.translate(input)));
+        sign.setTextOnRow(line, ComponentText.toText(input));
 
         updateSign(sign, player.getServerWorld(), blockEntity.getPos());
         KiloChat.sendLangMessageTo(player, "command.signedit.set_text", line + 1, input);

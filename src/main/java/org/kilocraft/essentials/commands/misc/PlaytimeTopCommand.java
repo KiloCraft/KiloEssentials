@@ -94,18 +94,12 @@ public class PlaytimeTopCommand extends EssentialCommand {
     }
 
     private static int send(OnlineUser src, int page, List<Map.Entry<String, Integer>> sortedList, long totalTicks) {
-        int rank = 0;
-
         TextInput input = new TextInput(
                 ModConstants.translation("command.playtimetop.total", TimeDifferenceUtil.convertSecondsToString((int) (totalTicks / 20L), 'e', '6'))
         );
 
         for (int i = 0; i < sortedList.size(); i++) {
             Map.Entry<String, Integer> entry = sortedList.get(i);
-
-            if (entry.getKey().equalsIgnoreCase(src.getFormattedDisplayName())) {
-                rank = i;
-            }
 
             String pt = TimeDifferenceUtil.convertSecondsToString(entry.getValue() / 20, 'e', '6');
             System.out.println(pt);
