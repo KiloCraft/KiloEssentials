@@ -19,7 +19,6 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -59,7 +58,7 @@ public class SethomeCommand extends EssentialCommand {
         String name = input.replaceFirst("-confirmed-", "");
 
         if (!canSet(user) && !homeHandler.hasHome(name)) {
-            user.sendMessage(messages.commands().playerHomes().reachedLimit);
+            user.sendLangMessage("command.sethome.limit");
             return FAILED;
         }
 
@@ -76,8 +75,7 @@ public class SethomeCommand extends EssentialCommand {
         }
 
         homeHandler.addHome(new Home(player.getUuid(), name, Vec3dLocation.of(player).shortDecimals()));
-        user.sendMessage(new MutableTextMessage(HomeCommand.replaceVariables(
-                KiloConfig.messages().commands().playerHomes().homeSet, user, user, homeHandler.getHome(name)), user));
+        user.sendLangMessage("command.sethome.self", name);
 
         return SUCCESS;
     }
@@ -98,8 +96,7 @@ public class SethomeCommand extends EssentialCommand {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
             if (CommandUtils.areTheSame(source, user) && canSet(user) && !homeHandler.hasHome(name)) {
-                source.sendMessage(messages.commands().playerHomes().reachedLimit
-                        .replace("{HOME_SIZE}", String.valueOf(homeHandler.getHomes().size())));
+                source.sendLangMessage("command.sethome.limit");
                 return;
             }
 
@@ -119,11 +116,9 @@ public class SethomeCommand extends EssentialCommand {
             }
 
             if (CommandUtils.areTheSame(source, user))
-                source.sendMessage(messages.commands().playerHomes().homeSet
-                        .replace("{HOME_NAME}", name));
-            else source.sendMessage(messages.commands().playerHomes().admin().homeSet
-                    .replace("{HOME_NAME}", name)
-                    .replace("{TARGET_TAG}", user.getNameTag()));
+                source.sendLangMessage("command.sethome.self", name);
+            else
+                source.sendLangMessage("command.sethome.other", name, user.getDisplayName());
         });
 
         return AWAIT;

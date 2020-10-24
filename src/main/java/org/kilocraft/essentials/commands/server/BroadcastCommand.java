@@ -27,8 +27,8 @@ public class BroadcastCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
         String format = KiloConfig.messages().commands().broadCastFormat;
-        KiloChat.broadCast(new MutableTextMessage(
-                format.replace("%MESSAGE%", getString(ctx, "message")), true));
+        KiloChat.broadCast(
+                format.replace("%MESSAGE%", getString(ctx, "message")));
         return SUCCESS;
     }
 }

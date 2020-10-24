@@ -5,12 +5,9 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
@@ -63,9 +60,10 @@ public class HomesCommand extends EssentialCommand {
         boolean areTheSame = CommandUtils.areTheSame(source, user);
         assert user.getHomesHandler() != null;
         if (user.getHomesHandler().homes() == 0) {
-            source.sendMessage(areTheSame ? KiloConfig.messages().commands().playerHomes().noHome :
-                    KiloConfig.messages().commands().playerHomes().admin().noHome.replace("{TARGET_TAG}", user.getNameTag()));
-
+            if (areTheSame)
+                source.sendLangMessage("command.home.no_home.self");
+            else
+                source.sendLangMessage("command.home.no_home.other", user.getDisplayName());
             return FAILED;
         }
 
@@ -94,7 +92,7 @@ public class HomesCommand extends EssentialCommand {
         assert homeHandler != null;
 
         if (homeHandler.getHomes().size() == 0) {
-            src.sendLangError("command.home.no_home");
+            src.sendLangError("command.home.no_home.self");
             return FAILED;
         }
 

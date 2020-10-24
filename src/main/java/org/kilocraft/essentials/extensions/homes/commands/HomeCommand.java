@@ -59,7 +59,7 @@ public class HomeCommand extends EssentialCommand {
         final String name = input.replaceFirst("-confirmed-", "");
 
         if (!homeHandler.hasHome(name)) {
-            user.sendMessage(this.messages.commands().playerHomes().invalidHome);
+            user.sendLangMessage("command.home.invalid_home");
             return IEssentialCommand.FAILED;
         }
 
@@ -71,8 +71,7 @@ public class HomeCommand extends EssentialCommand {
         ScheduledExecutionThread.teleport(user, () -> {
             try {
                 homeHandler.teleportToHome(user, name);
-                user.sendMessage(new MutableTextMessage(HomeCommand.replaceVariables(
-                        this.messages.commands().playerHomes().teleporting, user, user, user.getHomesHandler().getHome(name)), user));
+                user.sendLangMessage("command.home.teleport.self", name);
             } catch (final UnsafeHomeException e) {
                 if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION) {
                     user.sendError(e.getMessage());
@@ -121,11 +120,11 @@ public class HomeCommand extends EssentialCommand {
                 }
             }
 
-            String message = CommandUtils.areTheSame(source, user) ? this.messages.commands().playerHomes().teleporting :
-                    this.messages.commands().playerHomes().admin().teleporting;
-
-            source.sendMessage(new MutableTextMessage(HomeCommand.replaceVariables(
-                    message, source, user, user.getHomesHandler().getHome(name)), user));
+            if (CommandUtils.areTheSame(source, user)) {
+                source.sendLangMessage("command.home.teleport.self", home.getName());
+            } else {
+                source.sendLangMessage("command.home.teleport.other", home.getName(), user.getDisplayName());
+            }
         });
 
         return IEssentialCommand.AWAIT;

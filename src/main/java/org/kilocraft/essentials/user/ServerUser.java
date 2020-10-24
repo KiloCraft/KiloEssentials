@@ -299,7 +299,8 @@ public class ServerUser implements User {
 
     @Override
     public Optional<String> getNickname() {
-        return this.getPreference(Preferences.NICK);
+        Optional<String> optional = this.getPreference(Preferences.NICK);
+        return optional.map(s -> Optional.of(s + "<reset>")).orElse(optional);
     }
 
     @Override

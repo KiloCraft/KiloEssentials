@@ -46,6 +46,11 @@ public class ComponentText {
         return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component));
     }
 
+    public static Text toText(@NotNull final String raw) {
+        Validate.notNull(raw, "Input must not be null!");
+        return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(of(raw)));
+    }
+
     public static Component toComponent(@NotNull final Text text) {
         Validate.notNull(text, "Text must not be null!");
         return GsonComponentSerializer.gson().deserialize(Text.Serializer.toJson(text));

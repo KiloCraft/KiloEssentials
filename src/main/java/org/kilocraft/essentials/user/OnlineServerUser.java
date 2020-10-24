@@ -2,6 +2,7 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
@@ -10,6 +11,7 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
@@ -33,6 +35,7 @@ import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
+import java.awt.*;
 import java.net.SocketAddress;
 import java.util.Date;
 import java.util.UUID;
@@ -89,12 +92,12 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(final String message) {
-        KiloChat.sendMessageTo(this.asPlayer(), new MutableTextMessage(message, true));
+        KiloChat.sendMessageTo(this.asPlayer(), ComponentText.toText(message));
     }
 
     @Override
     public int sendError(final String message) {
-        KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)new MutableTextMessage("&c" + message, true).toText()).formatted(Formatting.RED));
+        KiloChat.sendMessageTo(this.asPlayer(), ComponentText.toText(ComponentText.of(message).color(NamedTextColor.RED)));
         return 0;
     }
 

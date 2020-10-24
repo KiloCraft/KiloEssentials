@@ -8,8 +8,10 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.config.messages.Messages;
@@ -123,22 +125,23 @@ public class KiloChat {
 		for (PlayerEntity entity : getServer().getPlayerList()) {
 			entity.sendMessage(text, false);
 		}
-
 	}
 
-	public static void broadCastLang(String key) {
-		broadCastLang(key, (Object) null);
-	}
+	public static void broadCast(String message) {
+        for (PlayerEntity entity : getServer().getPlayerList()) {
+            entity.sendMessage(ComponentText.toText(message), false);
+        }
+    }
 
 	public static void broadCastLang(String key, Object... objects) {
-		broadCast(new MutableTextMessage(getFormattedLang(key, objects), true));
+		broadCast(getFormattedLang(key, objects));
 	}
 
 	public static void onUserJoin(ServerUser user) {
-		broadCast(new MutableTextMessage(messages.events().userJoin, user));
+		broadCast(ConfigVariableFactory.replaceUserVariables(messages.events().userJoin, user));
 	}
 
-	public static void onUserLeave(ServerUser user) {
-		broadCast(new MutableTextMessage(messages.events().userLeave, user));
-	}
+    public static void onUserLeave(ServerUser user) {
+        broadCast(ConfigVariableFactory.replaceUserVariables(messages.events().userLeave, user));
+    }
 }

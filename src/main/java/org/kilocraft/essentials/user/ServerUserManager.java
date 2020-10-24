@@ -298,7 +298,7 @@ public class ServerUserManager implements UserManager, TickListener {
         if (silent) {
             ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
         } else if (config.meta().broadcast) {
-            KiloChat.broadCast(new MutableTextMessage(message));
+            KiloChat.broadCast(message);
         }
     }
 
@@ -316,7 +316,7 @@ public class ServerUserManager implements UserManager, TickListener {
         if (silent) {
             ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
         } else if (config.meta().broadcast) {
-            KiloChat.broadCast(new MutableTextMessage(message));
+            KiloChat.broadCast(message);
         }
     }
 

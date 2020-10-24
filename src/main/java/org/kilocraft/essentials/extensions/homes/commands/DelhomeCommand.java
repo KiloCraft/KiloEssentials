@@ -55,7 +55,7 @@ public class DelhomeCommand extends EssentialCommand {
         String name = input.replaceFirst("-confirmed-", "");
 
         if (!homeHandler.hasHome(name)) {
-            user.sendMessage(KiloConfig.messages().commands().playerHomes().invalidHome);
+            user.sendLangMessage("command.home.invalid_home");
             return FAILED;
         }
 
@@ -66,8 +66,7 @@ public class DelhomeCommand extends EssentialCommand {
             homeHandler.removeHome(name);
         }
 
-        user.sendMessage(new MutableTextMessage(KiloConfig.messages().commands().playerHomes().homeRemoved
-                .replace("{HOME_NAME}", name), true));
+        user.sendLangMessage("command.delhome.self", name);
 
         return SUCCESS;
     }
@@ -84,10 +83,9 @@ public class DelhomeCommand extends EssentialCommand {
 
             if (!homeHandler.hasHome(name)) {
                 if (CommandUtils.areTheSame(source, user))
-                    source.sendMessage(messages.commands().playerHomes().noHome);
+                    source.sendLangMessage("command.home.no_home.self");
                 else
-                    source.sendMessage(messages.commands().playerHomes().admin().noHome
-                            .replace("{TARGET_TAG}", user.getNameTag()));
+                    source.sendLangMessage("command.home.no_home.other", user.getDisplayName());
                 return;
             }
 
@@ -105,11 +103,9 @@ public class DelhomeCommand extends EssentialCommand {
             }
 
             if (CommandUtils.areTheSame(source, user))
-                source.sendMessage(messages.commands().playerHomes().homeRemoved
-                        .replace("{HOME_NAME}", name));
-            else source.sendMessage(messages.commands().playerHomes().admin().homeRemoved
-                    .replace("{HOME_NAME}", name)
-                    .replace("{TARGET_TAG}", user.getNameTag()));
+                source.sendLangMessage("command.delhome.self", name);
+            else
+                source.sendLangMessage("command.delhome.other", name, user.getDisplayName());
         });
 
         return AWAIT;

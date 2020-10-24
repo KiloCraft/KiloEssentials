@@ -243,7 +243,7 @@ public class RtpCommand extends EssentialCommand {
         RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
 
         if (!cfg.broadcastMessage.isEmpty()) {
-            KiloChat.broadCast(new MutableTextMessage(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName())));
+            KiloChat.broadCast(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName()));
         }
 
         ServerWorld world = target.getServerWorld();
