@@ -68,7 +68,9 @@ dependencies {
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
 
     compile "net.kyori:adventure-text-minimessage:${project.kyori_adventure_version}"
+    shadow "net.kyori:adventure-text-minimessage:${project.kyori_adventure_version}"
     compile "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_version}"
+    shadow "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_version}"
 
 }
 
