@@ -12,6 +12,5 @@ public class OnServerStop implements EventHandler<ServerStopEvent> {
     public void handle(@NotNull ServerStopEvent event) {
         KiloEssentialsImpl.getInstance().onServerStop();
         LocateBiomeProvided.stopAll();
-        Votifier.getInstance().onDisable();
     }
 }
