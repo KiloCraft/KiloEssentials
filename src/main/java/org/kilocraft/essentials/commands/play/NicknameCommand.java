@@ -83,18 +83,22 @@ public class NicknameCommand extends EssentialCommand {
         ServerPlayerEntity self = source.getPlayer();
         int maxLength = KiloConfig.main().nicknameMaxLength;
         String nickname = getString(ctx, "nickname");
-        String unformatted = TextFormat.clearColorCodes(nickname).replaceAll("<.+>", "");
+        String unformatted = ComponentText.clearFormatting(TextFormat.clearColorCodes(nickname));
 
         if (unformatted.length() > maxLength || unformatted.length() < 3) {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
         }
 
         String formattedNickname = "";
-        if (KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING)) {
+        if (KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_BASIC)) {
         	formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
         } else {
         	formattedNickname = TextFormat.removeAlternateColorCodes('&', nickname);
         }
+        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_BASIC)) formattedNickname = ComponentText.stripColor(ComponentText.stripFormatting(formattedNickname));
+        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_EVENT)) formattedNickname = ComponentText.stripEvent(formattedNickname);
+        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_GRADIENT)) formattedNickname = ComponentText.stripGradient(formattedNickname);
+        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_RAINBOW)) formattedNickname = ComponentText.stripRainbow(formattedNickname);
 
         OnlineUser src = KiloServer.getServer().getUserManager().getOnline(self);
 
@@ -105,10 +109,9 @@ public class NicknameCommand extends EssentialCommand {
                 return;
             }
 
-            KiloServer.getServer().getCommandSourceUser(source).sendMessage(new MutableTextMessage(messages.commands().nickname().setSelf
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage(messages.commands().nickname().setSelf
                     .replace("{NICK}", src.getNickname().isPresent() ? src.getNickname().get() : src.getDisplayName())
-                    .replace("{NICK_NEW}", nickname)
-                    , true));
+                    .replace("{NICK_NEW}", nickname));
 
             src.setNickname(nickname);
             self.setCustomName(new LiteralText(finalFormattedNickname));
@@ -121,7 +124,7 @@ public class NicknameCommand extends EssentialCommand {
         ServerCommandSource source = ctx.getSource();
         OnlineUser src = this.getOnlineUser(ctx);
         String nickname = getString(ctx, "nickname");
-        String unformatted = ComponentText.clearColorCodes(TextFormat.clearColorCodes(nickname));
+        String unformatted = ComponentText.clearFormatting(TextFormat.clearColorCodes(nickname));
         int maxLength = KiloConfig.main().nicknameMaxLength;
 
         if (unformatted.length() > maxLength || unformatted.length() < 3) {

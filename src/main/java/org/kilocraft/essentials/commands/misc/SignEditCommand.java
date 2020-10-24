@@ -126,7 +126,7 @@ public class SignEditCommand extends EssentialCommand {
         int line = getInteger(ctx, "line") - 1;
         String input = getString(ctx, "string");
 
-        if (ComponentText.clearColorCodes(TextFormat.removeAlternateColorCodes('&', input)).length() > 17)
+        if (ComponentText.clearFormatting(TextFormat.removeAlternateColorCodes('&', input)).length() > 17)
             throw KiloCommands.getException(ExceptionMessageNode.STRING_TOO_LONG, 17).create();
 
         BlockEntity blockEntity = getBlockEntityAtCursor(player);

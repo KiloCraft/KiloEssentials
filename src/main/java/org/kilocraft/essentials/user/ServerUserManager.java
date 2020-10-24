@@ -24,6 +24,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.TickListener;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.PunishmentManager;
@@ -50,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -443,7 +445,11 @@ public class ServerUserManager implements UserManager, TickListener {
                     user.sendMessage(getMuteMessage(user));
                     return;
                 }
-                if (!user.hasPermission(EssentialPermission.CHAT_EVENTS)) string = string.replaceAll("<\\/?(click|hover|insertion)(:.+)+>", "");
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_COLOR)) string = ComponentText.stripColor(string);
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_BASIC)) string = ComponentText.stripFormatting(string);
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_EVENT)) string = ComponentText.stripEvent(string);
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_GRADIENT)) string = ComponentText.stripGradient(string);
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_RAINBOW)) string = ComponentText.stripRainbow(string);
                 ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
             }
         } catch (Exception e) {

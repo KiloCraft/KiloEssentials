@@ -41,8 +41,8 @@ public class ComponentText {
         return string;
     }
 
-    public static String clearColorCodes(@NotNull String textToClear) {
-        return textToClear.replaceAll("<.+:.+>", "");
+    public static String clearFormatting(@NotNull String textToClear) {
+        return stripRainbow(stripGradient(stripEvent(stripFormatting(stripColor(textToClear)))));
     }
 
     public static Text toText(@NotNull final Component component) {
@@ -74,7 +74,11 @@ public class ComponentText {
     }
 
     public static Component removeEvents(@NotNull final Component component) {
-        return component.clickEvent(null).hoverEvent(null).insertion(null);
+        component.style(s -> s.clickEvent(null).hoverEvent(null));
+        for (Component c : component.children()) {
+            removeEvents(c);
+        }
+        return component;
     }
 
     public static Component removeStyle(@NotNull final Component component) {
@@ -119,4 +123,25 @@ public class ComponentText {
 
         return "<" + color + ">" + tps;
     }
+
+    public static String stripColor(String s) {
+        return s.replaceAll("<\\/?((color:#?\\w+)|black|dark_blue|dark_green|dark_aqua|dark_red|dark_purple|gold|gray|dark_gray|blue|green|aqua|red|light_purple|yellow|white)>", "");
+    }
+
+    public static String stripFormatting(String s) {
+        return s.replaceAll("<\\/?(bold|italic|underlined|obfuscated|strikethrough)>", "");
+    }
+
+    public static String stripEvent(String s) {
+        return s.replaceAll("<\\/?(((click|insertion)(:[^<>]+)*)|hover:\\w*:('|\")[<>\\w]+('|\"))>", "");
+    }
+
+    public static String stripGradient(String s) {
+        return s.replaceAll("<\\/?gradient(:#?\\w+)*>", "");
+    }
+
+    public static String stripRainbow(String s) {
+        return s.replaceAll("<\\/?rainbow>", "");
+    }
+
 }
