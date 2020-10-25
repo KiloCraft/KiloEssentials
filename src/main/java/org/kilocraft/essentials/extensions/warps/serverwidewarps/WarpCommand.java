@@ -95,7 +95,7 @@ public class WarpCommand {
         source.getPlayer();
         ServerWarp warp = ServerWarpManager.getWarp(name);
         OnlineUser user = KiloServer.getServer().getOnlineUser(source.getPlayer());
-        ScheduledExecutionThread.teleport(user, () -> {
+        ScheduledExecutionThread.teleport(user, null, () -> {
             user.sendLangMessage("command.warp.teleport", warp.getName());
             user.saveLocation();
             try {

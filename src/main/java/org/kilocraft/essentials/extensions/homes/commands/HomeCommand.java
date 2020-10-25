@@ -68,7 +68,7 @@ public class HomeCommand extends EssentialCommand {
             return IEssentialCommand.FAILED;
         }
 
-        ScheduledExecutionThread.teleport(user, () -> {
+        ScheduledExecutionThread.teleport(user, null, () -> {
             try {
                 homeHandler.teleportToHome(user, name);
                 user.sendLangMessage("command.home.teleport.self", name);

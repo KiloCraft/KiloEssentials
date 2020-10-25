@@ -38,11 +38,9 @@ public class TpAcceptCommand extends EssentialCommand {
 
         boolean toSender = UserUtils.TpaRequests.useRequestAndGetType(sender);
         OnlineUser tpTarget = toSender ? sender : victim;
-        ScheduledExecutionThread.teleport(toSender ? victim : sender, () -> {
-            (toSender ? victim : sender).teleport(tpTarget);
-            victim.sendLangMessage("command.tpa.accepted", sender.getFormattedDisplayName());
-            sender.sendLangMessage("command.tpa.accepted.announce", victim.getFormattedDisplayName());
-        });
+        sender.sendLangMessage("command.tpa.accepted.announce", victim.getFormattedDisplayName());
+        victim.sendLangMessage("command.tpa.accepted", sender.getFormattedDisplayName());
+        ScheduledExecutionThread.teleport(toSender ? victim : sender, toSender ? sender : victim, () -> (toSender ? victim : sender).teleport(tpTarget));
 
 
         return SUCCESS;
