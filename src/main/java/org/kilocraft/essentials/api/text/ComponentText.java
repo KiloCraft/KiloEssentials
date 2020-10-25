@@ -129,7 +129,7 @@ public class ComponentText {
     }
 
     public static String stripFormatting(String s) {
-        return s.replaceAll("<\\/?(bold|italic|underlined|obfuscated|strikethrough)>", "");
+        return s.replaceAll("<\\/?(bold|italic|underlined|obfuscated|strikethrough|reset)>", "");
     }
 
     public static String stripEvent(String s) {

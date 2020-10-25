@@ -3,6 +3,7 @@ package org.kilocraft.essentials.api.util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.net.SocketAddress;
@@ -21,7 +22,7 @@ public class StringUtils {
     }
 
     public static String uniformNickname(final String nickname) {
-        return stringToUsername(TextFormat.clearColorCodes(nickname)).replaceAll("\\s+", "");
+        return stringToUsername(ComponentText.clearFormatting(TextFormat.clearColorCodes(nickname))).replaceAll("\\s+", "");
     }
 
     public static String stringToUsername(final String string) {

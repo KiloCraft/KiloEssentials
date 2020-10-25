@@ -39,6 +39,7 @@ public class ScheduledExecutionThread {
         }
         if (player.asPlayer().getPos().distanceTo(pos) > 1) {
             player.sendLangMessage("teleport.abort");
+            if (player2 != null) player2.sendLangMessage("teleport.abort.other", player.getDisplayName());
         } else {
             player.sendLangMessage("teleport.wait", seconds);
             start(1000, seconds == 1 ? s : () -> tick(seconds - 1, player, player2, pos, s));
