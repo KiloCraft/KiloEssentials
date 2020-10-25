@@ -17,9 +17,9 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
-import org.kilocraft.essentials.chat.LangText;
-import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.chat.StringText;
+import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class CustomCommands implements RelodableConfigurableFeature {
+public class CustomCommands implements ReloadableConfigurableFeature {
     public static boolean enabled = false;
     static Map<Identifier, SimpleCommand> map = new HashMap<>();
     private static ConfigurationNode configNode;
@@ -46,16 +46,14 @@ public class CustomCommands implements RelodableConfigurableFeature {
     public boolean register() {
         enabled = true;
         load();
-
         return true;
     }
 
     public void load() {
         try {
-            KiloFile CONFIG_FILE = new KiloFile("customCommands.hocon", KiloEssentials.getEssentialsPath());
+            KiloFile CONFIG_FILE = new KiloFile("customCommands.conf", KiloEssentials.getEssentialsPath());
             if (!CONFIG_FILE.exists()) {
                 CONFIG_FILE.createFile();
-                CONFIG_FILE.pasteFromResources("assets/config/customCommands.hocon");
             }
 
             ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
@@ -118,7 +116,7 @@ public class CustomCommands implements RelodableConfigurableFeature {
                 }
 
                 if (iArgs >= args.length) {
-                    throw new SimpleCommandExceptionType(LangText.getFormatter(true, "general.usage", cs.usage)
+                    throw new SimpleCommandExceptionType(StringText.of(true, "general.usage", cs.usage)
                             .formatted(Formatting.RED)).create();
                 }
 
@@ -153,10 +151,10 @@ public class CustomCommands implements RelodableConfigurableFeature {
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
             switch (this) {
                 case PLAYERS:
-                    return ArgumentCompletions.allPlayers(ctx, builder);
+                    return ArgumentSuggestions.allPlayers(ctx, builder);
 
                 default:
-                    return ArgumentCompletions.noSuggestions(ctx, builder);
+                    return ArgumentSuggestions.noSuggestions(ctx, builder);
             }
         }
     }

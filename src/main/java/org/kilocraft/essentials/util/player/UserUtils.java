@@ -15,8 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.SimpleProcess;
@@ -49,7 +47,8 @@ public class UserUtils {
             return Texter.newText(builder.toString());
         }
 
-        return Team.modifyText(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
+        return user.asPlayer().getScoreboardTeam() == null ? Texter.newText(user.getFormattedDisplayName()) :
+                Team.modifyText(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
     }
 
     private static net.luckperms.api.model.user.User getLuckyUser(UUID uuid) {
@@ -150,10 +149,6 @@ public class UserUtils {
             player.swingHand(hand, true);
         }
 
-        public static void showBobbing(PlayerEntity player) {
-            player.inventory.selectedSlot += 1;
-            player.inventory.selectedSlot -= 1;
-        }
     }
 
 }

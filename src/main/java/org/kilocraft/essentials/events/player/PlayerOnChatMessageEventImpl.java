@@ -6,21 +6,29 @@ import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.chat.ServerChat;
 
 public class PlayerOnChatMessageEventImpl implements PlayerOnChatMessageEvent {
+    private final ServerPlayerEntity player;
+    private final ServerChat.Channel channel;
+    private String message;
     private boolean cancelled = false;
     private String cancelReason;
-    private final ServerPlayerEntity player;
-    private String message;
 
-    public PlayerOnChatMessageEventImpl(@NotNull final ServerPlayerEntity player, @NotNull final String message) {
+    public PlayerOnChatMessageEventImpl(@NotNull final ServerPlayerEntity player, @NotNull final String message, @NotNull final ServerChat.Channel channel) {
         this.player = player;
         this.message = message;
+        this.channel = channel;
     }
 
     @Override
     public String getMessage() {
         return this.message;
+    }
+
+    @Override
+    public ServerChat.Channel getChannel() {
+        return this.channel;
     }
 
     @Override

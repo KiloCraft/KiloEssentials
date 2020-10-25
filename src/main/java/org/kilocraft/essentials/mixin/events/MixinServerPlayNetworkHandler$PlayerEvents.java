@@ -65,7 +65,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
 
     @Inject(at = @At(value = "HEAD"), method = "onDisconnected")
     private void ke$triggerEvent$onDisconnect(Text text, CallbackInfo ci) {
-        KiloServer.getServer().triggerEvent(new PlayerDisconnectEventImpl(this.player));
+        KiloServer.getServer().triggerEvent(new PlayerDisconnectEventImpl(this.player, KiloServer.getServer().getOnlineUser(this.player.getUuid())));
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "onDisconnected")
@@ -105,12 +105,12 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         ServerWorld serverWorld = this.player.getServerWorld();
         Hand hand = playerInteractBlockC2SPacket.getHand();
         ItemStack itemStack = this.player.getStackInHand(hand);
-        BlockHitResult blockHitResult = playerInteractBlockC2SPacket.getHitY();
+        BlockHitResult blockHitResult = playerInteractBlockC2SPacket.getBlockHitResult();
         BlockPos blockPos = blockHitResult.getBlockPos();
         Direction direction = blockHitResult.getSide();
         this.player.updateLastActionTime();
 
-        PlayerInteractBlockEvent event = new PlayerInteractBlockEventImpl(player, playerInteractBlockC2SPacket.getHitY(), hand);
+        PlayerInteractBlockEvent event = new PlayerInteractBlockEventImpl(player, playerInteractBlockC2SPacket.getBlockHitResult(), hand);
         KiloServer.getServer().triggerEvent(event);
         if (!event.isCancelled()) {
             if (blockPos.getY() < this.server.getWorldHeight()) {

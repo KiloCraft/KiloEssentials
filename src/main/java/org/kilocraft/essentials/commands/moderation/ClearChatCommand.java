@@ -8,14 +8,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 
 import java.util.Collection;
 
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayers;
-import static net.minecraft.command.arguments.EntityArgumentType.players;
+import static net.minecraft.command.argument.EntityArgumentType.getPlayers;
+import static net.minecraft.command.argument.EntityArgumentType.players;
 import static org.kilocraft.essentials.chat.KiloChat.*;
 
 public class ClearChatCommand extends EssentialCommand {
@@ -25,7 +25,7 @@ public class ClearChatCommand extends EssentialCommand {
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetsArgument = argument("targets", players())
-                .suggests(ArgumentCompletions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> executeMultiple(ctx, getPlayers(ctx, "targets"), false))
                 .then(literal("-silent")
                         .executes(ctx -> executeMultiple(ctx, getPlayers(ctx, "targets"), true)));
@@ -36,12 +36,12 @@ public class ClearChatCommand extends EssentialCommand {
     }
 
     private static int executeAll(CommandContext<ServerCommandSource> ctx, boolean silent) {
-        broadCastExceptConsole(new TextMessage(getClearString(), false));
+        broadCastExceptConsole(new MutableTextMessage(getClearString(), false));
 
         if (!silent)
             broadCastLangExceptConsole("command.clearchat.broadcast", ctx.getSource().getName());
 
-        broadCastToConsole(new TextMessage(
+        broadCastToConsole(new MutableTextMessage(
                 getFormattedLang("command.clearchat.broadcast", ctx.getSource().getName()), false));
 
         return SUCCESS;

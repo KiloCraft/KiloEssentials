@@ -7,18 +7,23 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ConfigurableFeatures {
-    private static List<ConfigurableFeature> features = new ArrayList<>();;
-    private static List<TickListener> tickListeners = new ArrayList<>();
+    private static final List<ConfigurableFeature> features = new ArrayList<>();
+    private static final List<TickListener> tickListeners = new ArrayList<>();
+    private static ConfigurableFeatures INSTANCE;
+
     public ConfigurableFeatures() {
         KiloEssentialsImpl.getLogger().info("Registering the Configurable Features...");
+        INSTANCE = this;
     }
 
-    public <F extends ConfigurableFeature> void tryToRegister(F feature, String configKey) {
+    public <F extends ConfigurableFeature> boolean isEnabled(F feature) {
+        return features.contains(feature);
+    }
+
+    public <F extends ConfigurableFeature> void register(F feature, String configKey) {
         try {
             if (KiloConfig.getMainNode().getNode("features").getNode(configKey).getBoolean()) {
                 if (SharedConstants.isDevelopment) {
@@ -31,18 +36,18 @@ public class ConfigurableFeatures {
 
                 features.add(feature);
                 feature.register();
-            }
+            } else features.remove(feature);
         } catch (NullPointerException ignored) {
             //Don't enable the feature:: PASS
         }
-
     }
 
-    public void loadAll() {
+    public void loadAll(boolean reload) {
         for (ConfigurableFeature feature : features) {
-            if (feature instanceof RelodableConfigurableFeature) {
+            if (feature instanceof ReloadableConfigurableFeature) {
                 try {
-                    ((RelodableConfigurableFeature) feature).load();
+                    ((ReloadableConfigurableFeature) feature).load();
+                    ((ReloadableConfigurableFeature) feature).load(reload);
                 } catch (Exception e) {
                     KiloEssentials.getLogger().fatal("Can not load the feature " + feature.getClass().getSimpleName(), e);
                 }
@@ -58,5 +63,9 @@ public class ConfigurableFeatures {
                 KiloEssentials.getLogger().fatal("An unexpected error occurred while processing a Tick Event", e);
             }
         }
+    }
+
+    public static ConfigurableFeatures getInstance() {
+        return INSTANCE;
     }
 }

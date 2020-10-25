@@ -17,9 +17,9 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.commands.CommandUtils;
 
 import java.util.*;
@@ -28,8 +28,8 @@ import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static net.minecraft.command.arguments.GameProfileArgumentType.gameProfile;
-import static net.minecraft.command.arguments.GameProfileArgumentType.getProfileArgument;
+import static net.minecraft.command.argument.GameProfileArgumentType.gameProfile;
+import static net.minecraft.command.argument.GameProfileArgumentType.getProfileArgument;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -65,7 +65,7 @@ public class OperatorCommand {
 
         getLiteral.then(
                 argument("gameProfile", gameProfile())
-                        .suggests(ArgumentCompletions::allOperators)
+                        .suggests(ArgumentSuggestions::allOperators)
                         .executes(
                             c -> executeGet(
                                     c.getSource(),
@@ -86,7 +86,7 @@ public class OperatorCommand {
 
         addLiteral.then(
                 argument("gameProfile", gameProfile())
-                        .suggests(ArgumentCompletions::allNonOperators)
+                        .suggests(ArgumentSuggestions::allNonOperators)
                         .then(
                                 argument("level", integer(0, 4))
                                         .then(
@@ -106,7 +106,7 @@ public class OperatorCommand {
 
         removeLiteral.then(
                 argument("gameProfile", gameProfile())
-                        .suggests(ArgumentCompletions::allOperators)
+                        .suggests(ArgumentSuggestions::allOperators)
                         .executes(
                             c -> execute(
                                     c.getSource(),
@@ -188,14 +188,14 @@ public class OperatorCommand {
                 if (level > leastPermLevelReq) source.sendError(KiloCommands.getPermissionError("Operator permission level " + (leastPermLevelReq + 1)));
                 else if (!source.getName().equals(gameProfile.getName())){
                     if (!playerManager.isOperator(gameProfile)) {
-                        LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
-                        if (CommandUtils.isOnline(p)) p.sendMessage(LangText.getFormatter(true, "command.operator.announce", source.getName(), level), false);
+                        StringText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
+                        if (CommandUtils.isOnline(p)) p.sendMessage(StringText.of(true, "command.operator.announce", source.getName(), level), false);
                         addOperator(gameProfile, level, byPass);
                     }
                     else if (playerManager.isOperator(gameProfile) && operatorList.get(gameProfile).getPermissionLevel() < level) {
                         removeOperator(gameProfile);
                         addOperator(gameProfile, level, byPass);
-                        LangText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
+                        StringText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
                     }
                     else if (playerManager.isOperator(gameProfile)) {
                         source.sendError(new LiteralText(gameProfile.getName() + " is already a operator!"));
@@ -203,19 +203,19 @@ public class OperatorCommand {
 
                 }
                 else if (source.getName().equals(gameProfile.getName())) {
-                    source.sendError(LangText.get(false, "command.operator.exception"));
+                    source.sendError(StringText.of(false, "command.operator.exception"));
                 }
             }
             else if (!set && playerManager.isOperator(gameProfile) && !source.getName().equals(gameProfile.getName())){
                 removeOperator(gameProfile);
-                if (CommandUtils.isOnline(p)) p.sendMessage(LangText.get(true, "command.operator.announce.removed"), false);
-                LangText.sendToUniversalSource(source, "command.operator.removed", false, gameProfile.getName());
+                if (CommandUtils.isOnline(p)) p.sendMessage(StringText.of(true, "command.operator.announce.removed"), false);
+                StringText.sendToUniversalSource(source, "command.operator.removed", false, gameProfile.getName());
             }
             else if (!set && !playerManager.isOperator(gameProfile) && !source.getName().equals(gameProfile.getName())) {
                 source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!"));
             }
             else if (source.getName().equals(gameProfile.getName()))
-                source.sendError(LangText.get(false, "command.operator.exception"));
+                source.sendError(StringText.of(false, "command.operator.exception"));
 
             if (CommandUtils.isOnline(p)) playerManager.sendCommandTree(Objects.requireNonNull(playerManager.getPlayer(gameProfile.getId())));
         }

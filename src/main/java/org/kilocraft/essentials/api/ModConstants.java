@@ -7,6 +7,7 @@ import org.kilocraft.essentials.util.messages.MessageUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Properties;
@@ -16,7 +17,7 @@ public class ModConstants {
     private static final Properties lang = new Properties();
     private static MessageUtil messageUtil;
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.##");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
     public ModConstants() {
     }
@@ -24,7 +25,7 @@ public class ModConstants {
     public void loadConstants() {
         try {
             ModConstants.properties.load(ModConstants.class.getClassLoader().getResourceAsStream("mod.properties"));
-            ModConstants.lang.load(ModConstants.class.getClassLoader().getResourceAsStream("assets/messages/lang.properties"));
+            ModConstants.lang.load(ModConstants.class.getClassLoader().getResourceAsStream("assets/messages/strings.properties"));
             ModConstants.messageUtil = new MessageUtil();
         } catch (final IOException e) {
             e.printStackTrace();
@@ -51,7 +52,7 @@ public class ModConstants {
         return ModConstants.properties;
     }
 
-    public static Properties getLang() {
+    public static Properties getStrings() {
         return ModConstants.lang;
     }
 
@@ -59,12 +60,12 @@ public class ModConstants {
         return ModConstants.properties.getProperty("version");
     }
 
-    public static String getBuild() {
-        return ModConstants.properties.getProperty("build");
-    }
-
     public static String getVersionNick() {
         return ModConstants.properties.getProperty("version_nick");
+    }
+
+    public static String getVersionType() {
+        return ModConstants.properties.getProperty("version_type");
     }
 
     public static String getVersionInt() {

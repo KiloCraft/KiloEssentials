@@ -37,8 +37,6 @@ public class NbtCommands {
 
         if (succeededExecutions >= 1 && swingHand) {
             UserUtils.Animate.swingHand(player);
-        } else {
-            UserUtils.Animate.showBobbing(player);
         }
 
         return true;

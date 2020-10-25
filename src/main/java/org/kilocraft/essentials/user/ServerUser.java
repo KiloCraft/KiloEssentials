@@ -13,18 +13,18 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.user.preference.Preference;
+import org.kilocraft.essentials.api.user.preference.UserPreferences;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.UserMessageReceptionist;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.user.setting.ServerUserSettings;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.ServerUserPreferences;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.nbt.NBTUtils;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.Texter;
@@ -40,7 +40,7 @@ import java.util.*;
  * @see User
  * @see ServerUserManager
  * @see UserHomeHandler
- * @see UserSettings
+ * @see UserPreferences
  * @see OnlineUser
  * @see org.kilocraft.essentials.api.user.CommandSourceUser
  * @see org.kilocraft.essentials.user.UserHandler
@@ -52,14 +52,14 @@ import java.util.*;
 public class ServerUser implements User {
     public static final int SYS_MESSAGE_COOL_DOWN = 400;
     protected static final ServerUserManager MANAGER = (ServerUserManager) KiloServer.getServer().getUserManager();
-    private final ServerUserSettings settings;
+    private final ServerUserPreferences settings;
     private UserHomeHandler homeHandler;
     private Vec3dLocation lastLocation;
     private boolean hasJoinedBefore = true;
     private Date firstJoin = new Date();
     public int messageCoolDown;
     public int systemMessageCoolDown;
-    private MessageReceptionist lastDmReceptionist;
+    private EntityIdentifiable lastDmReceptionist;
     final UUID uuid;
     String name = "";
     String savedName = "";
@@ -71,7 +71,7 @@ public class ServerUser implements User {
 
     public ServerUser(@NotNull final UUID uuid) {
         this.uuid = uuid;
-        this.settings = new ServerUserSettings();
+        this.settings = new ServerUserPreferences();
 
         if (UserHomeHandler.isEnabled()) {
             this.homeHandler = new UserHomeHandler(this);
@@ -152,7 +152,17 @@ public class ServerUser implements User {
 
         if (cacheTag.contains("dmRec")) {
             CompoundTag lastDmTag = cacheTag.getCompound("dmRec");
-            this.lastDmReceptionist = new UserMessageReceptionist(lastDmTag.getString("name"), NBTUtils.getUUID(lastDmTag, "id"));
+            this.lastDmReceptionist = new EntityIdentifiable() {
+                @Override
+                public UUID getId() {
+                    return NBTUtils.getUUID(lastDmTag, "id");
+                }
+
+                @Override
+                public String getName() {
+                    return lastDmTag.getString("name");
+                }
+            };
         }
 
         this.firstJoin = dateFromString(metaTag.getString("firstJoin"));
@@ -204,6 +214,12 @@ public class ServerUser implements User {
     @Override
     public String getLastSocketAddress() {
         return this.lastSocketAddress;
+    }
+
+    @Nullable
+    @Override
+    public String getLastIp() {
+        return StringUtils.socketAddressToIp(this.lastSocketAddress);
     }
 
     @Override
@@ -272,18 +288,19 @@ public class ServerUser implements User {
     }
 
     @Override
-    public UserSettings getSettings() {
+    public UserPreferences getPreferences() {
         return this.settings;
     }
 
     @Override
-    public <T> T getSetting(Setting<T> setting) {
-        return this.settings.get(setting);
+    public <T> T getPreference(Preference<T> preference) {
+        return this.settings.get(preference);
     }
 
     @Override
     public Optional<String> getNickname() {
-        return this.getSetting(Settings.NICK);
+        Optional<String> optional = this.getPreference(Preferences.NICK);
+        return optional.map(s -> Optional.of("<reset>" + s + "<reset>")).orElse(optional);
     }
 
     @Override
@@ -309,14 +326,14 @@ public class ServerUser implements User {
 
     @Override
     public void setNickname(String name) {
-        this.getSettings().set(Settings.NICK, Optional.of(name));
+        this.getPreferences().set(Preferences.NICK, Optional.of(name));
         KiloServer.getServer().getUserManager().onChangeNickname(this, this.getNickname().isPresent() ? this.getNickname().get() : ""); // This is to update the entries in UserManager.
     }
 
     @Override
     public void clearNickname() {
         KiloServer.getServer().getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
-        this.getSettings().reset(Settings.NICK);
+        this.getPreferences().reset(Preferences.NICK);
     }
 
     @Override
@@ -371,17 +388,17 @@ public class ServerUser implements User {
 
     @Override
     public boolean ignored(UUID uuid) {
-        return this.getSetting(Settings.IGNORE_LIST).containsValue(uuid);
+        return this.getPreference(Preferences.IGNORE_LIST).containsValue(uuid);
     }
 
     @Override
-    public MessageReceptionist getLastMessageReceptionist() {
+    public EntityIdentifiable getLastMessageReceptionist() {
         return this.lastDmReceptionist;
     }
 
     @Override
-    public void setLastMessageReceptionist(MessageReceptionist receptionist) {
-        this.lastDmReceptionist = receptionist;
+    public void setLastMessageReceptionist(EntityIdentifiable entity) {
+        this.lastDmReceptionist = entity;
     }
 
     public static void saveLocationOf(ServerPlayerEntity player) {
@@ -393,7 +410,7 @@ public class ServerUser implements User {
     }
 
     public boolean shouldMessage() {
-        return !this.getSetting(Settings.DON_NOT_DISTURB);
+        return !this.getPreference(Preferences.DON_NOT_DISTURB);
     }
 
     public ServerUser useSavedName() {

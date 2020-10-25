@@ -11,7 +11,7 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -38,7 +38,7 @@ public class TpaHereCommand extends EssentialCommand {
             throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
         }
 
-        if (target.ignored(src.getUuid()) || target.getSetting(Settings.DON_NOT_DISTURB) || !target.hasPermission(TpaCommand.PERMISSION)) {
+        if (target.ignored(src.getUuid()) || target.getPreference(Preferences.DON_NOT_DISTURB) || !target.hasPermission(TpaCommand.PERMISSION)) {
             throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
         }
 
@@ -63,8 +63,8 @@ public class TpaHereCommand extends EssentialCommand {
                         .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText("&cClick to deny"))))
         );
 
-        if (target.getSetting(Settings.SOUNDS)) {
-            ServerChat.pingPlayer(target.asPlayer(), ServerChat.PingType.PRIVATE);
+        if (target.getPreference(Preferences.SOUNDS)) {
+            ServerChat.pingUser(target, ServerChat.MentionTypes.PRIVATE);
         }
         return SUCCESS;
     }

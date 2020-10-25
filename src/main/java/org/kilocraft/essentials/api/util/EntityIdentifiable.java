@@ -1,5 +1,8 @@
 package org.kilocraft.essentials.api.util;
 
+import com.mojang.authlib.GameProfile;
+
+import java.util.Map.Entry;
 import java.util.UUID;
 
 /**
@@ -17,4 +20,18 @@ public interface EntityIdentifiable {
      * @return name as String
      */
     String getName();
+
+    static EntityIdentifiable fromGameProfile(final GameProfile profile) {
+        return new EntityIdentifiable() {
+            @Override
+            public UUID getId() {
+                return profile.getId();
+            }
+
+            @Override
+            public String getName() {
+                return profile.getName();
+            }
+        };
+    }
 }

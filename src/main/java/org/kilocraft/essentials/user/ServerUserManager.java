@@ -1,13 +1,13 @@
 package org.kilocraft.essentials.user;
 
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.server.*;
+import net.minecraft.server.BanEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -17,30 +17,31 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.TickListener;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.UserManager;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
+import org.kilocraft.essentials.api.user.punishment.PunishmentEntry;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
+import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.*;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.AnimatedText;
@@ -48,7 +49,9 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -56,8 +59,7 @@ import java.util.regex.Pattern;
 
 public class ServerUserManager implements UserManager, TickListener {
     private static final Pattern DAT_FILE_PATTERN = Pattern.compile(".dat");
-    private static final Pattern UUID_PATTERN = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
-    private static final Pattern USER_FILE_NAME = Pattern.compile(UUID_PATTERN + "\\.dat");
+    private static final Pattern USER_FILE_NAME = Pattern.compile(org.kilocraft.essentials.api.util.StringUtils.UUID_PATTERN + "\\.dat");
     private final UserHandler handler = new UserHandler();
     private final ServerPunishmentManager punishmentManager = new ServerPunishmentManager();
     private final List<OnlineUser> users = new ArrayList<>();
@@ -69,7 +71,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private final MutedPlayerList mutedPlayerList = new MutedPlayerList(new File(KiloEssentials.getDataDirPath() + "/mutes.json"));
     private Map<UUID, String> cachedNicknames = new HashMap<>();
 
-    public ServerUserManager(PlayerManager manager) {
+    public ServerUserManager() {
     }
 
     @Override
@@ -132,7 +134,7 @@ public class ServerUserManager implements UserManager, TickListener {
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
-        return CompletableFuture.completedFuture(Optional.of(new NeverJoinedUser()));
+        return CompletableFuture.completedFuture(Optional.empty());
     }
 
     @Override
@@ -146,13 +148,13 @@ public class ServerUserManager implements UserManager, TickListener {
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
 
-        return CompletableFuture.completedFuture(Optional.of(new NeverJoinedUser()));
+        return CompletableFuture.completedFuture(Optional.empty());
     }
 
     @Override
     @Nullable
     public CompletableFuture<Optional<User>> getOffline(GameProfile profile) {
-        if(profileHasID(profile)) return getOffline(profile.getId(), profile.getName());
+        if (profileHasID(profile)) return getOffline(profile.getId(), profile.getName());
         return CompletableFuture.completedFuture(Optional.empty());
     }
 
@@ -169,7 +171,7 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     @Nullable
     public OnlineUser getOnline(GameProfile profile) {
-        if(profileIsComplete(profile)) return getOnline(profile.getId());
+        if (profileIsComplete(profile)) return getOnline(profile.getId());
         return null;
     }
 
@@ -270,7 +272,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         if (user.isOnline()) {
-            KiloServer.getServer().sendGlobalPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, ((OnlineUser) user).asPlayer()));
+            KiloServer.getServer().getMetaManager().updateDisplayName(((OnlineUser) user).asPlayer());
         }
     }
 
@@ -285,69 +287,51 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     @Override
-    public void performPunishment(@NotNull Punishment punishment, Punishment.@NotNull Type type, @NotNull Action<Punishment.ActionResult> action) {
-        MinecraftServer server = KiloServer.getServer().getMinecraftServer();
-        String victimIP = punishment.getVictimIP();
-        String source = punishment.getArbiter().getName();
-        String reason = punishment.getReason();
-        Date date = new Date();
-        Date expiry = punishment.getExpiry();
-        if (type == Punishment.Type.DENY_ACCESS) {
-            GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
-            if (victim != null) action.perform(Punishment.ActionResult.FAILED);
-            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
-            if (KiloConfig.main().moderation().meta().broadcast) {
-                ServerChat.Channel.PUBLIC.sendLangMessage("command.ban.staff", source, victim.getName(), reason, time);
-            } else {
-                ServerChat.Channel.STAFF.sendLangMessage("command.ban.staff", source, victim.getName(), reason, time);
-            }
-            BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(victim, date, source, expiry, reason);
-            server.getPlayerManager().getUserBanList().add(bannedPlayerEntry);
-            ServerPlayerEntity serverPlayerEntity = server.getPlayerManager().getPlayer(victim.getId());
-            if (serverPlayerEntity != null) {
-                serverPlayerEntity.networkHandler.disconnect(new TextMessage(replaceBanVariables(KiloConfig.main().moderation().disconnectReasons().permBan, bannedPlayerEntry)).toText());
-            }
-            action.perform(Punishment.ActionResult.SUCCESS);
-        } else if (type == Punishment.Type.DENY_ACCESS_IP) {
-            String target = punishment.getVictim() == null ? victimIP : victimIP + " (" + punishment.getVictim().getName() + ")";
-            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
-            ServerChat.Channel.STAFF.sendLangMessage("command.ipban.staff", source, target, reason, time);
-            BannedIpEntry bannedIpEntry = new BannedIpEntry(victimIP, date, source, expiry, reason);
-            server.getPlayerManager().getIpBanList().add(bannedIpEntry);
-            List<ServerPlayerEntity> list = server.getPlayerManager().getPlayersByIp(victimIP);
-            for (ServerPlayerEntity serverPlayerEntity : list) {
-                serverPlayerEntity.networkHandler.disconnect(new TextMessage(replaceBanVariables(KiloConfig.main().moderation().disconnectReasons().permIpBan, bannedIpEntry)).toText());
-            }
-            action.perform(Punishment.ActionResult.SUCCESS);
-        } else {
-            GameProfile victim = server.getUserCache().getByUuid(punishment.getVictim().getId());
-            String time = expiry == null ? "PERMANENT" : TimeDifferenceUtil.formatDateDiff(date, expiry);
-            ServerChat.Channel.STAFF.sendLangMessage("command.mute.staff", source, victim.getName(), reason, time);
-            mutedPlayerList.add(new MutedPlayerEntry(victim, date, source, expiry, reason));
-            action.perform(Punishment.ActionResult.SUCCESS);
+    public void onPunishmentPerformed(OnlineUser src, PunishmentEntry entry, Punishment.Type type, @Nullable String expiry, boolean silent) {
+        final ModerationConfigSection config = KiloConfig.main().moderation();
+        assert entry.getVictim() != null;
+        final String message = config.meta().performed
+                .replace("{TYPE}", type == Punishment.Type.MUTE ? config.meta().wordMuted : config.meta().wordBanned)
+                .replace("{SOURCE}", src.getName())
+                .replace("{VICTIM}", entry.getVictim() == null ? entry.getVictimIP() == null ? "INVALID" : entry.getVictimIP() : entry.getVictim().getName())
+                .replace("{REASON}", entry.getReason() == null ? config.defaults().ban : entry.getReason())
+                .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
+
+        if (silent) {
+            ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
+        } else if (config.meta().broadcast) {
+            KiloChat.broadCast(message);
         }
     }
 
-    public String replaceBanVariables(final String str, final BanEntry banEntry) {
-        return new ConfigObjectReplacerUtil("ban", str, true)
-                .append("reason", banEntry.getReason())
-                .append("expiry", banEntry.getExpiryDate() == null ? "Error, please report to administrator" : banEntry.getExpiryDate().toString())
-                .append("source", banEntry.getSource())
-                .toString();
+    @Override
+    public void onPunishmentRevoked(OnlineUser src, PunishmentEntry entry, Punishment.Type type, @Nullable String expiry, boolean silent) {
+        final ModerationConfigSection config = KiloConfig.main().moderation();
+        assert entry.getVictim() != null;
+        final String message = config.meta().revoked
+                .replace("{TYPE}", type == Punishment.Type.MUTE ? config.meta().wordMuted : config.meta().wordBanned)
+                .replace("{SOURCE}", src.getName())
+                .replace("{VICTIM}", entry.getVictim() == null ? entry.getVictimIP() == null ? "INVALID" : entry.getVictimIP() : entry.getVictim().getName())
+                .replace("{REASON}", entry.getReason() == null ? config.defaults().ban : entry.getReason())
+                .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
+
+        if (silent) {
+            ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
+        } else if (config.meta().broadcast) {
+            KiloChat.broadCast(message);
+        }
     }
 
     public boolean shouldNotUseNickname(OnlineUser user, String rawNickname) {
         String NICKNAME_CACHE = "nicknames";
-        if (!CacheManager.shouldUse(NICKNAME_CACHE)) {
+        if (!CacheManager.isPresent(NICKNAME_CACHE)) {
             Map<UUID, String> map = new HashMap<>();
             KiloEssentials.getInstance().getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
                 for (User victim : list) {
-                    victim.getNickname().ifPresent(nick -> {
-                        map.put(
-                                victim.getUuid(),
-                                org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT)
-                        );
-                    });
+                    victim.getNickname().ifPresent(nick -> map.put(
+                            victim.getUuid(),
+                            org.kilocraft.essentials.api.util.StringUtils.uniformNickname(nick).toLowerCase(Locale.ROOT)
+                    ));
 
                     map.put(victim.getUuid(), org.kilocraft.essentials.api.util.StringUtils.uniformNickname(victim.getUsername()).toLowerCase(Locale.ROOT));
                 }
@@ -374,26 +358,11 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     private boolean profileIsComplete(GameProfile profile) {
-        if (profile != null) {
-            return profile.isComplete();
-        }
-        return false;
-    }
-    private boolean profileHasID(GameProfile profile) {
-        if (profile != null) {
-            return !(profile.getId() == null);
-        }
-        return false;
+        return profile != null && profile.isComplete();
     }
 
-    private void profileSanityCheck(GameProfile profile) {
-        if (profile != null) {
-            if (!profile.isComplete() && profile.getId() == null) {
-                throw new IllegalArgumentException("Cannot use GameProfile with missing username to get an OfflineUser");
-            }
-        } else {
-            throw new NullPointerException("GameProfile is null");
-        }
+    private boolean profileHasID(GameProfile profile) {
+        return profile != null && profile.getId() != null;
     }
 
     public void onJoin(ServerPlayerEntity playerEntity) {
@@ -440,22 +409,7 @@ public class ServerUserManager implements UserManager, TickListener {
         ServerPlayerEntity player = user.asPlayer();
         NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
 
-        PlayerOnChatMessageEvent event = KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(player, packet.getChatMessage()));
-        if (event.isCancelled()) {
-            if (event.getCancelReason() != null) {
-                user.sendError(event.getCancelReason());
-            }
-
-            return;
-        }
-
-
-        String string = StringUtils.normalizeSpace(event.getMessage());
-        if (punishmentManager.isMuted(user) && !string.startsWith("/")) {
-            GameProfile gameProfile = KiloServer.getServer().getMinecraftServer().getUserCache().getByUuid(user.getId());
-            user.sendLangError("mute.reason", mutedPlayerList.get(gameProfile).getReason(), TimeDifferenceUtil.formatDateDiff(new Date(), mutedPlayerList.get(gameProfile).getExpiryDate()));
-            return;
-        }
+        String string = StringUtils.normalizeSpace(packet.getChatMessage());
         player.updateLastActionTime();
 
         for (int i = 0; i < string.length(); ++i) {
@@ -487,7 +441,16 @@ public class ServerUserManager implements UserManager, TickListener {
             if (string.startsWith("/")) {
                 KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
             } else {
-                ServerChat.send(user, new TextMessage(string), user.getSetting(Settings.CHAT_CHANNEL));
+                if (punishmentManager.isMuted(user)) {
+                    user.sendMessage(getMuteMessage(user));
+                    return;
+                }
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_COLOR)) string = ComponentText.stripColor(string);
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_BASIC)) string = ComponentText.stripFormatting(string);
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_EVENT)) string = ComponentText.stripEvent(string);
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_GRADIENT)) string = ComponentText.stripGradient(string);
+                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_RAINBOW)) string = ComponentText.stripRainbow(string);
+                ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
             }
         } catch (Exception e) {
             MutableText text = Texter.newTranslatable("command.failed");
@@ -543,19 +506,19 @@ public class ServerUserManager implements UserManager, TickListener {
 
         public LoadingText(ServerPlayerEntity player) {
             this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
-                    .append(LangText.get(true, "general.wait_server.frame1"))
-                    .append(LangText.get(true, "general.wait_server.frame2"))
-                    .append(LangText.get(true, "general.wait_server.frame3"))
-                    .append(LangText.get(true, "general.wait_server.frame4"))
+                    .append(StringText.of(true, "general.wait_server.frame1"))
+                    .append(StringText.of(true, "general.wait_server.frame2"))
+                    .append(StringText.of(true, "general.wait_server.frame3"))
+                    .append(StringText.of(true, "general.wait_server.frame4"))
                     .build();
         }
 
         public LoadingText(ServerPlayerEntity player, String key) {
             this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
-                    .append(LangText.get(true, key + ".frame1"))
-                    .append(LangText.get(true, key + ".frame2"))
-                    .append(LangText.get(true, key + ".frame3"))
-                    .append(LangText.get(true, key + ".frame4"))
+                    .append(StringText.of(true, key + ".frame1"))
+                    .append(StringText.of(true, key + ".frame2"))
+                    .append(StringText.of(true, key + ".frame3"))
+                    .append(StringText.of(true, key + ".frame4"))
                     .build();
         }
 
@@ -567,6 +530,35 @@ public class ServerUserManager implements UserManager, TickListener {
         public void stop() {
             this.animatedText.remove();
             this.animatedText = null;
+        }
+    }
+
+    public static String replaceVariables(final String str, final BanEntry<?> entry, final boolean permanent) {
+        ConfigObjectReplacerUtil replacer = new ConfigObjectReplacerUtil("ban", str, true)
+                .append("reason", entry.getReason())
+                .append("source", entry.getSource());
+
+        if (!permanent) {
+            SimpleDateFormat dateFormat = ModConstants.DATE_FORMAT;
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            replacer.append("expiry", dateFormat.format(entry.getExpiryDate()))
+                    .append("left", TimeDifferenceUtil.formatDateDiff(new Date(), entry.getExpiryDate()));
+        }
+
+        return replacer.toString();
+    }
+
+    public static String getMuteMessage(final OnlineUser user) {
+        MutedPlayerEntry entry = KiloServer.getServer().getUserManager().getMutedPlayerList().get(user.asPlayer().getGameProfile());
+        assert entry != null;
+
+        if (entry.getExpiryDate() == null) {
+            return KiloConfig.main().moderation().messages().mute
+                    .replace("{MUTE_REASON}", entry.getReason() == null ? KiloConfig.main().moderation().defaults().mute : entry.getReason());
+        } else {
+            return KiloConfig.main().moderation().messages().tempMute
+                    .replace("{MUTE_REASON}", entry.getReason() == null ? KiloConfig.main().moderation().defaults().mute : entry.getReason())
+                    .replace("{MUTE_LEFT}", TimeDifferenceUtil.formatDateDiff(new Date(), entry.getExpiryDate()));
         }
     }
 

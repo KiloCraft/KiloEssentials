@@ -53,8 +53,8 @@ public class KiloConfig {
 
     public static void load() {
         try {
-            KiloFile CONFIG_FILE = new KiloFile("config.hocon", KiloEssentials.getEssentialsPath());
-            KiloFile MESSAGES_FILE = new KiloFile("messages.hocon", KiloEssentials.getEssentialsPath());
+            KiloFile CONFIG_FILE = new KiloFile("essentials.conf", KiloEssentials.getEssentialsPath());
+            KiloFile MESSAGES_FILE = new KiloFile("messages.conf", KiloEssentials.getEssentialsPath());
 
             ConfigurationLoader<CommentedConfigurationNode> mainLoader = HoconConfigurationLoader.builder()
                     .setFile(CONFIG_FILE.getFile()).build();

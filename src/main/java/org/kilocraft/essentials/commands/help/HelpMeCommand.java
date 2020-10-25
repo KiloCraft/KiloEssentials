@@ -8,7 +8,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -35,7 +35,7 @@ public class HelpMeCommand extends EssentialCommand {
     private int sendHelp(final CommandContext<ServerCommandSource> ctx) {
         final CommandSourceUser src = this.getServerUser(ctx);
         final Text text = new LiteralText("")
-                .append(LangText.getFormatter(true, "command.helpme.prefix"))
+                .append(StringText.of(true, "command.helpme.prefix"))
                 .append(" ")
                 .append(new LiteralText(ctx.getSource().getName()).formatted(Formatting.YELLOW)
                         .append(new LiteralText(": ").formatted(Formatting.WHITE)))
@@ -55,7 +55,7 @@ public class HelpMeCommand extends EssentialCommand {
             src.sendLangMessage("command.helpme.sent");
         }
 
-        return SUCCESS;
+        return i;
     }
 
 }

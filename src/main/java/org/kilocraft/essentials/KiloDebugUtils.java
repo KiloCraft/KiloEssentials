@@ -18,7 +18,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
-import org.kilocraft.essentials.util.TPSTracker;
+import org.kilocraft.essentials.util.TpsTracker;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.File;
@@ -112,18 +112,18 @@ public class KiloDebugUtils {
             entities = entities + moWorld.loadedEntities();
         }
 
-        TPSTracker.tps1.getAverage();
+        TpsTracker.tps.getAverage();
 
         String debugText = String.format(DEBUG_FORMAT,
-                TextFormat.getFormattedTPS(TPSTracker.tps1.getAverage()),
-                TPSTracker.tps1.getShortAverage(),
-                TPSTracker.MillisecondPerTick.getShortAverage(), entities, loadedChunks,
+                TextFormat.getFormattedTPS(TpsTracker.tps.getAverage()),
+                TpsTracker.tps.getShortAverage(),
+                TpsTracker.MillisecondPerTick.getShortAverage(), entities, loadedChunks,
                 ModConstants.getVersionInt(), ModConstants.getVersionNick()
         );
 
         bossBar.setName(Texter.newText().append(DEBUG_TEXT).append(Texter.newText(debugText)));
 
-        int tps = (int) TPSTracker.tps1.getAverage();
+        int tps = (int) TpsTracker.tps.getAverage();
         bossBar.setValue(tps);
 
         if (tps > 15) {

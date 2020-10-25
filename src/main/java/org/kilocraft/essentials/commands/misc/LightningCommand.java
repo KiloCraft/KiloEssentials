@@ -11,7 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.chat.LangText;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 
@@ -31,7 +31,7 @@ public class LightningCommand extends EssentialCommand {
         LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(player.getServerWorld(),
                 null, null, player, new BlockPos(vec3d), SpawnReason.COMMAND, true, false);
 
-        player.sendMessage(LangText.getFormatter(true, "command.smite"), true);
+        player.sendMessage(StringText.of(true, "command.smite"), true);
         return player.getServerWorld().spawnEntity(lightning) ? SUCCESS : FAILED;
     }
 

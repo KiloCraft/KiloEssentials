@@ -23,7 +23,7 @@ public class Config {
     @Setting(value = "server")
     private ServerConfigSection serverSection = new ServerConfigSection();
 
-    @Setting(value = "permissionManager", comment = "Select the PermissionManager to use! Options: vanilla, luckperms, thimble")
+    @Setting(value = "permissionManager", comment = "Select the PermissionManager to use! Options: vanilla, luckperms")
     private String permissionManager = "luckperms";
 
     @Setting(value = "startupScript", comment = "Automatically creates the script to startup the server\n" +
@@ -50,6 +50,9 @@ public class Config {
 
     @Setting(value = "rtpSpecs", comment = "Configure the RTP range")
     private RtpSpecsConfigSection rtpSpecs = new RtpSpecsConfigSection();
+
+    @Setting(value = "votifier", comment = "Configure the Votifier")
+    private VotifierConfigSection votifier = new VotifierConfigSection();
 
     @Setting(value = "motd", comment = "Configure the RTP range")
     private MotdConfigSection motd = new MotdConfigSection();
@@ -128,6 +131,8 @@ public class Config {
     public RtpSpecsConfigSection rtpSpecs() {
         return rtpSpecs;
     }
+
+    public VotifierConfigSection votifier() { return votifier; }
 
     public MotdConfigSection motd() { return motd; }
 

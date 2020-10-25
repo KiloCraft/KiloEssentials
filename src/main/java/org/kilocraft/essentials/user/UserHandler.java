@@ -11,6 +11,8 @@ import java.text.DecimalFormat;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserHandler {
     public static final short DATA_VERSION = 3;
@@ -89,25 +91,29 @@ public class UserHandler {
                 upgradeAll();
             }
         } catch (IOException e) {
-            KiloEssentials.getLogger().error("Failed at checking the user data!");
-            e.printStackTrace();
+            KiloEssentials.getLogger().error("Failed at checking the user data!", e);
         }
     }
 
     private void upgradeAll() {
+        int updated = 0;
         StopWatch watch = new StopWatch();
         watch.start();
-        int updated = 0;
-        File[] files = getUserFiles();
+        Pattern pattern = Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
-        for (File file : files) {
-            UUID uuid = UUID.fromString(file.getName().replace(".dat", ""));
+        for (File file : getUserFiles()) {
+            String strId = file.getName().replace(".dat", "");
+            Matcher matcher = pattern.matcher(strId);
+            if (!matcher.matches()) {
+                continue;
+            }
+            UUID uuid = UUID.fromString(strId);
             try {
                 if (upgrade(file, uuid)) {
                     updated++;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                KiloEssentials.getLogger().error("Failed to update User File [" + uuid + "]", e);
             }
         }
 

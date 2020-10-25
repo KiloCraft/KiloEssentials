@@ -11,7 +11,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.util.Map;
 import java.util.UUID;
@@ -33,8 +33,8 @@ public class IgnoreListCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx, String target) throws CommandSyntaxException {
         OnlineUser src = getOnlineUser(ctx);
-        essentials.getUserThenAcceptAsync(src, target, (user) -> {
-            Map<String, UUID> ignoreList = user.getSetting(Settings.IGNORE_LIST);
+        getEssentials().getUserThenAcceptAsync(src, target, (user) -> {
+            Map<String, UUID> ignoreList = user.getPreference(Preferences.IGNORE_LIST);
 
             if (ignoreList.isEmpty()) {
                 src.sendLangMessage("command.ignorelist.empty");
@@ -56,11 +56,9 @@ public class IgnoreListCommand extends EssentialCommand {
 
                 Formatting thisFormat = nextColor[0] ? Formatting.WHITE : Formatting.GRAY;
 
-                thisIgnored.append(new LiteralText(name).styled((style) -> {
-                    return style.withFormatting(thisFormat).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                            new LiteralText("[i] ").formatted(Formatting.YELLOW)
-                                    .append(new LiteralText("Click to remove!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ignore " + name));
-                }));
+                thisIgnored.append(new LiteralText(name).styled((style) -> style.withFormatting(thisFormat).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new LiteralText("[i] ").formatted(Formatting.YELLOW)
+                                .append(new LiteralText("Click to remove!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ignore " + name))));
 
                 if (listSize != i[0])
                     thisIgnored.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));

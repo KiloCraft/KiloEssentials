@@ -6,14 +6,15 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.arguments.IdentifierArgumentType;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
+import static net.minecraft.command.argument.IdentifierArgumentType.identifier;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -40,12 +41,14 @@ public class LocateBiomeCommand {
 
     private static CompletableFuture<Suggestions> biomeNames(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         List<String> strings = new ArrayList<>();
-        for (Biome biome : Registry.BIOME) strings.add(LocateBiomeProvided.getBiomeId(biome));
+        for (Biome biome : KiloServer.getServer().getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY)) {
+            strings.add(LocateBiomeProvided.getBiomeId(biome));
+        }
         return CommandSource.suggestMatching(strings, builder);
     }
 
     private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        Biome biome = Registry.BIOME.get(IdentifierArgumentType.getIdentifier(ctx, "identifier"));
+        Biome biome = KiloServer.getServer().getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY).get(IdentifierArgumentType.getIdentifier(ctx, "identifier"));
 
         if (biome == null)
             throw KiloCommands.getException(ExceptionMessageNode.INCORRECT_IDENTIFIER, "biome").create();

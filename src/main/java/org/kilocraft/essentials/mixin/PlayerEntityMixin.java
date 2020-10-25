@@ -29,7 +29,7 @@ public abstract class PlayerEntityMixin {
         if (player.getScoreboardTeam() != null && user != null) {
             Text text = new LiteralText(user.getFormattedDisplayName()).styled((style) ->
                     style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + this.getEntityName() + " "))
-                            .setHoverEvent((HoverEvent) this.addTellClickEvent(UserUtils.getDisplayNameWithMeta(user, true))).withInsertion(this.getEntityName()));
+                            .withHoverEvent((HoverEvent) this.addTellClickEvent(UserUtils.getDisplayNameWithMeta(user, true))).withInsertion(this.getEntityName()));
 
             cir.setReturnValue(player.getScoreboardTeam().modifyText(text));
         }

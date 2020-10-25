@@ -6,12 +6,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.settting.Setting;
+import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.user.ServerUser;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 
 public class DoNotDisturbCommand extends EssentialCommand {
-    private Setting<Boolean> SETTING = Settings.DON_NOT_DISTURB;
+    private final Preference<Boolean> Preference = Preferences.DON_NOT_DISTURB;
     public DoNotDisturbCommand() {
         super("donotdisturb", new String[]{"toggledisturb"});
         this.withUsage("command.donotdisturb.usage");
@@ -25,9 +25,9 @@ public class DoNotDisturbCommand extends EssentialCommand {
     private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final ServerUser user = (ServerUser) this.getOnlineUser(ctx);
 
-        user.getSettings().set(SETTING, !user.getSetting(SETTING));
+        user.getPreferences().set(Preference, !user.getPreference(Preference));
 
-        if (user.getSetting(SETTING)) {
+        if (user.getPreference(Preference)) {
             ((OnlineUser) user).sendLangMessage("command.donotdisturb.on");
         } else {
             ((OnlineUser) user).sendLangMessage("command.donotdisturb.off");

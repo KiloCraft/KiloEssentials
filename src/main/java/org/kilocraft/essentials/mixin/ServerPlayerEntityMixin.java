@@ -20,10 +20,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin {
 
-    @Inject(method = "changeDimension", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayerEntity;changeDimension(Lnet/minecraft/server/world/ServerWorld;)Lnet/minecraft/entity/Entity;"))
-    private void modify(ServerWorld serverWorld, CallbackInfoReturnable<Entity> cir) {
+    @Inject(method = "worldChanged", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayerEntity;changeDimension(Lnet/minecraft/server/world/ServerWorld;)Lnet/minecraft/entity/Entity;"))
+    private void modify(ServerWorld serverWorld, CallbackInfo ci) {
         if (LocationUtil.shouldBlockAccessTo(serverWorld.getDimension())) {
-            cir.cancel();
+            ci.cancel();
             KiloChat.sendLangMessageTo((ServerPlayerEntity) (Object) this, "general.dimension_not_allowed", RegistryUtils.dimensionToName(serverWorld.getDimension()));
         }
 

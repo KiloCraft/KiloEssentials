@@ -6,10 +6,10 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class ChatConfigSection {
     @Setting(value = "commandSpyFormat", comment = "Set the format of command spy messages")
-    public String commandSpyFormat = "&r&7%SOURCE% &3->&r /%COMMAND%";
+    public String commandSpyFormat = "&8[&5Spy&8] &r&7%SOURCE% &3->&r /%COMMAND%";
 
     @Setting(value = "socialSpyFormat", comment = "Set the format of social spy messages")
-    public String socialSpyFormat = "&7[%SOURCE%&r&3 -> &7%TARGET%&r&7]&7 %MESSAGE%";
+    public String socialSpyFormat = "&8[&5Spy&8] &7[%SOURCE%&r&3 -> &7%TARGET%&r&7]&7 %MESSAGE%";
 
     @Setting(value = "useVanillaChat", comment = "If set to true the KiloEssentials Chat will be disabled")
     public boolean useVanillaChat = false;
@@ -27,7 +27,7 @@ public class ChatConfigSection {
     public String itemFormat = "[item]";
 
     @Setting(value = "prefixes", comment = "Sets format and meta of chat channels")
-    private ChatPrefixesConigSection prefixesSection = new ChatPrefixesConigSection();
+    private ChatFormatsConfigSection formatsSection = new ChatFormatsConfigSection();
 
     @Setting(value = "privateChat", comment = "Sets the format and meta of private chat channels")
     private PrivateChatConfigSection privateChatSection = new PrivateChatConfigSection();
@@ -35,8 +35,8 @@ public class ChatConfigSection {
     @Setting(value = "ping")
     private ChatPingConfigSection pingSection = new ChatPingConfigSection();
 
-    public ChatPrefixesConigSection prefixes() {
-        return prefixesSection;
+    public ChatFormatsConfigSection prefixes() {
+        return formatsSection;
     }
 
     public PrivateChatConfigSection privateChat() {

@@ -9,7 +9,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
+import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandConfigSection;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandsConfig;
@@ -19,7 +19,7 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 
-public class PlaytimeCommands implements RelodableConfigurableFeature {
+public class PlaytimeCommands implements ReloadableConfigurableFeature {
     private static boolean enabled = false;
     private static PlaytimeCommands instance = null;
     private static PlaytimeCommandsConfig config;

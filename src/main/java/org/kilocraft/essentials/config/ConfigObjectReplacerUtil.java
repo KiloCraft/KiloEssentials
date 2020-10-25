@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.config;
 
+import java.util.Locale;
+
 public class ConfigObjectReplacerUtil {
     private boolean isLocal;
     private String prefix;
@@ -17,7 +19,7 @@ public class ConfigObjectReplacerUtil {
     }
 
     public String toVar(String key) {
-        String s = prefix.toUpperCase() + "_" + key.toUpperCase();
+        String s = prefix.toLowerCase(Locale.ROOT) + "_" + key.toLowerCase(Locale.ROOT);
         return isLocal ? "{" + s + "}" : "%" + s + "%";
     }
 
