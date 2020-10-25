@@ -4,9 +4,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.NBTSerializable;
-import org.kilocraft.essentials.api.text.MessageReceptionist;
-import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.user.preference.Preference;
+import org.kilocraft.essentials.api.user.preference.UserPreferences;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.user.UserHomeHandler;
@@ -30,7 +29,7 @@ import java.util.UUID;
  * @since 1.5
  * @author CODY_AI (OnBlock)
  */
-public interface User extends EntityIdentifiable, NBTSerializable, MessageReceptionist{
+public interface User extends EntityIdentifiable, NBTSerializable {
     /**
      * Gets the Unique Unified Identifier of this User
      * @return UUID of this user
@@ -45,18 +44,18 @@ public interface User extends EntityIdentifiable, NBTSerializable, MessageRecept
 
     /**
      * Gets the Settings for this user
-     * @return UserSettings
+     * @return UserPreference
      */
-    UserSettings getSettings();
+    UserPreferences getPreferences();
 
     /**
      * Get a Setting for this user
      *
-     * @param setting The Setting to Get
-     * @param <T> Type of the Setting (value)
-     * @return the value of that Setting (T)
+     * @param preference The Preference to Get
+     * @param <T> Type of the Preference (value)
+     * @return the value of that Preference (T)
      */
-    <T> T getSetting(Setting<T> setting);
+    <T> T getPreference(Preference<T> preference);
 
     /**
      * Checks if the user is online or not
@@ -186,6 +185,13 @@ public interface User extends EntityIdentifiable, NBTSerializable, MessageRecept
     String getLastSocketAddress();
 
     /**
+     * The last saved Ip Address of this user
+     * @return last Ip Address as String
+     */
+    @Nullable
+    String getLastIp();
+
+    /**
      * Gets the amount of playtime as ticks
      * @return ticks played
      */
@@ -221,8 +227,8 @@ public interface User extends EntityIdentifiable, NBTSerializable, MessageRecept
      */
     boolean ignored(UUID uuid);
 
-    MessageReceptionist getLastMessageReceptionist();
+    EntityIdentifiable getLastMessageReceptionist();
 
-    void setLastMessageReceptionist(MessageReceptionist receptionist);
+    void setLastMessageReceptionist(EntityIdentifiable entity);
 
 }

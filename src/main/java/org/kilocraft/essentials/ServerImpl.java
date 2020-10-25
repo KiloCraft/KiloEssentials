@@ -2,11 +2,11 @@ package org.kilocraft.essentials;
 
 import com.google.common.collect.Lists;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.adventure.text.Component;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.PlayerManager;
@@ -14,12 +14,16 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
@@ -27,10 +31,12 @@ import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.server.Server;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.events.server.ServerReloadEventImpl;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
@@ -68,7 +74,7 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public MinecraftServer getMinecraftServer() {
+    public @NotNull MinecraftServer getMinecraftServer() {
         return this.server;
     }
 
@@ -79,9 +85,8 @@ public class ServerImpl implements Server {
 
     @Override
     public void reload(Action<Throwable> fallback) {
-
         this.reloadKiloEssentials();
-        this.reloadMinecraftServer(throwable -> fallback.perform(throwable));
+        this.reloadMinecraftServer(fallback);
     }
 
     @Override
@@ -91,14 +96,14 @@ public class ServerImpl implements Server {
 
     @Override
     public void reloadMinecraftServer(Action<Throwable> fallback) {
-        ResourcePackManager<ResourcePackProfile> resourcePackManager = this.server.getDataPackManager();
+        ResourcePackManager resourcePackManager = this.server.getDataPackManager();
         SaveProperties saveProperties = this.getMinecraftServer().getSaveProperties();
         Collection<String> collection = resourcePackManager.getEnabledNames();
 
         Collection<String> modifiedCollection = Lists.newArrayList(collection);
         resourcePackManager.scanPacks();
         for (String string : resourcePackManager.getNames()) {
-            if (!saveProperties.method_29589().getDisabled().contains(string) && !modifiedCollection.contains(string)) {
+            if (!saveProperties.getDataPackSettings().getDisabled().contains(string) && !modifiedCollection.contains(string)) {
                 modifiedCollection.add(string);
             }
         }
@@ -197,7 +202,7 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void registerEvent(EventHandler e) {
+    public <E extends Event> void registerEvent(EventHandler<E> e) {
         eventRegistry.register(e);
     }
 
@@ -207,7 +212,7 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public <E extends Event> E triggerEvent(E e) {
+    public <E extends Event> E triggerEvent(@NotNull E e) {
         return eventRegistry.trigger(e);
     }
 
@@ -306,6 +311,45 @@ public class ServerImpl implements Server {
         for (String s : message.split("\n")) {
             getLogger().info(TextFormat.clearColorCodes(s));
         }
+    }
+
+    @Override
+    public void sendMessage(MutableTextMessage message) {
+        this.sendMessage(message.toText());
+    }
+
+    @Override
+    public void sendMessage(Text text) {
+        this.server.sendSystemMessage(text, Util.NIL_UUID);
+    }
+
+    @Override
+    public void sendMessage(@NotNull Component component) {
+        this.sendMessage(ComponentText.toText(component));
+    }
+
+    @Override
+    public void sendLangMessage(@NotNull String key, @Nullable Object... objects) {
+    }
+
+    @Override
+    public int sendError(String message) {
+        this.sendMessage(message);
+        return -1;
+    }
+
+    @Override
+    public void sendError(MutableTextMessage message) {
+        this.sendError(message.toText());
+    }
+
+    @Override
+    public void sendError(Text text) {
+        this.sendMessage(((MutableText) text).formatted(Formatting.RED));
+    }
+
+    @Override
+    public void sendLangError(@NotNull String key, @Nullable Object... objects) {
     }
 
     @Override

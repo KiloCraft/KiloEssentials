@@ -3,7 +3,7 @@ package org.kilocraft.essentials.util;
 import org.jetbrains.annotations.Nullable;
 
 public class SimpleProcess<T> {
-    private String id;
+    private final String id;
     private T t;
 
     public SimpleProcess(String id) {

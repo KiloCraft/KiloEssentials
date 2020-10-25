@@ -9,7 +9,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -25,14 +25,14 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.chat.LangText;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.StringText;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
-import org.kilocraft.essentials.util.text.Pager;
+import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class PlayerWarpCommand extends EssentialCommand {
-    private static final String HEADER = ModConstants.getLang().getProperty("command.playerwarp.header");
+    private static final String HEADER = ModConstants.getStrings().getProperty("command.playerwarp.header");
     public PlayerWarpCommand(String label, Predicate<ServerCommandSource> predicate, String[] alias) {
         super(label, predicate, alias);
         this.withUsage("command.playerwarp.usage", "add", "name", "type", "description");
@@ -128,6 +128,11 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
+        if (name.length() > 20) {
+            user.sendLangMessage("command.playerwarp.name_too_long");
+            return FAILED;
+        }
+
         String type = StringArgumentType.getString(ctx, "type");
         String desc = StringArgumentType.getString(ctx, "description");
 
@@ -206,7 +211,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             return SUCCESS;
         }
 
-        this.essentials.getUserThenAcceptAsync(src, inputName, (user) -> {
+        this.getEssentials().getUserThenAcceptAsync(src, inputName, (user) -> {
             this.sendList(src.getCommandSource(), user, page);
         });
 
@@ -224,15 +229,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        if (this.isOnline(warp.getOwner())) {
-            sendInfo(src, warp, this.getOnlineUser(warp.getOwner()));
-            return SUCCESS;
-        }
-
-        this.essentials.getUserThenAcceptAsync(src, warp.getOwner(), (user) -> {
-            sendInfo(src, warp, user);
-        });
-
+        this.getEssentials().getUserThenAcceptAsync(src, warp.getOwner(), (user) -> sendInfo(src, warp, user));
         return AWAIT;
     }
 
@@ -258,7 +255,7 @@ public class PlayerWarpCommand extends EssentialCommand {
 //        }
 
         src.teleport(warp.getLocation(), true);
-        src.sendMessage(new TextMessage(
+        src.sendMessage(new MutableTextMessage(
                 KiloConfig.messages().commands().warp().teleportTo
                         .replace("{WARP_NAME}", warp.getName()),
                 true
@@ -289,7 +286,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             input.append(String.format(LINE_FORMAT, i + 1, warp.getName(), warp.getType(), RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())));
         }
 
-        Pager.Page paged = Pager.getPageFromStrings(Pager.Options.builder().setPageIndex(page - 1).build(), input.getLines());
+        ListedText.Page paged = ListedText.getPageFromStrings(ListedText.Options.builder().setPageIndex(page - 1).build(), input.getLines());
         paged.send(src, "Player Warps: " + user.getNameTag(), "/playerwarps " + src.getName() + " %page%");
     }
 
@@ -341,13 +338,13 @@ public class PlayerWarpCommand extends EssentialCommand {
 
     private Text getTeleportConfirmationText(String warpName) {
         return new LiteralText("")
-                .append(LangText.get(true, "general.loc.unsafe.confirmation")
+                .append(StringText.of(true, "general.loc.unsafe.confirmation")
                         .formatted(Formatting.YELLOW))
                 .append(new LiteralText(" [").formatted(Formatting.GRAY)
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
                         .append(new LiteralText("]").formatted(Formatting.GRAY))
                         .styled((style) -> {
-                            return style.withFormatting(Formatting.GRAY).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pwarp teleport -confirmed-" + warpName));
+                            return style.withFormatting(Formatting.GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pwarp teleport -confirmed-" + warpName));
                         }));
     }
 

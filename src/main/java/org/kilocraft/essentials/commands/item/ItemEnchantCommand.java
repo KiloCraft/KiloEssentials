@@ -12,13 +12,13 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.ArrayList;
@@ -29,8 +29,8 @@ import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static net.minecraft.command.arguments.ItemEnchantmentArgumentType.getEnchantment;
-import static net.minecraft.command.arguments.ItemEnchantmentArgumentType.itemEnchantment;
+import static net.minecraft.command.argument.ItemEnchantmentArgumentType.getEnchantment;
+import static net.minecraft.command.argument.ItemEnchantmentArgumentType.itemEnchantment;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -57,7 +57,7 @@ public class ItemEnchantCommand {
                 .executes(ctx -> addEnchantment(ctx, -1));
 
         RequiredArgumentBuilder<ServerCommandSource, Integer> levelArgument = argument("level", integer())
-                .suggests(ArgumentCompletions::noSuggestions)
+                .suggests(ArgumentSuggestions::noSuggestions)
                 .executes(ctx -> addEnchantment(ctx, getInteger(ctx, "level")));
 
         removeArgument.then(removeEnchantArgument);

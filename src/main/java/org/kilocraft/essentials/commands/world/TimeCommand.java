@@ -3,18 +3,14 @@ package org.kilocraft.essentials.commands.world;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
 
-import java.util.Iterator;
-
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
-import static net.minecraft.command.arguments.TimeArgumentType.time;
+import static net.minecraft.command.argument.TimeArgumentType.time;
 
 public class TimeCommand extends EssentialCommand {
     public TimeCommand() {
@@ -80,7 +76,7 @@ public class TimeCommand extends EssentialCommand {
     public static int executeSet(CommandContext<ServerCommandSource> context, int time, String timeName){
 
         for (ServerWorld world : context.getSource().getMinecraftServer().getWorlds()) {
-            world.method_29199(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);
+            world.setTimeOfDay(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);
         }
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", timeName + " &8(&d" + time + "&8)&r");
@@ -90,7 +86,7 @@ public class TimeCommand extends EssentialCommand {
 
     public static int executeAdd(CommandContext<ServerCommandSource> context, int timeToAdd) {
         for (ServerWorld world : context.getSource().getMinecraftServer().getWorlds()) {
-            world.method_29199(world.getTimeOfDay() + timeToAdd);
+            world.setTimeOfDay(world.getTimeOfDay() + timeToAdd);
         }
 
         KiloChat.sendLangMessageTo(context.getSource(), "template.#2", "Server time", context.getSource().getWorld().getTimeOfDay());

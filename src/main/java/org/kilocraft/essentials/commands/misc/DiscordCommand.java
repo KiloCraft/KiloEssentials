@@ -24,7 +24,7 @@ public class DiscordCommand implements ConfigurableFeature {
 
     public int execute(CommandContext<ServerCommandSource> context) {
         String jsonText = KiloConfig.messages().commands().discordMessage;
-        Text text = TextFormat.translateToNMSText(jsonText);
+        Text text = TextFormat.translateJsonToText(jsonText);
         KiloChat.sendMessageToSource(context.getSource(), text);
 
         return 1;

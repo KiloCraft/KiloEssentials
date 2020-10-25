@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.kyori.adventure.text.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
@@ -18,17 +19,18 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.text.MessageReceptionist;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.settting.Setting;
-import org.kilocraft.essentials.api.user.settting.UserSettings;
+import org.kilocraft.essentials.api.user.preference.Preference;
+import org.kilocraft.essentials.api.user.preference.UserPreferences;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -65,12 +67,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public UserSettings getSettings() {
+    public UserPreferences getPreferences() {
         return null;
     }
 
     @Override
-    public <T> T getSetting(Setting<T> setting) {
+    public <T> T getPreference(Preference<T> preference) {
         return null;
     }
 
@@ -170,6 +172,11 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public @Nullable String getLastIp() {
+        return null;
+    }
+
+    @Override
     public int getTicksPlayed() {
         return 0;
     }
@@ -200,13 +207,28 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public MessageReceptionist getLastMessageReceptionist() {
+    public EntityIdentifiable getLastMessageReceptionist() {
+        if (this.isOnline()) {
+            try {
+                assert this.getUser() != null;
+                return this.getUser().getLastMessageReceptionist();
+            } catch (CommandSyntaxException exception) {
+                exception.printStackTrace();
+            }
+        }
         return null;
     }
 
     @Override
-    public void setLastMessageReceptionist(MessageReceptionist receptionist) {
-
+    public void setLastMessageReceptionist(EntityIdentifiable entity) {
+        if (this.isOnline()) {
+            try {
+                assert this.getUser() != null;
+                this.getUser().setLastMessageReceptionist(entity);
+            } catch (CommandSyntaxException exception) {
+                exception.printStackTrace();
+            }
+        }
     }
 
     @Nullable
@@ -249,17 +271,17 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendMessage(String message) {
-        KiloChat.sendMessageTo(this.source, new LiteralText(TextFormat.translate(message)));
+        KiloChat.sendMessageTo(this.source, ComponentText.toText(message));
     }
 
     @Override
     public int sendError(String message) {
-        this.source.sendError(new TextMessage("&c" + message, true).toText());
+        this.source.sendError(new MutableTextMessage("&c" + message, true).toText());
         return -1;
     }
 
     @Override
-    public void sendError(TextMessage message) {
+    public void sendError(MutableTextMessage message) {
         try {
             KiloChat.sendMessageTo(this.source, message);
         } catch (CommandSyntaxException e) {
@@ -280,7 +302,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public int sendError(ExceptionMessageNode node, Object... objects) {
         String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.source, ((MutableText)new TextMessage(
+        KiloChat.sendMessageTo(this.source, ((MutableText)new MutableTextMessage(
                 (objects != null) ? String.format(message, objects) : message, true)
                 .toText()).formatted(Formatting.RED));
         return -1;
@@ -292,8 +314,13 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void sendMessage(TextMessage textMessage) {
-        KiloChat.sendMessageToSource(this.source, textMessage);
+    public void sendMessage(@NotNull Component component) {
+        this.sendMessage(ComponentText.toText(component));
+    }
+
+    @Override
+    public void sendMessage(MutableTextMessage mutableTextMessage) {
+        KiloChat.sendMessageToSource(this.source, mutableTextMessage);
     }
 
     @Override
@@ -304,7 +331,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public void sendConfigMessage(String key, Object... objects) {
         String string = KiloConfig.getMessage(key, objects);
-        KiloChat.sendMessageToSource(this.source, new TextMessage(string, true));
+        KiloChat.sendMessageToSource(this.source, new MutableTextMessage(string, true));
     }
 
     @Override

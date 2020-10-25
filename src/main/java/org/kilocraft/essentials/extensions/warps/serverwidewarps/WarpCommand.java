@@ -11,8 +11,10 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
@@ -56,9 +58,9 @@ public class WarpCommand {
                 SimpleCommandManager.register(
                         new SimpleCommand(
                                 "server_warp:" + warp.getName().toLowerCase(Locale.ROOT),
-                                warp.getName().toLowerCase(),
+                                warp.getName().toLowerCase(Locale.ROOT),
                                 (source, args, server) -> executeTeleport(source, warp.getName())
-                        )
+                        ).withoutArgs()
                 );
             }
         }
@@ -87,19 +89,21 @@ public class WarpCommand {
     }
 
     private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
-        if (!ServerWarpManager.getWarpsByName().contains(name))
+        if (!ServerWarpManager.getWarpsByName().contains(name)) {
             throw WARP_NOT_FOUND_EXCEPTION.create();
-            ServerWarp warp = ServerWarpManager.getWarp(name);
-
-            KiloChat.sendMessageTo(source, new TextMessage(
-                    KiloConfig.messages().commands().warp().teleportTo
-                            .replace("{WARP_NAME}", name),
-                    true
-            ));
-
-            KiloServer.getServer().getOnlineUser(source.getPlayer()).saveLocation();
-            ServerWarpManager.teleport(source, warp);
-
+        }
+        source.getPlayer();
+        ServerWarp warp = ServerWarpManager.getWarp(name);
+        OnlineUser user = KiloServer.getServer().getOnlineUser(source.getPlayer());
+        ScheduledExecutionThread.teleport(user, null, () -> {
+            user.sendLangMessage("command.warp.teleport", warp.getName());
+            user.saveLocation();
+            try {
+                ServerWarpManager.teleport(user.getCommandSource(), warp);
+            } catch (CommandSyntaxException ignored) {
+                //We already have a check, which checks if the executor is a player
+            }
+        });
         return 1;
     }
 
@@ -123,7 +127,7 @@ public class WarpCommand {
             Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
 
             thisWarp.append(new LiteralText(warp.getName()).styled((style) -> {
-                return style.withFormatting(thisFormat).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                return style.withFormatting(thisFormat).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                         new LiteralText("[i] ").formatted(Formatting.YELLOW)
                                 .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                         "/warp " + warp.getName()));

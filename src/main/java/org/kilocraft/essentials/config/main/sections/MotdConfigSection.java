@@ -14,13 +14,4 @@ public class MotdConfigSection {
 
     @Setting(value = "line2")
     public String line2 = "&bSecond line";
-
-    @Setting(value = "rainbow", comment = "Ignore color values and format rainbow")
-    public boolean rainbow = false;
-
-    @Setting(value = "offset", comment = "Rainbow color start offset (accepted values: 0.0 - 1.0)")
-    public int offset = 0;
-
-    @Setting(value = "ignorespaces")
-    public boolean ignorespaces = true;
 }

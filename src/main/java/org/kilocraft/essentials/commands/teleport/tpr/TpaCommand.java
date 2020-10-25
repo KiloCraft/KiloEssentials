@@ -10,9 +10,10 @@ import net.minecraft.text.Texts;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -43,7 +44,7 @@ public class TpaCommand extends EssentialCommand {
             throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
         }
 
-        if (target.ignored(src.getUuid()) || target.getSetting(Settings.DON_NOT_DISTURB) || !target.hasPermission(PERMISSION)) {
+        if (target.ignored(src.getUuid()) || target.getPreference(Preferences.DON_NOT_DISTURB) || !target.hasPermission(PERMISSION)) {
             throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
         }
 
@@ -55,7 +56,7 @@ public class TpaCommand extends EssentialCommand {
         UserUtils.TpaRequests.add(src, target, false);
 
         src.sendMessage(
-                Texter.newText(tl("command.tpa.sent", target.getFormattedDisplayName()))
+                ComponentText.toText(tl("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
                         .append(
                                 Texts.bracketed(
@@ -66,7 +67,7 @@ public class TpaCommand extends EssentialCommand {
         );
 
         target.sendMessage(
-                Texter.newText(tl("command.tpa.receive", src.getFormattedDisplayName()))
+                ComponentText.toText(tl("command.tpa.receive", src.getFormattedDisplayName()))
                         .append(" ")
                         .append(
                                 Texts.bracketed(
@@ -83,8 +84,8 @@ public class TpaCommand extends EssentialCommand {
                         )
         );
 
-        if (target.getSetting(Settings.SOUNDS)) {
-            ServerChat.pingPlayer(target.asPlayer(), ServerChat.PingType.PRIVATE);
+        if (target.getPreference(Preferences.SOUNDS)) {
+            ServerChat.pingUser(target, ServerChat.MentionTypes.PRIVATE);
         }
 
         return SUCCESS;

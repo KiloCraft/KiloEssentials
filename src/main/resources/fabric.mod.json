@@ -19,14 +19,9 @@
     "DrexHD",
     "Hansi132"
   ],
-
   "license": "MIT",
-
   "environment": "server",
   "entrypoints": {
-    "server": [
-      "org.kilocraft.essentials.KiloEssentialsMod"
-    ]
   },
   "mixins": [
     "kiloessentials.events.mixins.json",
@@ -39,7 +34,6 @@
     "fabricloader": ">=0.7.1+build.174"
   },
   "suggests": {
-    "luckperms": "*",
-    "thimble": "*"
+    "luckperms": "*"
   }
 }

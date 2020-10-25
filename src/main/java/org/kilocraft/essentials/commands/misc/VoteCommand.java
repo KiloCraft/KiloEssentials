@@ -23,7 +23,7 @@ public class VoteCommand implements ConfigurableFeature {
 
     public int execute(CommandContext<ServerCommandSource> context) {
         String jsonText = KiloConfig.messages().commands().voteMessage;
-        Text text = TextFormat.translateToNMSText(jsonText);
+        Text text = TextFormat.translateJsonToText(jsonText);
         KiloChat.sendMessageToSource(context.getSource(), text);
 
         return 1;

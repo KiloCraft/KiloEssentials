@@ -8,11 +8,13 @@ public class SimpleCommand {
     String label;
     String permReq;
     int opReq;
+    boolean hasArgs;
     SimpleExecutableCommand executable;
 
     public SimpleCommand(String id, String label, SimpleExecutableCommand executable) {
         this.id = id;
         this.label = label;
+        this.hasArgs = true;
         this.executable = executable;
     }
 
@@ -34,6 +36,11 @@ public class SimpleCommand {
         return this;
     }
 
+    public SimpleCommand withoutArgs() {
+        this.hasArgs = false;
+        return this;
+    }
+
     @Nullable
     public String getRequirementPerm() {
         return this.permReq;
@@ -42,5 +49,4 @@ public class SimpleCommand {
     public int getRequirementLevel() {
         return this.opReq;
     }
-
 }

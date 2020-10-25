@@ -1,6 +1,8 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
@@ -9,27 +11,31 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
-import org.kilocraft.essentials.user.setting.Settings;
-import org.kilocraft.essentials.util.GlobalUtils;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
+import java.awt.*;
 import java.net.SocketAddress;
 import java.util.Date;
 import java.util.UUID;
@@ -86,17 +92,17 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(final String message) {
-        KiloChat.sendMessageTo(this.asPlayer(), new TextMessage(message, true));
+        KiloChat.sendMessageTo(this.asPlayer(), ComponentText.toText(message));
     }
 
     @Override
     public int sendError(final String message) {
-        KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)new TextMessage("&c" + message, true).toText()).formatted(Formatting.RED));
+        KiloChat.sendMessageTo(this.asPlayer(), ComponentText.toText(ComponentText.of(message).color(NamedTextColor.RED)));
         return 0;
     }
 
     @Override
-    public void sendError(TextMessage message) {
+    public void sendError(MutableTextMessage message) {
 
     }
 
@@ -113,7 +119,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public int sendError(final ExceptionMessageNode node, final Object... objects) {
         final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)new TextMessage(
+        KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)new MutableTextMessage(
                 objects != null ? String.format(message, objects) : message, true)
                 .toText()).formatted(Formatting.RED));
         return -1;
@@ -125,8 +131,13 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public void sendMessage(final TextMessage textMessage) {
-        KiloChat.sendMessageTo(this.asPlayer(), textMessage);
+    public void sendMessage(@NotNull Component component) {
+        this.asPlayer().sendMessage(ComponentText.toText(component), false);
+    }
+
+    @Override
+    public void sendMessage(final MutableTextMessage mutableTextMessage) {
+        KiloChat.sendMessageTo(this.asPlayer(), mutableTextMessage);
     }
 
     @Override
@@ -137,7 +148,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public void sendConfigMessage(final String key, final Object... objects) {
         final String message = KiloConfig.getMessage(key, objects);
-        this.sendMessage(new TextMessage(message, true));
+        this.sendMessage(new MutableTextMessage(message, true));
     }
 
     @Override
@@ -195,7 +206,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void setFlight(final boolean set) {
-        super.getSettings().set(Settings.CAN_FLY, true);
+        super.getPreferences().set(Preferences.CAN_FLY, true);
         this.asPlayer().abilities.allowFlying = set;
         this.asPlayer().abilities.flying = set;
         this.asPlayer().sendAbilitiesUpdate();
@@ -225,15 +236,26 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         return super.lastSocketAddress;
     }
 
+    @Nullable
+    @Override
+    public String getLastIp() {
+        String last = this.getLastSocketAddress();
+        if (last == null) {
+            return null;
+        }
+
+        return StringUtils.socketAddressToIp(this.getLastSocketAddress());
+    }
+
     @Deprecated
     @Override
     public void saveData() {
     }
 
     public void onJoined() {
-        this.setFlight(super.getSetting(Settings.CAN_FLY));
+        this.setFlight(super.getPreference(Preferences.CAN_FLY));
 
-        SocketAddress socketAddress = GlobalUtils.getSocketAddress(super.uuid);
+        SocketAddress socketAddress = this.getConnection().getAddress();
         if (socketAddress != null) {
             lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
         }
@@ -241,13 +263,13 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         super.messageCoolDown = 0;
         super.systemMessageCoolDown = 0;
 
-        GameMode gameMode = super.getSetting(Settings.GAME_MODE);
+        GameMode gameMode = super.getPreference(Preferences.GAME_MODE);
         if (gameMode == GameMode.NOT_SET) {
             gameMode = this.asPlayer().interactionManager.getGameMode();
         }
 
         this.setGameMode(gameMode);
-        super.getSettings().set(Settings.GAME_MODE, gameMode);
+        super.getPreferences().set(Preferences.GAME_MODE, gameMode);
 
         if (ticksPlayed <= 0) {
             ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
@@ -259,6 +281,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             isStaff = true;
         }
 
+        KiloEssentials.getInstance().getLuckPermsCompatibility().ifPresent((it) -> it.onUserJoin(this));
     }
 
     public void onLeave() {

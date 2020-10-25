@@ -1,26 +1,30 @@
 package org.kilocraft.essentials.commands.teleport;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.arguments.DimensionArgumentType;
+import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
-import static net.minecraft.command.arguments.DimensionArgumentType.dimension;
-import static net.minecraft.command.arguments.EntityArgumentType.getPlayer;
-import static net.minecraft.command.arguments.EntityArgumentType.player;
-import static net.minecraft.command.arguments.Vec3ArgumentType.getVec3;
-import static net.minecraft.command.arguments.Vec3ArgumentType.vec3;
+import static net.minecraft.command.argument.DimensionArgumentType.dimension;
+import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
+import static net.minecraft.command.argument.EntityArgumentType.player;
+import static net.minecraft.command.argument.Vec3ArgumentType.getVec3;
+import static net.minecraft.command.argument.Vec3ArgumentType.vec3;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.kilocraft.essentials.KiloCommands.SUCCESS;
@@ -28,12 +32,14 @@ import static org.kilocraft.essentials.KiloCommands.SUCCESS;
 public class TeleportCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> tpToCommand = dispatcher.register(literal("teleportto")
-            .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO))
-            .then(argument("target", player()).executes(TeleportCommands::teleportTo))
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO))
+                .then(argument("user", StringArgumentType.string())
+                        .suggests(ArgumentSuggestions::users)
+                        .executes(TeleportCommands::teleportTo))
         );
 
         LiteralCommandNode<ServerCommandSource> tpPosCommand = dispatcher.register(literal("teleportpos")
-                .requires(src -> KiloCommands.hasPermission(src , CommandPermission.TELEPORTPOS))
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTPOS))
                 .then(argument("pos", vec3()).executes(TeleportCommands::teleportPos))
         );
 
@@ -44,11 +50,11 @@ public class TeleportCommands {
 
         LiteralCommandNode<ServerCommandSource> tpInCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN))
-                .then(argument("dimension", dimension()).suggests(ArgumentCompletions::dimensions).then(argument("pos", vec3())
-                        .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
-                            .then(argument("target", player())
-                                    .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
-                    )
+                .then(argument("dimension", dimension()).suggests(ArgumentSuggestions::dimensions).then(argument("pos", vec3())
+                                .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
+                                .then(argument("target", player())
+                                        .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
+                        )
                 )
         );
 
@@ -59,19 +65,20 @@ public class TeleportCommands {
     }
 
     private static int teleportTo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity target = getPlayer(ctx, "target");
+        OnlineUser src = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
+        String input = StringArgumentType.getString(ctx, "user");
 
-        KiloServer.getServer().getOnlineUser(target).saveLocation();
-        ctx.getSource().getPlayer().teleport(
-                target.getServerWorld(),
-                target.getPos().getX(), target.getPos().getY(), target.getPos().getZ(),
-                target.yaw, target.pitch
-        );
+        KiloEssentials.getInstance().getUserThenAcceptAsync(src, input, (user) -> {
+            if (user.getLocation() == null) {
+                src.sendLangError("command.back.no_loc");
+                return;
+            }
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "position",
-                getFormattedMessage(target), ctx.getSource().getPlayer().getName().asString());
+            src.teleport(user.getLocation(), true);
+            src.sendLangMessage("template.#1", "position", getFormattedMessage(src.asPlayer()), src.getName());
+        });
 
-        return SUCCESS();
+        return 0;
     }
 
     private static int teleportPos(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -126,12 +133,7 @@ public class TeleportCommands {
     }
 
     private static String getFormattedMessage(ServerPlayerEntity target) {
-        return String.format("%s, %s, %s &8(&d%s&8)",
-                Math.round(target.getPos().getX()),
-                Math.round(target.getPos().getY()),
-                Math.round(target.getPos().getZ()),
-                RegistryUtils.dimensionToName(target.getServerWorld().getDimension())
-        );
+        return Vec3dLocation.of(target).toString();
     }
 
 

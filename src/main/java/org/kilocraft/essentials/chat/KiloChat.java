@@ -8,8 +8,10 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.config.messages.Messages;
@@ -22,23 +24,23 @@ public class KiloChat {
 	private static final Messages messages = KiloConfig.messages();
 
 	public static String getFormattedLang(String key) {
-		return getFormattedString(ModConstants.getLang().getProperty(key), (Object) null);
+		return getFormattedString(ModConstants.getStrings().getProperty(key), (Object) null);
 	}
 
 	public static String getFormattedLang(String key, Object... objects) {
-		return getFormattedString(ModConstants.getLang().getProperty(key), objects);
+		return getFormattedString(ModConstants.getStrings().getProperty(key), objects);
 	}
 
 	public static String getFormattedString(String string, Object... objects) {
 		return (objects[0] != null) ? String.format(string, objects) : string;
 	}
 
-	public static void sendMessageTo(ServerPlayerEntity player, TextMessage textMessage) {
-		sendMessageTo(player, textMessage.toComponent());
+	public static void sendMessageTo(ServerPlayerEntity player, MutableTextMessage mutableTextMessage) {
+		sendMessageTo(player, mutableTextMessage.toText());
 	}
 
-	public static void sendMessageTo(ServerCommandSource source, TextMessage textMessage) throws CommandSyntaxException {
-		sendMessageTo(source.getPlayer(), textMessage.toComponent());
+	public static void sendMessageTo(ServerCommandSource source, MutableTextMessage mutableTextMessage) throws CommandSyntaxException {
+		sendMessageTo(source.getPlayer(), mutableTextMessage.toText());
 	}
 
 	public static void sendMessageTo(ServerPlayerEntity player, Text text) {
@@ -49,11 +51,11 @@ public class KiloChat {
 		source.sendFeedback(text, false);
 	}
 
-	public static void sendMessageToSource(ServerCommandSource source, TextMessage message) {
+	public static void sendMessageToSource(ServerCommandSource source, MutableTextMessage message) {
 		if (CommandUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(message.getOriginal());
 		else
-			source.sendFeedback(new LiteralText(message.getFormattedMessage()), false);
+			source.sendFeedback(message.toText(), false);
 	}
 
 	public static void sendMessageToSource(ServerCommandSource source, Text text) {
@@ -67,87 +69,79 @@ public class KiloChat {
 		if (CommandUtils.isConsole(source))
 			getServer().sendMessage(getFormattedLang(key));
 		else
-			source.sendFeedback(LangText.get(true, key), false);
+			source.sendFeedback(StringText.of(key), false);
 	}
 
 	public static void sendLangCommandFeedback(ServerCommandSource source, String key, boolean sendToOPs, Object... objects) {
 		if (CommandUtils.isConsole(source))
 			getServer().sendMessage(getFormattedLang(key, objects));
 		else
-			source.sendFeedback(LangText.getFormatter(true, key, objects), sendToOPs);
+			source.sendFeedback(StringText.of(true, key, objects), sendToOPs);
 	}
 
 	public static void sendLangMessageTo(ServerPlayerEntity player, String key) {
-		sendMessageTo(player, LangText.get(true, key));
+		sendMessageTo(player, StringText.of(true, key));
 	}
 
 	public static void sendLangMessageTo(ServerPlayerEntity player, String key, Object... objects) {
-		sendMessageTo(player, LangText.getFormatter(true, key, objects));
+		sendMessageTo(player, StringText.of(true, key, objects));
 	}
 
 	public static void sendLangMessageTo(ServerCommandSource source, String key, Object... objects) {
 		if (CommandUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(getFormattedLang(key, objects));
 		else
-			source.sendFeedback(LangText.getFormatter(true, key, objects), false);
+			source.sendFeedback(StringText.of(true, key, objects), false);
 	}
 
-	public static void broadCastExceptConsole(TextMessage textMessage) {
+	public static void broadCastExceptConsole(MutableTextMessage mutableTextMessage) {
 		for (PlayerEntity player : getServer().getPlayerList()) {
-			player.sendMessage(textMessage.toComponent(), false);
+			player.sendMessage(mutableTextMessage.toText(), false);
 		}
 	}
 
 	public static void broadCastLangExceptConsole(String key, Object... objects) {
-		broadCastExceptConsole(new TextMessage(getFormattedLang(key, objects), false));
+		broadCastExceptConsole(new MutableTextMessage(getFormattedLang(key, objects), false));
 	}
 
 	public static void broadCastLangToConsole(String key, Object... objects) {
-		broadCastToConsole(new TextMessage(getFormattedLang(key, objects), false));
+		broadCastToConsole(new MutableTextMessage(getFormattedLang(key, objects), false));
 	}
 
-	public static void broadCastToConsole(TextMessage textMessage) {
-		textMessage.setMessage(textMessage.getOriginal(), false);
-		getServer().sendMessage(textMessage.getFormattedMessage());
+	public static void broadCastToConsole(MutableTextMessage mutableTextMessage) {
+		mutableTextMessage.setMessage(mutableTextMessage.getOriginal(), false);
+		getServer().sendMessage(mutableTextMessage.toText());
 	}
 
-	public static void broadCast(TextMessage textMessage) {
+	public static void broadCast(MutableTextMessage mutableTextMessage) {
 		for (PlayerEntity player : getServer().getPlayerList()) {
-			player.sendMessage(textMessage.toComponent(), false);
+			player.sendMessage(mutableTextMessage.toText(), false);
 		}
 
-		getServer().sendMessage(TextFormat.removeAlternateColorCodes('&', textMessage.getFormattedMessage()));
+		getServer().sendMessage(mutableTextMessage.toText());
 	}
 
 	public static void broadCast(Text text) {
 		for (PlayerEntity entity : getServer().getPlayerList()) {
 			entity.sendMessage(text, false);
 		}
-
 	}
 
-	public static void broadCastLang(String key) {
-		broadCastLang(key, (Object) null);
-	}
+	public static void broadCast(String message) {
+        for (PlayerEntity entity : getServer().getPlayerList()) {
+            entity.sendMessage(ComponentText.toText(message), false);
+        }
+    }
 
 	public static void broadCastLang(String key, Object... objects) {
-		broadCast(new TextMessage(getFormattedLang(key, objects), true));
+		broadCast(getFormattedLang(key, objects));
 	}
 
 	public static void onUserJoin(ServerUser user) {
-		if (DISABLE_EVENT_MESSAGES)
-			return;
-
-		broadCast(new TextMessage(messages.events().userJoin, user));
+		broadCast(ConfigVariableFactory.replaceUserVariables(messages.events().userJoin, user));
 	}
 
-	public static void onUserLeave(ServerUser user) {
-		if (DISABLE_EVENT_MESSAGES)
-			return;
-
-		broadCast(new TextMessage(messages.events().userLeave, user));
-	}
-
-	public static boolean DISABLE_EVENT_MESSAGES = messages.events().disableOnProxyMode && KiloConfig.main().server().proxyMode;
-
+    public static void onUserLeave(ServerUser user) {
+        broadCast(ConfigVariableFactory.replaceUserVariables(messages.events().userLeave, user));
+    }
 }

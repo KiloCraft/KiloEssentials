@@ -5,19 +5,19 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.arguments.GameProfileArgumentType;
+import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.*;
-import org.kilocraft.essentials.util.text.Pager;
+import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class WhoWasCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> usernameArgument = getUserArgument("username")
-                .suggests(ArgumentCompletions::allPlayers)
+                .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> executeOthers(ctx, 1));
 
         RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = argument("page", IntegerArgumentType.integer(1))
@@ -94,9 +94,9 @@ public class WhoWasCommand extends EssentialCommand {
             return FAILED;
         }
 
-        if (CacheManager.shouldUse(getCacheId(uuid))) {
+        if (CacheManager.isPresent(getCacheId(uuid))) {
             AtomicReference<NameLookup.PreviousPlayerNameEntry[]> reference = new AtomicReference<>();
-            CacheManager.getAndRun(getCacheId(uuid), (cached) -> reference.set((NameLookup.PreviousPlayerNameEntry[]) cached.get()));
+            CacheManager.ifPresent(getCacheId(uuid), (cached) -> reference.set((NameLookup.PreviousPlayerNameEntry[]) cached));
             return send(src, name, page, reference.get());
         }
 
@@ -130,14 +130,14 @@ public class WhoWasCommand extends EssentialCommand {
             } else {
                 dateText = Texter.newText(String.format(DATE_FORMAT, TimeDifferenceUtil.formatDateDiff(entry.getChangeTime())))
                         .styled((style) ->
-                                style.setHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(new Date(entry.getChangeTime()))))
+                                style.withHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(new Date(entry.getChangeTime()))))
                         );
             }
 
             input.append(Texter.newText(String.format(LINE_FORMAT, i, entry.getPlayerName())).append(" ").append(dateText));
         }
 
-        Pager.Page paged = Pager.getPageFromText(Pager.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
+        ListedText.Page paged = ListedText.getPageFromText(ListedText.Options.builder().setPageIndex(page - 1).build(), input.getTextLines());
 
         paged.send(src.getCommandSource(), "Name history of " + name + " (&e" + i + "&6)", "/whowas " + name + " %page%");
         return SUCCESS;

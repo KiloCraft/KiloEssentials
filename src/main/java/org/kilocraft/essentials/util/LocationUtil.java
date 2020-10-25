@@ -4,7 +4,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.biome.Biome;
@@ -16,7 +15,7 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.user.setting.Settings;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 public class LocationUtil {
@@ -28,7 +27,7 @@ public class LocationUtil {
     }
 
     public static boolean isBlockSafeFor(OnlineUser user, final Location loc) {
-        return user.asPlayer().isCreative() || user.getSetting(Settings.INVULNERABLE) || (isBlockSafe(loc) && !user.asPlayer().isFireImmune());
+        return user.asPlayer().isCreative() || user.getPreference(Preferences.INVULNERABLE) || (isBlockSafe(loc) && !user.asPlayer().isFireImmune());
     }
 
     public static boolean isBlockSafe(final Location loc) {

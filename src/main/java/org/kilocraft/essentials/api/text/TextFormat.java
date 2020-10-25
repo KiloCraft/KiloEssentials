@@ -11,9 +11,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.commands.CommandUtils;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+@Deprecated
 public enum TextFormat {
     /**
      * Represents black
@@ -86,7 +88,7 @@ public enum TextFormat {
     /**
      * Makes the text bold.
      */
-    BOLD('l', 0x11, Formatting.BOLD ,true, "\\u001b[1m"),
+    BOLD('l', 0x11, Formatting.BOLD, true, "\\u001b[1m"),
     /**
      * Makes a line appear through the text.
      */
@@ -94,23 +96,24 @@ public enum TextFormat {
     /**
      * Makes the text appear underlined.
      */
-    UNDERLINE('n', 0x13, Formatting.UNDERLINE,true, "\\u001b[4m"),
+    UNDERLINE('n', 0x13, Formatting.UNDERLINE, true, "\\u001b[4m"),
     /**
      * Makes the text italic.
      */
-    ITALIC('o', 0x14, Formatting.ITALIC,true),
+    ITALIC('o', 0x14, Formatting.ITALIC, true),
     /**
      * Resets all previous events colors or formats.
      */
     RESET('r', 0x15, Formatting.RESET),
     /**
      * Reverses the Text and background color
+     *
      * @apiNote Console Only
      */
     REVERSED('s', 0, null, "\\u001b[7m");
 
     private static String[] list() {
-        return new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
+        return new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
                 "a", "b", "c", "d", "e", "f", "i", "k", "l", "m", "o", "r"};
     }
 
@@ -132,7 +135,7 @@ public enum TextFormat {
         this.intCode = intCode;
         this.isFormat = isFormat;
         this.formatting = formatting;
-        this.toString = new String(new char[] {COLOR_CHAR, code});
+        this.toString = new String(new char[]{COLOR_CHAR, code});
         this.ansi = ansi;
     }
 
@@ -162,7 +165,7 @@ public enum TextFormat {
         return TextFormat.list();
     }
 
-    public Formatting getFormattingByChar(char code) {
+    public Formatting getFormatting() {
         return formatting;
     }
 
@@ -204,7 +207,7 @@ public enum TextFormat {
      *
      * @param code Code to check
      * @return Associative {@link org.kilocraft.essentials.api} with the given code,
-     *     or null if it doesn't exist
+     * or null if it doesn't exist
      */
     @Nullable
     public static TextFormat getByChar(char code) {
@@ -216,7 +219,7 @@ public enum TextFormat {
      *
      * @param code Code to check
      * @return Associative {@link org.kilocraft.essentials.api} with the given code,
-     *     or null if it doesn't exist
+     * or null if it doesn't exist
      */
     @Nullable
     public static TextFormat getByChar(@NotNull String code) {
@@ -242,7 +245,7 @@ public enum TextFormat {
         return STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
     }
 
-    public static Text translateToNMSText(String jsonString) {
+    public static Text translateJsonToText(String jsonString) {
         return Text.Serializer.fromJson(jsonString);
     }
 
@@ -252,7 +255,7 @@ public enum TextFormat {
      * character. The alternate color code character will only be replaced if
      * it is immediately followed by 0-9, A-F, a-f, K-O, k-o, R or r.
      *
-     * @param altColorChar The alternate color code character to replace. Ex: {@literal &}
+     * @param altColorChar    The alternate color code character to replace. Ex: {@literal &}
      * @param textToTranslate Text containing the alternate color code character.
      * @return Text containing the ChatColor.COLOR_CODE color code character.
      */
@@ -263,9 +266,9 @@ public enum TextFormat {
         char[] b = textToTranslate.toCharArray();
 
         for (int i = 0; i < b.length - 1; i++) {
-            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
+            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
                 b[i] = TextFormat.COLOR_CHAR;
-                b[i+1] = Character.toLowerCase(b[i+1]);
+                b[i + 1] = Character.toLowerCase(b[i + 1]);
             }
         }
         return new String(b);
@@ -276,9 +279,9 @@ public enum TextFormat {
         char[] b = textToTranslate.toCharArray();
 
         for (int i = 0; i < b.length - 1; i++) {
-            if (b[i] == COLOR_CHAR && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {
+            if (b[i] == COLOR_CHAR && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
                 b[i] = altColorChar;
-                b[i+1] = Character.toLowerCase(b[i+1]);
+                b[i + 1] = Character.toLowerCase(b[i + 1]);
             }
         }
         return new String(b);
@@ -413,6 +416,16 @@ public enum TextFormat {
 
     public static char getFormattedPercentage(double percentage, boolean reverse) {
         return percentage > 80 ? (reverse ? 'c' : 'a') : percentage < 40 ? (reverse ? 'a' : 'c') : 'e';
+    }
+
+    public static String getCodeByFormatting(Formatting formatting) {
+        for (TextFormat value : values()) {
+            if (value.formatting == formatting) {
+                return String.valueOf(value.code);
+            }
+        }
+
+        return null;
     }
 
     static {

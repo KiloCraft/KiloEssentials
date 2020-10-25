@@ -4,9 +4,12 @@ import net.minecraft.SharedConstants;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.chat.LangText;
 import org.kilocraft.essentials.api.text.TextFormat;
-import java.util.*;
+import org.kilocraft.essentials.chat.StringText;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
@@ -60,25 +63,79 @@ public class Texter {
 
     public static MutableText appendButton(MutableText text, MutableText hoverText, ClickEvent.Action action, String actionValue) {
         return text.styled((style) -> {
-            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
+            style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
             style.withClickEvent(new ClickEvent(action, actionValue));
             return style;
         });
     }
 
     public static MutableText getButton(String title, String command, MutableText hoverText) {
-        return newText(title).styled((style) -> style.setHoverEvent(Events.onHover(hoverText)).withClickEvent(Events.onClickRun(command)));
+        return newText(title).styled((style) -> style.withHoverEvent(Events.onHover(hoverText)).withClickEvent(Events.onClickRun(command)));
     }
 
     public static MutableText getButton(String title, String command, String string) {
-        return newText(title).styled((style) -> style.setHoverEvent(Events.onHover(string)).withClickEvent(Events.onClickRun(command)));
+        return newText(title).styled((style) -> style.withHoverEvent(Events.onHover(string)).withClickEvent(Events.onClickRun(command)));
     }
 
     public static MutableText confirmationMessage(String langKey, MutableText button) {
         return newText()
-                .append(LangText.getFormatter(true, langKey))
+                .append(StringText.of(true, langKey))
                 .append(" ")
                 .append(button);
+    }
+
+    public enum TypeFormat {
+        STRING("String", String.class, Formatting.YELLOW),
+        INTEGER("Integer", Integer.class, Formatting.GOLD),
+        DOUBLE("Double", Double.class, Formatting.GOLD),
+        FLOAT("Float", Float.class, Formatting.GOLD),
+        BYTE("Byte", Byte.class, Formatting.RED),
+        CHAR("Char", Character.class, Formatting.AQUA),
+        LONG("Long", Long.class, Formatting.GOLD),
+        BOOLEAN("Boolean", Boolean.class, Formatting.GREEN),
+        SHORT("Short", Short.class, Formatting.GOLD),
+        LIST("List", List.class, Formatting.WHITE),
+        MAP("Map", Map.class, Formatting.WHITE);
+
+        private final String name;
+        private final Class<?> clazz;
+        private final Formatting defaultFormat;
+
+        TypeFormat(String name, Class<?> clazz, Formatting formatting) {
+            this.name = name;
+            this.clazz = clazz;
+            this.defaultFormat = formatting;
+        }
+
+        @Nullable
+        public static Texter.TypeFormat getByName(String name) {
+            for (TypeFormat value : values()) {
+                if (value.name.equals(name)) {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
+        @Nullable
+        public static Texter.TypeFormat getByClazz(Class<?> clazz) {
+            for (TypeFormat value : values()) {
+                if (value.clazz.equals(clazz))
+                    return value;
+            }
+
+            return null;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Formatting getDefaultFormatting() {
+            return defaultFormat;
+        }
+
     }
 
     public static class Legacy {
@@ -87,31 +144,107 @@ public class Texter {
             return original;
         }
 
+        //        public static String toFormattedString(Text text) {
+//            StringBuilder builder = new StringBuilder();
+//            String main = "";
+//
+//            for (Text sibling : text.getSiblings()) {
+//                String str_1 = sibling.asString();
+//                if (!str_1.isEmpty()) {
+//                    String str_2 = styleToString(sibling.getStyle());
+//                    if (!str_2.equals(main)) {
+//                        if (!main.isEmpty()) {
+//                            builder.append(Formatting.RESET);
+//                        }
+//
+//                        builder.append(str_2);
+//                        main = str_2;
+//                    }
+//
+//                    builder.append(str_1);
+//                }
+//            }
+//
+//            if (!main.isEmpty()) {
+//                builder.append(Formatting.RESET);
+//            }
+//
+//            return builder.toString();
+//        }
         public static String toFormattedString(Text text) {
+            return toFormattedString(text, false);
+        }
+
+        public static String toFormattedString(Text text, boolean skipSelf) {
             StringBuilder builder = new StringBuilder();
-            String main = "";
-
+            if (!skipSelf) {
+                builder.append(styleToString2(text.getStyle()));
+                builder.append(text.asString());
+            }
+            Style style = text.getStyle();
             for (Text sibling : text.getSiblings()) {
-                String str_1 = sibling.asString();
-                if (!str_1.isEmpty()) {
-                    String str_2 = styleToString(sibling.getStyle());
-                    if (!str_2.equals(main)) {
-                        if (!main.isEmpty()) {
-                            builder.append(Formatting.RESET);
-                        }
-
-                        builder.append(str_2);
-                        main = str_2;
-                    }
-
-                    builder.append(str_1);
+                if (style.equals(sibling.getStyle())) {
+                    builder.append(styleToString(sibling.getStyle()));
+                    builder.append(sibling.asString());
+                    builder.append(toFormattedString(sibling, true));
+                } else {
+                    builder.append(toFormattedString(sibling, false));
                 }
             }
 
-            if (!main.isEmpty()) {
-                builder.append(Formatting.RESET);
+            return builder.toString();
+        }
+
+
+        public static String toFormattedString2(Text text) {
+            return toFormattedString2(text, false);
+        }
+
+        public static String toFormattedString2(Text text, boolean skipSelf) {
+            StringBuilder builder = new StringBuilder();
+            if (!skipSelf) {
+                builder.append(styleToString2(text.getStyle()));
+                builder.append(text.asString());
+            }
+            Style style = text.getStyle();
+            for (Text sibling : text.getSiblings()) {
+                if (style.equals(sibling.getStyle())) {
+                    builder.append(styleToString2(sibling.getStyle()));
+                    builder.append(sibling.asString());
+                    builder.append(toFormattedString2(sibling, true));
+                } else {
+                    builder.append(toFormattedString2(sibling, false));
+                }
             }
 
+            return builder.toString();
+        }
+
+        private static String styleToString2(Style style) {
+            StringBuilder builder = new StringBuilder();
+            if (style.isBold()) {
+                builder.append("<bold>");
+            }
+
+            if (style.isItalic()) {
+                builder.append("<italic>");
+            }
+
+            if (style.isUnderlined()) {
+                builder.append("<underlined>");
+            }
+
+            if (style.isObfuscated()) {
+                builder.append("<obfuscated>");
+            }
+
+            if (style.isStrikethrough()) {
+                builder.append("<strikethrough>");
+            }
+
+            if (style.getColor() != null) {
+                builder.append("<color:").append(style.getColor().getName()).append(">");
+            }
             return builder.toString();
         }
 
@@ -150,6 +283,10 @@ public class Texter {
     }
 
     public static class Events {
+        public static ClickEvent onClickCopy(String string) {
+            return new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, string);
+        }
+
         public static ClickEvent onClickSuggest(String command) {
             return new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command);
         }
@@ -182,13 +319,9 @@ public class Texter {
 
     public static class ArrayStyle {
         private final List<Object> list;
-        private boolean nextColor = false;
         private final Formatting aFormat;
         private final Formatting bFormat;
-
-        public static ArrayStyle of(List<Object> list) {
-            return new Texter.ArrayStyle(Formatting.WHITE, Formatting.GRAY, list);
-        }
+        private boolean nextColor = false;
 
         public ArrayStyle(Formatting aFormat, Formatting bFormat, @Nullable List<Object> list) {
             this.list = list == null ? new ArrayList<>() : list;
@@ -198,6 +331,10 @@ public class Texter {
 
         public ArrayStyle() {
             this(Formatting.WHITE, Formatting.GRAY, null);
+        }
+
+        public static ArrayStyle of(List<Object> list) {
+            return new Texter.ArrayStyle(Formatting.WHITE, Formatting.GRAY, list);
         }
 
         public ArrayStyle append(String string) {
@@ -239,19 +376,15 @@ public class Texter {
     }
 
     public static class ListStyle {
-        private MutableText title;
         private final MutableText text;
         private final Formatting primary;
         private final Formatting aFormat;
         private final Formatting bFormat;
         private final Formatting borders;
         private final List<Object> list;
+        private MutableText title;
         private int size;
         private boolean nextColor = false;
-
-        public static ListStyle of(String title, Formatting primary, Formatting borders, Formatting aFormat, Formatting bFormat) {
-            return new ListStyle(title, primary, borders, aFormat, bFormat, null);
-        }
 
         public ListStyle(String title, Formatting primary, Formatting borders, Formatting aFormat, Formatting bFormat, @Nullable List<Object> list) {
             this.title = new LiteralText(title);
@@ -261,6 +394,10 @@ public class Texter {
             this.bFormat = bFormat;
             this.borders = borders;
             this.list = list == null ? new ArrayList<>() : list;
+        }
+
+        public static ListStyle of(String title, Formatting primary, Formatting borders, Formatting aFormat, Formatting bFormat) {
+            return new ListStyle(title, primary, borders, aFormat, bFormat, null);
         }
 
         public ListStyle append(Object... objects) {
@@ -284,7 +421,7 @@ public class Texter {
             MutableText text = obj instanceof MutableText ? ((MutableText) obj).formatted(formatting) :
                     Texter.newText(String.valueOf(obj)).formatted(formatting);
             if (hoverEvent != null) {
-                text.styled((style) -> style.setHoverEvent(hoverEvent));
+                text.styled((style) -> style.withHoverEvent(hoverEvent));
             }
             if (clickEvent != null) {
                 text.styled((style) -> style.withClickEvent(clickEvent));
@@ -330,16 +467,6 @@ public class Texter {
         private MutableText valueObjectSeparator;
         private boolean useLineStarter = false;
 
-        public static InfoBlockStyle of(String title) {
-            return of(title, Formatting.GOLD, Formatting.YELLOW, Formatting.GRAY, false);
-        }
-
-        public static InfoBlockStyle of(String title, Formatting primary, Formatting secondary, Formatting borders, boolean lineStarter) {
-            InfoBlockStyle infoBlockStyle = new InfoBlockStyle(title, primary, secondary, borders);
-            infoBlockStyle.useLineStarter = lineStarter;
-            return infoBlockStyle;
-        }
-
         public InfoBlockStyle(String title, Formatting primary, Formatting secondary, Formatting borders) {
             this.header = new LiteralText("")
                     .append(new LiteralText("- [ ").formatted(borders))
@@ -355,6 +482,16 @@ public class Texter {
             this.valueObjectSeparator = new LiteralText(": ").formatted(borders);
         }
 
+        public static InfoBlockStyle of(String title) {
+            return of(title, Formatting.GOLD, Formatting.YELLOW, Formatting.GRAY, false);
+        }
+
+        public static InfoBlockStyle of(String title, Formatting primary, Formatting secondary, Formatting borders, boolean lineStarter) {
+            InfoBlockStyle infoBlockStyle = new InfoBlockStyle(title, primary, secondary, borders);
+            infoBlockStyle.useLineStarter = lineStarter;
+            return infoBlockStyle;
+        }
+
         public InfoBlockStyle setLineStarter(MutableText text) {
             if (!this.useLineStarter)
                 this.useLineStarter = true;
@@ -367,7 +504,7 @@ public class Texter {
             this.valueObjectSeparator = text;
             return this;
         }
-        
+
         public InfoBlockStyle append(List<?> objects, String title) {
             MutableText text = newText();
             for (int i = 0; i < objects.size(); i++) {
@@ -378,7 +515,7 @@ public class Texter {
                     MutableText mutable = (MutableText) obj;
                     this.text.styled((style) -> {
                         if (mutable.getStyle().getHoverEvent() != null) {
-                            style.setHoverEvent(mutable.getStyle().getHoverEvent());
+                            style.withHoverEvent(mutable.getStyle().getHoverEvent());
                         }
 
                         if (mutable.getStyle().getClickEvent() != null) {
@@ -407,7 +544,7 @@ public class Texter {
                     MutableText objectToText = (MutableText) objects[i];
                     text.styled((style) -> {
                         if (objectToText.getStyle().getHoverEvent() != null) {
-                            style.setHoverEvent(objectToText.getStyle().getHoverEvent());
+                            style.withHoverEvent(objectToText.getStyle().getHoverEvent());
                         }
 
                         if (objectToText.getStyle().getClickEvent() != null) {
@@ -431,8 +568,7 @@ public class Texter {
                     }
 
                     text.append(new LiteralText("]").formatted(borders));
-                }
-                else if (subTitles[i] != null) {
+                } else if (subTitles[i] != null) {
                     TypeFormat typeFormat = TypeFormat.getByClazz(objects[i].getClass());
 
                     text.append(new LiteralText(subTitles[i]).formatted(secondary))
@@ -518,60 +654,7 @@ public class Texter {
         }
 
         public MutableText build() {
-            return new LiteralText("").append(header).append(this.text).append(new LiteralText(SEPARATOR).formatted(borders));
+            return new LiteralText("").append(header).append(this.text.append("\n")).append(new LiteralText(SEPARATOR).formatted(borders));
         }
-    }
-
-    public enum TypeFormat {
-        STRING("String", String.class, Formatting.YELLOW),
-        INTEGER("Integer", Integer.class, Formatting.GOLD),
-        DOUBLE("Double", Double.class, Formatting.GOLD),
-        FLOAT("Float", Float.class, Formatting.GOLD),
-        BYTE("Byte", Byte.class, Formatting.RED),
-        CHAR("Char", Character.class, Formatting.AQUA),
-        LONG("Long", Long.class, Formatting.GOLD),
-        BOOLEAN("Boolean", Boolean.class, Formatting.GREEN),
-        SHORT("Short", Short.class, Formatting.GOLD),
-        LIST("List", List.class, Formatting.WHITE),
-        MAP("Map", Map.class, Formatting.WHITE);
-
-        private final String name;
-        private final Class<?> clazz;
-        private final Formatting defaultFormat;
-        TypeFormat(String name, Class<?> clazz, Formatting formatting) {
-            this.name = name;
-            this.clazz = clazz;
-            this.defaultFormat = formatting;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Formatting getDefaultFormatting() {
-            return defaultFormat;
-        }
-
-        @Nullable
-        public static Texter.TypeFormat getByName(String name) {
-            for (TypeFormat value : values()) {
-                if (value.name.equals(name)) {
-                    return value;
-                }
-            }
-
-            return null;
-        }
-
-        @Nullable
-        public static Texter.TypeFormat getByClazz(Class<?> clazz) {
-            for (TypeFormat value : values()) {
-                if (value.clazz.equals(clazz))
-                    return value;
-            }
-
-            return null;
-        }
-
     }
 }

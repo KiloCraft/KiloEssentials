@@ -23,9 +23,6 @@ public class CommandsConfigSection {
     @Setting(value = "serverWideWarps")
     private WarpCommandConfigSection warpCommand = new WarpCommandConfigSection();
 
-    @Setting(value = "playerHomes", comment = "Local Variables: {HOME_NAME}, {TARGET_TAG}, {HOMES_SIZE}")
-    private PlayerHomesConfigSection playerHomesSection = new PlayerHomesConfigSection();
-
     @Setting(value = "rtp")
     private RtpCommandConfigSection rtpSection = new RtpCommandConfigSection();
 
@@ -41,10 +38,6 @@ public class CommandsConfigSection {
 
     public WarpCommandConfigSection warp() {
         return warpCommand;
-    }
-
-    public PlayerHomesConfigSection playerHomes() {
-        return playerHomesSection;
     }
 
     public RtpCommandConfigSection rtp() {

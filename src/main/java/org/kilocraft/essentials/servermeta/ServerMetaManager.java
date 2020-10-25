@@ -3,15 +3,10 @@ package org.kilocraft.essentials.servermeta;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.util.math.RollingAverage;
-import org.kilocraft.essentials.util.TPSTracker;
-import org.kilocraft.essentials.util.monitor.SystemMonitor;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,35 +30,19 @@ public class ServerMetaManager {
                 continue;
             }
 
-
-            Server server = KiloServer.getServer();
-            RollingAverage tps = TPSTracker.tps1;
-            double memoryUsedPercentage = SystemMonitor.getRamUsedPercentage();
-
-            PlayerListMeta.serverName = server.getName();
-            PlayerListMeta.serverTps = tps.getShortAverage();
-            PlayerListMeta.serverFormattedTps = "&" + TextFormat.getFormattedTPS(tps.getAverage()) + tps.getShortAverage() + "&r";
-            PlayerListMeta.serverPlayerCount = String.valueOf(server.getPlayerManager().getCurrentPlayerCount());
-            PlayerListMeta.serverMemoryMax = String.valueOf(SystemMonitor.getRamMaxMB());
-            PlayerListMeta.serverMemoryPercentage = String.valueOf(memoryUsedPercentage);
-            PlayerListMeta.serverFormattedMemoryPercentage = "&" + TextFormat.getFormattedPercentage(memoryUsedPercentage, true) + PlayerListMeta.serverMemoryPercentage + "&r";
-            PlayerListMeta.serverMemoryUsageMB = String.valueOf(SystemMonitor.getRamUsedMB());
-
-            PlayerListMeta.provideFor(playerEntity);
+            PlayerListMeta.update(playerEntity);
         }
     }
 
-    public void updateDisplayName(String name) {
-        ServerPlayerEntity player = KiloServer.getServer().getPlayer(name);
-        PlayerListS2CPacket playerListPacket = new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player);
-
+    public void updateDisplayName(ServerPlayerEntity player) {
         if (player != null) {
-            KiloServer.getServer().getPlayerManager().sendToAll(playerListPacket);
+            PlayerListS2CPacket packet = new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player);
+            KiloServer.getServer().sendGlobalPacket(packet);
         }
     }
 
     public void onPlayerJoined(ServerPlayerEntity player) {
-        PlayerListMeta.provideFor(player);
+        PlayerListMeta.update(player);
     }
 
     public final void setDescription(final Text description) throws IOException {
@@ -71,7 +50,7 @@ public class ServerMetaManager {
 
         final Properties properties = new Properties();
         properties.load(new FileInputStream(KiloEssentials.getServerProperties().toFile()));
-        properties.setProperty("motd", TextFormat.translate(((MutableText)description).getString()));
+        properties.setProperty("motd", TextFormat.translate(description.getString()));
         properties.store(new FileOutputStream(KiloEssentials.getServerProperties().toFile()), "");
     }
 

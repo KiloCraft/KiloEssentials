@@ -4,15 +4,13 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.text.MessageReceptionist;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.chat.ServerChat;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -35,7 +33,7 @@ public class ReplyCommand extends EssentialCommand {
     private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = KiloServer.getServer().getUserManager().getOnline(ctx.getSource());
         String message = getString(ctx, "message");
-        MessageReceptionist lastReceptionist = user.getLastMessageReceptionist();
+        EntityIdentifiable lastReceptionist = user.getLastMessageReceptionist();
 
         if (lastReceptionist == null || lastReceptionist.getId() == null) {
             user.sendConfigMessage("chat.privateChat.noMessageToReply");

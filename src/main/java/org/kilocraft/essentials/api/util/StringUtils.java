@@ -3,8 +3,10 @@ package org.kilocraft.essentials.api.util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
+import java.net.SocketAddress;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -12,14 +14,15 @@ import java.util.regex.Pattern;
 public class StringUtils {
     public static final String EMPTY_STRING = "";
     private static final Pattern INVALID_FILE_CHARS = Pattern.compile("[^a-z0-9-]");
-    private static final Pattern USERNAME = Pattern.compile("/[a-zA-Z][a-zA-Z0-9-_]/gi");
+    public static final Pattern USERNAME_PATTERN = Pattern.compile("/[a-zA-Z][a-zA-Z0-9-_]/gi");
+    public static final Pattern UUID_PATTERN = Pattern.compile("([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})");
 
     public static String sanitizeFileName(final String name) {
         return INVALID_FILE_CHARS.matcher(name.toLowerCase(Locale.ENGLISH)).replaceAll("_");
     }
 
     public static String uniformNickname(final String nickname) {
-        return stringToUsername(TextFormat.clearColorCodes(nickname)).replaceAll("\\s+", "");
+        return stringToUsername(ComponentText.clearFormatting(TextFormat.clearColorCodes(nickname))).replaceAll("\\s+", "");
     }
 
     public static String stringToUsername(final String string) {
@@ -44,6 +47,20 @@ public class StringUtils {
         }
 
         return builder.toString();
+    }
+
+    public static String socketAddressToIp(@NotNull final String address) {
+        String string = address;
+        string = string.substring(string.indexOf("/") + 1);
+        string = string.substring(0, string.indexOf(":"));
+        return string;
+    }
+
+    public static String socketAddressToPort(@NotNull final String address) {
+        String string = address;
+        string = string.substring(string.indexOf("/") + 1);
+        string = string.substring(string.indexOf(":") + 1);
+        return string;
     }
 
     public static class Calculator implements Comparable<Double> {

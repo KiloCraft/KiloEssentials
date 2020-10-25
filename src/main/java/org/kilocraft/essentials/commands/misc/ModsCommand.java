@@ -12,7 +12,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.Person;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
@@ -84,7 +84,7 @@ public class ModsCommand extends EssentialCommand {
         for (Person author : meta.getAuthors()) {
             MutableText mutable = Texter.newText(author.getName());
             mutable.styled((style) -> {
-                style.setHoverEvent(Texter.Events.onHover(tl("general.click_info")));
+                style.withHoverEvent(Texter.Events.onHover(tl("general.click_info")));
                 style.withClickEvent(Texter.Events.onClickRun("mods", meta.getId(), author.getName()));
                 return style;
             });

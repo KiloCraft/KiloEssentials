@@ -21,7 +21,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTStorage;
-import org.kilocraft.essentials.api.feature.RelodableConfigurableFeature;
+import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ParticleAnimationManager implements RelodableConfigurableFeature, TickListener, NBTStorage {
+public class ParticleAnimationManager implements ReloadableConfigurableFeature, TickListener, NBTStorage {
     static Map<Identifier, ParticleAnimation> map = new HashMap<>();
     private static final Map<UUID, Identifier> uuidIdentifierMap = new HashMap<>();
     private static ParticleTypesConfig config;
@@ -46,8 +46,7 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
     @Override
     public boolean register() {
         NBTStorageUtil.addCallback(this);
-        KiloEssentials.getInstance().getCommandHandler().register(new MagicalParticlesCommand());
-        load();
+        KiloCommands.getInstance().register(new MagicalParticlesCommand());
         return true;
     }
 
@@ -59,10 +58,10 @@ public class ParticleAnimationManager implements RelodableConfigurableFeature, T
 
     private static void loadConfig() {
         try {
-            KiloFile CONFIG_FILE = new KiloFile("particle_types.hocon", KiloEssentials.getEssentialsPath());
+            KiloFile CONFIG_FILE = new KiloFile("particle_types.conf", KiloEssentials.getEssentialsPath());
             if (!CONFIG_FILE.exists()) {
                 CONFIG_FILE.createFile();
-                CONFIG_FILE.pasteFromResources("assets/config/particle_types.hocon");
+                CONFIG_FILE.pasteFromResources("assets/config/particle_types.conf");
             }
 
             ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()

@@ -7,18 +7,19 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.argument.MessageArgumentType.MessageFormat;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.command.ArgumentCompletions;
+import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static net.minecraft.command.arguments.MessageArgumentType.*;
+import static net.minecraft.command.argument.MessageArgumentType.*;
 
 public class SayAsCommand extends EssentialCommand {
     public SayAsCommand() {
@@ -46,7 +47,7 @@ public class SayAsCommand extends EssentialCommand {
                 .build();
 
         ArgumentCommandNode<ServerCommandSource, MessageFormat> messageArg = argument("message", message())
-                .suggests(ArgumentCompletions::noSuggestions)
+                .suggests(ArgumentSuggestions::noSuggestions)
                 .executes(this::execute)
                 .build();
 
@@ -72,7 +73,7 @@ public class SayAsCommand extends EssentialCommand {
             return SUCCESS;
         }
 
-        ServerChat.sendSafely(target, new TextMessage(Texter.Legacy.toFormattedString(message)), channel);
+        ServerChat.sendSafely(target, new MutableTextMessage(Texter.Legacy.toFormattedString(message)), channel);
         return SUCCESS;
     }
 

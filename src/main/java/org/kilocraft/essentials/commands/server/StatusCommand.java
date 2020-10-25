@@ -13,7 +13,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
-import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
@@ -23,7 +23,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 
 import static org.kilocraft.essentials.api.text.TextFormat.getFormattedTPS;
-import static org.kilocraft.essentials.util.TPSTracker.*;
+import static org.kilocraft.essentials.util.TpsTracker.*;
 
 public class StatusCommand extends EssentialCommand {
     public StatusCommand() {
@@ -38,7 +38,7 @@ public class StatusCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
         try {
-            KiloChat.sendMessageToSource(ctx.getSource(), new TextMessage(getInfo(), true));
+            KiloChat.sendMessageToSource(ctx.getSource(), new MutableTextMessage(getInfo(), true));
         } catch (Exception e) {
             String msg = "An unexpected exception occurred when processing the cpu usage" +
                     "Please report this to a Administrator";
@@ -59,10 +59,10 @@ public class StatusCommand extends EssentialCommand {
                 "&7Platform: &6" + bean.getArch() + " &d" + Util.getOperatingSystem().name().toLowerCase() +
                 "\n&7Server uptime: &6" + TimeDifferenceUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()) +
                 "\n&7TPS:" +
-                String.format("&%s %s&8,&8(&75m&8/&715m&8/&730m&8&8/&71h&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
-                        getFormattedTPS(tps1.getAverage()), tps1.getShortAverage(), getFormattedTPS(tps5.getAverage()), tps5.getShortAverage(),
-                        getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(), getFormattedTPS(tps30.getAverage()), tps30.getShortAverage(),
-                        getFormattedTPS(tps60.getAverage()), tps60.getShortAverage()) +
+                String.format("&%s %s&8,&8(&75m&8/&715m&8/&71h&8&71d&8&8/)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
+                        getFormattedTPS(tps.getAverage()), tps.getShortAverage(), getFormattedTPS(tps5.getAverage()), tps5.getShortAverage(),
+                        getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(), getFormattedTPS(tps60.getAverage()), tps60.getShortAverage(),
+                        getFormattedTPS(tps1440.getAverage()), tps1440.getShortAverage()) +
                 "\n&7CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7:" +
                 " &" + TextFormat.getFormattedPercentage(cpuUsage, true) + cpuUsage + "% Usage" +
                 " &3" + Thread.activeCount() + " Running Threads" +
@@ -70,7 +70,7 @@ public class StatusCommand extends EssentialCommand {
                 TextFormat.getFormattedPercentage(ramUsage, true) + ramUsage + "% " +
                 "&8(&b" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&7" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
-                "\n&7Dimensions&8:&e" +
+                "\n&7Worlds&8:&e" +
                 addWorldInfo();
     }
 
