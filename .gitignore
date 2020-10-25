@@ -25,3 +25,4 @@ bin/
 run/
 KiloEssentials_client.launch
 KiloEssentials_server.launch
+*.log
