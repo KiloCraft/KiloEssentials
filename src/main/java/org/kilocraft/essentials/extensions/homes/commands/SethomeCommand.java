@@ -62,7 +62,7 @@ public class SethomeCommand extends EssentialCommand {
             return FAILED;
         }
 
-        if (World.isHeightInvalid(player.getBlockPos())) {
+        if (World.isValid(player.getBlockPos())) {
             user.sendLangError("general.position_out_of_world");
             return FAILED;
         }
@@ -87,7 +87,7 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        if (World.isHeightInvalid(player.getBlockPos())) {
+        if (World.isValid(player.getBlockPos())) {
             source.sendLangError("general.position_out_of_world");
             return FAILED;
         }

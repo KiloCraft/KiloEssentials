@@ -73,7 +73,7 @@ public class ANSIHelper {
                         case STRIKETHROUGH:
                             builder.append(LoggerFormats.STRIKETHROUGH.getCode());
                             break;
-                        case UNDERLINE:
+                        case UNDERLINED:
                             builder.append(LoggerFormats.UNDERLINE.getCode());
                             break;
                         case ITALIC:

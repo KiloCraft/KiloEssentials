@@ -22,7 +22,7 @@ public abstract class ServerPlayerInteractionManagerMixin$PlayerEvent$InteractIt
     @Shadow public ServerWorld world;
 
     @Inject(method = "interactItem", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayerInteractionManager;interactItem(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;"))
+            at = @At(value = "HEAD"))
     private void onInteractItem(ServerPlayerEntity serverPlayerEntity, World world, ItemStack itemStack, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         PlayerInteractItem event = new PlayerInteractItemEventImpl(serverPlayerEntity, world, hand, itemStack);
         KiloServer.getServer().triggerEvent(event);

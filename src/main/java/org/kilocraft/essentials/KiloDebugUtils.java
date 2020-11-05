@@ -105,11 +105,9 @@ public class KiloDebugUtils {
 
     public void update() {
         int loadedChunks = 0;
-        int entities = 0;
         for (ServerWorld world : minecraftServer.getWorlds()) {
             MonitorableWorld moWorld = ((MonitorableWorld) world);
             loadedChunks = loadedChunks + moWorld.totalLoadedChunks();
-            entities = entities + moWorld.loadedEntities();
         }
 
         TpsTracker.tps.getAverage();
@@ -117,7 +115,7 @@ public class KiloDebugUtils {
         String debugText = String.format(DEBUG_FORMAT,
                 TextFormat.getFormattedTPS(TpsTracker.tps.getAverage()),
                 TpsTracker.tps.getShortAverage(),
-                TpsTracker.MillisecondPerTick.getShortAverage(), entities, loadedChunks,
+                TpsTracker.MillisecondPerTick.getShortAverage(), loadedChunks,
                 ModConstants.getVersionInt(), ModConstants.getVersionNick()
         );
 
