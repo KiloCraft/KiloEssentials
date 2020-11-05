@@ -32,23 +32,23 @@ public class UserUtils {
     private static final PermissionUtil.Manager PERM_MANAGER = KiloEssentials.getInstance().getPermissionUtil().getManager();
 
     public static MutableText getDisplayNameWithMeta(OnlineUser user, boolean nickName) {
-        MutableText text = new LiteralText("");
+        StringBuilder builder = new StringBuilder();
         if (PERM_MANAGER == PermissionUtil.Manager.LUCKPERMS) {
             CachedMetaData metaData = getLuckyMetaData(user.getUuid());
             String prefix = metaData.getPrefix();
             String suffix = metaData.getSuffix();
 
             if (prefix != null) {
-                text.append(ComponentText.toText(prefix));
+                builder.append(prefix);
             }
 
-            text.append(ComponentText.toText(nickName ? user.getFormattedDisplayName() : user.getUsername()));
+            builder.append(nickName ? user.getFormattedDisplayName() : user.getUsername());
 
             if (suffix != null) {
-                text.append(ComponentText.toText(suffix));
+                builder.append(suffix);
             }
 
-            return text;
+            return ComponentText.toText(builder.toString());
         }
 
         return user.asPlayer().getScoreboardTeam() == null ? Texter.newText(user.getFormattedDisplayName()) :

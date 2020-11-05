@@ -87,7 +87,7 @@ public class SethomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        if (World.isValid(player.getBlockPos())) {
+        if (!World.isValid(player.getBlockPos())) {
             source.sendLangError("general.position_out_of_world");
             return FAILED;
         }
