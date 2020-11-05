@@ -62,7 +62,7 @@ public class SethomeCommand extends EssentialCommand {
             return FAILED;
         }
 
-        if (World.isValid(player.getBlockPos())) {
+        if (!World.isValid(player.getBlockPos())) {
             user.sendLangError("general.position_out_of_world");
             return FAILED;
         }
