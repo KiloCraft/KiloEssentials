@@ -4,6 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.kyori.adventure.text.Component;
 import net.minecraft.SharedConstants;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -13,6 +14,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
@@ -435,7 +437,42 @@ public final class ServerChat {
     }
 
     public static Text stringToMessageComponent(@NotNull String string, OnlineUser sender, boolean appendLinks, boolean appendItems) {
-        return ComponentText.toText(ComponentText.of(string));
+        Validate.notNull(string, "Message string must not be null!");
+        String[] strings = string.split(" ");
+        StringBuilder text = new StringBuilder();
+        int i = 0;
+        for (String s : strings) {
+            i++;
+            Matcher matcher = LINK_PATTERN.matcher(string);
+            if (appendLinks && matcher.find()) {
+                String shortenedUrl = s.substring(0, Math.min(s.length(), LINK_MAX_LENGTH));
+
+                text.append("<click:open_url:" + s + ">");
+
+                if (s.length() > LINK_MAX_LENGTH) {
+                    text.append(shortenedUrl);
+                    text.append("...");
+                    text.append(s.substring(s.length() - 5));
+                }
+                text.append("</click>");
+
+            } /*else if (appendItems && s.contains(itemFormat)) {
+                ServerPlayerEntity player = sender.asPlayer();
+                ItemStack itemStack = player.getMainHandStack();
+
+                Text item = new LiteralText("").append(itemStack.toHoverableText());
+                itemStack.getTag()
+                text.append(item);
+            }*/ else {
+                text.append(s);
+            }
+
+            if (i < strings.length) {
+                text.append(" ");
+            }
+        }
+
+        return ComponentText.toText(text.toString());
     }
 
     public enum Channel {
