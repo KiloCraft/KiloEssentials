@@ -39,7 +39,7 @@ public class FlyCommand extends EssentialCommand {
     }
 
     private static int toggle(ServerCommandSource source, ServerPlayerEntity playerEntity) {
-        return execute(source, playerEntity, !playerEntity.method_31549().allowFlying);
+        return execute(source, playerEntity, !playerEntity.getAbilities().allowFlying);
     }
 
     private static int execute(ServerCommandSource source, ServerPlayerEntity playerEntity, boolean bool) {

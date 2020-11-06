@@ -48,7 +48,7 @@ public class HatCommand extends EssentialCommand {
 
     private int hat(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        PlayerInventory inventory = target.method_31548();
+        PlayerInventory inventory = target.getInventory();
         ItemStack handStack = inventory.getMainHandStack();
 
         if (handStack.getItem() instanceof Wearable) {

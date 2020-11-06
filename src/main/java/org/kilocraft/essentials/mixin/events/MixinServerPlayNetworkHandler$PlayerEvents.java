@@ -90,7 +90,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
 
             if (KiloServer.getServer().triggerEvent(event).isCancelled()) {
                 this.player.updateLastActionTime();
-                this.player.method_31548().updateItems();
+                this.player.getInventory().updateItems();
             } else {
                 this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
             }

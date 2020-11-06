@@ -207,8 +207,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public void setFlight(final boolean set) {
         super.getPreferences().set(Preferences.CAN_FLY, true);
-        this.asPlayer().method_31549().allowFlying = set;
-        this.asPlayer().method_31549().flying = set;
+        this.asPlayer().getAbilities().allowFlying = set;
+        this.asPlayer().getAbilities().flying = set;
         this.asPlayer().sendAbilitiesUpdate();
     }
 
