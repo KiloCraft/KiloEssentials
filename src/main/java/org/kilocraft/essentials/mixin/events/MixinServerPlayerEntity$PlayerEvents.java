@@ -19,7 +19,7 @@ public abstract class MixinServerPlayerEntity$PlayerEvents {
         KiloServer.getServer().triggerEvent(new PlayerDeathEventImpl((ServerPlayerEntity) (Object) this));
     }
 
-    @Inject(at = @At("HEAD"), method = "stopRiding", cancellable = true)
+    @Inject(at = @At("RETURN"), method = "stopRiding", cancellable = true)
     private void stopRiding(CallbackInfo ci) {
         PlayerStopRidingEvent event = new PlayerStopRidingEventImpl((ServerPlayerEntity) (Object) this);
         KiloServer.getServer().triggerEvent(event);

@@ -249,17 +249,17 @@ public class SignEditCommand extends EssentialCommand {
             newState = newBlock.getDefaultState().with(Properties.ROTATION, oldState.get(Properties.ROTATION));
         }
 
-        SignBlockEntity newSign = new SignBlockEntity();
+        SignBlockEntity newSign = new SignBlockEntity(sign.getPos(), sign.getCachedState());
         for (int i = 0; i < 4; i++) {
             newSign.setTextOnRow(i, ((SignBlockEntityAccessor) sign).getTexts()[i]);
         }
-        newSign.setLocation(player.getEntityWorld(), sign.getPos());
         if (sign.getTextColor() != DyeColor.BLACK)
             newSign.setTextColor(sign.getTextColor());
 
         ServerWorld world = player.getServerWorld();
         world.setBlockState(sign.getPos(), newState);
-        world.setBlockEntity(sign.getPos(), newSign);
+        //TODO: Relook at this at a later point
+//        world.setBlockEntity(sign.getPos(), newSign);
         world.updateNeighbors(sign.getPos(), newState.getBlock());
         KiloChat.sendLangMessageTo(player, "command.signedit.set_type", inputType);
         return SUCCESS;

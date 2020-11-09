@@ -1,5 +1,7 @@
 package org.kilocraft.essentials.util.player;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
@@ -8,12 +10,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.PermissionUtil;
@@ -28,8 +32,8 @@ public class UserUtils {
     private static final PermissionUtil.Manager PERM_MANAGER = KiloEssentials.getInstance().getPermissionUtil().getManager();
 
     public static MutableText getDisplayNameWithMeta(OnlineUser user, boolean nickName) {
+        StringBuilder builder = new StringBuilder();
         if (PERM_MANAGER == PermissionUtil.Manager.LUCKPERMS) {
-            StringBuilder builder = new StringBuilder();
             CachedMetaData metaData = getLuckyMetaData(user.getUuid());
             String prefix = metaData.getPrefix();
             String suffix = metaData.getSuffix();
@@ -44,7 +48,7 @@ public class UserUtils {
                 builder.append(suffix);
             }
 
-            return Texter.newText(builder.toString());
+            return ComponentText.toText(builder.toString());
         }
 
         return user.asPlayer().getScoreboardTeam() == null ? Texter.newText(user.getFormattedDisplayName()) :

@@ -82,7 +82,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             if (stand == null) {
                 continue;
             }
-            if (stand.hasPlayerRider() && stand.hasPassengerType(PlayerEntity.class) && stand.getPassengerList().get(0) instanceof PlayerEntity) {
+            if (stand.hasPlayerRider() && stand.hasPassengerType(entity -> entity instanceof PlayerEntity) && stand.getPassengerList().get(0) instanceof PlayerEntity) {
                 OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) stand.getPassengerList().get(0));
 
                 if (user != null) {

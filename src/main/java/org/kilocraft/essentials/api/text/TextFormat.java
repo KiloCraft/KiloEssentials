@@ -96,7 +96,7 @@ public enum TextFormat {
     /**
      * Makes the text appear underlined.
      */
-    UNDERLINE('n', 0x13, Formatting.UNDERLINE, true, "\\u001b[4m"),
+    UNDERLINED('n', 0x13, Formatting.UNDERLINE, true, "\\u001b[4m"),
     /**
      * Makes the text italic.
      */

@@ -66,7 +66,7 @@ public class InventoryCommand extends EssentialCommand {
 
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                ScreenHandler handler = GenericContainerScreenHandler.createGeneric9x5(syncId, src.asPlayer().inventory);
+                ScreenHandler handler = GenericContainerScreenHandler.createGeneric9x5(syncId, src.asPlayer().getInventory());
                 handler.addListener(new ScreenHandlerListener() {
                     @Override
                     public void onHandlerRegistered(ScreenHandler screenHandler, DefaultedList<ItemStack> defaultedList) {
@@ -91,23 +91,23 @@ public class InventoryCommand extends EssentialCommand {
 
     private static void setSlotsInit(ServerPlayerEntity target, ScreenHandler handler){
         for (int i = 0; i < 36; i++){
-            handler.setStackInSlot(i, target.inventory.main.get(i));
+            handler.setStackInSlot(i, target.getInventory().main.get(i));
         }
 
         for (int i = 0; i < 4; i++){
-            handler.setStackInSlot(i + 36, target.inventory.armor.get(i));
+            handler.setStackInSlot(i + 36, target.getInventory().armor.get(i));
         }
 
-        handler.setStackInSlot(44, target.inventory.offHand.get(0));
+        handler.setStackInSlot(44, target.getInventory().offHand.get(0));
     }
 
     private static void copySlotsFromInventory(ServerPlayerEntity target, ScreenHandler handler, int slotID){
         if (slotID < 36){
-            target.inventory.main.set(slotID, handler.getStacks().get(slotID));
+            target.getInventory().main.set(slotID, handler.getStacks().get(slotID));
         } else if (slotID < 40){
-            target.inventory.armor.set(slotID - 36, handler.getStacks().get(slotID));
+            target.getInventory().armor.set(slotID - 36, handler.getStacks().get(slotID));
         } else if (slotID == 44){
-            target.inventory.offHand.set(0, handler.getStacks().get(slotID));
+            target.getInventory().offHand.set(0, handler.getStacks().get(slotID));
         }
     }
 

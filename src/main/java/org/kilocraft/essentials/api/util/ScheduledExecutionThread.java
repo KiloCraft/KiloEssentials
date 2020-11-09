@@ -22,7 +22,8 @@ public class ScheduledExecutionThread {
     }
 
     public static void teleport(OnlineUser player, @Nullable OnlineUser player2, ScheduledExecution s) {
-        tick(3, player, player2, player.asPlayer().getPos(), s);
+        s.apply();
+//        tick(3, player, player2, player.asPlayer().getPos(), s);
         //TODO: Check if both players are still online
     }
 

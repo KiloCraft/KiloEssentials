@@ -47,7 +47,7 @@ public abstract class CraftingScreenHandlerMixin extends AbstractRecipeScreenHan
     public void modifyClose(PlayerEntity playerEntity, CallbackInfo ci) {
         if (this.context == ScreenHandlerContext.EMPTY) {
             super.close(playerEntity);
-            this.dropInventory(playerEntity, playerEntity.getEntityWorld(), this.input);
+            this.dropInventory(playerEntity, this.input);
             ci.cancel();
         }
     }

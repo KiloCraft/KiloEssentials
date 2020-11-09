@@ -20,8 +20,6 @@ public abstract class ServerWorldMixin implements MonitorableWorld {
 
     @Shadow @Final private List<ServerPlayerEntity> players;
 
-    @Shadow @Final private Map<UUID, Entity> entitiesByUuid;
-
     @Override
     public int cachedChunks() {
         if (this.getChunkManager() == null)
@@ -36,14 +34,6 @@ public abstract class ServerWorldMixin implements MonitorableWorld {
             return -1;
 
         return this.getChunkManager().getTotalChunksLoadedCount();
-    }
-
-    @Override
-    public int loadedEntities() {
-        if (this.entitiesByUuid == null)
-            return -1;
-
-        return this.entitiesByUuid.size();
     }
 
     @Override

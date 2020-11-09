@@ -34,7 +34,7 @@ public abstract class ForgingScreenHandlerMixin extends ScreenHandler {
     private void modify$close(PlayerEntity playerEntity, CallbackInfo ci) {
         if (this.context == ScreenHandlerContext.EMPTY) {
             super.close(playerEntity);
-            this.dropInventory(playerEntity, playerEntity.getEntityWorld(), this.input);
+            this.dropInventory(playerEntity, this.input);
             ci.cancel();
         }
     }

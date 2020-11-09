@@ -257,7 +257,8 @@ public class RtpCommand extends EssentialCommand {
 
         do {
             tries++;
-            loc = (Vec3dLocation) randomLocation(world, isNether ? 90 : world.getHeight(), cfg.minX, cfg.maxX, cfg.minZ, cfg.maxZ);
+            //TODO: Figure out world height
+            loc = (Vec3dLocation) randomLocation(world, isNether ? 90 : 256, cfg.minX, cfg.maxX, cfg.minZ, cfg.maxZ);
             loc = (Vec3dLocation) LocationUtil.posOnGround(loc, false);
             pos = loc.toPos();
             state = world.getBlockState(pos);
