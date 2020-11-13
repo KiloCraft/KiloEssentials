@@ -12,12 +12,12 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -37,8 +37,9 @@ public class StatusCommand extends EssentialCommand {
     private static OperatingSystemMXBean bean = SystemMonitor.getOsSystemMXBean();
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
+        final CommandSourceUser sender = this.getCommandSource(ctx);
         try {
-            KiloChat.sendMessageToSource(ctx.getSource(), new MutableTextMessage(getInfo(), true));
+            sender.sendMessage(getInfo());
         } catch (Exception e) {
             String msg = "An unexpected exception occurred when processing the cpu usage" +
                     "Please report this to a Administrator";
@@ -75,7 +76,7 @@ public class StatusCommand extends EssentialCommand {
     }
 
     private static String addWorldInfo() {
-        String worldInfoLoaded = "&6%s &7Chunks &8(&9%s&7 C&8) &e%s &7Entities &7&6%s &7Players";
+        String worldInfoLoaded = "&6%s &7Chunks &8(&9%s&7 C&8) &7&6%s &7Players";
         StringBuilder builder = new StringBuilder();
 
         for (ServerWorld world : KiloServer.getServer().getWorlds()) {
@@ -83,7 +84,7 @@ public class StatusCommand extends EssentialCommand {
 
             if (monitoredWorld.totalLoadedChunks() != 0) {
                 builder.append("\n&7* ").append(RegistryUtils.dimensionToName(world.getDimension())).append("&8: ");
-                builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.cachedChunks(), monitoredWorld.loadedEntities(), monitoredWorld.players()));
+                builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.cachedChunks(), monitoredWorld.players()));
             }
         }
 

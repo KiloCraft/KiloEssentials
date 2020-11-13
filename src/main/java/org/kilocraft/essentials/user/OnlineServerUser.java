@@ -102,11 +102,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public void sendError(MutableTextMessage message) {
-
-    }
-
-    @Override
     public void sendError(Text text) {
         KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)text).formatted(Formatting.RED));
     }

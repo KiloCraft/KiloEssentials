@@ -35,14 +35,17 @@ public class KiloChat {
 		return (objects[0] != null) ? String.format(string, objects) : string;
 	}
 
+	@Deprecated
 	public static void sendMessageTo(ServerPlayerEntity player, MutableTextMessage mutableTextMessage) {
 		sendMessageTo(player, mutableTextMessage.toText());
 	}
 
+	@Deprecated
 	public static void sendMessageTo(ServerCommandSource source, MutableTextMessage mutableTextMessage) throws CommandSyntaxException {
 		sendMessageTo(source.getPlayer(), mutableTextMessage.toText());
 	}
 
+	@Deprecated
 	public static void sendMessageTo(ServerPlayerEntity player, Text text) {
 		player.sendMessage(text, false);
 	}
@@ -51,6 +54,7 @@ public class KiloChat {
 		source.sendFeedback(text, false);
 	}
 
+	@Deprecated
 	public static void sendMessageToSource(ServerCommandSource source, MutableTextMessage message) {
 		if (CommandUtils.isConsole(source))
 			KiloEssentials.getServer().sendMessage(message.getOriginal());
@@ -70,13 +74,6 @@ public class KiloChat {
 			getServer().sendMessage(getFormattedLang(key));
 		else
 			source.sendFeedback(StringText.of(key), false);
-	}
-
-	public static void sendLangCommandFeedback(ServerCommandSource source, String key, boolean sendToOPs, Object... objects) {
-		if (CommandUtils.isConsole(source))
-			getServer().sendMessage(getFormattedLang(key, objects));
-		else
-			source.sendFeedback(StringText.of(true, key, objects), sendToOPs);
 	}
 
 	public static void sendLangMessageTo(ServerPlayerEntity player, String key) {

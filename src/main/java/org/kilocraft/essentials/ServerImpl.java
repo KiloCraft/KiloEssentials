@@ -339,11 +339,6 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void sendError(MutableTextMessage message) {
-        this.sendError(message.toText());
-    }
-
-    @Override
     public void sendError(Text text) {
         this.sendMessage(((MutableText) text).formatted(Formatting.RED));
     }

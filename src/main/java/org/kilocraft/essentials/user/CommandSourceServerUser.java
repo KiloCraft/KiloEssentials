@@ -276,22 +276,14 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendMessage(String message) {
-        KiloChat.sendMessageTo(this.source, ComponentText.toText(message));
+        MutableText text = new LiteralText("\n");
+        KiloChat.sendMessageTo(this.source, text.append(ComponentText.toText(message)));
     }
 
     @Override
     public int sendError(String message) {
         this.source.sendError(new MutableTextMessage("&c" + message, true).toText());
-        return -1;
-    }
-
-    @Override
-    public void sendError(MutableTextMessage message) {
-        try {
-            KiloChat.sendMessageTo(this.source, message);
-        } catch (CommandSyntaxException e) {
-            this.source.sendError(Texts.toText(e.getRawMessage()));
-        }
+        return 1;
     }
 
     @Override
@@ -307,10 +299,9 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public int sendError(ExceptionMessageNode node, Object... objects) {
         String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.source, ((MutableText)new MutableTextMessage(
-                (objects != null) ? String.format(message, objects) : message, true)
-                .toText()).formatted(Formatting.RED));
-        return -1;
+        KiloChat.sendMessageTo(this.source, ComponentText.toText("<red>" +
+                ((objects != null) ? String.format(message, objects) : message)));
+        return 1;
     }
 
     @Override

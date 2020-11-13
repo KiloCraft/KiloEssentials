@@ -231,8 +231,8 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     @Override
-    public OnlineUser getOnlineUser(final ServerCommandSource source) throws CommandSyntaxException {
-        return this.getServer().getOnlineUser(source.getPlayer());
+    public OnlineUser getOnlineUser(final ServerCommandSource source) {
+        return this.getServer().getCommandSourceUser(source);
     }
 
     @Override
@@ -244,8 +244,12 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return KiloEssentials.getServer();
     }
 
-    public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx) {
         return this.getOnlineUser(ctx.getSource());
+    }
+
+    public CommandSourceUser getCommandSource(final CommandContext<ServerCommandSource> ctx) {
+        return this.getServer().getCommandSourceUser(ctx.getSource());
     }
 
     public OnlineUser getOnlineUser(final ServerPlayerEntity player) {

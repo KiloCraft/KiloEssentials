@@ -21,8 +21,6 @@ public interface OnlineMessageReceptionist {
 
     int sendError(final String message);
 
-    void sendError(final MutableTextMessage message);
-
     void sendError(final Text text);
 
     void sendLangError(@NotNull final String key, @Nullable final Object... objects);
