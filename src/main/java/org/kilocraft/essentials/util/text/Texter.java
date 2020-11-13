@@ -4,6 +4,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.chat.StringText;
 
@@ -15,7 +16,7 @@ public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
 
     public static MutableText newText(final String str) {
-        return new LiteralText(TextFormat.translate(str));
+        return ComponentText.toText(TextFormat.translate(str));
     }
 
     public static TranslatableText newTranslatable(String key, Object... objects) {
@@ -24,14 +25,6 @@ public class Texter {
 
     public static MutableText newText() {
         return new LiteralText("");
-    }
-
-    public static MutableText newText(@Nullable final String... strings) {
-        MutableText text = newText();
-        for (String string : strings) {
-            text.append(string);
-        }
-        return text;
     }
 
     public static MutableText newRawText(final String string) {
