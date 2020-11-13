@@ -7,6 +7,7 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.query.QueryOptions;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -32,6 +33,15 @@ public class UserUtils {
     private static final PermissionUtil.Manager PERM_MANAGER = KiloEssentials.getInstance().getPermissionUtil().getManager();
 
     public static MutableText getDisplayNameWithMeta(OnlineUser user, boolean nickName) {
+        if (PERM_MANAGER == PermissionUtil.Manager.LUCKPERMS) {
+            return ComponentText.toText(getDisplayNameWithMetaAsString(user, nickName));
+        }
+
+        return user.asPlayer().getScoreboardTeam() == null ? Texter.newText(user.getFormattedDisplayName()) :
+                Team.modifyText(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
+    }
+
+    public static String getDisplayNameWithMetaAsString(OnlineUser user, boolean nickName) {
         StringBuilder builder = new StringBuilder();
         if (PERM_MANAGER == PermissionUtil.Manager.LUCKPERMS) {
             CachedMetaData metaData = getLuckyMetaData(user.getUuid());
@@ -48,11 +58,9 @@ public class UserUtils {
                 builder.append(suffix);
             }
 
-            return ComponentText.toText(builder.toString());
+            return builder.toString();
         }
-
-        return user.asPlayer().getScoreboardTeam() == null ? Texter.newText(user.getFormattedDisplayName()) :
-                Team.modifyText(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
+        return user.getFormattedDisplayName();
     }
 
     private static net.luckperms.api.model.user.User getLuckyUser(UUID uuid) {

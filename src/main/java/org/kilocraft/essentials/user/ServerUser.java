@@ -261,6 +261,15 @@ public class ServerUser implements User {
     }
 
     @Override
+    public String getRankedDisplayNameAsString() {
+        if (this.isOnline()) {
+            return UserUtils.getDisplayNameWithMetaAsString((OnlineUser) this, true);
+        }
+
+        return this.getDisplayName();
+    }
+
+    @Override
     public Text getRankedName() {
         if (this.isOnline()) {
             return UserUtils.getDisplayNameWithMeta((OnlineUser) this, false);

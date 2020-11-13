@@ -11,6 +11,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.util.TpsTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
+import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
 public class ConfigVariableFactory {
@@ -20,6 +21,7 @@ public class ConfigVariableFactory {
         Validate.notNull(user, "User most not be null!");
         String string = replaceUserVariables(str, user);
         return new ConfigObjectReplacerUtil("user", string)
+                .append("rankedName", user.getRankedDisplayNameAsString())
                 .append("ranked_displayName", Texter.Legacy.toFormattedString(user.getRankedDisplayName()))
                 .append("ping", user.asPlayer().pingMilliseconds)
                 .append("formatted_ping", ComponentText.formatPing(user.asPlayer().pingMilliseconds))
@@ -29,6 +31,7 @@ public class ConfigVariableFactory {
     public static String replaceTargetUserVariables(String str, @NotNull final User user) {
         Validate.notNull(user, "User most not be null!");
         return new ConfigObjectReplacerUtil("target", str)
+                .append("rankedName", user.getRankedDisplayNameAsString())
                 .append("displayName", user.getFormattedDisplayName())
                 .append("name", user.getUsername())
                 .append("tag", user.getNameTag())
@@ -38,6 +41,7 @@ public class ConfigVariableFactory {
     public static String replaceUserVariables(String str, @NotNull final User user) {
         Validate.notNull(user, "User most not be null!");
         return new ConfigObjectReplacerUtil("user", str)
+                .append("rankedName", user.getRankedDisplayNameAsString())
                 .append("displayName", user.getFormattedDisplayName())
                 .append("name", user.getUsername())
                 .append("tag", user.getNameTag())

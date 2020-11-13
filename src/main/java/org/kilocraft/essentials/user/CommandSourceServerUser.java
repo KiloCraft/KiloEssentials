@@ -102,6 +102,11 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public String getRankedDisplayNameAsString() {
+        return this.getDisplayName();
+    }
+
+    @Override
     public Text getRankedName() {
         return new LiteralText(this.getDisplayName());
     }
