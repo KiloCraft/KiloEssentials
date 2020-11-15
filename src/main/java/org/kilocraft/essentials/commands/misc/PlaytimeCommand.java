@@ -55,7 +55,7 @@ public class PlaytimeCommand extends EssentialCommand {
     }
 
     private int set(CommandContext<ServerCommandSource> ctx, String type) {
-        CommandSourceUser src = getServerUser(ctx);
+        CommandSourceUser src = getCommandSource(ctx);
         int ticks = getInteger(ctx, "seconds") * 20;
 
         AtomicInteger atomicInteger = new AtomicInteger(AWAIT);
@@ -80,11 +80,11 @@ public class PlaytimeCommand extends EssentialCommand {
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return execute(getServerUser(ctx), getOnlineUser(ctx));
+        return execute(getCommandSource(ctx), getOnlineUser(ctx));
     }
 
     private int executeOther(CommandContext<ServerCommandSource> ctx) {
-        CommandSourceUser src = getServerUser(ctx);
+        CommandSourceUser src = getCommandSource(ctx);
         String inputName = getUserArgumentInput(ctx, "user");
 
         if (getOnlineUser(inputName) != null)

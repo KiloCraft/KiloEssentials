@@ -202,7 +202,7 @@ public class ServerUserManager implements UserManager, TickListener {
         for (OnlineUser user : users) {
             if (user.hasNickname()) {
                 String nick = org.kilocraft.essentials.api.util.StringUtils.stringToUsername(
-                        TextFormat.clearColorCodes(user.getDisplayName()).replaceAll("\\s+", "")
+                        ComponentText.clearFormatting(user.getDisplayName()).replaceAll("\\s+", "")
                 );
 
                 if (nick.equals(nickname)) {
@@ -383,6 +383,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
+        KiloChat.onUserLeave(user);
         user.onLeave();
         this.teleportRequestsMap.remove(user.getId());
         if (user.getNickname().isPresent()) {
@@ -402,7 +403,6 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         this.onlineUsers.remove(player.getUuid());
-        KiloChat.onUserLeave(user);
     }
 
     public void onChatMessage(OnlineUser user, ChatMessageC2SPacket packet) {

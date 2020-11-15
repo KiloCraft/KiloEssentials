@@ -21,7 +21,7 @@ public class VersionCommand extends EssentialCommand {
     private int executeVersion(CommandContext<ServerCommandSource> ctx) {
         GameVersion gameVersion = MinecraftVersion.create();
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.info.version",
+        getCommandSource(ctx).sendLangMessage("command.info.version",
                 ModConstants.getVersionInt(),
                 ModConstants.getBuildType(),
                 ModConstants.getVersionType(),

@@ -3,11 +3,13 @@ package org.kilocraft.essentials.commands.moderation;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
@@ -25,8 +27,8 @@ public class IpInfoCommand extends EssentialCommand {
         commandNode.addChild(targetArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) {
-        CommandSourceUser source = getServerUser(ctx);
+    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        OnlineUser source = getOnlineUser(ctx);
 
         getEssentials().getUserThenAcceptAsync(source.getCommandSource(), getUserArgumentInput(ctx, "user"), (user) -> {
             if (user.getLastSocketAddress() == null) {

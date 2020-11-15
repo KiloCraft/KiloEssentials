@@ -297,27 +297,10 @@ public enum TextFormat {
         return allowFormats ? translate(string) : TextFormat.removeAlternateColorCodes('&', string);
     }
 
-    public static LiteralText translateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
-        return new LiteralText(translateAlternateColorCodes(altColorChar, textToTranslate));
-    }
-
     public static String clearColorCodes(@NotNull String textToClear) {
         return removeAlternateColorCodes(ALTERNATIVE_COLOR_CHAR, textToClear);
     }
 
-    public static String removeAlternateColorCodes(@NotNull String textToTranslate, char... chars) {
-        Validate.notNull(textToTranslate, "Cannot translate null text");
-        String string = "";
-        for (char aChar : chars) {
-            string = removeAlternateColorCodes(aChar, string);
-        }
-
-        for (LoggerFormats s : LoggerFormats.values()) {
-            string = string.replace(s.getCode(), "");
-        }
-
-        return string;
-    }
 
     public static String removeAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
         Validate.notNull(textToTranslate, "Cannot translate null text");
@@ -326,106 +309,6 @@ public enum TextFormat {
             textToTranslate = textToTranslate.replace(String.valueOf(altColorChar) + c, "");
         }
         return textToTranslate;
-    }
-
-    public static LiteralText removeAlternateToLiteralText(char altColorChar, @NotNull String textToTranslate) {
-        return new LiteralText(removeAlternateColorCodes(altColorChar, textToTranslate));
-    }
-
-    public static void sendToUniversalSource(ServerCommandSource source, String text, boolean log) {
-        LiteralText literalText;
-        if (CommandUtils.isConsole(source)) {
-            literalText = new LiteralText(removeAlternateColorCodes('&', text));
-        } else {
-            literalText = new LiteralText(translateAlternateColorCodes('&', text));
-        }
-
-        source.sendFeedback(literalText, log);
-    }
-
-    public static void sendToUniversalSource(char altColorChar, ServerCommandSource source, String text, boolean log) {
-        LiteralText literalText;
-        if (CommandUtils.isConsole(source)) {
-            literalText = new LiteralText(removeAlternateColorCodes(altColorChar, text));
-        } else {
-            literalText = new LiteralText(translateAlternateColorCodes(altColorChar, text));
-        }
-
-        source.sendFeedback(literalText, log);
-    }
-
-    public static void sendToUniversalSource(ServerCommandSource source, LiteralText text, boolean log) {
-        sendToUniversalSource(source, text.asString(), log);
-    }
-
-    public static void sendToSource(ServerCommandSource source, boolean log, String text, Object... objects) {
-        sendToUniversalSource(source, String.format(text, objects), log);
-    }
-
-    /**
-     * Gets the ChatColors used at the end of the given input string.
-     *
-     * @param input Input string to retrieve the colors from.
-     * @return Any remaining ChatColors to pass onto the next line.
-     */
-    @NotNull
-    public static String getLastColors(@NotNull String input) {
-        Validate.notNull(input, "Cannot get last colors from null text");
-
-        String result = "";
-        int length = input.length();
-
-        // Search backwards from the end as it is faster
-        for (int index = length - 1; index > -1; index--) {
-            char section = input.charAt(index);
-            if (section == COLOR_CHAR && index < length - 1) {
-                char c = input.charAt(index + 1);
-                TextFormat color = getByChar(c);
-
-                if (color != null) {
-                    result = color.toString() + result;
-
-                    // Once we find a color or reset we can stop searching
-                    if (color.isColor() || color.equals(RESET)) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public static String getFormattedPing(int i) {
-        if (i < 200)
-            return "&a" + i;
-        if (i > 200 && i < 400)
-            return "&e" + i;
-
-        return "&c" + i;
-    }
-
-    public static char getFormattedTPS(double tps) {
-        if (tps > 15)
-            return 'a';
-        if (tps > 10)
-            return 'e';
-
-        return 'c';
-    }
-
-    public static char getFormattedPercentage(double percentage, boolean reverse) {
-        return percentage > 80 ? (reverse ? 'c' : 'a') : percentage < 40 ? (reverse ? 'a' : 'c') : 'e';
-    }
-
-    public static String getCodeByFormatting(Formatting formatting) {
-        for (TextFormat value : values()) {
-            if (value.formatting == formatting) {
-                return String.valueOf(value.code);
-            }
-        }
-
-        return null;
     }
 
     static {

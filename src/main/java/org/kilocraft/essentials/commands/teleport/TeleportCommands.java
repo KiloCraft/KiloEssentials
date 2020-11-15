@@ -92,7 +92,7 @@ public class TeleportCommands {
                 player.yaw, player.pitch
         );
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "position",
+        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendLangMessage("template.#1", "position",
                 getFormattedMessage(player), player.getName().asString());
 
         return SUCCESS();
@@ -109,7 +109,7 @@ public class TeleportCommands {
                 sender.yaw, sender.pitch
         );
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "position",
+        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendLangMessage("template.#1", "position",
                 getFormattedMessage(target), target.getName().asString());
 
         return SUCCESS();
@@ -126,7 +126,7 @@ public class TeleportCommands {
                 target.yaw, target.pitch
         );
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "position",
+        KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendLangMessage("template.#1", "position",
                 getFormattedMessage(target), target.getName().asString());
 
         return SUCCESS();

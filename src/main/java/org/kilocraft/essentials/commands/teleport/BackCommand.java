@@ -45,7 +45,7 @@ public class BackCommand extends EssentialCommand {
         OnlineUser user = getOnlineUser(target);
 
         if (user.getLastSavedLocation() == null) {
-            sendMessage(ctx, "command.back.no_loc");
+            user.sendLangMessage("command.back.no_loc");
             return FAILED;
         }
 
@@ -56,7 +56,7 @@ public class BackCommand extends EssentialCommand {
         if (CommandUtils.areTheSame(ctx.getSource(), target))
             user.sendLangMessage("command.back.self", loc.asFormattedString());
         else
-            sendMessage(ctx, "command.back.others", user.getUsername(), loc.asFormattedString());
+            user.sendLangMessage("command.back.others", user.getUsername(), loc.asFormattedString());
 
         return SUCCESS;
     }

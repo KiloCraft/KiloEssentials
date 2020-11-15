@@ -5,7 +5,6 @@ import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.chat.StringText;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class Texter {
     private static final String SEPARATOR = "-----------------------------------------------------";
 
     public static MutableText newText(final String str) {
-        return ComponentText.toText(TextFormat.translate(str));
+        return ComponentText.toText(str);
     }
 
     public static TranslatableText newTranslatable(String key, Object... objects) {
@@ -48,6 +47,25 @@ public class Texter {
 
         return text;
     }
+
+    public static String exceptionToString(Exception e, boolean requireDevMode) {
+        StringBuilder builder = new StringBuilder(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
+
+        if (!requireDevMode && SharedConstants.isDevelopment) {
+            StackTraceElement[] stackTraceElements = e.getStackTrace();
+
+            for (int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
+                builder.append("\n\n").append(stackTraceElements[i].getMethodName())
+                        .append("\n ")
+                        .append(stackTraceElements[i].getFileName())
+                        .append(":")
+                        .append(stackTraceElements[i].getLineNumber());
+            }
+        }
+
+        return builder.toString();
+    }
+
 
     public static MutableText blockStyle(MutableText text) {
         MutableText separator = new LiteralText(SEPARATOR).formatted(Formatting.GRAY);
@@ -302,7 +320,7 @@ public class Texter {
         }
 
         public static HoverEvent onHover(String text) {
-            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(TextFormat.translate(text)));
+            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, ComponentText.toText(text));
         }
 
         public static HoverEvent onHover(MutableText text) {
@@ -465,7 +483,7 @@ public class Texter {
                     .append(new LiteralText("- [ ").formatted(borders))
                     .append(newText(title).formatted(primary))
                     .append(" ] ")
-                    .append(SEPARATOR.substring(TextFormat.removeAlternateColorCodes('&', title).length() + 4))
+                    .append(SEPARATOR.substring(ComponentText.clearFormatting(title).length() + 4))
                     .formatted(borders);
             this.text = new LiteralText("");
             this.primary = primary;
@@ -566,7 +584,7 @@ public class Texter {
 
                     text.append(new LiteralText(subTitles[i]).formatted(secondary))
                             .append(new LiteralText(valueObjectSeparator.getString()).formatted(borders))
-                            .append(new LiteralText(TextFormat.translate(String.valueOf(objects[i])))
+                            .append(ComponentText.toText(String.valueOf(objects[i]))
                                     .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary)
                             );
 
@@ -599,7 +617,7 @@ public class Texter {
 
         public InfoBlockStyle append(Object obj) {
             TypeFormat typeFormat = TypeFormat.getByClazz(obj.getClass());
-            this.text.append(new LiteralText(TextFormat.translate(String.valueOf(obj)))
+            this.text.append(ComponentText.toText(String.valueOf(obj))
                     .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary));
             return this;
         }
@@ -628,7 +646,7 @@ public class Texter {
             TypeFormat typeFormat = TypeFormat.getByClazz(obj.getClass());
             return this.append(
                     title,
-                    new LiteralText(TextFormat.translate(String.valueOf(obj)))
+                    ComponentText.toText(String.valueOf(obj))
                             .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary),
                     separateLine,
                     nextLine

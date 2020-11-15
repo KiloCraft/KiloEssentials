@@ -21,8 +21,8 @@ public class CommandFormattingCommand extends EssentialCommand {
         argumentBuilder.executes(this::execute);
     }
 
-    public int execute(CommandContext<ServerCommandSource> context) {
-        this.sendMessage(context, text);
+    public int execute(CommandContext<ServerCommandSource> ctx) {
+        getCommandSource(ctx).sendMessage(text);
         return SUCCESS;
     }
 }

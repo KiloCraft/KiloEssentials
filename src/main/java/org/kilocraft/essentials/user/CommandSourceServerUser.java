@@ -2,6 +2,9 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
@@ -9,8 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,6 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -30,9 +30,7 @@ import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
@@ -122,6 +120,11 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
+    public void setNickname(String name) {
+
+    }
+
+    @Override
     public Location getLocation() {
         return Vec3dLocation.of(this.source.getPosition());
     }
@@ -133,11 +136,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void saveLocation() {
-
-    }
-
-    @Override
-    public void setNickname(String name) {
 
     }
 
@@ -276,19 +274,24 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendMessage(String message) {
-        MutableText text = new LiteralText("\n");
-        KiloChat.sendMessageTo(this.source, text.append(ComponentText.toText(message)));
+        MutableText text = new LiteralText(CommandUtils.isConsole(this.source) ? "\n" : "");
+        this.sendMessage(text.append(ComponentText.toText(message).styled(style -> {
+            if (SharedConstants.isDevelopment && this.hasPermission(EssentialPermission.DEBUG)) {
+                return style.withHoverEvent(new net.minecraft.text.HoverEvent(net.minecraft.text.HoverEvent.Action.SHOW_TEXT, new LiteralText(message)));
+            }
+            return style;
+        })));
     }
 
     @Override
     public int sendError(String message) {
-        this.source.sendError(new MutableTextMessage("&c" + message, true).toText());
+        this.sendMessage(Component.text(message).color(NamedTextColor.RED));
         return 1;
     }
 
     @Override
-    public void sendError(Text text) {
-        KiloChat.sendMessageTo(this.source, ((MutableText)text).formatted(Formatting.RED));
+    public void sendPermissionError(@NotNull String hover) {
+        this.sendMessage(Component.text(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
     }
 
     @Override
@@ -299,8 +302,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public int sendError(ExceptionMessageNode node, Object... objects) {
         String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.source, ComponentText.toText("<red>" +
-                ((objects != null) ? String.format(message, objects) : message)));
+        this.sendMessage("<red>" + (objects != null ? String.format(message, objects) : message));
         return 1;
     }
 
@@ -315,19 +317,8 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void sendMessage(MutableTextMessage mutableTextMessage) {
-        KiloChat.sendMessageToSource(this.source, mutableTextMessage);
-    }
-
-    @Override
     public void sendLangMessage(@NotNull String key, Object... objects) {
-        KiloChat.sendLangMessageTo(this.source, key, objects);
-    }
-
-    @Override
-    public void sendConfigMessage(String key, Object... objects) {
-        String string = KiloConfig.getMessage(key, objects);
-        KiloChat.sendMessageToSource(this.source, new MutableTextMessage(string, true));
+        this.sendMessage(KiloChat.getFormattedLang(key, objects));
     }
 
     @Override
@@ -336,8 +327,8 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public Vec3dLocation getLocationAsVector() {
-        return null;
+    public Vec3dLocation getLocationAsVector() throws CommandSyntaxException {
+        return this.isConsole() ? null : Vec3dLocation.of(source.getPlayer());
     }
 
     @Override

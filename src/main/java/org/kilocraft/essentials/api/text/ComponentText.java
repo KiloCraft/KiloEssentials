@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.ModConstants;
 
 import java.util.Locale;
 
@@ -58,6 +59,10 @@ public class ComponentText {
     public static Component toComponent(@NotNull final Text text) {
         Validate.notNull(text, "Text must not be null!");
         return GsonComponentSerializer.gson().deserialize(Text.Serializer.toJson(text));
+    }
+
+    public static Component toComponent(@NotNull final String json) {
+        return GsonComponentSerializer.gson().deserialize(json);
     }
 
     public static Component of(@NotNull final String raw) {
@@ -121,7 +126,7 @@ public class ComponentText {
             color = NamedTextColor.RED.toString();
         }
 
-        return "<" + color + ">" + tps;
+        return "<" + color + ">" + ModConstants.DECIMAL_FORMAT.format(tps);
     }
 
     public static String stripColor(String s) {

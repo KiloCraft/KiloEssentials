@@ -41,7 +41,7 @@ public class UnBanCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx, boolean silent) throws CommandSyntaxException {
-        CommandSourceUser src = this.getServerUser(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
         Collection<GameProfile> gameProfiles = GameProfileArgumentType.getProfileArgument(ctx, "profile");
         if (gameProfiles.size() > 1) {
             throw KiloCommands.getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();

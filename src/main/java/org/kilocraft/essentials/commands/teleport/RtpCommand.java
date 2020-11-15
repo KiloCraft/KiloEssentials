@@ -36,7 +36,6 @@ import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
@@ -200,7 +199,7 @@ public class RtpCommand extends EssentialCommand {
         OnlineUser target = this.getOnlineUser(ctx);
 
         if (UserUtils.Process.isIn(target, PROCESS.getId())) {
-            this.getServerUser(ctx).sendLangError("command.rtp.in_process");
+            target.sendLangError("command.rtp.in_process");
             return FAILED;
         }
 

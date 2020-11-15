@@ -38,7 +38,7 @@ public class CalculateCommand extends EssentialCommand {
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
-        CommandSourceUser src = this.getServerUser(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
         String input = StringArgumentType.getString(ctx, "input");
 //        StringUtils.Calculator calculator = new StringUtils.Calculator(input);
         ScriptEngineManager mgr = new ScriptEngineManager();

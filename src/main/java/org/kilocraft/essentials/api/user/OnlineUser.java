@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.api.user;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,11 +27,9 @@ public interface OnlineUser extends User, OnlineMessageReceptionist {
 
     int sendError(ExceptionMessageNode node, Object... objects);
 
-    void sendConfigMessage(String key, Object... objects);
-
     ClientConnection getConnection();
 
-    Vec3dLocation getLocationAsVector();
+    Vec3dLocation getLocationAsVector() throws CommandSyntaxException;
 
     Vec3d getEyeLocation();
 

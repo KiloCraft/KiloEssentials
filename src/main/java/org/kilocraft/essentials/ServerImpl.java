@@ -3,6 +3,7 @@ package org.kilocraft.essentials;
 import com.google.common.collect.Lists;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
@@ -36,7 +37,7 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
-import org.kilocraft.essentials.chat.MutableTextMessage;
+import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.events.server.ServerReloadEventImpl;
 import org.kilocraft.essentials.mixin.accessor.MinecraftServerAccessor;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
@@ -314,11 +315,6 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void sendMessage(MutableTextMessage message) {
-        this.sendMessage(message.toText());
-    }
-
-    @Override
     public void sendMessage(Text text) {
         this.server.sendSystemMessage(text, Util.NIL_UUID);
     }
@@ -339,8 +335,8 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public void sendError(Text text) {
-        this.sendMessage(((MutableText) text).formatted(Formatting.RED));
+    public void sendPermissionError(@NotNull String hover) {
+        this.sendMessage(Component.text(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
     }
 
     @Override

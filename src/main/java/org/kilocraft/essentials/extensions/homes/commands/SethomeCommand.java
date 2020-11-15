@@ -68,7 +68,7 @@ public class SethomeCommand extends EssentialCommand {
         }
 
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-            KiloChat.sendMessageTo(player, getConfirmationText(name, ""));
+            user.sendMessage(getConfirmationText(name, ""));
             return AWAIT;
         } else {
             homeHandler.removeHome(name);
@@ -101,7 +101,7 @@ public class SethomeCommand extends EssentialCommand {
             }
 
             if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-                KiloChat.sendMessageTo(player, getConfirmationText(name, user.getUsername()));
+                source.sendMessage(getConfirmationText(name, user.getUsername()));
                 return;
             } else {
                 homeHandler.removeHome(name);

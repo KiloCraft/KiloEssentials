@@ -11,6 +11,7 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -126,12 +127,10 @@ public class WarpCommand {
 
             Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
 
-            thisWarp.append(new LiteralText(warp.getName()).styled((style) -> {
-                return style.withFormatting(thisFormat).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new LiteralText("[i] ").formatted(Formatting.YELLOW)
-                                .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                        "/warp " + warp.getName()));
-            }));
+            thisWarp.append(new LiteralText(warp.getName()).styled((style) -> style.withFormatting(thisFormat).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new LiteralText("[i] ").formatted(Formatting.YELLOW)
+                            .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                    "/warp " + warp.getName()))));
 
             if (warpsSize != i)
                 thisWarp.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
@@ -140,15 +139,14 @@ public class WarpCommand {
 
             text.append(thisWarp);
         }
-
-        KiloChat.sendMessageToSource(source, text);
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(text);
         return 1;
     }
 
     private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
         ServerWarpManager.addWarp(new ServerWarp(name, Vec3dLocation.of(source.getPlayer()).shortDecimals(), addCommand));
-
-        KiloChat.sendLangMessageTo(source, "command.warp.set", name);
+        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(source);
+        user.sendLangMessage("command.warp.set", name);
         registerAliases();
         KiloCommands.updateGlobalCommandTree();
         return 1;
@@ -156,9 +154,10 @@ public class WarpCommand {
 
     private static int executeRemove(ServerCommandSource source, String warp) throws CommandSyntaxException {
         ServerWarp w = ServerWarpManager.getWarp(warp);
+        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(source);
         if (w != null) {
             ServerWarpManager.removeWarp(w);
-            KiloChat.sendLangMessageTo(source, "command.warp.remove", warp);
+            user.sendLangMessage("command.warp.remove", warp);
         }
         else
             throw WARP_NOT_FOUND_EXCEPTION.create();

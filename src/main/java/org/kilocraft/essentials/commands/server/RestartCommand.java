@@ -34,20 +34,15 @@ public class RestartCommand {
 
     private static int execute(ServerCommandSource source, String args) {
         boolean confirmed = args.contains("-confirmed");
-        boolean scriptPresent = KiloConfig.main().startupScript().enabled && KiloEssentials.getInstance().getStartupScript().exists();
 
         if (!confirmed && !KiloServer.getServer().getCommandSourceUser(source).isConsole()) {
-            if (!scriptPresent) {
-                source.sendFeedback(StringText.of(true, "command.restart.no_script").formatted(Formatting.RED), false);
-                return 0;
-            }
 
             LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
-            literalText.styled((style) -> {
-                return style.withFormatting(Formatting.RED).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to restart the server").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/restart -confirmed"));
-            });
+            literalText.styled((style) -> style.withFormatting(Formatting.RED)
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to restart the server").formatted(Formatting.YELLOW)))
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/restart -confirmed")));
 
-            KiloChat.sendMessageTo(source, literalText);
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage(literalText);
             return 0;
         }
 

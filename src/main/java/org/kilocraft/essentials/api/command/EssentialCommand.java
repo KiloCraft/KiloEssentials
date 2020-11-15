@@ -14,7 +14,6 @@ import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +27,6 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.StringUtils;
-import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.Config;
 import org.kilocraft.essentials.config.messages.Messages;
@@ -199,22 +196,6 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return KiloEssentials.hasPermissionNode(src, essPerm, minOpLevel);
     }
 
-    public void sendMessage(final CommandContext<ServerCommandSource> ctx, final Text text) {
-        ctx.getSource().sendFeedback(text, false);
-    }
-
-    public void sendMessage(final CommandContext<ServerCommandSource> ctx, final String key, final Object... objects) {
-        sendMessage(ctx.getSource(), key, objects);
-    }
-
-    public void sendMessage(final ServerCommandSource src, final String key, final Object... objects) {
-        KiloChat.sendLangMessageTo(src, key, objects);
-    }
-
-    public Text getLang(final String key, final Object... objects) {
-        return StringText.of(true, key, objects);
-    }
-
     @Override
     public LiteralArgumentBuilder<ServerCommandSource> literal(final String label) {
         return CommandManager.literal(label);
@@ -230,9 +211,12 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.getServer().getOnlineUser(name);
     }
 
-    @Override
-    public OnlineUser getOnlineUser(final ServerCommandSource source) {
-        return this.getServer().getCommandSourceUser(source);
+    public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        return this.getOnlineUser(ctx.getSource().getPlayer());
+    }
+
+    public CommandSourceUser getCommandSource(final CommandContext<ServerCommandSource> ctx) {
+        return this.getServer().getCommandSourceUser(ctx.getSource());
     }
 
     @Override
@@ -244,20 +228,8 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return KiloEssentials.getServer();
     }
 
-    public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx) {
-        return this.getOnlineUser(ctx.getSource());
-    }
-
-    public CommandSourceUser getCommandSource(final CommandContext<ServerCommandSource> ctx) {
-        return this.getServer().getCommandSourceUser(ctx.getSource());
-    }
-
     public OnlineUser getOnlineUser(final ServerPlayerEntity player) {
         return this.getServer().getOnlineUser(player);
-    }
-
-    public CommandSourceUser getServerUser(final CommandContext<ServerCommandSource> ctx) {
-        return this.getServer().getCommandSourceUser(ctx.getSource());
     }
 
     public String getUserArgumentInput(final CommandContext<ServerCommandSource> ctx, final String label) {
@@ -349,7 +321,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public int sendUsage(CommandContext<ServerCommandSource> ctx, String key, Object... objects) {
-        this.getServerUser(ctx).sendLangMessage(key, objects);
+        this.getCommandSource(ctx).sendLangMessage(key, objects);
         return AWAIT;
     }
 

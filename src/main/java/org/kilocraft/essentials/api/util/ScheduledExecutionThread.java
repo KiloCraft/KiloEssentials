@@ -30,7 +30,6 @@ public class ScheduledExecutionThread {
     private static void tick(int seconds, OnlineUser player, @Nullable OnlineUser player2, Vec3d pos, ScheduledExecution s) {
         if (player2 != null) {
             if (isOnline(player) && !isOnline(player2)) {
-                System.out.println(player2.getName() + "went offline");
                 player.sendLangMessage("teleport.offline", player2.getDisplayName());
                 return;
             } else if (!isOnline(player) && isOnline(player2)) {

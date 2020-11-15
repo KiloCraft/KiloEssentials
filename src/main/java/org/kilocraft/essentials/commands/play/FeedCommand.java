@@ -2,16 +2,15 @@ package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
@@ -26,14 +25,14 @@ public class FeedCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FEED_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
-                .executes(context -> execute(context.getSource(), getPlayer(context, "target")));
+                .executes(context -> execute(context, getPlayer(context, "target")));
 
-        argumentBuilder.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
+        argumentBuilder.executes(context -> execute(context, context.getSource().getPlayer()));
         commandNode.addChild(target.build());
     }
 
-    private int execute(ServerCommandSource source, ServerPlayerEntity player) {
-        OnlineUser self = getOnlineUser(source);
+    private int execute(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
+        OnlineUser self = getCommandSource(context);
         OnlineUser target = getOnlineUser(player);
         if (CommandUtils.areTheSame(self, target)) {
             if (player.getHungerManager().getFoodLevel() == 20)

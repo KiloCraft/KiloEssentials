@@ -46,10 +46,10 @@ public class FlyCommand extends EssentialCommand {
         OnlineUser user = KiloServer.getServer().getOnlineUser(playerEntity);
         user.setFlight(bool);
 
-        KiloChat.sendLangMessageTo(source, "template.#1", "Flight", bool, playerEntity.getName().asString());
+        user.sendLangMessage("template.#1", "Flight", bool, playerEntity.getName().asString());
 
         if (!CommandUtils.areTheSame(source, playerEntity))
-            KiloChat.sendLangMessageTo(playerEntity, "template.#1.announce", source.getName(), "Flight", bool);
+            user.sendLangMessage("template.#1.announce", source.getName(), "Flight", bool);
 
         return 1;
     }

@@ -52,7 +52,7 @@ public class ConfigVariableFactory {
         Validate.notNull(player, "Player most not be null!");
         return new ConfigObjectReplacerUtil("player", str)
                 .append("ping", player.pingMilliseconds)
-                .append("formatted_ping", TextFormat.getFormattedPing(player.pingMilliseconds))
+                .append("formatted_ping", ComponentText.formatPing(player.pingMilliseconds))
                 .toString();
     }
 
@@ -61,11 +61,11 @@ public class ConfigVariableFactory {
         final double memUsagePercent = SystemMonitor.getRamUsedPercentage();
         return new ConfigObjectReplacerUtil("server", str)
                 .append("tps", TpsTracker.tps.getShortAverage())
-                .append("formatted_tps", ComponentText.formatTps(Double.parseDouble(TpsTracker.tps.getShortAverage())))
+                .append("formatted_tps", ComponentText.formatTps(TpsTracker.tps.getAverage()))
                 .append("tps5", TpsTracker.tps5.getShortAverage())
-                .append("formatted_tps5", ComponentText.formatTps(Double.parseDouble(TpsTracker.tps5.getShortAverage())))
+                .append("formatted_tps5", ComponentText.formatTps(TpsTracker.tps5.getAverage()))
                 .append("tps15", TpsTracker.tps15.getShortAverage())
-                .append("formatted_tps15", ComponentText.formatTps(Double.parseDouble(TpsTracker.tps15.getShortAverage())))
+                .append("formatted_tps15", ComponentText.formatTps(TpsTracker.tps15.getAverage()))
                 .append("player_count", server.getPlayerManager().getCurrentPlayerCount())
                 .append("max_players", server.getPlayerManager().getMaxPlayerCount())
                 .append("name", KiloConfig.main().server().name)

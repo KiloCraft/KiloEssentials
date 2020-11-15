@@ -2,6 +2,7 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
@@ -11,7 +12,6 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
@@ -30,12 +30,10 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.MutableTextMessage;
-import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
-import java.awt.*;
 import java.net.SocketAddress;
 import java.util.Date;
 import java.util.UUID;
@@ -92,18 +90,18 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(final String message) {
-        KiloChat.sendMessageTo(this.asPlayer(), ComponentText.toText(message));
+        this.sendMessage(ComponentText.of(message));
     }
 
     @Override
     public int sendError(final String message) {
-        KiloChat.sendMessageTo(this.asPlayer(), ComponentText.toText(ComponentText.of(message).color(NamedTextColor.RED)));
+        this.sendMessage(Component.text(message).color(NamedTextColor.RED));
         return 0;
     }
 
     @Override
-    public void sendError(Text text) {
-        KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)text).formatted(Formatting.RED));
+    public void sendPermissionError(@NotNull String hover) {
+        this.sendMessage(Component.text(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
     }
 
     @Override
@@ -114,9 +112,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public int sendError(final ExceptionMessageNode node, final Object... objects) {
         final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        KiloChat.sendMessageTo(this.asPlayer(), ((MutableText)new MutableTextMessage(
-                objects != null ? String.format(message, objects) : message, true)
-                .toText()).formatted(Formatting.RED));
+        this.sendMessage("<red>" + (objects != null ? String.format(message, objects) : message));
         return -1;
     }
 
@@ -127,23 +123,12 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendMessage(@NotNull Component component) {
-        this.asPlayer().sendMessage(ComponentText.toText(component), false);
-    }
-
-    @Override
-    public void sendMessage(final MutableTextMessage mutableTextMessage) {
-        KiloChat.sendMessageTo(this.asPlayer(), mutableTextMessage);
+        this.sendMessage(ComponentText.toText(component));
     }
 
     @Override
     public void sendLangMessage(final @NotNull String key, final Object... objects) {
-        KiloChat.sendLangMessageTo(this.asPlayer(), key, objects);
-    }
-
-    @Override
-    public void sendConfigMessage(final String key, final Object... objects) {
-        final String message = KiloConfig.getMessage(key, objects);
-        this.sendMessage(new MutableTextMessage(message, true));
+        this.sendMessage(KiloChat.getFormattedLang(key, objects));
     }
 
     @Override

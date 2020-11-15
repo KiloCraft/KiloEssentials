@@ -54,7 +54,7 @@ public class TempMuteCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @NotNull String time, @Nullable String reason, boolean silent) throws CommandSyntaxException {
-        CommandSourceUser src = this.getServerUser(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
         Date date = new Date();
         Date expiry = new Date(TimeDifferenceUtil.parse(time, true));
 

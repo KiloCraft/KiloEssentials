@@ -36,11 +36,9 @@ public class StopCommand {
 
         if (!confirmed && !CommandUtils.isConsole(source)) {
             LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
-            literalText.styled((style) -> {
-                return style.withFormatting(Formatting.RED).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed"));
-            });
+            literalText.styled((style) -> style.withFormatting(Formatting.RED).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed")));
 
-            KiloChat.sendMessageTo(source, literalText);
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage(literalText);
         } else
             KiloServer.getServer().shutdown();
 

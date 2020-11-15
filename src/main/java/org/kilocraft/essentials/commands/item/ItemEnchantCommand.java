@@ -18,7 +18,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
 
 import java.util.ArrayList;
@@ -104,34 +106,36 @@ public class ItemEnchantCommand {
         ServerCommandSource source = ctx.getSource();
         Enchantment enchantment = getEnchantment(ctx, "enchantment");
         ItemStack itemStack = source.getPlayer().getMainHandStack();
+        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(source);
 
         if (itemStack.isEmpty()) {
-            KiloChat.sendLangMessageTo(ctx.getSource(), "general.no_item");
+            user.sendLangMessage( "general.no_item");
             return -1;
         }
 
         int finalLevel = level == -1 ? enchantment.getMinLevel() : level;
         itemStack.addEnchantment(enchantment, finalLevel);
 
-        KiloChat.sendLangMessageTo(source, "command.item.enchant.add", getEnchantmentName(enchantment), finalLevel);
+        user.sendLangMessage("command.item.enchant.add", getEnchantmentName(enchantment), finalLevel);
         return 1;
     }
 
     private static int resetEnchantments(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
+        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
 
         if (item.isEmpty()) {
-            KiloChat.sendLangMessageTo(ctx.getSource(), "general.no_item");
+            user.sendLangMessage("general.no_item");
             return -1;
         }
 
         if (item.getTag() == null) {
-            KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.nothing_to_reset");
+            user.sendLangMessage("command.item.nothing_to_reset");
             return -1;
         }
 
         Objects.requireNonNull(item.getTag()).remove("Enchantments");
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.item.enchant.reset");
+        user.sendLangMessage("command.item.enchant.reset");
         return 1;
     }
 
@@ -139,14 +143,15 @@ public class ItemEnchantCommand {
         ServerCommandSource source = ctx.getSource();
         Enchantment enchantment = getEnchantment(ctx, "enchantment");
         ItemStack itemStack = source.getPlayer().getMainHandStack();
+        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
 
         if (itemStack.isEmpty()) {
-            KiloChat.sendLangMessageTo(ctx.getSource(), "general.no_item");
+            user.sendLangMessage("general.no_item");
             return -1;
         }
 
         if (itemStack.getTag() == null || !itemStack.getTag().contains("Enchantments")) {
-            KiloChat.sendLangMessageTo(source, "command.item.nothing_to_reset");
+            user.sendLangMessage("command.item.nothing_to_reset");
             return -1;
         }
 
@@ -167,11 +172,11 @@ public class ItemEnchantCommand {
         }
 
         if (removedEnchantments == 0) {
-            KiloChat.sendLangMessageTo(source, "command.item.nothing_to_reset");
+            user.sendLangMessage("command.item.nothing_to_reset");
             return -1;
         }
 
-        KiloChat.sendLangMessageTo(source, "command.item.enchant.remove", getEnchantmentName(enchantment));
+        user.sendLangMessage("command.item.enchant.remove", getEnchantmentName(enchantment));
         return 1;
     }
 

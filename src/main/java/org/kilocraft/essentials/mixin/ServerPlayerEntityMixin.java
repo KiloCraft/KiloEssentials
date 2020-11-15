@@ -6,6 +6,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUser;
@@ -24,7 +25,7 @@ public abstract class ServerPlayerEntityMixin {
     private void modify(ServerWorld serverWorld, CallbackInfo ci) {
         if (LocationUtil.shouldBlockAccessTo(serverWorld.getDimension())) {
             ci.cancel();
-            KiloChat.sendLangMessageTo((ServerPlayerEntity) (Object) this, "general.dimension_not_allowed", RegistryUtils.dimensionToName(serverWorld.getDimension()));
+            KiloServer.getServer().getOnlineUser((ServerPlayerEntity) (Object)this).sendLangMessage("general.dimension_not_allowed", RegistryUtils.dimensionToName(serverWorld.getDimension()));
         }
 
         ServerUser.saveLocationOf((ServerPlayerEntity) (Object) this);

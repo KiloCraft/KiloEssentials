@@ -83,9 +83,9 @@ public class BuilderMsgCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int send(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int send(CommandContext<ServerCommandSource> ctx) {
         String message = StringArgumentType.getString(ctx, "message");
-        ServerChat.sendSafely(this.getOnlineUser(ctx), new MutableTextMessage(message), ServerChat.Channel.BUILDER);
+        ServerChat.sendChatMessage(this.getCommandSource(ctx), message, ServerChat.Channel.BUILDER);
         return SUCCESS;
     }
 

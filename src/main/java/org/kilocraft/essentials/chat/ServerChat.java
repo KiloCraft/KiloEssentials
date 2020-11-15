@@ -322,7 +322,7 @@ public final class ServerChat {
         if (CommandUtils.isPlayer(source)) {
             OnlineUser user = KiloServer.getServer().getOnlineUser(source.getPlayer());
             if (KiloServer.getServer().getUserManager().getPunishmentManager().isMuted(user)) {
-                KiloChat.sendMessageTo(source, new MutableTextMessage(ServerUserManager.getMuteMessage(user)));
+                user.sendMessage(ServerUserManager.getMuteMessage(user));
                 return;
             }
 
@@ -357,12 +357,12 @@ public final class ServerChat {
 
         ComponentText.toText(ComponentText.removeEvents(ComponentText.of(toSource)));
 
-        KiloChat.sendMessageToSource(source, new MutableTextMessage(toSource, true).toText().formatted(Formatting.WHITE));
-        KiloChat.sendMessageTo(target.asPlayer(), new MutableTextMessage(toTarget, true).toText().formatted(Formatting.WHITE));
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(toSource);
+        target.sendMessage(toTarget);
 
         for (final OnlineServerUser user : KiloServer.getServer().getUserManager().getOnlineUsers().values()) {
             if (user.getPreference(Preferences.SOCIAL_SPY) && !CommandUtils.areTheSame(source, user) && !CommandUtils.areTheSame(target, user)) {
-                user.sendMessage(new MutableTextMessage(toSpy, true).toText().formatted(Formatting.GRAY));
+                user.sendMessage(toSpy);
             }
 
             KiloServer.getServer().triggerEvent(new PlayerOnDirectMessageEventImpl(source, target, raw));
@@ -394,14 +394,6 @@ public final class ServerChat {
         for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
             if (user.hasPermission(permission)) {
                 user.sendMessage(message);
-            }
-        }
-    }
-
-    public static void sendLangMessage(EssentialPermission permission, String key, Object... objects) {
-        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-            if (user.hasPermission(permission)) {
-                user.sendLangMessage(key, objects);
             }
         }
     }
@@ -520,20 +512,6 @@ public final class ServerChat {
                     break;
                 case BUILDER:
                     ServerChat.send(message, EssentialPermission.BUILDER);
-                    break;
-            }
-        }
-
-        public void sendLangMessage(String key, Object... objects) {
-            switch (this) {
-                case PUBLIC:
-                    KiloChat.broadCastLang(key, objects);
-                    break;
-                case STAFF:
-                    ServerChat.sendLangMessage(EssentialPermission.STAFF, key, objects);
-                    break;
-                case BUILDER:
-                    ServerChat.sendLangMessage(EssentialPermission.BUILDER, key, objects);
                     break;
             }
         }

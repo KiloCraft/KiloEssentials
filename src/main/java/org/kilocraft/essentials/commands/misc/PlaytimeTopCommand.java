@@ -102,7 +102,6 @@ public class PlaytimeTopCommand extends EssentialCommand {
             Map.Entry<String, Integer> entry = sortedList.get(i);
 
             String pt = TimeDifferenceUtil.convertSecondsToString(entry.getValue() / 20, 'e', '6');
-            System.out.println(pt);
             input.append(String.format(LINE_FORMAT, i + 1, entry.getKey(), pt));
         }
 

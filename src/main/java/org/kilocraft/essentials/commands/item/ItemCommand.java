@@ -8,7 +8,7 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 
 public class ItemCommand extends EssentialCommand {
     public ItemCommand() {
-        super("item", src ->
+        super("modifyitem", src ->
             KiloCommands.hasPermission(src, CommandPermission.ITEM_NAME) ||
                     KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE) ||
                     KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS) ||
@@ -23,6 +23,6 @@ public class ItemCommand extends EssentialCommand {
         ItemLoreCommand.registerChild(argumentBuilder, dispatcher);
         ItemEnchantCommand.registerChild(argumentBuilder, dispatcher);
         PowerToolsCommand.registerChild(argumentBuilder, dispatcher);
-        //ItemMendCommand.registerChild(argumentBuilder, dispatcher);
+//        ItemMendCommand.registerChild(argumentBuilder, dispatcher);
     }
 }

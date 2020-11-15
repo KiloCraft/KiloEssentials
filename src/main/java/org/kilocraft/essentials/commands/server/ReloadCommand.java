@@ -3,7 +3,6 @@ package org.kilocraft.essentials.commands.server;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.HoverEvent;
 import org.apache.commons.lang3.time.StopWatch;
@@ -12,7 +11,6 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.concurrent.TimeUnit;
@@ -32,9 +30,9 @@ public class ReloadCommand extends EssentialCommand {
     }
 
     private int reload(CommandContext<ServerCommandSource> ctx) {
-        final CommandSourceUser src = this.getServerUser(ctx);
+        final CommandSourceUser src = this.getCommandSource(ctx);
         StopWatch watch = new StopWatch();
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.start");
+        src.sendLangMessage("command.reload.start");
 
         watch.start();
         getServer().reload((throwable) -> {
@@ -50,9 +48,9 @@ public class ReloadCommand extends EssentialCommand {
     }
 
     private int reloadVanilla(CommandContext<ServerCommandSource> ctx) {
-        final CommandSourceUser src = this.getServerUser(ctx);
+        final CommandSourceUser src = this.getCommandSource(ctx);
         StopWatch watch = new StopWatch();
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.vanilla");
+        src.sendLangMessage("command.reload.vanilla");
 
         watch.start();
         AtomicBoolean success = new AtomicBoolean(true);
@@ -71,10 +69,10 @@ public class ReloadCommand extends EssentialCommand {
     }
 
     private int reloadKE(CommandContext<ServerCommandSource> ctx) {
-        final CommandSourceUser src = this.getServerUser(ctx);
+        final CommandSourceUser src = this.getCommandSource(ctx);
         StopWatch watch = new StopWatch();
         watch.start();
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.reload.ke");
+        src.sendLangMessage("command.reload.ke");
         getServer().reloadKiloEssentials();
         watch.stop();
         src.sendLangMessage("command.reload.end", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));

@@ -81,7 +81,7 @@ public class WhoWasCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private int send(OnlineUser src, String name, int page) {
+    private int send(OnlineUser user, String name, int page) {
         String uuid;
         try {
             uuid = NameLookup.getPlayerUUID(name);
@@ -90,25 +90,25 @@ public class WhoWasCommand extends EssentialCommand {
                 throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
             }
         } catch (Exception e) {
-            src.sendError(Texter.exceptionToText(e, false));
+            user.sendError(Texter.exceptionToString(e, false));
             return FAILED;
         }
 
         if (CacheManager.isPresent(getCacheId(uuid))) {
             AtomicReference<NameLookup.PreviousPlayerNameEntry[]> reference = new AtomicReference<>();
             CacheManager.ifPresent(getCacheId(uuid), (cached) -> reference.set((NameLookup.PreviousPlayerNameEntry[]) cached));
-            return send(src, name, page, reference.get());
+            return send(user, name, page, reference.get());
         }
 
         try {
-            src.sendLangMessage("api.mojang.wait");
+            user.sendLangMessage("api.mojang.wait");
             NameLookup.PreviousPlayerNameEntry[] entries = NameLookup.getPlayerPreviousNames(uuid);
             Cached<NameLookup.PreviousPlayerNameEntry[]> cached = new Cached<>(getCacheId(uuid), 3, TimeUnit.HOURS, entries);
             CacheManager.cache(cached);
 
-            return send(src, name, page, entries);
+            return send(user, name, page, entries);
         } catch (IOException e) {
-            src.sendError("Can not get the data! " + e.getMessage());
+            user.sendError("Can not get the data! " + e.getMessage());
             return FAILED;
         }
     }

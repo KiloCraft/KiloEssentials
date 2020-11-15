@@ -11,7 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -120,11 +122,12 @@ public class SimpleCommandManager {
         SimpleCommand command = getCommandByLabel(label);
         String str = input.replaceFirst("/", "").replaceFirst(label + " ", "");
         String[] args = str.replaceFirst(label, "").split(" ");
+        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(source);
 
         try {
             if (command != null) {
                 if (command.opReq >= 1 && !source.hasPermissionLevel(command.opReq)) {
-                    KiloCommands.sendPermissionError(source);
+                    user.sendPermissionError("");
                     return 0;
                 }
 
@@ -135,11 +138,9 @@ public class SimpleCommandManager {
                 CommandPermission reqPerm = CommandPermission.getByNode(label);
 
                 if (isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
-                    KiloCommands.sendPermissionError(source);
+                    user.sendPermissionError("");
                 else
-                    KiloChat.sendMessageToSource(source, new MutableTextMessage(
-                            KiloConfig.messages().commands().context().executionException
-                            , true));
+                    user.sendMessage(KiloConfig.messages().commands().context().executionException);
 
             } else {
                 source.sendError(Texts.toText(e.getRawMessage()));

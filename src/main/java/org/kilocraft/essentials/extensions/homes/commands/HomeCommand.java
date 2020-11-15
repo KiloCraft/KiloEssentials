@@ -86,18 +86,18 @@ public class HomeCommand extends EssentialCommand {
         final ServerPlayerEntity player = ctx.getSource().getPlayer();
         final String input = StringArgumentType.getString(ctx, "name");
         final String name = input.replaceFirst("-confirmed-", "");
-        final OnlineUser source = this.getOnlineUser(player);
+        final OnlineUser src = this.getOnlineUser(player);
         final String inputName = StringArgumentType.getString(ctx, "user");
 
-        this.getEssentials().getUserThenAcceptAsync(source, inputName, user -> {
+        this.getEssentials().getUserThenAcceptAsync(src, inputName, user -> {
             final UserHomeHandler homeHandler = user.getHomesHandler();
             if (!homeHandler.hasHome(name)) {
-                source.sendConfigMessage("commands.playerHomes.invalid_home");
+                src.sendLangMessage("commands.playerHomes.invalid_home");
                 return;
             }
 
             if (homeHandler.getHome(name).shouldTeleport()) {
-                source.sendLangMessage("command.home.invalid_dim", homeHandler.getHome(name).getLocation().getDimensionType().toString());
+                src.sendLangMessage("command.home.invalid_dim", homeHandler.getHome(name).getLocation().getDimensionType().toString());
                 return;
             }
 
@@ -113,17 +113,17 @@ public class HomeCommand extends EssentialCommand {
 //            }
 
             try {
-                homeHandler.teleportToHome(source, name);
+                homeHandler.teleportToHome(src, name);
             } catch (final UnsafeHomeException e) {
                 if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION) {
-                    source.sendError(e.getMessage());
+                    src.sendError(e.getMessage());
                 }
             }
 
-            if (CommandUtils.areTheSame(source, user)) {
-                source.sendLangMessage("command.home.teleport.self", home.getName());
+            if (CommandUtils.areTheSame(src, user)) {
+                src.sendLangMessage("command.home.teleport.self", home.getName());
             } else {
-                source.sendLangMessage("command.home.teleport.other", home.getName(), user.getDisplayName());
+                src.sendLangMessage("command.home.teleport.other", home.getName(), user.getDisplayName());
             }
         });
 

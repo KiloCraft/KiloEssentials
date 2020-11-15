@@ -15,6 +15,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
@@ -63,7 +64,7 @@ public class ArgumentSuggestions {
     public static CompletableFuture<Suggestions> allPlayerNicks(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         final List<String> nicks = new ArrayList<>();
         for (final OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-            nicks.add(TextFormat.removeAlternateColorCodes('&', user.getDisplayName()));
+            nicks.add(ComponentText.clearFormatting(user.getDisplayName()));
             nicks.add(user.getUsername());
         }
 

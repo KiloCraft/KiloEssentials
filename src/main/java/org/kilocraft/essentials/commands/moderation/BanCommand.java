@@ -15,6 +15,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
@@ -68,9 +69,9 @@ public class BanCommand extends EssentialCommand {
 
         if (super.isOnline(victim.getId())) {
             super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
-                    new MutableTextMessage(
+                    ComponentText.toText(
                             ServerUserManager.replaceVariables(super.config.moderation().messages().permBan, entry, true)
-                    ).toText()
+                    )
             );
         }
 
