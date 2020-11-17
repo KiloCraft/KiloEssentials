@@ -86,7 +86,7 @@ public final class ServerChat {
         pingEnabled = ServerChat.config.ping().enabled;
     }
 
-    public static void sendSafely(final OnlineUser sender, final MutableTextMessage message, final Channel channel) {
+    public static void sendSafely(final OnlineUser sender, final String message, final Channel channel) {
         try {
             send(sender, message, channel);
         } catch (Exception e) {
@@ -125,14 +125,14 @@ public final class ServerChat {
                 sender.sendMessage(text);
             }
 
-            channel.send(text, true);
+            channel.send(text, processPings(sender, raw, channel));
             KiloServer.getServer().sendMessage(text);
         } catch (Exception e) {
             sender.sendError(e.getMessage());
         }
     }
 
-    public static void send(final OnlineUser sender, final MutableTextMessage message, final Channel channel) throws Exception {
+    public static void send(final OnlineUser sender, final String message, final Channel channel) throws Exception {
 //        if (message.getOriginal().startsWith(DEBUG_EXCEPTION) && SharedConstants.isDevelopment) {
 //            throw new UnexpectedException("Debug exception thrown by " + sender.getUsername() + message.getOriginal().replaceFirst(DEBUG_EXCEPTION, ""));
 //        }
@@ -193,14 +193,14 @@ public final class ServerChat {
 //        channel.send(text, mentions);
     }
 
-    private static boolean processPings(final OnlineUser sender, final MutableTextMessage message, final Channel channel) {
+    private static boolean processPings(final OnlineUser sender, String message, final Channel channel) {
         if (!pingEnabled && !KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_PING_OTHER)) {
             return false;
         }
 
         boolean contains = false;
-        if (message.getOriginal().contains(pingEveryoneTemplate) && KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_PING_EVERYONE)) {
-            message.setMessage(message.getFormattedMessage().replaceAll(pingEveryoneTemplate, everyoneDisplayFormat + "&r"));
+        if (message.contains(pingEveryoneTemplate) && KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_PING_EVERYONE)) {
+            message = message.replaceAll(pingEveryoneTemplate, everyoneDisplayFormat + "&r");
 
             for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
                 if (user.getPreference(Preferences.CHAT_CHANNEL) == channel) {
@@ -212,20 +212,18 @@ public final class ServerChat {
         for (OnlineUser target : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
             String nameFormat = senderFormat.replace("%PLAYER_NAME%", target.getUsername());
             String nickFormat = senderFormat.replace("%PLAYER_NAME%", target.getDisplayName());
-            if ((!message.getOriginal().contains(nameFormat) && !message.getOriginal().contains(nickFormat)) || !KiloEssentials.hasPermissionNode(target.getCommandSource(), EssentialPermission.CHAT_GET_PINGED)) {
+            if ((!message.contains(nameFormat) && !message.contains(nickFormat)) || !KiloEssentials.hasPermissionNode(target.getCommandSource(), EssentialPermission.CHAT_GET_PINGED)) {
                 continue;
             }
 
             boolean canPing = target.getPreference(Preferences.CHAT_CHANNEL) == channel;
             String formattedPing = canPing ? displayFormat : pingFailedDisplayFormat;
-            String format = message.getOriginal().contains(nameFormat) ? nameFormat : nickFormat;
+            String format = message.contains(nameFormat) ? nameFormat : nickFormat;
 
-            message.setMessage(
-                    message.getFormattedMessage().replaceAll(
+            message = message.replaceAll(
                             format,
                             formattedPing.replaceAll("%PLAYER_DISPLAYNAME%", target.getFormattedDisplayName() + "&r")
-                    ).replaceAll("%", "")
-            );
+                    ).replaceAll("%", "");
 
             if (pingSoundEnabled && canPing) {
                 contains = true;

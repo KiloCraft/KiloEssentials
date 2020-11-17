@@ -25,7 +25,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.User;
@@ -36,7 +35,6 @@ import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
@@ -298,7 +296,7 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
         if (silent) {
-            ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
+            ServerChat.Channel.STAFF.send(ComponentText.toText(config.meta().silentPrefix + " " + message));
         } else if (config.meta().broadcast) {
             KiloChat.broadCast(message);
         }
@@ -316,7 +314,7 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
         if (silent) {
-            ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
+            ServerChat.Channel.STAFF.send(ComponentText.toText(config.meta().silentPrefix + " " + message));
         } else if (config.meta().broadcast) {
             KiloChat.broadCast(message);
         }
