@@ -2,7 +2,6 @@ package org.kilocraft.essentials.api.util;
 
 import com.mojang.authlib.GameProfile;
 
-import java.util.Map.Entry;
 import java.util.UUID;
 
 /**

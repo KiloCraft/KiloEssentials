@@ -11,7 +11,6 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;

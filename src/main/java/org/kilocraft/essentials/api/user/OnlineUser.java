@@ -9,9 +9,9 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.api.text.OnlineMessageReceptionist;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.api.text.OnlineMessageReceptionist;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public interface OnlineUser extends User, OnlineMessageReceptionist {

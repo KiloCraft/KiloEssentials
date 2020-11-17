@@ -19,7 +19,6 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 

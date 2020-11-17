@@ -1,17 +1,13 @@
 package org.kilocraft.essentials.api.text;
 
 import com.google.common.collect.Maps;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.commands.CommandUtils;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 

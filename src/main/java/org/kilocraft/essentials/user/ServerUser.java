@@ -23,15 +23,17 @@ import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.user.preference.ServerUserPreferences;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.user.preference.ServerUserPreferences;
 import org.kilocraft.essentials.util.nbt.NBTUtils;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Main User Implementation

@@ -4,8 +4,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.event.EventBus;
-import net.luckperms.api.event.user.track.UserTrackEvent;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 import net.minecraft.server.command.ServerCommandSource;
@@ -14,17 +12,12 @@ import org.apache.logging.log4j.core.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.user.ServerUser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 public class PermissionUtil {
     private static final Logger logger = (Logger) KiloEssentials.getLogger();

@@ -9,7 +9,6 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.chat.KiloChat;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static net.minecraft.command.argument.TimeArgumentType.time;

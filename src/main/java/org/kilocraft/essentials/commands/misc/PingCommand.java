@@ -7,17 +7,14 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
 import static net.minecraft.command.argument.EntityArgumentType.player;
-import static org.kilocraft.essentials.KiloCommands.hasPermission;
 
 public class PingCommand extends EssentialCommand {
     public PingCommand() {

@@ -17,7 +17,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import static net.minecraft.command.argument.DimensionArgumentType.dimension;

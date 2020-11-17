@@ -1,17 +1,13 @@
 package org.kilocraft.essentials.util.player;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.query.QueryOptions;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;

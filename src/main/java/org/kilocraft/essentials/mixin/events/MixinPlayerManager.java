@@ -11,7 +11,6 @@ import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.player.PlayerConnectEventImpl;

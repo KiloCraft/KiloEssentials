@@ -11,15 +11,12 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.commands.CommandUtils;
 
 import java.util.*;

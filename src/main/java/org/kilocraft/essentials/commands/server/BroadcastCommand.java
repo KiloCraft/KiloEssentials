@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 

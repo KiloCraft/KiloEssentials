@@ -4,12 +4,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.user.punishment.PunishmentEntry;
 import org.kilocraft.essentials.user.OnlineServerUser;
-import org.kilocraft.essentials.util.Action;
 import org.kilocraft.essentials.util.MutedPlayerList;
 
 import java.util.List;

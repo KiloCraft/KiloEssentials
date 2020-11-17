@@ -6,12 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.util.TpsTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
-import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
 public class ConfigVariableFactory {

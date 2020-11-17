@@ -8,8 +8,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.item.ItemStack;
 import net.minecraft.command.CommandSource;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -18,7 +18,6 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;

@@ -3,7 +3,6 @@ package org.kilocraft.essentials.api.text;
 import com.google.common.collect.Lists;
 import net.minecraft.text.MutableText;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

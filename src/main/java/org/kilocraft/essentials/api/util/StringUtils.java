@@ -6,7 +6,6 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 
-import java.net.SocketAddress;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
