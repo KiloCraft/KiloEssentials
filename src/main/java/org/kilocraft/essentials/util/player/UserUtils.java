@@ -34,7 +34,7 @@ public class UserUtils {
         }
 
         return user.asPlayer().getScoreboardTeam() == null ? Texter.newText(user.getFormattedDisplayName()) :
-                Team.modifyText(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
+                Team.decorateName(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
     }
 
     public static String getDisplayNameWithMetaAsString(OnlineUser user, boolean nickName) {
