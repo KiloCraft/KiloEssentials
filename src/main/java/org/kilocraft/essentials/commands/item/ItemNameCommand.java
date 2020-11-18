@@ -16,10 +16,12 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.util.text.Texter;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -86,9 +88,9 @@ public class ItemNameCommand {
             return 1;
         }
 
-        String nameToSet = TextFormat.translate(inputString, KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING));
+        String nameToSet = KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING) ? inputString : ComponentText.clearFormatting(inputString);
         user.sendLangMessage( "command.item.set", "name", nameToSet);
-        item.setCustomName(new LiteralText(nameToSet));
+        item.setCustomName(ComponentText.toText(nameToSet));
 
         return 1;
     }

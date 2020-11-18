@@ -82,39 +82,33 @@ public class NicknameCommand extends EssentialCommand {
         ServerPlayerEntity self = source.getPlayer();
         int maxLength = KiloConfig.main().nicknameMaxLength;
         String nickname = getString(ctx, "nickname");
-        String unformatted = ComponentText.clearFormatting(TextFormat.clearColorCodes(nickname));
+        String unformatted = ComponentText.clearFormatting(nickname);
         KiloEssentials.getLogger().info(source.getName() + " attempted to nick, stripped nick: " + unformatted);
 
         if (unformatted.length() > maxLength || unformatted.length() < 3) {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
         }
 
-        String formattedNickname = "";
-        if (KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_BASIC)) {
-        	formattedNickname = TextFormat.translateAlternateColorCodes('&', nickname);
-        } else {
-        	formattedNickname = TextFormat.removeAlternateColorCodes('&', nickname);
-        }
-        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_BASIC)) formattedNickname = ComponentText.stripColor(ComponentText.stripFormatting(formattedNickname));
-        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_EVENT)) formattedNickname = ComponentText.stripEvent(formattedNickname);
-        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_GRADIENT)) formattedNickname = ComponentText.stripGradient(formattedNickname);
-        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_RAINBOW)) formattedNickname = ComponentText.stripRainbow(formattedNickname);
+        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_BASIC)) nickname = ComponentText.stripColor(ComponentText.stripFormatting(nickname));
+        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_EVENT)) nickname = ComponentText.stripEvent(nickname);
+        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_GRADIENT)) nickname = ComponentText.stripGradient(nickname);
+        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_RAINBOW)) nickname = ComponentText.stripRainbow(nickname);
 
         OnlineUser src = KiloServer.getServer().getUserManager().getOnline(self);
 
-        String finalFormattedNickname = formattedNickname;
+        String finalNickname = nickname;
         KiloEssentials.getInstance().getUserThenAcceptAsync(src, src.getUsername(), (user) -> {
-            if (((ServerUserManager) this.getServer().getUserManager()).shouldNotUseNickname(src, nickname)) {
+            if (((ServerUserManager) this.getServer().getUserManager()).shouldNotUseNickname(src, finalNickname)) {
                 src.sendLangMessage("command.nickname.already_taken");
                 return;
             }
 
             KiloServer.getServer().getCommandSourceUser(source).sendMessage(messages.commands().nickname().setSelf
                     .replace("{NICK}", src.getNickname().isPresent() ? src.getNickname().get() : src.getDisplayName())
-                    .replace("{NICK_NEW}", nickname));
+                    .replace("{NICK_NEW}", finalNickname));
 
-            src.setNickname(nickname);
-            self.setCustomName(new LiteralText(finalFormattedNickname));
+            src.setNickname(finalNickname);
+            self.setCustomName(ComponentText.toText(finalNickname));
         });
 
         return AWAIT;

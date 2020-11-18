@@ -1,6 +1,9 @@
 package org.kilocraft.essentials.extensions.betterchairs;
 
-import net.minecraft.block.*;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
@@ -21,11 +24,11 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.registry.RegistryUtils;

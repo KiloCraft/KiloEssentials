@@ -23,8 +23,8 @@ public class ChatConfigSection {
     @Setting(value = "spamWarning", comment = "Send this message to the player if they are trying to spam")
     public String spamWarning = "&cDon't spam!";
 
-    @Setting(value = "itemFormat", comment = "The format someone has to use to show an Item (Main hand) in chat")
-    public String itemFormat = "[item]";
+    @Setting(value = "itemFormat", comment = "The format someone has to use to show an Item (Main hand) in chat (regex)")
+    public String itemFormat = "\\[item\\]";
 
     @Setting(value = "prefixes", comment = "Sets format and meta of chat channels")
     private ChatFormatsConfigSection formatsSection = new ChatFormatsConfigSection();

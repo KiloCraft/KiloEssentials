@@ -6,16 +6,16 @@
   "mixins": [
   ],
   "server": [
-    "CommandManagerMixin",
-    "ForgingScreenHandlerMixin",
     "AnvilScreenHandlerMixin",
+    "CommandManagerMixin",
+    "CraftingScreenHandlerMixin",
+    "ForgingScreenHandlerMixin",
     "MinecraftServerMixin",
+    "PlayerListS2CPacketMixin",
+    "QueryResponseS2CPacketMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
-    "ServerWorldMixin",
-    "CraftingScreenHandlerMixin",
-    "PlayerListS2CPacketMixin",
-    "QueryResponseS2CPacketMixin"
+    "ServerWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1
