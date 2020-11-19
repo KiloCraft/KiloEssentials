@@ -37,6 +37,7 @@ import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.config.main.sections.chat.ChatPingSoundConfigSection;
+import org.kilocraft.essentials.events.player.PlayerOnChatMessageEventImpl;
 import org.kilocraft.essentials.events.player.PlayerOnDirectMessageEventImpl;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
@@ -94,6 +95,7 @@ public final class ServerChat {
     }
 
     public static void sendChatMessage(final OnlineUser user, final String raw, final Channel channel) {
+        KiloServer.getServer().triggerEvent(new PlayerOnChatMessageEventImpl(user.asPlayer(), raw, channel));
         TextComponent.Builder text = Component.text();
         text.append(ComponentText.of(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), user))
                 .style(style -> style.hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(hoverEvent(user, channel)))
@@ -175,7 +177,7 @@ public final class ServerChat {
             ServerPlayerEntity player = sender.asPlayer();
             ItemStack itemStack = player.getMainHandStack();
             CompoundTag tag = itemStack.getTag();
-            text.append(ComponentText.of(input.substring(0, Math.max(0, itemMatcher.start())))).append(ComponentText.toComponent(itemStack.getName())).append(ComponentText.of(input.substring(Math.min(itemMatcher.end(), input.length()))));
+            text.append(ComponentText.of(input.substring(0, Math.max(0, itemMatcher.start())))).append(Component.text("[")).append(ComponentText.toComponent(itemStack.getName())).append(Component.text("]")).append(ComponentText.of(input.substring(Math.min(itemMatcher.end(), input.length()))));
             text.style(style -> style.hoverEvent(net.kyori.adventure.text.event.HoverEvent.showItem(Key.key(RegistryUtils.toIdentifier(itemStack.getItem())), 1, BinaryTagHolder.of(tag == null ? new CompoundTag().toString() : tag.toString()))));
             result.setType(ParseResult.ParseType.ITEM).setResult(text.build());
         } else {

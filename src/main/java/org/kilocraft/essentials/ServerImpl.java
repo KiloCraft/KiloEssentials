@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.minecraft.SharedConstants;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
@@ -202,6 +203,7 @@ public class ServerImpl implements Server {
 
     @Override
     public <E extends Event> void registerEvent(EventHandler<E> e) {
+        if (SharedConstants.isDevelopment) KiloEssentials.getLogger().info("Registering event " + e.getClass().getSimpleName());
         eventRegistry.register(e);
     }
 
