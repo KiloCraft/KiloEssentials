@@ -14,9 +14,9 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.preference.Preferences;
-import org.kilocraft.essentials.util.text.Texter;
-import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.player.UserUtils;
+import org.kilocraft.essentials.util.text.Texter;
 
 public class TpaCommand extends EssentialCommand {
     public static final CommandPermission PERMISSION = CommandPermission.TELEPORTREQUEST;

@@ -1,7 +1,8 @@
 package org.kilocraft.essentials.util.nbt;
 
 import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;

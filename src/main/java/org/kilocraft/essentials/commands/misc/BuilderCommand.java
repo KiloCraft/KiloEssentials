@@ -32,7 +32,7 @@ public class BuilderCommand extends EssentialCommand {
             }
         }
 
-        this.getServerUser(ctx).sendMessage(text.build());
+        this.getCommandSource(ctx).sendMessage(text.build());
         return SUCCESS;
     }
 }

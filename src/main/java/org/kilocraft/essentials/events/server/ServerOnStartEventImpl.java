@@ -1,9 +1,8 @@
 package org.kilocraft.essentials.events.server;
 
+import net.minecraft.server.MinecraftServer;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.context.ServerContext;
-
-import net.minecraft.server.MinecraftServer;
 
 public class ServerOnStartEventImpl implements Event, ServerContext {
 

@@ -8,10 +8,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
@@ -46,10 +45,10 @@ public class FlyCommand extends EssentialCommand {
         OnlineUser user = KiloServer.getServer().getOnlineUser(playerEntity);
         user.setFlight(bool);
 
-        KiloChat.sendLangMessageTo(source, "template.#1", "Flight", bool, playerEntity.getName().asString());
+        user.sendLangMessage("template.#1", "Flight", bool, playerEntity.getName().asString());
 
         if (!CommandUtils.areTheSame(source, playerEntity))
-            KiloChat.sendLangMessageTo(playerEntity, "template.#1.announce", source.getName(), "Flight", bool);
+            user.sendLangMessage("template.#1.announce", source.getName(), "Flight", bool);
 
         return 1;
     }

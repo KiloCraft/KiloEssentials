@@ -40,7 +40,7 @@ public class UnBanIpCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx, boolean silent) {
-        CommandSourceUser src = this.getServerUser(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
         String input = this.getUserArgumentInput(ctx, "target");
 
         Matcher matcher = BanIpCommand.PATTERN.matcher(input);

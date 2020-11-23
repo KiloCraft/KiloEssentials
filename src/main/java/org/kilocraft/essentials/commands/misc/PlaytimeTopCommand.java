@@ -15,8 +15,8 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.util.CacheManager;
-import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
+import org.kilocraft.essentials.util.text.ListedText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,7 +102,6 @@ public class PlaytimeTopCommand extends EssentialCommand {
             Map.Entry<String, Integer> entry = sortedList.get(i);
 
             String pt = TimeDifferenceUtil.convertSecondsToString(entry.getValue() / 20, 'e', '6');
-            System.out.println(pt);
             input.append(String.format(LINE_FORMAT, i + 1, entry.getKey(), pt));
         }
 

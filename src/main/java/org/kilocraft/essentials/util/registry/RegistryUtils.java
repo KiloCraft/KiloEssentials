@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.util.registry;
 
+import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -96,6 +97,10 @@ public class RegistryUtils {
 
     public static boolean isEnd(@NotNull final DimensionType type) {
         return type.equals(toDimension(DimensionType.THE_END_REGISTRY_KEY.getValue()));
+    }
+
+    public static String toIdentifier(@NotNull Item item) {
+        return Registry.ITEM.getId(item).toString();
     }
 
 }

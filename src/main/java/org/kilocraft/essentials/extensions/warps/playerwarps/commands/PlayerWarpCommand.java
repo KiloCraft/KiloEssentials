@@ -23,10 +23,10 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.text.TextInput;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
@@ -44,9 +44,24 @@ import java.util.function.Predicate;
 
 public class PlayerWarpCommand extends EssentialCommand {
     private static final String HEADER = ModConstants.getStrings().getProperty("command.playerwarp.header");
+
     public PlayerWarpCommand(String label, Predicate<ServerCommandSource> predicate, String[] alias) {
         super(label, predicate, alias);
         this.withUsage("command.playerwarp.usage", "add", "name", "type", "description");
+    }
+
+    private static boolean canSet(User user) {
+        for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
+            String thisPerm = "kiloessentials.command.player_warp.limit." + i;
+            int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
+
+            if (PlayerWarpsManager.getWarps(user.getUuid()).size() + 1 <= allowed &&
+                    KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
+                return true;
+            }
+        }
+
+        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS);
     }
 
     @Override
@@ -147,7 +162,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         if (warp != null && !user.hasPermission(CommandPermission.PLAYER_WARP_OTHERS)) {
-            user.sendError(KiloCommands.getPermissionError(CommandPermission.PLAYER_WARP_OTHERS.getNode()));
+            user.sendPermissionError(CommandPermission.PLAYER_WARP_OTHERS.getNode());
             return FAILED;
         } else if (warp != null && !input.startsWith("-confirmed-")) {
             user.sendMessage(getConfirmationText(name, ""));
@@ -173,7 +188,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         if (!warp.getOwner().equals(user.getUuid()) && !user.hasPermission(CommandPermission.PLAYER_WARP_OTHERS)) {
-            user.sendError(KiloCommands.getPermissionError(CommandPermission.PLAYER_WARP_OTHERS.getNode()));
+            user.sendPermissionError(CommandPermission.PLAYER_WARP_OTHERS.getNode());
             return FAILED;
         }
 
@@ -188,8 +203,8 @@ public class PlayerWarpCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int list(CommandContext<ServerCommandSource> ctx, int page, @Nullable String inputName) throws CommandSyntaxException {
-        final OnlineUser src = this.getOnlineUser(ctx);
+    private int list(CommandContext<ServerCommandSource> ctx, int page, @Nullable String inputName) {
+        final CommandSourceUser src = this.getCommandSource(ctx);
 
         if (PlayerWarpsManager.getWarps().isEmpty()) {
             src.sendLangError("command.playerwarp.no_warp");
@@ -255,11 +270,9 @@ public class PlayerWarpCommand extends EssentialCommand {
 //        }
 
         src.teleport(warp.getLocation(), true);
-        src.sendMessage(new MutableTextMessage(
+        src.sendMessage(
                 KiloConfig.messages().commands().warp().teleportTo
-                        .replace("{WARP_NAME}", warp.getName()),
-                true
-        ));
+                        .replace("{WARP_NAME}", warp.getName()));
 
         return SUCCESS;
     }
@@ -288,20 +301,6 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         ListedText.Page paged = ListedText.getPageFromStrings(ListedText.Options.builder().setPageIndex(page - 1).build(), input.getLines());
         paged.send(src, "Player Warps: " + user.getNameTag(), "/playerwarps " + src.getName() + " %page%");
-    }
-
-    private static boolean canSet(User user) {
-        for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
-            String thisPerm = "kiloessentials.command.player_warp.limit." + i;
-            int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
-
-            if (PlayerWarpsManager.getWarps(user.getUuid()).size() + 1 <= allowed &&
-                    KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
-                return true;
-            }
-        }
-
-        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS);
     }
 
     private CompletableFuture<Suggestions> warpSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {

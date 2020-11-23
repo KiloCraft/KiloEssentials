@@ -9,7 +9,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -17,15 +16,11 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
-import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -69,7 +64,7 @@ public class GamemodeCommand extends EssentialCommand {
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable final GameMode cValue, final String selection, final boolean silent) throws CommandSyntaxException {
         ServerCommandSource src = ctx.getSource();
-        CommandSourceUser sourceUser = this.getServerUser(ctx);
+        OnlineUser sourceUser = this.getOnlineUser(ctx);
         String arg = cValue == null ? getString(ctx, "mode") : cValue.getName();
         GameMode selectedMode = this.getMode(arg);
 
@@ -99,38 +94,6 @@ public class GamemodeCommand extends EssentialCommand {
         });
 
         return atomicInteger.get();
-    }
-
-    private int setPlayers(final ServerCommandSource src, final Collection<ServerPlayerEntity> players, final GameMode selectedMode, boolean silent) throws CommandSyntaxException {
-        if (players.size() == 1 && !this.hasPermission(src, this.getPermission("self", selectedMode))) {
-            throw new SimpleCommandExceptionType(getPermissionError(this.getPermission("self", selectedMode).getNode())).create();
-        }
-
-        if (players.size() > 1 && !this.hasPermission(src, this.getPermission("others", selectedMode))) {
-            throw new SimpleCommandExceptionType(getPermissionError(this.getPermission("others", selectedMode).getNode())).create();
-        }
-
-        String singletonName = null;
-        for (ServerPlayerEntity player : players) {
-            if (!silent && !CommandUtils.areTheSame(src, player)) {
-                KiloChat.sendLangMessageTo(player, "template.#1.announce", src.getName(), "gamemode", selectedMode.getName());
-            }
-
-            player.setGameMode(selectedMode);
-
-            if (players.size() == 1) {
-                singletonName = player.getEntityName();
-            }
-        }
-
-        if (singletonName == null) {
-            singletonName = src.getName();
-        }
-
-        KiloChat.sendLangMessageTo(src, "template.#1", "gamemode",
-                selectedMode.getName(), players.size() == 1 ? singletonName : players.size() + " players");
-
-        return SUCCESS;
     }
 
     private GameMode getMode(final String arg) {

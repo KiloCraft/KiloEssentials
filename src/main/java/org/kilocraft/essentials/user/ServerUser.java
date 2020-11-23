@@ -23,15 +23,17 @@ import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.user.preference.ServerUserPreferences;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.user.preference.ServerUserPreferences;
 import org.kilocraft.essentials.util.nbt.NBTUtils;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Main User Implementation
@@ -261,6 +263,15 @@ public class ServerUser implements User {
     }
 
     @Override
+    public String getRankedDisplayNameAsString() {
+        if (this.isOnline()) {
+            return UserUtils.getDisplayNameWithMetaAsString((OnlineUser) this, true);
+        }
+
+        return this.getDisplayName();
+    }
+
+    @Override
     public Text getRankedName() {
         if (this.isOnline()) {
             return UserUtils.getDisplayNameWithMeta((OnlineUser) this, false);
@@ -300,7 +311,7 @@ public class ServerUser implements User {
     @Override
     public Optional<String> getNickname() {
         Optional<String> optional = this.getPreference(Preferences.NICK);
-        return optional.map(s -> Optional.of("<reset>" + s + "<reset>")).orElse(optional);
+        return optional.map(s -> Optional.of("<reset>" + s + "<reset></gradient></rainbow>")).orElse(optional);
     }
 
     @Override

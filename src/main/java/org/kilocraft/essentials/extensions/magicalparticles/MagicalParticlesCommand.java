@@ -17,9 +17,9 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
@@ -60,6 +60,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
     private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
+        OnlineUser user = getOnlineUser(ctx);
         boolean silent = false;
         Identifier identifier = getIdentifier(ctx, "animation");
 
@@ -77,7 +78,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
         }
 
         if (!canUse(this.getOnlineUser(player), identifier)) {
-            KiloChat.sendMessageTo(player, KiloCommands.getPermissionError("?"));
+            user.sendPermissionError("?");
             return FAILED;
         }
 
@@ -86,8 +87,8 @@ public class MagicalParticlesCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int list(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int list(CommandContext<ServerCommandSource> ctx) {
+        OnlineUser user = getCommandSource(ctx);
         Texter.ListStyle text = Texter.ListStyle.of(
                 "Particle Animations", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY
         );
@@ -109,13 +110,14 @@ public class MagicalParticlesCommand extends EssentialCommand {
                 Texter.Events.onClickRun("/mp set " + id.toString() + "--s")
         ));
 
-        KiloChat.sendMessageTo(player, text.setSize(map.size()).build());
+        user.sendMessage(text.setSize(map.size()).build());
         return SUCCESS;
     }
 
     private int disable(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        KiloChat.sendLangMessageTo(player, "command.magicalparticles.disabled");
+        CommandSourceUser user = getCommandSource(ctx);
+        user.sendLangMessage("command.magicalparticles.disabled");
         removePlayer(player.getUuid());
         return SUCCESS;
     }

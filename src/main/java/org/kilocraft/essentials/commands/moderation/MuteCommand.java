@@ -9,14 +9,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.util.MutedPlayerEntry;
-import org.kilocraft.essentials.util.TimeDifferenceUtil;
 
 import java.util.Date;
 
@@ -45,7 +42,7 @@ public class MuteCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable String reason, boolean silent) throws CommandSyntaxException {
-        CommandSourceUser src = this.getServerUser(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
         Date date = new Date();
 
         super.resolveAndGetProfileAsync(ctx, "victim").thenAcceptAsync((victim) -> {

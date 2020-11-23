@@ -36,7 +36,7 @@ public class UnMuteCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx, boolean silent) throws CommandSyntaxException {
-        CommandSourceUser src = this.getServerUser(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
 
         super.resolveAndGetProfileAsync(ctx, "victim").thenAcceptAsync((victim) -> {
             super.getServer().getUserManager().getMutedPlayerList().remove(victim);

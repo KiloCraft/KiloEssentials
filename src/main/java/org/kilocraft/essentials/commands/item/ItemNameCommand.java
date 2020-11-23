@@ -8,17 +8,20 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.item.ItemStack;
 import net.minecraft.command.CommandSource;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.util.text.Texter;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -59,19 +62,20 @@ public class ItemNameCommand {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         String inputString = getString(ctx, "name");
         ItemStack item = player.getMainHandStack();
+        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
 
         if (inputString.length() >= 90) {
-            KiloChat.sendLangMessageTo(player, "command.item.too_long");
+            user.sendLangMessage( "command.item.too_long");
             return 0;
         }
 
         if (item.isEmpty()) {
-            KiloChat.sendLangMessageTo(player, "general.no_item");
+            user.sendLangMessage( "general.no_item");
             return 0;
         }
 
         if (player.experienceLevel < 1 && !player.isCreative()) {
-			KiloChat.sendLangMessageTo(player, "command.item.no_exp");
+			user.sendLangMessage( "command.item.no_exp");
         	return 0;
 		}
 
@@ -79,14 +83,14 @@ public class ItemNameCommand {
 
         if (inputString.equalsIgnoreCase("reset")) {
             item.removeCustomName();
-            KiloChat.sendLangMessageTo(player, "command.item.reset", "name", Texter.Legacy.toFormattedString(item.getName()));
+            user.sendLangMessage( "command.item.reset", "name", Texter.Legacy.toFormattedString(item.getName()));
 
             return 1;
         }
 
-        String nameToSet = TextFormat.translate(inputString, KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING));
-        KiloChat.sendLangMessageTo(player, "command.item.set", "name", nameToSet);
-        item.setCustomName(new LiteralText(nameToSet));
+        String nameToSet = KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING) ? inputString : ComponentText.clearFormatting(inputString);
+        user.sendLangMessage( "command.item.set", "name", nameToSet);
+        item.setCustomName(ComponentText.toText(nameToSet));
 
         return 1;
     }

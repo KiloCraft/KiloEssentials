@@ -11,18 +11,17 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.world.MonitorableWorld;
-import org.kilocraft.essentials.chat.MutableTextMessage;
-import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
+import org.kilocraft.essentials.util.TpsTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 
-import static org.kilocraft.essentials.api.text.TextFormat.getFormattedTPS;
 import static org.kilocraft.essentials.util.TpsTracker.*;
 
 public class StatusCommand extends EssentialCommand {
@@ -37,12 +36,13 @@ public class StatusCommand extends EssentialCommand {
     private static OperatingSystemMXBean bean = SystemMonitor.getOsSystemMXBean();
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
+        final CommandSourceUser sender = this.getCommandSource(ctx);
         try {
-            KiloChat.sendMessageToSource(ctx.getSource(), new MutableTextMessage(getInfo(), true));
+            sender.sendMessage(getInfo());
         } catch (Exception e) {
             String msg = "An unexpected exception occurred when processing the cpu usage" +
                     "Please report this to a Administrator";
-            KiloChat.sendMessageTo(ctx.getSource(),
+            sender.sendMessage(
                     new LiteralText(msg + "\n Exception message:")
                             .append(new LiteralText(e.getMessage()).formatted(Formatting.WHITE)).formatted(Formatting.RED));
 
@@ -58,16 +58,20 @@ public class StatusCommand extends EssentialCommand {
         return "&eGeneral status:&r\n" +
                 "&7Platform: &6" + bean.getArch() + " &d" + Util.getOperatingSystem().name().toLowerCase() +
                 "\n&7Server uptime: &6" + TimeDifferenceUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()) +
-                "\n&7TPS:" +
-                String.format("&%s %s&8,&8(&75m&8/&715m&8/&71h&8&71d&8&8/)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
-                        getFormattedTPS(tps.getAverage()), tps.getShortAverage(), getFormattedTPS(tps5.getAverage()), tps5.getShortAverage(),
-                        getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(), getFormattedTPS(tps60.getAverage()), tps60.getShortAverage(),
-                        getFormattedTPS(tps1440.getAverage()), tps1440.getShortAverage()) +
+                "\n&7TPS: " +
+                String.format(
+                        "%s <dark_gray>(<gray>%s ms<dark_gray>) <dark_gray>(<gray>5m<dark_gray>/<gray>15m<dark_gray>/<gray>1h<dark_gray>/<gray>1d<dark_gray>) %s<dark_gray>, %s<dark_gray>, %s<dark_gray>, %s<reset>",
+                        ComponentText.formatTps(tps.getAverage()),
+                        TpsTracker.MillisecondPerTick.getShortAverage(),
+                        ComponentText.formatTps(tps5.getAverage()),
+                        ComponentText.formatTps(tps15.getAverage()),
+                        ComponentText.formatTps(tps60.getAverage()),
+                        ComponentText.formatTps(tps1440.getAverage())) +
                 "\n&7CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7:" +
-                " &" + TextFormat.getFormattedPercentage(cpuUsage, true) + cpuUsage + "% Usage" +
+                " &" + ComponentText.formatPercentage(cpuUsage) + cpuUsage + "% Usage" +
                 " &3" + Thread.activeCount() + " Running Threads" +
                 "\n&7Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: &" +
-                TextFormat.getFormattedPercentage(ramUsage, true) + ramUsage + "% " +
+                ComponentText.formatPercentage(ramUsage) + ramUsage + "% " +
                 "&8(&b" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&7" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
                 "\n&7Worlds&8:&e" +
@@ -75,7 +79,7 @@ public class StatusCommand extends EssentialCommand {
     }
 
     private static String addWorldInfo() {
-        String worldInfoLoaded = "&6%s &7Chunks &8(&9%s&7 C&8) &e%s &7Entities &7&6%s &7Players";
+        String worldInfoLoaded = "&6%s &7Chunks &8(&9%s&7 C&8) &7&6%s &7Players";
         StringBuilder builder = new StringBuilder();
 
         for (ServerWorld world : KiloServer.getServer().getWorlds()) {
@@ -83,7 +87,7 @@ public class StatusCommand extends EssentialCommand {
 
             if (monitoredWorld.totalLoadedChunks() != 0) {
                 builder.append("\n&7* ").append(RegistryUtils.dimensionToName(world.getDimension())).append("&8: ");
-                builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.cachedChunks(), monitoredWorld.loadedEntities(), monitoredWorld.players()));
+                builder.append(String.format(worldInfoLoaded, monitoredWorld.totalLoadedChunks(), monitoredWorld.cachedChunks(), monitoredWorld.players()));
             }
         }
 

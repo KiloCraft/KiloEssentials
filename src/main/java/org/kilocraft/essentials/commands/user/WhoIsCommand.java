@@ -39,12 +39,12 @@ public class WhoIsCommand extends EssentialCommand {
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        CommandSourceUser user = getServerUser(ctx);
+        CommandSourceUser user = getCommandSource(ctx);
         return execute(user, getOnlineUser(ctx));
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) {
-        CommandSourceUser src = getServerUser(ctx);
+        CommandSourceUser src = getCommandSource(ctx);
         getEssentials().getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
             execute(src, user);
         });

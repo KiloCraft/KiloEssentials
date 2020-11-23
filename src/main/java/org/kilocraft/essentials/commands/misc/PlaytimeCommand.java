@@ -11,8 +11,8 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.util.text.Texter;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
+import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,7 +55,7 @@ public class PlaytimeCommand extends EssentialCommand {
     }
 
     private int set(CommandContext<ServerCommandSource> ctx, String type) {
-        CommandSourceUser src = getServerUser(ctx);
+        CommandSourceUser src = getCommandSource(ctx);
         int ticks = getInteger(ctx, "seconds") * 20;
 
         AtomicInteger atomicInteger = new AtomicInteger(AWAIT);
@@ -80,11 +80,11 @@ public class PlaytimeCommand extends EssentialCommand {
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return execute(getServerUser(ctx), getOnlineUser(ctx));
+        return execute(getCommandSource(ctx), getOnlineUser(ctx));
     }
 
     private int executeOther(CommandContext<ServerCommandSource> ctx) {
-        CommandSourceUser src = getServerUser(ctx);
+        CommandSourceUser src = getCommandSource(ctx);
         String inputName = getUserArgumentInput(ctx, "user");
 
         if (getOnlineUser(inputName) != null)

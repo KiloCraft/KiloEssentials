@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.commands.misc;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -14,15 +13,13 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.Person;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.*;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.text.Texter;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -43,9 +40,7 @@ public class ModsCommand extends EssentialCommand {
     }
 
     private int sendList(CommandContext<ServerCommandSource> ctx) {
-        int allMods = FabricLoader.getInstance().getAllMods().size();
         Texter.ListStyle text = Texter.ListStyle.of("Mods", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY);
-        text.setSize(allMods);
 
         for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
             ModMetadata meta = mod.getMetadata();
@@ -56,8 +51,7 @@ public class ModsCommand extends EssentialCommand {
                     meta.getName()
             );
         }
-
-        KiloChat.sendMessageTo(ctx.getSource(), text.build());
+        getCommandSource(ctx).sendMessage(text.build());
         return SUCCESS;
     }
 
@@ -73,9 +67,9 @@ public class ModsCommand extends EssentialCommand {
         Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(meta.getName());
         text.append("Version", meta.getVersion().getFriendlyString());
         text.append("Authors", authorsToArrayText(meta));
-        text.append("Description", "");
+        text.append("Description", meta.getDescription());
 
-        KiloChat.sendMessageTo(ctx.getSource(), text.build());
+        getCommandSource(ctx).sendMessage(text.build());
         return SUCCESS;
     }
 
@@ -94,28 +88,6 @@ public class ModsCommand extends EssentialCommand {
         return text.build();
     }
 
-    private Text getModAuthorList(ModMetadata meta) {
-        MutableText text = new LiteralText("");
-        int i = 0;
-        AtomicBoolean nextColor = new AtomicBoolean(false);
-        int authors = meta.getAuthors().size();
-
-        for (Person person : meta.getAuthors()) {
-            MutableText thisPerson = new LiteralText("");
-            i++;
-            Formatting thisFormat = nextColor.get() ? Formatting.WHITE : Formatting.GRAY;
-
-            thisPerson.append(new LiteralText(person.getName()).formatted(thisFormat));
-            if (authors != i) {
-                thisPerson.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
-            }
-
-            nextColor.set(!nextColor.get());
-            text.append(thisPerson);
-        }
-
-        return text;
-    }
 
     private CompletableFuture<Suggestions> suggestMods(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(FabricLoader.getInstance().getAllMods().stream()

@@ -10,7 +10,6 @@ import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 
 import java.util.Collection;
 
@@ -35,27 +34,24 @@ public class ClearChatCommand extends EssentialCommand {
         commandNode.addChild(targetsArgument.build());
     }
 
-    private static int executeAll(CommandContext<ServerCommandSource> ctx, boolean silent) {
-        broadCastExceptConsole(new MutableTextMessage(getClearString(), false));
+    private int executeAll(CommandContext<ServerCommandSource> ctx, boolean silent) {
+        broadCast(getClearString());
 
-        if (!silent)
-            broadCastLangExceptConsole("command.clearchat.broadcast", ctx.getSource().getName());
+        if (!silent) broadCast(getFormattedLang("command.clearchat.broadcast", ctx.getSource().getName()));
 
-        broadCastToConsole(new MutableTextMessage(
-                getFormattedLang("command.clearchat.broadcast", ctx.getSource().getName()), false));
+        broadCastToConsole(getFormattedLang("command.clearchat.broadcast", ctx.getSource().getName()));
 
         return SUCCESS;
     }
 
-    private static int executeMultiple(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> targets, boolean silent) {
+    private int executeMultiple(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> targets, boolean silent) {
         for (ServerPlayerEntity target : targets) {
-            target.sendMessage(new LiteralText(getClearString()), false);
+            getOnlineUser(target).sendMessage(new LiteralText(getClearString()));
 
-            if (!silent)
-                sendLangMessageTo(target, "command.clearchat.singleton", ctx.getSource().getName());
+            getOnlineUser(target).sendLangMessage("command.clearchat.singleton", ctx.getSource().getName());
         }
 
-        broadCastLangToConsole("command.clearchat.singleton.broadcast", ctx.getSource().getName(), targets.size());
+        broadCastToConsole(getFormattedLang("command.clearchat.singleton.broadcast", ctx.getSource().getName(), targets.size()));
 
         return SUCCESS;
     }

@@ -9,8 +9,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.lifecycle.ServerScheduledUpdateEvent;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.MutableTextMessage;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.LocationUtil;
@@ -53,7 +51,7 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
 
             if (pos != null) {
                 player.teleport(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch);
-                KiloChat.sendMessageTo(player, new MutableTextMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getServerWorld().getDimension())), true));
+                KiloServer.getServer().getOnlineUser(player).sendMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getServerWorld().getDimension())));
             }
         }
 

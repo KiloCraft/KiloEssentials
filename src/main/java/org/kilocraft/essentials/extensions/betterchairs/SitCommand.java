@@ -7,10 +7,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.mixin.accessor.EntityAccessor;
 import org.kilocraft.essentials.user.preference.Preferences;
 
@@ -44,7 +44,7 @@ public class SitCommand extends EssentialCommand {
     }
 
     private int set(CommandContext<ServerCommandSource> ctx, boolean enable) throws CommandSyntaxException {
-        OnlineUser user = getOnlineUser(ctx.getSource());
+        OnlineUser user = getOnlineUser(ctx);
         user.getPreferences().set(Preferences.CAN_SEAT, enable);
 
         if (user.getPreference(Preferences.CAN_SEAT)) {
@@ -57,7 +57,7 @@ public class SitCommand extends EssentialCommand {
     }
 
     private int seat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getOnlineUser(ctx.getSource());
+        OnlineUser user = getOnlineUser(ctx);
 
         if (SeatManager.getInstance().isSitting(user.asPlayer())) {
             SeatManager.getInstance().unseat(user);
@@ -74,10 +74,11 @@ public class SitCommand extends EssentialCommand {
     }
 
     private int setOthers(CommandContext<ServerCommandSource> ctx, boolean set) throws CommandSyntaxException {
-        OnlineUser target = getOnlineUser(getPlayer(ctx, "target").getCommandSource());
+        CommandSourceUser user = getCommandSource(ctx);
+        OnlineUser target = getOnlineUser(getPlayer(ctx, "target"));
 
         target.getPreferences().set(Preferences.CAN_SEAT, set);
-        KiloChat.sendLangMessageTo(ctx.getSource(), "template.#1", "canSit", set, target.getUsername());
+        user.sendLangMessage("template.#1", "canSit", set, target.getUsername());
         return SUCCESS;
     }
 

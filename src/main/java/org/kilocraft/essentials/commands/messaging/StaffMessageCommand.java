@@ -6,19 +6,16 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.kyori.adventure.text.TextComponent;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.util.List;
@@ -85,9 +82,9 @@ public class StaffMessageCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int send(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int send(CommandContext<ServerCommandSource> ctx) {
         String message = StringArgumentType.getString(ctx, "message");
-        ServerChat.sendChatMessage(this.getOnlineUser(ctx), message, ServerChat.Channel.STAFF);
+        ServerChat.sendChatMessage(this.getCommandSource(ctx), message, ServerChat.Channel.STAFF);
         return SUCCESS;
     }
 

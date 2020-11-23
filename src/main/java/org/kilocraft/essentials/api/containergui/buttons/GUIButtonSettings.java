@@ -5,7 +5,6 @@ import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class GUIButtonSettings {
     public static GUIButtonSettings dummy() {

@@ -25,7 +25,6 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.user.User;
@@ -34,9 +33,8 @@ import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.user.punishment.PunishmentEntry;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.MutableTextMessage;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
@@ -51,7 +49,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -202,7 +199,7 @@ public class ServerUserManager implements UserManager, TickListener {
         for (OnlineUser user : users) {
             if (user.hasNickname()) {
                 String nick = org.kilocraft.essentials.api.util.StringUtils.stringToUsername(
-                        TextFormat.clearColorCodes(user.getDisplayName()).replaceAll("\\s+", "")
+                        ComponentText.clearFormatting(user.getDisplayName()).replaceAll("\\s+", "")
                 );
 
                 if (nick.equals(nickname)) {
@@ -298,7 +295,7 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
         if (silent) {
-            ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
+            ServerChat.Channel.STAFF.send(ComponentText.toText(config.meta().silentPrefix + " " + message));
         } else if (config.meta().broadcast) {
             KiloChat.broadCast(message);
         }
@@ -316,7 +313,7 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
         if (silent) {
-            ServerChat.Channel.STAFF.send(new MutableTextMessage(config.meta().silentPrefix + " " + message).toText());
+            ServerChat.Channel.STAFF.send(ComponentText.toText(config.meta().silentPrefix + " " + message));
         } else if (config.meta().broadcast) {
             KiloChat.broadCast(message);
         }
@@ -383,6 +380,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
+        KiloChat.onUserLeave(user);
         user.onLeave();
         this.teleportRequestsMap.remove(user.getId());
         if (user.getNickname().isPresent()) {
@@ -402,7 +400,6 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         this.onlineUsers.remove(player.getUuid());
-        KiloChat.onUserLeave(user);
     }
 
     public void onChatMessage(OnlineUser user, ChatMessageC2SPacket packet) {

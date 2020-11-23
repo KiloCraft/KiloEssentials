@@ -14,12 +14,11 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
@@ -68,7 +67,7 @@ public class SethomeCommand extends EssentialCommand {
         }
 
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-            KiloChat.sendMessageTo(player, getConfirmationText(name, ""));
+            user.sendMessage(getConfirmationText(name, ""));
             return AWAIT;
         } else {
             homeHandler.removeHome(name);
@@ -101,7 +100,7 @@ public class SethomeCommand extends EssentialCommand {
             }
 
             if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-                KiloChat.sendMessageTo(player, getConfirmationText(name, user.getUsername()));
+                source.sendMessage(getConfirmationText(name, user.getUsername()));
                 return;
             } else {
                 homeHandler.removeHome(name);

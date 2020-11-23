@@ -4,9 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.chat.MutableTextMessage;
-import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.util.TpsTracker;
 
 import static org.kilocraft.essentials.util.TpsTracker.*;
@@ -21,14 +19,14 @@ public class TpsCommand extends EssentialCommand {
     }
 
     private int run(CommandContext<ServerCommandSource> ctx) {
-        KiloChat.sendMessageToSource(ctx.getSource(), new MutableTextMessage(String.format(
-                "&6TPS&%s %s&7 &8(&7%s ms&8) &8(&75m&8/&715m&8/&71h&8/&71d&8)&%s %s&8,&%s %s&8,&%s %s&8,&%s %s&r",
-                TextFormat.getFormattedTPS(tps.getAverage()), tps.getShortAverage(),
+        getCommandSource(ctx).sendMessage(String.format(
+                "<gold>TPS %s <dark_gray>(<gray>%s ms<dark_gray>) <dark_gray>(<gray>5m<dark_gray>/<gray>15m<dark_gray>/<gray>1h<dark_gray>/<gray>1d<dark_gray>) %s<dark_gray>, %s<dark_gray>, %s<dark_gray>, %s<reset>",
+                ComponentText.formatTps(tps.getAverage()),
                 TpsTracker.MillisecondPerTick.getShortAverage(),
-                TextFormat.getFormattedTPS(tps5.getAverage()), tps5.getShortAverage(),
-                TextFormat.getFormattedTPS(tps15.getAverage()), tps15.getShortAverage(),
-                TextFormat.getFormattedTPS(tps60.getAverage()), tps60.getShortAverage(),
-                TextFormat.getFormattedTPS(tps1440.getAverage()), tps1440.getShortAverage()), true));
+                ComponentText.formatTps(tps5.getAverage()),
+                ComponentText.formatTps(tps15.getAverage()),
+                ComponentText.formatTps(tps60.getAverage()),
+                ComponentText.formatTps(tps1440.getAverage())));
 
         return (int) Math.floor(tps.getAverage());
     }

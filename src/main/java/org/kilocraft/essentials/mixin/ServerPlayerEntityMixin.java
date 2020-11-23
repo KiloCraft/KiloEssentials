@@ -1,13 +1,8 @@
 package org.kilocraft.essentials.mixin;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -15,7 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin {
@@ -24,7 +18,7 @@ public abstract class ServerPlayerEntityMixin {
     private void modify(ServerWorld serverWorld, CallbackInfo ci) {
         if (LocationUtil.shouldBlockAccessTo(serverWorld.getDimension())) {
             ci.cancel();
-            KiloChat.sendLangMessageTo((ServerPlayerEntity) (Object) this, "general.dimension_not_allowed", RegistryUtils.dimensionToName(serverWorld.getDimension()));
+            KiloServer.getServer().getOnlineUser((ServerPlayerEntity) (Object)this).sendLangMessage("general.dimension_not_allowed", RegistryUtils.dimensionToName(serverWorld.getDimension()));
         }
 
         ServerUser.saveLocationOf((ServerPlayerEntity) (Object) this);

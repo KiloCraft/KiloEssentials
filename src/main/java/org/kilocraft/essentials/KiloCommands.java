@@ -32,12 +32,9 @@ import org.kilocraft.essentials.api.event.commands.OnCommandExecutionEvent;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.commands.help.HelpCommand;
-import org.kilocraft.essentials.commands.moderation.*;
 import org.kilocraft.essentials.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.commands.help.UsageCommand;
 import org.kilocraft.essentials.commands.inventory.AnvilCommand;
@@ -48,6 +45,7 @@ import org.kilocraft.essentials.commands.item.ItemCommand;
 import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
+import org.kilocraft.essentials.commands.moderation.*;
 import org.kilocraft.essentials.commands.play.*;
 import org.kilocraft.essentials.commands.server.*;
 import org.kilocraft.essentials.commands.teleport.BackCommand;
@@ -259,27 +257,28 @@ public class KiloCommands {
     public static void executeUsageFor(final String langKey, final ServerCommandSource source) {
         final String fromLang = ModConstants.getStrings().getProperty(langKey);
         if (fromLang != null)
-            KiloChat.sendMessageToSource(source, new MutableTextMessage("&6Command usage:\n" + fromLang, true));
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage("<gold>Command usage:\n" + fromLang);
         else
-            KiloChat.sendLangMessageTo(source, "general.usage.help");
+            KiloServer.getServer().getCommandSourceUser(source).sendMessage("general.usage.help");
     }
 
     @Deprecated
     public static int executeSmartUsage(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final String command = ctx.getInput().replace("/", "");
         final ParseResults<ServerCommandSource> parseResults = KiloCommands.getDispatcher().parse(command, ctx.getSource());
+        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
         if (parseResults.getContext().getNodes().isEmpty())
             throw KiloCommands.getException(ExceptionMessageNode.UNKNOWN_COMMAND_EXCEPTION).create();
 
         final Map<CommandNode<ServerCommandSource>, String> commandNodeStringMap = KiloCommands.getDispatcher().getSmartUsage(((ParsedCommandNode) Iterables.getLast(parseResults.getContext().getNodes())).getNode(), ctx.getSource());
         final Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.firstRow", command);
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.commandRow", command, "");
+        user.sendLangMessage( "command.usage.firstRow", command);
+        user.sendLangMessage( "command.usage.commandRow", command, "");
 
         while (iterator.hasNext()) {
             if (iterator.next().equals("/" + command)) continue;
-            KiloChat.sendLangMessageTo(ctx.getSource(), "command.usage.commandRow", command, iterator.next());
+            user.sendLangMessage( "command.usage.commandRow", command, iterator.next());
         }
 
         return 1;
@@ -288,6 +287,7 @@ public class KiloCommands {
     @Deprecated
     public static void executeSmartUsageFor(final String command, final ServerCommandSource source) throws CommandSyntaxException {
         final ParseResults<ServerCommandSource> parseResults = KiloCommands.getDispatcher().parse(command, source);
+        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(source);
         if (parseResults.getContext().getNodes().isEmpty())
             throw KiloCommands.getException(ExceptionMessageNode.UNKNOWN_COMMAND_EXCEPTION).create();
 
@@ -295,20 +295,20 @@ public class KiloCommands {
         final Iterator<String> iterator = commandNodeStringMap.values().iterator();
 
         int usages = 0;
-        KiloChat.sendLangMessageTo(source, "command.usage.firstRow", parseResults.getReader().getString());
+        user.sendLangMessage("command.usage.firstRow", parseResults.getReader().getString());
         if (parseResults.getContext().getNodes().get(0).getNode().getCommand() != null) {
-            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
+            user.sendLangMessage("command.usage.commandRow", parseResults.getReader().getString(), "");
             usages++;
         }
 
         while (iterator.hasNext()) {
             usages++;
             final String usage = iterator.next();
-            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), usage);
+            user.sendLangMessage("command.usage.commandRow", parseResults.getReader().getString(), usage);
         }
 
         if (usages == 0)
-            KiloChat.sendLangMessageTo(source, "command.usage.commandRow", parseResults.getReader().getString(), "");
+            user.sendLangMessage("command.usage.commandRow", parseResults.getReader().getString(), "");
 
         commandNodeStringMap.size();
     }
@@ -338,9 +338,7 @@ public class KiloCommands {
 
     @Deprecated
     public static void sendPermissionError(final ServerCommandSource source) {
-        KiloChat.sendMessageToSource(source, new MutableTextMessage(
-                KiloConfig.messages().commands().context().permissionException
-                , true));
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(KiloConfig.messages().commands().context().permissionException);
     }
 
     public static SimpleCommandExceptionType getException(final ExceptionMessageNode node, final Object... objects) {
@@ -476,11 +474,11 @@ public class KiloCommands {
                     if (this.isCommand(literalName) && reqPerm != null && !KiloCommands.hasPermission(executor, reqPerm)) {
                         KiloCommands.sendPermissionError(executor);
                     } else {
-                        KiloChat.sendMessageToSource(executor, new MutableTextMessage(KiloConfig.messages().commands().context().executionException, true));
+                        src.sendMessage(KiloConfig.messages().commands().context().executionException);
                     }
 
                 } else {
-                    executor.sendError(Texts.toText(e.getRawMessage()));
+                    src.sendError(e.getRawMessage().getString());
 
                     if (e.getInput() != null && e.getCursor() >= 0) {
                         final int cursor = Math.min(e.getInput().length(), e.getCursor());
@@ -502,17 +500,17 @@ public class KiloCommands {
 
             }
         } catch (final Exception e) {
-            final MutableText text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
+            final StringBuilder builder = new StringBuilder(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
             if (SharedConstants.isDevelopment) {
                 getLogger().error("Command exception: {}", command, e);
                 StackTraceElement[] stackTraceElements = e.getStackTrace();
 
                 for (int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
-                    text.append(Texter.exceptionToText(e, true));
+                    builder.append(Texter.exceptionToString(e, true));
                 }
             }
 
-            executor.sendError(new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text))));
+            executor.sendError(new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, ComponentText.toText(builder.toString())))));
 
             if (SharedConstants.isDevelopment) {
                 executor.sendError(new LiteralText(Util.getInnermostMessage(e)));

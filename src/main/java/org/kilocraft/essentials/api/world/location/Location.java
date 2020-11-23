@@ -14,8 +14,6 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
-import java.text.DecimalFormat;
-
 public interface Location {
     double getX();
     double getY();

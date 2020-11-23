@@ -88,6 +88,12 @@ public interface User extends EntityIdentifiable, NBTSerializable {
     Text getRankedDisplayName();
 
     /**
+     * Gets the modified Display name as a {@link String}
+     * @return Team modified Display name
+     */
+    String getRankedDisplayNameAsString();
+
+    /**
      * Gets the modified name as a {@link Text}
      * @return Team modified name
      */

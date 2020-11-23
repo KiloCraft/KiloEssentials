@@ -49,6 +49,6 @@ public class DebugEssentialsCommand extends EssentialCommand {
     }
 
     private void sendFeedback(final CommandContext<ServerCommandSource> ctx, String key, Object... objects) {
-        this.getServerUser(ctx).sendLangMessage(key, objects);
+        this.getCommandSource(ctx).sendLangMessage(key, objects);
     }
 }

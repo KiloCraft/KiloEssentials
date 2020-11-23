@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.MutableTextMessage;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.player.PlayerConnectEventImpl;
@@ -83,33 +83,33 @@ public abstract class MixinPlayerManager {
     @Inject(method = "checkCanJoin", at = @At(value = "HEAD"), cancellable = true)
     private void override$checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Text> cir) {
         try {
-            MutableTextMessage message = null;
+            String message = null;
             ModerationConfigSection.Messages messages = KiloConfig.main().moderation().messages();
             if (this.bannedProfiles.get(gameProfile) != null) {
                 BannedPlayerEntry entry = this.bannedProfiles.get(gameProfile);
                 assert entry != null;
                 if (entry.getExpiryDate() == null) {
-                    message = new MutableTextMessage(replaceVariables(messages.permBan, entry, true));
+                    message = replaceVariables(messages.permBan, entry, true);
                 } else {
-                    message = new MutableTextMessage(replaceVariables(messages.tempBan, entry, false));
+                    message = replaceVariables(messages.tempBan, entry, false);
                 }
             } else if (this.bannedIps.get(socketAddress) != null) {
                 BannedIpEntry entry = this.bannedIps.get(socketAddress);
                 assert entry != null;
                 if (entry.getExpiryDate() == null) {
-                    message = new MutableTextMessage(replaceVariables(messages.permIpBan, entry, true));
+                    message = replaceVariables(messages.permIpBan, entry, true);
                 } else {
-                    message = new MutableTextMessage(replaceVariables(messages.tempIpBan, entry, false));
+                    message = replaceVariables(messages.tempIpBan, entry, false);
                 }
             } else if (this.whitelistEnabled && !this.whitelist.isAllowed(gameProfile)) {
                 if (messages.whitelist.isEmpty()) {
                     cir.setReturnValue(new TranslatableText("multiplayer.disconnect.not_whitelisted"));
                 } else {
-                    message = new MutableTextMessage(messages.whitelist);
+                    message = messages.whitelist;
                 }
             }
 
-            cir.setReturnValue(message == null ? null : message.toText());
+            cir.setReturnValue(message == null ? null : ComponentText.toText(message));
         } catch (Exception e) {
             e.printStackTrace();
         }

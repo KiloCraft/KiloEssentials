@@ -18,7 +18,6 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.text.Texter;
@@ -43,7 +42,7 @@ public class HomesCommand extends EssentialCommand {
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getOnlineUser(ctx.getSource());
+        OnlineUser user = getOnlineUser(ctx);
         return sendInfo(user, user);
     }
 

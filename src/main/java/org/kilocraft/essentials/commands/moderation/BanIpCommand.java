@@ -15,10 +15,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -83,9 +83,9 @@ public class BanIpCommand extends EssentialCommand {
         BannedIpEntry entry = new BannedIpEntry(ip, date, src.getName(), null, reason);
         bannedIpList.add(entry);
 
-        MutableText text = new MutableTextMessage(
-                ServerUserManager.replaceVariables(super.config.moderation().messages().permIpBan, entry, true)
-        ).toText();
+        MutableText text = ComponentText.toText(
+            ServerUserManager.replaceVariables(super.config.moderation().messages().permIpBan, entry, true)
+        );
 
         for (ServerPlayerEntity player : players) {
             player.networkHandler.disconnect(text);

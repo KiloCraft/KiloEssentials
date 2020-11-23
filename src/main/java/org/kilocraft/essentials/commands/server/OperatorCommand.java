@@ -11,15 +11,12 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
+import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.commands.CommandUtils;
 
 import java.util.*;
@@ -139,28 +136,26 @@ public class OperatorCommand {
 
     private static int executeList(ServerCommandSource source) {
         String s = Arrays.toString(source.getMinecraftServer().getPlayerManager().getOpList().getNames());
-        LiteralText literalText = (LiteralText) new LiteralText(
-                "&eOperators&8:&r " + s.replace("[", "").replace("]", "").replaceAll(",", "&7,&r")
-        ).setStyle(Style.EMPTY.withFormatting(Formatting.GRAY));
+        String text = "<yellow>Operators<dark_gray>:<reset> " + s.replace("[", "").replace("]", "").replaceAll(",", "<gray>,<reset>");
 
-        TextFormat.sendToUniversalSource(source, literalText, false);
+        KiloServer.getServer().getCommandSourceUser(source).sendMessage(text);
         return 1;
     }
 
     private static int executeGet(ServerCommandSource source, Collection<GameProfile> gameProfiles) {
         PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
-        String text = "&eOperator &b%s&e:\n &7-&e Permission level&8: &a%s&e\n &7-&e Can bypass the player limit&8: &6%s&r";
+        String text = "<yellow>Operator <aqua>%s<yellow>:\n <gray>-<yellow> Permission level<dark_gray>: <green>%s<yellow>\n <gray>-<yellow> Can bypass the player limit<dark_gray>: <gold>%s<reset>";
 
         gameProfiles.forEach((gameProfile) -> {
             OperatorList operatorList = playerManager.getOpList();
             if (playerManager.isOperator(gameProfile)) {
-                TextFormat.sendToUniversalSource(source,
+                KiloServer.getServer().getCommandSourceUser(source).sendMessage(
                         String.format(
                                 text,
                                 gameProfile.getName(),
                                 Objects.requireNonNull(operatorList.get(gameProfile)).getPermissionLevel(),
                                 Objects.requireNonNull(operatorList.get(gameProfile)).canBypassPlayerLimit()
-                        ), false);
+                        ));
             }
             else if (!playerManager.isOperator(gameProfile))
                 source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!"));

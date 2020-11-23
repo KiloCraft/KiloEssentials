@@ -7,7 +7,6 @@ import net.minecraft.MinecraftVersion;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.chat.KiloChat;
 
 public class VersionCommand extends EssentialCommand {
     public VersionCommand() {
@@ -21,7 +20,7 @@ public class VersionCommand extends EssentialCommand {
     private int executeVersion(CommandContext<ServerCommandSource> ctx) {
         GameVersion gameVersion = MinecraftVersion.create();
 
-        KiloChat.sendLangMessageTo(ctx.getSource(), "command.info.version",
+        getCommandSource(ctx).sendLangMessage("command.info.version",
                 ModConstants.getVersionInt(),
                 ModConstants.getBuildType(),
                 ModConstants.getVersionType(),

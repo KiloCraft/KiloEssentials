@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.util.TpsTracker;
@@ -20,6 +19,7 @@ public class ConfigVariableFactory {
         Validate.notNull(user, "User most not be null!");
         String string = replaceUserVariables(str, user);
         return new ConfigObjectReplacerUtil("user", string)
+                .append("rankedName", user.getRankedDisplayNameAsString())
                 .append("ranked_displayName", Texter.Legacy.toFormattedString(user.getRankedDisplayName()))
                 .append("ping", user.asPlayer().pingMilliseconds)
                 .append("formatted_ping", ComponentText.formatPing(user.asPlayer().pingMilliseconds))
@@ -29,6 +29,7 @@ public class ConfigVariableFactory {
     public static String replaceTargetUserVariables(String str, @NotNull final User user) {
         Validate.notNull(user, "User most not be null!");
         return new ConfigObjectReplacerUtil("target", str)
+                .append("rankedName", user.getRankedDisplayNameAsString())
                 .append("displayName", user.getFormattedDisplayName())
                 .append("name", user.getUsername())
                 .append("tag", user.getNameTag())
@@ -38,6 +39,7 @@ public class ConfigVariableFactory {
     public static String replaceUserVariables(String str, @NotNull final User user) {
         Validate.notNull(user, "User most not be null!");
         return new ConfigObjectReplacerUtil("user", str)
+                .append("rankedName", user.getRankedDisplayNameAsString())
                 .append("displayName", user.getFormattedDisplayName())
                 .append("name", user.getUsername())
                 .append("tag", user.getNameTag())
@@ -48,7 +50,7 @@ public class ConfigVariableFactory {
         Validate.notNull(player, "Player most not be null!");
         return new ConfigObjectReplacerUtil("player", str)
                 .append("ping", player.pingMilliseconds)
-                .append("formatted_ping", TextFormat.getFormattedPing(player.pingMilliseconds))
+                .append("formatted_ping", ComponentText.formatPing(player.pingMilliseconds))
                 .toString();
     }
 
@@ -57,11 +59,11 @@ public class ConfigVariableFactory {
         final double memUsagePercent = SystemMonitor.getRamUsedPercentage();
         return new ConfigObjectReplacerUtil("server", str)
                 .append("tps", TpsTracker.tps.getShortAverage())
-                .append("formatted_tps", ComponentText.formatTps(Double.parseDouble(TpsTracker.tps.getShortAverage())))
+                .append("formatted_tps", ComponentText.formatTps(TpsTracker.tps.getAverage()))
                 .append("tps5", TpsTracker.tps5.getShortAverage())
-                .append("formatted_tps5", ComponentText.formatTps(Double.parseDouble(TpsTracker.tps5.getShortAverage())))
+                .append("formatted_tps5", ComponentText.formatTps(TpsTracker.tps5.getAverage()))
                 .append("tps15", TpsTracker.tps15.getShortAverage())
-                .append("formatted_tps15", ComponentText.formatTps(Double.parseDouble(TpsTracker.tps15.getShortAverage())))
+                .append("formatted_tps15", ComponentText.formatTps(TpsTracker.tps15.getAverage()))
                 .append("player_count", server.getPlayerManager().getCurrentPlayerCount())
                 .append("max_players", server.getPlayerManager().getMaxPlayerCount())
                 .append("name", KiloConfig.main().server().name)

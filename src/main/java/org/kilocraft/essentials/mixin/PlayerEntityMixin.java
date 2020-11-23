@@ -31,7 +31,7 @@ public abstract class PlayerEntityMixin {
                     style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + this.getEntityName() + " "))
                             .withHoverEvent((HoverEvent) this.addTellClickEvent(UserUtils.getDisplayNameWithMeta(user, true))).withInsertion(this.getEntityName()));
 
-            cir.setReturnValue(player.getScoreboardTeam().modifyText(text));
+            cir.setReturnValue(player.getScoreboardTeam().decorateName(text));
         }
     }
 

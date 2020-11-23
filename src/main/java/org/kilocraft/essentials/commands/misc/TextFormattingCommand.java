@@ -15,7 +15,7 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import static net.kyori.adventure.text.Component.*;
 
 public class TextFormattingCommand extends EssentialCommand {
-    private static final Text MESSAGE = ComponentText.toText(
+    private static final Text message = ComponentText.toText(
             text().append(text("Text Formats", NamedTextColor.GOLD, TextDecoration.BOLD))
                     .append(newline())
                     .append(
@@ -37,8 +37,8 @@ public class TextFormattingCommand extends EssentialCommand {
         argumentBuilder.executes(this::execute);
     }
 
-    public int execute(CommandContext<ServerCommandSource> context) {
-        this.sendMessage(context, MESSAGE);
+    public int execute(CommandContext<ServerCommandSource> ctx) {
+        getCommandSource(ctx).sendMessage(message);
         return SUCCESS;
     }
 }

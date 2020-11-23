@@ -1,9 +1,7 @@
 package org.kilocraft.essentials.extensions.warps.serverwidewarps;
 
 import net.minecraft.nbt.CompoundTag;
-import org.kilocraft.essentials.api.NBTSerializable;
 import org.kilocraft.essentials.api.world.location.Location;
-import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.extensions.warps.Warp;
 
 public class ServerWarp extends Warp {

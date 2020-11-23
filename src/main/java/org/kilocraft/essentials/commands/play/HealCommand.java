@@ -2,15 +2,15 @@ package org.kilocraft.essentials.commands.play;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.commands.CommandUtils;
 
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
@@ -25,25 +25,28 @@ public class HealCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
                 .requires(s -> KiloCommands.hasPermission(s, CommandPermission.HEAL_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
-                .executes(context -> execute(context.getSource(), getPlayer(context, "target")));
+                .executes(context -> execute(context, getPlayer(context, "target")));
         
-        argumentBuilder.executes(context -> execute(context.getSource(), context.getSource().getPlayer()));
+        argumentBuilder.executes(context -> execute(context, context.getSource().getPlayer()));
         commandNode.addChild(target.build());
     }
 
-    private static int execute(ServerCommandSource source, ServerPlayerEntity player) {
-        if (CommandUtils.areTheSame(source, player)) {
-            if (player.getHealth() == player.getMaxHealth()) {
-                KiloChat.sendMessageTo(player, StringText.of(true, "command.heal.exception.self"));
+    private int execute(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
+        OnlineUser self = getCommandSource(context);
+        OnlineUser target = getOnlineUser(player);
+        boolean shouldHeal = player.getHealth() == player.getMaxHealth() && player.getHungerManager().getFoodLevel() == 20;
+        if (CommandUtils.areTheSame(self, target)) {
+            if (shouldHeal) {
+                target.sendLangMessage("command.heal.exception.self");
             } else {
-                KiloChat.sendMessageTo(player, StringText.of(true, "command.heal.self"));
+                target.sendLangMessage("command.heal.self");
             }
         } else {
-            if (player.getHealth() == player.getMaxHealth()) {
-                KiloChat.sendMessageTo(source, StringText.of(true, "command.heal.exception.others", player.getName().asString()));
+            if (shouldHeal) {
+                self.sendLangMessage("command.heal.exception.others", target.getFormattedDisplayName());
             } else {
-                KiloChat.sendMessageTo(player, StringText.of(true, "command.heal.announce", source.getName()));
-                KiloChat.sendMessageToSource(source, StringText.of(true, "command.heal.other", player.getName().asString()));
+                target.sendLangMessage("command.heal.announce", self.getDisplayName());
+                self.sendLangMessage("command.heal.other", target.getDisplayName());
             }
         }
 

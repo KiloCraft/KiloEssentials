@@ -17,7 +17,6 @@ public interface IEssentialCommand {
     LiteralArgumentBuilder<ServerCommandSource> literal(String label);
     <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String string, ArgumentType<T> argumentType);
     OnlineUser getOnlineUser(String name);
-    OnlineUser getOnlineUser(ServerCommandSource source) throws CommandSyntaxException;
     OnlineUser getOnlineUser(UUID uuid) throws CommandSyntaxException;
 
     String getLabel();

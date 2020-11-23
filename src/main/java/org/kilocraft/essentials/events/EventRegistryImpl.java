@@ -1,15 +1,12 @@
 package org.kilocraft.essentials.events;
 
 import net.minecraft.SharedConstants;
-import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.KiloDebugUtils;
-import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.event.Event;
 import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
-
-import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

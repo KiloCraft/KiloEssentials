@@ -3,7 +3,6 @@ package org.kilocraft.essentials.api;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.ServerImpl;
 import org.kilocraft.essentials.api.server.Server;

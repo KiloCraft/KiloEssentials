@@ -15,8 +15,6 @@ import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.MutableTextMessage;
 
 import java.util.concurrent.CompletableFuture;
 

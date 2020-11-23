@@ -1,7 +1,5 @@
 package org.kilocraft.essentials.api;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
 import java.io.IOException;
