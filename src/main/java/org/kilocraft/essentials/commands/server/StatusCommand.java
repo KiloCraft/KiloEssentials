@@ -67,11 +67,11 @@ public class StatusCommand extends EssentialCommand {
                         ComponentText.formatTps(tps15.getAverage()),
                         ComponentText.formatTps(tps60.getAverage()),
                         ComponentText.formatTps(tps1440.getAverage())) +
-                "\n&7CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7:" +
-                " &" + ComponentText.formatPercentage(cpuUsage) + cpuUsage + "% Usage" +
+                "\n&7CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7: " +
+                ComponentText.formatPercentage(cpuUsage) + "% Usage" +
                 " &3" + Thread.activeCount() + " Running Threads" +
-                "\n&7Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: &" +
-                ComponentText.formatPercentage(ramUsage) + ramUsage + "% " +
+                "\n&7Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: " +
+                ComponentText.formatPercentage(ramUsage) + "% " +
                 "&8(&b" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&7" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
                 "\n&7Worlds&8:&e" +

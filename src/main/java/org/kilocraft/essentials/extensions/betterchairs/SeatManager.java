@@ -186,6 +186,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         stand.setNoGravity(true);
         stand.setInvulnerable(true);
         stand.addScoreboardTag("KE$SitStand#" + user.getUsername());
+        stand.addScoreboardTag("KE$SitStand");
         stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
         System.out.println(user);
         System.out.println(user.getPreferences());

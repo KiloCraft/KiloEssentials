@@ -211,7 +211,7 @@ public final class ServerChat {
             boolean canPing = user.getPreference(Preferences.CHAT_CHANNEL) == channel;
             String format = message.contains(nameFormat) ? nameFormat : nickFormat;
             String formattedPing = canPing ? displayFormat : pingFailedDisplayFormat;
-            message = message.replaceAll(format, formattedPing.replaceAll("%PLAYER_DISPLAYNAME%", user.getFormattedDisplayName()));
+            message = message.replaceAll(format, formattedPing.replaceAll("%PLAYER_DISPLAYNAME%", user.getFormattedDisplayName()) + "<reset>");
 
             if (pingSoundEnabled && canPing) {
                 result.addPinged(user);
