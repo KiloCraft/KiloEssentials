@@ -241,7 +241,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         super.systemMessageCoolDown = 0;
 
         GameMode gameMode = super.getPreference(Preferences.GAME_MODE);
-        if (gameMode == GameMode.NOT_SET) {
+        if (gameMode == null) {
             gameMode = this.asPlayer().interactionManager.getGameMode();
         }
 

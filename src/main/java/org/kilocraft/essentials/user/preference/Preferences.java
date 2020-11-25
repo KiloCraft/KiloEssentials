@@ -37,7 +37,7 @@ public class Preferences {
                 }
             });
     public static final Preference<GameMode> GAME_MODE = new Preference<GameMode>(
-            "gamemode", GameMode.NOT_SET,
+            "gamemode", null,
             (fun) -> fun.tag().putInt(fun.setting().getId(), fun.value().getId()),
             (fun) -> fun.set(GameMode.byId(fun.tag().getInt(fun.setting().getId())))
     );

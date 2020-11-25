@@ -22,12 +22,16 @@ public class ScheduledExecutionThread {
     }
 
     public static void teleport(OnlineUser player, @Nullable OnlineUser player2, ScheduledExecution s) {
+        teleport(player, player2, s, 1);
+    }
+
+    public static void teleport(OnlineUser player, @Nullable OnlineUser player2, ScheduledExecution s, int blocks) {
         s.apply();
-//        tick(3, player, player2, player.asPlayer().getPos(), s);
+//        tick(3, player, player2, player.asPlayer().getPos(), s, blocks);
         //TODO: Check if both players are still online
     }
 
-    private static void tick(int seconds, OnlineUser player, @Nullable OnlineUser player2, Vec3d pos, ScheduledExecution s) {
+    private static void tick(int seconds, OnlineUser player, @Nullable OnlineUser player2, Vec3d pos, ScheduledExecution s, int blocks) {
         if (player2 != null) {
             if (isOnline(player) && !isOnline(player2)) {
                 player.sendLangMessage("teleport.offline", player2.getDisplayName());
@@ -37,12 +41,12 @@ public class ScheduledExecutionThread {
                 return;
             }
         }
-        if (player.asPlayer().getPos().distanceTo(pos) > 1) {
+        if (player.asPlayer().getPos().distanceTo(pos) > blocks) {
             player.sendLangMessage("teleport.abort");
             if (player2 != null) player2.sendLangMessage("teleport.abort.other", player.getDisplayName());
         } else {
             player.sendLangMessage("teleport.wait", seconds);
-            start(1000, seconds == 1 ? s : () -> tick(seconds - 1, player, player2, pos, s));
+            start(1000, seconds == 1 ? s : () -> tick(seconds - 1, player, player2, pos, s, blocks));
         }
     }
 
