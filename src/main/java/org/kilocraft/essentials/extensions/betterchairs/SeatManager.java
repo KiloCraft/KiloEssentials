@@ -40,16 +40,8 @@ import java.util.UUID;
 public class SeatManager implements ConfigurableFeature, TickListener {
     private static SeatManager INSTANCE;
     private static boolean enabled = false;
+    private static int tick = 0;
     private final HashMap<ServerWorld, UUID> stands = new HashMap<>();
-
-    @Override
-    public boolean register() {
-        INSTANCE = this;
-        enabled = true;
-        KiloCommands.getInstance().register(new SitCommand());
-
-        return true;
-    }
 
     public static SeatManager getInstance() {
         if (INSTANCE == null) {
@@ -63,11 +55,18 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         return enabled;
     }
 
+    @Override
+    public boolean register() {
+        INSTANCE = this;
+        enabled = true;
+        KiloCommands.getInstance().register(new SitCommand());
+
+        return true;
+    }
+
     private boolean hasPermission(@NotNull final ServerPlayerEntity player) {
         return KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.SIT_SELF);
     }
-
-    private static int tick = 0;
 
     @Override
     public void onTick() {
@@ -214,12 +213,19 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
         ServerPlayerEntity player = user.asPlayer();
 
-        if (player == null || !player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity)) {
+        if (player == null) {
             return;
         }
 
-        ArmorStandEntity stand = (ArmorStandEntity) player.getVehicle();
-        if (stand != null && stand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
+        ArmorStandEntity stand = null;
+        for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
+            ArmorStandEntity armorStand = (ArmorStandEntity) entry.getKey().getEntity(entry.getValue());
+            if (armorStand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
+                stand = armorStand;
+                break;
+            }
+        }
+        if (stand != null) {
             player.sendMessage(StringText.of(true, "sit.stop_riding"), true);
             stands.remove(RegistryUtils.toServerWorld(stand.getEntityWorld().getDimension()), stand.getUuid());
             stand.kill();
