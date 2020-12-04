@@ -38,7 +38,10 @@ repositories {
     maven { url 'https://jitpack.io' }
     maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
     maven { url 'https://repo.spongepowered.org/maven' }
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven {
+        name = 'sonatype-oss'
+        url = 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
     maven { url 'https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/' }
 }
 
@@ -67,10 +70,10 @@ dependencies {
     shadow group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
 
-    compile "net.kyori:adventure-text-minimessage:${project.kyori_adventure_version}"
-    shadow "net.kyori:adventure-text-minimessage:${project.kyori_adventure_version}"
-    compile "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_version}"
-    shadow "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_version}"
+    compile "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
+    shadow "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
+    compile "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_serializer_version}"
+    shadow "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_serializer_version}"
 
 }
 

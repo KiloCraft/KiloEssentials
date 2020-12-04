@@ -167,8 +167,6 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             return false;
         }
 
-        System.out.println(loc);
-        System.out.println(loc.getWorld());
         ArmorStandEntity stand = EntityType.ARMOR_STAND.create(
                 loc.getWorld(), null,
                 new LiteralText("KE$SitStand#" + stands.size() + user.getUsername()), null, loc.toPos(),
@@ -187,9 +185,6 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         stand.addScoreboardTag("KE$SitStand#" + user.getUsername());
         stand.addScoreboardTag("KE$SitStand");
         stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
-        System.out.println(user);
-        System.out.println(user.getPreferences());
-        System.out.println(summonType);
         user.getPreferences().set(Preferences.SITTING_TYPE, summonType);
         stand.bodyYaw = yaw;
         stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());

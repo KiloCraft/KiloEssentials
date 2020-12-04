@@ -191,7 +191,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void setGameMode(GameMode mode) {
-        this.asPlayer().setGameMode(mode);
+        this.asPlayer().changeGameMode(mode);
     }
 
     @Override

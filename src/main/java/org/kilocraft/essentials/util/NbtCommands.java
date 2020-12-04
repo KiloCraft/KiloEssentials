@@ -21,7 +21,7 @@ public class NbtCommands {
         ItemStack stack = player.getMainHandStack();
         CompoundTag tag = stack.getTag();
 
-        if (tag == null || tag.isEmpty() || !tag.contains("NBTCommands")) {
+        if (tag == null || tag.getSize() == 0 || !tag.contains("NBTCommands")) {
             return false;
         }
 

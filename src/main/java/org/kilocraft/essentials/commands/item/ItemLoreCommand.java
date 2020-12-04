@@ -175,7 +175,6 @@ public class ItemLoreCommand {
 
         String text = KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING) ? inputString : ComponentText.clearFormatting(inputString);
 
-		System.out.println(Text.Serializer.toJson(ComponentText.toText(text)));
 		lore.set(inputLine, StringTag.of(Text.Serializer.toJson(ComponentText.toText(text))));
 		itemTag.getCompound("display").put("Lore", lore);
 		item.setTag(itemTag);

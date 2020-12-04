@@ -19,7 +19,6 @@ import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 public class LocationUtil {
-    public static int MAX_WORLD_HEIGHT = KiloServer.getServer().getMinecraftServer().getWorldHeight();
 
     public static boolean shouldBlockAccessTo(DimensionType type) {
         return KiloConfig.main().world().disabledDimensions.contains(RegistryUtils.toIdentifier(type).toString()) ||

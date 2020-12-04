@@ -117,18 +117,18 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         PlayerInteractBlockEvent event = new PlayerInteractBlockEventImpl(player, playerInteractBlockC2SPacket.getBlockHitResult(), hand);
         KiloServer.getServer().triggerEvent(event);
         if (!event.isCancelled()) {
-            if (blockPos.getY() < this.server.getWorldHeight()) {
+            if (blockPos.getY() < this.server.getOverworld().getTopHeightLimit()) {
                 if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double) blockPos.getX() + 0.5D, (double) blockPos.getY() + 0.5D, (double) blockPos.getZ() + 0.5D) < 64.0D && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
                     ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
-                    if (direction == Direction.UP && actionResult != ActionResult.SUCCESS && blockPos.getY() >= this.server.getWorldHeight() - 1 && shouldContinueUsingItem(this.player, itemStack)) {
-                        Text text = (new TranslatableText("build.tooHigh", this.server.getWorldHeight())).formatted(Formatting.RED);
+                    if (direction == Direction.UP && actionResult != ActionResult.SUCCESS && blockPos.getY() >= this.server.getOverworld().getTopHeightLimit() - 1 && shouldContinueUsingItem(this.player, itemStack)) {
+                        Text text = (new TranslatableText("build.tooHigh", this.server.getOverworld().getTopHeightLimit())).formatted(Formatting.RED);
                         this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO, Util.NIL_UUID));
                     } else if (actionResult.shouldSwingHand()) {
                         this.player.swingHand(hand, true);
                     }
                 }
             } else {
-                Text text = (new TranslatableText("build.tooHigh", this.server.getWorldHeight())).formatted(Formatting.RED);
+                Text text = (new TranslatableText("build.tooHigh", this.server.getOverworld().getTopHeightLimit())).formatted(Formatting.RED);
                 this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO, Util.NIL_UUID));
             }
         }
