@@ -12,6 +12,7 @@ public class KiloEvents {
     public KiloEvents() {
         List<EventHandler<?>> events = new ArrayList<EventHandler<?>>() {{
             add(new OnServerReady());
+            add(new OnServerStarted());
             add(new OnSave());
             add(new OnReload());
             add(new PlayerJoinEvent());
