@@ -4,6 +4,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.config.KiloConfig;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -26,8 +27,9 @@ public class ScheduledExecutionThread {
     }
 
     public static void teleport(OnlineUser player, @Nullable OnlineUser player2, ScheduledExecution s, int blocks) {
-        s.apply();
-//        tick(3, player, player2, player.asPlayer().getPos(), s, blocks);
+        int cooldown = KiloConfig.main().server().cooldown;
+        if (cooldown < 1) s.apply();
+        else tick(cooldown, player, player2, player.asPlayer().getPos(), s, blocks);
         //TODO: Check if both players are still online
     }
 

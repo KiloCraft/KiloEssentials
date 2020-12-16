@@ -215,7 +215,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         ArmorStandEntity stand = null;
         for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
             ArmorStandEntity armorStand = (ArmorStandEntity) entry.getKey().getEntity(entry.getValue());
-            if (armorStand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
+            if (armorStand != null && armorStand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
                 stand = armorStand;
                 break;
             }

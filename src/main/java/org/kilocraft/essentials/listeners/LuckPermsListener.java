@@ -21,10 +21,12 @@ public class LuckPermsListener {
     void onPermChange(PermissionHolder target, String node) {
         if (target instanceof User) {
             ServerPlayerEntity player = KiloEssentials.getServer().getPlayer(((User) target).getUniqueId());
-            if (node.startsWith("group.")) {
-                KiloServer.getServer().getMetaManager().updateDisplayName(player);
+            if (player != null) {
+                if (node.startsWith("group.")) {
+                    KiloServer.getServer().getMetaManager().updateDisplayName(player);
+                }
+                KiloServer.getServer().getPlayerManager().sendCommandTree(player);
             }
-            KiloServer.getServer().getPlayerManager().sendCommandTree(player);
         }
     }
 
