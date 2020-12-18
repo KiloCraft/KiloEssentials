@@ -4,7 +4,9 @@
   "package": "org.kilocraft.essentials.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "RconClientMixin"
+    "EntityMixin",
+    "RconClientMixin",
+    "SpawnHelperInfoMixin"
   ],
   "server": [
     "AnvilScreenHandlerMixin",

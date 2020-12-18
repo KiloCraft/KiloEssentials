@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MinecraftServerAccessor",
-    "PlayerListHeaderS2CPacketMixin"
+    "PlayerListHeaderS2CPacketMixin",
+    "SpawnHelperAccessor",
+    "SpawnHelperInfoAccessor"
   ],
   "server": [
     "EntityAccessor",

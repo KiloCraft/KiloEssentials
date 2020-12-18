@@ -295,7 +295,7 @@ public class RtpCommand extends EssentialCommand {
             loc.setY(loc.getY() + 3);
             targetUser.teleport(loc.center(), true);
 
-            String biome = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
+//            String biome = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
 
             if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
                 targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
@@ -307,17 +307,18 @@ public class RtpCommand extends EssentialCommand {
                     .replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
                     .replace("{cord.Z}", String.valueOf(loc.getZ()))
                     .replace("{ELAPSED_TIME}", timeElapsed);
+            targetUser.sendMessage(cfgMessage);
 
-            Text text = new LiteralText("")
+/*            Text text = new LiteralText("")
                     .append(new LiteralText("You've been teleported to this ").formatted(Formatting.YELLOW))
                     .append(new LiteralText(biome).formatted(Formatting.GOLD))
                     .append(new LiteralText(" biome!").formatted(Formatting.YELLOW))
-                    .append("\n").append(Texter.newText(cfgMessage));
+                    .append("\n").append(Texter.newText(cfgMessage));*/
 
-            targetUser.sendMessage(text);
+/*            targetUser.sendMessage(text);
             if (!sourceUser.equals(targetUser)) {
                 sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), biome);
-            }
+            }*/
 
             logger.info("Finished RTP For " + targetUser.getUsername() + " in " + timeElapsed);
         }

@@ -230,7 +230,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public void onJoined() {
-        this.setFlight(super.getPreference(Preferences.CAN_FLY));
+        this.setFlight(false);
 
         SocketAddress socketAddress = this.getConnection().getAddress();
         if (socketAddress != null) {

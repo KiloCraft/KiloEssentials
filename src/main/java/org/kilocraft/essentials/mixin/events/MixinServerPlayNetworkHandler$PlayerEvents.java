@@ -1,14 +1,18 @@
 package org.kilocraft.essentials.mixin.events;
 
+import net.minecraft.command.EntityDataObject;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
@@ -30,6 +34,7 @@ import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerInteractBlockEvent;
 import org.kilocraft.essentials.api.event.player.PlayerInteractItemStartEvent;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.events.player.PlayerClientCommandEventImpl;
 import org.kilocraft.essentials.events.player.PlayerDisconnectEventImpl;
 import org.kilocraft.essentials.events.player.PlayerInteractBlockEventImpl;
@@ -50,7 +55,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
 
     @Shadow
     public ServerPlayerEntity player;
-
+    int interactions = 0;
     @Shadow
     @Final
     private MinecraftServer server;
@@ -136,6 +141,22 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
         this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos.offset(direction)));
     }
+
+    @Inject(method = "onPlayerInteractEntity", at = @At(value = "HEAD"))
+    private void ke$onPlayerInteractEntity(PlayerInteractEntityC2SPacket playerInteractEntityC2SPacket, CallbackInfo ci) {
+        interactions++;
+        if (interactions % 2 == 0) return;
+        NetworkThreadUtils.forceMainThread(playerInteractEntityC2SPacket, (ServerPlayNetworkHandler) (Object) this, this.player.getServerWorld());
+        ServerWorld serverWorld = this.player.getServerWorld();
+        Entity entity = playerInteractEntityC2SPacket.getEntity(serverWorld);
+        EntityDataObject entityDataObject = new EntityDataObject(entity);
+        CompoundTag tag = entityDataObject.getTag();
+        String command = tag.getString("command");
+        if (!command.equals("")) {
+            CommandUtils.runCommandWithFormatting(this.player.getCommandSource(), command);
+        }
+    }
+
 
     @Inject(method = "onClientCommand", cancellable = true,
             at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V"))

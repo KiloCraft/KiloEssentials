@@ -129,6 +129,7 @@ public class KiloCommands {
     private void registerDefaults() {
         this.register(new DebugEssentialsCommand());
         this.register(new LightningCommand());
+        this.register(new MobCapCommand());
         this.register(new NicknameCommand());
         this.register(new SayAsCommand());
         this.register(new SudoCommand());

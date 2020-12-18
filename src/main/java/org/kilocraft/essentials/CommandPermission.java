@@ -63,6 +63,7 @@ public enum CommandPermission {
     TELEPORTPOS("teleportpos"),
     TELEPORTHERE("teleporthere"),
     TELEPORTIN("teleportin"),
+    MOBCAP("mobcap"),
     NICKNAME_SELF("nickname.self"),
     NICKNAME_OTHERS("nickname.others"),
     NICKNAME_FORMATTING_BASIC("nickname.formatting.basic"),
