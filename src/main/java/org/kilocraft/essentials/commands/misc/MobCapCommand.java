@@ -51,11 +51,11 @@ public class MobCapCommand extends EssentialCommand {
         SpawnHelper.Info spawnHelperInfo = world.getChunkManager().getSpawnInfo();
         if (spawnHelperInfo == null) KiloEssentials.getLogger().error("SpawnEntry is null");
         TextComponent.Builder text = Component.text();
-        text.content("Mobcaps (" + mult + ")\n").color(NamedTextColor.GOLD);
+        text.content("Mobcaps (" + mult + "):\n").color(NamedTextColor.YELLOW);
         for (SpawnGroup spawnGroup : SpawnGroup.values()) {
             String name = spawnGroup.getName();
             int cap = (int) ((spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) spawnHelperInfo).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea()) * MobCapCommand.mult);
-            text.append(Component.text(name + ": ").color(NamedTextColor.YELLOW)).append(Component.text(cap + "\n").color(NamedTextColor.GRAY));
+            text.append(Component.text(name + ": ").color(NamedTextColor.GRAY)).append(Component.text(cap + "\n").color(NamedTextColor.GOLD));
         }
         player.sendMessage(ComponentText.toText(text.build()), false);
         return SUCCESS;
