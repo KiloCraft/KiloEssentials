@@ -12,7 +12,6 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.MutableText;
 import net.minecraft.world.SpawnHelper;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -55,7 +54,7 @@ public class MobCapCommand extends EssentialCommand {
         text.content("Mobcaps (" + mult + ")\n").color(NamedTextColor.GOLD);
         for (SpawnGroup spawnGroup : SpawnGroup.values()) {
             String name = spawnGroup.getName();
-            int cap = (int) ((spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor)spawnHelperInfo).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea()) * MobCapCommand.mult);
+            int cap = (int) ((spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) spawnHelperInfo).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea()) * MobCapCommand.mult);
             text.append(Component.text(name + ": ").color(NamedTextColor.YELLOW)).append(Component.text(cap + "\n").color(NamedTextColor.GRAY));
         }
         player.sendMessage(ComponentText.toText(text.build()), false);

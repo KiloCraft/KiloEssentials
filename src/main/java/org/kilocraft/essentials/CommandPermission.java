@@ -64,6 +64,7 @@ public enum CommandPermission {
     TELEPORTHERE("teleporthere"),
     TELEPORTIN("teleportin"),
     MOBCAP("mobcap"),
+    VIEWDISTANCE("viewdistance"),
     NICKNAME_SELF("nickname.self"),
     NICKNAME_OTHERS("nickname.others"),
     NICKNAME_FORMATTING_BASIC("nickname.formatting.basic"),
