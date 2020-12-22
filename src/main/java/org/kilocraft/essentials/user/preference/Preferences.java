@@ -19,7 +19,6 @@ public class Preferences {
     @NotNull
     public static final List<Preference<?>> list = new ArrayList<>();
 
-    public static final Preference<Boolean> CAN_FLY = new Preference<>("allowFlying", false);
     public static final Preference<Boolean> INVULNERABLE = new Preference<>("invulnerable", false);
     public static final Preference<Boolean> SOCIAL_SPY = new Preference<>("social_spy", false);
     public static final Preference<Boolean> COMMAND_SPY = new Preference<>("command_spy", false);

@@ -12,6 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
@@ -38,7 +39,8 @@ public class ViewDistanceCommand extends EssentialCommand {
         if (server.isDedicated()) {
             if (distance != server.getPlayerManager().getViewDistance()) {
                 server.getPlayerManager().setViewDistance(distance);
-                player.sendMessage(StringText.of(true, "command.viewdistance", distance), false);
+                KiloEssentials.getInstance().getSettingManager().setViewDistance(distance);
+                player.sendMessage(StringText.of(true, "command.viewdistance.set", distance), false);
             }
             return distance;
         }
@@ -47,9 +49,7 @@ public class ViewDistanceCommand extends EssentialCommand {
 
     private int info(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        MinecraftServer server = ctx.getSource().getMinecraftServer();
-        TextComponent text = Component.text("View Distance: ").color(NamedTextColor.GRAY).append(Component.text(server.getPlayerManager().getViewDistance()).color(NamedTextColor.GOLD));
-        player.sendMessage(ComponentText.toText(text), false);
+        player.sendMessage(StringText.of(true, "command.viewdistance.info", KiloEssentials.getInstance().getSettingManager().getViewDistance()), false);
         return SUCCESS;
     }
 }

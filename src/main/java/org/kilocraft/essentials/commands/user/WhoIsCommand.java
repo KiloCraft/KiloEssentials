@@ -104,9 +104,8 @@ public class WhoIsCommand extends EssentialCommand {
         }
 
         text.append("Artifacts",
-                new String[]{"IsStaff", "May Fly", "May Sit"},
+                new String[]{"IsStaff", "May Sit"},
                 ((ServerUser) target).isStaff(),
-                settings.get(Preferences.CAN_FLY),
                 settings.get(Preferences.CAN_SEAT)
         );
 

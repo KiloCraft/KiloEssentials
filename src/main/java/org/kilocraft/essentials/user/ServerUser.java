@@ -264,10 +264,12 @@ public class ServerUser implements User {
 
     @Override
     public String getRankedDisplayNameAsString() {
-        if (this.isOnline()) {
-            return UserUtils.getDisplayNameWithMetaAsString((OnlineUser) this, true);
+        try {
+            if (this.isOnline()) {
+                return UserUtils.getDisplayNameWithMetaAsString((OnlineUser) this, true);
+            }
+        } catch (IllegalStateException ignored) {
         }
-
         return this.getDisplayName();
     }
 

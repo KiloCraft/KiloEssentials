@@ -183,7 +183,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void setFlight(final boolean set) {
-        super.getPreferences().set(Preferences.CAN_FLY, set);
         this.asPlayer().getAbilities().allowFlying = set;
         this.asPlayer().getAbilities().flying = set;
         this.asPlayer().sendAbilitiesUpdate();
@@ -230,7 +229,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public void onJoined() {
-        this.setFlight(false);
 
         SocketAddress socketAddress = this.getConnection().getAddress();
         if (socketAddress != null) {
