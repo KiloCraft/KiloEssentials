@@ -75,6 +75,8 @@ public enum CommandPermission {
     CLEARCHAT("clearchat"),
     ENDERCHEST_SELF("enderchest.self"),
     ENDERCHEST_OTHERS("enderchest.others"),
+    ENTITIES("entities"),
+    ENTITIES_PLAYER("entities.player"),
     STATUS("status"),
     SEEK_INVENTORY("seek_inventory"),
     SAYAS_OTHERS("sayas.others"),

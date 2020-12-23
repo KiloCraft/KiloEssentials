@@ -17,7 +17,6 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.world.MonitorableWorld;
 import org.kilocraft.essentials.util.TpsTracker;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -106,8 +105,7 @@ public class KiloDebugUtils {
     public void update() {
         int loadedChunks = 0;
         for (ServerWorld world : minecraftServer.getWorlds()) {
-            MonitorableWorld moWorld = ((MonitorableWorld) world);
-            loadedChunks = loadedChunks + moWorld.totalLoadedChunks();
+            loadedChunks = loadedChunks + world.getChunkManager().getTotalChunksLoadedCount();
         }
 
         TpsTracker.tps.getAverage();

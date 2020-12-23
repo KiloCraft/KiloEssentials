@@ -17,8 +17,7 @@
     "PlayerListS2CPacketMixin",
     "QueryResponseS2CPacketMixin",
     "ServerPlayerEntityMixin",
-    "ServerPlayNetworkHandlerMixin",
-    "ServerWorldMixin"
+    "ServerPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

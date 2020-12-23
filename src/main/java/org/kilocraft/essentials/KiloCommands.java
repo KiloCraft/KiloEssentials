@@ -156,6 +156,7 @@ public class KiloCommands {
         this.register(new PingCommand());
         this.register(new ClearChatCommand());
         this.register(new EnderchestCommand());
+        this.register(new EntitiesCommand());
         this.register(new StatusCommand());
         this.register(new StaffMessageCommand());
         this.register(new BuilderMsgCommand());
