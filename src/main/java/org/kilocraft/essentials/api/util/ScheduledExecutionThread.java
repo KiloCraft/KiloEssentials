@@ -6,15 +6,19 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class ScheduledExecutionThread {
+
+    public static ConcurrentLinkedDeque<ScheduledExecution> scheduledExecutions = new ConcurrentLinkedDeque<>();
 
     public static void start(long wait, ScheduledExecution s) {
         CompletableFuture.runAsync(() -> {
             try {
                 Thread.sleep(wait);
-                s.apply();
+                scheduledExecutions.add(s);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 Thread.currentThread().interrupt();

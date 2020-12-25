@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "EntityMixin",
+    "MinecraftDedicatedServerMixin",
     "RconClientMixin",
     "SpawnHelperInfoMixin"
   ],
