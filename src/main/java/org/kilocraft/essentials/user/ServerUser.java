@@ -236,7 +236,7 @@ public class ServerUser implements User {
 
     @Override
     public boolean isOnline() {
-        return this instanceof OnlineUser || MANAGER.isOnline(this);
+        return MANAGER.isOnline(this);
     }
 
     @Override

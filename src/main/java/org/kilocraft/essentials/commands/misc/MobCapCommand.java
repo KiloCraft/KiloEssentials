@@ -20,6 +20,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.SpawnHelper;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 public class MobCapCommand extends EssentialCommand {
 
     public MobCapCommand() {
-        super("mobcap", CommandPermission.MOBCAP);
+        super("mobcap", CommandPermission.MOBCAP_QUERY);
     }
 
     public static CompletableFuture<Suggestions> suggestSpawnGroups(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
@@ -51,7 +52,8 @@ public class MobCapCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, Float> multiplier = argument("multiplier", FloatArgumentType.floatArg(0, 100));
         multiplier.executes(this::execute);
         final RequiredArgumentBuilder<ServerCommandSource, String> spawnGroup = this.argument("name", StringArgumentType.word())
-                .suggests(MobCapCommand::suggestSpawnGroups);
+                .suggests(MobCapCommand::suggestSpawnGroups)
+                .requires(src -> KiloCommands.hasPermission(src, CommandPermission.MOBCAP_SET));
         spawnGroup.then(multiplier);
         argumentBuilder.executes(this::info);
         commandNode.addChild(spawnGroup.build());

@@ -92,13 +92,13 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public int sendError(final String message) {
-        this.sendMessage(Component.text(message).color(NamedTextColor.RED));
+        this.sendMessage(ComponentText.of(message).color(NamedTextColor.RED));
         return 0;
     }
 
     @Override
     public void sendPermissionError(@NotNull String hover) {
-        this.sendMessage(Component.text(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
+        this.sendMessage(ComponentText.of(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
     }
 
     @Override

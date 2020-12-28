@@ -34,30 +34,27 @@ public class ScheduledExecutionThread {
         int cooldown = KiloConfig.main().server().cooldown;
         if (cooldown < 1) s.apply();
         else tick(cooldown, player, player2, player.asPlayer().getPos(), s, blocks);
-        //TODO: Check if both players are still online
     }
 
     private static void tick(int seconds, OnlineUser player, @Nullable OnlineUser player2, Vec3d pos, ScheduledExecution s, int blocks) {
         if (player2 != null) {
-            if (isOnline(player) && !isOnline(player2)) {
+            if (player.isOnline() && !player2.isOnline()) {
                 player.sendLangMessage("teleport.offline", player2.getDisplayName());
                 return;
-            } else if (!isOnline(player) && isOnline(player2)) {
+            } else if (!player.isOnline() && player2.isOnline()) {
                 player2.sendLangMessage("teleport.offline", player.getDisplayName());
                 return;
             }
         }
-        if (player.asPlayer().getPos().distanceTo(pos) > blocks) {
-            player.sendLangMessage("teleport.abort");
-            if (player2 != null) player2.sendLangMessage("teleport.abort.other", player.getDisplayName());
-        } else {
-            player.sendLangMessage("teleport.wait", seconds);
-            start(1000, seconds == 1 ? s : () -> tick(seconds - 1, player, player2, pos, s, blocks));
+        if (!player.isOnline()) {
+            if (player.asPlayer().getPos().distanceTo(pos) > blocks) {
+                player.sendLangMessage("teleport.abort");
+                if (player2 != null) player2.sendLangMessage("teleport.abort.other", player.getDisplayName());
+            } else {
+                player.sendLangMessage("teleport.wait", seconds);
+                start(1000, seconds == 1 ? s : () -> tick(seconds - 1, player, player2, pos, s, blocks));
+            }
         }
-    }
-
-    private static boolean isOnline(OnlineUser user) {
-        return KiloServer.getServer().getPlayerManager().getPlayer(user.getUuid()) != null;
     }
 
 }

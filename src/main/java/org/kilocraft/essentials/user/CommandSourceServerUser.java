@@ -285,13 +285,13 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public int sendError(String message) {
-        this.sendMessage(Component.text(message).color(NamedTextColor.RED));
+        this.sendMessage(ComponentText.of(message).color(NamedTextColor.RED));
         return 1;
     }
 
     @Override
     public void sendPermissionError(@NotNull String hover) {
-        this.sendMessage(Component.text(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
+        this.sendMessage(ComponentText.of(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(ComponentText.of(hover)))));
     }
 
     @Override

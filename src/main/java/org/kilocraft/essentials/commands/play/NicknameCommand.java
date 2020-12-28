@@ -12,6 +12,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.Format;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -25,6 +26,7 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.player.PlayerDataModifier;
 
@@ -89,12 +91,8 @@ public class NicknameCommand extends EssentialCommand {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
         }
 
-        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_BASIC)) nickname = ComponentText.stripColor(ComponentText.stripFormatting(nickname));
-        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_EVENT)) nickname = ComponentText.stripEvent(nickname);
-        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_GRADIENT)) nickname = ComponentText.stripGradient(nickname);
-        if (!KiloCommands.hasPermission(source, CommandPermission.NICKNAME_FORMATTING_RAINBOW)) nickname = ComponentText.stripRainbow(nickname);
-
         OnlineUser src = KiloServer.getServer().getUserManager().getOnline(self);
+        nickname = Format.parse(src, nickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting.");
 
         String finalNickname = nickname;
         KiloEssentials.getInstance().getUserThenAcceptAsync(src, src.getUsername(), (user) -> {

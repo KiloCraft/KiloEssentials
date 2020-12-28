@@ -19,6 +19,7 @@ import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.Format;
 import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -442,11 +443,7 @@ public class ServerUserManager implements UserManager, TickListener {
                     user.sendMessage(getMuteMessage(user));
                     return;
                 }
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_COLOR)) string = ComponentText.stripColor(string);
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_BASIC)) string = ComponentText.stripFormatting(string);
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_EVENT)) string = ComponentText.stripEvent(string);
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_GRADIENT)) string = ComponentText.stripGradient(string);
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_RAINBOW)) string = ComponentText.stripRainbow(string);
+                string = Format.parse(user, string, PermissionUtil.PERMISSION_PREFIX + "chat.formatting.");
                 ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
             }
         } catch (Exception e) {

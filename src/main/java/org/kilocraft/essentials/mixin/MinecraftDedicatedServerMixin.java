@@ -14,7 +14,6 @@ public class MinecraftDedicatedServerMixin {
     @Inject(method = "executeQueuedCommands", at = @At(value = "RETURN"))
     public void executeScheduledExecutions(CallbackInfo ci) {
         for (ScheduledExecution scheduledExecution : ScheduledExecutionThread.scheduledExecutions) {
-            System.out.println("Applying queue");
             scheduledExecution.apply();
         }
         ScheduledExecutionThread.scheduledExecutions.clear();
