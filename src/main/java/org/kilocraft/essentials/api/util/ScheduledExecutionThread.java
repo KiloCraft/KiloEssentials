@@ -46,7 +46,7 @@ public class ScheduledExecutionThread {
                 return;
             }
         }
-        if (!player.isOnline()) {
+        if (player.isOnline()) {
             if (player.asPlayer().getPos().distanceTo(pos) > blocks) {
                 player.sendLangMessage("teleport.abort");
                 if (player2 != null) player2.sendLangMessage("teleport.abort.other", player.getDisplayName());
