@@ -2,8 +2,10 @@ package org.kilocraft.essentials.mixin;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.SpawnHelper;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.commands.misc.MobCapCommand;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
 import org.spongepowered.asm.mixin.Final;
@@ -22,8 +24,12 @@ public class SpawnHelperInfoMixin {
 
     @Inject(method = "isBelowCap", at = @At("HEAD"), cancellable = true)
     private void changeMobCaps(SpawnGroup spawnGroup, CallbackInfoReturnable<Boolean> cir) {
-        int i = (int) (((spawnGroup.getCapacity() * this.spawningChunkCount / SpawnHelperAccessor.getChunkArea()) * KiloEssentials.getInstance().getSettingManager().getMultiplier()) * KiloEssentials.getInstance().getSettingManager().getMultiplier(spawnGroup));
-        cir.setReturnValue(this.groupToCount.getInt(spawnGroup) < i);
+        for (ServerWorld world : KiloServer.getServer().getMinecraftServer().getWorlds()) {
+            if (world.getChunkManager().getSpawnInfo().equals((Object)this)) {
+                int i = (int) (((spawnGroup.getCapacity() * this.spawningChunkCount / SpawnHelperAccessor.getChunkArea()) * KiloEssentials.getInstance().getSettingManager().getMultiplier(world.getRegistryKey().getValue(), null)) * KiloEssentials.getInstance().getSettingManager().getMultiplier(world.getRegistryKey().getValue(), spawnGroup));
+                cir.setReturnValue(this.groupToCount.getInt(spawnGroup) < i);
+            }
+        }
     }
 
 }
