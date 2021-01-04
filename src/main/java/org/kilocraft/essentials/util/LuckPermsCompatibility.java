@@ -50,6 +50,7 @@ public class LuckPermsCompatibility {
         if (group.getDisplayName() != null) {
             team.setDisplayName(Texter.newText(group.getDisplayName()));
         }
+        team.setShowFriendlyInvisibles(false);
         return team;
     }
 
