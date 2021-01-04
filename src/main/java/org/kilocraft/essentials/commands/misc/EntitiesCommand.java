@@ -56,7 +56,7 @@ public class EntitiesCommand extends EssentialCommand {
                 entitiesByType.put(entity.getType(), entitiesByType.getOrDefault(entity.getType(), 0) + 1);
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     int i = nearbyEntities.get(player);
-                    if (entity.getPos().distanceTo(player.getPos()) < KiloEssentials.getInstance().getSettingManager().getViewDistance() * 16 && entity.getEntityWorld().equals(player.getEntityWorld())) {
+                    if (entity.getChunkPos().method_24022(player.getChunkPos()) <= KiloEssentials.getInstance().getSettingManager().getViewDistance() && entity.getEntityWorld().equals(player.getEntityWorld())) {
                         i++;
                     }
                     nearbyEntities.put(player, i);
