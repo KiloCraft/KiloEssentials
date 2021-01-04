@@ -14,24 +14,11 @@ import java.util.*;
 
 public class ServerSettingManager implements NBTStorage {
 
-    private Value<Float> GLOBAL_MOBCAP = new Value<>(1F);
-    private Value<Float> AMBIENT_MOBCAP = new Value<>(1F);
-    private Value<Float> CREATURE_MOBCAP = new Value<>(1F);
-    private Value<Float> MISC_MOBCAP = new Value<>(1F);
-    private Value<Float> MONSTER_MOBCAP = new Value<>(1F);
-    private Value<Float> WATER_AMBIENT_MOBCAP = new Value<>(1F);
-    private Value<Float> WATER_CREATURE_MOBCAP = new Value<>(1F);
     private Value<Integer> viewDistance = new Value<>(10);
-    private HashMap<SpawnGroup, Value<Float>> spawnGroupToPreference = new HashMap<>();
+    private Value<Double> shulkerSpawnChance = new Value<>(0D);
 
     public ServerSettingManager() {
         NBTStorageUtil.addCallback(this);
-        spawnGroupToPreference.put(SpawnGroup.AMBIENT, AMBIENT_MOBCAP);
-        spawnGroupToPreference.put(SpawnGroup.CREATURE, CREATURE_MOBCAP);
-        spawnGroupToPreference.put(SpawnGroup.MISC, MISC_MOBCAP);
-        spawnGroupToPreference.put(SpawnGroup.MONSTER, MONSTER_MOBCAP);
-        spawnGroupToPreference.put(SpawnGroup.WATER_AMBIENT, WATER_AMBIENT_MOBCAP);
-        spawnGroupToPreference.put(SpawnGroup.WATER_CREATURE, WATER_CREATURE_MOBCAP);
     }
 
     public float getMultiplier(Identifier world, SpawnGroup spawnGroup) {
@@ -60,6 +47,7 @@ public class ServerSettingManager implements NBTStorage {
         }
         tag.put("mobcaps", mobcaps);
         tag.putInt("view_distance", viewDistance.getValue());
+        tag.putDouble("shulker_spawn_chance", shulkerSpawnChance.getValue());
         return tag;
     }
 
@@ -82,6 +70,7 @@ public class ServerSettingManager implements NBTStorage {
             }
         }
         if (tag.contains("view_distance")) viewDistance.setValue(tag.getInt("view_distance"));
+        if (tag.contains("shulker_spawn_chance")) shulkerSpawnChance.setValue(tag.getDouble("shulker_spawn_chance"));
         KiloEssentials.getServer().getMinecraftServer().getPlayerManager().setViewDistance(viewDistance.getValue());
     }
 
@@ -91,5 +80,13 @@ public class ServerSettingManager implements NBTStorage {
 
     public void setViewDistance(int viewDistance) {
         this.viewDistance.setValue(viewDistance);
+    }
+
+    public double getShulkerSpawnChance() {
+        return shulkerSpawnChance.getValue();
+    }
+
+    public void setShulkerSpawnChance(double chance) {
+        this.shulkerSpawnChance.setValue(chance);
     }
 }
