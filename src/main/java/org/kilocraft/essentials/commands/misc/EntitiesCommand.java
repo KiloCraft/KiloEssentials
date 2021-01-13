@@ -17,13 +17,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EntitiesCommand extends EssentialCommand {
@@ -56,7 +57,7 @@ public class EntitiesCommand extends EssentialCommand {
                 entitiesByType.put(entity.getType(), entitiesByType.getOrDefault(entity.getType(), 0) + 1);
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     int i = nearbyEntities.get(player);
-                    if (entity.getChunkPos().method_24022(player.getChunkPos()) <= KiloEssentials.getInstance().getSettingManager().getViewDistance() && entity.getEntityWorld().equals(player.getEntityWorld())) {
+                    if (entity.getChunkPos().method_24022(player.getChunkPos()) <= ServerSettings.VIEWDISTANCE.getValue() && entity.getEntityWorld().equals(player.getEntityWorld())) {
                         i++;
                     }
                     nearbyEntities.put(player, i);
@@ -74,14 +75,18 @@ public class EntitiesCommand extends EssentialCommand {
                     .append(Component.text(entry.getValue() + "\n").color(NamedTextColor.LIGHT_PURPLE));
         });
         TextComponent.Builder entityHover = Component.text().content("Entities by Type:\n").color(NamedTextColor.YELLOW);
-        sortByValue(entitiesByType).forEach(entry -> {
+        int i = 0;
+        HashMap<EntityType<?>, Integer> sorted = new HashMap<>();
+        sortByValue(entitiesByType).forEachOrdered(entry -> sorted.put(entry.getKey(), entry.getValue()));
+        for (Map.Entry<EntityType<?>, Integer> entry : sorted.entrySet()) {
             entityHover.append(Component.text(entry.getKey().getName().getString()).color(NamedTextColor.GRAY),
                     Component.text("(").color(NamedTextColor.DARK_GRAY),
                     Component.text(entry.getKey().getSpawnGroup().getName()).color(NamedTextColor.AQUA),
                     Component.text(")").color(NamedTextColor.DARK_GRAY),
                     Component.text(": ").color(NamedTextColor.GRAY),
-                    Component.text(entry.getValue() + "\n").color(NamedTextColor.LIGHT_PURPLE));
-        });
+                    Component.text(entry.getValue() + ((i % 3 == 2) ? "\n" : " ")).color(NamedTextColor.LIGHT_PURPLE));
+            i++;
+        }
         TextComponent.Builder builder = Component.text().content("There are currently ").color(NamedTextColor.YELLOW)
                 .append(Component.text(entities).color(NamedTextColor.GOLD).hoverEvent(HoverEvent.showText(entityHover.build())),
                         Component.text(" loaded, by ").color(NamedTextColor.YELLOW),
@@ -97,7 +102,7 @@ public class EntitiesCommand extends EssentialCommand {
         HashMap<EntityType<?>, Integer> entitiesByType = new HashMap<>();
         int entities = 0;
         for (Entity entity : player.getServerWorld().iterateEntities()) {
-            if (entity.getPos().distanceTo(player.getPos()) < KiloEssentials.getInstance().getSettingManager().getViewDistance() * 16) {
+            if (entity.getChunkPos().method_24022(player.getChunkPos()) <= ServerSettings.VIEWDISTANCE.getValue()) {
                 entitiesByType.put(entity.getType(), entitiesByType.getOrDefault(entity.getType(), 0) + 1);
                 entities++;
             }

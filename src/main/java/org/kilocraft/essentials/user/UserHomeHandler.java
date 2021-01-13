@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
@@ -119,7 +120,7 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
         if (user.isOnline()) {
-            ServerWorld world = Objects.requireNonNull(user.asPlayer().getServer()).getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
+            ServerWorld world = Objects.requireNonNull(KiloEssentials.getServer()).getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
 
             if (world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);

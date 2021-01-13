@@ -37,6 +37,7 @@ public enum CommandPermission {
     SUDO_OTHERS("sudo.others"),
     SUDO_SERVER("sudo.server"),
     BROADCAST("broadcast"),
+    SETTING("setting"),
     ANVIL("anvil"),
     WORKBENCH("workbench"),
     SMITH("smith"),

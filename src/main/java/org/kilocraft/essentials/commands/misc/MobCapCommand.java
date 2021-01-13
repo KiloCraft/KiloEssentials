@@ -29,7 +29,7 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
-import org.kilocraft.essentials.util.settings.ServerSettingManager;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.Arrays;
 import java.util.List;
@@ -84,7 +84,7 @@ public class MobCapCommand extends EssentialCommand {
     private int info(CommandContext<ServerCommandSource> ctx, ServerWorld world) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         SpawnHelper.Info spawnHelperInfo = world.getChunkManager().getSpawnInfo();
-        ServerSettingManager settingManager = KiloEssentials.getInstance().getSettingManager();
+        ServerSettings settingManager = KiloEssentials.getInstance().getSettingManager();
         if (spawnHelperInfo == null) KiloEssentials.getLogger().error("SpawnEntry is null");
         TextComponent.Builder text = Component.text();
         text.content("Mobcaps").color(NamedTextColor.YELLOW).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(settingManager.getMultiplier(world.getRegistryKey().getValue(), null)).color(NamedTextColor.GREEN)).append(Component.text(")").color(NamedTextColor.DARK_GRAY)).append(Component.text(":\n").color(NamedTextColor.YELLOW));

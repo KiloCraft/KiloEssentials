@@ -36,7 +36,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.util.LuckPermsCompatibility;
 import org.kilocraft.essentials.util.PermissionUtil;
-import org.kilocraft.essentials.util.settings.ServerSettingManager;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 
@@ -118,5 +118,5 @@ public interface KiloEssentials {
 
     Optional<LuckPermsCompatibility> getLuckPermsCompatibility();
 
-    ServerSettingManager getSettingManager();
+    ServerSettings getSettingManager();
 }

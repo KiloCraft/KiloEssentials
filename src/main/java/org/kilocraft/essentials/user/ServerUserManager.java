@@ -292,7 +292,7 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{TYPE}", type == Punishment.Type.MUTE ? config.meta().wordMuted : config.meta().wordBanned)
                 .replace("{SOURCE}", src.getName())
                 .replace("{VICTIM}", entry.getVictim() == null ? entry.getVictimIP() == null ? "INVALID" : entry.getVictimIP() : entry.getVictim().getName())
-                .replace("{REASON}", entry.getReason() == null ? config.defaults().ban : entry.getReason())
+                .replace("{REASON}", entry.getReason() == null ? (type == Punishment.Type.MUTE ? config.defaults().mute : config.defaults().ban) : entry.getReason())
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
         if (silent) {

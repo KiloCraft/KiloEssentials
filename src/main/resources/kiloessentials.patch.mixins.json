@@ -4,7 +4,9 @@
   "package": "org.kilocraft.essentials.mixin.patch",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ShulkerEntityMixinPatch"
+    "ItemEntityMixin",
+    "ShulkerEntityMixinPatch",
+    "WitherEntityMixin"
   ],
   "server": [
     "SignBlockEntityMixinPatch"

@@ -23,6 +23,7 @@ import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.TpsTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -76,7 +77,7 @@ public class StatusCommand extends EssentialCommand {
             for (Entity entity : world.iterateEntities()) {
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     int i = nearbyEntities.get(player);
-                    if (entity.getPos().distanceTo(player.getPos()) < KiloEssentials.getInstance().getSettingManager().getViewDistance()*16) i++;
+                    if (entity.getPos().distanceTo(player.getPos()) < ServerSettings.VIEWDISTANCE.getValue() * 16) i++;
                     nearbyEntities.put(player, i);
                 }
                 entities++;
