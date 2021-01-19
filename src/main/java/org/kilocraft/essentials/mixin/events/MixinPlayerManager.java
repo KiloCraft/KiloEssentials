@@ -1,8 +1,15 @@
 package org.kilocraft.essentials.mixin.events;
 
+import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.group.Group;
+import net.luckperms.api.model.user.User;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
+import net.minecraft.scoreboard.ServerScoreboard;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -15,6 +22,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.player.PlayerConnectEventImpl;
 import org.kilocraft.essentials.events.player.PlayerConnectedEventImpl;
+import org.kilocraft.essentials.servermeta.PlayerListMeta;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.net.SocketAddress;
-import java.util.UUID;
+import java.util.*;
 
 import static org.kilocraft.essentials.user.ServerUserManager.replaceVariables;
 
@@ -50,6 +58,10 @@ public abstract class MixinPlayerManager {
     @Shadow
     @Final
     private Whitelist whitelist;
+
+    @Shadow
+    @Final
+    private List<ServerPlayerEntity> players;
 
     @Inject(at = @At("HEAD"), method = "onPlayerConnect", cancellable = true)
     private void oky$onPlayerConnect(ClientConnection connection, ServerPlayerEntity playerEntity, CallbackInfo ci) {
@@ -112,6 +124,16 @@ public abstract class MixinPlayerManager {
             cir.setReturnValue(message == null ? null : ComponentText.toText(message));
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+    @Redirect(method = "sendScoreboard", at = @At(value = "INVOKE", target = "Lnet/minecraft/scoreboard/ServerScoreboard;getTeams()Ljava/util/Collection;"))
+    public Collection<Team> changeScoreboardPacket(ServerScoreboard serverScoreboard) {
+        if (KiloConfig.main().playerList().customOrder) {
+            return Collections.emptyList();
+        } else {
+            return serverScoreboard.getTeams();
         }
     }
 

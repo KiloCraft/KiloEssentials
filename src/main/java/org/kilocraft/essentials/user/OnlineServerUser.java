@@ -28,6 +28,7 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
+import org.kilocraft.essentials.servermeta.PlayerListMeta;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -256,7 +257,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             isStaff = true;
         }
 
-        KiloEssentials.getInstance().getLuckPermsCompatibility().ifPresent((it) -> it.onUserJoin(this));
+        PlayerListMeta.updateForAll();
     }
 
     public void onLeave() {
