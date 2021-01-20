@@ -90,7 +90,7 @@ public class Home {
         ServerWorld destinationWorld = RegistryUtils.toServerWorld(type);
         Vec3d destination = new Vec3d(home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ());
         user.saveLocation();
-        destinationWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getEntityId()); // Lag reduction magic
+        destinationWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getId()); // Lag reduction magic
         player.teleport(destinationWorld, home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ(),
                 home.getLocation().getRotation().getYaw(), home.getLocation().getRotation().getPitch());
     }

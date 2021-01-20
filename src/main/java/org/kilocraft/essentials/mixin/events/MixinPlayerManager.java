@@ -66,7 +66,7 @@ public abstract class MixinPlayerManager {
     @Inject(at = @At("HEAD"), method = "onPlayerConnect", cancellable = true)
     private void oky$onPlayerConnect(ClientConnection connection, ServerPlayerEntity playerEntity, CallbackInfo ci) {
         PlayerConnectEventImpl e = KiloServer.getServer().triggerEvent(new PlayerConnectEventImpl(connection, playerEntity));
-        LOGGER.info(playerEntity.getEntityName() + " with a Entity ID of \"" + playerEntity.getEntityId() + "\" Joined the server");
+        LOGGER.info(playerEntity.getEntityName() + " with a Entity ID of \"" + playerEntity.getId() + "\" Joined the server");
 
         if (e.isCancelled()) {
             connection.disconnect(new LiteralText(e.getCancelReason()));
