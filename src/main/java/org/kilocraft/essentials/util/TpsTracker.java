@@ -15,6 +15,7 @@ public class TpsTracker {
     public static final RollingAverage tps60 = new RollingAverage(60 * 60);
     public static final RollingAverage tps1440 = new RollingAverage(60 * 1440);
 
+
     public static class MillisecondPerTick {
         private static final List<Long> longs = new ArrayList<>();
         private static int tick = 0;

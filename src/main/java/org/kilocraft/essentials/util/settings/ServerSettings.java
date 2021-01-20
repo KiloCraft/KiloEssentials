@@ -9,6 +9,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.provided.KiloFile;
+import org.kilocraft.essentials.servermeta.PlayerListMeta;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 import org.kilocraft.essentials.util.settings.values.*;
 import org.kilocraft.essentials.util.settings.values.util.AbstractSetting;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class ServerSettings implements NBTStorage {
 
     public static IntegerSetting VIEWDISTANCE = (IntegerSetting) new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getServer().getMinecraftServer().getPlayerManager().setViewDistance(distance));
+    public static IntegerSetting TICK_DISTANCE = new IntegerSetting(10, "tick_distance");
     public static DoubleSetting SHULKER_SPAWN_CHANCE = new DoubleSetting(0D, "shulker_spawn_chance");
     public static DoubleSetting ITEM_MERGE_RADIUS = new DoubleSetting(0.5D, "item_merge_radius").range(0D, 256D);
     public static BooleanSetting DEBUG = (BooleanSetting) new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
