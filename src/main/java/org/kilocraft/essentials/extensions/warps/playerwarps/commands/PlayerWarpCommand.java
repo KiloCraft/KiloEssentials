@@ -271,10 +271,12 @@ public class PlayerWarpCommand extends EssentialCommand {
 //            }
 //        }
         ScheduledExecutionThread.teleport(src, null, () -> {
-            src.sendMessage(
-                    KiloConfig.messages().commands().warp().teleportTo
-                            .replace("{WARP_NAME}", warp.getName()));
-            src.teleport(warp.getLocation(), true);
+            if (src.isOnline()) {
+                src.sendMessage(
+                        KiloConfig.messages().commands().warp().teleportTo
+                                .replace("{WARP_NAME}", warp.getName()));
+                src.teleport(warp.getLocation(), true);
+            }
         });
         return SUCCESS;
     }

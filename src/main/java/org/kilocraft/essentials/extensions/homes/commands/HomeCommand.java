@@ -35,6 +35,18 @@ public class HomeCommand extends EssentialCommand {
         this.withUsage("command.home.usage", "name");
     }
 
+    public static String replaceVariables(final String str, final OnlineUser source, final User target, final Home home) {
+        String string = ConfigVariableFactory.replaceUserVariables(str, source);
+        string = ConfigVariableFactory.replaceTargetUserVariables(string, target);
+
+        string = new ConfigObjectReplacerUtil("home", string, true)
+                .append("name", home.getName())
+                .append("size", target.getHomesHandler().getHomes().size())
+                .toString();
+
+        return string;
+    }
+
     @Override
     public final void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = this.argument("name", StringArgumentType.word())
@@ -68,8 +80,10 @@ public class HomeCommand extends EssentialCommand {
 
         ScheduledExecutionThread.teleport(user, null, () -> {
             try {
-                homeHandler.teleportToHome(user, name);
-                user.sendLangMessage("command.home.teleport.self", name);
+                if (user.isOnline()) {
+                    homeHandler.teleportToHome(user, name);
+                    user.sendLangMessage("command.home.teleport.self", name);
+                }
             } catch (final UnsafeHomeException e) {
                 if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION) {
                     user.sendError(e.getMessage());
@@ -126,18 +140,6 @@ public class HomeCommand extends EssentialCommand {
         });
 
         return IEssentialCommand.AWAIT;
-    }
-
-    public static String replaceVariables(final String str, final OnlineUser source, final User target, final Home home) {
-        String string = ConfigVariableFactory.replaceUserVariables(str, source);
-        string = ConfigVariableFactory.replaceTargetUserVariables(string, target);
-
-        string = new ConfigObjectReplacerUtil("home", string, true)
-                .append("name", home.getName())
-                .append("size", target.getHomesHandler().getHomes().size())
-                .toString();
-
-        return string;
     }
 
     private Text getTeleportConfirmationText(String homeName, String owner) {

@@ -97,12 +97,14 @@ public class WarpCommand {
         ServerWarp warp = ServerWarpManager.getWarp(name);
         OnlineUser user = KiloServer.getServer().getOnlineUser(source.getPlayer());
         ScheduledExecutionThread.teleport(user, null, () -> {
-            user.sendLangMessage("command.warp.teleport", warp.getName());
-            user.saveLocation();
-            try {
-                ServerWarpManager.teleport(user.getCommandSource(), warp);
-            } catch (CommandSyntaxException ignored) {
-                //We already have a check, which checks if the executor is a player
+            if (user.isOnline()) {
+                user.sendLangMessage("command.warp.teleport", warp.getName());
+                user.saveLocation();
+                try {
+                    ServerWarpManager.teleport(user.getCommandSource(), warp);
+                } catch (CommandSyntaxException ignored) {
+                    //We already have a check, which checks if the executor is a player
+                }
             }
         });
         return 1;

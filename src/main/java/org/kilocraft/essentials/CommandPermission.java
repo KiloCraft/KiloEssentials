@@ -67,7 +67,7 @@ public enum CommandPermission {
     MOBCAP_SET("mobcap.set"),
     MOBCAP_QUERY("mobcap.query"),
     VIEWDISTANCE("viewdistance"),
-    SHULKER_CHANCE("shulkerchance"),
+    SLIME_CHUNK("slime_chunk"),
     NICKNAME_SELF("nickname.self"),
     NICKNAME_OTHERS("nickname.others"),
     REALNAME("realname"),

@@ -131,7 +131,6 @@ public class KiloCommands {
         this.register(new LightningCommand());
         this.register(new MobCapCommand());
         this.register(new ViewDistanceCommand());
-        this.register(new ShulkerSpawnChanceCommand());
         this.register(new NicknameCommand());
         this.register(new SayAsCommand());
         this.register(new SudoCommand());
@@ -142,6 +141,7 @@ public class KiloCommands {
         this.register(new HatCommand());
         this.register(new VersionCommand());
         this.register(new ReloadCommand());
+        this.register(new SlimeChunkCommand());
         this.register(new TextFormattingCommand());
         this.register(new CommandFormattingCommand());
         this.register(new GamemodeCommand());

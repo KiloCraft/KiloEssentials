@@ -6,7 +6,11 @@ public class Average {
     private int index = 0;
 
     public Average(int size) {
-        this.data = new long[size];
+        data = new long[size];
+    }
+
+    public static String format(double d) {
+        return String.format("%.2f", d);
     }
 
     public void add(long l) {
@@ -14,17 +18,46 @@ public class Average {
         index++;
     }
 
-
     public double getAverage() {
         double result = 0;
-        for (long l : data) {
-            result += l;
+        int to = Math.min(data.length, index);
+        for (int i = 0; i < to; i++) {
+            result += data[i];
         }
-        return result / data.length;
+        return result / to;
+    }
+
+    /*
+     * Get the average of the last x entries
+     */
+    public double getAverage(int x) {
+        x = Math.min(x, index);
+        double result = 0;
+        for (int i = index - 1; i >= index - x; i--) {
+            result += data[i < 0 ? data.length - i : i % data.length];
+        }
+        return result / x;
     }
 
     public String formattedAverage() {
-        return String.format("%.2f", getAverage());
+        return format(getAverage());
+    }
+
+    public String formattedAverage(int x) {
+        return format(getAverage(x));
+    }
+
+    public String toString() {
+        StringBuilder result = new StringBuilder("[");
+        int to = Math.min(data.length, index);
+        for (int i = 0; i < data.length; i++) {
+            if (index - 1 == i) result.append("(");
+            result.append(i >= to ? "X" : data[i]);
+            if (index - 1 == i) result.append(")");
+            if (i != data.length - 1) result.append(",");
+        }
+        result.append("]");
+        return result.toString();
     }
 
 }
