@@ -9,10 +9,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
+import org.kilocraft.essentials.events.player.PlayerMutedEventImpl;
 import org.kilocraft.essentials.util.MutedPlayerEntry;
 
 import java.util.Date;
@@ -48,6 +50,7 @@ public class MuteCommand extends EssentialCommand {
         super.resolveAndGetProfileAsync(ctx, "victim").thenAcceptAsync((victim) -> {
             MutedPlayerEntry entry = new MutedPlayerEntry(victim, date, src.getName(), null, reason);
             super.getServer().getUserManager().getMutedPlayerList().add(entry);
+            KiloServer.getServer().triggerEvent(new PlayerMutedEventImpl(EntityIdentifiable.fromGameProfile(victim), src, reason));
             this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.MUTE, null, silent);
         });
 

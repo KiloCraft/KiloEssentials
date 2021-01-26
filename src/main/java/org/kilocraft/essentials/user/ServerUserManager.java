@@ -39,6 +39,8 @@ import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
+import org.kilocraft.essentials.events.player.PlayerClientCommandEventImpl;
+import org.kilocraft.essentials.events.player.PlayerMutedEventImpl;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.*;
@@ -295,7 +297,8 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{REASON}", entry.getReason() == null ? (type == Punishment.Type.MUTE ? config.defaults().mute : config.defaults().ban) : entry.getReason())
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
-        if (silent) {
+
+            if (silent) {
             ServerChat.Channel.STAFF.send(ComponentText.toText(config.meta().silentPrefix + " " + message));
         } else if (config.meta().broadcast) {
             KiloChat.broadCast(message);
