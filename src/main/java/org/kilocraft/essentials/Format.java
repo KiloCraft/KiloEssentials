@@ -14,8 +14,8 @@ public enum Format {
     GRADIENT("gradient", "<\\/?gradient(:#?\\w+)*>"),
     RAINBOW("rainbow", "<\\/?rainbow>");
 
-    private final String perm;
-    private final String[] regex;
+    public final String perm;
+    public final String[] regex;
 
     Format(String perm, String... regex) {
         this.perm = perm;
