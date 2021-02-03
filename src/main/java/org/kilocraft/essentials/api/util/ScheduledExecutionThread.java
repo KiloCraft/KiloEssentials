@@ -16,6 +16,7 @@ public class ScheduledExecutionThread {
 
     public static void start(long wait, ScheduledExecution s) {
         CompletableFuture.runAsync(() -> {
+            Thread.currentThread().setName("ScheduledExecutionThread");
             try {
                 Thread.sleep(wait);
                 scheduledExecutions.add(s);

@@ -6,6 +6,7 @@
   "mixins": [
     "EntityMixin",
     "EntitySelectorOptionsMixin",
+    "GuardianEntityMixin",
     "MinecraftDedicatedServerMixin",
     "RconClientMixin",
     "ServerChunkManagerMixin",
