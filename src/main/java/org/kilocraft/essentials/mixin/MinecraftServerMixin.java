@@ -47,8 +47,8 @@ public abstract class MinecraftServerMixin implements Brandable {
             TpsTracker.tps60.add(currentTps, diff);
             TpsTracker.tps1440.add(currentTps, diff);
             tickSection = currentTime;
-            DataTracker.compute();
         }
+        DataTracker.compute();
 
         KiloServer.getServer().triggerEvent(new ServerTickEventImpl((MinecraftServer) (Object) this));
     }
