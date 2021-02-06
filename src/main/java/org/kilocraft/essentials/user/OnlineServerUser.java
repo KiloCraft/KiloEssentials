@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.Format;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -30,10 +31,12 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.servermeta.PlayerListMeta;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.net.SocketAddress;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 public class OnlineServerUser extends ServerUser implements OnlineUser {
@@ -255,6 +258,12 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         if (KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF)) {
             isStaff = true;
+        }
+
+        if (KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_SELF) || KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_OTHERS)) {
+            this.getNickname().ifPresent(s -> this.setNickname(Format.parse(this, s, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting.")));
+        } else {
+            this.clearNickname();
         }
 
         PlayerListMeta.updateForAll();
