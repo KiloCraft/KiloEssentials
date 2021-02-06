@@ -9,10 +9,10 @@
     "GuardianEntityMixin",
     "MinecraftDedicatedServerMixin",
     "RconClientMixin",
-    "ServerChunkManagerMixin",
     "ServerScoreboardMixin",
     "ServerWorldMixin",
     "SpawnHelperInfoMixin",
+    "SpawnHelperMixin",
     "WorldMixin"
   ],
   "server": [
