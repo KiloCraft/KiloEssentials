@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -18,8 +19,10 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
 
     @Redirect(method = "tickEntity", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
     public <T> void shouldTickEntity(Consumer<T> consumer, T t) {
+        if (!ServerSettings.TICK_ENTITIES.getValue()) return;
         int tickDistance = ServerSettings.TICK_DISTANCE.getValue();
         if (t instanceof Entity && tickDistance != -1) {
+            if (t instanceof VillagerEntity && !ServerSettings.TICK_VILLAGERS.getValue()) return;
             Entity entity = (Entity) t;
             Entity player = entity.world.getClosestPlayer(entity, -1.0D);
             if (player != null) {

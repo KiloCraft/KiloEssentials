@@ -28,7 +28,10 @@ public class ServerSettings implements NBTStorage {
     public static DoubleSetting ITEM_MERGE_RADIUS = new DoubleSetting(0.5D, "item_merge_radius").range(0D, 256D);
     public static IntegerSetting GUARDIAN_SPAWN_CHECK_LIMIT = new IntegerSetting(-1, "guardian_spawn_check_limit");
     public static IntegerSetting GUARDIAN_SPAWN_CHECK_RANGE = new IntegerSetting(-1, "guardian_spawn_check_range");
+    public static IntegerSetting DRIP_LEAF_HEIGHT = new IntegerSetting(5, "drip_leaf_height");
     public static BooleanSetting DEBUG = (BooleanSetting) new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
+    public static BooleanSetting TICK_ENTITIES = new BooleanSetting(true, "tick_entities");
+    public static BooleanSetting TICK_VILLAGERS = new BooleanSetting(true, "tick_villagers");
     private IntegerSetting wither_check_distance = new IntegerSetting(2, "wither_check_distance").range(-256, 256);
     private DoubleSetting wither_tp_distance = new DoubleSetting(0.5, "wither_tp_distance").range(-256D, 256D);
 
