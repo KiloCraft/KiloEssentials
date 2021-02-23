@@ -26,10 +26,14 @@ public class ServerSettings implements NBTStorage {
     public static IntegerSetting TICK_DISTANCE = new IntegerSetting(10, "tick_distance");
     public static DoubleSetting SHULKER_SPAWN_CHANCE = new DoubleSetting(0D, "shulker_spawn_chance");
     public static DoubleSetting ITEM_MERGE_RADIUS = new DoubleSetting(0.5D, "item_merge_radius").range(0D, 256D);
+    public static BooleanSetting ITEM_MERGE_ADJUST_MOVEMENT = new BooleanSetting(true, "item_merge_adjust_movement");
     public static IntegerSetting GUARDIAN_SPAWN_CHECK_LIMIT = new IntegerSetting(-1, "guardian_spawn_check_limit");
     public static IntegerSetting GUARDIAN_SPAWN_CHECK_RANGE = new IntegerSetting(-1, "guardian_spawn_check_range");
+    public static IntegerSetting CHICKEN_SPAWN_CHECK_LIMIT = new IntegerSetting(-1, "chicken_spawn_check_limit");
+    public static IntegerSetting CHICKEN_SPAWN_CHECK_RANGE = new IntegerSetting(-1, "chicken_spawn_check_range");
     public static IntegerSetting DRIP_LEAF_HEIGHT = new IntegerSetting(5, "drip_leaf_height");
     public static BooleanSetting DEBUG = (BooleanSetting) new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
+    public static BooleanSetting PATCH_DONKEY_DUPE = new BooleanSetting(true, "patch_donkey_dupe");
     public static BooleanSetting TICK_ENTITIES = new BooleanSetting(true, "tick_entities");
     public static BooleanSetting TICK_VILLAGERS = new BooleanSetting(true, "tick_villagers");
     private IntegerSetting wither_check_distance = new IntegerSetting(2, "wither_check_distance").range(-256, 256);
