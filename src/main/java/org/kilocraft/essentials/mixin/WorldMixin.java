@@ -26,7 +26,7 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
             Entity entity = (Entity) t;
             Entity player = entity.world.getClosestPlayer(entity, -1.0D);
             if (player != null) {
-                if (entity.getChunkPos().method_24022(player.getChunkPos()) > tickDistance) {
+                if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) > tickDistance) {
                     DataTracker.add(DataTracker.cTickedEntities);
                     return;
                 }
@@ -43,7 +43,7 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
         if (tickDistance != -1) {
             Entity player = this.getClosestPlayer(chunkPos.getStartX() + 8, 128, chunkPos.getStartZ() + 8, -1.0D, false);
             if (player != null) {
-                if (chunkPos.method_24022(player.getChunkPos()) > tickDistance) {
+                if (chunkPos.getChebyshevDistance(player.getChunkPos()) > tickDistance) {
                     DataTracker.add(DataTracker.cTickedBlockEntities);
                     return;
                 }

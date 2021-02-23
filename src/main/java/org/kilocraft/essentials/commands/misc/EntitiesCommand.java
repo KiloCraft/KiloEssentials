@@ -57,7 +57,7 @@ public class EntitiesCommand extends EssentialCommand {
                 entitiesByType.put(entity.getType(), entitiesByType.getOrDefault(entity.getType(), 0) + 1);
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     int i = nearbyEntities.get(player);
-                    if (entity.getChunkPos().method_24022(player.getChunkPos()) <= ServerSettings.VIEWDISTANCE.getValue() && entity.getEntityWorld().equals(player.getEntityWorld())) {
+                    if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) <= ServerSettings.VIEWDISTANCE.getValue() && entity.getEntityWorld().equals(player.getEntityWorld())) {
                         i++;
                     }
                     nearbyEntities.put(player, i);
@@ -102,7 +102,7 @@ public class EntitiesCommand extends EssentialCommand {
         HashMap<EntityType<?>, Integer> entitiesByType = new HashMap<>();
         int entities = 0;
         for (Entity entity : player.getServerWorld().iterateEntities()) {
-            if (entity.getChunkPos().method_24022(player.getChunkPos()) <= ServerSettings.VIEWDISTANCE.getValue()) {
+            if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) <= ServerSettings.VIEWDISTANCE.getValue()) {
                 entitiesByType.put(entity.getType(), entitiesByType.getOrDefault(entity.getType(), 0) + 1);
                 entities++;
             }

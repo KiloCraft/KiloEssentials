@@ -6,6 +6,7 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -228,12 +229,27 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     }
 
     public void killAll() {
+        int i = 0;
         for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
             ArmorStandEntity armorStand = (ArmorStandEntity) entry.getKey().getEntity(entry.getValue());
             if (armorStand != null) {
+                i++;
                 armorStand.kill();
             }
         }
+        KiloEssentials.getLogger().info("Killed " + i + " armorstands!");
+        i = 0;
+        for (ServerWorld world : KiloEssentials.getServer().getMinecraftServer().getWorlds()) {
+            for (Entity entity : world.iterateEntities()) {
+                if (!(entity instanceof ArmorStandEntity)) continue;
+                if (entity.getScoreboardTags().contains("KE$SitStand")) {
+                    i++;
+                    entity.kill();
+                }
+            }
+        }
+        if (i > 0) KiloEssentials.getLogger().info("Killed " + i + " leftover armorstands!");
+
     }
 
     public boolean isSitting(@NotNull final ServerPlayerEntity player) {

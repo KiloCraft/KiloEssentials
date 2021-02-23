@@ -32,7 +32,7 @@ public abstract class ServerWorldMixin extends World {
         if (tickDistance != -1) {
             Entity player = this.getClosestPlayer(chunkPos.getStartX() + 8, 128, chunkPos.getStartZ() + 8, -1.0D, false);
             if (player != null) {
-                if (chunkPos.method_24022(player.getChunkPos()) > tickDistance) {
+                if (chunkPos.getChebyshevDistance(player.getChunkPos()) > tickDistance) {
                     DataTracker.add(DataTracker.cTickedChunks);
                     ci.cancel();
                     return;

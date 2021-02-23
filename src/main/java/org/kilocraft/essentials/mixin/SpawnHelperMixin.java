@@ -22,7 +22,7 @@ public abstract class SpawnHelperMixin {
         if (tickDistance != -1) {
             Entity player = serverWorld.getClosestPlayer(chunk.getPos().getStartX() + 8, 128, chunk.getPos().getStartZ() + 8, -1.0D, false);
             if (player != null) {
-                if (chunk.getPos().method_24022(player.getChunkPos()) > tickDistance) {
+                if (chunk.getPos().getChebyshevDistance(player.getChunkPos()) > tickDistance) {
                     DataTracker.add(DataTracker.cSpawnAttempts);
                     cir.setReturnValue(false);
                     return;
