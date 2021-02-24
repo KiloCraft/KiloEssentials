@@ -4,6 +4,7 @@ public class Average {
 
     public final long[] data;
     private int index = 0;
+    private long tracked = 0;
 
     public Average(int size) {
         data = new long[size];
@@ -16,6 +17,15 @@ public class Average {
     public void add(long l) {
         data[index % data.length] = l;
         index++;
+    }
+
+    public void track() {
+        tracked++;
+    }
+
+    public void compute() {
+        add(tracked);
+        tracked = 0;
     }
 
     public double getAverage() {

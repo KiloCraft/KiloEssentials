@@ -19,7 +19,7 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.util.DataTracker;
+import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.TpsTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;

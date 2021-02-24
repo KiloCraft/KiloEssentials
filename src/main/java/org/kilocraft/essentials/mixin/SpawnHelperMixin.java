@@ -5,10 +5,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.chunk.Chunk;
-import org.kilocraft.essentials.util.DataTracker;
+import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -23,12 +22,12 @@ public abstract class SpawnHelperMixin {
             Entity player = serverWorld.getClosestPlayer(chunk.getPos().getStartX() + 8, 128, chunk.getPos().getStartZ() + 8, -1.0D, false);
             if (player != null) {
                 if (chunk.getPos().getChebyshevDistance(player.getChunkPos()) > tickDistance) {
-                    DataTracker.add(DataTracker.cSpawnAttempts);
+                    DataTracker.cSpawnAttempts.track();
                     cir.setReturnValue(false);
                     return;
                 }
             }
         }
-        DataTracker.add(DataTracker.spawnAttempts);
+        DataTracker.spawnAttempts.track();
     }
 }

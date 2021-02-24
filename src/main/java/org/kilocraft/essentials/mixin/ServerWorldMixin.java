@@ -9,7 +9,7 @@ import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
-import org.kilocraft.essentials.util.DataTracker;
+import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,13 +33,13 @@ public abstract class ServerWorldMixin extends World {
             Entity player = this.getClosestPlayer(chunkPos.getStartX() + 8, 128, chunkPos.getStartZ() + 8, -1.0D, false);
             if (player != null) {
                 if (chunkPos.getChebyshevDistance(player.getChunkPos()) > tickDistance) {
-                    DataTracker.add(DataTracker.cTickedChunks);
+                    DataTracker.cTickedChunks.track();
                     ci.cancel();
                     return;
                 }
             }
         }
-        DataTracker.add(DataTracker.tickedChunks);
+        DataTracker.tickedChunks.track();
     }
 
 }

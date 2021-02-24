@@ -16,12 +16,14 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Pair;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -76,15 +78,21 @@ public class EntitiesCommand extends EssentialCommand {
         });
         TextComponent.Builder entityHover = Component.text().content("Entities by Type:\n").color(NamedTextColor.YELLOW);
         int i = 0;
-        HashMap<EntityType<?>, Integer> sorted = new HashMap<>();
-        sortByValue(entitiesByType).forEachOrdered(entry -> sorted.put(entry.getKey(), entry.getValue()));
-        for (Map.Entry<EntityType<?>, Integer> entry : sorted.entrySet()) {
-            entityHover.append(Component.text(entry.getKey().getName().getString()).color(NamedTextColor.GRAY),
+        ArrayList<Pair<EntityType<?>, Integer>> sorted = new ArrayList<>();
+        sortByValue(entitiesByType).forEachOrdered(entry -> sorted.add(new Pair<>(entry.getKey(), entry.getValue())));
+        for (Pair<EntityType<?>, Integer> pair : sorted) {
+            NamedTextColor color = NamedTextColor.WHITE;
+            if (pair.getRight() > 50) { color = NamedTextColor.GREEN; }
+            if (pair.getRight() > 100) { color = NamedTextColor.YELLOW; }
+            if (pair.getRight() > 250) { color = NamedTextColor.GOLD; }
+            if (pair.getRight() > 500) { color = NamedTextColor.RED; }
+            if (pair.getRight() > 1000) { color = NamedTextColor.DARK_RED; }
+            entityHover.append(Component.text(pair.getLeft().getName().getString()).color(NamedTextColor.GRAY),
                     Component.text("(").color(NamedTextColor.DARK_GRAY),
-                    Component.text(entry.getKey().getSpawnGroup().getName()).color(NamedTextColor.AQUA),
+                    Component.text(pair.getLeft().getSpawnGroup().getName()).color(NamedTextColor.AQUA),
                     Component.text(")").color(NamedTextColor.DARK_GRAY),
                     Component.text(": ").color(NamedTextColor.GRAY),
-                    Component.text(entry.getValue() + ((i % 3 == 2) ? "\n" : " ")).color(NamedTextColor.LIGHT_PURPLE));
+                    Component.text(pair.getRight() + ((i % 3 == 2) ? "\n" : " ")).color(color));
             i++;
         }
         TextComponent.Builder builder = Component.text().content("There are currently ").color(NamedTextColor.YELLOW)

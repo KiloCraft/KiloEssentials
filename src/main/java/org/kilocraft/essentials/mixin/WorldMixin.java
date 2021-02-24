@@ -6,7 +6,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
-import org.kilocraft.essentials.util.DataTracker;
+import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,29 +27,29 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
             Entity player = entity.world.getClosestPlayer(entity, -1.0D);
             if (player != null) {
                 if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) > tickDistance) {
-                    DataTracker.add(DataTracker.cTickedEntities);
+                    DataTracker.cTickedEntities.track();
                     return;
                 }
             }
         }
-        DataTracker.add(DataTracker.tickedEntities);
+        DataTracker.tickedEntities.track();
         consumer.accept(t);
     }
 
     @Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/BlockEntityTickInvoker;tick()V"))
     public void shouldTickBlockEntity(BlockEntityTickInvoker blockEntityTickInvoker) {
-        ChunkPos chunkPos = new ChunkPos(blockEntityTickInvoker.getPos());
         int tickDistance = ServerSettings.TICK_DISTANCE.getValue();
         if (tickDistance != -1) {
+            ChunkPos chunkPos = new ChunkPos(blockEntityTickInvoker.getPos());
             Entity player = this.getClosestPlayer(chunkPos.getStartX() + 8, 128, chunkPos.getStartZ() + 8, -1.0D, false);
             if (player != null) {
                 if (chunkPos.getChebyshevDistance(player.getChunkPos()) > tickDistance) {
-                    DataTracker.add(DataTracker.cTickedBlockEntities);
+                    DataTracker.cTickedBlockEntities.track();
                     return;
                 }
             }
         }
-        DataTracker.add(DataTracker.tickedBlockEntities);
+        DataTracker.tickedBlockEntities.track();
         blockEntityTickInvoker.tick();
     }
 
