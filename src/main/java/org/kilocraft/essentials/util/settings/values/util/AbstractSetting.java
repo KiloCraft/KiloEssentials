@@ -1,70 +1,65 @@
 package org.kilocraft.essentials.util.settings.values.util;
 
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.command.ServerCommandSource;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
-public abstract class AbstractSetting<K> {
+public abstract class AbstractSetting implements Setting {
 
-    protected static String commandArgumentValue = "value";
-    private static List<AbstractSetting<?>> valueList = new ArrayList<>();
     protected final String id;
-    public boolean shouldGenerateCommands = false;
-    private K value;
-    private List<Consumer<K>> onLoad = new ArrayList<>();
+    protected final List<AbstractSetting> children = new ArrayList<>();
+    Setting parent;
 
-    public AbstractSetting(K value, String id) {
-        this.value = value;
+
+    public AbstractSetting(String id) {
         this.id = id;
-        valueList.add(this);
     }
 
-    public static List<AbstractSetting<?>> getValueList() {
-        return valueList;
+
+    public abstract void toTag(CompoundTag tag);
+
+    public abstract void fromTag(CompoundTag tag);
+
+    public AbstractSetting addChild(AbstractSetting setting) {
+        children.add(setting);
+        setting.setParent(this);
+        return this;
     }
 
-    public K getValue() {
-        return value;
-    }
-
-    public void setValue(K value) {
-        this.value = value;
-        changed();
-    }
-
-    public abstract CompoundTag toTag(CompoundTag tag);
-
-    public void fromTag(CompoundTag tag) {
-        changed();
-    }
-
-    void changed() {
-        for (Consumer<K> consumer : onLoad) {
-            consumer.accept(this.getValue());
+    public List<AbstractSetting> getChildren() {
+        List<AbstractSetting> result = new ArrayList<>();
+        result.add(this);
+        for (AbstractSetting child : children) {
+            result.addAll(child.getChildren());
         }
+        return result;
     }
 
-    public String getId() {
-        return id;
+    protected void setParent(Setting parent) {
+        this.parent = parent;
     }
 
-    public AbstractSetting<K> generateCommand(boolean shouldGenerateCommands) {
-        this.shouldGenerateCommands = shouldGenerateCommands;
-        return this;
+    public String getID() {
+        String parentID = parent.getID();
+        return parentID.equals("") ? id : parentID + "." + id;
     }
 
-    public AbstractSetting<K> onChanged(Consumer<K> consumer) {
-        this.onLoad.add(consumer);
-        return this;
+    @Nullable
+    public AbstractSetting getSetting(String id) {
+        if (id.equals("")) {
+            return this;
+        }
+        for (AbstractSetting child : children) {
+            if (id.startsWith(child.id)) {
+                String[] part = id.split("\\.", 2);
+                return child.getSetting(part.length > 1 ? part[1] : "");
+            }
+        }
+        return null;
     }
 
-    public abstract RequiredArgumentBuilder<ServerCommandSource, K> valueArgument();
 
-    public abstract void setValueFromCommand(CommandContext<ServerCommandSource> ctx);
 
 }

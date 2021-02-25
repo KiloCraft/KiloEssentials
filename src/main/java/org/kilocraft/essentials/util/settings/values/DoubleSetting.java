@@ -7,9 +7,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.AbstractSetting;
+import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
 
-public class DoubleSetting extends AbstractSetting<Double> implements RangeSetting<Double> {
+public class DoubleSetting extends ConfigurableSetting<Double> implements RangeSetting<Double> {
 
     private Double from = Double.MIN_VALUE;
     private Double to = Double.MAX_VALUE;
@@ -20,13 +21,24 @@ public class DoubleSetting extends AbstractSetting<Double> implements RangeSetti
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        tag.putDouble(id, this.getValue());
-        return tag;
+    public void toTag(CompoundTag tag) {
+        CompoundTag setting = new CompoundTag();
+        setting.putDouble("value", this.getValue());
+        for (AbstractSetting child : this.children) {
+            child.toTag(setting);
+        }
+        tag.put(id, setting);
     }
 
+    @Override
     public void fromTag(CompoundTag tag) {
-        if (tag.contains(id)) this.setValue(tag.getDouble(id));
+        if (tag.contains(id)) {
+            CompoundTag setting = tag.getCompound(id);
+            this.setValue(setting.getDouble("value"));
+            for (AbstractSetting child : children) {
+                child.fromTag(setting);
+            }
+        }
         super.fromTag(tag);
     }
 

@@ -28,7 +28,7 @@ public class BigDripleafBlockMixin {
     @Overwrite
     protected static void grow(World world, Random random, BlockPos blockPos) {
         int i = world.getTopY() - blockPos.getY();
-        int j = 1 + random.nextInt(ServerSettings.DRIP_LEAF_HEIGHT.getValue());
+        int j = 1 + random.nextInt(5);
         int k = Math.min(j, i);
         Direction direction = Direction.Type.HORIZONTAL.random(random);
         BlockPos.Mutable mutable = blockPos.mutableCopy();

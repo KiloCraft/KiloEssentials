@@ -15,6 +15,7 @@ import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 public class OnServerReady implements EventHandler<ServerReadyEvent> {
     @Override
     public void handle(@NotNull ServerReadyEvent event) {
+        KiloEssentials.getInstance().getSettingManager().registerSettings();
         NBTStorageUtil.onLoad();
         BrandedServer.set();
         KiloServer.getServer().getMetaManager().load();

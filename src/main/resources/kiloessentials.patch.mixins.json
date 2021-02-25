@@ -4,11 +4,14 @@
   "package": "org.kilocraft.essentials.mixin.patch",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AnimalEntityMixinPatch",
     "BigDripleafBlockMixin",
+    "DecorationItemMixin",
+    "EggEntityMixinPatch",
     "HorseBaseEntityMixin",
-    "ItemEntityMixin",
+    "ItemEntityMixinPatch",
     "ShulkerEntityMixinPatch",
-    "WitherEntityMixin"
+    "WitherEntityMixinPatch"
   ],
   "server": [
     "SignBlockEntityMixinPatch"

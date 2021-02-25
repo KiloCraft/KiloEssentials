@@ -70,9 +70,9 @@ public class MobCapCommand extends EssentialCommand {
         Optional<SpawnGroup> spawnGroup = Optional.ofNullable(SpawnGroup.byName(name));
         Identifier id = world.getRegistryKey().getValue();
         if (spawnGroup.isPresent()) {
-            KiloEssentials.getInstance().getSettingManager().setMultiplier(id, spawnGroup.get(), f);
+            ServerSettings.setFloat("mobcap." + id.getPath() + "." + spawnGroup.get().getName().toLowerCase(), f);
         } else if (name.equals("global")) {
-            KiloEssentials.getInstance().getSettingManager().setMultiplier(id, null, f);
+            ServerSettings.setFloat("mobcap." + id.getPath(), f);
         } else {
             throw new SimpleCommandExceptionType(new LiteralText("Invalid spawn group: " + name)).create();
         }
@@ -84,20 +84,19 @@ public class MobCapCommand extends EssentialCommand {
     private int info(CommandContext<ServerCommandSource> ctx, ServerWorld world) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         SpawnHelper.Info spawnHelperInfo = world.getChunkManager().getSpawnInfo();
-        ServerSettings settingManager = KiloEssentials.getInstance().getSettingManager();
         if (spawnHelperInfo == null) KiloEssentials.getLogger().error("SpawnEntry is null");
         TextComponent.Builder text = Component.text();
-        text.content("Mobcaps").color(NamedTextColor.YELLOW).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(settingManager.getMultiplier(world.getRegistryKey().getValue(), null)).color(NamedTextColor.GREEN)).append(Component.text(")").color(NamedTextColor.DARK_GRAY)).append(Component.text(":\n").color(NamedTextColor.YELLOW));
+        text.content("Mobcaps").color(NamedTextColor.YELLOW).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(ServerSettings.getFloat("mobcap." + world.getRegistryKey().getValue().getPath())).color(NamedTextColor.GREEN)).append(Component.text(")").color(NamedTextColor.DARK_GRAY)).append(Component.text(":\n").color(NamedTextColor.YELLOW));
         for (SpawnGroup spawnGroup : SpawnGroup.values()) {
             int count = spawnHelperInfo.getGroupToCount().getOrDefault(spawnGroup, 0);
             String name = spawnGroup.getName();
             int cap = (int) ((spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) spawnHelperInfo).getSpawnChunkCount() /
-                    SpawnHelperAccessor.getChunkArea()) * settingManager.getMultiplier(world.getRegistryKey().getValue(), spawnGroup) *
-                    settingManager.getMultiplier(world.getRegistryKey().getValue(), null));
-            text.append(Component.text(name + ": ").color(NamedTextColor.GRAY)).append(Component.text(count).color(NamedTextColor.LIGHT_PURPLE)).append(Component.text("/").color(NamedTextColor.DARK_GRAY)).append(Component.text(cap).color(NamedTextColor.GOLD)).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(settingManager.getMultiplier(world.getRegistryKey().getValue(), spawnGroup)).color(NamedTextColor.AQUA)).append(Component.text(")\n").color(NamedTextColor.DARK_GRAY));
+                    SpawnHelperAccessor.getChunkArea()) * ServerSettings.getFloat("mobcap." + world.getRegistryKey().getValue().getPath() + "." + spawnGroup.getName().toLowerCase()) *
+                    ServerSettings.getFloat("mobcap." + world.getRegistryKey().getValue().getPath()));
+            text.append(Component.text(name + ": ").color(NamedTextColor.GRAY)).append(Component.text(count).color(NamedTextColor.LIGHT_PURPLE)).append(Component.text("/").color(NamedTextColor.DARK_GRAY)).append(Component.text(cap).color(NamedTextColor.GOLD)).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(ServerSettings.getFloat("mobcap." + world.getRegistryKey().getValue().getPath() + "." + spawnGroup.getName().toLowerCase())).color(NamedTextColor.AQUA)).append(Component.text(")\n").color(NamedTextColor.DARK_GRAY));
         }
         player.sendMessage(ComponentText.toText(text.build()), false);
-        return (int) (settingManager.getMultiplier(world.getRegistryKey().getValue(), null) * 100);
+        return (int) ServerSettings.getFloat("mobcap." + world.getRegistryKey().getValue().getPath()) * 100;
     }
 
 }

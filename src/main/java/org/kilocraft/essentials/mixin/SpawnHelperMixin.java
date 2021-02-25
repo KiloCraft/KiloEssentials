@@ -17,7 +17,7 @@ public abstract class SpawnHelperMixin {
 
     @Inject(method = "isAcceptableSpawnPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;getPos()Lnet/minecraft/util/math/ChunkPos;"), cancellable = true)
     private static void shouldSpawnEntities(ServerWorld serverWorld, Chunk chunk, BlockPos.Mutable mutable, double d, CallbackInfoReturnable<Boolean> cir) {
-        int tickDistance = ServerSettings.TICK_DISTANCE.getValue();
+        int tickDistance = ServerSettings.getInt("tick.distance");
         if (tickDistance != -1) {
             Entity player = serverWorld.getClosestPlayer(chunk.getPos().getStartX() + 8, 128, chunk.getPos().getStartZ() + 8, -1.0D, false);
             if (player != null) {
