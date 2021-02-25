@@ -9,11 +9,13 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import org.checkerframework.checker.units.qual.K;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.util.settings.values.util.AbstractSetting;
+import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 
 import java.security.InvalidKeyException;
 
@@ -25,11 +27,12 @@ public class SettingCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        for (AbstractSetting<?> setting : AbstractSetting.getValueList()) {
-            if (!setting.shouldGenerateCommands) continue;
-            RequiredArgumentBuilder<ServerCommandSource, ?> value = setting.valueArgument();
+        for (AbstractSetting setting : ServerSettings.root.getChildren()) {
+            if (!(setting instanceof ConfigurableSetting)) continue;
+            ConfigurableSetting<?> configurableSetting = (ConfigurableSetting<?>) setting;
+            RequiredArgumentBuilder<ServerCommandSource, ?> value = configurableSetting.valueArgument();
             value.executes(this::setValue);
-            LiteralArgumentBuilder<ServerCommandSource> id = literal(setting.getId());
+            LiteralArgumentBuilder<ServerCommandSource> id = literal(setting.getID());
             id.executes(this::getValue);
             id.then(value);
             commandNode.addChild(id.build());
@@ -39,29 +42,25 @@ public class SettingCommand extends EssentialCommand {
     public int setValue(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String input = ctx.getInput();
         String id = input.split(" ")[1];
-        try {
-            AbstractSetting<?> setting = KiloEssentials.getInstance().getSettingManager().getSetting(id);
-            setting.setValueFromCommand(ctx);
-            Object value = setting.getValue();
-            ServerPlayerEntity player = ctx.getSource().getPlayer();
-            player.sendMessage(StringText.of(true, "command.setting.set", setting.getId(), value), false);
-        } catch (InvalidKeyException e) {
-            throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
-        }
+        AbstractSetting setting = ServerSettings.root.getSetting(id);
+        if (!(setting instanceof ConfigurableSetting)) throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
+        ConfigurableSetting<?> configurableSetting = (ConfigurableSetting<?>) setting;
+        configurableSetting.setValueFromCommand(ctx);
+        Object value = configurableSetting.getValue();
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        player.sendMessage(StringText.of(true, "command.setting.set", setting.getID(), value), false);
         return SUCCESS;
     }
 
     public int getValue(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String input = ctx.getInput();
         String id = input.split(" ")[1];
-        try {
-            AbstractSetting<?> setting = KiloEssentials.getInstance().getSettingManager().getSetting(id);
-            Object value = setting.getValue();
-            ServerPlayerEntity player = ctx.getSource().getPlayer();
-            player.sendMessage(StringText.of(true, "command.setting.info", setting.getId(), value), false);
-        } catch (InvalidKeyException e) {
-            throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
-        }
+        AbstractSetting setting = ServerSettings.root.getSetting(id);
+        if (!(setting instanceof ConfigurableSetting)) throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
+        ConfigurableSetting<?> configurableSetting = (ConfigurableSetting<?>) setting;
+        Object value = configurableSetting.getValue();
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        player.sendMessage(StringText.of(true, "command.setting.info", setting.getID(), value), false);
         return 1;
     }
 }

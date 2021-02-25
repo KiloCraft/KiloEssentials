@@ -14,7 +14,7 @@ public class ShulkerEntityMixinPatch {
 
     @Inject(method = "spawnNewShulker", at = @At(value = "HEAD"), cancellable = true)
     public void onShulkerSpawnAttempt(CallbackInfo ci) {
-        if (ServerSettings.SHULKER_SPAWN_CHANCE.getValue() >= new Random().nextDouble() * 100) {
+        if (ServerSettings.getDouble("patch.shulker_spawn_chance") >= new Random().nextDouble() * 100) {
             ci.cancel();
         }
     }

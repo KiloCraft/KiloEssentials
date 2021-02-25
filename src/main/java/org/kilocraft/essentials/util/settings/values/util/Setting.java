@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.util.settings.values.util;
 
-public interface CustomSave {
+public interface Setting {
 
-
+    String getID();
 
 }

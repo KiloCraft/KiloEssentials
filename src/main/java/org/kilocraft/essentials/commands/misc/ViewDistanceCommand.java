@@ -40,7 +40,7 @@ public class ViewDistanceCommand extends EssentialCommand {
         if (server.isDedicated()) {
             if (distance != server.getPlayerManager().getViewDistance()) {
                 server.getPlayerManager().setViewDistance(distance);
-                ServerSettings.VIEWDISTANCE.setValue(distance);
+                ServerSettings.setInt("view_distance", distance);
                 player.sendMessage(StringText.of(true, "command.viewdistance.set", distance), false);
             }
             return distance;
@@ -50,7 +50,7 @@ public class ViewDistanceCommand extends EssentialCommand {
 
     private int info(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        player.sendMessage(StringText.of(true, "command.viewdistance.info", ServerSettings.VIEWDISTANCE.getValue()), false);
+        player.sendMessage(StringText.of(true, "command.viewdistance.info", ServerSettings.getInt("view_distance")), false);
         return SUCCESS;
     }
 }

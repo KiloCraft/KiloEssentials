@@ -28,7 +28,7 @@ public class HorseBaseEntityMixin {
 
     @Inject(method = "putPlayerOnBack", at = @At("HEAD"))
     public void closeInventories(PlayerEntity player, CallbackInfo info) {
-        if (!ServerSettings.PATCH_DONKEY_DUPE.getValue()) return;
+        if (!ServerSettings.getBoolean("patch.donkey_dupe")) return;
         HorseBaseEntity horse = (HorseBaseEntity) (Object) this;
         ArrayList<UUID> players = horseToPlayers.getOrDefault(horse.getUuid(), new ArrayList<>());
         for (UUID uuid : players) {

@@ -1,9 +1,4 @@
-package org.kilocraft.essentials.util;
-
-import org.kilocraft.essentials.util.math.Average;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.kilocraft.essentials.util.math;
 
 public class DataTracker {
 
@@ -15,18 +10,12 @@ public class DataTracker {
     public static final Average cTickedChunks = new Average(60);
     public static final Average cTickedEntities = new Average(60);
     public static final Average cTickedBlockEntities = new Average(60);
-    public static final HashMap<Average, Long> averages = new HashMap<>();
+    private static final Average[] averages = {spawnAttempts, tickedChunks, tickedEntities, tickedBlockEntities, cSpawnAttempts, cTickedChunks, cTickedEntities, cTickedBlockEntities};
 
     public static void compute() {
-        for (Map.Entry<Average, Long> entry : averages.entrySet()) {
-            entry.getKey().add(entry.getValue());
-            averages.put(entry.getKey(), 0L);
+        for (Average average: averages) {
+            average.compute();
         }
-    }
-
-    public static void add(Average average) {
-        long count = averages.getOrDefault(average, 0L);
-        averages.put(average, count + 1);
     }
 
 }
