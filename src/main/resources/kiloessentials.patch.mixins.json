@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AnimalEntityMixinPatch",
-    "BigDripleafBlockMixin",
     "DecorationItemMixin",
     "EggEntityMixinPatch",
     "HorseBaseEntityMixin",

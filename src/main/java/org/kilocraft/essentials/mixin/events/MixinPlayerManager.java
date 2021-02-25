@@ -1,11 +1,6 @@
 package org.kilocraft.essentials.mixin.events;
 
-import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.group.Group;
-import net.luckperms.api.model.user.User;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -22,7 +17,6 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.player.PlayerConnectEventImpl;
 import org.kilocraft.essentials.events.player.PlayerConnectedEventImpl;
-import org.kilocraft.essentials.servermeta.PlayerListMeta;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,7 +27,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.net.SocketAddress;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import static org.kilocraft.essentials.user.ServerUserManager.replaceVariables;
 

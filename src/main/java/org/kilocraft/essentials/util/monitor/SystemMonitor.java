@@ -1,19 +1,15 @@
 package org.kilocraft.essentials.util.monitor;
 
 
-import sun.management.ManagementFactoryHelper;
-
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.text.DecimalFormat;
 
 public class SystemMonitor {
-    public static OperatingSystemMXBean systemMXBean = ManagementFactoryHelper.getOperatingSystemMXBean();
 
     private static final Runtime runTime = Runtime.getRuntime();
     private static final DecimalFormat decimalFormat = new DecimalFormat("##.##");
@@ -116,10 +112,6 @@ public class SystemMonitor {
     public static double getDiskUsedGB() {
         updateDiskInfo();
         return DISK_USED_GB;
-    }
-
-    public static OperatingSystemMXBean getOsSystemMXBean() {
-        return systemMXBean;
     }
 
 }

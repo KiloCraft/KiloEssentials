@@ -7,14 +7,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
+import net.minecraft.class_5894;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -39,7 +37,6 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
-import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.SimpleProcess;
@@ -67,6 +64,125 @@ public class RtpCommand extends EssentialCommand {
 
     public RtpCommand() {
         super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
+    }
+
+    static void teleport(ServerCommandSource src, ServerPlayerEntity target, Logger logger) {
+        OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
+        CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(src);
+        UserUtils.Process.add(targetUser, PROCESS);
+
+        if (targetUser.getPreference(RTP_LEFT) < 0) {
+            targetUser.getPreferences().set(RTP_LEFT, 0);
+        }
+
+        //Check if the player has any rtps left or permission to ignore the limit
+        if (CommandUtils.areTheSame(src, target) && targetUser.getPreference(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
+            targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
+            return;
+        }
+
+        //Check if the target is in the correct dimension or has permission to perform the command in other dimensions
+        if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
+            targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
+            return;
+        }
+
+        StopWatch watch = new StopWatch();
+        watch.start();
+
+        RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
+
+        if (!cfg.broadcastMessage.isEmpty()) {
+            KiloChat.broadCast(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName()));
+        }
+
+        ServerWorld world = target.getServerWorld();
+        Vec3dLocation loc;
+        BlockPos pos;
+        BlockState state;
+        int tries = 0;
+        boolean hasAirSpace;
+        boolean isNether = RegistryUtils.isNether(world.getDimension());
+        boolean safe;
+
+        do {
+            tries++;
+            //TODO: Figure out world height
+            loc = (Vec3dLocation) randomLocation(world, isNether ? 90 : 256, cfg.minX, cfg.maxX, cfg.minZ, cfg.maxZ);
+            loc = (Vec3dLocation) LocationUtil.posOnGround(loc, false);
+            pos = loc.toPos();
+            state = world.getBlockState(pos);
+            Material material = state.getMaterial();
+            Biome.Category category = world.getBiome(pos).getCategory();
+
+            if (!LocationUtil.hasSolidGround(loc)) {
+                safe = false;
+                continue;
+            }
+
+            hasAirSpace = !isNether || world.getBlockState(pos.up()).isAir();
+            safe = hasAirSpace && !material.isLiquid() && material != Material.FIRE && category != Category.OCEAN && category != Category.RIVER && !LocationUtil.isBlockLiquid(loc.down());
+
+            if (cfg.showTries && target.networkHandler != null) {
+                int finalTries = tries;
+                KiloServer.getServer().getMinecraftServer().execute(() -> {
+                    target.networkHandler.sendPacket(
+                            new class_5894(
+                                    Texter.newText(String.format(ACTION_MSG, finalTries, cfg.maxTries))
+                            )
+                    );
+                });
+            }
+        } while (tries <= cfg.maxTries && !safe);
+
+        watch.stop();
+        String timeElapsed = ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)) + "ms";
+
+        if (!safe) {
+            sourceUser.sendLangError("command.rtp.failed");
+        } else {
+            targetUser.saveLocation();
+            loc.setY(loc.getY() + 3);
+            targetUser.teleport(loc.center(), true);
+
+//            String biome = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
+
+            if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
+                targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
+            }
+
+            String cfgMessage = KiloConfig.messages().commands().rtp().teleported
+                    .replace("{RTP_LEFT}", String.valueOf(targetUser.getPreference(RTP_LEFT)))
+                    .replace("{cord.X}", String.valueOf(loc.getX()))
+                    .replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
+                    .replace("{cord.Z}", String.valueOf(loc.getZ()))
+                    .replace("{ELAPSED_TIME}", timeElapsed);
+            targetUser.sendMessage(cfgMessage);
+
+/*            Text text = new LiteralText("")
+                    .append(new LiteralText("You've been teleported to this ").formatted(Formatting.YELLOW))
+                    .append(new LiteralText(biome).formatted(Formatting.GOLD))
+                    .append(new LiteralText(" biome!").formatted(Formatting.YELLOW))
+                    .append("\n").append(Texter.newText(cfgMessage));*/
+
+/*            targetUser.sendMessage(text);
+            if (!sourceUser.equals(targetUser)) {
+                sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), biome);
+            }*/
+
+            logger.info("Finished RTP For " + targetUser.getUsername() + " in " + timeElapsed);
+        }
+
+        UserUtils.Process.remove(targetUser);
+        Thread.currentThread().interrupt();
+    }
+
+    @NotNull
+    private static Location randomLocation(World world, int height, int minX, int maxX, int minZ, int maxZ) {
+        int randX = ThreadLocalRandom.current().nextInt(minX, maxX + 1);
+        int randZ = ThreadLocalRandom.current().nextInt(minZ, maxZ + 1);
+
+        return Vec3dLocation.of(randX, height, randZ, 0, 0, RegistryUtils.toIdentifier(world.getDimension()));
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -213,126 +329,6 @@ public class RtpCommand extends EssentialCommand {
         Thread rtpThread = new Thread(rtp, "RTP thread");
         rtpThread.start();
         return SUCCESS;
-    }
-
-    static void teleport(ServerCommandSource src, ServerPlayerEntity target, Logger logger) {
-        OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
-        CommandSourceUser sourceUser = KiloEssentials.getServer().getCommandSourceUser(src);
-        UserUtils.Process.add(targetUser, PROCESS);
-
-        if (targetUser.getPreference(RTP_LEFT) < 0) {
-            targetUser.getPreferences().set(RTP_LEFT, 0);
-        }
-
-        //Check if the player has any rtps left or permission to ignore the limit
-        if (CommandUtils.areTheSame(src, target) && targetUser.getPreference(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
-            targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
-            return;
-        }
-
-        //Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-        if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
-            targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
-            return;
-        }
-
-        StopWatch watch = new StopWatch();
-        watch.start();
-
-        RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
-
-        if (!cfg.broadcastMessage.isEmpty()) {
-            KiloChat.broadCast(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName()));
-        }
-
-        ServerWorld world = target.getServerWorld();
-        Vec3dLocation loc;
-        BlockPos pos;
-        BlockState state;
-        int tries = 0;
-        boolean hasAirSpace;
-        boolean isNether = RegistryUtils.isNether(world.getDimension());
-        boolean safe;
-
-        do {
-            tries++;
-            //TODO: Figure out world height
-            loc = (Vec3dLocation) randomLocation(world, isNether ? 90 : 256, cfg.minX, cfg.maxX, cfg.minZ, cfg.maxZ);
-            loc = (Vec3dLocation) LocationUtil.posOnGround(loc, false);
-            pos = loc.toPos();
-            state = world.getBlockState(pos);
-            Material material = state.getMaterial();
-            Biome.Category category = world.getBiome(pos).getCategory();
-
-            if (!LocationUtil.hasSolidGround(loc)) {
-                safe = false;
-                continue;
-            }
-
-            hasAirSpace = !isNether || world.getBlockState(pos.up()).isAir();
-            safe = hasAirSpace && !material.isLiquid() && material != Material.FIRE && category != Category.OCEAN && category != Category.RIVER && !LocationUtil.isBlockLiquid(loc.down());
-
-            if (cfg.showTries && target.networkHandler != null) {
-                int finalTries = tries;
-                KiloServer.getServer().getMinecraftServer().execute(() -> {
-                    target.networkHandler.sendPacket(
-                            new TitleS2CPacket(
-                                    TitleS2CPacket.Action.ACTIONBAR,
-                                    Texter.newText(String.format(ACTION_MSG, finalTries, cfg.maxTries))
-                            )
-                    );
-                });
-            }
-        } while (tries <= cfg.maxTries && !safe);
-
-        watch.stop();
-        String timeElapsed = ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)) + "ms";
-
-        if (!safe) {
-            sourceUser.sendLangError("command.rtp.failed");
-        } else {
-            targetUser.saveLocation();
-            loc.setY(loc.getY() + 3);
-            targetUser.teleport(loc.center(), true);
-
-//            String biome = LocateBiomeProvided.getBiomeName(target.getServerWorld().getBiome(target.getBlockPos()));
-
-            if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
-                targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
-            }
-
-            String cfgMessage = KiloConfig.messages().commands().rtp().teleported
-                    .replace("{RTP_LEFT}", String.valueOf(targetUser.getPreference(RTP_LEFT)))
-                    .replace("{cord.X}", String.valueOf(loc.getX()))
-                    .replace("{cord.Y}", String.valueOf(target.getBlockPos().getY()))
-                    .replace("{cord.Z}", String.valueOf(loc.getZ()))
-                    .replace("{ELAPSED_TIME}", timeElapsed);
-            targetUser.sendMessage(cfgMessage);
-
-/*            Text text = new LiteralText("")
-                    .append(new LiteralText("You've been teleported to this ").formatted(Formatting.YELLOW))
-                    .append(new LiteralText(biome).formatted(Formatting.GOLD))
-                    .append(new LiteralText(" biome!").formatted(Formatting.YELLOW))
-                    .append("\n").append(Texter.newText(cfgMessage));*/
-
-/*            targetUser.sendMessage(text);
-            if (!sourceUser.equals(targetUser)) {
-                sourceUser.sendLangMessage("command.rtp.others", targetUser.getUsername(), biome);
-            }*/
-
-            logger.info("Finished RTP For " + targetUser.getUsername() + " in " + timeElapsed);
-        }
-
-        UserUtils.Process.remove(targetUser);
-        Thread.currentThread().interrupt();
-    }
-
-    @NotNull
-    private static Location randomLocation(World world, int height, int minX, int maxX, int minZ, int maxZ) {
-        int randX = ThreadLocalRandom.current().nextInt(minX, maxX + 1);
-        int randZ = ThreadLocalRandom.current().nextInt(minZ, maxZ + 1);
-
-        return Vec3dLocation.of(randX, height, randZ, 0, 0, RegistryUtils.toIdentifier(world.getDimension()));
     }
 }
 

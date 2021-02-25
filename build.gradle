@@ -11,8 +11,8 @@ plugins {
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 version gitVersion()
 def details = versionDetails()
@@ -68,7 +68,8 @@ dependencies {
 
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     shadow group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+    shadow group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
     compile "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
     shadow "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"

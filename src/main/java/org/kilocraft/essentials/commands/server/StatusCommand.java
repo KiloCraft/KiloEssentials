@@ -27,14 +27,12 @@ import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.kilocraft.essentials.util.TpsTracker.*;
 
 public class StatusCommand extends EssentialCommand {
-    private static OperatingSystemMXBean bean = SystemMonitor.getOsSystemMXBean();
 
     public StatusCommand() {
         super("status", CommandPermission.STATUS);
@@ -44,7 +42,6 @@ public class StatusCommand extends EssentialCommand {
         double ramUsage = SystemMonitor.getRamUsedPercentage();
         double cpuUsage = SystemMonitor.getCpuLoadPercentage();
         return ComponentText.of("&eGeneral status:&r\n" +
-                "&7Platform: &6" + bean.getArch() + " &d" + Util.getOperatingSystem().name().toLowerCase() +
                 "\n&7Server uptime: &6" + TimeDifferenceUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()) +
                 "\n&7TPS: " +
                 String.format(
@@ -55,7 +52,7 @@ public class StatusCommand extends EssentialCommand {
                         ComponentText.formatTps(tps15.getAverage()),
                         ComponentText.formatTps(tps60.getAverage()),
                         ComponentText.formatTps(tps1440.getAverage())) +
-                "\n&7CPU &8(&e" + SystemMonitor.systemMXBean.getAvailableProcessors() + "&8)&7: " +
+                "\n&7CPU: " +
                 ComponentText.formatPercentage(cpuUsage) + "% Usage" +
                 " &3" + Thread.activeCount() + " Running Threads" +
                 "\n&7Memory &8(&e" + SystemMonitor.getRamMaxMB() + " max&8)&7: " +

@@ -116,8 +116,13 @@ public class VoteReceiver extends Thread {
                 in.read(block, 0, block.length);
 
                 // Decrypt the block.
-                block = RSA.decrypt(block, Votifier.getInstance().getKeyPair()
-                        .getPrivate());
+                try {
+                    block = RSA.decrypt(block, Votifier.getInstance().getKeyPair()
+                            .getPrivate());
+                } catch (Exception e) {
+                    LOGGER.error("Unable to decrypt vote record from " + socket.getInetAddress().toString() + ". Make sure that that your public key matches the one you gave the server list.");
+                    continue;
+                }
                 int position = 0;
 
                 // Perform the opcode check.
@@ -171,10 +176,6 @@ public class VoteReceiver extends Thread {
                 socket.close();
             } catch (SocketException ex) {
                 LOGGER.error("Protocol error. Ignoring packet - {}", ex.getLocalizedMessage());
-            } catch (BadPaddingException ex) {
-                LOGGER.error(
-                        "Unable to decrypt vote record. Make sure that that your public key matches the one you gave the server list.", ex
-                );
             } catch (Exception ex) {
                 LOGGER.error("Exception caught while receiving a vote notification", ex);
             }

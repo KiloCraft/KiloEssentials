@@ -26,12 +26,12 @@ public abstract class SignBlockEntityMixinPatch {
 
     //Fixes the activate method so your hand won't swing if the Sign doesn't have any commands
     @Inject(method = "onActivate", at = @At(value = "HEAD"), cancellable = true)
-    private void patch$SignActivationReturnValue(PlayerEntity playerEntity, CallbackInfoReturnable<Boolean> cir) {
+    private void patch$SignActivationReturnValue(ServerPlayerEntity serverPlayerEntity, CallbackInfoReturnable<Boolean> cir) {
         for (Text value : text) {
             Style style = value != null ? value.getStyle() : null;
             if (style != null && style.getClickEvent() != null && style.getClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) {
-                UserUtils.Animate.swingHand(playerEntity);
-                KiloServer.getServer().execute(getCommandSource((ServerPlayerEntity) playerEntity), style.getClickEvent().getValue());
+                UserUtils.Animate.swingHand(serverPlayerEntity);
+                KiloServer.getServer().execute(getCommandSource(serverPlayerEntity), style.getClickEvent().getValue());
                 cir.setReturnValue(true);
             }
         }

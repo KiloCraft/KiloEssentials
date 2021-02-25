@@ -1,11 +1,13 @@
 package org.kilocraft.essentials.servermeta;
 
+import io.netty.buffer.Unpooled;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
+import net.minecraft.class_5900;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
-import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +20,10 @@ import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketMixin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PlayerListMeta {
     private static String header = "";
@@ -34,12 +39,11 @@ public class PlayerListMeta {
     private static void updateForAll(ServerScoreboard scoreboard) {
         List<Team> teams = getTeams(scoreboard);
         for (Team cachedTeam : cachedTeams) {
-            KiloEssentials.getServer().getMinecraftServer().getPlayerManager().sendToAll(new TeamS2CPacket(cachedTeam, 1));
-
+            KiloEssentials.getServer().getMinecraftServer().getPlayerManager().sendToAll(class_5900.method_34170(cachedTeam));
         }
         cachedTeams.clear();
         for (Team team : teams) {
-            KiloEssentials.getServer().getMinecraftServer().getPlayerManager().sendToAll(new TeamS2CPacket(team, 0));
+            KiloEssentials.getServer().getMinecraftServer().getPlayerManager().sendToAll(class_5900.method_34172(team, true));
             cachedTeams.addAll(teams);
         }
     }
@@ -49,9 +53,10 @@ public class PlayerListMeta {
             return;
         }
 
-        PlayerListHeaderS2CPacketMixin packet = (PlayerListHeaderS2CPacketMixin) new PlayerListHeaderS2CPacket();
-        packet.setHeader(ComponentText.toText(ComponentText.of(formatFor(player, header), false)));
-        packet.setFooter(ComponentText.toText(ComponentText.of(formatFor(player, footer), false)));
+        PacketByteBuf packetData = new PacketByteBuf(Unpooled.buffer()).
+                writeText(ComponentText.toText(ComponentText.of(formatFor(player, header), false))).
+                writeText(ComponentText.toText(ComponentText.of(formatFor(player, footer), false)));
+        PlayerListHeaderS2CPacketMixin packet = (PlayerListHeaderS2CPacketMixin) new PlayerListHeaderS2CPacket(packetData);
 
         player.networkHandler.sendPacket(packet);
     }

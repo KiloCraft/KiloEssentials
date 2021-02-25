@@ -3,18 +3,18 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.netty.channel.Channel;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5894;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.BanEntry;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
@@ -533,7 +533,7 @@ public class ServerUserManager implements UserManager, TickListener {
         private AnimatedText animatedText;
 
         public LoadingText(ServerPlayerEntity player) {
-            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player)
                     .append(StringText.of(true, "general.wait_server.frame1"))
                     .append(StringText.of(true, "general.wait_server.frame2"))
                     .append(StringText.of(true, "general.wait_server.frame3"))
@@ -542,7 +542,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         public LoadingText(ServerPlayerEntity player, String key) {
-            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player)
                     .append(StringText.of(true, key + ".frame1"))
                     .append(StringText.of(true, key + ".frame2"))
                     .append(StringText.of(true, key + ".frame3"))

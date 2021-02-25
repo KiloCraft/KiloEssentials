@@ -95,7 +95,8 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
         }
     }
 
-    @Inject(method = "onPlayerInteractEntity", at = @At(value = "HEAD"))
+    //TODO:
+/*    @Inject(method = "onPlayerInteractEntity", at = @At(value = "HEAD"))
     private void ke$onPlayerInteractEntity(PlayerInteractEntityC2SPacket playerInteractEntityC2SPacket, CallbackInfo ci) {
         if (lastInteraction + 50 > Util.getMeasuringTimeMs()) return;
         NetworkThreadUtils.forceMainThread(playerInteractEntityC2SPacket, (ServerPlayNetworkHandler) (Object) this, this.player.getServerWorld());
@@ -105,6 +106,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
             EntityDataObject entityDataObject = new EntityDataObject(entity);
             CompoundTag tag = entityDataObject.getTag();
             String command = tag.getString("command");
+            playerInteractEntityC2SPacket.method_34209();
             String specificCommand = playerInteractEntityC2SPacket.getType() ==
                     PlayerInteractEntityC2SPacket.InteractionType.ATTACK ?
                     tag.getString("leftCommand") :
@@ -121,7 +123,7 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
             if (success) this.player.swingHand(playerInteractEntityC2SPacket.getHand(), true);
         }
         lastInteraction = Util.getMeasuringTimeMs();
-    }
+    }*/
 
 
     @Inject(method = "onClientCommand", cancellable = true,
