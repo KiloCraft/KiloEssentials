@@ -6,17 +6,17 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class RtpSpecsConfigSection {
 
-    @Setting(value = "minimumX")
-    public int minX = -15000;
+    @Setting(value = "minimum")
+    public int min = 15000;
 
-    @Setting(value = "minimumZ")
-    public int minZ = -15000;
+    @Setting(value = "maximum")
+    public int max = 25000;
 
-    @Setting(value = "maximumX")
-    public int maxX = 30000;
+    @Setting(value = "centerX")
+    public int centerX = 0;
 
-    @Setting(value = "maximumZ")
-    public int maxZ = 30000;
+    @Setting(value = "centerZ")
+    public int centerZ = 0;
 
     @Setting(value = "maxTries", comment = "The amount of time the server tries to find a random location, Default: 5")
     public int maxTries = 5;
