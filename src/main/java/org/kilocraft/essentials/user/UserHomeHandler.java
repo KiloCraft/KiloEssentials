@@ -12,6 +12,7 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.extensions.homes.api.Home;
@@ -124,6 +125,11 @@ public class UserHomeHandler implements ConfigurableFeature {
 
             if (world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
+            }
+
+            if (!userHomes.contains(home)) {
+                user.sendLangMessage("command.home.invalid_home");
+                return;
             }
 
             Home.teleportTo(user, home);
