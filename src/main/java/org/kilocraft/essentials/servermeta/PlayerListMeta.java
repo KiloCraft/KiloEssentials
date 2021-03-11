@@ -5,9 +5,9 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
-import net.minecraft.class_5900;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
+import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -39,11 +39,11 @@ public class PlayerListMeta {
     private static void updateForAll(ServerScoreboard scoreboard) {
         List<Team> teams = getTeams(scoreboard);
         for (Team cachedTeam : cachedTeams) {
-            KiloEssentials.getServer().getMinecraftServer().getPlayerManager().sendToAll(class_5900.method_34170(cachedTeam));
+            KiloEssentials.getServer().getMinecraftServer().getPlayerManager().sendToAll(TeamS2CPacket.updateRemovedTeam(cachedTeam));
         }
         cachedTeams.clear();
         for (Team team : teams) {
-            KiloEssentials.getServer().getMinecraftServer().getPlayerManager().sendToAll(class_5900.method_34172(team, true));
+            KiloEssentials.getServer().getMinecraftServer().getPlayerManager().sendToAll(TeamS2CPacket.updateTeam(team, true));
             cachedTeams.addAll(teams);
         }
     }

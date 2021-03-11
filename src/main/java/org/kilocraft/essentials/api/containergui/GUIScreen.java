@@ -57,7 +57,7 @@ public class GUIScreen extends ScreenHandler {
     }
 
     @Override
-    public ItemStack onSlotClick(int slot, int clickData, SlotActionType slotActionType, PlayerEntity playerEntity) {
+    public void onSlotClick(int slot, int clickData, SlotActionType slotActionType, PlayerEntity playerEntity) {
         if (buttons.containsKey(slot)) {
             this.buttons.get(slot).onClick(GUIButton.ClickAction.getBySlotActionType(slotActionType));
         }
@@ -68,7 +68,6 @@ public class GUIScreen extends ScreenHandler {
         );
 
         this.sendContentUpdates();
-        return ItemStack.EMPTY;
     }
 
 }

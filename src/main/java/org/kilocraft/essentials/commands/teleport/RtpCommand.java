@@ -77,6 +77,10 @@ public class RtpCommand extends EssentialCommand {
         if (!cfg.broadcastMessage.isEmpty()) {
             KiloChat.broadCast(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName()));
         }
+
+        if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
+            targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
+        }
         ServerCommandSource source = new ServerCommandSource(new CommandOutput() {
             public void sendSystemMessage(Text text, UUID uUID) { }
             public boolean shouldReceiveFeedback() { return false; }

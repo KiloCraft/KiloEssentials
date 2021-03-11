@@ -76,6 +76,8 @@ public enum CommandPermission {
     ENDERCHEST_OTHERS("enderchest.others"),
     ENTITIES("entities"),
     ENTITIES_PLAYER("entities.player"),
+    ENTITIES_TYPE("entities.type"),
+    ENTITIES_ITEM("entities.item"),
     STATUS("status"),
     SEEK_INVENTORY("seek_inventory"),
     SAYAS_OTHERS("sayas.others"),

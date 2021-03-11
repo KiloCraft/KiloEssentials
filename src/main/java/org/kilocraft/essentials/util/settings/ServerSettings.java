@@ -75,6 +75,17 @@ public class ServerSettings implements NBTStorage {
         DoubleSetting tp_distance = new DoubleSetting(1D, "tp_distance").range(-256D, 256D);
         wither.addChild(check_distance);
         wither.addChild(tp_distance);
+        //per-player-mobcap
+        BooleanSetting ppmobcap = new BooleanSetting(false, "ppmobcap");
+        FloatSetting max = new FloatSetting(1.2F, "max");
+        ppmobcap.addChild(max);
+
+        //Enchanting
+        CategorySetting enchanting = new CategorySetting("enchanting");
+        BooleanSetting hasChanged = new BooleanSetting(false, "hasChanged");
+        enchanting.addChild(hasChanged);
+
+
         //Entity merging
         CategorySetting item_merge = new CategorySetting("item_merge");
         DoubleSetting radius = new DoubleSetting(0.5D, "radius").range(0D, 256D);
@@ -86,6 +97,8 @@ public class ServerSettings implements NBTStorage {
 
         patch.addChild(donkeyDupe);
         patch.addChild(wither);
+        patch.addChild(ppmobcap);
+        patch.addChild(enchanting);
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
 

@@ -36,7 +36,7 @@ public class ServerMetaManager {
 
     public void updateDisplayName(ServerPlayerEntity player) {
         if (player != null) {
-            PlayerListS2CPacket packet = new PlayerListS2CPacket(PlayerListS2CPacket.class_5893.UPDATE_DISPLAY_NAME, player);
+            PlayerListS2CPacket packet = new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player);
             KiloServer.getServer().sendGlobalPacket(packet);
         }
     }

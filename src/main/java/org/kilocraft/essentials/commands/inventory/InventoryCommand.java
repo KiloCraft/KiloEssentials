@@ -68,10 +68,6 @@ public class InventoryCommand extends EssentialCommand {
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
                 ScreenHandler handler = GenericContainerScreenHandler.createGeneric9x5(syncId, src.asPlayer().getInventory());
                 handler.addListener(new ScreenHandlerListener() {
-                    @Override
-                    public void onHandlerRegistered(ScreenHandler screenHandler, DefaultedList<ItemStack> defaultedList) {
-                        setSlotsInit(target.asPlayer(), handler);
-                    }
 
                     @Override
                     public void onSlotUpdate(ScreenHandler screenHandler, int i, ItemStack itemStack) {

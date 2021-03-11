@@ -9,6 +9,7 @@
     "EggEntityMixinPatch",
     "HorseBaseEntityMixin",
     "ItemEntityMixinPatch",
+    "PropertyMixinPatch",
     "ShulkerEntityMixinPatch",
     "WitherEntityMixinPatch"
   ],

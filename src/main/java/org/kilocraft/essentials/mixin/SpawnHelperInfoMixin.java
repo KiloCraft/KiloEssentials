@@ -4,9 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.SpawnHelper;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.commands.misc.MobCapCommand;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Final;
@@ -17,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SpawnHelper.Info.class)
-public class SpawnHelperInfoMixin {
+public abstract class SpawnHelperInfoMixin {
 
     @Shadow @Final private int spawningChunkCount;
 
@@ -34,5 +32,7 @@ public class SpawnHelperInfoMixin {
             }
         }
     }
+
+
 
 }

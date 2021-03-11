@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.util.text;
 
-import net.minecraft.class_5894;
-import net.minecraft.class_5905;
+import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -62,8 +62,8 @@ public class AnimatedText {
             }
 
             if (this.player.networkHandler != null) {
-                this.player.networkHandler.sendPacket(new class_5905(1, this.nextFrameTime, -1));
-                this.player.networkHandler.sendPacket(new class_5894(this.frames.get(this.frame)));
+                this.player.networkHandler.sendPacket(new TitleFadeS2CPacket(1, this.nextFrameTime, -1));
+                this.player.networkHandler.sendPacket(new OverlayMessageS2CPacket(this.frames.get(this.frame)));
             }
             this.frame++;
         };
@@ -83,7 +83,7 @@ public class AnimatedText {
         this.executorService.shutdown();
 
         if (this.player != null)
-            this.player.networkHandler.sendPacket(new class_5894(new LiteralText("")));
+            this.player.networkHandler.sendPacket(new OverlayMessageS2CPacket(new LiteralText("")));
     }
 
     public void remove() {
