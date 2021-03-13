@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -20,16 +19,18 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
 
     @Redirect(method = "tickEntity", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
     public <T> void shouldTickEntity(Consumer<T> consumer, T t) {
-        if (!ServerSettings.getBoolean("tick.entity")) return;
+        if (!ServerSettings.entityTickCache[0]) return;
         int tickDistance = ServerSettings.getInt("tick.distance");
-        if (t instanceof Entity && tickDistance != -1) {
+        if (t instanceof Entity ) {
             Entity entity = (Entity) t;
-            if (!ServerSettings.getBoolean("tick.entity." + Registry.ENTITY_TYPE.getId(entity.getType()).getPath())) return;
-            Entity player = entity.world.getClosestPlayer(entity, -1.0D);
-            if (player != null) {
-                if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) > tickDistance) {
-                    DataTracker.cTickedEntities.track();
-                    return;
+            if (!ServerSettings.entityTickCache[Registry.ENTITY_TYPE.getRawId(entity.getType()) + 1]) return;
+            if (tickDistance != -1){
+                Entity player = entity.world.getClosestPlayer(entity, -1.0D);
+                if (player != null) {
+                    if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) > tickDistance) {
+                        DataTracker.cTickedEntities.track();
+                        return;
+                    }
                 }
             }
         }

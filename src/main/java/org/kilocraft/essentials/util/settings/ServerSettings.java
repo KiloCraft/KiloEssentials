@@ -23,6 +23,12 @@ import java.util.*;
 public class ServerSettings implements NBTStorage {
 
     public static RootSetting root = new RootSetting();
+    //TODO: Figure out a clever way to cache values
+    //if we ever get more than 256 entities this will throw IndexOutOfBoundsException
+    public static final boolean[] entityTickCache = new boolean[256];
+    public static final boolean[] entitySpawnCache = new boolean[256];
+    public static boolean perPlayerMobcap = false;
+    public static float perPlayerMobcapMax = 1.2F;
 
     public ServerSettings() {
         NBTStorageUtil.addCallback(this);
@@ -76,7 +82,7 @@ public class ServerSettings implements NBTStorage {
         wither.addChild(check_distance);
         wither.addChild(tp_distance);
         //per-player-mobcap
-        BooleanSetting ppmobcap = new BooleanSetting(false, "ppmobcap");
+        BooleanSetting ppmobcap = (BooleanSetting) new BooleanSetting(false, "ppmobcap").onChanged(bool -> perPlayerMobcap = bool);
         FloatSetting max = new FloatSetting(1.2F, "max");
         ppmobcap.addChild(max);
 
@@ -121,14 +127,22 @@ public class ServerSettings implements NBTStorage {
         //Ticking
         CategorySetting tick = new CategorySetting("tick");
         IntegerSetting distance = new IntegerSetting(10, "distance");
-        BooleanSetting entity = new BooleanSetting(true, "entity");
+        BooleanSetting entity = (BooleanSetting) new BooleanSetting(true, "entity").onChanged(bool -> entityTickCache[0] = bool);
         for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-            BooleanSetting value = new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath());
+            BooleanSetting value = (BooleanSetting) new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entityTickCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
             entity.addChild(value);
         }
 
-        tick.addChild(distance);
-        tick.addChild(entity);
+        //Spawning
+        CategorySetting spawn = new CategorySetting("spawn");
+        BooleanSetting spawnEntity = (BooleanSetting) new BooleanSetting(true, "entity").onChanged(bool -> entitySpawnCache[0] = bool);
+        for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
+            BooleanSetting value = (BooleanSetting) new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entitySpawnCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
+            spawnEntity.addChild(value);
+        }
+
+        spawn.addChild(distance);
+        spawn.addChild(spawnEntity);
 
         //Mobcap
         CategorySetting mobcap = new CategorySetting("mobcap");
@@ -144,6 +158,7 @@ public class ServerSettings implements NBTStorage {
         root.addChild(debug);
         root.addChild(entity_limit);
         root.addChild(tick);
+        root.addChild(spawn);
         root.addChild(mobcap);
         root.addChild(patch);
         KiloCommands.getInstance().register(new SettingCommand());

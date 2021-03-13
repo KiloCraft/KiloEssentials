@@ -8,13 +8,14 @@ import org.kilocraft.essentials.api.event.server.ServerTickEvent;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.math.DataTracker;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 
 public class OnTick implements EventHandler<ServerTickEvent> {
 	private int tick = 0;
 
 	@Override
 	public void handle(@NotNull ServerTickEvent event) {
-        DataTracker.computeEntityCache();
+        if (ServerSettings.perPlayerMobcap) DataTracker.computeEntityCache();
         ((ServerUserManager) KiloServer.getServer().getUserManager()).onTick();
 
         if (tick >= 100) {
