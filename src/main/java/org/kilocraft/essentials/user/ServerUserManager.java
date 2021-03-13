@@ -13,9 +13,7 @@ import net.minecraft.server.BanEntry;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
@@ -475,7 +473,11 @@ public class ServerUserManager implements UserManager, TickListener {
                     user.sendMessage(getMuteMessage(user));
                     return;
                 }
-                string = Format.parse(user, string, PermissionUtil.PERMISSION_PREFIX + "chat.formatting.");
+                try {
+                    string = Format.validatePermission(user, string, PermissionUtil.PERMISSION_PREFIX + "chat.formatting.");
+                } catch (CommandSyntaxException e) {
+                    user.getCommandSource().sendError(new LiteralText(Util.getInnermostMessage(e)));
+                }
                 ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
             }
         } catch (Exception e) {

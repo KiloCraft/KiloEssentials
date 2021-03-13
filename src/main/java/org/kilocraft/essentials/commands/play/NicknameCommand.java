@@ -92,7 +92,7 @@ public class NicknameCommand extends EssentialCommand {
         }
 
         OnlineUser src = KiloServer.getServer().getUserManager().getOnline(self);
-        nickname = Format.parse(src, nickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting.");
+        nickname = Format.validatePermission(src, nickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting.");
 
         String finalNickname = nickname;
         KiloEssentials.getInstance().getUserThenAcceptAsync(src, src.getUsername(), (user) -> {

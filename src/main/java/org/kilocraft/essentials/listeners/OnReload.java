@@ -12,6 +12,7 @@ import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.provided.BrandedServer;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
+import org.kilocraft.essentials.util.settings.SettingCommand;
 
 public class OnReload implements EventHandler<ServerReloadEvent> {
     @Override
@@ -30,6 +31,7 @@ public class OnReload implements EventHandler<ServerReloadEvent> {
 
             KiloDebugUtils.validateDebugMode(true);
             KiloServer.getServer().setName(KiloConfig.main().server().name);
+            KiloCommands.getInstance().register(new SettingCommand());
             KiloCommands.updateGlobalCommandTree();
         } catch (Exception e) {
             KiloEssentials.getLogger().error("An unexpected error occurred while reloading the server!", e);
