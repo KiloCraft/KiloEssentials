@@ -475,10 +475,10 @@ public class ServerUserManager implements UserManager, TickListener {
                 }
                 try {
                     string = Format.validatePermission(user, string, PermissionUtil.PERMISSION_PREFIX + "chat.formatting.");
+                    ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
                 } catch (CommandSyntaxException e) {
                     user.getCommandSource().sendError(new LiteralText(Util.getInnermostMessage(e)));
                 }
-                ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
             }
         } catch (Exception e) {
             MutableText text = Texter.newTranslatable("command.failed");

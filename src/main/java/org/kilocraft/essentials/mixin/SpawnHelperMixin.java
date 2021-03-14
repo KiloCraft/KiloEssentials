@@ -60,11 +60,11 @@ public abstract class SpawnHelperMixin {
 
     @Inject(method = "canSpawn(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/SpawnGroup;Lnet/minecraft/world/gen/StructureAccessor;Lnet/minecraft/world/gen/chunk/ChunkGenerator;Lnet/minecraft/world/biome/SpawnSettings$SpawnEntry;Lnet/minecraft/util/math/BlockPos$Mutable;D)Z", at = @At(value = "HEAD"), cancellable = true)
     private static void canEntitySpawn(ServerWorld serverWorld, SpawnGroup spawnGroup, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnSettings.SpawnEntry spawnEntry, BlockPos.Mutable mutable, double d, CallbackInfoReturnable<Boolean> cir) {
-        if (!ServerSettings.entityTickCache[Registry.ENTITY_TYPE.getRawId(spawnEntry.type) + 1]) cir.setReturnValue(false);
+        if (!ServerSettings.entitySpawnCache[Registry.ENTITY_TYPE.getRawId(spawnEntry.type) + 1]) cir.setReturnValue(false);
     }
 
     @Inject(method = "spawn", at = @At(value = "HEAD"), cancellable = true)
     private static void canEntitiesSpawn(ServerWorld serverWorld, WorldChunk worldChunk, SpawnHelper.Info info, boolean bl, boolean bl2, boolean bl3, CallbackInfo ci) {
-        if (!ServerSettings.entityTickCache[0]) ci.cancel();
+        if (!ServerSettings.entitySpawnCache[0]) ci.cancel();
     }
 }

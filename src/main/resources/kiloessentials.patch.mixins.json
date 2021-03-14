@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AnimalEntityMixinPatch",
+    "ChunkDataS2CPacketMixin",
     "DecorationItemMixin",
     "EggEntityMixinPatch",
     "HorseBaseEntityMixin",
