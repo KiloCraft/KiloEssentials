@@ -25,8 +25,9 @@ public class ServerSettings implements NBTStorage {
     public static RootSetting root = new RootSetting();
     //TODO: Figure out a clever way to cache values
     //if we ever get more than 256 entities this will throw IndexOutOfBoundsException
-    public static final boolean[] entityTickCache = new boolean[256];
-    public static final boolean[] entitySpawnCache = new boolean[256];
+    private static final int entities = 128;
+    public static final boolean[] entityTickCache = new boolean[entities];
+    public static final boolean[] entitySpawnCache = new boolean[entities];
     public static boolean perPlayerMobcap = false;
     public static float perPlayerMobcapMax = 1.2F;
 
@@ -111,7 +112,7 @@ public class ServerSettings implements NBTStorage {
         //Entity Limit
         CategorySetting entity_limit = new CategorySetting("entity_limit");
         List<String> limit_entries = new ArrayList<>();
-        for (EntityType entityType : new EntityType[]{EntityType.GUARDIAN, EntityType.ITEM_FRAME, EntityType.CHICKEN}) {
+        for (EntityType entityType : new EntityType[]{EntityType.GUARDIAN, EntityType.ITEM_FRAME, EntityType.CHICKEN, EntityType.VILLAGER}) {
             limit_entries.add(Registry.ENTITY_TYPE.getId(entityType).getPath());
         }
         limit_entries.add("animals");
@@ -132,6 +133,8 @@ public class ServerSettings implements NBTStorage {
             BooleanSetting value = (BooleanSetting) new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entityTickCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
             entity.addChild(value);
         }
+        tick.addChild(distance);
+        tick.addChild(entity);
 
         //Spawning
         CategorySetting spawn = new CategorySetting("spawn");
@@ -141,7 +144,6 @@ public class ServerSettings implements NBTStorage {
             spawnEntity.addChild(value);
         }
 
-        spawn.addChild(distance);
         spawn.addChild(spawnEntity);
 
         //Mobcap

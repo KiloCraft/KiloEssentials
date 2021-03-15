@@ -12,6 +12,7 @@
     "ItemEntityMixinPatch",
     "PropertyMixinPatch",
     "ShulkerEntityMixinPatch",
+    "VillagerBreedTaskMixinPatch",
     "WitherEntityMixinPatch"
   ],
   "server": [
