@@ -17,29 +17,6 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
 
     public FloatSetting(Float value, String id) {
         super(value, id);
-        this.shouldGenerateCommands = true;
-    }
-
-    @Override
-    public void toTag(CompoundTag tag) {
-        CompoundTag setting = new CompoundTag();
-        setting.putFloat("value", this.getValue());
-        for (AbstractSetting child : this.children) {
-            child.toTag(setting);
-        }
-        tag.put(id, setting);
-    }
-
-    @Override
-    public void fromTag(CompoundTag tag) {
-        if (tag.contains(id)) {
-            CompoundTag setting = tag.getCompound(id);
-            this.setValue(setting.getFloat("value"));
-            for (AbstractSetting child : children) {
-                child.fromTag(setting);
-            }
-        }
-        super.fromTag(tag);
     }
 
     @Override
@@ -50,6 +27,16 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
     @Override
     public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
         this.setValue(FloatArgumentType.getFloat(ctx, commandArgumentValue));
+    }
+
+    @Override
+    protected void setValue(CompoundTag tag) {
+        tag.putFloat("value", this.getValue());
+    }
+
+    @Override
+    protected Float getValue(CompoundTag tag) {
+        return tag.getFloat("value");
     }
 
     @Override

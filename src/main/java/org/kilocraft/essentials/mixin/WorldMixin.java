@@ -20,7 +20,7 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
     @Redirect(method = "tickEntity", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
     public <T> void shouldTickEntity(Consumer<T> consumer, T t) {
         if (!ServerSettings.entityTickCache[0]) return;
-        int tickDistance = ServerSettings.getInt("tick.distance");
+        int tickDistance = ServerSettings.tickDistance;
         if (t instanceof Entity ) {
             Entity entity = (Entity) t;
             if (!ServerSettings.entityTickCache[Registry.ENTITY_TYPE.getRawId(entity.getType()) + 1]) return;
@@ -40,7 +40,7 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
 
     @Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/BlockEntityTickInvoker;tick()V"))
     public void shouldTickBlockEntity(BlockEntityTickInvoker blockEntityTickInvoker) {
-        int tickDistance = ServerSettings.getInt("tick.distance");
+        int tickDistance = ServerSettings.tickDistance;
         if (tickDistance != -1) {
             ChunkPos chunkPos = new ChunkPos(blockEntityTickInvoker.getPos());
             Entity player = this.getClosestPlayer(chunkPos.getStartX() + 8, 128, chunkPos.getStartZ() + 8, -1.0D, false);

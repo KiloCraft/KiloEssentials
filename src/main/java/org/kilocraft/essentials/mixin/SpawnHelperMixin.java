@@ -28,7 +28,7 @@ public abstract class SpawnHelperMixin {
 
     @Inject(method = "spawnEntitiesInChunk(Lnet/minecraft/entity/SpawnGroup;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/chunk/WorldChunk;Lnet/minecraft/world/SpawnHelper$Checker;Lnet/minecraft/world/SpawnHelper$Runner;)V", at = @At(value = "HEAD"), cancellable = true)
     private static void ke$adjustMobcap(SpawnGroup spawnGroup, ServerWorld world, WorldChunk chunk, SpawnHelper.Checker checker, SpawnHelper.Runner runner, CallbackInfo ci) {
-        int tickDistance = ServerSettings.getInt("tick.distance");
+        int tickDistance = ServerSettings.tickDistance;
         if (tickDistance != -1) {
             Entity player = world.getClosestPlayer(chunk.getPos().getStartX() + 8, 128, chunk.getPos().getStartZ() + 8, -1.0D, false);
             if (player != null) {

@@ -30,6 +30,7 @@ public class ServerSettings implements NBTStorage {
     public static final boolean[] entitySpawnCache = new boolean[entities];
     public static boolean perPlayerMobcap = false;
     public static float perPlayerMobcapMax = 1.2F;
+    public static int tickDistance = -1;
 
     public ServerSettings() {
         NBTStorageUtil.addCallback(this);
@@ -51,6 +52,10 @@ public class ServerSettings implements NBTStorage {
         return ((IntegerSetting) Objects.requireNonNull(root.getSetting(id))).getValue();
     }
 
+    public static String getString(String id) {
+        return ((StringSetting) Objects.requireNonNull(root.getSetting(id))).getValue();
+    }
+
     public static void setBoolean(String id, boolean value) {
         ((BooleanSetting) Objects.requireNonNull(root.getSetting(id))).setValue(value);
     }
@@ -65,6 +70,10 @@ public class ServerSettings implements NBTStorage {
 
     public static void setInt(String id, int value) {
         ((IntegerSetting) Objects.requireNonNull(root.getSetting(id))).setValue(value);
+    }
+
+    public static void setString(String id, String value) {
+        ((StringSetting) Objects.requireNonNull(root.getSetting(id))).setValue(value);
     }
 
     public void registerSettings() {
@@ -127,7 +136,7 @@ public class ServerSettings implements NBTStorage {
 
         //Ticking
         CategorySetting tick = new CategorySetting("tick");
-        IntegerSetting distance = new IntegerSetting(10, "distance");
+        IntegerSetting distance = (IntegerSetting) new IntegerSetting(-1, "distance").onChanged(integer -> tickDistance = integer);
         BooleanSetting entity = (BooleanSetting) new BooleanSetting(true, "entity").onChanged(bool -> entityTickCache[0] = bool);
         for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
             BooleanSetting value = (BooleanSetting) new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entityTickCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);

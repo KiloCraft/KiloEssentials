@@ -30,7 +30,7 @@ public abstract class ServerWorldMixin extends World {
     @Inject(method = "tickChunk", at = @At(value = "HEAD"), cancellable = true)
     public void shouldTickChunk(WorldChunk worldChunk, int i, CallbackInfo ci) {
         ChunkPos chunkPos = worldChunk.getPos();
-        int tickDistance = ServerSettings.getInt("tick.distance");
+        int tickDistance = ServerSettings.tickDistance;
         if (tickDistance != -1) {
             Entity player = this.getClosestPlayer(chunkPos.getStartX() + 8, 128, chunkPos.getStartZ() + 8, -1.0D, false);
             if (player != null) {

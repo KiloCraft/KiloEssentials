@@ -17,29 +17,6 @@ public class DoubleSetting extends ConfigurableSetting<Double> implements RangeS
 
     public DoubleSetting(Double value, String id) {
         super(value, id);
-        this.shouldGenerateCommands = true;
-    }
-
-    @Override
-    public void toTag(CompoundTag tag) {
-        CompoundTag setting = new CompoundTag();
-        setting.putDouble("value", this.getValue());
-        for (AbstractSetting child : this.children) {
-            child.toTag(setting);
-        }
-        tag.put(id, setting);
-    }
-
-    @Override
-    public void fromTag(CompoundTag tag) {
-        if (tag.contains(id)) {
-            CompoundTag setting = tag.getCompound(id);
-            this.setValue(setting.getDouble("value"));
-            for (AbstractSetting child : children) {
-                child.fromTag(setting);
-            }
-        }
-        super.fromTag(tag);
     }
 
     @Override
@@ -50,6 +27,16 @@ public class DoubleSetting extends ConfigurableSetting<Double> implements RangeS
     @Override
     public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
         this.setValue(DoubleArgumentType.getDouble(ctx, commandArgumentValue));
+    }
+
+    @Override
+    protected void setValue(CompoundTag tag) {
+        tag.putDouble("value", this.getValue());
+    }
+
+    @Override
+    protected Double getValue(CompoundTag tag) {
+        return tag.getDouble("value");
     }
 
     @Override

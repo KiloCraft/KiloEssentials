@@ -13,7 +13,6 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
 
     protected static String commandArgumentValue = "value";
     private K value;
-    public boolean shouldGenerateCommands = false;
     private final List<Consumer<K>> onLoad = new ArrayList<>();
 
     public ConfigurableSetting(K value, String id) {
@@ -22,8 +21,24 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
     }
 
     @Override
+    public void toTag(CompoundTag tag) {
+        CompoundTag setting = new CompoundTag();
+        setValue(setting);
+        for (AbstractSetting child : children) {
+            child.toTag(setting);
+        }
+        tag.put(id, setting);
+    }
+
+    @Override
     public void fromTag(CompoundTag tag) {
-        changed();
+        if (tag.contains(id)) {
+            CompoundTag setting = tag.getCompound(id);
+            this.setValue(getValue(setting));
+            for (AbstractSetting child : children) {
+                child.fromTag(setting);
+            }
+        }
     }
 
     public abstract RequiredArgumentBuilder<ServerCommandSource, K> valueArgument();
@@ -38,6 +53,10 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
         this.value = value;
         changed();
     }
+
+    protected abstract void setValue(CompoundTag tag);
+
+    protected abstract K getValue(CompoundTag tag);
 
     void changed() {
         for (Consumer<K> consumer : onLoad) {
