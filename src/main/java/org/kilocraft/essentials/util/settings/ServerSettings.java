@@ -111,12 +111,16 @@ public class ServerSettings implements NBTStorage {
         //Shulker spawn chance
         DoubleSetting shulker_spawn_chance = new DoubleSetting(0D, "shulker_spawn_chance");
 
+        //Global sound
+        BooleanSetting global_sound = new BooleanSetting(true, "global_sound");
+
         patch.addChild(donkeyDupe);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
         patch.addChild(enchanting);
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
+        patch.addChild(global_sound);
 
         //Entity Limit
         CategorySetting entity_limit = new CategorySetting("entity_limit");

@@ -13,7 +13,8 @@
     "PropertyMixinPatch",
     "ShulkerEntityMixinPatch",
     "VillagerBreedTaskMixinPatch",
-    "WitherEntityMixinPatch"
+    "WitherEntityMixinPatch",
+    "ServerWorldMixinPatch"
   ],
   "server": [
     "SignBlockEntityMixinPatch"
