@@ -261,7 +261,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         }
 
         if (KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_SELF) || KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_OTHERS)) {
-            this.getNickname().ifPresent(s -> {
+            this.getPreference(Preferences.NICK).ifPresent(s -> {
                 try {
                     this.setNickname(Format.validatePermission(this, s, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting."));
                 } catch (CommandSyntaxException e) {
