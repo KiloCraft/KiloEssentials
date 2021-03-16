@@ -31,6 +31,9 @@ public class ServerSettings implements NBTStorage {
     public static boolean perPlayerMobcap = false;
     public static float perPlayerMobcapMax = 1.2F;
     public static int tickDistance = -1;
+    public static int wither_check_distance = 2;
+    public static double wither_tp_distance = 1;
+
 
     public ServerSettings() {
         NBTStorageUtil.addCallback(this);
@@ -87,8 +90,8 @@ public class ServerSettings implements NBTStorage {
         BooleanSetting donkeyDupe = new BooleanSetting(true, "donkey_dupe");
         //Stuck Wither
         CategorySetting wither = new CategorySetting("wither");
-        IntegerSetting check_distance = new IntegerSetting(2, "check_distance").range(-256, 256);
-        DoubleSetting tp_distance = new DoubleSetting(1D, "tp_distance").range(-256D, 256D);
+        IntegerSetting check_distance = (IntegerSetting) new IntegerSetting(2, "check_distance").range(-256, 256).onChanged(integer -> wither_check_distance = integer);
+        DoubleSetting tp_distance = (DoubleSetting) new DoubleSetting(1D, "tp_distance").range(-256D, 256D).onChanged(d -> wither_tp_distance = d);
         wither.addChild(check_distance);
         wither.addChild(tp_distance);
         //per-player-mobcap

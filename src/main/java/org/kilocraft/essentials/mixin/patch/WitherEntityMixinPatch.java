@@ -6,6 +6,7 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.world.World;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,11 +27,10 @@ public abstract class WitherEntityMixinPatch extends HostileEntity {
     @Inject(method = "tickMovement", at = @At(value = "HEAD"))
     public void moveIfInBedrock(CallbackInfo ci) {
         if (this.getInvulnerableTimer() > 0) {
-            //TODO:
-            /*if (this.getEntityWorld().getBlockState(this.getBlockPos().add(0, KiloEssentials.getInstance().getSettingManager().getInteger("wither_check_distance"), 0)).isIn(BlockTags.WITHER_IMMUNE)
-            || this.getEntityWorld().getBlockState(this.getBlockPos().add(0, KiloEssentials.getInstance().getSettingManager().getInteger("wither_check_distance") + 1, 0)).isIn(BlockTags.WITHER_IMMUNE)) {
-                this.updatePosition(this.getPos().x, (this.getPos().y + KiloEssentials.getInstance().getSettingManager().getDouble("wither_tp_distance")), this.getPos().z);
-            }*/
+            if (this.getEntityWorld().getBlockState(this.getBlockPos().add(0, ServerSettings.wither_check_distance, 0)).isIn(BlockTags.WITHER_IMMUNE)
+            || this.getEntityWorld().getBlockState(this.getBlockPos().add(0, ServerSettings.wither_check_distance + 1, 0)).isIn(BlockTags.WITHER_IMMUNE)) {
+                this.updatePosition(this.getPos().x, (this.getPos().y + ServerSettings.wither_tp_distance), this.getPos().z);
+            }
         }
     }
 

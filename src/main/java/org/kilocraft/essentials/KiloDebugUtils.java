@@ -17,7 +17,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.util.TpsTracker;
+import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.File;
@@ -108,17 +108,17 @@ public class KiloDebugUtils {
             loadedChunks = loadedChunks + world.getChunkManager().getTotalChunksLoadedCount();
         }
 
-        TpsTracker.tps.getAverage();
+
 
         String debugText = String.format(DEBUG_FORMAT,
-                ComponentText.formatTps(TpsTracker.tps.getAverage()),
-                TpsTracker.MillisecondPerTick.getShortAverage(), loadedChunks,
+                ComponentText.formatTps(DataTracker.tps.getAverage(100)),
+                DataTracker.getMSPT(), loadedChunks,
                 ModConstants.getVersionInt(), ModConstants.getVersionNick()
         );
 
         bossBar.setName(Texter.newText().append(DEBUG_TEXT).append(Texter.newText(debugText)));
 
-        int tps = (int) TpsTracker.tps.getAverage();
+        int tps = (int) DataTracker.tps.getAverage(100);
         bossBar.setValue(tps);
 
         if (tps > 15) {

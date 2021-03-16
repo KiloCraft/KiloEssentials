@@ -2,16 +2,25 @@ package org.kilocraft.essentials.util.math;
 
 public class Average {
 
-    public final long[] data;
+    private long[] data;
     private int index = 0;
     private long tracked = 0;
-
     public Average(int size) {
         data = new long[size];
     }
 
     public static String format(double d) {
         return String.format("%.2f", d);
+    }
+
+    public Average setData(long[] data) {
+        this.data = data;
+        return this;
+    }
+
+    public Average setIndex(int index) {
+        this.index = index;
+        return this;
     }
 
     public void add(long l) {
@@ -23,7 +32,7 @@ public class Average {
         tracked++;
     }
 
-    public void compute() {
+    protected void compute() {
         add(tracked);
         tracked = 0;
     }

@@ -12,7 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -21,7 +20,6 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
-import org.kilocraft.essentials.util.TpsTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.ServerSettings;
@@ -29,8 +27,6 @@ import org.kilocraft.essentials.util.settings.ServerSettings;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.kilocraft.essentials.util.TpsTracker.*;
 
 public class StatusCommand extends EssentialCommand {
 
@@ -46,12 +42,12 @@ public class StatusCommand extends EssentialCommand {
                 "\n&7TPS: " +
                 String.format(
                         "%s <dark_gray>(<gray>%s ms<dark_gray>) <dark_gray>(<gray>5m<dark_gray>/<gray>15m<dark_gray>/<gray>1h<dark_gray>/<gray>1d<dark_gray>) %s<dark_gray>, %s<dark_gray>, %s<dark_gray>, %s<reset>",
-                        ComponentText.formatTps(tps.getAverage()),
-                        TpsTracker.MillisecondPerTick.getShortAverage(),
-                        ComponentText.formatTps(tps5.getAverage()),
-                        ComponentText.formatTps(tps15.getAverage()),
-                        ComponentText.formatTps(tps60.getAverage()),
-                        ComponentText.formatTps(tps1440.getAverage())) +
+                        ComponentText.formatTps(DataTracker.tps.getAverage(100)),
+                        DataTracker.getMSPT(),
+                        ComponentText.formatTps(DataTracker.tps.getAverage(6000)),
+                        ComponentText.formatTps(DataTracker.tps.getAverage(18000)),
+                        ComponentText.formatTps(DataTracker.tps.getAverage(72000)),
+                        ComponentText.formatTps(DataTracker.tps.getAverage(1728000))) +
                 "\n&7CPU: " +
                 ComponentText.formatPercentage(cpuUsage) + "% Usage" +
                 " &3" + Thread.activeCount() + " Running Threads" +
