@@ -7,8 +7,6 @@ import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.server.ServerTickEvent;
 import org.kilocraft.essentials.events.server.ServerScheduledUpdateEventImpl;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.util.math.DataTracker;
-import org.kilocraft.essentials.util.settings.ServerSettings;
 
 public class OnTick implements EventHandler<ServerTickEvent> {
 	private int tick = 0;

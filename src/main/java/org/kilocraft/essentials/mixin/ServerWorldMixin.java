@@ -11,8 +11,6 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.settings.ServerSettings;
-import org.kilocraft.essentials.util.settings.values.BooleanSetting;
-import org.kilocraft.essentials.util.settings.values.IntegerSetting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

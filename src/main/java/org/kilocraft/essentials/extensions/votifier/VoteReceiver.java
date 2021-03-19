@@ -10,7 +10,6 @@ import org.kilocraft.essentials.api.util.Vote;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.votifier.crypto.RSA;
 
-import javax.crypto.BadPaddingException;
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;

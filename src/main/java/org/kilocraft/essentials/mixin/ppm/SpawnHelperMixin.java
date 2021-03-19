@@ -4,14 +4,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
@@ -86,7 +84,7 @@ public abstract class SpawnHelperMixin {
             }
 
             if ((flag || !spawnGroup.isPeaceful()) && (flag1 || spawnGroup.isPeaceful()) && (flag2 || !spawnGroup.isRare()) && difference > 0) {
-                            int spawnCount = spawnEntitiesInChunk(spawnGroup, serverWorld, chunk, ((SpawnHelperInfoAccessor) info)::test, ((SpawnHelperInfoAccessor) info)::run,
+                            spawnEntitiesInChunk(spawnGroup, serverWorld, chunk, ((SpawnHelperInfoAccessor) info)::test, ((SpawnHelperInfoAccessor) info)::run,
                         difference, ServerSettings.perPlayerMobcap ? ((ThreadedAnvilChunkStorageInterface)serverWorld.getChunkManager().threadedAnvilChunkStorage)::updatePlayerMobTypeMap : null);
             }
         }

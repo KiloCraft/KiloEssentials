@@ -9,15 +9,11 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import org.checkerframework.checker.units.qual.K;
 import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.util.settings.values.util.AbstractSetting;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
-
-import java.security.InvalidKeyException;
 
 public class SettingCommand extends EssentialCommand {
 

@@ -25,10 +25,10 @@ import org.kilocraft.essentials.extensions.votifier.Votifier;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.LuckPermsCompatibility;
 import org.kilocraft.essentials.util.PermissionUtil;
-import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.io.IOException;
 import java.util.List;

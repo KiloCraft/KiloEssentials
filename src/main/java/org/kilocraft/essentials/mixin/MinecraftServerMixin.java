@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.MathHelper;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.server.Brandable;
 import org.kilocraft.essentials.events.server.ServerTickEventImpl;
