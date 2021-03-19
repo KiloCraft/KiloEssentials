@@ -13,7 +13,12 @@
     "ServerWorldMixin",
     "SpawnHelperInfoMixin",
     "SpawnHelperMixin",
-    "WorldMixin"
+    "WorldMixin",
+    "ppm.ServerChunkManagerMixin",
+    "ppm.ServerPlayerEntityMixin",
+    "ppm.SpawnHelperMixin",
+    "ppm.ThreadedAnvilChunkStorageAccessor",
+    "ppm.ThreadedAnvilChunkStorageMixin"
   ],
   "server": [
     "AnvilScreenHandlerMixin",
