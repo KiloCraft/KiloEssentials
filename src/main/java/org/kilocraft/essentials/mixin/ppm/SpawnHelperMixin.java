@@ -19,6 +19,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
+import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Final;
@@ -71,13 +72,15 @@ public abstract class SpawnHelperMixin {
         SpawnGroup[] spawnGroups = SPAWNABLE_GROUPS;
         for (SpawnGroup spawnGroup : spawnGroups) {
             int currEntityCount = info.getGroupToCount().getInt(spawnGroup);
-            int k1 = spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) info).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea();
+            float multiplier = ServerSettings.getFloat("mobcap." + serverWorld.getRegistryKey().getValue().getPath()) *
+                    ServerSettings.getFloat("mobcap." + serverWorld.getRegistryKey().getValue().getPath() + "." + spawnGroup.getName().toLowerCase());
+            int k1 = (int) (spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) info).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea() * multiplier);
             int difference = k1 - currEntityCount;
 
             if (ServerSettings.perPlayerMobcap) {
                 int minDiff = Integer.MAX_VALUE;
                 for (ServerPlayerEntity player : ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobDistanceMap().getPlayersInRange(chunk.getPos())) {
-                    minDiff = Math.min(spawnGroup.getCapacity() - ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobCountNear(player, spawnGroup), minDiff);
+                    minDiff = (int) Math.min((spawnGroup.getCapacity() * multiplier) - ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobCountNear(player, spawnGroup), minDiff);
                 }
                 difference = (minDiff == Integer.MAX_VALUE) ? 0 : minDiff;
             }
@@ -93,6 +96,17 @@ public abstract class SpawnHelperMixin {
 
 
     private static int spawnEntitiesInChunk(SpawnGroup spawnGroup, ServerWorld serverWorld, WorldChunk worldChunk, SpawnHelper.Checker checker, SpawnHelper.Runner runner, int maxSpawns, Consumer<Entity> trackEntity) {
+        int tickDistance = ServerSettings.tickDistance;
+        if (tickDistance != -1) {
+            Entity player = serverWorld.getClosestPlayer(worldChunk.getPos().getStartX() + 8, 128, worldChunk.getPos().getStartZ() + 8, -1.0D, false);
+            if (player != null) {
+                if (worldChunk.getPos().getChebyshevDistance(player.getChunkPos()) > tickDistance) {
+                    DataTracker.cSpawnAttempts.track();
+                    return 0;
+                }
+            }
+        }
+        DataTracker.spawnAttempts.track();
         BlockPos blockPos = getSpawnPos(serverWorld, worldChunk);
         if (blockPos.getY() >= serverWorld.getBottomY() + 1) {
             return spawnMobsInternal(spawnGroup, serverWorld, worldChunk, blockPos, checker, runner, maxSpawns, trackEntity);

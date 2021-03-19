@@ -11,8 +11,6 @@
     "RconClientMixin",
     "ServerScoreboardMixin",
     "ServerWorldMixin",
-    "SpawnHelperInfoMixin",
-    "SpawnHelperMixin",
     "WorldMixin"
   ],
   "server": [

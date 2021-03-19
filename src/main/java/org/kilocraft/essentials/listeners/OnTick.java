@@ -15,7 +15,6 @@ public class OnTick implements EventHandler<ServerTickEvent> {
 
 	@Override
 	public void handle(@NotNull ServerTickEvent event) {
-        if (ServerSettings.perPlayerMobcap) DataTracker.computeEntityCache();
         ((ServerUserManager) KiloServer.getServer().getUserManager()).onTick();
 
         if (tick >= 100) {

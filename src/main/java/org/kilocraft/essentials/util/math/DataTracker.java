@@ -23,30 +23,11 @@ public class DataTracker {
     public static final Average cTickedEntities = new Average(60);
     public static final Average cTickedBlockEntities = new Average(60);
     public static final Average tps = new Average(28800);
-    public static final HashMap<ServerWorld, HashMap<ServerPlayerEntity, Object2IntOpenHashMap<SpawnGroup>>> cachedEntityCount = new HashMap<>();
     private static final Average[] averages = {spawnAttempts, tickedChunks, tickedEntities, tickedBlockEntities, cSpawnAttempts, cTickedChunks, cTickedEntities, cTickedBlockEntities};
 
     public static void compute() {
         for (Average average : averages) {
             average.compute();
-        }
-    }
-
-    public static void computeEntityCache() {
-        cachedEntityCount.clear();
-        int viewDistance = ServerSettings.getInt("view_distance");
-        for (ServerWorld world : KiloEssentials.getServer().getWorlds()) {
-            HashMap<ServerPlayerEntity, Object2IntOpenHashMap<SpawnGroup>> playerToSpawnGroup = new HashMap<>();
-            for (Entity entity : world.iterateEntities()) {
-                for (ServerPlayerEntity player : world.getPlayers()) {
-                    if (player.getChunkPos().getChebyshevDistance(entity.getChunkPos()) <= viewDistance && entity.getEntityWorld().equals(player.getEntityWorld())) {
-                        Object2IntOpenHashMap<SpawnGroup> intOpenHashMap = playerToSpawnGroup.getOrDefault(player, new Object2IntOpenHashMap<>());
-                        intOpenHashMap.addTo(entity.getType().getSpawnGroup(), 1);
-                        playerToSpawnGroup.put(player, intOpenHashMap);
-                    }
-                }
-            }
-            cachedEntityCount.put(world, playerToSpawnGroup);
         }
     }
 

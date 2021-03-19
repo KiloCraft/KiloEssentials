@@ -29,7 +29,6 @@ public class ServerSettings implements NBTStorage {
     public static final boolean[] entityTickCache = new boolean[entities];
     public static final boolean[] entitySpawnCache = new boolean[entities];
     public static boolean perPlayerMobcap = false;
-    public static float perPlayerMobcapMax = 1.2F;
     public static int tickDistance = -1;
     public static int wither_check_distance = 2;
     public static double wither_tp_distance = 1;
@@ -96,8 +95,6 @@ public class ServerSettings implements NBTStorage {
         wither.addChild(tp_distance);
         //per-player-mobcap
         BooleanSetting ppmobcap = (BooleanSetting) new BooleanSetting(false, "ppmobcap").onChanged(bool -> perPlayerMobcap = bool);
-        FloatSetting max = new FloatSetting(1.2F, "max");
-        ppmobcap.addChild(max);
 
         //Enchanting
         CategorySetting enchanting = new CategorySetting("enchanting");
