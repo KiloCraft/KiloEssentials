@@ -20,7 +20,7 @@ public class TpsCommand extends EssentialCommand {
         getCommandSource(ctx).sendMessage(String.format(
                 "<gold>TPS %s <dark_gray>(<gray>%s ms<dark_gray>) <dark_gray>(<gray>5m<dark_gray>/<gray>15m<dark_gray>/<gray>1h<dark_gray>/<gray>1d<dark_gray>) %s<dark_gray>, %s<dark_gray>, %s<dark_gray>, %s<reset>",
                 ComponentText.formatTps(DataTracker.tps.getAverage(100)),
-                DataTracker.getMSPT(),
+                DataTracker.getFormattedMSPT(),
                 ComponentText.formatTps(DataTracker.tps.getAverage(6000)),
                 ComponentText.formatTps(DataTracker.tps.getAverage(18000)),
                 ComponentText.formatTps(DataTracker.tps.getAverage(72000)),

@@ -112,7 +112,7 @@ public class KiloDebugUtils {
 
         String debugText = String.format(DEBUG_FORMAT,
                 ComponentText.formatTps(DataTracker.tps.getAverage(100)),
-                DataTracker.getMSPT(), loadedChunks,
+                DataTracker.getFormattedMSPT(), loadedChunks,
                 ModConstants.getVersionInt(), ModConstants.getVersionNick()
         );
 
