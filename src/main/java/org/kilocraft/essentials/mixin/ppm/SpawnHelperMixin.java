@@ -20,6 +20,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
 import org.kilocraft.essentials.util.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -37,10 +38,6 @@ public abstract class SpawnHelperMixin {
     private static SpawnGroup[] SPAWNABLE_GROUPS;
 
     @Shadow
-    public static void spawnEntitiesInChunk(SpawnGroup spawnGroup, ServerWorld serverWorld, WorldChunk worldChunk, SpawnHelper.Checker checker, SpawnHelper.Runner runner) {
-    }
-
-    @Shadow
     protected static BlockPos getSpawnPos(World world, WorldChunk worldChunk) {
         return null;
     }
@@ -53,11 +50,6 @@ public abstract class SpawnHelperMixin {
     @Shadow
     protected static Optional<SpawnSettings.SpawnEntry> pickRandomSpawnEntry(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos blockPos) {
         return null;
-    }
-
-    @Shadow
-    public static boolean canSpawn(SpawnRestriction.Location location, WorldView worldView, BlockPos blockPos, EntityType<?> entityType) {
-        return false;
     }
 
     @Shadow
@@ -82,8 +74,7 @@ public abstract class SpawnHelperMixin {
             int k1 = spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) info).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea();
             int difference = k1 - currEntityCount;
 
-            //TODO:
-            if (true/*worldserver.paperConfig.perPlayerMobSpawns*/) {
+            if (ServerSettings.perPlayerMobcap) {
                 int minDiff = Integer.MAX_VALUE;
                 for (ServerPlayerEntity player : ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobDistanceMap().getPlayersInRange(chunk.getPos())) {
                     minDiff = Math.min(spawnGroup.getCapacity() - ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobCountNear(player, spawnGroup), minDiff);
@@ -92,35 +83,19 @@ public abstract class SpawnHelperMixin {
             }
 
             if ((flag || !spawnGroup.isPeaceful()) && (flag1 || spawnGroup.isPeaceful()) && (flag2 || !spawnGroup.isRare()) && difference > 0) {
-                // CraftBukkit end
-                //-a(enumcreaturetype, worldserver, chunk, (entitytypes, blockposition, ichunkaccess) -> {
-                //TODO: should return int
                             int spawnCount = spawnEntitiesInChunk(spawnGroup, serverWorld, chunk, ((SpawnHelperInfoAccessor) info)::test, ((SpawnHelperInfoAccessor) info)::run,
-                                    //TODO: Config
-                        difference, true/*worldserver.paperConfig.perPlayerMobSpawns*/ ? ((ThreadedAnvilChunkStorageInterface)serverWorld.getChunkManager().threadedAnvilChunkStorage)::updatePlayerMobTypeMap : null);
-                info.getGroupToCount().mergeInt(spawnGroup, spawnCount, Integer::sum);
-                // Paper end - per player mob spawning
-            }
-
-            if ((flag || !spawnGroup.isPeaceful()) && (flag1 || spawnGroup.isPeaceful()) && (flag2 || !spawnGroup.isRare()) && ((SpawnHelperInfoAccessor) info).isBelowCap(spawnGroup)) {
-                spawnEntitiesInChunk(spawnGroup, serverWorld, chunk, ((SpawnHelperInfoAccessor) info)::test, ((SpawnHelperInfoAccessor) info)::run);
+                        difference, ServerSettings.perPlayerMobcap ? ((ThreadedAnvilChunkStorageInterface)serverWorld.getChunkManager().threadedAnvilChunkStorage)::updatePlayerMobTypeMap : null);
             }
         }
 
         serverWorld.getProfiler().pop();
     }
 
-//TODO:
-    /*     public static void a(EnumCreatureType enumcreaturetype, WorldServer worldserver, IChunkAccess ichunkaccess, BlockPosition blockposition, SpawnerCreature.c spawnercreature_c, SpawnerCreature.a spawnercreature_a) {
-+        // Paper start - add maxSpawns parameter and return spawned mobs
-+        spawnMobsInternal(enumcreaturetype, worldserver, ichunkaccess, blockposition, spawnercreature_c, spawnercreature_a, Integer.MAX_VALUE, null);
-+    }*/
-
 
     private static int spawnEntitiesInChunk(SpawnGroup spawnGroup, ServerWorld serverWorld, WorldChunk worldChunk, SpawnHelper.Checker checker, SpawnHelper.Runner runner, int maxSpawns, Consumer<Entity> trackEntity) {
         BlockPos blockPos = getSpawnPos(serverWorld, worldChunk);
         if (blockPos.getY() >= serverWorld.getBottomY() + 1) {
-            return spawnMobsInternal(spawnGroup, serverWorld, worldChunk, blockPos, checker, runner, Integer.MAX_VALUE, null);
+            return spawnMobsInternal(spawnGroup, serverWorld, worldChunk, blockPos, checker, runner, maxSpawns, trackEntity);
         }
         return 0;
     }

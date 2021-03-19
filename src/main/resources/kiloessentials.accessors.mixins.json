@@ -8,8 +8,7 @@
     "PlayerListHeaderS2CPacketMixin",
     "SpawnHelperAccessor",
     "SpawnHelperInfoAccessor",
-    "SpreadPlayerCommandInvoker",
-    "org.kilocraft.essentials.mixin.ppm.ThreadedAnvilChunkStorageAccessor"
+    "SpreadPlayerCommandInvoker"
   ],
   "server": [
     "EntityAccessor",

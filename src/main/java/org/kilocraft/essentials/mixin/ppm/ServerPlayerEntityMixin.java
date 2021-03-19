@@ -29,9 +29,9 @@ public class ServerPlayerEntityMixin implements ServerPlayerEntityInterface {
         return mobcounts;
     }
 
-    @Inject(method = "<init>", at = @At(value = "HEAD"))
+    @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void onInit(MinecraftServer minecraftServer, ServerWorld serverWorld, GameProfile gameProfile, CallbackInfo ci) {
-        cachedSingleMobDistanceMap = new PooledHashSets.PooledObjectLinkedOpenHashSet<>();
+        cachedSingleMobDistanceMap = new PooledHashSets.PooledObjectLinkedOpenHashSet<>((ServerPlayerEntity) (Object) this);
     }
 
 }

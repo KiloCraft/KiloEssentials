@@ -22,14 +22,9 @@ import java.util.Arrays;
 @Mixin(ServerChunkManager.class)
 public abstract class ServerChunkManagerMixin extends ChunkManager {
 
-    //per-player-mobspawn paper patch
-
     @Shadow
     @Final
     public ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
-    @Shadow
-    @Final
-    private ChunkTicketManager ticketManager;
     @Shadow
     @Final
     private ServerWorld world;

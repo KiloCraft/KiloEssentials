@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.7.11",
+  "package": "org.kilocraft.essentials.mixin.ppm",
+  "compatibilityLevel": "JAVA_8",
+  "server": [
+  "ServerChunkManagerMixin",
+  "ServerPlayerEntityMixin",
+  "SpawnHelperMixin",
+  "ThreadedAnvilChunkStorageAccessor",
+  "ThreadedAnvilChunkStorageMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

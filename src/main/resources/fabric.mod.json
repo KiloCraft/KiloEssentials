@@ -27,7 +27,8 @@
     "kiloessentials.events.mixins.json",
     "kiloessentials.mixins.json",
     "kiloessentials.accessors.mixins.json",
-    "kiloessentials.patch.mixins.json"
+    "kiloessentials.patch.mixins.json",
+    "kiloessentials.ppm.mixins.json"
   ],
 
   "depends": {

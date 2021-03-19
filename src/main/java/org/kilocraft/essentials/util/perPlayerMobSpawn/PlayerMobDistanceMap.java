@@ -30,6 +30,10 @@ public final class PlayerMobDistanceMap {
         return this.playerMap.getOrDefault(ChunkPos.toLong(chunkX, chunkZ), EMPTY_SET);
     }
 
+    public Long2ObjectOpenHashMap<PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity>> getPlayerMap() {
+        return playerMap;
+    }
+
     public void update(final List<ServerPlayerEntity> currentPlayers, final int newViewDistance) {
         final ObjectLinkedOpenHashSet<ServerPlayerEntity> gone = new ObjectLinkedOpenHashSet<>(this.players.keySet());
 
