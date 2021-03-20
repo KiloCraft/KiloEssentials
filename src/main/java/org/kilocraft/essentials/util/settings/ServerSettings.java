@@ -13,6 +13,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
+import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.values.*;
 import org.kilocraft.essentials.util.settings.values.util.RootSetting;
@@ -33,6 +34,7 @@ public class ServerSettings implements NBTStorage {
     public static int tickDistance = -1;
     public static int wither_check_distance = 2;
     public static double wither_tp_distance = 1;
+    public static float[][] mobcap;
 
 
     public ServerSettings() {
@@ -161,13 +163,17 @@ public class ServerSettings implements NBTStorage {
         spawn.addChild(spawnEntity);
 
         //Mobcap
+        ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][SpawnGroup.values().length];
         CategorySetting mobcap = new CategorySetting("mobcap");
+        int worldID = 0;
         for (RegistryKey<World> registryKey : RegistryUtils.getWorldsKeySet()) {
-            FloatSetting world = new FloatSetting(1F, registryKey.getValue().getPath()).range(0F, 100F);
+            ((RegistryKeyID)registryKey).setID(worldID);
+            FloatSetting world = (FloatSetting) new FloatSetting(1F, registryKey.getValue().getPath()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID)registryKey).getID()][0] = f);
             for (SpawnGroup spawnGroup : SpawnGroup.values()) {
-                FloatSetting group = new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F);
+                FloatSetting group = (FloatSetting) new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID)registryKey).getID()][spawnGroup.ordinal()] = f);
                 world.addChild(group);
             }
+            worldID++;
             mobcap.addChild(world);
         }
         root.addChild(viewDistance);

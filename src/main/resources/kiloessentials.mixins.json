@@ -9,6 +9,7 @@
     "GuardianEntityMixin",
     "MinecraftDedicatedServerMixin",
     "RconClientMixin",
+    "RegistryKeyMixin",
     "ServerScoreboardMixin",
     "ServerWorldMixin",
     "WorldMixin"

@@ -21,7 +21,8 @@ public abstract class MinecraftServerMixin implements Brandable {
     @Final
     public long[] lastTickLengths;
 
-    @Shadow private int ticks;
+    @Shadow
+    private int ticks;
 
     @Inject(at = @At(value = "RETURN"), method = "<init>")
     private void kilo$run(CallbackInfo ci) {
@@ -32,7 +33,6 @@ public abstract class MinecraftServerMixin implements Brandable {
     private void ke$onTickStart(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         DataTracker.tps.add((long) (1000L / Math.max(50, DataTracker.getMSPT())));
         DataTracker.compute();
-
         KiloServer.getServer().triggerEvent(new ServerTickEventImpl((MinecraftServer) (Object) this));
     }
 

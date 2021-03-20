@@ -19,6 +19,7 @@ import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
 import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
+import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -70,8 +71,8 @@ public abstract class SpawnHelperMixin {
         SpawnGroup[] spawnGroups = SPAWNABLE_GROUPS;
         for (SpawnGroup spawnGroup : spawnGroups) {
             int currEntityCount = info.getGroupToCount().getInt(spawnGroup);
-            float multiplier = ServerSettings.getFloat("mobcap." + serverWorld.getRegistryKey().getValue().getPath()) *
-                    ServerSettings.getFloat("mobcap." + serverWorld.getRegistryKey().getValue().getPath() + "." + spawnGroup.getName().toLowerCase());
+            float multiplier = ServerSettings.mobcap[((RegistryKeyID) serverWorld.getRegistryKey()).getID()][0] *
+                    ServerSettings.mobcap[((RegistryKeyID) serverWorld.getRegistryKey()).getID()][spawnGroup.ordinal()];
             int k1 = (int) (spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) info).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea() * multiplier);
             int difference = k1 - currEntityCount;
 
@@ -84,8 +85,8 @@ public abstract class SpawnHelperMixin {
             }
 
             if ((flag || !spawnGroup.isPeaceful()) && (flag1 || spawnGroup.isPeaceful()) && (flag2 || !spawnGroup.isRare()) && difference > 0) {
-                            spawnEntitiesInChunk(spawnGroup, serverWorld, chunk, ((SpawnHelperInfoAccessor) info)::test, ((SpawnHelperInfoAccessor) info)::run,
-                        difference, ServerSettings.perPlayerMobcap ? ((ThreadedAnvilChunkStorageInterface)serverWorld.getChunkManager().threadedAnvilChunkStorage)::updatePlayerMobTypeMap : null);
+                spawnEntitiesInChunk(spawnGroup, serverWorld, chunk, ((SpawnHelperInfoAccessor) info)::test, ((SpawnHelperInfoAccessor) info)::run,
+                        difference, ServerSettings.perPlayerMobcap ? ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage)::updatePlayerMobTypeMap : null);
             }
         }
 
@@ -118,36 +119,34 @@ public abstract class SpawnHelperMixin {
         int i = blockPos.getY();
         int spawns = 0;
         BlockState blockState = chunk.getBlockState(blockPos);
-        if (!blockState.isSolidBlock(chunk, blockPos)) {
+        if (blockState != null && !blockState.isSolidBlock(chunk, blockPos)) {
             BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-            for(int k = 0; k < 3; ++k) {
+            for (int k = 0; k < 3; ++k) {
                 int l = blockPos.getX();
                 int m = blockPos.getZ();
-                SpawnSettings.SpawnEntry spawnEntry = null;
+                SpawnSettings.SpawnEntry spawnEntry;
                 EntityData entityData = null;
                 int o = MathHelper.ceil(serverWorld.random.nextFloat() * 4.0F);
                 int p = 0;
 
-                for(int q = 0; q < o; ++q) {
+                for (int q = 0; q < o; ++q) {
                     l += serverWorld.random.nextInt(6) - serverWorld.random.nextInt(6);
                     m += serverWorld.random.nextInt(6) - serverWorld.random.nextInt(6);
                     mutable.set(l, i, m);
-                    double d = (double)l + 0.5D;
-                    double e = (double)m + 0.5D;
+                    double d = (double) l + 0.5D;
+                    double e = (double) m + 0.5D;
                     PlayerEntity playerEntity = serverWorld.getClosestPlayer(d, i, e, -1.0D, false);
                     if (playerEntity != null) {
                         double f = playerEntity.squaredDistanceTo(d, i, e);
-                        if (isAcceptableSpawnPosition(serverWorld, chunk, mutable, f)) {
-                            if (spawnEntry == null) {
-                                Optional<SpawnSettings.SpawnEntry> optional = pickRandomSpawnEntry(serverWorld, structureAccessor, chunkGenerator, spawnGroup, serverWorld.random, mutable);
-                                if (!optional.isPresent()) {
-                                    break;
-                                }
-
-                                spawnEntry = optional.get();
-                                o = spawnEntry.minGroupSize + serverWorld.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
+                        if (isAcceptableSpawnPosition(serverWorld, chunk, mutable, f) && serverWorld.isChunkLoaded(mutable)) {
+                            Optional<SpawnSettings.SpawnEntry> optional = pickRandomSpawnEntry(serverWorld, structureAccessor, chunkGenerator, spawnGroup, serverWorld.random, mutable);
+                            if (!optional.isPresent()) {
+                                break;
                             }
+
+                            spawnEntry = optional.get();
+                            o = spawnEntry.minGroupSize + serverWorld.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
 
                             if (SpawnHelperAccessor.canSpawn(serverWorld, spawnGroup, structureAccessor, chunkGenerator, spawnEntry, mutable, f) && checker.test(spawnEntry.type, mutable, chunk)) {
                                 MobEntity mobEntity = createMob(serverWorld, spawnEntry.type);
@@ -182,5 +181,6 @@ public abstract class SpawnHelperMixin {
         }
         return spawns;
     }
+
 
 }
