@@ -20,12 +20,12 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
     @Redirect(method = "tickEntity", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
     public <T> void shouldTickEntity(Consumer<T> consumer, T t) {
         if (!ServerSettings.entityTickCache[0]) return;
-        int tickDistance = ServerSettings.tickDistance;
-        if (t instanceof Entity ) {
-            Entity entity = (Entity) t;
+        if (t instanceof Entity) {
+            final Entity entity = (Entity) t;
             if (!ServerSettings.entityTickCache[Registry.ENTITY_TYPE.getRawId(entity.getType()) + 1]) return;
-            if (tickDistance != -1){
-                Entity player = entity.world.getClosestPlayer(entity, -1.0D);
+            final int tickDistance = ServerSettings.tickDistance;
+            if (tickDistance != -1) {
+                final Entity player = entity.world.getClosestPlayer(entity, -1.0D);
                 if (player != null) {
                     if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) > tickDistance) {
                         DataTracker.cTickedEntities.track();
@@ -40,10 +40,10 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
 
     @Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/BlockEntityTickInvoker;tick()V"))
     public void shouldTickBlockEntity(BlockEntityTickInvoker blockEntityTickInvoker) {
-        int tickDistance = ServerSettings.tickDistance;
+        final int tickDistance = ServerSettings.tickDistance;
         if (tickDistance != -1) {
-            ChunkPos chunkPos = new ChunkPos(blockEntityTickInvoker.getPos());
-            Entity player = this.getClosestPlayer(chunkPos.getStartX() + 8, 128, chunkPos.getStartZ() + 8, -1.0D, false);
+            final ChunkPos chunkPos = new ChunkPos(blockEntityTickInvoker.getPos());
+            final Entity player = this.getClosestPlayer(chunkPos.getStartX() + 8, 128, chunkPos.getStartZ() + 8, -1.0D, false);
             if (player != null) {
                 if (chunkPos.getChebyshevDistance(player.getChunkPos()) > tickDistance) {
                     DataTracker.cTickedBlockEntities.track();
