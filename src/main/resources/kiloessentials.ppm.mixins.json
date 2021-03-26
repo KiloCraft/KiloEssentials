@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.7.11",
-  "package": "org.kilocraft.essentials.mixin.ppm",
+  "package": "org.kilocraft.essentials.mixin.perPlayerMobcap",
   "compatibilityLevel": "JAVA_8",
   "server": [
   "ServerChunkManagerMixin",

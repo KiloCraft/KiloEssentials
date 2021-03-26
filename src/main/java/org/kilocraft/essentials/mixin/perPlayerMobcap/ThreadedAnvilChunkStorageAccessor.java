@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.mixin.ppm;
+package org.kilocraft.essentials.mixin.perPlayerMobcap;
 
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import org.spongepowered.asm.mixin.Mixin;

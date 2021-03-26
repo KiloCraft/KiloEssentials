@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util.perPlayerMobSpawn;
+package org.kilocraft.essentials.patch.perPlayerMobSpawn;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;

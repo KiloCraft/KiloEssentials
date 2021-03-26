@@ -13,7 +13,16 @@
     "RegistryKeyMixin",
     "ServerScoreboardMixin",
     "ServerWorldMixin",
-    "WorldMixin"
+    "WorldMixin",
+    "entityActivationRange.AreaEffectCloudEntityMixin",
+    "entityActivationRange.ArrowEntityEntity",
+    "entityActivationRange.EntityMixin",
+    "entityActivationRange.ItemEntityMixin",
+    "entityActivationRange.LivingEntityMixin",
+    "entityActivationRange.PassiveEntityMixin",
+    "entityActivationRange.PersistentProjectileEntityAccessor",
+    "entityActivationRange.ServerWorldMixin",
+    "entityActivationRange.VillagerEntityMixin"
   ],
   "server": [
     "AnvilScreenHandlerMixin",
