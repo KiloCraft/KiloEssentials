@@ -4,6 +4,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -35,6 +36,8 @@ public class ServerSettings implements NBTStorage {
     public static int wither_check_distance = 2;
     public static double wither_tp_distance = 1;
     public static float[][] mobcap;
+    public static boolean tickInactiveVillagers = false;
+    public static int[] activationRange = new int[4];
 
 
     public ServerSettings() {
@@ -117,6 +120,16 @@ public class ServerSettings implements NBTStorage {
         //Global sound
         BooleanSetting global_sound = new BooleanSetting(true, "global_sound");
 
+        //Activation range
+        CategorySetting activation_range = new CategorySetting("activation_range");
+        IntegerSetting misc = (IntegerSetting) new IntegerSetting(16, "misc").onChanged(integer -> activationRange[0] = integer);
+        IntegerSetting raider = (IntegerSetting) new IntegerSetting(48, "raider").onChanged(integer -> activationRange[1] = integer);
+        IntegerSetting animal = (IntegerSetting) new IntegerSetting(32, "animal").onChanged(integer -> activationRange[2] = integer);
+        IntegerSetting monster = (IntegerSetting) new IntegerSetting(32, "monster").onChanged(integer -> activationRange[3] = integer);
+        BooleanSetting inactiveVillagers = (BooleanSetting) new BooleanSetting(true, "inactiveVillagers").onChanged(bool -> tickInactiveVillagers = bool);
+        activation_range.addChild(misc).addChild(raider).addChild(animal).addChild(monster).addChild(inactiveVillagers);
+
+
         patch.addChild(donkeyDupe);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
@@ -124,6 +137,7 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
         patch.addChild(global_sound);
+        patch.addChild(activation_range);
 
         //Entity Limit
         CategorySetting entity_limit = new CategorySetting("entity_limit");

@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.mixin.ppm;
+package org.kilocraft.essentials.mixin.perPlayerMobcap;
 
 import com.mojang.datafixers.DataFixer;
 import net.minecraft.entity.Entity;
@@ -14,9 +14,9 @@ import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatusChangeListener;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
-import org.kilocraft.essentials.util.perPlayerMobSpawn.PlayerMobDistanceMap;
-import org.kilocraft.essentials.util.perPlayerMobSpawn.ServerPlayerEntityInterface;
-import org.kilocraft.essentials.util.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
+import org.kilocraft.essentials.patch.perPlayerMobSpawn.PlayerMobDistanceMap;
+import org.kilocraft.essentials.patch.perPlayerMobSpawn.ServerPlayerEntityInterface;
+import org.kilocraft.essentials.patch.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

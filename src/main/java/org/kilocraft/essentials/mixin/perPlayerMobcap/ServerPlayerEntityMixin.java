@@ -1,12 +1,12 @@
-package org.kilocraft.essentials.mixin.ppm;
+package org.kilocraft.essentials.mixin.perPlayerMobcap;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import org.kilocraft.essentials.util.perPlayerMobSpawn.PooledHashSets;
-import org.kilocraft.essentials.util.perPlayerMobSpawn.ServerPlayerEntityInterface;
+import org.kilocraft.essentials.patch.perPlayerMobSpawn.PooledHashSets;
+import org.kilocraft.essentials.patch.perPlayerMobSpawn.ServerPlayerEntityInterface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

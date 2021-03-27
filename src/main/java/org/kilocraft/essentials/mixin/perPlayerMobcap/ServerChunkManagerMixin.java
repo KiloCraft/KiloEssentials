@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.mixin.ppm;
+package org.kilocraft.essentials.mixin.perPlayerMobcap;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -7,9 +7,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.chunk.ChunkManager;
-import org.kilocraft.essentials.util.perPlayerMobSpawn.PlayerMobDistanceMap;
-import org.kilocraft.essentials.util.perPlayerMobSpawn.ServerPlayerEntityInterface;
-import org.kilocraft.essentials.util.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
+import org.kilocraft.essentials.patch.perPlayerMobSpawn.PlayerMobDistanceMap;
+import org.kilocraft.essentials.patch.perPlayerMobSpawn.ServerPlayerEntityInterface;
+import org.kilocraft.essentials.patch.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,7 +35,7 @@ public abstract class ServerChunkManagerMixin extends ChunkManager {
         PlayerMobDistanceMap mobDistanceMap = ((ThreadedAnvilChunkStorageInterface) threadedAnvilChunkStorage).getMobDistanceMap();
         if (mobDistanceMap != null) {
             // update distance map
-            mobDistanceMap.update(this.world.getPlayers(), ((ThreadedAnvilChunkStorageAccessor) threadedAnvilChunkStorage).getWatchDistance());
+            mobDistanceMap.update(this.world.getPlayers(), ServerSettings.tickDistance < 0 ? ((ThreadedAnvilChunkStorageAccessor) threadedAnvilChunkStorage).getWatchDistance() : ServerSettings.tickDistance);
             // re-set mob counts
             for (ServerPlayerEntity player : this.world.getPlayers()) {
                 Arrays.fill(((ServerPlayerEntityInterface) player).getMobCounts(), 0);

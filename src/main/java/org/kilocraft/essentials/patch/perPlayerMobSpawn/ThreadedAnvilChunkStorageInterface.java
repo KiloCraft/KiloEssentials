@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util.perPlayerMobSpawn;
+package org.kilocraft.essentials.patch.perPlayerMobSpawn;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnGroup;
