@@ -47,7 +47,6 @@ public abstract class MinecraftServerMixin implements Brandable {
     @Inject(at = @At("HEAD"), method = "tick")
     private void ke$onTickStart(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         DataTracker.tps.add((long) (1000L / Math.max(50, DataTracker.getMSPT())));
-        DataTracker.compute();
         KiloServer.getServer().triggerEvent(new ServerTickEventImpl((MinecraftServer) (Object) this));
     }
 

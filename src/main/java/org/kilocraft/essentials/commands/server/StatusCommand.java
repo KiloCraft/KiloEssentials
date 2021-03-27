@@ -55,16 +55,7 @@ public class StatusCommand extends EssentialCommand {
                 ComponentText.formatPercentage(ramUsage) + "% " +
                 "&8(&b" + SystemMonitor.getRamUsedMB() + " MB" + "&8/&7" +
                 SystemMonitor.getRamTotalMB() + " MB" + "&8)" +
-                "\n&7Worlds&8:&e").append(addWorldInfo())
-                .append(ComponentText.of("\n&7Ticking: "))
-                .append(ComponentText.of("&6BlockEntity ")
-                        .append(ComponentText.of("&8(&a" + DataTracker.tickedBlockEntities.formattedAverage() + "&8/&7" + DataTracker.cTickedBlockEntities.formattedAverage() + "&8)"))
-                .append(ComponentText.of(" &bEntity "))
-                        .append(ComponentText.of("&8(&a" + DataTracker.tickedEntities.formattedAverage() + "&8/&7" + DataTracker.cTickedEntities.formattedAverage() + "&8)"))
-                .append(ComponentText.of(" &aChunk "))
-                        .append(ComponentText.of("&8(&a" + DataTracker.tickedChunks.formattedAverage() + "&8/&7" + DataTracker.cTickedChunks.formattedAverage() + "&8)"))
-                .append(ComponentText.of(" &dSpawning "))
-                        .append(ComponentText.of("&8(&a" + DataTracker.spawnAttempts.formattedAverage() + "&8/&7" + DataTracker.cSpawnAttempts.formattedAverage() + "&8)")));
+                "\n&7Worlds&8:&e").append(addWorldInfo());
     }
 
     private static TextComponent addWorldInfo() {
