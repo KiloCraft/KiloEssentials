@@ -12,7 +12,6 @@
     "RconClientMixin",
     "RegistryKeyMixin",
     "ServerScoreboardMixin",
-    "ServerWorldMixin",
     "WorldMixin",
     "entityActivationRange.AreaEffectCloudEntityMixin",
     "entityActivationRange.ArrowEntityEntity",

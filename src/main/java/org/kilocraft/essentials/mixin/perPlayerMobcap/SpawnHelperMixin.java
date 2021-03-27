@@ -89,23 +89,11 @@ public abstract class SpawnHelperMixin {
                         difference, ServerSettings.perPlayerMobcap ? ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage)::updatePlayerMobTypeMap : null);
             }
         }
-
         serverWorld.getProfiler().pop();
     }
 
 
     private static int spawnEntitiesInChunk(SpawnGroup spawnGroup, ServerWorld serverWorld, WorldChunk worldChunk, SpawnHelper.Checker checker, SpawnHelper.Runner runner, int maxSpawns, Consumer<Entity> trackEntity) {
-        int tickDistance = ServerSettings.tickDistance;
-        if (tickDistance != -1) {
-            Entity player = serverWorld.getClosestPlayer(worldChunk.getPos().getStartX() + 8, 128, worldChunk.getPos().getStartZ() + 8, -1.0D, false);
-            if (player != null) {
-                if (worldChunk.getPos().getChebyshevDistance(player.getChunkPos()) > tickDistance) {
-                    DataTracker.cSpawnAttempts.track();
-                    return 0;
-                }
-            }
-        }
-        DataTracker.spawnAttempts.track();
         BlockPos blockPos = getSpawnPos(serverWorld, worldChunk);
         if (blockPos.getY() >= serverWorld.getBottomY() + 1) {
             return spawnMobsInternal(spawnGroup, serverWorld, worldChunk, blockPos, checker, runner, maxSpawns, trackEntity);
