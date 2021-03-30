@@ -15,13 +15,22 @@
     "WorldMixin",
     "entityActivationRange.AreaEffectCloudEntityMixin",
     "entityActivationRange.ArrowEntityEntity",
+    "entityActivationRange.EntityAccessor",
     "entityActivationRange.EntityMixin",
+    "entityActivationRange.GoalMixin",
+    "entityActivationRange.GoalSelectorMixin",
     "entityActivationRange.ItemEntityMixin",
+    "entityActivationRange.LivingEntityAccessor",
     "entityActivationRange.LivingEntityMixin",
+    "entityActivationRange.MobEntityAccessor",
+    "entityActivationRange.MobEntityMixin",
+    "entityActivationRange.MoveToTargetPosGoalMixin",
     "entityActivationRange.PassiveEntityMixin",
+    "entityActivationRange.PathAwareEntityMixin",
     "entityActivationRange.PersistentProjectileEntityAccessor",
     "entityActivationRange.ServerWorldMixin",
-    "entityActivationRange.VillagerEntityMixin"
+    "entityActivationRange.VillagerEntityMixin",
+    "entityActivationRange.WorldMixin"
   ],
   "server": [
     "AnvilScreenHandlerMixin",

@@ -30,7 +30,7 @@ public abstract class ItemEntityMixin extends Entity implements InactiveEntity {
         int elapsedTicks = KiloEssentials.getServer().getMinecraftServer().getTicks() - this.lastTick;
         if (this.pickupDelay > 0 && this.pickupDelay != 32767)
             this.pickupDelay = Math.max((this.pickupDelay - elapsedTicks), 0);
-        if (this.age != -32768) this.age = elapsedTicks;
+        if (this.age != -32768) this.age += elapsedTicks;
         this.lastTick = KiloEssentials.getServer().getMinecraftServer().getTicks();
 
         if (!this.world.isClient && this.age >= 6000) {

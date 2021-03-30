@@ -2,12 +2,14 @@ package org.kilocraft.essentials.mixin.entityActivationRange;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.kilocraft.essentials.patch.entityActivationRange.ActivationRange;
 import org.kilocraft.essentials.patch.entityActivationRange.InactiveEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.BooleanSupplier;
@@ -26,6 +28,17 @@ public class ServerWorldMixin {
             ++entity.age;
             ((InactiveEntity)entity).inactiveTick();
             ci.cancel();
+        }
+    }
+
+    @Redirect(method = "tickPassenger", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tickRiding()V"))
+    public void shouldTickPassengers(Entity entity) {
+        if (ActivationRange.checkIfActive(entity)) {
+            entity.tickRiding();
+        } else {
+            entity.setVelocity(Vec3d.ZERO);
+            ((InactiveEntity)entity).inactiveTick();
+            entity.getVehicle().updatePassengerPosition(entity);
         }
     }
 

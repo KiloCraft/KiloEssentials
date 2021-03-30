@@ -4,7 +4,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.scoreboard.Team;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -12,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
+import org.kilocraft.essentials.patch.entityActivationRange.ActivationRange;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 import org.kilocraft.essentials.util.registry.RegistryKeyID;
@@ -23,21 +23,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.kilocraft.essentials.patch.entityActivationRange.ActivationRange.activationRange;
+
 public class ServerSettings implements NBTStorage {
 
-    public static RootSetting root = new RootSetting();
     //TODO: Figure out a clever way to cache values
     //if we ever get more than 256 entities this will throw IndexOutOfBoundsException
     private static final int entities = 128;
     public static final boolean[] entityTickCache = new boolean[entities];
     public static final boolean[] entitySpawnCache = new boolean[entities];
+    public static RootSetting root = new RootSetting();
     public static boolean perPlayerMobcap = false;
     public static int tickDistance = -1;
     public static int wither_check_distance = 2;
     public static double wither_tp_distance = 1;
     public static float[][] mobcap;
     public static boolean tickInactiveVillagers = false;
-    public static int[] activationRange = new int[4];
+    public static int villagerWorkImmunityAfter = 5 * 20;
+    public static int villagerWorkImmunityFor = 20;
+    public static boolean villagerActiveForPanice = true;
 
 
     public ServerSettings() {
@@ -120,15 +124,6 @@ public class ServerSettings implements NBTStorage {
         //Global sound
         BooleanSetting global_sound = new BooleanSetting(true, "global_sound");
 
-        //Activation range
-        CategorySetting activation_range = new CategorySetting("activation_range");
-        IntegerSetting misc = (IntegerSetting) new IntegerSetting(16, "misc").onChanged(integer -> activationRange[0] = integer);
-        IntegerSetting raider = (IntegerSetting) new IntegerSetting(48, "raider").onChanged(integer -> activationRange[1] = integer);
-        IntegerSetting animal = (IntegerSetting) new IntegerSetting(32, "animal").onChanged(integer -> activationRange[2] = integer);
-        IntegerSetting monster = (IntegerSetting) new IntegerSetting(32, "monster").onChanged(integer -> activationRange[3] = integer);
-        BooleanSetting inactiveVillagers = (BooleanSetting) new BooleanSetting(true, "inactiveVillagers").onChanged(bool -> tickInactiveVillagers = bool);
-        activation_range.addChild(misc).addChild(raider).addChild(animal).addChild(monster).addChild(inactiveVillagers);
-
 
         patch.addChild(donkeyDupe);
         patch.addChild(wither);
@@ -137,7 +132,32 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
         patch.addChild(global_sound);
-        patch.addChild(activation_range);
+
+        //Activation range
+        CategorySetting activation_range = new CategorySetting("activation_range");
+        CategorySetting general = new CategorySetting("general");
+        for (ActivationRange.ActivationType activationType : ActivationRange.ActivationType.values()) {
+            CategorySetting type = new CategorySetting(activationType.toString().toLowerCase());
+            IntegerSetting range = (IntegerSetting) new IntegerSetting(activationType.getActivationRange(), "range").onChanged(integer -> activationRange[activationType.ordinal()][0] = integer);
+            IntegerSetting maxPerTick = (IntegerSetting) new IntegerSetting(activationType.getWakeUpInactiveMaxPerTick(), "max_per_tick").onChanged(integer -> activationRange[activationType.ordinal()][1] = integer);
+            IntegerSetting checkEvery = (IntegerSetting) new IntegerSetting(activationType.getWakeUpInactiveEvery(), "check_every").onChanged(integer -> activationRange[activationType.ordinal()][2] = integer);
+            IntegerSetting wakeupFor = (IntegerSetting) new IntegerSetting(activationType.getWakeUpInactiveFor(), "wakeup_for").onChanged(integer -> activationRange[activationType.ordinal()][3] = integer);
+            type.addChild(range).addChild(maxPerTick).addChild(checkEvery).addChild(wakeupFor);
+            general.addChild(type);
+        }
+        activation_range.addChild(general);
+        {
+            CategorySetting custom = new CategorySetting("custom");
+            CategorySetting villager = new CategorySetting("villager");
+            BooleanSetting tickInactive = (BooleanSetting) new BooleanSetting(true, "tick_inactive").onChanged(bool -> tickInactiveVillagers = bool);
+            IntegerSetting workImmunityAfter = (IntegerSetting) new IntegerSetting(5 * 20, "work_immunity_after").onChanged(integer -> villagerWorkImmunityAfter = integer);
+            IntegerSetting workImmunityFor = (IntegerSetting) new IntegerSetting(5 * 20, "work_immunity_for").onChanged(integer -> villagerWorkImmunityFor = integer);
+            BooleanSetting activeForPanice = (BooleanSetting) new BooleanSetting(true, "active_for_panic").onChanged(bool -> villagerActiveForPanice = bool);
+            villager.addChild(tickInactive).addChild(workImmunityAfter).addChild(workImmunityFor).addChild(activeForPanice);
+
+            custom.addChild(villager);
+            activation_range.addChild(custom);
+        }
 
         //Entity Limit
         CategorySetting entity_limit = new CategorySetting("entity_limit");
@@ -181,15 +201,17 @@ public class ServerSettings implements NBTStorage {
         CategorySetting mobcap = new CategorySetting("mobcap");
         int worldID = 0;
         for (RegistryKey<World> registryKey : RegistryUtils.getWorldsKeySet()) {
-            ((RegistryKeyID)registryKey).setID(worldID);
-            FloatSetting world = (FloatSetting) new FloatSetting(1F, registryKey.getValue().getPath()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID)registryKey).getID()][0] = f);
+            ((RegistryKeyID) registryKey).setID(worldID);
+            FloatSetting world = (FloatSetting) new FloatSetting(1F, registryKey.getValue().getPath()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][0] = f);
             for (SpawnGroup spawnGroup : SpawnGroup.values()) {
-                FloatSetting group = (FloatSetting) new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID)registryKey).getID()][spawnGroup.ordinal()] = f);
+                FloatSetting group = (FloatSetting) new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][spawnGroup.ordinal()] = f);
                 world.addChild(group);
             }
             worldID++;
             mobcap.addChild(world);
         }
+
+        root.addChild(activation_range);
         root.addChild(viewDistance);
         root.addChild(debug);
         root.addChild(entity_limit);
