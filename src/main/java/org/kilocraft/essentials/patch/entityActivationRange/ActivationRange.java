@@ -20,7 +20,6 @@ import org.kilocraft.essentials.mixin.entityActivationRange.EntityAccessor;
 import org.kilocraft.essentials.mixin.entityActivationRange.LivingEntityAccessor;
 import org.kilocraft.essentials.mixin.entityActivationRange.MobEntityAccessor;
 import org.kilocraft.essentials.mixin.entityActivationRange.PersistentProjectileEntityAccessor;
-import org.kilocraft.essentials.patch.GoalSelectorInterface;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 public class ActivationRange {
@@ -258,7 +257,6 @@ public class ActivationRange {
         ActivationType activationType = activationTypeEntity.getActivationType();
         long inactiveFor = KiloEssentials.getServer().getMinecraftServer().getTicks() - activationTypeEntity.getActivatedTick();
         if (((WorldInfo) world).getRemaining()[activationType.ordinal()] > 0 && inactiveFor > activationRange[activationType.ordinal()][2]) {
-            //TODO: does this work?
             ((WorldInfo) world).getRemaining()[activationType.ordinal()]--;
             return activationRange[activationType.ordinal()][3];
         }

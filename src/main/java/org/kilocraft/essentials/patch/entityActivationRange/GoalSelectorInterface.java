@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.patch;
+package org.kilocraft.essentials.patch.entityActivationRange;
 
 public interface GoalSelectorInterface {
 

@@ -10,9 +10,9 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.CommandSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -87,7 +87,7 @@ public class PowerToolsCommand {
             } catch (NumberFormatException ignored) { }
         }
 
-        ListTag commands = item.getTag().getList("NBTCommands", 8);
+        NbtList commands = item.getTag().getList("NBTCommands", 8);
         String[] strings = {commands.getString(inputLine)};
         return CommandSource.suggestMatching(strings, builder);
     }
@@ -108,7 +108,7 @@ public class PowerToolsCommand {
             return -1;
         }
 
-        ListTag lore = item.getTag().getList("NBTCommands", 8);
+        NbtList lore = item.getTag().getList("NBTCommands", 8);
 
         if (inputLine >= lore.size()) {
             user.sendLangMessage("command.item.nothing_to_reset");
@@ -156,7 +156,7 @@ public class PowerToolsCommand {
             return -1;
         }
 
-        ListTag commands = item.getTag().getList("NBTCommands", 8);
+        NbtList commands = item.getTag().getList("NBTCommands", 8);
 
         MutableText text = new LiteralText("PowerTool Commands:").formatted(Formatting.GOLD);
 
@@ -183,21 +183,21 @@ public class PowerToolsCommand {
             return -1;
         }
 
-        CompoundTag itemTag = item.getTag();
+        NbtCompound itemTag = item.getTag();
 
         if (!item.hasTag()) {
-            itemTag = new CompoundTag();
+            itemTag = new NbtCompound();
         }
 
         if (!itemTag.contains("NBTCommands")) {
-            itemTag.put("NBTCommands", new CompoundTag());
+            itemTag.put("NBTCommands", new NbtCompound());
         }
 
-        ListTag command = itemTag.getList("NBTCommands", 8);
+        NbtList command = itemTag.getList("NBTCommands", 8);
         int inputLine = getInteger(ctx, "line") - 1;
 
         if (command == null) {
-            command = new ListTag();
+            command = new NbtList();
         }
 
         if (inputLine > command.size() - 1) {
@@ -205,11 +205,11 @@ public class PowerToolsCommand {
                 if (!command.getString(i).isEmpty())
                     continue;
 
-                command.add(StringTag.of(inputString));
+                command.add(NbtString.of(inputString));
             }
         }
 
-        command.set(inputLine, StringTag.of(inputString));
+        command.set(inputLine, NbtString.of(inputString));
         itemTag.put("NBTCommands", command);
         item.setTag(itemTag);
 

@@ -61,7 +61,6 @@ public abstract class VillagerEntityMixin<E extends LivingEntity> extends Mercha
 
     @Redirect(method = "mobTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;isAiDisabled()Z"))
     public boolean stopWhenInactive(VillagerEntity villagerEntity) {
-        //TODO: make sure it's correct: https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0402-Entity-Activation-Range-2.0.patch#L396
         return villagerEntity.isAiDisabled() || inactive;
     }
 

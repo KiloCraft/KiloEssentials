@@ -99,7 +99,7 @@ public class KiloDebugUtils {
         BossBarManager manager = minecraftServer.getBossBarManager();
         bossBar = manager.add(DEBUG_BAR, new LiteralText("DebugBar"));
         bossBar.setMaxValue(20);
-        bossBar.setOverlay(BossBar.Style.PROGRESS);
+        bossBar.setStyle(BossBar.Style.PROGRESS);
     }
 
     public void update() {

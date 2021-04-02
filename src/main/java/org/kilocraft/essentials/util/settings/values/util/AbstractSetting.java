@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.util.settings.values.util;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -18,9 +18,9 @@ public abstract class AbstractSetting implements Setting {
     }
 
 
-    public abstract void toTag(CompoundTag tag);
+    public abstract void toTag(NbtCompound tag);
 
-    public abstract void fromTag(CompoundTag tag);
+    public abstract void fromTag(NbtCompound tag);
 
     public AbstractSetting addChild(AbstractSetting setting) {
         children.add(setting);

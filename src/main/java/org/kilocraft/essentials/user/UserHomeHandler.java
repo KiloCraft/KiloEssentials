@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import org.kilocraft.essentials.KiloCommands;
@@ -136,7 +136,7 @@ public class UserHomeHandler implements ConfigurableFeature {
 
     }
 
-    public CompoundTag serialize(CompoundTag tag) {
+    public NbtCompound serialize(NbtCompound tag) {
         for (Home userHome : this.userHomes) {
             tag.put(userHome.getName(), userHome.toTag());
         }
@@ -144,9 +144,9 @@ public class UserHomeHandler implements ConfigurableFeature {
         return tag;
     }
 
-    public void deserialize(CompoundTag compoundTag) {
-        for (String key : compoundTag.getKeys()) {
-            Home home = new Home(compoundTag.getCompound(key));
+    public void deserialize(NbtCompound NbtCompound) {
+        for (String key : NbtCompound.getKeys()) {
+            Home home = new Home(NbtCompound.getCompound(key));
             home.setName(key);
             home.setOwner(this.serverUser.uuid);
             this.userHomes.add(home);

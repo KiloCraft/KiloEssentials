@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.util.settings.values.util;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -54,15 +54,15 @@ public class RootSetting implements Setting {
         }
     }
 
-    public CompoundTag toTag() {
-        CompoundTag root = new CompoundTag();
+    public NbtCompound toTag() {
+        NbtCompound root = new NbtCompound();
         for (AbstractSetting child : this.children) {
             child.toTag(root);
         }
         return root;
     }
 
-    public void fromTag(CompoundTag tag) {
+    public void fromTag(NbtCompound tag) {
         for (AbstractSetting child : children) {
             child.fromTag(tag);
         }

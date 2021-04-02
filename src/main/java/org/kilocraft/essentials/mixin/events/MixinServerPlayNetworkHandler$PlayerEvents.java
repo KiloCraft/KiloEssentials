@@ -1,13 +1,17 @@
 package org.kilocraft.essentials.mixin.events;
 
+import net.minecraft.command.EntityDataObject;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -16,12 +20,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.player.PlayerInteractItemStartEvent;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.events.player.PlayerClientCommandEventImpl;
 import org.kilocraft.essentials.events.player.PlayerDisconnectEventImpl;
 import org.kilocraft.essentials.events.player.PlayerInteractItemStartEventImpl;
+import org.kilocraft.essentials.util.InteractionHandler;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,22 +45,12 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
 
     @Shadow
     public ServerPlayerEntity player;
-    long lastInteraction = 0;
     @Shadow
     @Final
     private MinecraftServer server;
 
-    @Shadow
-    private Vec3d requestedTeleportPos;
 
-    private static boolean shouldContinueUsingItem(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-        if (itemStack.isEmpty()) {
-            return false;
-        } else {
-            Item item = itemStack.getItem();
-            return (item instanceof BlockItem || item instanceof BucketItem) && !serverPlayerEntity.getItemCooldownManager().isCoolingDown(item);
-        }
-    }
+    @Shadow public abstract ServerPlayerEntity getPlayer();
 
     @Inject(at = @At(value = "HEAD"), method = "onDisconnected")
     private void ke$triggerEvent$onDisconnect(Text text, CallbackInfo ci) {
@@ -88,37 +85,6 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
             }
         }
     }
-
-    //TODO:
-/*    @Inject(method = "onPlayerInteractEntity", at = @At(value = "HEAD"))
-    private void ke$onPlayerInteractEntity(PlayerInteractEntityC2SPacket playerInteractEntityC2SPacket, CallbackInfo ci) {
-        if (lastInteraction + 50 > Util.getMeasuringTimeMs()) return;
-        NetworkThreadUtils.forceMainThread(playerInteractEntityC2SPacket, (ServerPlayNetworkHandler) (Object) this, this.player.getServerWorld());
-        ServerWorld serverWorld = this.player.getServerWorld();
-        Entity entity = playerInteractEntityC2SPacket.getEntity(serverWorld);
-        if (entity != null) {
-            EntityDataObject entityDataObject = new EntityDataObject(entity);
-            CompoundTag tag = entityDataObject.getTag();
-            String command = tag.getString("command");
-            playerInteractEntityC2SPacket.method_34209();
-            String specificCommand = playerInteractEntityC2SPacket.getType() ==
-                    PlayerInteractEntityC2SPacket.InteractionType.ATTACK ?
-                    tag.getString("leftCommand") :
-                    tag.getString("rightCommand");
-            boolean success = false;
-            if (!command.equals("")) {
-                CommandUtils.runCommandWithFormatting(this.player.getCommandSource(), command);
-                success = true;
-            }
-            if (!specificCommand.equals("")) {
-                CommandUtils.runCommandWithFormatting(this.player.getCommandSource(), specificCommand);
-                success = true;
-            }
-            if (success) this.player.swingHand(playerInteractEntityC2SPacket.getHand(), true);
-        }
-        lastInteraction = Util.getMeasuringTimeMs();
-    }*/
-
 
     @Inject(method = "onClientCommand", cancellable = true,
             at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V"))

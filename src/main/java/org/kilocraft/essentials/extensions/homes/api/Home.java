@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.extensions.homes.api;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
@@ -31,33 +31,33 @@ public class Home {
     public Home() {
     }
 
-    public Home(CompoundTag compoundTag) {
-        fromTag(compoundTag);
+    public Home(NbtCompound NbtCompound) {
+        fromTag(NbtCompound);
     }
 
-    public CompoundTag toTag() {
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put("loc", this.location.toTag());
+    public NbtCompound toTag() {
+        NbtCompound NbtCompound = new NbtCompound();
+        NbtCompound.put("loc", this.location.toTag());
 
-        return compoundTag;
+        return NbtCompound;
     }
 
-    public void fromTag(CompoundTag compoundTag) {
+    public void fromTag(NbtCompound NbtCompound) {
         if (this.location == null)
             this.location = Vec3dLocation.dummy();
 
-        if (compoundTag.contains("pos")) { //OLD Format
-            this.location.setDimension(new Identifier(compoundTag.getString("dimension")));
+        if (NbtCompound.contains("pos")) { //OLD Format
+            this.location.setDimension(new Identifier(NbtCompound.getString("dimension")));
 
-            CompoundTag pos = compoundTag.getCompound("pos");
+            NbtCompound pos = NbtCompound.getCompound("pos");
             ((Vec3dLocation) this.location).setVector(new Vec3d(pos.getDouble("x"), pos.getDouble("y"), pos.getDouble("z")));
 
-            CompoundTag dir = compoundTag.getCompound("dir");
+            NbtCompound dir = NbtCompound.getCompound("dir");
             this.location.setRotation(dir.getFloat("dY"), dir.getFloat("dX"));
             return;
         }
 
-        this.location.fromTag(compoundTag.getCompound("loc"));
+        this.location.fromTag(NbtCompound.getCompound("loc"));
     }
 
     public UUID getOwner() {

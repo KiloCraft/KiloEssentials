@@ -2,7 +2,7 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -87,10 +87,10 @@ public class ServerUser implements User {
 
     }
 
-    public CompoundTag toTag() {
-        CompoundTag mainTag = new CompoundTag();
-        CompoundTag metaTag = new CompoundTag();
-        CompoundTag cacheTag = new CompoundTag();
+    public NbtCompound toTag() {
+        NbtCompound mainTag = new NbtCompound();
+        NbtCompound metaTag = new NbtCompound();
+        NbtCompound cacheTag = new NbtCompound();
 
         // Here we store the players current location
         if (this.location != null) {
@@ -120,7 +120,7 @@ public class ServerUser implements User {
         }
 
         if (UserHomeHandler.isEnabled() || this.homeHandler != null) {
-            CompoundTag homeTag = new CompoundTag();
+            NbtCompound homeTag = new NbtCompound();
             this.homeHandler.serialize(homeTag);
             mainTag.put("homes", homeTag);
         }
@@ -132,18 +132,18 @@ public class ServerUser implements User {
         return mainTag;
     }
 
-    public void fromTag(@NotNull CompoundTag compoundTag) {
-        CompoundTag metaTag = compoundTag.getCompound("meta");
-        CompoundTag cacheTag = compoundTag.getCompound("cache");
+    public void fromTag(@NotNull NbtCompound NbtCompound) {
+        NbtCompound metaTag = NbtCompound.getCompound("meta");
+        NbtCompound cacheTag = NbtCompound.getCompound("cache");
 
         if (cacheTag.contains("lastLoc")) {
             this.lastLocation = Vec3dLocation.dummy();
             this.lastLocation.fromTag(cacheTag.getCompound("lastLoc"));
         }
 
-        if (compoundTag.contains("loc")) {
+        if (NbtCompound.contains("loc")) {
             this.location = Vec3dLocation.dummy();
-            this.location.fromTag(compoundTag.getCompound("loc"));
+            this.location.fromTag(NbtCompound.getCompound("loc"));
             this.location.shortDecimals();
         }
 
@@ -153,7 +153,7 @@ public class ServerUser implements User {
 
 
         if (cacheTag.contains("dmRec")) {
-            CompoundTag lastDmTag = cacheTag.getCompound("dmRec");
+            NbtCompound lastDmTag = cacheTag.getCompound("dmRec");
             this.lastDmReceptionist = new EntityIdentifiable() {
                 @Override
                 public UUID getId() {
@@ -180,15 +180,15 @@ public class ServerUser implements User {
         }
 
         if (UserHomeHandler.isEnabled()) {
-            this.homeHandler.deserialize(compoundTag.getCompound("homes"));
+            this.homeHandler.deserialize(NbtCompound.getCompound("homes"));
         }
 
-        this.savedName = compoundTag.getString("name");
+        this.savedName = NbtCompound.getString("name");
         if (cacheTag.contains("IIP")) {
             this.lastSocketAddress = cacheTag.getString("IIP");
             KiloEssentials.getLogger().info("Updating ip for " + savedName);
         }
-        this.settings.fromTag(compoundTag.getCompound("settings"));
+        this.settings.fromTag(NbtCompound.getCompound("settings"));
     }
 
     public void updateLocation() {

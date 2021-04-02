@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public class ServerPlayerEntityMixin implements ServerPlayerEntityInterface {
+public abstract class ServerPlayerEntityMixin implements ServerPlayerEntityInterface {
 
     int[] mobcounts = new int[SpawnGroup.values().length];
 

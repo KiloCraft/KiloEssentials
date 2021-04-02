@@ -66,6 +66,7 @@ public enum CommandPermission {
     TELEPORTIN("teleportin"),
     MOBCAP_SET("mobcap.set"),
     MOBCAP_QUERY("mobcap.query"),
+    PMOBCAP("pmobcap"),
     VIEWDISTANCE("viewdistance"),
     SLIME_CHUNK("slime_chunk"),
     NICKNAME_SELF("nickname.self"),

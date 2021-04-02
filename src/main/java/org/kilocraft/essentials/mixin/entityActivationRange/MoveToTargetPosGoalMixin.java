@@ -21,8 +21,8 @@ public abstract class MoveToTargetPosGoalMixin extends Goal implements TargetPos
 
     @Shadow @Final protected PathAwareEntity mob;
 
-    @Inject(method = "findTargetPos", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/ai/goal/MoveToTargetPosGoal;targetPos:Lnet/minecraft/util/math/BlockPos;"), locals = LocalCapture.PRINT)
-    public void setTargetPos(CallbackInfoReturnable<Boolean> cir, BlockPos.Mutable mutable) {
+    @Inject(method = "findTargetPos", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/ai/goal/MoveToTargetPosGoal;targetPos:Lnet/minecraft/util/math/BlockPos;"), locals = LocalCapture.CAPTURE_FAILSOFT)
+    public void setTargetPos(CallbackInfoReturnable<Boolean> cir, int var1, int var2, BlockPos var3, BlockPos.Mutable mutable, int var5, int var6, int var7, int var8) {
         ((TargetPosition) this).setTargetPosition(mutable.mutableCopy());
     }
 

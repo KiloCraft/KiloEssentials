@@ -8,7 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -174,9 +174,9 @@ public final class ServerChat {
         } else if (itemMatcher.find()) {
             ServerPlayerEntity player = sender.asPlayer();
             ItemStack itemStack = player.getMainHandStack();
-            CompoundTag tag = itemStack.getTag();
+            NbtCompound tag = itemStack.getTag();
             text.append(ComponentText.of(input.substring(0, Math.max(0, itemMatcher.start())))).append(Component.text("[")).append(ComponentText.toComponent(itemStack.getName())).append(Component.text("]")).append(ComponentText.of(input.substring(Math.min(itemMatcher.end(), input.length()))));
-            text.style(style -> style.hoverEvent(net.kyori.adventure.text.event.HoverEvent.showItem(Key.key(RegistryUtils.toIdentifier(itemStack.getItem())), 1, BinaryTagHolder.of(tag == null ? new CompoundTag().toString() : tag.toString()))));
+            text.style(style -> style.hoverEvent(net.kyori.adventure.text.event.HoverEvent.showItem(Key.key(RegistryUtils.toIdentifier(itemStack.getItem())), 1, BinaryTagHolder.of(tag == null ? new NbtCompound().toString() : tag.toString()))));
             result.setType(ParseResult.ParseType.ITEM).setResult(text.build());
         } else {
             processPing(sender, result, channel);

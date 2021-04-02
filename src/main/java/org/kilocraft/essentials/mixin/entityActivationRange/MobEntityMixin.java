@@ -5,7 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.world.World;
-import org.kilocraft.essentials.patch.GoalSelectorInterface;
+import org.kilocraft.essentials.patch.entityActivationRange.GoalSelectorInterface;
 import org.kilocraft.essentials.patch.entityActivationRange.InactiveEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

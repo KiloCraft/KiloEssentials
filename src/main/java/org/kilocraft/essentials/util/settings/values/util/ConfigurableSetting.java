@@ -2,7 +2,7 @@ package org.kilocraft.essentials.util.settings.values.util;
 
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 
 import java.util.ArrayList;
@@ -21,8 +21,8 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
     }
 
     @Override
-    public void toTag(CompoundTag tag) {
-        CompoundTag setting = new CompoundTag();
+    public void toTag(NbtCompound tag) {
+        NbtCompound setting = new NbtCompound();
         setValue(setting);
         for (AbstractSetting child : children) {
             child.toTag(setting);
@@ -31,9 +31,9 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void fromTag(NbtCompound tag) {
         if (tag.contains(id)) {
-            CompoundTag setting = tag.getCompound(id);
+            NbtCompound setting = tag.getCompound(id);
             this.setValue(getValue(setting));
             for (AbstractSetting child : children) {
                 child.fromTag(setting);
@@ -54,9 +54,9 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
         changed();
     }
 
-    protected abstract void setValue(CompoundTag tag);
+    protected abstract void setValue(NbtCompound tag);
 
-    protected abstract K getValue(CompoundTag tag);
+    protected abstract K getValue(NbtCompound tag);
 
     void changed() {
         for (Consumer<K> consumer : onLoad) {

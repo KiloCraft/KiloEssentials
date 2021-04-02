@@ -3,7 +3,7 @@ package org.kilocraft.essentials.util.settings;
 import net.minecraft.SharedConstants;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -228,12 +228,12 @@ public class ServerSettings implements NBTStorage {
     }
 
     @Override
-    public CompoundTag serialize() {
+    public NbtCompound serialize() {
         return root.toTag();
     }
 
     @Override
-    public void deserialize(@NotNull CompoundTag tag) {
+    public void deserialize(@NotNull NbtCompound tag) {
         root.fromTag(tag);
     }
 

@@ -130,6 +130,7 @@ public class KiloCommands {
         this.register(new DebugEssentialsCommand());
         this.register(new LightningCommand());
         this.register(new MobCapCommand());
+        this.register(new PlayerMobCapCommand());
         this.register(new ViewDistanceCommand());
         this.register(new NicknameCommand());
         this.register(new SayAsCommand());

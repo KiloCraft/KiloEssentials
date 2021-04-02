@@ -12,10 +12,6 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements InactiveEntity {
 
-
-    @Shadow
-    private int age;
-
     @Shadow
     private int pickupDelay;
 

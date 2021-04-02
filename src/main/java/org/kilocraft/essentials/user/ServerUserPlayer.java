@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class ServerUserPlayer implements UserPlayer {
-    private CompoundTag compoundTag;
+    private NbtCompound NbtCompound;
 
     public ServerUserPlayer of(UUID uuid) {
         return new ServerUserPlayer(uuid);
@@ -23,14 +23,14 @@ public class ServerUserPlayer implements UserPlayer {
         File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
 
         try {
-            this.compoundTag = NbtIo.readCompressed(new FileInputStream(file));
+            this.NbtCompound = NbtIo.readCompressed(new FileInputStream(file));
         } catch (IOException ignored) { }
     }
 
     @Override
     public @Nullable EnderChestInventory getEnderchestInventory() {
         EnderChestInventory inv = new EnderChestInventory();
-        inv.readTags(this.compoundTag.getList("EnderItems", 10));
+        inv.readTags(this.NbtCompound.getList("EnderItems", 10));
         return inv;
     }
 

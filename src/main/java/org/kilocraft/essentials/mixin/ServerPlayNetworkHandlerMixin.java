@@ -3,10 +3,8 @@ package org.kilocraft.essentials.mixin;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
@@ -56,11 +54,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
         }
     }
 
-//    @Redirect(method = "onGameMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Z)V"))
-//    private void redirect(PlayerManager playerManager, Text text, boolean bl) {
-//        playerManager.broadcastChatMessage(new LiteralText(TextFormat.translate(Texter.Legacy.toFormattedString(text))), MessageType.CHAT, Util.field_25140);
-//    }
-
     @Inject(
             method = "onSignUpdate(Lnet/minecraft/network/packet/c2s/play/UpdateSignC2SPacket;)V", cancellable = true,
             at = @At(
@@ -100,24 +93,24 @@ public abstract class ServerPlayNetworkHandlerMixin {
         }
     }
 
-    @Redirect(method = "onBookUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;getList(Ljava/lang/String;I)Lnet/minecraft/nbt/ListTag;"))
-    public ListTag weDontNeedThesePages(CompoundTag compoundTag, String string, int i) {
-        ListTag listTag = compoundTag.getList("pages", 8);
+    @Redirect(method = "onBookUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;getList(Ljava/lang/String;I)Lnet/minecraft/nbt/NbtList;"))
+    public NbtList weDontNeedThesePages(NbtCompound NbtCompound, String string, int i) {
+        NbtList NbtList = NbtCompound.getList("pages", 8);
         boolean dupeAttempt = false;
-        for (int j = 0; j < listTag.size(); j++) {
-            Tag tag = listTag.get(j);
-            if (tag instanceof StringTag) {
-                StringTag stringTag = (StringTag) tag;
-                final String s = stringTag.asString();
+        for (int j = 0; j < NbtList.size(); j++) {
+            NbtElement tag = NbtList.get(j);
+            if (tag instanceof NbtString) {
+                NbtString NbtString = (NbtString) tag;
+                final String s = NbtString.asString();
                 if (s.length() > 300) {
-                    stringTag = StringTag.of(s.substring(0, 300));
-                    listTag.set(j, stringTag);
+                    NbtString = NbtString.of(s.substring(0, 300));
+                    NbtList.set(j, NbtString);
                     dupeAttempt = true;
                 }
             }
         }
         if (dupeAttempt) KiloEssentials.getLogger().warn(player.getEntityName() + " attempted to dupe!");
-        return listTag;
+        return NbtList;
     }
 
 }

@@ -3,7 +3,7 @@ package org.kilocraft.essentials.util.settings.values;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
@@ -29,12 +29,12 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
     }
 
     @Override
-    protected void setValue(CompoundTag tag) {
+    protected void setValue(NbtCompound tag) {
         tag.putFloat("value", this.getValue());
     }
 
     @Override
-    protected Float getValue(CompoundTag tag) {
+    protected Float getValue(NbtCompound tag) {
         return tag.getFloat("value");
     }
 

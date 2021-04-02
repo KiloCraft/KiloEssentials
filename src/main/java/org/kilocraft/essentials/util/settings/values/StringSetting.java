@@ -3,7 +3,7 @@ package org.kilocraft.essentials.util.settings.values;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
@@ -32,12 +32,12 @@ public class StringSetting extends ConfigurableSetting<String> {
     }
 
     @Override
-    protected void setValue(CompoundTag tag) {
+    protected void setValue(NbtCompound tag) {
         tag.putString("value", this.getValue());
     }
 
     @Override
-    protected String getValue(CompoundTag tag) {
+    protected String getValue(NbtCompound tag) {
         return tag.getString("value");
     }
 

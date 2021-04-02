@@ -3,7 +3,7 @@ package org.kilocraft.essentials.util.settings.values;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
@@ -25,12 +25,12 @@ public class BooleanSetting extends ConfigurableSetting<Boolean> {
     }
 
     @Override
-    protected void setValue(CompoundTag tag) {
+    protected void setValue(NbtCompound tag) {
         tag.putBoolean("value", this.getValue());
     }
 
     @Override
-    protected Boolean getValue(CompoundTag tag) {
+    protected Boolean getValue(NbtCompound tag) {
         return tag.getBoolean("value");
     }
 }
