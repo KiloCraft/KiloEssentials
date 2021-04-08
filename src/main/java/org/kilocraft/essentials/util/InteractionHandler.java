@@ -19,7 +19,7 @@ public class InteractionHandler {
         if (lastInteractions.getOrDefault(playerEntity.getUuid(), 0) + 50 > Util.getMeasuringTimeMs()) return;
         if (entity != null) {
             EntityDataObject entityDataObject = new EntityDataObject(entity);
-            NbtCompound tag = entityDataObject.getTag();
+            NbtCompound tag = entityDataObject.getNbt();
             String command = tag.getString("command");
             String specificCommand = leftClick ?
                     tag.getString("leftCommand") :

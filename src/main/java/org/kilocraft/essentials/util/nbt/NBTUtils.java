@@ -66,7 +66,7 @@ public class NBTUtils {
             return null;
 
         EnderChestInventory inv = new EnderChestInventory();
-        inv.readTags(tag.getList("EnderItems", 10));
+        inv.readNbtList(tag.getList("EnderItems", 10));
         return inv;
     }
 
@@ -75,7 +75,7 @@ public class NBTUtils {
         if (tag == null)
             return;
 
-        tag.put("EnderItems", inv.getTags());
+        tag.put("EnderItems", inv.toNbtList());
         savePlayerFromTag(uuid, tag);
     }
 

@@ -30,7 +30,7 @@ public class ServerUserPlayer implements UserPlayer {
     @Override
     public @Nullable EnderChestInventory getEnderchestInventory() {
         EnderChestInventory inv = new EnderChestInventory();
-        inv.readTags(this.NbtCompound.getList("EnderItems", 10));
+        inv.readNbtList(this.NbtCompound.getList("EnderItems", 10));
         return inv;
     }
 

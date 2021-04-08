@@ -59,7 +59,7 @@ public class PlayerDataModifier {
 
     public EnderChestInventory getEnderChest() {
         EnderChestInventory inv = new EnderChestInventory();
-        inv.readTags(this.NbtCompound.getList("EnderItems", 10));
+        inv.readNbtList(this.NbtCompound.getList("EnderItems", 10));
         return inv;
     }
 
