@@ -440,7 +440,7 @@ public class ServerUserManager implements UserManager, TickListener {
         ServerPlayerEntity player = user.asPlayer();
         NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
 
-        String string = StringUtils.normalizeSpace(packet.getChatMessage());
+        String string = StringUtils.normalizeSpace(packet.getChatMessage()).replaceAll("\\n", "");
         player.updateLastActionTime();
 
         for (int i = 0; i < string.length(); ++i) {

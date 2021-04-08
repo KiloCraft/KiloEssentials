@@ -18,6 +18,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class PermissionUtil {
     private static final Logger logger = (Logger) KiloEssentials.getLogger();
@@ -59,16 +60,16 @@ public class PermissionUtil {
         logger.info("Registered " + (CommandPermission.values().length + EssentialPermission.values().length) + " permission nodes.");
     }
 
+    public static void registerNode(final String node) {
+        pendingPermissions.add(node);
+    }
+
     public boolean hasPermission(ServerCommandSource src, String permission, int opLevel) {
         if (this.present && this.manager == Manager.LUCKPERMS) {
             return fromLuckPerms(src, permission, opLevel);
         }
 
         return fallbackPermissionCheck(src, opLevel);
-    }
-
-    public static void registerNode(final String node) {
-        pendingPermissions.add(node);
     }
 
     private boolean fromLuckPerms(ServerCommandSource src, String perm, int op) {
@@ -87,6 +88,22 @@ public class PermissionUtil {
         }
 
         return fallbackPermissionCheck(src, op);
+    }
+
+    public boolean hasPermission(UUID uuid, String perm) {
+        try {
+            if (this.present && this.manager == Manager.LUCKPERMS) {
+                LuckPerms luckPerms = LuckPermsProvider.get();
+
+                User user = luckPerms.getUserManager().getUser(uuid);
+
+                if (user != null) {
+                    return user.getCachedData().getPermissionData(user.getCachedData().getMetaData().getQueryOptions()).checkPermission(perm).asBoolean();
+                }
+            }
+        } catch (IllegalStateException ignored) {
+        }
+        return false;
     }
 
     private boolean checkPresent() {
@@ -121,6 +138,11 @@ public class PermissionUtil {
         return this.manager;
     }
 
+    @Override
+    public String toString() {
+        return this.manager.name;
+    }
+
     public enum Manager {
         NONE("none"),
         VANILLA("Vanilla"),
@@ -130,10 +152,6 @@ public class PermissionUtil {
 
         Manager(final String name) {
             this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
         }
 
         @NotNull
@@ -146,11 +164,10 @@ public class PermissionUtil {
 
             return Manager.NONE;
         }
-    }
 
-    @Override
-    public String toString() {
-        return this.manager.name;
+        public String getName() {
+            return this.name;
+        }
     }
 
 }

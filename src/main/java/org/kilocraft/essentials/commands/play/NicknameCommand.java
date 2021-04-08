@@ -85,7 +85,6 @@ public class NicknameCommand extends EssentialCommand {
         int maxLength = KiloConfig.main().nicknameMaxLength;
         String nickname = getString(ctx, "nickname");
         String unformatted = ComponentText.clearFormatting(nickname);
-        KiloEssentials.getLogger().info(source.getName() + " attempted to nick, stripped nick: " + unformatted);
 
         if (unformatted.length() > maxLength || unformatted.length() < 3) {
             throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
