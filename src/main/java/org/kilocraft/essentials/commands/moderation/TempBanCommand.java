@@ -14,12 +14,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
+import org.kilocraft.essentials.events.player.PlayerBannedEventImpl;
+import org.kilocraft.essentials.events.player.PlayerMutedEventImpl;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -64,7 +68,7 @@ public class TempBanCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @NotNull final String time, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
-        OnlineUser src = this.getOnlineUser(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
         Date date = new Date();
         Date expiry = new Date(TimeDifferenceUtil.parse(time, true));
         Collection<GameProfile> gameProfiles = GameProfileArgumentType.getProfileArgument(ctx, "profile");
@@ -83,7 +87,7 @@ public class TempBanCommand extends EssentialCommand {
                     )
             );
         }
-
+        KiloServer.getServer().triggerEvent(new PlayerBannedEventImpl(EntityIdentifiable.fromGameProfile(victim), src, reason));
         this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
         return AWAIT;
     }
