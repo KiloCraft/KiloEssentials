@@ -30,15 +30,6 @@ import java.util.function.BooleanSupplier;
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin implements Brandable {
 
-    @Shadow
-    @Final
-    public long[] lastTickLengths;
-
-    @Shadow
-    private int ticks;
-
-    @Shadow @Final private ServerScoreboard scoreboard;
-
     @Inject(at = @At(value = "RETURN"), method = "<init>")
     private void kilo$run(CallbackInfo ci) {
         KiloServer.setupServer((MinecraftServer) (Object) this);
@@ -53,6 +44,11 @@ public abstract class MinecraftServerMixin implements Brandable {
     @Inject(at = @At("RETURN"), method = "tick")
     private void ke$onTickReturn(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         //TpsTracker.MillisecondPerTick.onEnd();
+    }
+
+    @Inject(method = "prepareStartRegion", at = @At(value = "HEAD"), cancellable = true)
+    public void noSpawnChunks(CallbackInfo ci) {
+        ci.cancel();
     }
 
     @Override
