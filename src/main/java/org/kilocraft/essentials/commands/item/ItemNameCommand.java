@@ -62,7 +62,7 @@ public class ItemNameCommand {
         ItemStack item = player.getMainHandStack();
         CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
 
-        if (inputString.length() >= 90) {
+        if (ComponentText.clearFormatting(inputString).length() >= 90) {
             user.sendLangMessage( "command.item.too_long");
             return 0;
         }

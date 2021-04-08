@@ -41,7 +41,7 @@ import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.inventory.InventoryCommand;
 import org.kilocraft.essentials.commands.inventory.WorkbenchCommand;
-import org.kilocraft.essentials.commands.item.ItemCommand;
+import org.kilocraft.essentials.commands.item.ModifyItemCommand;
 import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
@@ -135,7 +135,7 @@ public class KiloCommands {
         this.register(new NicknameCommand());
         this.register(new SayAsCommand());
         this.register(new SudoCommand());
-        this.register(new ItemCommand());
+        this.register(new ModifyItemCommand());
         this.register(new WorkbenchCommand());
         this.register(new AnvilCommand());
         this.register(new SignEditCommand());
