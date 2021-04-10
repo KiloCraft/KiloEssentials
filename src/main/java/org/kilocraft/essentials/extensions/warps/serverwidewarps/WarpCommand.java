@@ -96,13 +96,20 @@ public class WarpCommand {
         source.getPlayer();
         ServerWarp warp = ServerWarpManager.getWarp(name);
         OnlineUser user = KiloServer.getServer().getOnlineUser(source.getPlayer());
+        //TODO: Set a home for people who warp and don't have a home yet
+/*        if (UserHomeHandler.isEnabled() && user.getHomesHandler().getHomes().isEmpty()) {
+            Home home = new Home();
+            user.getHomesHandler().addHome();
+        }*/
         ScheduledExecutionThread.teleport(user, null, () -> {
-            user.sendLangMessage("command.warp.teleport", warp.getName());
-            user.saveLocation();
-            try {
-                ServerWarpManager.teleport(user.getCommandSource(), warp);
-            } catch (CommandSyntaxException ignored) {
-                //We already have a check, which checks if the executor is a player
+            if (user.isOnline()) {
+                user.sendLangMessage("command.warp.teleport", warp.getName());
+                user.saveLocation();
+                try {
+                    ServerWarpManager.teleport(user.getCommandSource(), warp);
+                } catch (CommandSyntaxException ignored) {
+                    //We already have a check, which checks if the executor is a player
+                }
             }
         });
         return 1;

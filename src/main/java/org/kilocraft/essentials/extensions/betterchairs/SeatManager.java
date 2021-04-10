@@ -6,6 +6,7 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -40,16 +41,8 @@ import java.util.UUID;
 public class SeatManager implements ConfigurableFeature, TickListener {
     private static SeatManager INSTANCE;
     private static boolean enabled = false;
+    private static int tick = 0;
     private final HashMap<ServerWorld, UUID> stands = new HashMap<>();
-
-    @Override
-    public boolean register() {
-        INSTANCE = this;
-        enabled = true;
-        KiloCommands.getInstance().register(new SitCommand());
-
-        return true;
-    }
 
     public static SeatManager getInstance() {
         if (INSTANCE == null) {
@@ -63,11 +56,18 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         return enabled;
     }
 
+    @Override
+    public boolean register() {
+        INSTANCE = this;
+        enabled = true;
+        KiloCommands.getInstance().register(new SitCommand());
+
+        return true;
+    }
+
     private boolean hasPermission(@NotNull final ServerPlayerEntity player) {
         return KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.SIT_SELF);
     }
-
-    private static int tick = 0;
 
     @Override
     public void onTick() {
@@ -168,8 +168,6 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             return false;
         }
 
-        System.out.println(loc);
-        System.out.println(loc.getWorld());
         ArmorStandEntity stand = EntityType.ARMOR_STAND.create(
                 loc.getWorld(), null,
                 new LiteralText("KE$SitStand#" + stands.size() + user.getUsername()), null, loc.toPos(),
@@ -186,10 +184,8 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         stand.setNoGravity(true);
         stand.setInvulnerable(true);
         stand.addScoreboardTag("KE$SitStand#" + user.getUsername());
+        stand.addScoreboardTag("KE$SitStand");
         stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
-        System.out.println(user);
-        System.out.println(user.getPreferences());
-        System.out.println(summonType);
         user.getPreferences().set(Preferences.SITTING_TYPE, summonType);
         stand.bodyYaw = yaw;
         stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
@@ -213,12 +209,19 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
         ServerPlayerEntity player = user.asPlayer();
 
-        if (player == null || !player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity)) {
+        if (player == null) {
             return;
         }
 
-        ArmorStandEntity stand = (ArmorStandEntity) player.getVehicle();
-        if (stand != null && stand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
+        ArmorStandEntity stand = null;
+        for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
+            ArmorStandEntity armorStand = (ArmorStandEntity) entry.getKey().getEntity(entry.getValue());
+            if (armorStand != null && armorStand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
+                stand = armorStand;
+                break;
+            }
+        }
+        if (stand != null) {
             player.sendMessage(StringText.of(true, "sit.stop_riding"), true);
             stands.remove(RegistryUtils.toServerWorld(stand.getEntityWorld().getDimension()), stand.getUuid());
             stand.kill();
@@ -226,12 +229,27 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     }
 
     public void killAll() {
+        int i = 0;
         for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
             ArmorStandEntity armorStand = (ArmorStandEntity) entry.getKey().getEntity(entry.getValue());
             if (armorStand != null) {
+                i++;
                 armorStand.kill();
             }
         }
+        KiloEssentials.getLogger().info("Killed " + i + " armorstands!");
+        i = 0;
+        for (ServerWorld world : KiloEssentials.getServer().getMinecraftServer().getWorlds()) {
+            for (Entity entity : world.iterateEntities()) {
+                if (!(entity instanceof ArmorStandEntity)) continue;
+                if (entity.getScoreboardTags().contains("KE$SitStand")) {
+                    i++;
+                    entity.kill();
+                }
+            }
+        }
+        if (i > 0) KiloEssentials.getLogger().info("Killed " + i + " leftover armorstands!");
+
     }
 
     public boolean isSitting(@NotNull final ServerPlayerEntity player) {

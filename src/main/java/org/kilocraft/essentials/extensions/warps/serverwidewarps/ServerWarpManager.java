@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.NotNull;
@@ -99,8 +99,8 @@ public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
     }
 
     @Override
-    public CompoundTag serialize() {
-        CompoundTag tag = new CompoundTag();
+    public NbtCompound serialize() {
+        NbtCompound tag = new NbtCompound();
         for (ServerWarp warp : warps) {
             tag.put(warp.getName(), warp.toTag());
         }
@@ -109,11 +109,11 @@ public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
     }
 
     @Override
-    public void deserialize(@NotNull CompoundTag compoundTag) {
+    public void deserialize(@NotNull NbtCompound NbtCompound) {
         warps.clear();
         byName.clear();
-        compoundTag.getKeys().forEach((key) -> {
-            warps.add(new ServerWarp(key, compoundTag.getCompound(key)));
+        NbtCompound.getKeys().forEach((key) -> {
+            warps.add(new ServerWarp(key, NbtCompound.getCompound(key)));
             byName.add(key);
         });
     }

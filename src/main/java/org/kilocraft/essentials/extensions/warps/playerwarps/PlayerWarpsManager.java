@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.extensions.warps.playerwarps;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
@@ -110,8 +110,8 @@ public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTSto
     }
 
     @Override
-    public CompoundTag serialize() {
-        CompoundTag tag = new CompoundTag();
+    public NbtCompound serialize() {
+        NbtCompound tag = new NbtCompound();
         for (PlayerWarp warp : warps) {
             tag.put(warp.getName(), warp.toTag());
         }
@@ -120,13 +120,13 @@ public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTSto
     }
 
     @Override
-    public void deserialize(@NotNull CompoundTag compoundTag) {
+    public void deserialize(@NotNull NbtCompound NbtCompound) {
         warps.clear();
         byName.clear();
         warpOwners.clear();
 
-        for (String key : compoundTag.getKeys()) {
-            PlayerWarp warp = new PlayerWarp(key, compoundTag.getCompound(key));
+        for (String key : NbtCompound.getKeys()) {
+            PlayerWarp warp = new PlayerWarp(key, NbtCompound.getCompound(key));
             warpOwners.add(warp.getOwner());
             warps.add(warp);
             byName.add(key);

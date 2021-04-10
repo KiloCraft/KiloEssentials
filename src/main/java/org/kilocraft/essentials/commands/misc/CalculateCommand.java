@@ -45,7 +45,11 @@ public class CalculateCommand extends EssentialCommand {
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
         Double result = null;
         try {
-            result = Double.valueOf(String.valueOf(engine.eval(input)));
+            if (input.matches("[\\d+-\\/*()%]+")) {
+                result = Double.valueOf(String.valueOf(engine.eval(input)));
+            } else {
+                throw new ScriptException("");
+            }
         } catch (ScriptException e) {
             src.sendLangError("command.calculate.syntax");
             return 1;
@@ -64,7 +68,7 @@ public class CalculateCommand extends EssentialCommand {
 //            return FAILED;
 //        }
         DecimalFormat df = new DecimalFormat("#.##");
-        src.sendLangMessage("command.calculate.result", input, String.valueOf(df.format(result)));
+        src.sendLangMessage("command.calculate.result", input, df.format(result));
         return result.intValue();
     }
 
@@ -73,8 +77,8 @@ public class CalculateCommand extends EssentialCommand {
 //        List<String> commands = Arrays.asList(super.getAlias());
         List<String> commands = new LinkedList<String>(Arrays.asList(super.getAlias()));
         commands.add(super.getLabel());
-        for(String command : commands){
-            if(ctx.getInput().matches("\\/" + command + " [(]*[0-9]+([+][(]*[0-9]+[)]*)*")){
+        for (String command : commands) {
+            if (ctx.getInput().matches("\\/" + command + " [(]*[0-9]+([+][(]*[0-9]+[)]*)*")) {
                 operations.add("+");
                 operations.add("-");
                 operations.add("*");

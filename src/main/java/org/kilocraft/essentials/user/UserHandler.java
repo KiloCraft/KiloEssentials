@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.user;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import org.apache.commons.lang3.time.StopWatch;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -33,7 +33,7 @@ public class UserHandler {
 
     void loadUserAndResolveName(final ServerUser user) throws IOException {
         if (this.getUserFile(user).exists()) {
-            CompoundTag tag = NbtIo.readCompressed(new FileInputStream(this.getUserFile(user)));
+            NbtCompound tag = NbtIo.readCompressed(new FileInputStream(this.getUserFile(user)));
             user.fromTag(tag);
             user.name = tag.getString("name");
         }
@@ -126,7 +126,7 @@ public class UserHandler {
     }
 
     private boolean upgrade(File file, UUID uuid) throws IOException {
-        CompoundTag tag;
+        NbtCompound tag;
 
         try {
             tag = NbtIo.readCompressed(new FileInputStream(file));

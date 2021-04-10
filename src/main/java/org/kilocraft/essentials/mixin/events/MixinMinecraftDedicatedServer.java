@@ -15,5 +15,5 @@ public abstract class MixinMinecraftDedicatedServer {
     private void oky$setupServer$ready(CallbackInfoReturnable<Boolean> cir) {
         KiloServer.getServer().triggerEvent(new ServerReadyEventImpl());
     }
-
 }
+

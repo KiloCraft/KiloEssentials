@@ -130,11 +130,11 @@ public class ComponentText {
     }
 
     public static String stripColor(String s) {
-        return s.replaceAll("<\\/?((color:#\\w+)|(#\\w+)|((color:)?(black|dark_blue|dark_green|dark_aqua|dark_red|dark_purple|gold|gray|dark_gray|blue|green|aqua|red|light_purple|yellow|white)))>", "");
+        return s.replaceAll("<\\/?((color:#\\w+)|(#\\w+)|((color:)?(black|dark_blue|dark_green|dark_aqua|dark_red|dark_purple|gold|gray|dark_gray|blue|green|aqua|red|light_purple|yellow|white)))>", "").replaceAll("&[a-f0-9]", "");
     }
 
     public static String stripFormatting(String s) {
-        return s.replaceAll("<\\/?(bold|italic|underlined|obfuscated|strikethrough|reset)>", "");
+        return s.replaceAll("<\\/?(bold|italic|underlined|obfuscated|strikethrough|reset)>", "").replaceAll("&[k-o]", "");
     }
 
     public static String stripEvent(String s) {

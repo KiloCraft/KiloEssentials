@@ -2,8 +2,8 @@ package org.kilocraft.essentials.user.preference;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +19,6 @@ public class Preferences {
     @NotNull
     public static final List<Preference<?>> list = new ArrayList<>();
 
-    public static final Preference<Boolean> CAN_FLY = new Preference<>("can_fly", false);
     public static final Preference<Boolean> INVULNERABLE = new Preference<>("invulnerable", false);
     public static final Preference<Boolean> SOCIAL_SPY = new Preference<>("social_spy", false);
     public static final Preference<Boolean> COMMAND_SPY = new Preference<>("command_spy", false);
@@ -37,7 +36,7 @@ public class Preferences {
                 }
             });
     public static final Preference<GameMode> GAME_MODE = new Preference<GameMode>(
-            "gamemode", GameMode.NOT_SET,
+            "gamemode", null,
             (fun) -> fun.tag().putInt(fun.setting().getId(), fun.value().getId()),
             (fun) -> fun.set(GameMode.byId(fun.tag().getInt(fun.setting().getId())))
     );
@@ -45,9 +44,9 @@ public class Preferences {
             "ignored", Maps.newHashMap(),
             (fun) -> {
                 if (!fun.value().isEmpty()) {
-                    ListTag list = new ListTag();
+                    NbtList list = new NbtList();
                     for (Map.Entry<String, UUID> entry : fun.value().entrySet()) {
-                        CompoundTag tag = new CompoundTag();
+                        NbtCompound tag = new NbtCompound();
                         tag.putString("name", entry.getKey());
                         tag.putUuid("id", entry.getValue());
                         list.add(tag);
@@ -56,10 +55,10 @@ public class Preferences {
                 }
             }, (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {
-                    ListTag listTag = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
+                    NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
                     Map<String, UUID> map = Maps.newHashMap();
-                    for (int i = 0; i < listTag.size(); i++) {
-                        CompoundTag tag = listTag.getCompound(i);
+                    for (int i = 0; i < NbtList.size(); i++) {
+                        NbtCompound tag = NbtList.getCompound(i);
                         if (tag.contains("name") && tag.contains("id")) {
                             map.put(tag.getString("name"), tag.getUuid("id"));
                         }
@@ -97,21 +96,21 @@ public class Preferences {
             "fav_pwarps", Collections.emptyList(),
             (fun) -> {
                 if (!fun.value().isEmpty()) {
-                    ListTag listTag = new ListTag();
+                    NbtList NbtList = new NbtList();
                     for (String s : fun.value()) {
-                        CompoundTag tag = new CompoundTag();
+                        NbtCompound tag = new NbtCompound();
                         tag.putString("name", s);
-                        listTag.add(tag);
-                        fun.tag().put(fun.setting().getId(), listTag);
+                        NbtList.add(tag);
+                        fun.tag().put(fun.setting().getId(), NbtList);
                     }
                 }
             }, (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {
                     List<String> strings = new ArrayList<>();
-                    ListTag listTag = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
+                    NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
                     for (int i = 0; i < 10; i++) {
-                        if (listTag.getCompound(i) != null && listTag.getCompound(i).contains("name")) {
-                            strings.add(listTag.getCompound(i).getString("name"));
+                        if (NbtList.getCompound(i) != null && NbtList.getCompound(i).contains("name")) {
+                            strings.add(NbtList.getCompound(i).getString("name"));
                         }
                     }
 
@@ -124,21 +123,21 @@ public class Preferences {
             "pending_commands", Collections.emptyList(),
             (fun) -> {
                 if (!fun.value().isEmpty()) {
-                    ListTag listTag = new ListTag();
+                    NbtList NbtList = new NbtList();
                     for (String s : fun.value()) {
-                        CompoundTag tag = new CompoundTag();
+                        NbtCompound tag = new NbtCompound();
                         tag.putString("cmd", s);
-                        listTag.add(tag);
-                        fun.tag().put(fun.setting().getId(), listTag);
+                        NbtList.add(tag);
+                        fun.tag().put(fun.setting().getId(), NbtList);
                     }
                 }
             }, (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {
                     List<String> strings = new ArrayList<>();
-                    ListTag listTag = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
+                    NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
                     for (int i = 0; i < 10; i++) {
-                        if (listTag.getCompound(i) != null && listTag.getCompound(i).contains("cmd")) {
-                            strings.add(listTag.getCompound(i).getString("cmd"));
+                        if (NbtList.getCompound(i) != null && NbtList.getCompound(i).contains("cmd")) {
+                            strings.add(NbtList.getCompound(i).getString("cmd"));
                         }
                     }
 
@@ -149,9 +148,9 @@ public class Preferences {
             "enabled_chats", Lists.newArrayList(),
             (fun) -> {
                 if (!fun.value().equals(fun.setting().getDefault())) {
-                    ListTag list = new ListTag();
+                    NbtList list = new NbtList();
                     for (ServerChat.Channel channel : fun.value()) {
-                        CompoundTag tag = new CompoundTag();
+                        NbtCompound tag = new NbtCompound();
                         tag.putString("id", channel.getId());
                         list.add(tag);
                     }
@@ -160,9 +159,9 @@ public class Preferences {
             }, (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {
                     List<ServerChat.Channel> channels = Lists.newArrayList();
-                    ListTag list = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
+                    NbtList list = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
                     for (int i = 0; i < list.size(); i++) {
-                        CompoundTag tag = list.getCompound(i);
+                        NbtCompound tag = list.getCompound(i);
                         ServerChat.Channel channel = ServerChat.Channel.getById(tag.getString("id"));
                         if (channel != null) {
                             channels.add(channel);

@@ -14,6 +14,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -35,29 +36,46 @@ public class HomeCommand extends EssentialCommand {
         this.withUsage("command.home.usage", "name");
     }
 
+    public static String replaceVariables(final String str, final OnlineUser source, final User target, final Home home) {
+        String string = ConfigVariableFactory.replaceUserVariables(str, source);
+        string = ConfigVariableFactory.replaceTargetUserVariables(string, target);
+
+        string = new ConfigObjectReplacerUtil("home", string, true)
+                .append("name", home.getName())
+                .append("size", target.getHomesHandler().getHomes().size())
+                .toString();
+
+        return string;
+    }
+
     @Override
     public final void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = this.argument("name", StringArgumentType.word())
                 .suggests(UserHomeHandler::suggestHomes)
-                .executes(this::executeSelf);
+                .executes(ctx -> executeSelf(ctx, true));
 
         final RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
                 .requires(src -> this.hasPermission(src, CommandPermission.HOME_OTHERS_TP))
                 .executes(this::executeOthers);
 
         homeArgument.then(targetArgument);
+        argumentBuilder.executes(ctx -> executeSelf(ctx, false));
         this.commandNode.addChild(homeArgument.build());
     }
 
-    private int executeSelf(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeSelf(final CommandContext<ServerCommandSource> ctx, boolean hasInput) throws CommandSyntaxException {
         final ServerPlayerEntity player = ctx.getSource().getPlayer();
         final OnlineUser user = this.getOnlineUser(player);
         final UserHomeHandler homeHandler = user.getHomesHandler();
-        final String input = StringArgumentType.getString(ctx, "name");
+        final String input = hasInput ? StringArgumentType.getString(ctx, "name") : "home";
         final String name = input.replaceFirst("-confirmed-", "");
 
         if (!homeHandler.hasHome(name)) {
-            user.sendLangMessage("command.home.invalid_home");
+            if (hasInput) {
+                user.sendLangMessage("command.home.invalid_home");
+            } else {
+                KiloCommands.getInstance().sendUsage(ctx.getSource(), this);
+            }
             return IEssentialCommand.FAILED;
         }
 
@@ -68,8 +86,10 @@ public class HomeCommand extends EssentialCommand {
 
         ScheduledExecutionThread.teleport(user, null, () -> {
             try {
-                homeHandler.teleportToHome(user, name);
-                user.sendLangMessage("command.home.teleport.self", name);
+                if (user.isOnline()) {
+                    homeHandler.teleportToHome(user, name);
+                    user.sendLangMessage("command.home.teleport.self", name);
+                }
             } catch (final UnsafeHomeException e) {
                 if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION) {
                     user.sendError(e.getMessage());
@@ -126,18 +146,6 @@ public class HomeCommand extends EssentialCommand {
         });
 
         return IEssentialCommand.AWAIT;
-    }
-
-    public static String replaceVariables(final String str, final OnlineUser source, final User target, final Home home) {
-        String string = ConfigVariableFactory.replaceUserVariables(str, source);
-        string = ConfigVariableFactory.replaceTargetUserVariables(string, target);
-
-        string = new ConfigObjectReplacerUtil("home", string, true)
-                .append("name", home.getName())
-                .append("size", target.getHomesHandler().getHomes().size())
-                .toString();
-
-        return string;
     }
 
     private Text getTeleportConfirmationText(String homeName, String owner) {

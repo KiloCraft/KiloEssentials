@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.mixin.patch;
 
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -19,19 +18,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(SignBlockEntity.class)
 public abstract class SignBlockEntityMixinPatch {
 
-    @Shadow @Final
-    private Text[] text;
-
     @Shadow public abstract ServerCommandSource getCommandSource(ServerPlayerEntity serverPlayerEntity);
 
+    @Shadow @Final private Text[] texts;
+
     //Fixes the activate method so your hand won't swing if the Sign doesn't have any commands
-    @Inject(method = "onActivate", at = @At(value = "HEAD", target = "Lnet/minecraft/block/entity/SignBlockEntity;onActivate(Lnet/minecraft/entity/player/PlayerEntity;)Z"), cancellable = true)
-    private void patch$SignActivationReturnValue(PlayerEntity playerEntity, CallbackInfoReturnable<Boolean> cir) {
-        for (Text value : text) {
+    @Inject(method = "onActivate", at = @At(value = "HEAD"), cancellable = true)
+    private void patch$SignActivationReturnValue(ServerPlayerEntity serverPlayerEntity, CallbackInfoReturnable<Boolean> cir) {
+        for (Text value : texts) {
             Style style = value != null ? value.getStyle() : null;
             if (style != null && style.getClickEvent() != null && style.getClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) {
-                UserUtils.Animate.swingHand(playerEntity);
-                KiloServer.getServer().execute(getCommandSource((ServerPlayerEntity) playerEntity), style.getClickEvent().getValue());
+                UserUtils.Animate.swingHand(serverPlayerEntity);
+                KiloServer.getServer().execute(getCommandSource(serverPlayerEntity), style.getClickEvent().getValue());
+                cir.setReturnValue(true);
             }
         }
 

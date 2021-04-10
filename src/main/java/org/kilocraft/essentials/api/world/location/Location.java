@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api.world.location;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -30,8 +30,8 @@ public interface Location {
     boolean isSafeFor(OnlineUser user);
     boolean isSafeFor(ServerPlayerEntity player);
 
-    CompoundTag toTag();
-    void fromTag(CompoundTag tag);
+    NbtCompound toTag();
+    void fromTag(NbtCompound tag);
 
     void setX(double x);
     void setY(double y);

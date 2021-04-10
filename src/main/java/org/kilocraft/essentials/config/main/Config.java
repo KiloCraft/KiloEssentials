@@ -54,7 +54,7 @@ public class Config {
     @Setting(value = "votifier", comment = "Configure the Votifier")
     private VotifierConfigSection votifier = new VotifierConfigSection();
 
-    @Setting(value = "motd", comment = "Configure the RTP range")
+    @Setting(value = "motd", comment = "Configure the message of the day")
     private MotdConfigSection motd = new MotdConfigSection();
 
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")

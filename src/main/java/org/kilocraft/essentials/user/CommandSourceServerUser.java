@@ -5,7 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.SharedConstants;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -285,13 +285,13 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public int sendError(String message) {
-        this.sendMessage(Component.text(message).color(NamedTextColor.RED));
+        this.sendMessage(ComponentText.of(message).color(NamedTextColor.RED));
         return 1;
     }
 
     @Override
     public void sendPermissionError(@NotNull String hover) {
-        this.sendMessage(Component.text(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
+        this.sendMessage(ComponentText.of(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(ComponentText.of(hover)))));
     }
 
     @Override
@@ -383,12 +383,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public CompoundTag toTag() {
+    public NbtCompound toTag() {
         return null;
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void fromTag(NbtCompound tag) {
 
     }
 

@@ -550,19 +550,11 @@ public class Texter {
         }
 
         public InfoBlockStyle append(String title, String[] subTitles, Object... objects) {
+            MutableText text = new LiteralText("");
             for (int i = 0; i < objects.length; i++) {
                 if (objects[i] instanceof Text) {
                     MutableText objectToText = (MutableText) objects[i];
-                    text.styled((style) -> {
-                        if (objectToText.getStyle().getHoverEvent() != null) {
-                            style.withHoverEvent(objectToText.getStyle().getHoverEvent());
-                        }
-
-                        if (objectToText.getStyle().getClickEvent() != null) {
-                            style.withClickEvent(objectToText.getStyle().getClickEvent());
-                        }
-                        return style;
-                    });
+                    text.append(objectToText);
                 } else if (objects[i] instanceof List<?>) {
                     List<?> list = (List<?>) objects[i];
                     text.append(new LiteralText("[").formatted(borders))

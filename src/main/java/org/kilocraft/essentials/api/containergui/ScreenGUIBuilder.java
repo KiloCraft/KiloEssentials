@@ -8,9 +8,9 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -202,22 +202,22 @@ public class ScreenGUIBuilder {
                 return this.icon;
             }
 
-            CompoundTag tag = icon.getTag();
+            NbtCompound tag = icon.getTag();
             if (tag == null) {
-                tag = new CompoundTag();
+                tag = new NbtCompound();
             }
 
             if (!tag.contains("display")) {
-                tag.put("display", new CompoundTag());
+                tag.put("display", new NbtCompound());
             }
 
-            ListTag lore = tag.getCompound("display").getList("Lore", NBTTypes.STRING);
+            NbtList lore = tag.getCompound("display").getList("Lore", NBTTypes.STRING);
             if (lore == null) {
-                lore = new ListTag();
+                lore = new NbtList();
             }
 
             for (Text loreText : this.loreTexts) {
-                lore.add(StringTag.of(Text.Serializer.toJson(loreText)));
+                lore.add(NbtString.of(Text.Serializer.toJson(loreText)));
             }
             tag.getCompound("display").put("Lore", lore);
             this.icon.setTag(tag);

@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api.user.preference;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.user.preference.Preferences;
@@ -37,7 +37,7 @@ public class Preference<T> {
         return this.defaultValue;
     }
 
-    public void toTag(@NotNull final CompoundTag tag, @NotNull final Object value) throws IllegalArgumentException {
+    public void toTag(@NotNull final NbtCompound tag, @NotNull final Object value) throws IllegalArgumentException {
         if (this.hasCustomSerializer) {
             this.serializer.accept(new SerializerFunction(tag, (T) value, this));
         } else if (value instanceof String) {
@@ -59,7 +59,7 @@ public class Preference<T> {
         }
     }
 
-    public Object fromTag(@NotNull final CompoundTag tag) throws IllegalArgumentException {
+    public Object fromTag(@NotNull final NbtCompound tag) throws IllegalArgumentException {
         if (this.hasCustomSerializer) {
             SerializerFunction function = new SerializerFunction(tag, this.defaultValue, this);
             this.deserializer.accept(function);
@@ -84,17 +84,17 @@ public class Preference<T> {
     }
 
     public class SerializerFunction {
-        private final CompoundTag tag;
+        private final NbtCompound tag;
         private T value;
         private final Preference<T> preference;
 
-        public SerializerFunction(@NotNull final CompoundTag tag, @NotNull final T value, @NotNull final Preference<T> preference) {
+        public SerializerFunction(@NotNull final NbtCompound tag, @NotNull final T value, @NotNull final Preference<T> preference) {
             this.tag = tag;
             this.value = value;
             this.preference = preference;
         }
 
-        public CompoundTag tag() {
+        public NbtCompound tag() {
             return this.tag;
         }
 

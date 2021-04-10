@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.util.nbt;
 
 import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -14,11 +14,11 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class NBTUtils {
-    public static void putUUID(CompoundTag tag, String key, UUID uuid) {
+    public static void putUUID(NbtCompound tag, String key, UUID uuid) {
         tag.putUuid(key, uuid);
     }
 
-    public static UUID getUUID(CompoundTag tag, String key) {
+    public static UUID getUUID(NbtCompound tag, String key) {
         UUID uuid;
         //Get the UUID even if its the old format
         if (tag.contains(key + "Most") && tag.contains(key + "Least")) {
@@ -31,22 +31,22 @@ public class NBTUtils {
     }
 
     @Nullable
-    public static CompoundTag getPlayerTag(UUID uuid) {
+    public static NbtCompound getPlayerTag(UUID uuid) {
         File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
 
         if (!file.exists())
             return null;
 
-        CompoundTag compoundTag = null;
+        NbtCompound NbtCompound = null;
 
         try {
-            compoundTag = NbtIo.readCompressed(new FileInputStream(file));
+            NbtCompound = NbtIo.readCompressed(new FileInputStream(file));
         } catch (IOException ignored) { }
 
-        return compoundTag;
+        return NbtCompound;
     }
 
-    public static boolean savePlayerFromTag(UUID uuid, CompoundTag tag) {
+    public static boolean savePlayerFromTag(UUID uuid, NbtCompound tag) {
         File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
         if (!file.exists())
             return false;
@@ -61,26 +61,26 @@ public class NBTUtils {
     }
 
     @Nullable
-    public static EnderChestInventory tagToEnderchest(CompoundTag tag) {
+    public static EnderChestInventory tagToEnderchest(NbtCompound tag) {
         if (!tag.contains("EnderItems"))
             return null;
 
         EnderChestInventory inv = new EnderChestInventory();
-        inv.readTags(tag.getList("EnderItems", 10));
+        inv.readNbtList(tag.getList("EnderItems", 10));
         return inv;
     }
 
     public static void savePlayerEnderchest(UUID uuid, EnderChestInventory inv) {
-        CompoundTag tag = getPlayerTag(uuid);
+        NbtCompound tag = getPlayerTag(uuid);
         if (tag == null)
             return;
 
-        tag.put("EnderItems", inv.getTags());
+        tag.put("EnderItems", inv.toNbtList());
         savePlayerFromTag(uuid, tag);
     }
 
     public static void setPlayerCustomName(UUID uuid, Text text) {
-        CompoundTag tag = getPlayerTag(uuid);
+        NbtCompound tag = getPlayerTag(uuid);
         if (tag == null)
             return;
 

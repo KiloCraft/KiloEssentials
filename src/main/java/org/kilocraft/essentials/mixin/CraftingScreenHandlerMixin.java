@@ -4,10 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.AbstractRecipeScreenHandler;
-import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.screen.*;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,10 +20,6 @@ public abstract class CraftingScreenHandlerMixin extends AbstractRecipeScreenHan
         super(screenHandlerType, i);
     }
 
-    @Shadow
-    protected static void updateResult(int i, World world, PlayerEntity playerEntity, CraftingInventory craftingInventory, CraftingResultInventory craftingResultInventory) {
-    }
-
     @Shadow @Final private PlayerEntity player;
 
     @Shadow @Final private CraftingInventory input;
@@ -35,10 +28,14 @@ public abstract class CraftingScreenHandlerMixin extends AbstractRecipeScreenHan
 
     @Shadow @Final private ScreenHandlerContext context;
 
+    @Shadow
+    protected static void updateResult(ScreenHandler screenHandler, World world, PlayerEntity playerEntity, CraftingInventory craftingInventory, CraftingResultInventory craftingResultInventory) {
+    }
+
     @Inject(method = "onContentChanged", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/screen/CraftingScreenHandler;onContentChanged(Lnet/minecraft/inventory/Inventory;)V"))
     public void modifyOnContentChanged(Inventory inventory, CallbackInfo ci) {
         if (this.context == ScreenHandlerContext.EMPTY) {
-            updateResult(this.syncId, this.player.getEntityWorld(), this.player, this.input, this.result);
+            updateResult(this, this.player.getEntityWorld(), this.player, this.input, this.result);
             ci.cancel();
         }
     }

@@ -28,6 +28,7 @@ import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.StartupScript;
 import org.kilocraft.essentials.util.messages.MessageUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.io.IOException;
 import java.util.List;
@@ -56,6 +57,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
     private PermissionUtil permUtil;
     private StartupScript startupScript;
     private LuckPermsCompatibility luckPermsCompatibility;
+    private ServerSettings settingManager;
 
     public static CommandDispatcher<ServerCommandSource> commandDispatcher;
 
@@ -68,6 +70,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
             KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
         }
         new KiloEvents();
+
     }
 
 
@@ -91,6 +94,7 @@ public final class KiloEssentialsImpl implements KiloEssentials {
         if (permUtil.getManager() == PermissionUtil.Manager.LUCKPERMS) {
             this.luckPermsCompatibility = new LuckPermsCompatibility();
         }
+        this.settingManager = new ServerSettings();
     }
 
     public static Logger getLogger() {
@@ -341,4 +345,8 @@ public final class KiloEssentialsImpl implements KiloEssentials {
         this.permUtil = new PermissionUtil();
     }
 
+    @Override
+    public ServerSettings getSettingManager() {
+        return settingManager;
+    }
 }

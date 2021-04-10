@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.api.world.location;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -126,9 +126,9 @@ public class Vec3dLocation implements Location {
     }
 
     @Override
-    public CompoundTag toTag() {
-        CompoundTag tag = new CompoundTag();
-        CompoundTag pos = new CompoundTag();
+    public NbtCompound toTag() {
+        NbtCompound tag = new NbtCompound();
+        NbtCompound pos = new NbtCompound();
 
         if (this.useShortDecimals)
             shortDecimals();
@@ -143,7 +143,7 @@ public class Vec3dLocation implements Location {
             tag.putString("dim", this.dimension.toString());
 
         if (rotation.getYaw() != 0 && rotation.getPitch() != 0) {
-            CompoundTag view = new CompoundTag();
+            NbtCompound view = new NbtCompound();
             view.putFloat("yaw", this.rotation.getYaw());
             view.putFloat("pitch", this.rotation.getPitch());
 
@@ -154,8 +154,8 @@ public class Vec3dLocation implements Location {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        CompoundTag pos = tag.getCompound("pos");
+    public void fromTag(NbtCompound tag) {
+        NbtCompound pos = tag.getCompound("pos");
 
         this.x = pos.getDouble("x");
         this.y = pos.getDouble("y");
@@ -165,7 +165,7 @@ public class Vec3dLocation implements Location {
             this.dimension = new Identifier(tag.getString("dim"));
 
         if (tag.contains("view")) {
-            CompoundTag view = tag.getCompound("view");
+            NbtCompound view = tag.getCompound("view");
             this.rotation = new PlayerRotation(view.getFloat("yaw"), view.getFloat("pitch"));
         }
     }

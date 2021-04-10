@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.util.player;
 
 import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class PlayerDataModifier {
     private UUID uuid;
-    private CompoundTag compoundTag;
+    private NbtCompound NbtCompound;
 
     public PlayerDataModifier(UUID uuid) {
         this.uuid = uuid;
@@ -26,7 +26,7 @@ public class PlayerDataModifier {
             return false;
 
         try {
-            this.compoundTag = NbtIo.readCompressed(new FileInputStream(file));
+            this.NbtCompound = NbtIo.readCompressed(new FileInputStream(file));
         } catch (IOException ignored) { }
 
         return true;
@@ -38,7 +38,7 @@ public class PlayerDataModifier {
             return false;
 
         try {
-            NbtIo.writeCompressed(this.compoundTag, new FileOutputStream(file));
+            NbtIo.writeCompressed(this.NbtCompound, new FileOutputStream(file));
         } catch (IOException e) {
             return false;
         }
@@ -46,20 +46,20 @@ public class PlayerDataModifier {
         return false;
     }
 
-    public CompoundTag getTag() {
-        return this.compoundTag;
+    public NbtCompound getTag() {
+        return this.NbtCompound;
     }
 
     public void setCustomName(Text text) {
         if (text != null)
-            this.compoundTag.putString("CustomName", Text.Serializer.toJson(text));
+            this.NbtCompound.putString("CustomName", Text.Serializer.toJson(text));
         else
-            this.compoundTag.remove("CustomName");
+            this.NbtCompound.remove("CustomName");
     }
 
     public EnderChestInventory getEnderChest() {
         EnderChestInventory inv = new EnderChestInventory();
-        inv.readTags(this.compoundTag.getList("EnderItems", 10));
+        inv.readNbtList(this.NbtCompound.getList("EnderItems", 10));
         return inv;
     }
 

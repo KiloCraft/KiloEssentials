@@ -7,9 +7,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -19,7 +19,6 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
 
@@ -85,7 +84,7 @@ public class ItemLoreCommand {
 			return -1;
 		}
 
-		ListTag lore = item.getTag().getCompound("display").getList("Lore", NBTTypes.STRING);
+		NbtList lore = item.getTag().getCompound("display").getList("Lore", NBTTypes.STRING);
 
 		if (inputLine >= lore.size()) {
 			user.sendLangMessage("command.item.nothing_to_reset");
@@ -133,7 +132,7 @@ public class ItemLoreCommand {
 			return -1;
 		}
 
-		CompoundTag itemTag = item.getTag();
+		NbtCompound itemTag = item.getTag();
 
 		AtomicBoolean containsEnchantmentName = new AtomicBoolean(false);
 		Registry.ENCHANTMENT.forEach((enchantment) -> {
@@ -153,30 +152,29 @@ public class ItemLoreCommand {
 		}
 
 		if (!item.hasTag()) {
-			itemTag = new CompoundTag();
+			itemTag = new NbtCompound();
 		}
 
 		if (!itemTag.contains("display")) {
-			itemTag.put("display", new CompoundTag());
+			itemTag.put("display", new NbtCompound());
 		}
 
-		ListTag lore = itemTag.getCompound("display").getList("Lore", 8);
+		NbtList lore = itemTag.getCompound("display").getList("Lore", 8);
 		int inputLine = getInteger(ctx, "line") - 1;
 
 		if (lore == null) {
-			lore = new ListTag();
+			lore = new NbtList();
 		}
 
 		if (inputLine > lore.size() - 1) {
 			for (int i = lore.size(); i <= inputLine; i++) {
-				lore.add(StringTag.of("{\"text\":\"\"}"));
+				lore.add(NbtString.of("{\"text\":\"\"}"));
 			}
 		}
 
         String text = KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING) ? inputString : ComponentText.clearFormatting(inputString);
 
-		System.out.println(Text.Serializer.toJson(ComponentText.toText(text)));
-		lore.set(inputLine, StringTag.of(Text.Serializer.toJson(ComponentText.toText(text))));
+		lore.set(inputLine, NbtString.of(Text.Serializer.toJson(ComponentText.toText(text))));
 		itemTag.getCompound("display").put("Lore", lore);
 		item.setTag(itemTag);
 

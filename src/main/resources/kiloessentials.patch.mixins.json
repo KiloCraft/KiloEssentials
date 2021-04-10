@@ -4,6 +4,17 @@
   "package": "org.kilocraft.essentials.mixin.patch",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AnimalEntityMixinPatch",
+    "ChunkDataS2CPacketMixin",
+    "DecorationItemMixin",
+    "EggEntityMixinPatch",
+    "HorseBaseEntityMixin",
+    "ItemEntityMixinPatch",
+    "PropertyMixinPatch",
+    "ShulkerEntityMixinPatch",
+    "VillagerBreedTaskMixinPatch",
+    "WitherEntityMixinPatch",
+    "ServerWorldMixinPatch"
   ],
   "server": [
     "SignBlockEntityMixinPatch"

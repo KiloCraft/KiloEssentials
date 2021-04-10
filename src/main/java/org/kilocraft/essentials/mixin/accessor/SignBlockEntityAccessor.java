@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(SignBlockEntity.class)
 public interface SignBlockEntityAccessor {
-    @Accessor("text")
+    @Accessor("texts")
     Text[] getTexts();
 }

@@ -3,13 +3,17 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.BanEntry;
+import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
@@ -19,6 +23,7 @@ import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.Format;
 import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -39,6 +44,7 @@ import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
+import org.kilocraft.essentials.mixin.accessor.ServerConfigEntryAccessor;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.*;
 import org.kilocraft.essentials.util.player.UserUtils;
@@ -291,10 +297,11 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{TYPE}", type == Punishment.Type.MUTE ? config.meta().wordMuted : config.meta().wordBanned)
                 .replace("{SOURCE}", src.getName())
                 .replace("{VICTIM}", entry.getVictim() == null ? entry.getVictimIP() == null ? "INVALID" : entry.getVictimIP() : entry.getVictim().getName())
-                .replace("{REASON}", entry.getReason() == null ? config.defaults().ban : entry.getReason())
+                .replace("{REASON}", entry.getReason() == null ? (type == Punishment.Type.MUTE ? config.defaults().mute : config.defaults().ban) : entry.getReason())
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
-        if (silent) {
+
+            if (silent) {
             ServerChat.Channel.STAFF.send(ComponentText.toText(config.meta().silentPrefix + " " + message));
         } else if (config.meta().broadcast) {
             KiloChat.broadCast(message);
@@ -376,6 +383,33 @@ public class ServerUserManager implements UserManager, TickListener {
         OnlineServerUser user = (OnlineServerUser) this.getOnline(playerEntity);
         user.onJoined();
         KiloChat.onUserJoin(user);
+        List<GameProfile> banned = new ArrayList<>();
+        for (BannedPlayerEntry bannedPlayerEntry : KiloEssentials.getServer().getMinecraftServer().getPlayerManager().getUserBanList().values()) {
+            Object o = ((ServerConfigEntryAccessor)bannedPlayerEntry).getKey();
+            if (o instanceof GameProfile) {
+                GameProfile profile = (GameProfile) o;
+                Optional<User> optional = getOffline(profile).join();
+                optional.ifPresent(player -> {
+                    if (player.getLastIp().equals(user.getLastIp())) banned.add(profile);
+                });
+            }
+        }
+        List<OnlineUser> online = new ArrayList<>();
+        for (Map.Entry<UUID, OnlineServerUser> entry : this.onlineUsers.entrySet()) {
+            if (entry.getValue().getLastIp().equals(user.getLastIp())) {
+                online.add(entry.getValue());
+            }
+        }
+        if (!banned.isEmpty() || online.size() > 1) {
+            TextComponent.Builder builder = Component.text();
+            for (GameProfile profile : banned) {
+                builder.append(Component.text("[" + profile.getName() + "] ").color(NamedTextColor.RED));
+            }
+            for (OnlineUser onlineUser : online) {
+                builder.append(Component.text("[" + onlineUser.getName() + "] ").color(NamedTextColor.GREEN));
+            }
+            ServerChat.Channel.STAFF.send(ComponentText.toText(builder.build()));
+        }
     }
 
     public void onLeave(ServerPlayerEntity player) {
@@ -406,7 +440,7 @@ public class ServerUserManager implements UserManager, TickListener {
         ServerPlayerEntity player = user.asPlayer();
         NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
 
-        String string = StringUtils.normalizeSpace(packet.getChatMessage());
+        String string = StringUtils.normalizeSpace(packet.getChatMessage()).replaceAll("\\n", "");
         player.updateLastActionTime();
 
         for (int i = 0; i < string.length(); ++i) {
@@ -442,12 +476,12 @@ public class ServerUserManager implements UserManager, TickListener {
                     user.sendMessage(getMuteMessage(user));
                     return;
                 }
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_COLOR)) string = ComponentText.stripColor(string);
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_BASIC)) string = ComponentText.stripFormatting(string);
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_EVENT)) string = ComponentText.stripEvent(string);
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_GRADIENT)) string = ComponentText.stripGradient(string);
-                if (!user.hasPermission(EssentialPermission.CHAT_FORMATTING_RAINBOW)) string = ComponentText.stripRainbow(string);
-                ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
+                try {
+                    string = Format.validatePermission(user, string, PermissionUtil.PERMISSION_PREFIX + "chat.formatting.");
+                    ServerChat.sendChatMessage(user, string, user.getPreference(Preferences.CHAT_CHANNEL));
+                } catch (CommandSyntaxException e) {
+                    user.getCommandSource().sendError(new LiteralText(Util.getInnermostMessage(e)));
+                }
             }
         } catch (Exception e) {
             MutableText text = Texter.newTranslatable("command.failed");
@@ -502,7 +536,7 @@ public class ServerUserManager implements UserManager, TickListener {
         private AnimatedText animatedText;
 
         public LoadingText(ServerPlayerEntity player) {
-            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player)
                     .append(StringText.of(true, "general.wait_server.frame1"))
                     .append(StringText.of(true, "general.wait_server.frame2"))
                     .append(StringText.of(true, "general.wait_server.frame3"))
@@ -511,7 +545,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         public LoadingText(ServerPlayerEntity player, String key) {
-            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player, TitleS2CPacket.Action.ACTIONBAR)
+            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player)
                     .append(StringText.of(true, key + ".frame1"))
                     .append(StringText.of(true, key + ".frame2"))
                     .append(StringText.of(true, key + ".frame3"))

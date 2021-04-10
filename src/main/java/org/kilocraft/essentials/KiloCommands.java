@@ -41,7 +41,7 @@ import org.kilocraft.essentials.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.commands.inventory.InventoryCommand;
 import org.kilocraft.essentials.commands.inventory.WorkbenchCommand;
-import org.kilocraft.essentials.commands.item.ItemCommand;
+import org.kilocraft.essentials.commands.item.ModifyItemCommand;
 import org.kilocraft.essentials.commands.locate.LocateCommand;
 import org.kilocraft.essentials.commands.messaging.*;
 import org.kilocraft.essentials.commands.misc.*;
@@ -129,16 +129,20 @@ public class KiloCommands {
     private void registerDefaults() {
         this.register(new DebugEssentialsCommand());
         this.register(new LightningCommand());
+        this.register(new MobCapCommand());
+        this.register(new PlayerMobCapCommand());
+        this.register(new ViewDistanceCommand());
         this.register(new NicknameCommand());
         this.register(new SayAsCommand());
         this.register(new SudoCommand());
-        this.register(new ItemCommand());
+        this.register(new ModifyItemCommand());
         this.register(new WorkbenchCommand());
         this.register(new AnvilCommand());
         this.register(new SignEditCommand());
         this.register(new HatCommand());
         this.register(new VersionCommand());
         this.register(new ReloadCommand());
+        this.register(new SlimeChunkCommand());
         this.register(new TextFormattingCommand());
         this.register(new CommandFormattingCommand());
         this.register(new GamemodeCommand());
@@ -154,6 +158,7 @@ public class KiloCommands {
         this.register(new PingCommand());
         this.register(new ClearChatCommand());
         this.register(new EnderchestCommand());
+        this.register(new EntitiesCommand());
         this.register(new StatusCommand());
         this.register(new StaffMessageCommand());
         this.register(new BuilderMsgCommand());

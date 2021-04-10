@@ -1,39 +1,34 @@
 package org.kilocraft.essentials.mixin.events;
 
+import net.minecraft.command.EntityDataObject;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.event.player.PlayerInteractBlockEvent;
 import org.kilocraft.essentials.api.event.player.PlayerInteractItemStartEvent;
+import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.events.player.PlayerClientCommandEventImpl;
 import org.kilocraft.essentials.events.player.PlayerDisconnectEventImpl;
-import org.kilocraft.essentials.events.player.PlayerInteractBlockEventImpl;
 import org.kilocraft.essentials.events.player.PlayerInteractItemStartEventImpl;
+import org.kilocraft.essentials.util.InteractionHandler;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -50,22 +45,12 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
 
     @Shadow
     public ServerPlayerEntity player;
-
     @Shadow
     @Final
     private MinecraftServer server;
 
-    @Shadow
-    private Vec3d requestedTeleportPos;
 
-    private static boolean shouldContinueUsingItem(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-        if (itemStack.isEmpty()) {
-            return false;
-        } else {
-            Item item = itemStack.getItem();
-            return (item instanceof BlockItem || item instanceof BucketItem) && !serverPlayerEntity.getItemCooldownManager().isCoolingDown(item);
-        }
-    }
+    @Shadow public abstract ServerPlayerEntity getPlayer();
 
     @Inject(at = @At(value = "HEAD"), method = "onDisconnected")
     private void ke$triggerEvent$onDisconnect(Text text, CallbackInfo ci) {
@@ -99,42 +84,6 @@ public abstract class MixinServerPlayNetworkHandler$PlayerEvents {
                 this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
             }
         }
-    }
-
-    @Inject(method = "onPlayerInteractBlock", cancellable = true,
-            at = @At(value = "HEAD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onPlayerInteractBlock(Lnet/minecraft/network/packet/c2s/play/PlayerInteractBlockC2SPacket;)V"))
-    private void ke$modify$onInteractBlock(PlayerInteractBlockC2SPacket playerInteractBlockC2SPacket, CallbackInfo ci) {
-        ci.cancel();
-        NetworkThreadUtils.forceMainThread(playerInteractBlockC2SPacket, player.networkHandler, this.player.getServerWorld());
-        ServerWorld serverWorld = this.player.getServerWorld();
-        Hand hand = playerInteractBlockC2SPacket.getHand();
-        ItemStack itemStack = this.player.getStackInHand(hand);
-        BlockHitResult blockHitResult = playerInteractBlockC2SPacket.getBlockHitResult();
-        BlockPos blockPos = blockHitResult.getBlockPos();
-        Direction direction = blockHitResult.getSide();
-        this.player.updateLastActionTime();
-
-        PlayerInteractBlockEvent event = new PlayerInteractBlockEventImpl(player, playerInteractBlockC2SPacket.getBlockHitResult(), hand);
-        KiloServer.getServer().triggerEvent(event);
-        if (!event.isCancelled()) {
-            if (blockPos.getY() < this.server.getWorldHeight()) {
-                if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double) blockPos.getX() + 0.5D, (double) blockPos.getY() + 0.5D, (double) blockPos.getZ() + 0.5D) < 64.0D && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
-                    ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
-                    if (direction == Direction.UP && actionResult != ActionResult.SUCCESS && blockPos.getY() >= this.server.getWorldHeight() - 1 && shouldContinueUsingItem(this.player, itemStack)) {
-                        Text text = (new TranslatableText("build.tooHigh", this.server.getWorldHeight())).formatted(Formatting.RED);
-                        this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO, Util.NIL_UUID));
-                    } else if (actionResult.shouldSwingHand()) {
-                        this.player.swingHand(hand, true);
-                    }
-                }
-            } else {
-                Text text = (new TranslatableText("build.tooHigh", this.server.getWorldHeight())).formatted(Formatting.RED);
-                this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO, Util.NIL_UUID));
-            }
-        }
-
-        this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
-        this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos.offset(direction)));
     }
 
     @Inject(method = "onClientCommand", cancellable = true,

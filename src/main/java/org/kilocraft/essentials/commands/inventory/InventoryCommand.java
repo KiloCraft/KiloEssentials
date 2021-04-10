@@ -16,7 +16,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.collection.DefaultedList;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -68,10 +67,6 @@ public class InventoryCommand extends EssentialCommand {
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
                 ScreenHandler handler = GenericContainerScreenHandler.createGeneric9x5(syncId, src.asPlayer().getInventory());
                 handler.addListener(new ScreenHandlerListener() {
-                    @Override
-                    public void onHandlerRegistered(ScreenHandler screenHandler, DefaultedList<ItemStack> defaultedList) {
-                        setSlotsInit(target.asPlayer(), handler);
-                    }
 
                     @Override
                     public void onSlotUpdate(ScreenHandler screenHandler, int i, ItemStack itemStack) {

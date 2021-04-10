@@ -12,7 +12,6 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
@@ -21,7 +20,6 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.util.text.Texter;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -64,7 +62,7 @@ public class ItemNameCommand {
         ItemStack item = player.getMainHandStack();
         CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
 
-        if (inputString.length() >= 90) {
+        if (ComponentText.clearFormatting(inputString).length() >= 90) {
             user.sendLangMessage( "command.item.too_long");
             return 0;
         }

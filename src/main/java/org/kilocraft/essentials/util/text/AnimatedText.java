@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.util.text;
 
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -22,15 +23,13 @@ public class AnimatedText {
     private int initialDelay;
     private int nextFrameTime;
     private ServerPlayerEntity player;
-    private TitleS2CPacket.Action action;
 
-    public AnimatedText(int initialDelay, int delay, TimeUnit timeUnit, ServerPlayerEntity player, TitleS2CPacket.Action titleAction) {
+    public AnimatedText(int initialDelay, int delay, TimeUnit timeUnit, ServerPlayerEntity player) {
         this.frames = new ArrayList<>();
         this.timeUnit = timeUnit;
         this.initialDelay = initialDelay;
         this.nextFrameTime = delay;
         this.player = player;
-        this.action = titleAction;
         this.executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
@@ -45,7 +44,7 @@ public class AnimatedText {
 
     public AnimatedText setStyle(Style style) {
         for (Text frame : this.frames) {
-            ((MutableText)frame).setStyle(style);
+            ((MutableText) frame).setStyle(style);
         }
 
         return this;
@@ -63,9 +62,9 @@ public class AnimatedText {
             }
 
             if (this.player.networkHandler != null) {
-                this.player.networkHandler.sendPacket(new TitleS2CPacket(this.action, this.frames.get(this.frame),1, this.nextFrameTime, -1));
+                this.player.networkHandler.sendPacket(new TitleFadeS2CPacket(1, this.nextFrameTime, -1));
+                this.player.networkHandler.sendPacket(new OverlayMessageS2CPacket(this.frames.get(this.frame)));
             }
-
             this.frame++;
         };
 
@@ -84,7 +83,7 @@ public class AnimatedText {
         this.executorService.shutdown();
 
         if (this.player != null)
-            this.player.networkHandler.sendPacket(new TitleS2CPacket(this.action, new LiteralText("")));
+            this.player.networkHandler.sendPacket(new OverlayMessageS2CPacket(new LiteralText("")));
     }
 
     public void remove() {
@@ -96,8 +95,8 @@ public class AnimatedText {
         this.initialDelay = 0;
         this.player = null;
         this.runnable = null;
-        this.action = null;
         this.timeUnit = null;
     }
+
 
 }

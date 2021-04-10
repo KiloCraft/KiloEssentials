@@ -42,7 +42,7 @@ public class Votifier {
         Votifier.instance = this;
 
         // Set the plugin version.
-        version = "1.0";
+        version = "1.1";
 
 
 

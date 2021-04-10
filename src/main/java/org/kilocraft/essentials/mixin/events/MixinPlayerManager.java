@@ -3,6 +3,8 @@ package org.kilocraft.essentials.mixin.events;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
+import net.minecraft.scoreboard.ServerScoreboard;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -25,6 +27,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.net.SocketAddress;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static org.kilocraft.essentials.user.ServerUserManager.replaceVariables;
@@ -51,10 +56,14 @@ public abstract class MixinPlayerManager {
     @Final
     private Whitelist whitelist;
 
+    @Shadow
+    @Final
+    private List<ServerPlayerEntity> players;
+
     @Inject(at = @At("HEAD"), method = "onPlayerConnect", cancellable = true)
     private void oky$onPlayerConnect(ClientConnection connection, ServerPlayerEntity playerEntity, CallbackInfo ci) {
         PlayerConnectEventImpl e = KiloServer.getServer().triggerEvent(new PlayerConnectEventImpl(connection, playerEntity));
-        LOGGER.info(playerEntity.getEntityName() + " with a Entity ID of \"" + playerEntity.getEntityId() + "\" Joined the server");
+        LOGGER.info(playerEntity.getEntityName() + " with a Entity ID of \"" + playerEntity.getId() + "\" Joined the server");
 
         if (e.isCancelled()) {
             connection.disconnect(new LiteralText(e.getCancelReason()));
@@ -112,6 +121,16 @@ public abstract class MixinPlayerManager {
             cir.setReturnValue(message == null ? null : ComponentText.toText(message));
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+    @Redirect(method = "sendScoreboard", at = @At(value = "INVOKE", target = "Lnet/minecraft/scoreboard/ServerScoreboard;getTeams()Ljava/util/Collection;"))
+    public Collection<Team> changeScoreboardPacket(ServerScoreboard serverScoreboard) {
+        if (KiloConfig.main().playerList().customOrder) {
+            return Collections.emptyList();
+        } else {
+            return serverScoreboard.getTeams();
         }
     }
 

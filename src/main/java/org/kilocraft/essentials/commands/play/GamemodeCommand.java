@@ -116,7 +116,7 @@ public class GamemodeCommand extends EssentialCommand {
     private CompletableFuture<Suggestions> suggestGameModes(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
         List<String> strings = new ArrayList<>();
         for (GameMode value : GameMode.values()) {
-            if (value.equals(GameMode.NOT_SET) || !this.getOnlineUser(context).hasPermission(this.getPermission("self", value))) {
+            if (value == null || !this.getOnlineUser(context).hasPermission(this.getPermission("self", value))) {
                 continue;
             }
 

@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.extensions.warps.playerwarps;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.extensions.warps.Warp;
@@ -22,7 +22,7 @@ public class PlayerWarp extends Warp implements Comparable<PlayerWarp> {
         this.description = description;
     }
 
-    public PlayerWarp(String name, CompoundTag tag) {
+    public PlayerWarp(String name, NbtCompound tag) {
         super(name, null);
         this.fromTag(tag);
     }
@@ -40,17 +40,17 @@ public class PlayerWarp extends Warp implements Comparable<PlayerWarp> {
     }
 
     @Override
-    public CompoundTag toTag() {
-        CompoundTag compoundTag = super.toTag();
-        compoundTag.putString("type", this.type);
-        compoundTag.putString("desc", this.description);
-        NBTUtils.putUUID(compoundTag, "owner", this.owner);
+    public NbtCompound toTag() {
+        NbtCompound NbtCompound = super.toTag();
+        NbtCompound.putString("type", this.type);
+        NbtCompound.putString("desc", this.description);
+        NBTUtils.putUUID(NbtCompound, "owner", this.owner);
 
-        return compoundTag;
+        return NbtCompound;
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void fromTag(NbtCompound tag) {
         super.fromTag(tag);
         this.type = tag.getString("type");
         this.description = tag.getString("desc");

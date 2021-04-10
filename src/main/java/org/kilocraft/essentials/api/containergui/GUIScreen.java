@@ -3,7 +3,6 @@ package org.kilocraft.essentials.api.containergui;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -57,7 +56,7 @@ public class GUIScreen extends ScreenHandler {
     }
 
     @Override
-    public ItemStack onSlotClick(int slot, int clickData, SlotActionType slotActionType, PlayerEntity playerEntity) {
+    public void onSlotClick(int slot, int clickData, SlotActionType slotActionType, PlayerEntity playerEntity) {
         if (buttons.containsKey(slot)) {
             this.buttons.get(slot).onClick(GUIButton.ClickAction.getBySlotActionType(slotActionType));
         }
@@ -68,7 +67,6 @@ public class GUIScreen extends ScreenHandler {
         );
 
         this.sendContentUpdates();
-        return ItemStack.EMPTY;
     }
 
 }
