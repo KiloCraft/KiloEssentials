@@ -5,10 +5,8 @@ import org.kilocraft.essentials.api.event.context.Contextual;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
-public interface PlayerBannedEvent extends Event, Contextual {
+public interface PlayerBannedEvent extends PlayerPunishEventInterface, Event, Contextual {
 
-    EntityIdentifiable getVictim();
-    CommandSourceUser getSource();
-    String getReason();
+    boolean isIpBan();
 
 }

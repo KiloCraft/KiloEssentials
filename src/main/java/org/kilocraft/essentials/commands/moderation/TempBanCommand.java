@@ -87,7 +87,7 @@ public class TempBanCommand extends EssentialCommand {
                     )
             );
         }
-        KiloServer.getServer().triggerEvent(new PlayerBannedEventImpl(EntityIdentifiable.fromGameProfile(victim), src, reason));
+        KiloServer.getServer().triggerEvent(new PlayerBannedEventImpl(src, EntityIdentifiable.fromGameProfile(victim), reason, expiry.getTime(), silent, false));
         this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
         return AWAIT;
     }
