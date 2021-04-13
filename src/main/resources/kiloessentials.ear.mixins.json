@@ -1,0 +1,29 @@
+{
+  "required": true,
+  "minVersion": "0.7.11",
+  "package": "org.kilocraft.essentials.mixin.entityActivationRange",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "AreaEffectCloudEntityMixin",
+    "ArrowEntityEntity",
+    "EntityAccessor",
+    "EntityMixin",
+    "GoalMixin",
+    "GoalSelectorMixin",
+    "ItemEntityMixin",
+    "LivingEntityAccessor",
+    "LivingEntityMixin",
+    "MobEntityAccessor",
+    "MobEntityMixin",
+    "MoveToTargetPosGoalMixin",
+    "PassiveEntityMixin",
+    "PathAwareEntityMixin",
+    "PersistentProjectileEntityAccessor",
+    "ServerWorldMixin",
+    "VillagerEntityMixin",
+    "WorldMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
