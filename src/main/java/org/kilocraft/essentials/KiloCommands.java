@@ -170,6 +170,7 @@ public class KiloCommands {
         this.register(new LocateCommand());
         this.register(new MessageCommand());
         this.register(new DoNotDisturbCommand());
+        this.register(new VanishCommand());
         this.register(new IgnoreCommand());
         this.register(new IgnoreListCommand());
         this.register(new ReplyCommand());

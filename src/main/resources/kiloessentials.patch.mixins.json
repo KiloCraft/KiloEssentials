@@ -10,11 +10,12 @@
     "EggEntityMixinPatch",
     "HorseBaseEntityMixin",
     "ItemEntityMixinPatch",
+    "MainMixin",
     "PropertyMixinPatch",
+    "ServerWorldMixinPatch",
     "ShulkerEntityMixinPatch",
     "VillagerBreedTaskMixinPatch",
-    "WitherEntityMixinPatch",
-    "ServerWorldMixinPatch"
+    "WitherEntityMixinPatch"
   ],
   "server": [
     "SignBlockEntityMixinPatch"

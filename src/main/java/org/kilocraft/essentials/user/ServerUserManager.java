@@ -382,7 +382,7 @@ public class ServerUserManager implements UserManager, TickListener {
     public void onJoined(ServerPlayerEntity playerEntity) {
         OnlineServerUser user = (OnlineServerUser) this.getOnline(playerEntity);
         user.onJoined();
-        KiloChat.onUserJoin(user);
+        if (!user.getPreference(Preferences.VANISH)) KiloChat.onUserJoin(user);
         List<GameProfile> banned = new ArrayList<>();
         for (BannedPlayerEntry bannedPlayerEntry : KiloEssentials.getServer().getMinecraftServer().getPlayerManager().getUserBanList().values()) {
             Object o = ((ServerConfigEntryAccessor)bannedPlayerEntry).getKey();
@@ -414,7 +414,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public void onLeave(ServerPlayerEntity player) {
         OnlineServerUser user = this.onlineUsers.get(player.getUuid());
-        KiloChat.onUserLeave(user);
+        if (!user.getPreference(Preferences.VANISH)) KiloChat.onUserLeave(user);
         user.onLeave();
         this.teleportRequestsMap.remove(user.getId());
         if (user.getNickname().isPresent()) {

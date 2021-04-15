@@ -75,7 +75,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             }
 
             SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
-            if (!signBlockEntity.isEditable() || signBlockEntity.getEditor() != this.player) {
+            if (!signBlockEntity.isEditable() || signBlockEntity.getEditor() != this.player.getUuid()) {
                 LOGGER.warn("Player {} just tried to change non-editable sign", this.player.getEntityName());
                 return;
             }

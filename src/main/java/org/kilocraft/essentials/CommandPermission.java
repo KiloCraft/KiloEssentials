@@ -109,6 +109,7 @@ public enum CommandPermission {
     KICK("kick"),
     TELEPORTREQUEST("teleportrequest"),
     LASTSEEN("lastseen"),
+    VANISH("vanish"),
     CALCULATE("calculate"),
     GLOW("glow"),
     HUG_USE("hug"),

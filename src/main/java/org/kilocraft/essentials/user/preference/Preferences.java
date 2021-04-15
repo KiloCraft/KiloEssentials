@@ -92,6 +92,7 @@ public class Preferences {
     );
     public static final Preference<Integer> RANDOM_TELEPORTS_LEFT = new Preference<>("rtps_left", KiloConfig.main().rtpSpecs().defaultRTPs);
     public static final Preference<Boolean> DON_NOT_DISTURB = new Preference<>("do_not_disturb", false);
+    public static final Preference<Boolean> VANISH = new Preference<>("vanish", false);
     public static final Preference<List<String>> FAVIORATE_PLAYER_WARPS = new Preference<List<String>>(
             "fav_pwarps", Collections.emptyList(),
             (fun) -> {

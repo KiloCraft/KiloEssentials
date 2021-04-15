@@ -25,13 +25,7 @@ public class ServerMetaManager {
     }
 
     public void updateAll() {
-        for (ServerPlayerEntity playerEntity : KiloServer.getServer().getPlayerManager().getPlayerList()) {
-            if (playerEntity.networkHandler == null) {
-                continue;
-            }
-
-            PlayerListMeta.update(playerEntity);
-        }
+        KiloServer.getServer().getPlayerManager().getPlayerList().forEach(PlayerListMeta::update);
     }
 
     public void updateDisplayName(ServerPlayerEntity player) {

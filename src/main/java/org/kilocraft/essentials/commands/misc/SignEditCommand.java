@@ -213,7 +213,7 @@ public class SignEditCommand extends EssentialCommand {
         }
 
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
-        sign.setEditor(target);
+        sign.setEditor(target.getUuid());
 
         SignEditorOpenS2CPacket packet = new SignEditorOpenS2CPacket(sign.getPos());
         target.networkHandler.sendPacket(packet);
