@@ -14,12 +14,9 @@ public abstract class MixinMinecraftServer$OnStop {
 
     @Inject(at = @At("HEAD"), method = "shutdown")
     private void modify$shutdown(CallbackInfo ci) {
+        KiloServer.getServer().shutdown();
         KiloEssentials.getLogger().info("Shutting down the dedicated server...");
         KiloServer.getServer().triggerEvent(new ServerStopEventImpl());
     }
 
-    @Inject(at = @At("HEAD"), method = "close")
-    private void modify$close(CallbackInfo ci) {
-        KiloServer.getServer().shutdown();
-    }
 }

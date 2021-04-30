@@ -31,7 +31,6 @@ import java.util.concurrent.CompletableFuture;
 /**
  * @author CODY_AI
  * A better way of handeling the User (Instance of player) Homes
- *
  * @see ServerUser
  * @see ServerUserManager
  */
@@ -42,11 +41,40 @@ public class UserHomeHandler implements ConfigurableFeature {
     private List<Home> userHomes;
     private ServerUser serverUser;
 
+    public UserHomeHandler() {
+    }
+
+    public UserHomeHandler(ServerUser serverUser) {
+        if (isEnabled()) {
+            this.serverUser = serverUser;
+            this.userHomes = new ArrayList<>();
+        }
+    }
+
+    public static boolean isEnabled() {
+        return isEnabled;
+    }
+
+    @Deprecated
+    public static List<Home> getHomesOf(UUID uuid) {
+        List<Home> list = new ArrayList<>();
+        for (Home home : loadedHomes) {
+            if (home.getOwner().equals(uuid)) list.add(home);
+        }
+
+        return list;
+    }
+
+    public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+        return CommandSource.suggestMatching(KiloServer.getServer().getOnlineUser(
+                context.getSource().getPlayer()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
+    }
+
     @Override
     public boolean register() {
         isEnabled = true;
 
-        List<EssentialCommand> commands = new ArrayList<EssentialCommand>(){{
+        List<EssentialCommand> commands = new ArrayList<EssentialCommand>() {{
             add(new HomeCommand());
             add(new HomesCommand());
             add(new SethomeCommand());
@@ -58,20 +86,6 @@ public class UserHomeHandler implements ConfigurableFeature {
         }
 
         return true;
-    }
-
-    public static boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public UserHomeHandler() {
-    }
-
-    public UserHomeHandler(ServerUser serverUser) {
-        if (isEnabled()) {
-            this.serverUser = serverUser;
-            this.userHomes = new ArrayList<>();
-        }
     }
 
     public void addHome(Home home) {
@@ -119,6 +133,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
+        if (home == null) throw new UnsafeHomeException(null, Reason.NO_HOME);
         if (user.isOnline()) {
             ServerWorld world = Objects.requireNonNull(KiloEssentials.getServer()).getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
 
@@ -152,26 +167,10 @@ public class UserHomeHandler implements ConfigurableFeature {
             this.userHomes.add(home);
             loadedHomes.add(home);
         }
-
-    }
-
-    @Deprecated
-    public static List<Home> getHomesOf(UUID uuid) {
-        List<Home> list = new ArrayList<>();
-        for (Home home : loadedHomes) {
-            if  (home.getOwner().equals(uuid)) list.add(home);
-        }
-
-        return list;
-    }
-
-    public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-        return CommandSource.suggestMatching(KiloServer.getServer().getOnlineUser(
-                context.getSource().getPlayer()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
     }
 
     public enum Reason {
-        UNSAFE_DESTINATION, MISSING_DIMENSION, NO_PERMISSION;
+        UNSAFE_DESTINATION, MISSING_DIMENSION, NO_PERMISSION, NO_HOME;
     }
 
 }

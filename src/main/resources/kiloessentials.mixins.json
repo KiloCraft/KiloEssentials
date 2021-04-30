@@ -16,7 +16,6 @@
     "MinecraftServerMixin",
     "PlayerListS2CPacketMixin",
     "QueryResponseS2CPacketMixin",
-    "RconClientMixin",
     "RegistryKeyMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",

@@ -251,9 +251,9 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         super.getPreferences().set(Preferences.GAME_MODE, gameMode);
 
         if (ticksPlayed <= 0) {
-            ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE));
+            ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
         } else {
-            this.asPlayer().getStatHandler().setStat(this.asPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_ONE_MINUTE), ticksPlayed);
+            this.asPlayer().getStatHandler().setStat(this.asPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME), ticksPlayed);
         }
 
         if (KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF)) {
