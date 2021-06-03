@@ -91,9 +91,9 @@ public class MobCapCommand extends EssentialCommand {
         for (SpawnGroup spawnGroup : SpawnGroup.values()) {
             int count = spawnHelperInfo.getGroupToCount().getOrDefault(spawnGroup, 0);
             String name = spawnGroup.getName();
-            int cap = (int) ((spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) spawnHelperInfo).getSpawnChunkCount() /
-                                SpawnHelperAccessor.getChunkArea()) * (spawnGroup.getCapacity() * (ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0] *
-                                ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][spawnGroup.ordinal()])));
+            int cap = (int) (spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) spawnHelperInfo).getSpawnChunkCount() /
+                    (SpawnHelperAccessor.getChunkArea() * ((ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0] *
+                                ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][spawnGroup.ordinal()]))));
             text.append(Component.text(name + ": ").color(NamedTextColor.GRAY)).append(Component.text(count).color(NamedTextColor.LIGHT_PURPLE)).append(Component.text("/").color(NamedTextColor.DARK_GRAY)).append(Component.text(cap).color(NamedTextColor.GOLD)).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][spawnGroup.ordinal()]).color(NamedTextColor.AQUA)).append(Component.text(")\n").color(NamedTextColor.DARK_GRAY));
         }
         player.sendMessage(ComponentText.toText(text.build()), false);
