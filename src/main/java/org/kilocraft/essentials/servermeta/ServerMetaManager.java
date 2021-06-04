@@ -16,6 +16,8 @@ import java.util.Properties;
 public class ServerMetaManager {
     private final ServerMetadata metadata;
 
+    public static int cachedProtocolVersion = 0;
+
     public ServerMetaManager(ServerMetadata metadata) {
         this.metadata = metadata;
     }
@@ -39,17 +41,5 @@ public class ServerMetaManager {
         PlayerListMeta.update(player);
     }
 
-    public final void setDescription(final Text description) throws IOException {
-        this.metadata.setDescription(description);
-
-        final Properties properties = new Properties();
-        properties.load(new FileInputStream(KiloEssentials.getServerProperties().toFile()));
-        properties.setProperty("motd", TextFormat.translate(description.getString()));
-        properties.store(new FileOutputStream(KiloEssentials.getServerProperties().toFile()), "");
-    }
-
-    public final Text getDescription() {
-        return this.metadata.getDescription();
-    }
 
 }

@@ -2,6 +2,7 @@ package org.kilocraft.essentials.mixin;
 
 import com.mojang.authlib.GameProfile;
 import net.kyori.adventure.text.Component;
+import net.minecraft.SharedConstants;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.ServerMetadata;
@@ -10,7 +11,9 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.MotdConfigSection;
+import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,6 +46,9 @@ public class QueryResponseS2CPacketMixin {
             ServerMetadata.Players new_players = new ServerMetadata.Players(players.getPlayerLimit(), online.size());
             new_players.setSample(gameProfiles);
             this.metadata.setPlayers(new_players);
+            boolean b = ServerMetaManager.cachedProtocolVersion == ServerSettings.releaseProtocolVersion;
+            ServerMetadata.Version version = new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), b ? ServerSettings.releaseProtocolVersion : SharedConstants.getGameVersion().getProtocolVersion());
+            this.metadata.setVersion(version);
         }
     }
 }
