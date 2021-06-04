@@ -12,7 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -55,10 +54,10 @@ public class RtpCommand extends EssentialCommand {
         super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
     }
 
-    static void teleport(ServerCommandSource src, ServerPlayerEntity target, Logger logger) throws CommandSyntaxException {
+    static void teleport(ServerCommandSource src, ServerPlayerEntity target) throws CommandSyntaxException {
         OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
         RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
-        //UserUtils.Process.add(targetUser, PROCESS);
+        UserUtils.Process.add(targetUser, PROCESS);
         if (targetUser.getPreference(RTP_LEFT) < 0) {
             targetUser.getPreferences().set(RTP_LEFT, 0);
         }
@@ -87,7 +86,8 @@ public class RtpCommand extends EssentialCommand {
             public boolean shouldTrackOutput() { return false; }
             public boolean shouldBroadcastConsoleToOps() { return false; }
         }, src.getPosition(), src.getRotation(), src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getMinecraftServer(), src.getEntity());
-        SpreadPlayerCommandInvoker.execute(source, new Vec2f(0, 0), cfg.min, cfg.max, src.getWorld().getTopY(), false, Collections.singleton(target));
+        SpreadPlayerCommandInvoker.execute(source, new Vec2f(cfg.centerX, cfg.centerZ), cfg.min, cfg.max, src.getWorld().getTopY(), false, Collections.singleton(target));
+        UserUtils.Process.remove(targetUser);
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -217,7 +217,7 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser target = this.getOnlineUser(ctx);
+        OnlineUser target = KiloServer.getServer().getOnlineUser(getPlayer(ctx, "target"));
 
         if (UserUtils.Process.isIn(target, PROCESS.getId())) {
             target.sendLangError("command.rtp.in_process");
@@ -229,7 +229,7 @@ public class RtpCommand extends EssentialCommand {
 
     private int execute(ServerCommandSource source, ServerPlayerEntity target) throws CommandSyntaxException {
         KiloServer.getServer().getOnlineUser(target).sendMessage(messages.commands().rtp().start);
-        RtpCommand.teleport(source, target, logger);
+        RtpCommand.teleport(source, target);
         return SUCCESS;
     }
 }
