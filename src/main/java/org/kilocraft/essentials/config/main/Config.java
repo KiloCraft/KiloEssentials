@@ -97,6 +97,9 @@ public class Config {
     @Setting(value = "useNicknamesEverywhere", comment = "Use Nickname/DisplayName Everywhere!")
     public boolean useNicknamesEverywhere = true;
 
+    @Setting(value = "startHelp", comment = "Minutes until hostile mob spawn near a new player")
+    public int startHelp = 10;
+
     public ServerConfigSection server() {
         return serverSection;
     }

@@ -6,6 +6,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.SpawnHelper;
@@ -15,6 +16,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
 import org.kilocraft.essentials.patch.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
@@ -78,7 +82,10 @@ public abstract class SpawnHelperMixin {
             if (ServerSettings.perPlayerMobcap) {
                 int minDiff = Integer.MAX_VALUE;
                 for (ServerPlayerEntity player : ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobDistanceMap().getPlayersInRange(chunk.getPos())) {
-                    minDiff = (int) Math.min((spawnGroup.getCapacity() * multiplier) - ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobCountNear(player, spawnGroup), minDiff);
+                    int ticksPlayed = player.getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
+                    if (spawnGroup.isPeaceful() || ticksPlayed <= KiloConfig.main().startHelp * 1200) {
+                        minDiff = (int) Math.min((spawnGroup.getCapacity() * multiplier) - ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobCountNear(player, spawnGroup), minDiff);
+                    }
                 }
                 difference = (minDiff == Integer.MAX_VALUE) ? 0 : minDiff;
             }
