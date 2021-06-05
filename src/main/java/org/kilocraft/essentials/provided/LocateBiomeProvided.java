@@ -14,7 +14,7 @@ import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
-
+import org.kilocraft.essentials.provided.LocateBiomeProvided.BiomeLocatorThread;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

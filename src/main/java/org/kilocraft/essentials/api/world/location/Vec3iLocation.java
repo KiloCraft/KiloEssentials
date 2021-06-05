@@ -46,7 +46,7 @@ public class Vec3iLocation implements Location {
     }
 
     public static Vec3iLocation of(ServerPlayerEntity player) {
-        return new Vec3iLocation((int) player.getX(), (int) player.getY(), (int) player.getZ(), player.method_36454(), player.method_36455(), RegistryUtils.toIdentifier(player.getServerWorld().getDimension()));
+        return new Vec3iLocation((int) player.getX(), (int) player.getY(), (int) player.getZ(), player.getYaw(), player.getPitch(), RegistryUtils.toIdentifier(player.getServerWorld().getDimension()));
     }
 
     public static Vec3iLocation of(OnlineUser user) {

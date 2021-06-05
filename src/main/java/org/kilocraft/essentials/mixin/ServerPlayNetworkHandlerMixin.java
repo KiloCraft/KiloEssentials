@@ -4,7 +4,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.nbt.*;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
@@ -12,13 +11,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.ServerUserManager;
@@ -84,8 +82,9 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
             boolean canUseFormats = KiloEssentials.hasPermissionNode(this.player.getCommandSource(), EssentialPermission.SIGN_COLOR);
             for (int i = 0; i < strings.length; ++i) {
-                String str = TextFormat.translate(strings[i], canUseFormats);
-                signBlockEntity.setTextOnRow(i, new LiteralText(str));
+                String s = strings[i];
+                if (!canUseFormats) s = ComponentText.clearFormatting(s);
+                signBlockEntity.setTextOnRow(i, ComponentText.toText(s));
             }
 
             signBlockEntity.markDirty();

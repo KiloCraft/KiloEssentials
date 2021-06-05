@@ -16,7 +16,7 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.Cached;
@@ -142,7 +142,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
             final String desc = warp.getDescription();
             final String shortenedDesc = desc.substring(0, Math.min(desc.length(), maxLength));
 
-            final MutableText description = Texter.newText(TextFormat.clearColorCodes(shortenedDesc)).styled((style) ->
+            final MutableText description = Texter.newText(ComponentText.clearFormatting(shortenedDesc)).styled((style) ->
                     style.withHoverEvent(Texter.Events.onHover(Texter.newText(desc).formatted(Formatting.WHITE)))
             );
 

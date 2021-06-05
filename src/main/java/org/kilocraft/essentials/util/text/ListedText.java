@@ -6,7 +6,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -691,7 +690,7 @@ public class ListedText {
                     .append(new LiteralText("- [ ").formatted(f3))
                     .append(Texter.newText(title).formatted(f1))
                     .append(" ] ")
-                    .append(SEPARATOR.substring(TextFormat.removeAlternateColorCodes('&', title).length() + 4))
+                    .append(SEPARATOR.substring(ComponentText.clearFormatting(title).length() + 4))
                     .formatted(f3);
 
             if (!this.stickyHeader.isEmpty()) {

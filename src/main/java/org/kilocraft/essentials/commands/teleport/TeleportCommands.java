@@ -88,7 +88,7 @@ public class TeleportCommands {
         ctx.getSource().getPlayer().teleport(
                 player.getServerWorld(),
                 vec.getX(), vec.getY(), vec.getZ(),
-                player.method_36454(), player.method_36455()
+                player.getYaw(), player.getPitch()
         );
 
         KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendLangMessage("template.#1", "position",
@@ -105,7 +105,7 @@ public class TeleportCommands {
         target.teleport(
                 sender.getServerWorld(),
                 sender.getPos().getX(), sender.getPos().getY(), sender.getPos().getZ(),
-                sender.method_36454(), sender.method_36455()
+                sender.getYaw(), sender.getPitch()
         );
 
         KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendLangMessage("template.#1", "position",
@@ -122,7 +122,7 @@ public class TeleportCommands {
         target.teleport(
                 targetWorld,
                 vec.getX(), vec.getY(), vec.getZ(),
-                target.method_36454(), target.method_36455()
+                target.getYaw(), target.getPitch()
         );
 
         KiloServer.getServer().getCommandSourceUser(ctx.getSource()).sendLangMessage("template.#1", "position",

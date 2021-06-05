@@ -183,14 +183,12 @@ public class OperatorCommand {
                 if (level > leastPermLevelReq) source.sendError(KiloCommands.getPermissionError("Operator permission level " + (leastPermLevelReq + 1)));
                 else if (!source.getName().equals(gameProfile.getName())){
                     if (!playerManager.isOperator(gameProfile)) {
-                        StringText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
                         if (CommandUtils.isOnline(p)) p.sendMessage(StringText.of(true, "command.operator.announce", source.getName(), level), false);
                         addOperator(gameProfile, level, byPass);
                     }
                     else if (playerManager.isOperator(gameProfile) && operatorList.get(gameProfile).getPermissionLevel() < level) {
                         removeOperator(gameProfile);
                         addOperator(gameProfile, level, byPass);
-                        StringText.sendToUniversalSource(source, "command.operator.success", true, gameProfile.getName(), level);
                     }
                     else if (playerManager.isOperator(gameProfile)) {
                         source.sendError(new LiteralText(gameProfile.getName() + " is already a operator!"));
@@ -204,7 +202,6 @@ public class OperatorCommand {
             else if (!set && playerManager.isOperator(gameProfile) && !source.getName().equals(gameProfile.getName())){
                 removeOperator(gameProfile);
                 if (CommandUtils.isOnline(p)) p.sendMessage(StringText.of(true, "command.operator.announce.removed"), false);
-                StringText.sendToUniversalSource(source, "command.operator.removed", false, gameProfile.getName());
             }
             else if (!set && !playerManager.isOperator(gameProfile) && !source.getName().equals(gameProfile.getName())) {
                 source.sendError(new LiteralText(gameProfile.getName() + " is not a operator!"));

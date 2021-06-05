@@ -21,7 +21,7 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -152,7 +152,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         String type = StringArgumentType.getString(ctx, "type");
         String desc = StringArgumentType.getString(ctx, "description");
 
-        if (TextFormat.removeAlternateColorCodes('&', desc).length() > 100) {
+        if (ComponentText.clearFormatting(desc).length() > 100) {
             user.sendLangError("command.playerwarp.desc_too_long");
             return FAILED;
         }

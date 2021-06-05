@@ -35,13 +35,11 @@ import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.mixin.accessor.SignBlockEntityAccessor;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
-import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +125,7 @@ public class SignEditCommand extends EssentialCommand {
         String input = getString(ctx, "string");
         OnlineUser user = getOnlineUser(ctx);
 
-        if (ComponentText.clearFormatting(TextFormat.removeAlternateColorCodes('&', input)).length() > 17)
+        if (ComponentText.clearFormatting(input).length() > 17)
             throw KiloCommands.getException(ExceptionMessageNode.STRING_TOO_LONG, 17).create();
 
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
@@ -297,17 +295,7 @@ public class SignEditCommand extends EssentialCommand {
     private CompletableFuture<Suggestions> setTextSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         List<String> strings = new ArrayList<>();
         strings.add("reset");
-        ServerPlayerEntity player = context.getSource().getPlayer();
-        int line = getInteger(context, "line") - 1;
-
-        BlockEntity blockEntity = getBlockEntityAtCursor(player);
-        if (blockEntity != null) {
-            SignBlockEntity sign = (SignBlockEntity) blockEntity;
-            strings.add(TextFormat.reverseTranslate(Texter.Legacy.toFormattedString(((SignBlockEntityAccessor) sign).getTexts()[line]), '&'));
-            return CommandSource.suggestMatching(strings, builder);
-        }
-
-        return ArgumentSuggestions.noSuggestions(context, builder);
+        return CommandSource.suggestMatching(strings, builder);
     }
 
     private CompletableFuture<Suggestions> setCommandSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {

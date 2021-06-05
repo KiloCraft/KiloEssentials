@@ -57,7 +57,7 @@ public class Vec3dLocation implements Location {
         if (player.getServerWorld() != null && player.getServerWorld().getDimension() != null) {
             dim = RegistryUtils.toIdentifier(player.getServerWorld().getDimension());
         }
-        return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.method_36454(), player.method_36455(), dim);
+        return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(), dim);
     }
 
     public static Vec3dLocation of(Entity entity) {
@@ -65,7 +65,7 @@ public class Vec3dLocation implements Location {
         if (entity.getEntityWorld() != null && entity.getEntityWorld().getDimension() != null) {
             dim = RegistryUtils.toIdentifier(entity.getEntityWorld().getDimension());
         }
-        return new Vec3dLocation(entity.getX(), entity.getY(), entity.getZ(), entity.method_36454(), entity.method_36455(), dim);
+        return new Vec3dLocation(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch(), dim);
     }
 
     public static Vec3dLocation of(OnlineUser user) {

@@ -98,7 +98,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
                     if (user.getPreference(Preferences.SITTING_TYPE) == SummonType.INTERACT_SLAB) {
                         stand.bodyYaw = user.asPlayer().bodyYaw;
-                        stand.method_36456(user.asPlayer().bodyYaw);
+                        stand.setYaw(user.asPlayer().bodyYaw);
                     }
                 }
             } else {
@@ -138,7 +138,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
 
         Vec3dLocation vec3dLoc = Vec3dLocation.of(pos.getX(), pos.getY() + 1, pos.getZ(),
-                player.method_36454(), player.method_36455(), RegistryUtils.toIdentifier(world.getDimension()));
+                player.getYaw(), player.getPitch(), RegistryUtils.toIdentifier(world.getDimension()));
 
         if (state.getBlock() instanceof StairsBlock && state.get(Properties.BLOCK_HALF) == BlockHalf.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.40D);

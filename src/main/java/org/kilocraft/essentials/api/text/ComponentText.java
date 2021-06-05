@@ -32,7 +32,7 @@ public class ComponentText {
         final char[] b = text.toCharArray();
         for (int i = 0; i < b.length; i++) {
             if (b[i] == '&' && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
-                final @Nullable TextFormat format = TextFormat.getByChar(b[i + 1]);
+                final @Nullable Format format = Format.getByChar(b[i + 1]);
                 string = string.replace(
                         String.valueOf('&') + b[i + 1],
                         "<" + (format == null ? "reset" : format.name().toLowerCase(Locale.ENGLISH)) + ">"
@@ -101,6 +101,10 @@ public class ComponentText {
         }
 
         return "<" + color + ">" + percentage;
+    }
+
+    public static String translateOld(String input) {
+        return input.replaceAll("&([a-fk-or0-9])", "§$1");
     }
 
     public static String formatPing(final double milliseconds) {

@@ -9,7 +9,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.dimension.DimensionType;
-import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -55,7 +55,7 @@ public interface Location {
     Location down();
 
     default String asString() {
-        return TextFormat.clearColorCodes(this.asFormattedString());
+        return ComponentText.clearFormatting(this.asFormattedString());
     }
 
     default String asFormattedString() {
@@ -66,7 +66,7 @@ public interface Location {
         }
 
         builder.append("&8/&e").append(Math.round(this.getX())).append(", ").append(Math.round(this.getY())).append(", ").append(Math.round(this.getZ()));
-        return TextFormat.translate(builder.toString());
+        return builder.toString();
     }
 
 }
