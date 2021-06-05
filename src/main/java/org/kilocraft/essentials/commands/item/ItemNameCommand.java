@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.commands.item;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -16,7 +15,6 @@ import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -33,7 +31,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class ItemNameCommand {
     private static final Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_NAME);
 
-    public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
         LiteralCommandNode<ServerCommandSource> rootCommand = literal("name")
                 .requires(PERMISSION_CHECK).build();
         RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", greedyString())
@@ -42,7 +40,6 @@ public class ItemNameCommand {
 
         rootCommand.addChild(nameArgument.build());
         builder.then(rootCommand);
-        dispatcher.register(literal("rename").requires(PERMISSION_CHECK).redirect(rootCommand));
     }
 
     private static CompletableFuture<Suggestions> itemNameSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
@@ -51,7 +48,7 @@ public class ItemNameCommand {
             add("reset");
         }};
         if (!item.isEmpty()) {
-            list.add(TextFormat.reverseTranslate(item.getName().getString(), '&'));
+            list.add(item.getName().asString());
         }
         return CommandSource.suggestMatching(list, builder);
     }
@@ -62,27 +59,14 @@ public class ItemNameCommand {
         ItemStack item = player.getMainHandStack();
         CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
 
-        if (ComponentText.clearFormatting(inputString).length() >= 90) {
-            user.sendLangMessage( "command.item.too_long");
-            return 0;
-        }
+        if (ModifyItemCommand.validate(user, item, inputString)) return -1;
 
-        if (item.isEmpty()) {
-            user.sendLangMessage( "general.no_item");
-            return 0;
-        }
-
-        if (player.experienceLevel < 1 && !player.isCreative()) {
-			user.sendLangMessage( "command.item.no_exp");
-        	return 0;
-		}
 
 		player.addExperienceLevels(-1);
 
         if (inputString.equalsIgnoreCase("reset")) {
             item.removeCustomName();
             user.sendLangMessage( "command.item.reset", "name", Texter.Legacy.toFormattedString(item.getName()));
-
             return 1;
         }
 

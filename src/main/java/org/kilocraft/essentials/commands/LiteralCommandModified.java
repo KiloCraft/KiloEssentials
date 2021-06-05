@@ -46,7 +46,6 @@ public class LiteralCommandModified {
         add("teammsg");
         add("tm");
         add("time");
-        add("enchant");
         add("locatebiome");
         add("ban");
         add("ban-ip");

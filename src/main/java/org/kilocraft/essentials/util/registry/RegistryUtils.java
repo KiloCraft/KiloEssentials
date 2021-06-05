@@ -103,4 +103,9 @@ public class RegistryUtils {
         return Registry.ITEM.getId(item).toString();
     }
 
+    @Nullable
+    public static Item toItem(@NotNull String item) {
+        return Registry.ITEM.get(new Identifier(item));
+    }
+
 }
