@@ -8,6 +8,7 @@
     "ChunkDataS2CPacketMixin",
     "DecorationItemMixin",
     "EggEntityMixinPatch",
+    "EnchantCommandMixin",
     "HorseBaseEntityMixin",
     "ItemEntityMixinPatch",
     "MainMixin",
