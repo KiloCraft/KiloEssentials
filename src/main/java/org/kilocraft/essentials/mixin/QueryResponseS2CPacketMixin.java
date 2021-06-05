@@ -31,24 +31,24 @@ public class QueryResponseS2CPacketMixin {
 
     @Inject(method = "write", at = @At(value = "HEAD"))
     public void setMetaData(PacketByteBuf buf, CallbackInfo ci) {
-        if (this.metadata != null) {
             MotdConfigSection motdConfig = KiloConfig.main().motd();
             if (motdConfig.enabled) {
                 this.metadata.setDescription(ComponentText.toText(ComponentText.of(motdConfig.line1, false).append(Component.text("\n").append(ComponentText.of(motdConfig.line2)))));
             }
             ServerMetadata.Players players = this.metadata.getPlayers();
-            List<OnlineUser> online = KiloEssentials.getServer().getUserManager().getOnlineUsersAsList().stream().filter(onlineUser -> !onlineUser.getPreference(Preferences.VANISH)).collect(Collectors.toList());
-            int sampleSize = Math.min(12, online.size());
-            GameProfile[] gameProfiles = new GameProfile[sampleSize];
-            for (int i = 0; i < sampleSize; i++) {
-                gameProfiles[i] = online.get(i).asPlayer().getGameProfile();
+            if (players!=null) {
+                List<OnlineUser> online = KiloEssentials.getServer().getUserManager().getOnlineUsersAsList().stream().filter(onlineUser -> !onlineUser.getPreference(Preferences.VANISH)).collect(Collectors.toList());
+                int sampleSize = Math.min(12, online.size());
+                GameProfile[] gameProfiles = new GameProfile[sampleSize];
+                for (int i = 0; i < sampleSize; i++) {
+                    gameProfiles[i] = online.get(i).asPlayer().getGameProfile();
+                }
+                ServerMetadata.Players new_players = new ServerMetadata.Players(players.getPlayerLimit(), online.size());
+                new_players.setSample(gameProfiles);
+                this.metadata.setPlayers(new_players);
             }
-            ServerMetadata.Players new_players = new ServerMetadata.Players(players.getPlayerLimit(), online.size());
-            new_players.setSample(gameProfiles);
-            this.metadata.setPlayers(new_players);
             boolean b = ServerMetaManager.cachedProtocolVersion == ServerSettings.releaseProtocolVersion;
             ServerMetadata.Version version = new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), b ? ServerSettings.releaseProtocolVersion : SharedConstants.getGameVersion().getProtocolVersion());
             this.metadata.setVersion(version);
-        }
     }
 }
