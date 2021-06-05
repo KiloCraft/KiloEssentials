@@ -71,13 +71,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
     @Override
     public void onTick() {
-        tick++;
-
-        if (tick != 10) {
-            return;
-        }
-
-        tick = 0;
+        if (tick % 10 != 0) return;
         for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
             ServerWorld world = entry.getKey();
             UUID uuid = entry.getValue();
@@ -105,6 +99,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                 stand.kill();
             }
         }
+        tick++;
     }
 
     public boolean onInteractBlock(@NotNull final ServerPlayerEntity player,

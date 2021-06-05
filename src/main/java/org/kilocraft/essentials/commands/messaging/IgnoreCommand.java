@@ -31,23 +31,28 @@ public class IgnoreCommand extends EssentialCommand {
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = getOnlineUser(ctx);
         String inputName = getUserArgumentInput(ctx, "user");
-
+        Map<UUID, String> ignoreList = src.getPreference(Preferences.IGNORE_LIST);
+        if (inputName.matches("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b")) {
+            UUID uuid = UUID.fromString(inputName);
+            if (ignoreList.containsKey(uuid)) {
+                ignoreList.remove(uuid);
+                src.getPreferences().set(Preferences.IGNORE_LIST, ignoreList);
+                src.sendLangMessage("command.ignore.remove", uuid);
+                return SUCCESS;
+            }
+        }
         getEssentials().getUserThenAcceptAsync(src, inputName, (user) -> {
             if (((ServerUser) user).isStaff() || user.equals(src)) {
                 src.sendLangMessage("command.ignore.error");
                 return;
             }
 
-            Map<String, UUID> ignoreList = src.getPreference(Preferences.IGNORE_LIST);
-            if (ignoreList.containsValue(user.getUuid())) {
-                ignoreList.remove(user.getUsername(), user.getUuid());
-                src.sendLangMessage("command.ignore.remove", user.getNameTag());
-                return;
-            }
-
-            ignoreList.put(user.getUsername(), user.getUuid());
+            boolean remove = ignoreList.containsKey(user.getUuid());
+            if (remove) ignoreList.remove(user.getUuid());
+            else ignoreList.put(user.getUuid(), user.getUsername());
             src.getPreferences().set(Preferences.IGNORE_LIST, ignoreList);
-            src.sendLangMessage("command.ignore.add", user.getNameTag());
+            src.sendLangMessage(remove ? "command.ignore.remove" : "command.ignore.add" , user.getNameTag());
+
         });
 
         return AWAIT;

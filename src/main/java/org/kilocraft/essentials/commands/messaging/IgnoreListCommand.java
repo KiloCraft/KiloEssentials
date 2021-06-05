@@ -37,7 +37,7 @@ public class IgnoreListCommand extends EssentialCommand {
     private int execute(CommandContext<ServerCommandSource> ctx, String target) throws CommandSyntaxException {
         OnlineUser src = getOnlineUser(ctx);
         getEssentials().getUserThenAcceptAsync(src, target, (user) -> {
-            Map<String, UUID> ignoreList = user.getPreference(Preferences.IGNORE_LIST);
+            Map<UUID, String> ignoreList = user.getPreference(Preferences.IGNORE_LIST);
 
             if (ignoreList.isEmpty()) {
                 src.sendLangMessage("command.ignorelist.empty");
@@ -51,24 +51,24 @@ public class IgnoreListCommand extends EssentialCommand {
                     .append(new LiteralText(String.valueOf(listSize)).formatted(Formatting.LIGHT_PURPLE))
                     .append(new LiteralText(" ]: ").formatted(Formatting.DARK_GRAY));
 
-            final int[] i = {0};
-            final boolean[] nextColor = {false};
-            ignoreList.forEach((name, uuid) -> {
+            int i = 0;
+            boolean nextColor = false;
+            for (Map.Entry<UUID, String> entry : ignoreList.entrySet()) {
                 LiteralText thisIgnored = new LiteralText("");
-                i[0]++;
+                i++;
 
-                Formatting thisFormat = nextColor[0] ? Formatting.WHITE : Formatting.GRAY;
+                Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
 
-                thisIgnored.append(new LiteralText(name).styled((style) -> style.withFormatting(thisFormat).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                thisIgnored.append(new LiteralText(entry.getValue()).styled((style) -> style.withFormatting(thisFormat).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                         new LiteralText("[i] ").formatted(Formatting.YELLOW)
-                                .append(new LiteralText("Click to remove!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ignore " + name))));
+                                .append(new LiteralText("Click to remove!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ignore " + entry.getKey()))));
 
-                if (listSize != i[0])
+                if (listSize != i)
                     thisIgnored.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
 
-                nextColor[0] = !nextColor[0];
+                nextColor = !nextColor;
                 text.append(thisIgnored);
-            });
+            }
 
             src.sendMessage(text);
         });

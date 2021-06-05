@@ -40,15 +40,15 @@ public class Preferences {
             (fun) -> fun.tag().putInt(fun.setting().getId(), fun.value().getId()),
             (fun) -> fun.set(GameMode.byId(fun.tag().getInt(fun.setting().getId())))
     );
-    public static final Preference<Map<String, UUID>> IGNORE_LIST = new Preference<Map<String, UUID>>(
+    public static final Preference<Map<UUID, String>> IGNORE_LIST = new Preference<Map<UUID, String>>(
             "ignored", Maps.newHashMap(),
             (fun) -> {
                 if (!fun.value().isEmpty()) {
                     NbtList list = new NbtList();
-                    for (Map.Entry<String, UUID> entry : fun.value().entrySet()) {
+                    for (Map.Entry<UUID, String> entry : fun.value().entrySet()) {
                         NbtCompound tag = new NbtCompound();
-                        tag.putString("name", entry.getKey());
-                        tag.putUuid("id", entry.getValue());
+                        tag.putString("name", entry.getValue());
+                        tag.putUuid("id", entry.getKey());
                         list.add(tag);
                     }
                     fun.tag().put(fun.setting().getId(), list);
@@ -56,11 +56,11 @@ public class Preferences {
             }, (fun) -> {
                 if (fun.tag().contains(fun.setting().getId())) {
                     NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
-                    Map<String, UUID> map = Maps.newHashMap();
+                    Map<UUID, String> map = Maps.newHashMap();
                     for (int i = 0; i < NbtList.size(); i++) {
                         NbtCompound tag = NbtList.getCompound(i);
                         if (tag.contains("name") && tag.contains("id")) {
-                            map.put(tag.getString("name"), tag.getUuid("id"));
+                            map.put(tag.getUuid("id"), tag.getString("name"));
                         }
                     }
                     fun.set(map);
