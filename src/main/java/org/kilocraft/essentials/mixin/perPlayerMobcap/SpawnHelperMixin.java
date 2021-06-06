@@ -83,7 +83,7 @@ public abstract class SpawnHelperMixin {
                 int minDiff = Integer.MAX_VALUE;
                 for (ServerPlayerEntity player : ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobDistanceMap().getPlayersInRange(chunk.getPos())) {
                     int ticksPlayed = player.getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
-                    if (spawnGroup.isPeaceful() || ticksPlayed <= KiloConfig.main().startHelp * 1200) {
+                    if (spawnGroup.isPeaceful() || ticksPlayed >= KiloConfig.main().startHelp * 1200) {
                         minDiff = (int) Math.min((spawnGroup.getCapacity() * multiplier) - ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobCountNear(player, spawnGroup), minDiff);
                     }
                 }
