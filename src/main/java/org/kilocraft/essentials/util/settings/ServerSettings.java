@@ -199,14 +199,14 @@ public class ServerSettings implements NBTStorage {
         spawn.addChild(spawnEntity);
 
         //Mobcap
-        ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][SpawnGroup.values().length];
+        ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][SpawnGroup.values().length + 1];
         CategorySetting mobcap = new CategorySetting("mobcap");
         int worldID = 0;
         for (RegistryKey<World> registryKey : RegistryUtils.getWorldsKeySet()) {
             ((RegistryKeyID) registryKey).setID(worldID);
             FloatSetting world = (FloatSetting) new FloatSetting(1F, registryKey.getValue().getPath()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][0] = f);
             for (SpawnGroup spawnGroup : SpawnGroup.values()) {
-                FloatSetting group = (FloatSetting) new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][spawnGroup.ordinal()] = f);
+                FloatSetting group = (FloatSetting) new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][spawnGroup.ordinal() + 1] = f);
                 world.addChild(group);
             }
             worldID++;
