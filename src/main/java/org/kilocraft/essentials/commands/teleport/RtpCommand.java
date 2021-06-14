@@ -6,6 +6,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -34,6 +36,7 @@ import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.Collections;
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -54,7 +57,7 @@ public class RtpCommand extends EssentialCommand {
         super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
     }
 
-    static void teleport(ServerCommandSource src, ServerPlayerEntity target) throws CommandSyntaxException {
+    void teleport(ServerCommandSource src, ServerPlayerEntity target) throws CommandSyntaxException {
         OnlineUser targetUser = KiloServer.getServer().getOnlineUser(target.getUuid());
         RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
         UserUtils.Process.add(targetUser, PROCESS);
@@ -80,13 +83,24 @@ public class RtpCommand extends EssentialCommand {
         if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
             targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
         }
-        ServerCommandSource source = new ServerCommandSource(new CommandOutput() {
-            public void sendSystemMessage(Text text, UUID uUID) { }
-            public boolean shouldReceiveFeedback() { return false; }
-            public boolean shouldTrackOutput() { return false; }
-            public boolean shouldBroadcastConsoleToOps() { return false; }
-        }, src.getPosition(), src.getRotation(), src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getMinecraftServer(), src.getEntity());
-        SpreadPlayerCommandInvoker.execute(source, new Vec2f(cfg.centerX, cfg.centerZ), cfg.min, cfg.max, src.getWorld().getTopY(), false, Collections.singleton(target));
+        if (cfg.simpleRTP) {
+            Random r = new Random();
+            double x = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
+            double z = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
+            StatusEffectInstance jump_boost = new StatusEffectInstance(StatusEffects.JUMP_BOOST, 200, 255, false, false);
+            StatusEffectInstance blindness = new StatusEffectInstance(StatusEffects.BLINDNESS, 200, 0, false, false);
+            target.addStatusEffect(jump_boost);
+            target.addStatusEffect(blindness);
+            target.teleport(target.getServerWorld(), x, target.getServerWorld().getTopY(), z, target.getYaw(), target.getPitch());
+        } else {
+            ServerCommandSource source = new ServerCommandSource(new CommandOutput() {
+                public void sendSystemMessage(Text text, UUID uUID) { }
+                public boolean shouldReceiveFeedback() { return false; }
+                public boolean shouldTrackOutput() { return false; }
+                public boolean shouldBroadcastConsoleToOps() { return false; }
+            }, src.getPosition(), src.getRotation(), src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getMinecraftServer(), src.getEntity());
+            SpreadPlayerCommandInvoker.execute(source, new Vec2f(cfg.centerX, cfg.centerZ), cfg.min, cfg.max, src.getWorld().getTopY(), false, Collections.singleton(target));
+        }
         UserUtils.Process.remove(targetUser);
     }
 
@@ -229,7 +243,7 @@ public class RtpCommand extends EssentialCommand {
 
     private int execute(ServerCommandSource source, ServerPlayerEntity target) throws CommandSyntaxException {
         KiloServer.getServer().getOnlineUser(target).sendMessage(messages.commands().rtp().start);
-        RtpCommand.teleport(source, target);
+        teleport(source, target);
         return SUCCESS;
     }
 }
