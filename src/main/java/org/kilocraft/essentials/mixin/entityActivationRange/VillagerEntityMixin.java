@@ -35,14 +35,10 @@ public abstract class VillagerEntityMixin<E extends LivingEntity> extends Mercha
 
     @Override
     public void inactiveTick() {
-        if (this.getExperience() > 0) {
-            this.setExperience(this.getExperience() - 1);
+        if (this.getHeadRollingTimeLeft() > 0) {
+            this.setHeadRollingTimeLeft(this.getHeadRollingTimeLeft() - 1);
         }
-        if (ServerSettings.tickInactiveVillagers) {
-            inactive = false;
-        } else {
-            inactive = true;
-        }
+        inactive = !ServerSettings.tickInactiveVillagers;
         this.mobTick();
         ++this.despawnCounter;
         if (this.world.isClient) {
