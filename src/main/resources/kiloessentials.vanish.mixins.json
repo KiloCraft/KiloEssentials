@@ -1,8 +1,8 @@
 {
   "required": true,
-  "minVersion": "0.7.11",
+  "minVersion": "0.8",
   "package": "org.kilocraft.essentials.mixin.vanish",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
     "PlayerManagerMixin"
   ],
