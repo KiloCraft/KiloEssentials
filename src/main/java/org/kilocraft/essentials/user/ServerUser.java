@@ -13,7 +13,8 @@ import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
-import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.api.text.Format;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.user.preference.Preference;
@@ -250,7 +251,7 @@ public class ServerUser implements User {
 
     @Override
     public String getFormattedDisplayName() {
-        return TextFormat.translate(this.getDisplayName() + TextFormat.RESET.toString());
+        return ComponentText.translateOld(this.getDisplayName() + Format.RESET);
     }
 
     @Override
@@ -401,7 +402,7 @@ public class ServerUser implements User {
 
     @Override
     public boolean ignored(UUID uuid) {
-        return this.getPreference(Preferences.IGNORE_LIST).containsValue(uuid);
+        return this.getPreference(Preferences.IGNORE_LIST).containsKey(uuid);
     }
 
     @Override

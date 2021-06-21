@@ -5,10 +5,6 @@ import org.kilocraft.essentials.api.event.context.Contextual;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
-public interface PlayerMutedEvent extends Event, Contextual {
-
-    EntityIdentifiable getVictim();
-    CommandSourceUser getSource();
-    String getReason();
+public interface PlayerMutedEvent extends PlayerPunishEventInterface, Event, Contextual {
 
 }

@@ -1,48 +1,32 @@
-//NOTE: This file is customized only for this project!
-
 plugins {
+    id 'fabric-loom' version '0.8-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '5.1.0'
-    id 'java'
-    id 'fabric-loom' version '0.4-SNAPSHOT'
     id 'maven-publish'
-    id 'com.palantir.git-version' version '0.12.2'
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-version gitVersion()
-def details = versionDetails()
-details.lastTag
-details.commitDistance
-details.gitHash
-details.gitHashFull // full 40-character Git commit hash
-details.branchName // is null if the repository in detached HEAD mode
-details.isCleanTag
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archives_base_name
-version = "${project.mod_version as Object}-${project.mod_version_nick}-${project.minecraft_version}"
-def buildType = details.isCleanTag ? "clean" : "dirty"
+version = "${project.mod_version}-${project.mod_version_nick}-${project.minecraft_version}"
+group = project.maven_group
 
-def gitVersion = "${version}-${buildType}+git.${details.branchName}-${details.gitHash}"
-def buildTime = new Date();
-group = project.maven_group as Object
-
-minecraft {
-}
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
-    maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
     maven { url 'https://repo.spongepowered.org/maven' }
     maven {
         name = 'sonatype-oss'
         url = 'https://oss.sonatype.org/content/repositories/snapshots/'
     }
     maven { url 'https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/' }
+    // Add repositories to retrieve artifacts from in here.
+    // You should only use this when depending on other mods because
+    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
+    // for more information about repositories.
 }
 
 shadowJar {
@@ -51,72 +35,68 @@ shadowJar {
 }
 
 dependencies {
-    //to change the versions see the gradle.properties file
+    // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    implementation group: 'org.jetbrains', name: 'annotations', version: "${project.jetbrains_annotations}"
-
-    compile "org.spongepowered:configurate-hocon:${project.configurate_version}"
+    //Configurate
+    implementation "org.spongepowered:configurate-hocon:${project.configurate_version}"
     shadow "org.spongepowered:configurate-hocon:${project.configurate_version}"
 
-    compile group: 'com.google.inject', name: 'guice', version: '4.0'
-    shadow group: 'com.google.inject', name: 'guice', version: '4.0'
-
-    compile "net.luckperms:api:${project.luckperms_version}"
-
-    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-    shadow group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-    shadow group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-
-    compile "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
+    //Adventure
+    implementation "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
     shadow "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
-    compile "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_serializer_version}"
+
+    implementation "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_serializer_version}"
     shadow "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_serializer_version}"
 
-}
+    //Luckperms
+    implementation "net.luckperms:api:${project.luckperms_version}"
 
-tasks.jar.archiveClassifier = "compile"
+    //Other
+    implementation "com.googlecode.json-simple:json-simple:${project.json_simple}"
+    shadow "com.googlecode.json-simple:json-simple:${project.json_simple}"
+
+    implementation "javax.xml.bind:jaxb-api:${project.jaxb_api}"
+    shadow "javax.xml.bind:jaxb-api:${project.jaxb_api}"
+
+}
 
 task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
     from zipTree(shadowJar.archiveFile) dependsOn shadowJar
 }
 
 processResources {
-    inputs.property "version", project.gitVersion
+    inputs.property "version", project.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json", "mod.properties"
-        expand "version": version, "version_int": project.mod_version, "built_at": buildTime, "fabric_loader_version": project.loader_version,
-                "fabric_yarn_mappings": project.yarn_mappings, "mc_version": project.minecraft_version,
-                "git_hash": details.gitHash, "git_hash_full": details.gitHashFull, "git_branch": details.branchName, "build_type": buildType, "version_nick": project.mod_version_nick,
-                "version_type": project.mod_version_type
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json", "mod.properties"
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
     }
 }
 
-// ensure that the encoding is set to UTF-8, no matter what the system default is
-// this fixes some edge cases with special characters not displaying correctly
-// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+tasks.withType(JavaCompile).configureEach {
+    // ensure that the encoding is set to UTF-8, no matter what the system default is
+    // this fixes some edge cases with special characters not displaying correctly
+    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+    // If Javadoc is generated, this must be specified in that task too.
+    it.options.encoding = "UTF-8"
+
+    // Minecraft 1.17 (21w19a) upwards uses Java 16.
+    it.options.release = 16
 }
 
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
+java {
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
 }
 
 jar {
-    from "LICENSE"
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
 }
 
 // configure the maven publication
@@ -133,9 +113,11 @@ publishing {
         }
     }
 
-    // select the repositories you want to publish to
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
     }
 }

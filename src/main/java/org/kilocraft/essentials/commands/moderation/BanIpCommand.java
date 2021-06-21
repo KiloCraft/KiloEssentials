@@ -14,11 +14,14 @@ import net.minecraft.text.MutableText;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
+import org.kilocraft.essentials.events.player.PlayerBannedEventImpl;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -54,8 +57,8 @@ public class BanIpCommand extends EssentialCommand {
         this.argumentBuilder.then(victim);
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
-        OnlineUser src = this.getOnlineUser(ctx);
+    private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable final String reason, boolean silent) {
+        CommandSourceUser src = this.getCommandSource(ctx);
         String input = this.getUserArgumentInput(ctx, "target");
         Matcher matcher = PATTERN.matcher(input);
         if (matcher.matches()) {
@@ -75,7 +78,7 @@ public class BanIpCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private int banIp(final OnlineUser src, @Nullable EntityIdentifiable victim, @NotNull String ip, @Nullable final String reason, boolean silent) {
+    private int banIp(final CommandSourceUser src, @Nullable EntityIdentifiable victim, @NotNull String ip, @Nullable final String reason, boolean silent) {
         BannedIpList bannedIpList = super.getServer().getMinecraftServer().getPlayerManager().getIpBanList();
         List<ServerPlayerEntity> players = super.getServer().getPlayerManager().getPlayersByIp(ip);
         Date date = new Date();
@@ -91,6 +94,7 @@ public class BanIpCommand extends EssentialCommand {
             player.networkHandler.disconnect(text);
         }
 
+        KiloServer.getServer().triggerEvent(new PlayerBannedEventImpl(src, victim, reason, -1, silent, true));
         this.getServer().getUserManager().onPunishmentPerformed(src, victim == null ? new Punishment(src, ip, reason) : new Punishment(src, victim, ip, reason, null), Punishment.Type.BAN_IP, null, silent);
         return players.size();
     }

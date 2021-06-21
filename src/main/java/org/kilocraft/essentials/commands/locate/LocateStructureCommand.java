@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.commands.locate.LocateStructureCommand.StructureLocatorThread;
 import org.kilocraft.essentials.provided.LocateStructureProvided;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 

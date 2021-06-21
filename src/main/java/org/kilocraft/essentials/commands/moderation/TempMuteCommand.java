@@ -63,7 +63,7 @@ public class TempMuteCommand extends EssentialCommand {
         super.resolveAndGetProfileAsync(ctx, "victim").thenAcceptAsync((victim) -> {
             MutedPlayerEntry entry = new MutedPlayerEntry(victim, date, src.getName(), expiry, reason);
             super.getServer().getUserManager().getMutedPlayerList().add(entry);
-            KiloServer.getServer().triggerEvent(new PlayerMutedEventImpl(EntityIdentifiable.fromGameProfile(victim), src, reason));
+            KiloServer.getServer().triggerEvent(new PlayerMutedEventImpl(src, EntityIdentifiable.fromGameProfile(victim), reason, expiry.getTime(), silent));
             this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.MUTE, time, silent);
         });
 

@@ -14,11 +14,14 @@ import net.minecraft.text.MutableText;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
+import org.kilocraft.essentials.events.player.PlayerBannedEventImpl;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -61,7 +64,7 @@ public class TempBanIpCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx, @NotNull final String time, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
-        OnlineUser src = this.getOnlineUser(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
         String input = this.getUserArgumentInput(ctx, "target");
         Matcher matcher = BanIpCommand.PATTERN.matcher(input);
         if (matcher.matches()) {
@@ -85,7 +88,7 @@ public class TempBanIpCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private int tempBanIp(final OnlineUser src, @Nullable final EntityIdentifiable victim, @NotNull String ip, @NotNull final String time, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
+    private int tempBanIp(final CommandSourceUser src, @Nullable final EntityIdentifiable victim, @NotNull String ip, @NotNull final String time, @Nullable final String reason, boolean silent) throws CommandSyntaxException {
         Date date = new Date();
         Date expiry = new Date(TimeDifferenceUtil.parse(time, true));
         BannedIpList bannedIpList = super.getServer().getMinecraftServer().getPlayerManager().getIpBanList();
@@ -102,6 +105,7 @@ public class TempBanIpCommand extends EssentialCommand {
             player.networkHandler.disconnect(text);
         }
 
+        KiloServer.getServer().triggerEvent(new PlayerBannedEventImpl(src, victim, reason, expiry.getTime(), silent, true));
         this.getServer().getUserManager().onPunishmentPerformed(src, victim == null ? new Punishment(src, null, ip, reason, expiry) : new Punishment(src, victim, ip, reason, expiry), Punishment.Type.BAN_IP, time, silent);
         return players.size();
     }

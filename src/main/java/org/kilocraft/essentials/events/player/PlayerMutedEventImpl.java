@@ -4,30 +4,10 @@ import org.kilocraft.essentials.api.event.player.PlayerMutedEvent;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
-public class PlayerMutedEventImpl implements PlayerMutedEvent {
+public class PlayerMutedEventImpl extends AbstractPlayerPunishEvent implements PlayerMutedEvent {
 
-    private final EntityIdentifiable victim;
-    private final CommandSourceUser source;
-    private final String reason;
-
-    public PlayerMutedEventImpl(EntityIdentifiable victim, CommandSourceUser source, String reason) {
-        this.victim = victim;
-        this.source = source;
-        this.reason = reason;
+    public PlayerMutedEventImpl(CommandSourceUser source, EntityIdentifiable victim, String reason, long expiry, boolean silent) {
+        super(source, victim, reason, expiry, silent);
     }
 
-    @Override
-    public CommandSourceUser getSource() {
-        return this.source;
-    }
-
-    @Override
-    public String getReason() {
-        return this.reason;
-    }
-
-    @Override
-    public EntityIdentifiable getVictim() {
-        return this.victim;
-    }
 }

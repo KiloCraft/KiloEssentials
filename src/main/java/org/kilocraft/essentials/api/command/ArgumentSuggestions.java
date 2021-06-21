@@ -16,7 +16,6 @@ import net.minecraft.world.World;
 import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.commands.LiteralCommandModified;
@@ -88,10 +87,6 @@ public class ArgumentSuggestions {
                 KiloCommands.getDispatcher().getRoot().getChildren().stream().filter(child -> !child.getName().startsWith(LiteralCommandModified.getNMSCommandPrefix())).map(CommandNode::getName),
                 builder
         );
-    }
-
-    public static CompletableFuture<Suggestions> textFormatChars(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return ArgumentSuggestions.suggestAtCursor(Arrays.stream(TextFormat.getList()).filter(it -> context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context)) == '&'), context);
     }
 
     public static CompletableFuture<Suggestions> allNonOperators(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {

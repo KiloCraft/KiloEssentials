@@ -1,11 +1,11 @@
 package org.kilocraft.essentials.commands.item;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -36,7 +36,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class ItemLoreCommand {
 	private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE);
 
-	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
 		LiteralCommandNode<ServerCommandSource> rootCommand = literal("lore")
 				.requires(PERMISSION_CHECK)
 				.build();
@@ -65,7 +65,6 @@ public class ItemLoreCommand {
 		rootCommand.addChild(resetArgument.build());
 		rootCommand.addChild(setArgument.build());
 		builder.then(rootCommand);
-		dispatcher.register(literal("relore").requires(PERMISSION_CHECK).redirect(rootCommand));
 	}
 
 	private static int executeRemove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -75,7 +74,7 @@ public class ItemLoreCommand {
         CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
 
 		if (item.isEmpty()) {
-			user.sendLangMessage( "general.no_item");
+			user.sendLangMessage("command.item.no_item");
 			return -1;
 		}
 
@@ -98,20 +97,20 @@ public class ItemLoreCommand {
 	}
 
 	private static int executeReset(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-		ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
         CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
 
-		if (item.isEmpty()) {
-			user.sendLangMessage("general.no_item");
-			return -1;
-		}
+        if (ModifyItemCommand.validate(user, item)) return -1;
 
 		if (item.getTag() == null) {
 			user.sendLangMessage("command.item.nothing_to_reset");
 			return -1;
 		}
 
-		Objects.requireNonNull(item.getTag()).getCompound("display").remove("Lore");
+        player.addExperienceLevels(-1);
+
+        item.getTag().getCompound("display").remove("Lore");
 		user.sendLangMessage("command.item.lore.reset");
 		return 1;
 	}
@@ -122,34 +121,16 @@ public class ItemLoreCommand {
 		ItemStack item = player.getMainHandStack();
         CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
 
-		if (inputString.length() >= 90) {
-			user.sendLangMessage("command.item.too_long");
-			return -1;
-		}
-
-		if (item.isEmpty()) {
-			user.sendLangMessage("general.no_item");
-			return -1;
-		}
+        if (ModifyItemCommand.validate(user, item, inputString)) return -1;
 
 		NbtCompound itemTag = item.getTag();
 
-		AtomicBoolean containsEnchantmentName = new AtomicBoolean(false);
-		Registry.ENCHANTMENT.forEach((enchantment) -> {
-			if (ComponentText.clearFormatting(inputString).contains(enchantment.getName(1).getString())) {
-				containsEnchantmentName.set(true);
-			}
-		});
-
-		if (containsEnchantmentName.get()) {
-			user.sendLangMessage( "command.item.contains_enchantment_name");
-			return -1;
-		}
-
-		if (player.experienceLevel < 1 && !player.isCreative()) {
-			user.sendLangMessage("command.item.no_exp");
-			return 0;
-		}
+        for (Enchantment enchantment : Registry.ENCHANTMENT) {
+            if (ComponentText.clearFormatting(inputString).contains(enchantment.getName(1).getString())) {
+                user.sendLangMessage( "command.item.contains_enchantment_name");
+                return -1;
+            }
+        }
 
 		if (!item.hasTag()) {
 			itemTag = new NbtCompound();
@@ -174,7 +155,8 @@ public class ItemLoreCommand {
 
         String text = KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING) ? inputString : ComponentText.clearFormatting(inputString);
 
-		lore.set(inputLine, NbtString.of(Text.Serializer.toJson(ComponentText.toText(text))));
+        player.addExperienceLevels(-1);
+        lore.set(inputLine, NbtString.of(Text.Serializer.toJson(ComponentText.toText(text))));
 		itemTag.getCompound("display").put("Lore", lore);
 		item.setTag(itemTag);
 

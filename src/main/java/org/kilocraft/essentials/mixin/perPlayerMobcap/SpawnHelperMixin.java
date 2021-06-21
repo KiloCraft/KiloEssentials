@@ -6,6 +6,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.SpawnHelper;
@@ -15,9 +16,11 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
-import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.patch.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
 import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.settings.ServerSettings;
@@ -72,14 +75,17 @@ public abstract class SpawnHelperMixin {
         for (SpawnGroup spawnGroup : spawnGroups) {
             int currEntityCount = info.getGroupToCount().getInt(spawnGroup);
             float multiplier = ServerSettings.mobcap[((RegistryKeyID) serverWorld.getRegistryKey()).getID()][0] *
-                    ServerSettings.mobcap[((RegistryKeyID) serverWorld.getRegistryKey()).getID()][spawnGroup.ordinal()];
+                    ServerSettings.mobcap[((RegistryKeyID) serverWorld.getRegistryKey()).getID()][spawnGroup.ordinal() + 1];
             int k1 = (int) (spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) info).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea() * multiplier);
             int difference = k1 - currEntityCount;
 
             if (ServerSettings.perPlayerMobcap) {
                 int minDiff = Integer.MAX_VALUE;
                 for (ServerPlayerEntity player : ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobDistanceMap().getPlayersInRange(chunk.getPos())) {
-                    minDiff = (int) Math.min((spawnGroup.getCapacity() * multiplier) - ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobCountNear(player, spawnGroup), minDiff);
+                    int ticksPlayed = player.getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
+                    if (spawnGroup.isPeaceful() || ticksPlayed >= KiloConfig.main().startHelp * 1200) {
+                        minDiff = (int) Math.min((spawnGroup.getCapacity() * multiplier) - ((ThreadedAnvilChunkStorageInterface) serverWorld.getChunkManager().threadedAnvilChunkStorage).getMobCountNear(player, spawnGroup), minDiff);
+                    }
                 }
                 difference = (minDiff == Integer.MAX_VALUE) ? 0 : minDiff;
             }

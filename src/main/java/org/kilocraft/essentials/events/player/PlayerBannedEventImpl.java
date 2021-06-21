@@ -1,33 +1,20 @@
 package org.kilocraft.essentials.events.player;
 
-import org.kilocraft.essentials.api.event.player.PlayerMutedEvent;
+import org.kilocraft.essentials.api.event.player.PlayerBannedEvent;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
-public class PlayerBannedEventImpl implements PlayerMutedEvent {
+public class PlayerBannedEventImpl extends AbstractPlayerPunishEvent implements PlayerBannedEvent {
 
-    private final EntityIdentifiable victim;
-    private final CommandSourceUser source;
-    private final String reason;
+    private final boolean ip;
 
-    public PlayerBannedEventImpl(EntityIdentifiable victim, CommandSourceUser source, String reason) {
-        this.victim = victim;
-        this.source = source;
-        this.reason = reason;
+    public PlayerBannedEventImpl(CommandSourceUser source, EntityIdentifiable victim, String reason, long expiry, boolean silent, boolean ipBan) {
+        super(source, victim, reason, expiry, silent);
+        this.ip = ipBan;
     }
 
     @Override
-    public CommandSourceUser getSource() {
-        return this.source;
-    }
-
-    @Override
-    public String getReason() {
-        return this.reason;
-    }
-
-    @Override
-    public EntityIdentifiable getVictim() {
-        return this.victim;
+    public boolean isIpBan() {
+        return this.ip;
     }
 }

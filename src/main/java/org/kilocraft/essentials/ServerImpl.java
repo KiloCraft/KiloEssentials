@@ -32,7 +32,6 @@ import org.kilocraft.essentials.api.event.EventHandler;
 import org.kilocraft.essentials.api.event.EventRegistry;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.UserManager;
@@ -310,7 +309,7 @@ public class ServerImpl implements Server {
     @Override
     public void sendMessage(String message) {
         for (String s : message.split("\n")) {
-            getLogger().info(TextFormat.clearColorCodes(s));
+            getLogger().info(ComponentText.clearFormatting(s));
         }
     }
 
@@ -346,7 +345,7 @@ public class ServerImpl implements Server {
     @Override
     public void sendWarning(String message) {
         for (String s : message.split("\n")) {
-            getLogger().warn(TextFormat.clearColorCodes(s));
+            getLogger().warn(ComponentText.clearFormatting(s));
         }
     }
 

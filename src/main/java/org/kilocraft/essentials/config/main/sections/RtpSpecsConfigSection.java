@@ -6,6 +6,9 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class RtpSpecsConfigSection {
 
+    @Setting(value = "simpleRTP", comment = "Simple rtp just generates random coordinates and drops the player from the sky instead of heavy calculations")
+    public boolean simpleRTP = false;
+
     @Setting(value = "minimum")
     public int min = 15000;
 

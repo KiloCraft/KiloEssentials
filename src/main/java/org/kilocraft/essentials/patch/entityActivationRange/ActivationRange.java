@@ -173,7 +173,7 @@ public class ActivationRange {
             if (entity instanceof VillagerEntity) {
                 Brain<VillagerEntity> behaviorController = ((VillagerEntity) entity).getBrain();
 
-                if (ServerSettings.villagerActiveForPanice) {
+                if (ServerSettings.villagerActiveForPanic) {
                     for (Activity activity : VILLAGER_PANIC_IMMUNITIES) {
                         if (behaviorController.hasActivity(activity)) {
                             return 20 * 5;

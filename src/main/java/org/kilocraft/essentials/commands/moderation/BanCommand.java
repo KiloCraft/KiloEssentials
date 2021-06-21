@@ -76,7 +76,7 @@ public class BanCommand extends EssentialCommand {
                     )
             );
         }
-        KiloServer.getServer().triggerEvent(new PlayerBannedEventImpl(EntityIdentifiable.fromGameProfile(victim), src, reason));
+        KiloServer.getServer().triggerEvent(new PlayerBannedEventImpl(src, EntityIdentifiable.fromGameProfile(victim), reason, -1, silent, false));
         this.getServer().getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, null, silent);
 
         return SUCCESS;

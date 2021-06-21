@@ -14,7 +14,6 @@ import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -56,7 +55,7 @@ public class FormatPreviewCommand extends EssentialCommand {
         final String text = getString(ctx, "text");
         ctx.getSource().sendFeedback(
                 new LiteralText("Text Preview").formatted(Formatting.YELLOW)
-                        .append("\n").append(TextFormat.translate(text))
+                        .append("\n").append(ComponentText.toText(text))
                 , false
         );
 

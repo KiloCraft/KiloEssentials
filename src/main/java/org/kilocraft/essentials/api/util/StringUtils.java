@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.text.TextFormat;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -21,7 +20,7 @@ public class StringUtils {
     }
 
     public static String uniformNickname(final String nickname) {
-        return stringToUsername(ComponentText.clearFormatting(TextFormat.clearColorCodes(nickname))).replaceAll("\\s+", "");
+        return stringToUsername(ComponentText.clearFormatting(ComponentText.clearFormatting(nickname))).replaceAll("\\s+", "");
     }
 
     public static String stringToUsername(final String string) {

@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.commands.item;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -38,7 +37,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class PowerToolsCommand {
     private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS, 4);
 
-    public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
         LiteralCommandNode<ServerCommandSource> rootCommand = literal("command")
                 .requires(PERMISSION_CHECK)
                 .executes(PowerToolsCommand::executeList)
@@ -67,7 +66,6 @@ public class PowerToolsCommand {
         rootCommand.addChild(removeArgument.build());
         rootCommand.addChild(resetArgument.build());
         rootCommand.addChild(setArgument.build());
-        dispatcher.register(literal("powertool").requires(PERMISSION_CHECK).executes(PowerToolsCommand::executeList).redirect(rootCommand));
         builder.then(rootCommand);
     }
 
@@ -147,7 +145,7 @@ public class PowerToolsCommand {
 
         if (item.isEmpty()) {
 
-            user.sendLangMessage("general.no_item");
+            user.sendLangMessage("command.item.no_item");
             return -1;
         }
 

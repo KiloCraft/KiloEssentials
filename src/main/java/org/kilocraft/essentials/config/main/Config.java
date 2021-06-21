@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.config.main;
 
+import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.kilocraft.essentials.config.main.sections.*;
@@ -96,6 +97,9 @@ public class Config {
     @Setting(value = "useNicknamesEverywhere", comment = "Use Nickname/DisplayName Everywhere!")
     public boolean useNicknamesEverywhere = true;
 
+    @Setting(value = "startHelp", comment = "Minutes until hostile mob spawn near a new player")
+    public int startHelp = 10;
+
     public ServerConfigSection server() {
         return serverSection;
     }
@@ -107,6 +111,9 @@ public class Config {
     public WorldConfigSection world() {
         return worldSection;
     }
+
+    @Setting(value = "disabledItems", comment = "Put the identifier of an item here to disable modifyitem on it!")
+    public List<String> disabledItems = Lists.newArrayList("minecraft:barrier");
 
     public PlayerListConfigSection playerList() {
         return playerListSection;

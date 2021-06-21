@@ -41,7 +41,8 @@ public class ServerSettings implements NBTStorage {
     public static boolean tickInactiveVillagers = false;
     public static int villagerWorkImmunityAfter = 5 * 20;
     public static int villagerWorkImmunityFor = 20;
-    public static boolean villagerActiveForPanice = true;
+    public static int releaseProtocolVersion = 755;
+    public static boolean villagerActiveForPanic = true;
 
 
     public ServerSettings() {
@@ -91,6 +92,7 @@ public class ServerSettings implements NBTStorage {
     public void registerSettings() {
         //Custom settings
         IntegerSetting viewDistance = (IntegerSetting) new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getServer().getMinecraftServer().getPlayerManager().setViewDistance(distance));
+        IntegerSetting protocolVersion = (IntegerSetting) new IntegerSetting(755, "releaseProtocolVersion").onChanged(integer -> releaseProtocolVersion = integer);
         BooleanSetting debug = (BooleanSetting) new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
 
         //Patches
@@ -152,7 +154,7 @@ public class ServerSettings implements NBTStorage {
             BooleanSetting tickInactive = (BooleanSetting) new BooleanSetting(true, "tick_inactive").onChanged(bool -> tickInactiveVillagers = bool);
             IntegerSetting workImmunityAfter = (IntegerSetting) new IntegerSetting(5 * 20, "work_immunity_after").onChanged(integer -> villagerWorkImmunityAfter = integer);
             IntegerSetting workImmunityFor = (IntegerSetting) new IntegerSetting(5 * 20, "work_immunity_for").onChanged(integer -> villagerWorkImmunityFor = integer);
-            BooleanSetting activeForPanice = (BooleanSetting) new BooleanSetting(true, "active_for_panic").onChanged(bool -> villagerActiveForPanice = bool);
+            BooleanSetting activeForPanice = (BooleanSetting) new BooleanSetting(true, "active_for_panic").onChanged(bool -> villagerActiveForPanic = bool);
             villager.addChild(tickInactive).addChild(workImmunityAfter).addChild(workImmunityFor).addChild(activeForPanice);
 
             custom.addChild(villager);
@@ -197,14 +199,14 @@ public class ServerSettings implements NBTStorage {
         spawn.addChild(spawnEntity);
 
         //Mobcap
-        ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][SpawnGroup.values().length];
+        ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][SpawnGroup.values().length + 1];
         CategorySetting mobcap = new CategorySetting("mobcap");
         int worldID = 0;
         for (RegistryKey<World> registryKey : RegistryUtils.getWorldsKeySet()) {
             ((RegistryKeyID) registryKey).setID(worldID);
             FloatSetting world = (FloatSetting) new FloatSetting(1F, registryKey.getValue().getPath()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][0] = f);
             for (SpawnGroup spawnGroup : SpawnGroup.values()) {
-                FloatSetting group = (FloatSetting) new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][spawnGroup.ordinal()] = f);
+                FloatSetting group = (FloatSetting) new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][spawnGroup.ordinal() + 1] = f);
                 world.addChild(group);
             }
             worldID++;
@@ -213,6 +215,7 @@ public class ServerSettings implements NBTStorage {
 
         root.addChild(activation_range);
         root.addChild(viewDistance);
+        root.addChild(protocolVersion);
         root.addChild(debug);
         root.addChild(entity_limit);
         root.addChild(tick);

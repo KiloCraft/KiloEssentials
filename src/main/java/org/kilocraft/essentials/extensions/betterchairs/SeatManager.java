@@ -71,13 +71,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
     @Override
     public void onTick() {
-        tick++;
-
-        if (tick != 10) {
-            return;
-        }
-
-        tick = 0;
+        if (tick % 10 != 0) return;
         for (Map.Entry<ServerWorld, UUID> entry : stands.entrySet()) {
             ServerWorld world = entry.getKey();
             UUID uuid = entry.getValue();
@@ -98,13 +92,14 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
                     if (user.getPreference(Preferences.SITTING_TYPE) == SummonType.INTERACT_SLAB) {
                         stand.bodyYaw = user.asPlayer().bodyYaw;
-                        stand.yaw = user.asPlayer().bodyYaw;
+                        stand.setYaw(user.asPlayer().bodyYaw);
                     }
                 }
             } else {
                 stand.kill();
             }
         }
+        tick++;
     }
 
     public boolean onInteractBlock(@NotNull final ServerPlayerEntity player,
@@ -138,7 +133,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         }
 
         Vec3dLocation vec3dLoc = Vec3dLocation.of(pos.getX(), pos.getY() + 1, pos.getZ(),
-                player.yaw, player.pitch, RegistryUtils.toIdentifier(world.getDimension()));
+                player.getYaw(), player.getPitch(), RegistryUtils.toIdentifier(world.getDimension()));
 
         if (state.getBlock() instanceof StairsBlock && state.get(Properties.BLOCK_HALF) == BlockHalf.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.40D);

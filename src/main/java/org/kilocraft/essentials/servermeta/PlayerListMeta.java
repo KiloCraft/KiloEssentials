@@ -70,27 +70,31 @@ public class PlayerListMeta {
     public static List<Team> getTeams(ServerScoreboard scoreboard) {
         HashMap<Long, Team> weightToTeam = new HashMap<>();
         ArrayList<Team> teams = new ArrayList<>();
-        LuckPerms api = LuckPermsProvider.get();
-        for (ServerPlayerEntity player : KiloEssentials.getServer().getMinecraftServer().getPlayerManager().getPlayerList()) {
-            User luckUser = api.getUserManager().getUser(player.getUuid());
-            if (luckUser == null) continue;
-            Group group = api.getGroupManager().getGroup(luckUser.getPrimaryGroup());
-            if (group == null) continue;
-            long weight = group.getWeight().isPresent() ? group.getWeight().getAsInt() : 0;
-            Team team;
-            if (!weightToTeam.containsKey(weight)) {
-                String name = String.format("%016d", KiloConfig.main().playerList().topToBottom ? weight : 1000000000000000L - weight);
-                team = new Team(scoreboard, name);
-                weightToTeam.put(weight, team);
-            } else {
-                team = weightToTeam.get(weight);
+        try {
+            LuckPerms api = LuckPermsProvider.get();
+            for (ServerPlayerEntity player : KiloEssentials.getServer().getMinecraftServer().getPlayerManager().getPlayerList()) {
+                User luckUser = api.getUserManager().getUser(player.getUuid());
+                if (luckUser == null) continue;
+                Group group = api.getGroupManager().getGroup(luckUser.getPrimaryGroup());
+                if (group == null) continue;
+                long weight = group.getWeight().isPresent() ? group.getWeight().getAsInt() : 0;
+                Team team;
+                if (!weightToTeam.containsKey(weight)) {
+                    String name = String.format("%016d", KiloConfig.main().playerList().topToBottom ? weight : 1000000000000000L - weight);
+                    team = new Team(scoreboard, name);
+                    weightToTeam.put(weight, team);
+                } else {
+                    team = weightToTeam.get(weight);
+                }
+                team.getPlayerList().add(player.getEntityName());
             }
-            team.getPlayerList().add(player.getEntityName());
+            for (Map.Entry<Long, Team> entry : weightToTeam.entrySet()) {
+                teams.add(entry.getValue());
+            }
+            return teams;
+        } catch (NoClassDefFoundError error) {
+            return teams;
         }
-        for (Map.Entry<Long, Team> entry : weightToTeam.entrySet()) {
-            teams.add(entry.getValue());
-        }
-        return teams;
     }
 
 

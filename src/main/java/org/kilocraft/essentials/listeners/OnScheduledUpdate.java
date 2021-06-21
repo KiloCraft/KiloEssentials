@@ -50,7 +50,7 @@ public class OnScheduledUpdate implements EventHandler<ServerScheduledUpdateEven
             }
 
             if (pos != null) {
-                player.teleport(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.yaw, player.pitch);
+                player.teleport(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.getYaw(), player.getPitch());
                 KiloServer.getServer().getOnlineUser(player).sendMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getServerWorld().getDimension())));
             }
         }
