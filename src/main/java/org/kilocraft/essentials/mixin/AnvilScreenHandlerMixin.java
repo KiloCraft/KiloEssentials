@@ -57,49 +57,4 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
         this.updateResult();
     }
 
-
-    /**
-     * @author Drex
-     */
-    @Overwrite
-    protected void onTakeOutput(PlayerEntity player, ItemStack stack) {
-        if (!player.getAbilities().creativeMode) {
-            player.addExperienceLevels(-this.levelCost.get());
-        }
-
-        this.input.setStack(0, ItemStack.EMPTY);
-        if (this.repairItemUsage > 0) {
-            ItemStack itemStack = this.input.getStack(1);
-            if (!itemStack.isEmpty() && itemStack.getCount() > this.repairItemUsage) {
-                itemStack.decrement(this.repairItemUsage);
-                this.input.setStack(1, itemStack);
-            } else {
-                this.input.setStack(1, ItemStack.EMPTY);
-            }
-        } else {
-            this.input.setStack(1, ItemStack.EMPTY);
-
-
-
-        }
-
-        this.levelCost.set(0);
-        this.context.run((world, blockPos) -> {
-            BlockState blockState = world.getBlockState(blockPos);
-            if (!player.getAbilities().creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
-                BlockState blockState2 = AnvilBlock.getLandingState(blockState);
-                if (blockState2 == null) {
-                    world.removeBlock(blockPos, false);
-                    world.syncWorldEvent(1029, blockPos, 0);
-                } else {
-                    world.setBlockState(blockPos, blockState2, 2);
-                    world.syncWorldEvent(1030, blockPos, 0);
-                }
-            } else {
-                world.syncWorldEvent(1030, blockPos, 0);
-            }
-        });
-    }
-
-
 }

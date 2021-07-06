@@ -158,10 +158,10 @@ public class ScreenGUIBuilder {
         GUIScreen screen = new GUIScreen(handlerType, sync, inv, new SimpleInventory(rows * 9), rows, buttons);
 
         for (int i = 0; i < screen.slots.size() - 36; i++) {
-            screen.setStackInSlot(i, this.background);
+            screen.setStackInSlot(i, screen.getRevision(), this.background);
         }
 
-        this.buttons.forEach((slot, btn) -> screen.setStackInSlot(slot, btn.settings.icon));
+        this.buttons.forEach((slot, btn) -> screen.setStackInSlot(slot, screen.getRevision(), btn.settings.icon));
         return screen;
     }
 

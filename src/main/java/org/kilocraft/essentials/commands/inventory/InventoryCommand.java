@@ -26,6 +26,28 @@ public class InventoryCommand extends EssentialCommand {
         super("inventory", CommandPermission.SEEK_INVENTORY, new String[]{"inv", "seekinv"});
     }
 
+    private static void setSlotsInit(ServerPlayerEntity target, ScreenHandler handler) {
+        for (int i = 0; i < 36; i++) {
+            handler.setStackInSlot(i, handler.getRevision(), target.getInventory().main.get(i));
+        }
+
+        for (int i = 0; i < 4; i++) {
+            handler.setStackInSlot(i + 36, handler.getRevision(), target.getInventory().armor.get(i));
+        }
+
+        handler.setStackInSlot(44, handler.getRevision(), target.getInventory().offHand.get(0));
+    }
+
+    private static void copySlotsFromInventory(ServerPlayerEntity target, ScreenHandler handler, int slotID) {
+        if (slotID < 36) {
+            target.getInventory().main.set(slotID, handler.getStacks().get(slotID));
+        } else if (slotID < 40) {
+            target.getInventory().armor.set(slotID - 36, handler.getStacks().get(slotID));
+        } else if (slotID == 44) {
+            target.getInventory().offHand.set(0, handler.getStacks().get(slotID));
+        }
+    }
+
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getOnlineUserArgument("target")
                 .executes(this::execute);
@@ -52,7 +74,7 @@ public class InventoryCommand extends EssentialCommand {
             @Override
             public Text getDisplayName() {
                 Text text;
-                Text translatable =  new TranslatableText("container.inventory");
+                Text translatable = new TranslatableText("container.inventory");
 
                 if (src.equals(target)) {
                     text = Texter.newText().append(translatable).append(" ").append(target.getFormattedDisplayName());
@@ -82,28 +104,6 @@ public class InventoryCommand extends EssentialCommand {
                 return handler;
             }
         };
-    }
-
-    private static void setSlotsInit(ServerPlayerEntity target, ScreenHandler handler){
-        for (int i = 0; i < 36; i++){
-            handler.setStackInSlot(i, target.getInventory().main.get(i));
-        }
-
-        for (int i = 0; i < 4; i++){
-            handler.setStackInSlot(i + 36, target.getInventory().armor.get(i));
-        }
-
-        handler.setStackInSlot(44, target.getInventory().offHand.get(0));
-    }
-
-    private static void copySlotsFromInventory(ServerPlayerEntity target, ScreenHandler handler, int slotID){
-        if (slotID < 36){
-            target.getInventory().main.set(slotID, handler.getStacks().get(slotID));
-        } else if (slotID < 40){
-            target.getInventory().armor.set(slotID - 36, handler.getStacks().get(slotID));
-        } else if (slotID == 44){
-            target.getInventory().offHand.set(0, handler.getStacks().get(slotID));
-        }
     }
 
 }

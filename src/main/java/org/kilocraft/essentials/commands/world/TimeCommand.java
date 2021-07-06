@@ -77,7 +77,7 @@ public class TimeCommand extends EssentialCommand {
 
     public static int executeSet(CommandContext<ServerCommandSource> context, int time, String timeName){
         CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(context.getSource());
-        for (ServerWorld world : context.getSource().getMinecraftServer().getWorlds()) {
+        for (ServerWorld world : context.getSource().getServer().getWorlds()) {
             world.setTimeOfDay(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);
         }
 
@@ -88,7 +88,7 @@ public class TimeCommand extends EssentialCommand {
 
     public static int executeAdd(CommandContext<ServerCommandSource> context, int timeToAdd) {
         CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(context.getSource());
-        for (ServerWorld world : context.getSource().getMinecraftServer().getWorlds()) {
+        for (ServerWorld world : context.getSource().getServer().getWorlds()) {
             world.setTimeOfDay(world.getTimeOfDay() + timeToAdd);
         }
 

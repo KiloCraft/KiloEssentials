@@ -135,7 +135,7 @@ public class OperatorCommand {
     }
 
     private static int executeList(ServerCommandSource source) {
-        String s = Arrays.toString(source.getMinecraftServer().getPlayerManager().getOpList().getNames());
+        String s = Arrays.toString(source.getServer().getPlayerManager().getOpList().getNames());
         String text = "<yellow>Operators<dark_gray>:<reset> " + s.replace("[", "").replace("]", "").replaceAll(",", "<gray>,<reset>");
 
         KiloServer.getServer().getCommandSourceUser(source).sendMessage(text);
@@ -143,7 +143,7 @@ public class OperatorCommand {
     }
 
     private static int executeGet(ServerCommandSource source, Collection<GameProfile> gameProfiles) {
-        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
+        PlayerManager playerManager = source.getServer().getPlayerManager();
         String text = "<yellow>Operator <aqua>%s<yellow>:\n <gray>-<yellow> Permission level<dark_gray>: <green>%s<yellow>\n <gray>-<yellow> Can bypass the player limit<dark_gray>: <gold>%s<reset>";
 
         gameProfiles.forEach((gameProfile) -> {
@@ -167,7 +167,7 @@ public class OperatorCommand {
     }
 
     private static int execute(ServerCommandSource source, Collection<GameProfile> gameProfiles, boolean set, int level, boolean byPass) throws CommandSyntaxException {
-        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
+        PlayerManager playerManager = source.getServer().getPlayerManager();
         Iterator<GameProfile> v = gameProfiles.iterator();
         OperatorList operatorList = playerManager.getOpList();
 

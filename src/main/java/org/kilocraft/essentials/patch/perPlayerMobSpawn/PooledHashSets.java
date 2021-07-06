@@ -207,6 +207,10 @@ public class PooledHashSets<E> {
             return removed;
         }
 
+        public int size() {
+            return this.set.size();
+        }
+
         @Override
         public Iterator<E> iterator() {
             return this.set.iterator();

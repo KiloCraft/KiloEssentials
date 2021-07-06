@@ -92,7 +92,6 @@ public class ServerSettings implements NBTStorage {
     public void registerSettings() {
         //Custom settings
         IntegerSetting viewDistance = (IntegerSetting) new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getServer().getMinecraftServer().getPlayerManager().setViewDistance(distance));
-        IntegerSetting protocolVersion = (IntegerSetting) new IntegerSetting(755, "releaseProtocolVersion").onChanged(integer -> releaseProtocolVersion = integer);
         BooleanSetting debug = (BooleanSetting) new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
 
         //Patches
@@ -215,7 +214,6 @@ public class ServerSettings implements NBTStorage {
 
         root.addChild(activation_range);
         root.addChild(viewDistance);
-        root.addChild(protocolVersion);
         root.addChild(debug);
         root.addChild(entity_limit);
         root.addChild(tick);

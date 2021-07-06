@@ -36,7 +36,7 @@ public class QueryResponseS2CPacketMixin {
                 this.metadata.setDescription(ComponentText.toText(ComponentText.of(motdConfig.line1, false).append(Component.text("\n").append(ComponentText.of(motdConfig.line2)))));
             }
             ServerMetadata.Players players = this.metadata.getPlayers();
-            if (players!=null) {
+            if (players != null) {
                 List<OnlineUser> online = KiloEssentials.getServer().getUserManager().getOnlineUsersAsList().stream().filter(onlineUser -> !onlineUser.getPreference(Preferences.VANISH)).collect(Collectors.toList());
                 int sampleSize = Math.min(12, online.size());
                 GameProfile[] gameProfiles = new GameProfile[sampleSize];
@@ -47,8 +47,5 @@ public class QueryResponseS2CPacketMixin {
                 new_players.setSample(gameProfiles);
                 this.metadata.setPlayers(new_players);
             }
-            boolean b = ServerMetaManager.cachedProtocolVersion == ServerSettings.releaseProtocolVersion;
-            ServerMetadata.Version version = new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), b ? ServerSettings.releaseProtocolVersion : SharedConstants.getGameVersion().getProtocolVersion());
-            this.metadata.setVersion(version);
     }
 }

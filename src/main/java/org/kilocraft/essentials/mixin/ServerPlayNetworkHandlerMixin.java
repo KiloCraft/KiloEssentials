@@ -92,24 +92,4 @@ public abstract class ServerPlayNetworkHandlerMixin {
         }
     }
 
-    @Redirect(method = "onBookUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;getList(Ljava/lang/String;I)Lnet/minecraft/nbt/NbtList;"))
-    public NbtList weDontNeedThesePages(NbtCompound NbtCompound, String string, int i) {
-        NbtList NbtList = NbtCompound.getList("pages", 8);
-        boolean dupeAttempt = false;
-        for (int j = 0; j < NbtList.size(); j++) {
-            NbtElement tag = NbtList.get(j);
-            if (tag instanceof NbtString) {
-                NbtString NbtString = (NbtString) tag;
-                final String s = NbtString.asString();
-                if (s.length() > 300) {
-                    NbtString = NbtString.of(s.substring(0, 300));
-                    NbtList.set(j, NbtString);
-                    dupeAttempt = true;
-                }
-            }
-        }
-        if (dupeAttempt) KiloEssentials.getLogger().warn(player.getEntityName() + " attempted to dupe!");
-        return NbtList;
-    }
-
 }

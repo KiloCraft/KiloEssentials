@@ -63,7 +63,7 @@ public class GUIScreen extends ScreenHandler {
 
         this.inv.markDirty();
         ((ServerPlayerEntity) playerEntity).networkHandler.sendPacket(
-                new InventoryS2CPacket(syncId, playerEntity.currentScreenHandler.getStacks())
+                new InventoryS2CPacket(playerEntity.currentScreenHandler.syncId, playerEntity.currentScreenHandler.getRevision(), playerEntity.currentScreenHandler.getStacks(), playerEntity.currentScreenHandler.getCursorStack())
         );
 
         this.sendContentUpdates();

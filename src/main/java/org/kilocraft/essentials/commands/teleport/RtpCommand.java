@@ -98,7 +98,7 @@ public class RtpCommand extends EssentialCommand {
                 public boolean shouldReceiveFeedback() { return false; }
                 public boolean shouldTrackOutput() { return false; }
                 public boolean shouldBroadcastConsoleToOps() { return false; }
-            }, src.getPosition(), src.getRotation(), src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getMinecraftServer(), src.getEntity());
+            }, src.getPosition(), src.getRotation(), src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getServer(), src.getEntity());
             SpreadPlayerCommandInvoker.execute(source, new Vec2f(cfg.centerX, cfg.centerZ), cfg.min, cfg.max, src.getWorld().getTopY(), false, Collections.singleton(target));
         }
         UserUtils.Process.remove(targetUser);
