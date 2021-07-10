@@ -29,7 +29,7 @@ public class ViewDistanceCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         int distance = IntegerArgumentType.getInteger(ctx, "distance");
-        MinecraftServer server = ctx.getSource().getMinecraftServer();
+        MinecraftServer server = ctx.getSource().getServer();
         ServerPlayerEntity player = ctx.getSource().getPlayer();
 
         if (server.isDedicated()) {

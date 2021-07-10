@@ -65,7 +65,7 @@ public abstract class MuteEntry<T> extends ServerConfigEntry<T> {
     }
 
     @Override
-    protected void fromJson(JsonObject jsonObject) {
+    protected void write(JsonObject jsonObject) {
         jsonObject.addProperty("created", DATE_FORMAT.format(this.creationDate));
         jsonObject.addProperty("source", this.source);
         jsonObject.addProperty("expires", this.expiryDate == null ? "forever" : DATE_FORMAT.format(this.expiryDate));

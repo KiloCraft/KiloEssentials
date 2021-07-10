@@ -119,7 +119,7 @@ public class CommandUtils {
 
     private static ServerCommandSource operatorSource(ServerCommandSource src) {
         return new ServerCommandSource(commandOutput(src), src.getPosition(), src.getRotation(),
-                src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getMinecraftServer(), src.getEntity());
+                src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getServer(), src.getEntity());
     }
 
     private static CommandOutput commandOutput(ServerCommandSource src) {

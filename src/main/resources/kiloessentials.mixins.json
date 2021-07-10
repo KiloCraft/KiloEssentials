@@ -17,10 +17,10 @@
     "PlayerListS2CPacketMixin",
     "QueryResponseS2CPacketMixin",
     "RegistryKeyMixin",
-    "ServerHandshakeNetworkHandlerMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerScoreboardMixin",
+    "WorldChunkMixin",
     "WorldMixin"
   ],
   "injectors": {

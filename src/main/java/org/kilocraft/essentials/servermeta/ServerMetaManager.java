@@ -8,8 +8,6 @@ import org.kilocraft.essentials.api.KiloServer;
 public class ServerMetaManager {
     private final ServerMetadata metadata;
 
-    public static int cachedProtocolVersion = 0;
-
     public ServerMetaManager(ServerMetadata metadata) {
         this.metadata = metadata;
     }

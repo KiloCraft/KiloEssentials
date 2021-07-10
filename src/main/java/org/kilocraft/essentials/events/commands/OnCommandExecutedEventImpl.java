@@ -30,7 +30,7 @@ public class OnCommandExecutedEventImpl implements OnCommandExecutedEvent {
 
     @Override
     public MinecraftServer getServer() {
-        return source.getMinecraftServer();
+        return source.getServer();
     }
 
     @Override

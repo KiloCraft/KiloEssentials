@@ -17,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Optional;
 
 /**
  * The vote receiving server.
@@ -156,11 +157,11 @@ public class VoteReceiver extends Thread {
                 MinecraftServer server = KiloEssentials.getServer().getMinecraftServer();
                 ServerCommandSource source = server.getCommandSource();
                 for (String command : KiloConfig.main().votifier().commands) {
-                    GameProfile gameProfile = server.getUserCache().findByName(vote.getUsername());
-                    if (gameProfile == null) {
+                    Optional<GameProfile> optional = server.getUserCache().findByName(vote.getUsername());
+                    if (optional.isEmpty()) {
                         continue;
                     }
-                    String name = gameProfile.isComplete() ? gameProfile.getName() : vote.getUsername();
+                    String name = optional.get().isComplete() ? optional.get().getName() : vote.getUsername();
                     command = command.replace("%PLAYER%", name)
                             .replace("%SERVICE%", vote.getServiceName())
                             .replace("%TIMESTAMP%", vote.getTimeStamp())

@@ -1,7 +1,9 @@
-# KiloEssentials
-A essentials mod for fabric developed for the KiloCraft server
+[![Release](https://jitpack.io/v/KiloCraft/KiloEssentials.svg)](https://jitpack.io/#KiloCraft/KiloEssentials)
 
-IP: mc.50kilo.org
+# KiloEssentials
+An essentials mod for fabric developed for the KiloCraft server
+
+**IP:** 50kilo.org
 
 ## Setup
 

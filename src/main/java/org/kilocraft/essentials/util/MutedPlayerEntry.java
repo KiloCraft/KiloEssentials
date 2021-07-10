@@ -28,7 +28,7 @@ public class MutedPlayerEntry extends MuteEntry<GameProfile> {
         if (((ServerConfigEntryAccessor<?>) this).getKey() != null) {
             jsonObject.addProperty("uuid", ((GameProfile) ((ServerConfigEntryAccessor<?>) this).getKey()).getId() == null ? "" : ((GameProfile) ((ServerConfigEntryAccessor<?>) this).getKey()).getId().toString());
             jsonObject.addProperty("name", ((GameProfile) ((ServerConfigEntryAccessor<?>) this).getKey()).getName());
-            super.fromJson(jsonObject);
+            super.write(jsonObject);
         }
     }
 
