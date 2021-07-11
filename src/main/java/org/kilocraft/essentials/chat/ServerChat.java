@@ -9,6 +9,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,6 +18,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,10 +50,7 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -127,11 +126,7 @@ public final class ServerChat {
             text.append(result.getResult()).append(Component.text(" "));
         }
 
-        if (user.getPreference(Preferences.CHAT_VISIBILITY) == VisibilityPreference.MENTIONS) {
-            user.sendMessage(text.build());
-        }
-
-        channel.send(ComponentText.toText(text.build()), new ArrayList<>());
+        channel.send(ComponentText.toText(text.build()), MessageType.CHAT, user.getUuid());
         KiloServer.getServer().sendMessage(text.build());
     }
 
@@ -440,18 +435,11 @@ public final class ServerChat {
             return this.id;
         }
 
-        public void send(Text message) {
-            send(message, new ArrayList<>());
-        }
-
-        public void send(Text message, List<OnlineUser> mentioned) {
+        public void send(Text message, MessageType messageType, UUID uuid) {
             switch (this) {
                 case PUBLIC:
                     for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
-                        VisibilityPreference preference = user.getPreference(Preferences.CHAT_VISIBILITY);
-                        if (preference == VisibilityPreference.ALL || (preference == VisibilityPreference.MENTIONS && mentioned.contains(user))) {
-                            user.sendMessage(message);
-                        }
+                        user.asPlayer().sendMessage(message, messageType, uuid);
                     }
                     break;
                 case STAFF:
@@ -463,7 +451,11 @@ public final class ServerChat {
             }
         }
 
-        public String getFormat() {
+        public void send(Text message) {
+            send(message, MessageType.SYSTEM, Util.NIL_UUID);
+        }
+
+            public String getFormat() {
             switch (this) {
                 case PUBLIC:
                     return KiloConfig.main().chat().prefixes().publicChat;
