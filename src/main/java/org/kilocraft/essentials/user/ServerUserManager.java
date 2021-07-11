@@ -59,6 +59,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ServerUserManager implements UserManager, TickListener {
     private static final Pattern DAT_FILE_PATTERN = Pattern.compile(".dat");
@@ -169,6 +170,11 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     public List<OnlineUser> getOnlineUsersAsList() {
         return users;
+    }
+
+    @Override
+    public List<OnlineUser> getOnlineUsersAsList(boolean includeVanished) {
+        return users.stream().filter(onlineUser -> !onlineUser.getPreference(Preferences.VANISH) || includeVanished).collect(Collectors.toList());
     }
 
     @Override
@@ -390,7 +396,7 @@ public class ServerUserManager implements UserManager, TickListener {
                 GameProfile profile = (GameProfile) o;
                 Optional<User> optional = getOffline(profile).join();
                 optional.ifPresent(player -> {
-                    if (player.getLastIp().equals(user.getLastIp())) banned.add(profile);
+                    if (Objects.equals(player.getLastIp(), user.getLastIp())) banned.add(profile);
                 });
             }
         }

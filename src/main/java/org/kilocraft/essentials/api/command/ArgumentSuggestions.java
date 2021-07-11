@@ -13,7 +13,9 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -30,7 +32,7 @@ public class ArgumentSuggestions {
 
     public static CompletableFuture<Suggestions> users(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         List<String> list = Lists.newArrayList();
-        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList(KiloCommands.hasPermission(context.getSource(), CommandPermission.VANISH))) {
             if (user.hasNickname()) {
                 list.add(StringUtils.uniformNickname(user.getDisplayName()));
             }
@@ -62,7 +64,7 @@ public class ArgumentSuggestions {
 
     public static CompletableFuture<Suggestions> allPlayerNicks(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         final List<String> nicks = new ArrayList<>();
-        for (final OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+        for (final OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList(KiloCommands.hasPermission(context.getSource(), CommandPermission.VANISH))) {
             nicks.add(ComponentText.clearFormatting(user.getDisplayName()));
             nicks.add(user.getUsername());
         }

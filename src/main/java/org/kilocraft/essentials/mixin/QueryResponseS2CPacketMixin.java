@@ -37,7 +37,7 @@ public class QueryResponseS2CPacketMixin {
             }
             ServerMetadata.Players players = this.metadata.getPlayers();
             if (players != null) {
-                List<OnlineUser> online = KiloEssentials.getServer().getUserManager().getOnlineUsersAsList().stream().filter(onlineUser -> !onlineUser.getPreference(Preferences.VANISH)).collect(Collectors.toList());
+                List<OnlineUser> online = KiloEssentials.getServer().getUserManager().getOnlineUsersAsList(false);
                 int sampleSize = Math.min(12, online.size());
                 GameProfile[] gameProfiles = new GameProfile[sampleSize];
                 for (int i = 0; i < sampleSize; i++) {

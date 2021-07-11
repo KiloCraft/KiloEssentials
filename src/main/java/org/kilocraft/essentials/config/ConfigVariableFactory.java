@@ -3,6 +3,7 @@ package org.kilocraft.essentials.config;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -36,21 +37,14 @@ public class ConfigVariableFactory {
                 .toString();
     }
 
-    public static String replaceUserVariables(String str, @NotNull final User user) {
+    public static String replaceUserVariables(String str, @NotNull final OnlineUser user) {
         Validate.notNull(user, "User most not be null!");
         return new ConfigObjectReplacerUtil("user", str)
                 .append("rankedName", user.getRankedDisplayNameAsString())
                 .append("displayName", user.getFormattedDisplayName())
                 .append("name", user.getUsername())
                 .append("tag", user.getNameTag())
-                .toString();
-    }
-
-    public static String replacePlayerVariables(String str, @NotNull final ServerPlayerEntity player) {
-        Validate.notNull(player, "Player most not be null!");
-        return new ConfigObjectReplacerUtil("player", str)
-                .append("ping", player.pingMilliseconds)
-                .append("formatted_ping", ComponentText.formatPing(player.pingMilliseconds))
+                .append("player_count", server.getUserManager().getOnlineUsersAsList(user.hasPermission(CommandPermission.VANISH)).size())
                 .toString();
     }
 
@@ -64,7 +58,6 @@ public class ConfigVariableFactory {
                 .append("formatted_tps5", ComponentText.formatTps(DataTracker.tps.getAverage(6000)))
                 .append("tps15", DataTracker.tps.getAverage(18000))
                 .append("formatted_tps15", ComponentText.formatTps(DataTracker.tps.getAverage(18000)))
-                .append("player_count", server.getPlayerManager().getCurrentPlayerCount())
                 .append("max_players", server.getPlayerManager().getMaxPlayerCount())
                 .append("name", KiloConfig.main().server().name)
                 .append("memory_max", String.valueOf(SystemMonitor.getRamMaxMB()))

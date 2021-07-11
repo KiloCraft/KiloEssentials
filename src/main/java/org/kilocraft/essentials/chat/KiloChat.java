@@ -5,6 +5,7 @@ import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.messages.Messages;
+import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 
 import static org.kilocraft.essentials.api.KiloServer.getServer;
@@ -34,11 +35,11 @@ public class KiloChat {
         }
     }
 
-	public static void onUserJoin(ServerUser user) {
+	public static void onUserJoin(OnlineServerUser user) {
 		broadCast(ConfigVariableFactory.replaceUserVariables(messages.events().userJoin, user));
 	}
 
-    public static void onUserLeave(ServerUser user) {
+    public static void onUserLeave(OnlineServerUser user) {
         broadCast(ConfigVariableFactory.replaceUserVariables(messages.events().userLeave, user));
     }
 }

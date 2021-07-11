@@ -139,7 +139,7 @@ public final class ServerChat {
         if (message.contains(pingEveryoneTemplate) && KiloEssentials.hasPermissionNode(sender.getCommandSource(), EssentialPermission.CHAT_PING_EVERYONE)) {
             return true;
         }
-        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList(false)) {
             String nameFormat = senderFormat.replace("%PLAYER_NAME%", user.getUsername());
             String nickFormat = senderFormat.replace("%PLAYER_NAME%", ComponentText.clearFormatting(user.getDisplayName()));
             if ((message.contains(nameFormat) || message.contains(nickFormat)) && KiloEssentials.hasPermissionNode(user.getCommandSource(), EssentialPermission.CHAT_GET_PINGED)) {
@@ -199,7 +199,7 @@ public final class ServerChat {
             }
         }
 
-        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList(false)) {
             String nameFormat = senderFormat.replace("%PLAYER_NAME%", user.getUsername());
             String nickFormat = senderFormat.replace("%PLAYER_NAME%", ComponentText.clearFormatting(user.getDisplayName()));
             if ((!message.contains(nameFormat) && !message.contains(nickFormat)) || !KiloEssentials.hasPermissionNode(user.getCommandSource(), EssentialPermission.CHAT_GET_PINGED)) {

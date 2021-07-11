@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -32,7 +33,7 @@ public class RealNameCommand extends EssentialCommand {
 	private int execute(CommandContext<ServerCommandSource> ctx){
 		String input = getString(ctx, "nickname");
         CommandSourceUser source = KiloServer.getServer().getCommandSourceUser(ctx.getSource());
-		for (OnlineUser user : this.getServer().getUserManager().getOnlineUsersAsList()) {
+		for (OnlineUser user : this.getServer().getUserManager().getOnlineUsersAsList(KiloCommands.hasPermission(ctx.getSource(), CommandPermission.VANISH))) {
 			String nick = ComponentText.clearFormatting(user.getDisplayName());
 			if (input.equalsIgnoreCase(nick) || input.equals(user.getUsername())) {
                 source.sendLangMessage("command.realname.success", user.getFormattedDisplayName(), user.getUsername());

@@ -20,7 +20,7 @@ public class PlayerListConfigSection {
 
     @Setting(value = "footer", comment = "Sets the (Tab) PlayerList Footer")
     public List<String> footer = new ArrayList<String>(){{
-        add("<gray>Ping: %user_formatted_ping% <dark_gray>-<gray> Online: <aqua>%server_player_count% <dark_gray>-<gray> TPS: <reset>%server_formatted_tps%");
+        add("<gray>Ping: %user_formatted_ping% <dark_gray>-<gray> Online: <aqua>%user_player_count% <dark_gray>-<gray> TPS: <reset>%server_formatted_tps%");
         add("<gray>Use <green>/help<gray> for more info");
     }};
 

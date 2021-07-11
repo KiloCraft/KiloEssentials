@@ -30,6 +30,7 @@ import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.Config;
 import org.kilocraft.essentials.config.messages.Messages;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.NameLookup;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -238,10 +239,8 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(StringArgumentType.getString(ctx, label));
-
-        if (user == null) {
+        if (user == null || (user.getPreference(Preferences.VANISH) && !hasPermission(ctx.getSource(), CommandPermission.VANISH)))
             throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
-        }
 
         return user;
     }
