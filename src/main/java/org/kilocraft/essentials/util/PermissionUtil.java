@@ -73,21 +73,25 @@ public class PermissionUtil {
     }
 
     private boolean fromLuckPerms(ServerCommandSource src, String perm, int op) {
-        LuckPerms luckPerms = LuckPermsProvider.get();
-
         try {
-            ServerPlayerEntity player = src.getPlayer();
-            User user = luckPerms.getUserManager().getUser(player.getUuid());
+            LuckPerms luckPerms = LuckPermsProvider.get();
+            try {
+                ServerPlayerEntity player = src.getPlayer();
+                User user = luckPerms.getUserManager().getUser(player.getUuid());
 
-            if (user != null) {
-                QueryOptions options = luckPerms.getContextManager().getQueryOptions(player);
-                return user.getCachedData().getPermissionData(options).checkPermission(perm).asBoolean();
+                if (user != null) {
+                    QueryOptions options = luckPerms.getContextManager().getQueryOptions(player);
+                    return user.getCachedData().getPermissionData(options).checkPermission(perm).asBoolean();
+                }
+
+            } catch (CommandSyntaxException ignored) {
             }
-
-        } catch (CommandSyntaxException ignored) {
+            return fallbackPermissionCheck(src, op);
+        } catch (IllegalStateException e) {
+            return false;
         }
 
-        return fallbackPermissionCheck(src, op);
+
     }
 
     public boolean hasPermission(UUID uuid, String perm) {

@@ -93,13 +93,8 @@ public class RtpCommand extends EssentialCommand {
             target.addStatusEffect(blindness);
             target.teleport(target.getServerWorld(), x, target.getServerWorld().getTopY(), z, target.getYaw(), target.getPitch());
         } else {
-            ServerCommandSource source = new ServerCommandSource(new CommandOutput() {
-                public void sendSystemMessage(Text text, UUID uUID) { }
-                public boolean shouldReceiveFeedback() { return false; }
-                public boolean shouldTrackOutput() { return false; }
-                public boolean shouldBroadcastConsoleToOps() { return false; }
-            }, src.getPosition(), src.getRotation(), src.getWorld(), 4, src.getName(), src.getDisplayName(), src.getServer(), src.getEntity());
-            SpreadPlayerCommandInvoker.execute(source, new Vec2f(cfg.centerX, cfg.centerZ), cfg.min, cfg.max, src.getWorld().getTopY(), false, Collections.singleton(target));
+            src.withOutput(new NoOuput());
+            SpreadPlayerCommandInvoker.execute(src, new Vec2f(cfg.centerX, cfg.centerZ), cfg.min, cfg.max, src.getWorld().getTopY(), false, Collections.singleton(target));
         }
         UserUtils.Process.remove(targetUser);
     }
@@ -245,5 +240,22 @@ public class RtpCommand extends EssentialCommand {
         KiloServer.getServer().getOnlineUser(target).sendMessage(messages.commands().rtp().start);
         teleport(source, target);
         return SUCCESS;
+    }
+
+    public static class NoOuput implements CommandOutput {
+        public void sendSystemMessage(Text text, UUID uUID) {
+        }
+
+        public boolean shouldReceiveFeedback() {
+            return false;
+        }
+
+        public boolean shouldTrackOutput() {
+            return false;
+        }
+
+        public boolean shouldBroadcastConsoleToOps() {
+            return false;
+        }
     }
 }
