@@ -39,7 +39,7 @@ public class StopCommand {
 
             new CommandSourceServerUser(source).sendMessage(literalText);
         } else
-            KiloEssentials.getMinecraftServer().shutdown();
+            KiloEssentials.getMinecraftServer().stop(false);
 
         return 1;
     }

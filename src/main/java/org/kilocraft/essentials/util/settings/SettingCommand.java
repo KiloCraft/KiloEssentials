@@ -50,8 +50,7 @@ public class SettingCommand extends EssentialCommand {
         String input = ctx.getInput();
         String id = input.split(" ")[1];
         AbstractSetting setting = ServerSettings.root.getSetting(id);
-        if (!(setting instanceof ConfigurableSetting)) throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
-        ConfigurableSetting<?> configurableSetting = (ConfigurableSetting<?>) setting;
+        if (!(setting instanceof ConfigurableSetting<?> configurableSetting)) throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
         Object value = configurableSetting.getValue();
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         player.sendMessage(StringText.of(true, "command.setting.info", setting.getID(), value), false);
