@@ -2,7 +2,7 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.util.MutedPlayerList;
@@ -18,8 +18,8 @@ public class ServerPunishmentManager implements PunishmentManager {
 
     @Override
     public boolean isMuted(EntityIdentifiable user) {
-        MutedPlayerList mutedPlayerList = KiloServer.getServer().getUserManager().getMutedPlayerList();
-        MinecraftServer server = KiloServer.getServer().getMinecraftServer();
+        MutedPlayerList mutedPlayerList = KiloEssentials.getUserManager().getMutedPlayerList();
+        MinecraftServer server = KiloEssentials.getMinecraftServer();
         Optional<GameProfile> profile = server.getUserCache().getByUuid(user.getId());
         if (profile.isEmpty()) {
             return false;

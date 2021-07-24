@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
 import org.kilocraft.essentials.util.LocationUtil;
@@ -122,7 +122,7 @@ public class Vec3dLocation implements Location {
 
     @Override
     public boolean isSafeFor(ServerPlayerEntity player) {
-        return isSafeFor(KiloServer.getServer().getOnlineUser(player));
+        return isSafeFor(KiloEssentials.getUserManager().getOnline(player));
     }
 
     @Override

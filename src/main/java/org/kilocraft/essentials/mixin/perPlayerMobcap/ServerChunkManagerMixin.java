@@ -7,7 +7,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.chunk.ChunkManager;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.patch.perPlayerMobSpawn.PlayerMobDistanceMap;
 import org.kilocraft.essentials.patch.perPlayerMobSpawn.ServerPlayerEntityInterface;
 import org.kilocraft.essentials.patch.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;

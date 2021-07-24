@@ -8,7 +8,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.patch.entityActivationRange.ActivationRange;
@@ -41,7 +41,6 @@ public class ServerSettings implements NBTStorage {
     public static boolean tickInactiveVillagers = false;
     public static int villagerWorkImmunityAfter = 5 * 20;
     public static int villagerWorkImmunityFor = 20;
-    public static int releaseProtocolVersion = 755;
     public static boolean villagerActiveForPanic = true;
 
 
@@ -89,15 +88,17 @@ public class ServerSettings implements NBTStorage {
         ((StringSetting) Objects.requireNonNull(root.getSetting(id))).setValue(value);
     }
 
-    public void registerSettings() {
+    public static void registerSettings() {
         //Custom settings
-        IntegerSetting viewDistance = (IntegerSetting) new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getServer().getMinecraftServer().getPlayerManager().setViewDistance(distance));
+        IntegerSetting viewDistance = (IntegerSetting) new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getMinecraftServer().getPlayerManager().setViewDistance(distance));
         BooleanSetting debug = (BooleanSetting) new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
 
         //Patches
         CategorySetting patch = new CategorySetting("patch");
         //Donkey dupe
         BooleanSetting donkeyDupe = new BooleanSetting(true, "donkey_dupe");
+        //Donkey dupe
+        BooleanSetting loadSpawn = new BooleanSetting(true, "load_spawn");
         //Stuck Wither
         CategorySetting wither = new CategorySetting("wither");
         IntegerSetting check_distance = (IntegerSetting) new IntegerSetting(2, "check_distance").range(-256, 256).onChanged(integer -> wither_check_distance = integer);
@@ -127,6 +128,7 @@ public class ServerSettings implements NBTStorage {
 
 
         patch.addChild(donkeyDupe);
+        patch.addChild(loadSpawn);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
         patch.addChild(enchanting);
@@ -220,7 +222,7 @@ public class ServerSettings implements NBTStorage {
         root.addChild(spawn);
         root.addChild(mobcap);
         root.addChild(patch);
-        KiloCommands.getInstance().register(new SettingCommand());
+        KiloCommands.register(new SettingCommand());
     }
 
     @Override

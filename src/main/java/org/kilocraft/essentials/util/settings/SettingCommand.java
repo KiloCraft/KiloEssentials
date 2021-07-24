@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.util.settings.values.util.AbstractSetting;
@@ -24,8 +24,7 @@ public class SettingCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         for (AbstractSetting setting : ServerSettings.root.getChildren()) {
-            if (!(setting instanceof ConfigurableSetting)) continue;
-            ConfigurableSetting<?> configurableSetting = (ConfigurableSetting<?>) setting;
+            if (!(setting instanceof ConfigurableSetting<?> configurableSetting)) continue;
             RequiredArgumentBuilder<ServerCommandSource, ?> value = configurableSetting.valueArgument();
             value.executes(this::setValue);
             LiteralArgumentBuilder<ServerCommandSource> id = literal(setting.getID());
@@ -39,8 +38,7 @@ public class SettingCommand extends EssentialCommand {
         String input = ctx.getInput();
         String id = input.split(" ")[1];
         AbstractSetting setting = ServerSettings.root.getSetting(id);
-        if (!(setting instanceof ConfigurableSetting)) throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
-        ConfigurableSetting<?> configurableSetting = (ConfigurableSetting<?>) setting;
+        if (!(setting instanceof ConfigurableSetting<?> configurableSetting)) throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
         configurableSetting.setValueFromCommand(ctx);
         Object value = configurableSetting.getValue();
         ServerPlayerEntity player = ctx.getSource().getPlayer();

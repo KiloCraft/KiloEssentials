@@ -202,7 +202,7 @@ public class ScreenGUIBuilder {
                 return this.icon;
             }
 
-            NbtCompound tag = icon.getTag();
+            NbtCompound tag = icon.getNbt();
             if (tag == null) {
                 tag = new NbtCompound();
             }
@@ -220,7 +220,7 @@ public class ScreenGUIBuilder {
                 lore.add(NbtString.of(Text.Serializer.toJson(loreText)));
             }
             tag.getCompound("display").put("Lore", lore);
-            this.icon.setTag(tag);
+            this.icon.setNbt(tag);
 
             return this.icon;
         }

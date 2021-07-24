@@ -43,7 +43,7 @@ public abstract class EntityMixin implements ActivationTypeEntity, InactiveEntit
 
     @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;adjustMovementForPiston(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;"))
     public void onPistonMove(MovementType movementType, Vec3d vec3d, CallbackInfo ci) {
-        this.activatedTick = KiloEssentials.getServer().getMinecraftServer().getTicks() + 20;
+        this.activatedTick = KiloEssentials.getMinecraftServer().getTicks() + 20;
     }
 
     @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;adjustMovementForSneaking(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/entity/MovementType;)Lnet/minecraft/util/math/Vec3d;"), cancellable = true)

@@ -10,7 +10,7 @@ import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
-import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandConfigSection;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandsConfig;
 import org.kilocraft.essentials.provided.KiloFile;

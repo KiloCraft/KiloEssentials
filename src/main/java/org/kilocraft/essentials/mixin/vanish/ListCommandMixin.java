@@ -18,7 +18,7 @@ public class ListCommandMixin {
     @Redirect(method = "execute", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;getPlayerList()Ljava/util/List;"))
     private static List<ServerPlayerEntity> removeVanishedPlayers(PlayerManager playerManager) {
         List<ServerPlayerEntity> list = new ArrayList<>();
-        for (OnlineUser user : KiloEssentials.getServer().getUserManager().getOnlineUsersAsList(false)) {
+        for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList(false)) {
             list.add(user.asPlayer());
         }
         return list;

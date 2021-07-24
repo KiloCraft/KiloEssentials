@@ -14,7 +14,6 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.util.math.DataTracker;
@@ -37,7 +36,7 @@ public class KiloDebugUtils {
 
     public KiloDebugUtils() {
         INSTANCE = this;
-        this.minecraftServer = KiloServer.getServer().getMinecraftServer();
+        this.minecraftServer = KiloEssentials.getMinecraftServer();
 
         setupBossBar();
     }
@@ -46,8 +45,8 @@ public class KiloDebugUtils {
         File debugFile = new File(KiloEssentials.getWorkingDirectory() + "/kiloessentials.debug");
 
         if (debugFile.exists()) {
-            KiloEssentials.getServer().getLogger().warn("**** SERVER IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
-            KiloEssentials.getServer().getLogger().warn("     To change this simply remove the \"kiloessentials.debug\" file and reload");
+            KiloEssentials.getLogger().warn("**** SERVER IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
+            KiloEssentials.getLogger().warn("     To change this simply remove the \"kiloessentials.debug\" file and reload");
 
             setDebugMode(true);
         } else {
@@ -57,7 +56,7 @@ public class KiloDebugUtils {
             }
 
             if (reload && wasEnabled) {
-                KiloEssentials.getServer().getLogger().info("**** DEBUG/DEVELOPMENT MODE DISABLED!");
+                KiloEssentials.getLogger().info("**** DEBUG/DEVELOPMENT MODE DISABLED!");
             }
         }
     }

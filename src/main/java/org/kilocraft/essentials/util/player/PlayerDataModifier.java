@@ -46,7 +46,7 @@ public class PlayerDataModifier {
         return false;
     }
 
-    public NbtCompound getTag() {
+    public NbtCompound getNbt() {
         return this.NbtCompound;
     }
 

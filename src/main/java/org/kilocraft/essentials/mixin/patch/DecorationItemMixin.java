@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,7 +35,7 @@ public abstract class DecorationItemMixin extends Item {
         if (range !=-1 && limit !=-1) {
             Box box = new Box(blockPos.mutableCopy().add(range, range, range), blockPos.mutableCopy().add(-range, -range, -range));
             if (limit <= playerEntity.getEntityWorld().getEntitiesByType(EntityType.ITEM_FRAME, box, EntityPredicates.EXCEPT_SPECTATOR).size() + playerEntity.getEntityWorld().getEntitiesByType(EntityType.GLOW_ITEM_FRAME, box, EntityPredicates.EXCEPT_SPECTATOR).size()) {
-                OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) playerEntity);
+                OnlineUser user = KiloEssentials.getUserManager().getOnline((ServerPlayerEntity) playerEntity);
                 user.sendLangMessage("entity_limit.item_frame", limit, range);
                 return false;
             }

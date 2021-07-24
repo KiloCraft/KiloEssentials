@@ -4,26 +4,22 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.config.KiloConfig;
 
 public class BrandedServer {
-    public static void set() {
-        KiloServer.getServer().setDisplayBrandName(getFinalBrandName());
-    }
 
-    public static void load() {
-        set();
-        KiloServer.getServer().sendGlobalPacket(toPacket());
+    public static void update() {
+        KiloEssentials.getInstance().sendGlobalPacket(toPacket());
     }
 
     public static void provide(ServerPlayerEntity player) {
         player.networkHandler.sendPacket(toPacket());
     }
 
-    private static String getFinalBrandName() {
+    public static String getFinalBrandName() {
         String configBrand = KiloConfig.main().server().displayBrandName;
         boolean useDefault = configBrand.equals("default");
 

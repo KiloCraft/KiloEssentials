@@ -11,11 +11,11 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
@@ -75,7 +75,7 @@ public class DelhomeCommand extends EssentialCommand {
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        getEssentials().getUserThenAcceptAsync(player, inputName, (user) -> {
+        getUserManager().getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
             if (!homeHandler.hasHome(name)) {

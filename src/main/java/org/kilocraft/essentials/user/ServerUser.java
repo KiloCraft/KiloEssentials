@@ -9,9 +9,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.Format;
@@ -54,7 +53,7 @@ import java.util.UUID;
 
 public class ServerUser implements User {
     public static final int SYS_MESSAGE_COOL_DOWN = 400;
-    protected static final ServerUserManager MANAGER = (ServerUserManager) KiloServer.getServer().getUserManager();
+    protected static final ServerUserManager MANAGER = KiloEssentials.getUserManager();
     private final ServerUserPreferences settings;
     private UserHomeHandler homeHandler;
     private Vec3dLocation lastLocation;
@@ -341,12 +340,12 @@ public class ServerUser implements User {
     @Override
     public void setNickname(String name) {
         this.getPreferences().set(Preferences.NICK, Optional.of(name));
-        KiloServer.getServer().getUserManager().onChangeNickname(this, this.getNickname().isPresent() ? this.getNickname().get() : ""); // This is to update the entries in UserManager.
+        KiloEssentials.getUserManager().onChangeNickname(this, this.getNickname().isPresent() ? this.getNickname().get() : ""); // This is to update the entries in UserManager.
     }
 
     @Override
     public void clearNickname() {
-        KiloServer.getServer().getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
+        KiloEssentials.getUserManager().onChangeNickname(this, null); // This is to update the entries in UserManager.
         this.getPreferences().reset(Preferences.NICK);
     }
 
@@ -416,7 +415,7 @@ public class ServerUser implements User {
     }
 
     public static void saveLocationOf(ServerPlayerEntity player) {
-        OnlineUser user = KiloServer.getServer().getOnlineUser(player);
+        OnlineUser user = KiloEssentials.getUserManager().getOnline(player);
 
         if (user != null) {
             user.saveLocation();

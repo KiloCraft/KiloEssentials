@@ -9,13 +9,13 @@ public class DataTracker {
     public static final Average tps = new Average(28800);
 
     public static double getMSPT() {
-        MinecraftServer server = KiloEssentials.getServer().getMinecraftServer();
+        MinecraftServer server = KiloEssentials.getMinecraftServer();
         Average a = new Average(100).setData(server.lastTickLengths).setIndex(server.getTicks());
         return a.getAverage() / (1000000L);
     }
 
     public static String getFormattedMSPT() {
-        MinecraftServer server = KiloEssentials.getServer().getMinecraftServer();
+        MinecraftServer server = KiloEssentials.getMinecraftServer();
         Average a = new Average(100).setData(server.lastTickLengths).setIndex(server.getTicks());
         return ModConstants.DECIMAL_FORMAT.format(a.getAverage() / (1000000L));
     }

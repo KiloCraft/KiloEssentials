@@ -13,15 +13,14 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.extensions.homes.api.Home;
@@ -71,11 +70,7 @@ public class HomeCommand extends EssentialCommand {
         final String name = input.replaceFirst("-confirmed-", "");
 
         if (!homeHandler.hasHome(name)) {
-            if (hasInput) {
-                user.sendLangMessage("command.home.invalid_home");
-            } else {
-                KiloCommands.getInstance().sendUsage(ctx.getSource(), this);
-            }
+            user.sendLangMessage("command.home.invalid_home");
             return IEssentialCommand.FAILED;
         }
 
@@ -107,7 +102,7 @@ public class HomeCommand extends EssentialCommand {
         final OnlineUser src = this.getOnlineUser(player);
         final String inputName = StringArgumentType.getString(ctx, "user");
 
-        this.getEssentials().getUserThenAcceptAsync(src, inputName, user -> {
+        this.getUserManager().getUserThenAcceptAsync(src, inputName, user -> {
             final UserHomeHandler homeHandler = user.getHomesHandler();
             if (!homeHandler.hasHome(name)) {
                 src.sendLangMessage("commands.playerHomes.invalid_home");

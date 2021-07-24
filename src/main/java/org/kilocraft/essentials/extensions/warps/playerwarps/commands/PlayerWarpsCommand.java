@@ -14,7 +14,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.TextColor;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.CommandPermission;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextInput;
@@ -78,7 +78,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
         for (UUID owner : PlayerWarpsManager.getOwners()) {
             AtomicReference<String> name = new AtomicReference<>("");
 
-            this.getEssentials().getUserThenAcceptAsync(owner, (optional) ->
+            getUserManager().getUserThenAcceptAsync(owner, (optional) ->
                     optional.ifPresent((user) -> name.set(user.getFormattedDisplayName()))
             ).join();
 

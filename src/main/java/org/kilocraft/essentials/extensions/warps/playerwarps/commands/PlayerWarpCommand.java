@@ -17,8 +17,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -28,7 +28,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
@@ -227,7 +227,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             return SUCCESS;
         }
 
-        this.getEssentials().getUserThenAcceptAsync(src, inputName, (user) -> {
+        this.getUserManager().getUserThenAcceptAsync(src, inputName, (user) -> {
             this.sendList(src.getCommandSource(), user, page);
         });
 
@@ -245,7 +245,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        this.getEssentials().getUserThenAcceptAsync(src, warp.getOwner(), (user) -> sendInfo(src, warp, user));
+        this.getUserManager().getUserThenAcceptAsync(src, warp.getOwner(), (user) -> sendInfo(src, warp, user));
         return AWAIT;
     }
 

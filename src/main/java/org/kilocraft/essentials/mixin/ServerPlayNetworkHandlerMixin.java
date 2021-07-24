@@ -3,7 +3,6 @@ package org.kilocraft.essentials.mixin;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.nbt.*;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
@@ -13,19 +12,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.EssentialPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.user.ServerUserManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayNetworkHandler.class)
@@ -44,11 +40,11 @@ public abstract class ServerPlayNetworkHandlerMixin {
             )
     )
     private void modify(ChatMessageC2SPacket chatMessageC2SPacket, CallbackInfo ci) {
-        OnlineUser user = KiloServer.getServer().getOnlineUser(this.player);
+        OnlineUser user = KiloEssentials.getUserManager().getOnline(this.player);
 
         if (!KiloConfig.main().chat().useVanillaChat) {
             ci.cancel();
-            ((ServerUserManager) KiloServer.getServer().getUserManager()).onChatMessage(user, chatMessageC2SPacket);
+            KiloEssentials.getUserManager().onChatMessage(user, chatMessageC2SPacket);
         }
     }
 

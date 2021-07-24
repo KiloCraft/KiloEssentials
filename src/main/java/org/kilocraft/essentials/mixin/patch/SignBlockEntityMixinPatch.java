@@ -6,7 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,7 +29,7 @@ public abstract class SignBlockEntityMixinPatch {
             Style style = value != null ? value.getStyle() : null;
             if (style != null && style.getClickEvent() != null && style.getClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) {
                 UserUtils.Animate.swingHand(serverPlayerEntity);
-                KiloServer.getServer().execute(getCommandSource(serverPlayerEntity), style.getClickEvent().getValue());
+                KiloCommands.execute(getCommandSource(serverPlayerEntity), style.getClickEvent().getValue());
                 cir.setReturnValue(true);
             }
         }

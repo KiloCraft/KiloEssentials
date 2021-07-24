@@ -13,8 +13,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.provided.LocateBiomeProvided.BiomeLocatorThread;
+import org.kilocraft.essentials.api.KiloEssentials;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -60,11 +60,11 @@ public class LocateBiomeProvided implements Command {
     }
 
     public static String getBiomeId(Biome biome) {
-        return Objects.requireNonNull(KiloServer.getServer().getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY).getId(biome)).toString();
+        return Objects.requireNonNull(KiloEssentials.getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY).getId(biome)).toString();
     }
 
     public static String getBiomeName(Biome biome) {
-        String s = Objects.requireNonNull(KiloServer.getServer().getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY).getId(biome)).getPath();
+        String s = Objects.requireNonNull(KiloEssentials.getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY).getId(biome)).getPath();
         return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase(Locale.ROOT));
     }
 

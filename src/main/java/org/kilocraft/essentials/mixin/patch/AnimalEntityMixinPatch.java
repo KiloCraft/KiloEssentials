@@ -11,7 +11,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,7 +31,7 @@ public abstract class AnimalEntityMixinPatch extends PassiveEntity {
         int limit = ServerSettings.getInt("entity_limit.animals.limit");
         if (range !=-1 && limit !=-1) {
             if (limit <= this.getEntityWorld().getEntitiesByType(this.getType(), new Box(this.getBlockPos().mutableCopy().add(range, range, range), this.getBlockPos().mutableCopy().add(-range, -range, -range)), EntityPredicates.EXCEPT_SPECTATOR).size()) {
-                OnlineUser user = KiloServer.getServer().getOnlineUser((ServerPlayerEntity) playerEntity);
+                OnlineUser user = KiloEssentials.getUserManager().getOnline((ServerPlayerEntity) playerEntity);
                 user.sendLangMessage("entity_limit.animal", limit, Registry.ENTITY_TYPE.getId(this.getType()).getPath(), range);
                 return ItemStack.EMPTY;
             }

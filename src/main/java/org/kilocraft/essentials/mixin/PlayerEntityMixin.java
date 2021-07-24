@@ -6,7 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.InteractionHandler;
@@ -29,7 +29,7 @@ public abstract class PlayerEntityMixin {
             return;
 
         PlayerEntity player = (ServerPlayerEntity) (Object) this;
-        OnlineUser user = KiloServer.getServer().getOnlineUser(player.getUuid());
+        OnlineUser user = KiloEssentials.getUserManager().getOnline(player.getUuid());
         if (player.getScoreboardTeam() != null && user != null) {
             Text text = new LiteralText(user.getFormattedDisplayName()).styled((style) ->
                     style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + this.getEntityName() + " "))
