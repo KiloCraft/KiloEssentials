@@ -2,6 +2,7 @@ plugins {
     id 'fabric-loom' version '0.8-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '5.1.0'
     id 'maven-publish'
+    id 'com.palantir.git-version' version '0.12.2'
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -9,9 +10,22 @@ apply plugin: 'com.github.johnrengelman.shadow'
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
 
+version gitVersion()
+def details = versionDetails()
+details.lastTag
+details.commitDistance
+details.gitHash
+details.gitHashFull // full 40-character Git commit hash
+details.branchName // is null if the repository in detached HEAD mode
+details.isCleanTag
+
 archivesBaseName = project.archives_base_name
-version = "${project.mod_version}-${project.mod_version_nick}-${project.minecraft_version}"
-group = project.maven_group
+version = "${project.mod_version as Object}-${project.mod_version_nick}-${project.minecraft_version}"
+def buildType = details.isCleanTag ? "clean" : "dirty"
+
+def gitVersion = "${version}-${buildType}+git.${details.branchName}-${details.gitHash}"
+def buildTime = new Date();
+group = project.maven_group as Object
 
 repositories {
     mavenCentral()
@@ -80,6 +94,12 @@ processResources {
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version
+    }
+    filesMatching("mod.properties") {
+        expand "version": version, "version_int": project.mod_version, "built_at": buildTime, "fabric_loader_version": project.loader_version,
+                "fabric_yarn_mappings": project.yarn_mappings, "mc_version": project.minecraft_version,
+                "git_hash": details.gitHash, "git_hash_full": details.gitHashFull, "git_branch": details.branchName, "build_type": buildType, "version_nick": project.mod_version_nick,
+                "version_type": project.mod_version_type
     }
 }
 
