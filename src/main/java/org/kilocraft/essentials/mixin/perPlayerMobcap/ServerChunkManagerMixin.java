@@ -5,8 +5,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.chunk.ChunkManager;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.patch.perPlayerMobSpawn.PlayerMobDistanceMap;
 import org.kilocraft.essentials.patch.perPlayerMobSpawn.ServerPlayerEntityInterface;
 import org.kilocraft.essentials.patch.perPlayerMobSpawn.ThreadedAnvilChunkStorageInterface;
@@ -29,8 +31,12 @@ public abstract class ServerChunkManagerMixin extends ChunkManager {
     @Final
     private ServerWorld world;
 
+    @Shadow @Nullable public abstract SpawnHelper.Info getSpawnInfo();
+
     @Redirect(method = "tickChunks", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/SpawnHelper;setupSpawn(ILjava/lang/Iterable;Lnet/minecraft/world/SpawnHelper$ChunkSource;)Lnet/minecraft/world/SpawnHelper$Info;"))
     public SpawnHelper.Info updateSpawnHelper(int i, Iterable<Entity> iterable, SpawnHelper.ChunkSource chunkSource) {
+        //Only update SpawnHelperInfo when mob spawning is enabled
+        if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) return this.getSpawnInfo();
         SpawnHelper.Info spawnHelperInfo;
         PlayerMobDistanceMap mobDistanceMap = ((ThreadedAnvilChunkStorageInterface) threadedAnvilChunkStorage).getMobDistanceMap();
         if (mobDistanceMap != null) {
