@@ -96,7 +96,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                         this.unseat(user);
                     }
 
-                    if (user.getPreference(Preferences.SITTING_TYPE) == SummonType.INTERACT_SLAB) {
+                    if (user.getPreference(Preferences.SITTING_TYPE) == SummonType.INTERACT_SLAB || user.getPreference(Preferences.SITTING_TYPE) == SummonType.COMMAND) {
                         armorStand.setYaw(user.asPlayer().getYaw());
                     }
                 }
@@ -225,9 +225,9 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             ArmorStandEntity armorStand = getArmorStand(uuid);
             if (armorStand != null) {
                 if (armorStand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
+                    iterator.remove();
                     armorStand.kill();
                     player.sendMessage(StringText.of(true, "sit.stop_riding"), true);
-                    iterator.remove();
                 }
 
             } else {
