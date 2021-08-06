@@ -11,6 +11,7 @@ import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.api.util.TickManager;
 import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.util.commands.KiloCommands;
@@ -191,6 +192,7 @@ public class KiloEssentials {
     }
 
     private void onTick() {
+        TickManager.onTick();
         int ticks = getMinecraftServer().getTicks();
         if (ticks % 100 == 0) {
             ServerMetaManager.updateAll();

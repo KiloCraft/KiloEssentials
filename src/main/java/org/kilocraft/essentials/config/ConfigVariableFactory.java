@@ -2,12 +2,12 @@ package org.kilocraft.essentials.config;
 
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.api.util.TickManager;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -49,12 +49,12 @@ public class ConfigVariableFactory {
         Validate.notNull(str, "String must not be null!");
         final double memUsagePercent = SystemMonitor.getRamUsedPercentage();
         return new ConfigObjectReplacerUtil("server", str)
-                .append("tps", DataTracker.tps.getAverage(100))
-                .append("formatted_tps", ComponentText.formatTps(DataTracker.tps.getAverage(100)))
-                .append("tps5", DataTracker.tps.getAverage(6000))
-                .append("formatted_tps5", ComponentText.formatTps(DataTracker.tps.getAverage(6000)))
-                .append("tps15", DataTracker.tps.getAverage(18000))
-                .append("formatted_tps15", ComponentText.formatTps(DataTracker.tps.getAverage(18000)))
+                .append("tps", TickManager.tps[0])
+                .append("formatted_tps", ComponentText.formatTps(TickManager.tps[0]))
+                .append("tps5", TickManager.tps[3])
+                .append("formatted_tps5", ComponentText.formatTps(TickManager.tps[3]))
+                .append("tps15", TickManager.tps[4])
+                .append("formatted_tps15", ComponentText.formatTps(TickManager.tps[4]))
                 .append("max_players", KiloEssentials.getMinecraftServer().getPlayerManager().getMaxPlayerCount())
                 .append("name", KiloConfig.main().server().name)
                 .append("memory_max", String.valueOf(SystemMonitor.getRamMaxMB()))

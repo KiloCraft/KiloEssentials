@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.util.math.DataTracker;
+import org.kilocraft.essentials.api.util.TickManager;
 
 public class TpsCommand extends EssentialCommand {
     public TpsCommand() {
@@ -18,15 +18,15 @@ public class TpsCommand extends EssentialCommand {
 
     private int run(CommandContext<ServerCommandSource> ctx) {
         getCommandSource(ctx).sendMessage(String.format(
-                "<gold>TPS %s <dark_gray>(<gray>%s ms<dark_gray>) <dark_gray>(<gray>5m<dark_gray>/<gray>15m<dark_gray>/<gray>1h<dark_gray>/<gray>1d<dark_gray>) %s<dark_gray>, %s<dark_gray>, %s<dark_gray>, %s<reset>",
-                ComponentText.formatTps(DataTracker.tps.getAverage(100)),
-                DataTracker.getFormattedMSPT(),
-                ComponentText.formatTps(DataTracker.tps.getAverage(6000)),
-                ComponentText.formatTps(DataTracker.tps.getAverage(18000)),
-                ComponentText.formatTps(DataTracker.tps.getAverage(72000)),
-                ComponentText.formatTps(DataTracker.tps.getAverage(1728000))));
+                "<gold>TPS %s <dark_gray>(<gray>%s ms<dark_gray>) <dark_gray>(<gray>1m<dark_gray>/<gray>5m<dark_gray>/<gray>15m<dark_gray>/<gray>1h<dark_gray>) %s<dark_gray>, %s<dark_gray>, %s<dark_gray>, %s<reset>",
+                ComponentText.formatTps(TickManager.tps[0]),
+                TickManager.getFormattedMSPT(),
+                ComponentText.formatTps(TickManager.tps[2]),
+                ComponentText.formatTps(TickManager.tps[3]),
+                ComponentText.formatTps(TickManager.tps[4]),
+                ComponentText.formatTps(TickManager.tps[5])));
 
-        return (int) Math.floor(DataTracker.tps.getAverage(100));
+        return (int) Math.floor(TickManager.tps[0]);
     }
 
 }

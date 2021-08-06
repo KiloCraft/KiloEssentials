@@ -12,13 +12,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.api.util.TickManager;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
-import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.ServerSettings;
@@ -40,13 +40,13 @@ public class StatusCommand extends EssentialCommand {
                 "\n&7Server uptime: &6" + TimeDifferenceUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()) +
                 "\n&7TPS: " +
                 String.format(
-                        "%s <dark_gray>(<gray>%s ms<dark_gray>) <dark_gray>(<gray>5m<dark_gray>/<gray>15m<dark_gray>/<gray>1h<dark_gray>/<gray>1d<dark_gray>) %s<dark_gray>, %s<dark_gray>, %s<dark_gray>, %s<reset>",
-                        ComponentText.formatTps(DataTracker.tps.getAverage(100)),
-                        DataTracker.getFormattedMSPT(),
-                        ComponentText.formatTps(DataTracker.tps.getAverage(6000)),
-                        ComponentText.formatTps(DataTracker.tps.getAverage(18000)),
-                        ComponentText.formatTps(DataTracker.tps.getAverage(72000)),
-                        ComponentText.formatTps(DataTracker.tps.getAverage(1728000))) +
+                        "<gold>TPS %s <dark_gray>(<gray>%s ms<dark_gray>) <dark_gray>(<gray>1m<dark_gray>/<gray>5m<dark_gray>/<gray>15m<dark_gray>/<gray>1h<dark_gray>) %s<dark_gray>, %s<dark_gray>, %s<dark_gray>, %s<reset>",
+                        ComponentText.formatTps(TickManager.tps[0]),
+                        TickManager.getFormattedMSPT(),
+                        ComponentText.formatTps(TickManager.tps[2]),
+                        ComponentText.formatTps(TickManager.tps[3]),
+                        ComponentText.formatTps(TickManager.tps[4]),
+                        ComponentText.formatTps(TickManager.tps[5])) +
                 "\n&7CPU: " +
                 ComponentText.formatPercentage(cpuUsage) + "% Usage" +
                 " &3" + Thread.activeCount() + " Running Threads" +
