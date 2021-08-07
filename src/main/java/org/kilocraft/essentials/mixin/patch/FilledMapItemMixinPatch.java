@@ -21,7 +21,11 @@ public class FilledMapItemMixinPatch {
     @Redirect(method = "updateColors", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/WorldChunk;isEmpty()Z"))
     public boolean validateChunkNotNull(WorldChunk worldChunk) {
         //worldChunk may be null, because of the above redirect
-        return worldChunk != null && !worldChunk.isEmpty();
+        if (worldChunk == null) {
+            return true;
+        } else {
+            return worldChunk.isEmpty();
+        }
     }
 
 }
