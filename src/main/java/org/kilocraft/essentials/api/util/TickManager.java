@@ -3,8 +3,6 @@ package org.kilocraft.essentials.api.util;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 
-import java.util.concurrent.TimeUnit;
-
 public class TickManager {
 
     //Ticks worth one real day
@@ -40,7 +38,7 @@ public class TickManager {
 
     private static void calculateTps() {
         for (int i = 0; i < TICK_STORAGE_SIZES.length; i++) {
-            writeTpsAndMspt(i);
+            if (i == 0 || currentTick % (i * 5) == 0) writeTpsAndMspt(i);
         }
     }
 
@@ -50,18 +48,19 @@ public class TickManager {
         //Time used for calculating average ms per tick
         double actualTotalTickTime = 0;
         int validTicks = 0;
-        for (int i = 0; i < Math.min(TICK_STORAGE_SIZES[index], STORED_TICKS); i++) {
+        int length = Math.min(TICK_STORAGE_SIZES[index], STORED_TICKS);
+        for (int i = 0; i < length; i++) {
             long tickTime = TICK_TIMES[(currentTick - i + STORED_TICKS) % STORED_TICKS];
             if (tickTime != 0) {
                 //Calculate tick length (has to be at least 50ms, because that is how long the server will wait if it finished quicker)
-                totalTickTime += Math.max(tickTime, TimeUnit.MILLISECONDS.toNanos(50));
+                totalTickTime += Math.max(tickTime, 50000000);
                 actualTotalTickTime += tickTime;
                 validTicks++;
             }
         }
         if (validTicks > 0) {
             double averageTickLength = actualTotalTickTime / validTicks;
-            double averageTPS = TimeUnit.SECONDS.toNanos(1) / (totalTickTime / validTicks);
+            double averageTPS = 1000000000 / (totalTickTime / validTicks);
             tps[index] = averageTPS;
             mspt[index] = averageTickLength / 1000000;
         }
