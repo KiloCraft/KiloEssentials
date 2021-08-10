@@ -20,7 +20,7 @@ public enum CommandPermission {
     HOME_SET_LIMIT_BYPASS("home.limit.bypass"),
     PLAYER_WARP("player_warp"),
     PLAYER_WARP_SELF("player_warp.self"),
-    PLAYER_WARP_OTHERS("player_warp.others"),
+    PLAYER_WARP_ADMIN("player_warp.admin"),
     PLAYER_WARP_LIMIT("player_warp.limit"),
     PLAYER_WARP_LIMIT_BYPASS("player_warp.limit.bypass"),
     PLAYER_WARPS("playerwarps"),

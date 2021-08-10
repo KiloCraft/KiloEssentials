@@ -35,8 +35,16 @@ public class PlayerWarp extends Warp implements Comparable<PlayerWarp> {
         return this.owner;
     }
 
+    public void setOwner(UUID owner) {
+        this.owner = owner;
+    }
+
     public String getDescription() {
         return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -75,16 +83,16 @@ public class PlayerWarp extends Warp implements Comparable<PlayerWarp> {
             types.add(type);
         }
 
-        public String getName() {
-            return this.name;
-        }
-
         public static List<String> getTypes() {
             return types;
         }
 
         public static boolean isValid(String name) {
             return types.contains(name);
+        }
+
+        public String getName() {
+            return this.name;
         }
     }
 }

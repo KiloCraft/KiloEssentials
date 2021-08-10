@@ -14,15 +14,11 @@ import org.kilocraft.essentials.extensions.warps.playerwarps.commands.PlayerWarp
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTStorage {
     private static boolean enabled = false;
-    private static final List<UUID> warpOwners = new ArrayList<>();
     private static final ArrayList<String> byName = new ArrayList<>();
     private static final List<PlayerWarp> warps = new ArrayList<>();
 
@@ -34,7 +30,7 @@ public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTSto
         KiloCommands.register(
                 new PlayerWarpCommand("playerwarp", src ->
                         KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_SELF) ||
-                                KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_OTHERS)
+                                KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_ADMIN)
                         , new String[]{"pwarp"})
         );
 
@@ -64,13 +60,11 @@ public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTSto
     public static void addWarp(PlayerWarp warp) {
         warps.add(warp);
         byName.add(warp.getName());
-        warpOwners.add(warp.getOwner());
     }
 
     public static void removeWarp(PlayerWarp warp) {
         warps.remove(warp);
         byName.remove(warp.getName());
-        warpOwners.remove(warp.getOwner());
     }
 
     public static void removeWarp(String name) {
@@ -96,10 +90,6 @@ public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTSto
         return warps.stream().filter((warp) -> warp.getOwner().equals(owner)).collect(Collectors.toList());
     }
 
-    public static List<UUID> getOwners() {
-        return warpOwners;
-    }
-
     public static boolean isEnabled() {
         return enabled;
     }
@@ -123,11 +113,9 @@ public class PlayerWarpsManager implements ReloadableConfigurableFeature, NBTSto
     public void deserialize(@NotNull NbtCompound NbtCompound) {
         warps.clear();
         byName.clear();
-        warpOwners.clear();
 
         for (String key : NbtCompound.getKeys()) {
             PlayerWarp warp = new PlayerWarp(key, NbtCompound.getCompound(key));
-            warpOwners.add(warp.getOwner());
             warps.add(warp);
             byName.add(key);
         }
