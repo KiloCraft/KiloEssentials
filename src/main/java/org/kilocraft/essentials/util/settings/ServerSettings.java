@@ -106,12 +106,11 @@ public class ServerSettings implements NBTStorage {
     }
 
     public static void setViewDistance(int viewDistance) {
-        ServerSettings.setInt("view_distance", viewDistance);
+        ServerSettings.setInt("tick_utils.view_distance", viewDistance);
     }
 
     public static void registerSettings() {
         //Custom settings
-        IntegerSetting viewDistance = new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getMinecraftServer().getPlayerManager().setViewDistance(distance));
         BooleanSetting debug = new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
 
         //Patches
@@ -207,16 +206,18 @@ public class ServerSettings implements NBTStorage {
         automated.addChild(max_mobcap);
 
         Arrays.fill(entityTickCache, true);
-        BooleanSetting entityTicking = new BooleanSetting(true, "entity").onChanged(bool -> entityTickCache[0] = bool);
+        BooleanSetting entityTicking = (BooleanSetting) new BooleanSetting(true, "entity").onChanged(bool -> entityTickCache[0] = bool).limitChildren();
         for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
             BooleanSetting value = new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entityTickCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
             entityTicking.addChild(value);
         }
+        IntegerSetting view_distance = new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getMinecraftServer().getPlayerManager().setViewDistance(distance));
 
         tick_utils.addChild(automated);
-        tick_utils.addChild(entityTicking);
         tick_utils.addChild(tick_distance);
+        tick_utils.addChild(view_distance);
         tick_utils.addChild(global_mobcap);
+        tick_utils.addChild(entityTicking);
 
         //Entity Limit
         CategorySetting entity_limit = new CategorySetting("entity_limit");
@@ -235,15 +236,12 @@ public class ServerSettings implements NBTStorage {
         }
 
         //Spawning
-        CategorySetting spawn = new CategorySetting("spawn");
+        CategorySetting spawn = (CategorySetting) new CategorySetting("spawn").limitChildren();
         Arrays.fill(entitySpawnCache, true);
-        BooleanSetting spawnEntity = new BooleanSetting(true, "entity").onChanged(bool -> entitySpawnCache[0] = bool);
         for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
             BooleanSetting value = new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entitySpawnCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
-            spawnEntity.addChild(value);
+            spawn.addChild(value);
         }
-
-        spawn.addChild(spawnEntity);
 
         //Mobcap
         ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][SpawnGroup.values().length + 1];
@@ -261,7 +259,6 @@ public class ServerSettings implements NBTStorage {
         }
 
         root.addChild(activation_range);
-        root.addChild(viewDistance);
         root.addChild(debug);
         root.addChild(tick_utils);
         root.addChild(entity_limit);

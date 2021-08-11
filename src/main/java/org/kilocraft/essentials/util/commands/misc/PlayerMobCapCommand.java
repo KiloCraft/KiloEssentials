@@ -38,7 +38,7 @@ public class PlayerMobCapCommand extends EssentialCommand {
         if (spawnHelperInfo == null) KiloEssentials.getLogger().error("SpawnEntry is null");
         TextComponent.Builder text = Component.text();
         text.content("Player Mobcaps").color(NamedTextColor.YELLOW).append(Component.text(" (").color(NamedTextColor.DARK_GRAY))
-                .append(Component.text(ServerSettings.tick_utils_global_mobcap).color(NamedTextColor.RED))
+                .append(Component.text(String.format("%.1f", ServerSettings.tick_utils_global_mobcap)).color(NamedTextColor.RED))
                 .append(Component.text(", ").color(NamedTextColor.GRAY))
                 .append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0]).color(NamedTextColor.GREEN))
                 .append(Component.text(")").color(NamedTextColor.DARK_GRAY))

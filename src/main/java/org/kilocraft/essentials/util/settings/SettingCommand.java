@@ -106,7 +106,7 @@ public class SettingCommand extends EssentialCommand {
         int children = 0;
         for (AbstractSetting child : setting.getChildren()) {
             String preString = "  ".repeat(Math.max(0, depth)) + "- ";
-            if (depth != 0 && children >= MAX_ENTRIES) {
+            if (depth != 0 && children >= MAX_ENTRIES && setting.shouldLimitChildren()) {
                 player.sendMessage(StringText.of(true, "command.setting.more", preString, (setting.getChildren().size() - MAX_ENTRIES)), false);
                 return;
             }

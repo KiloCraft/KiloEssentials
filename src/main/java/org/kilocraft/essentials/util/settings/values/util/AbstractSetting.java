@@ -11,6 +11,8 @@ public abstract class AbstractSetting implements Setting {
     protected final String id;
     protected final List<AbstractSetting> children = new ArrayList<>();
     Setting parent;
+    private boolean limitChildren = false;
+
     public AbstractSetting(String id) {
         this.id = id;
     }
@@ -24,6 +26,11 @@ public abstract class AbstractSetting implements Setting {
     public List<AbstractSetting> getChildren() {
         return children;
     }
+
+    public boolean shouldLimitChildren() {
+        return limitChildren;
+    }
+
 
     public AbstractSetting addChild(AbstractSetting setting) {
         children.add(setting);
@@ -67,5 +74,9 @@ public abstract class AbstractSetting implements Setting {
         return null;
     }
 
+    public AbstractSetting limitChildren() {
+        this.limitChildren = true;
+        return this;
+    }
 
 }
