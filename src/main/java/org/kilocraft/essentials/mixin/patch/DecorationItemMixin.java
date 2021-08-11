@@ -36,7 +36,7 @@ public abstract class DecorationItemMixin extends Item {
             Box box = new Box(blockPos.mutableCopy().add(range, range, range), blockPos.mutableCopy().add(-range, -range, -range));
             if (limit <= playerEntity.getEntityWorld().getEntitiesByType(EntityType.ITEM_FRAME, box, EntityPredicates.EXCEPT_SPECTATOR).size() + playerEntity.getEntityWorld().getEntitiesByType(EntityType.GLOW_ITEM_FRAME, box, EntityPredicates.EXCEPT_SPECTATOR).size()) {
                 OnlineUser user = KiloEssentials.getUserManager().getOnline((ServerPlayerEntity) playerEntity);
-                user.sendLangMessage("entity_limit.item_frame", limit, range);
+                user.sendLangMessage("template.entity_limit", limit, "item frame", range);
                 return false;
             }
         }

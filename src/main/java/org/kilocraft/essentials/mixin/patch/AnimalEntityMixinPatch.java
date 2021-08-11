@@ -32,7 +32,7 @@ public abstract class AnimalEntityMixinPatch extends PassiveEntity {
         if (range !=-1 && limit !=-1) {
             if (limit <= this.getEntityWorld().getEntitiesByType(this.getType(), new Box(this.getBlockPos().mutableCopy().add(range, range, range), this.getBlockPos().mutableCopy().add(-range, -range, -range)), EntityPredicates.EXCEPT_SPECTATOR).size()) {
                 OnlineUser user = KiloEssentials.getUserManager().getOnline((ServerPlayerEntity) playerEntity);
-                user.sendLangMessage("entity_limit.animal", limit, Registry.ENTITY_TYPE.getId(this.getType()).getPath(), range);
+                user.sendLangMessage("template.entity_limit", limit, Registry.ENTITY_TYPE.getId(this.getType()).getPath(), range);
                 return ItemStack.EMPTY;
             }
         }
