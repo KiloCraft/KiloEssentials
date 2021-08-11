@@ -4,7 +4,7 @@
   "package": "org.kilocraft.essentials.mixin.patch",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "AnimalEntityMixinPatch",
+    "AnimalEntityMixin",
     "ClientConnectionMixin",
     "DecorationItemMixin",
     "EggEntityMixin",

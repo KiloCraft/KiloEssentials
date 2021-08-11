@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -93,7 +94,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                     BlockPos pos = summonType == SummonType.COMMAND ? armorStand.getBlockPos().up() : armorStand.getBlockPos().up(2);
 
                     if (armorStand.getEntityWorld().getBlockState(pos).getBlock() == Blocks.AIR) {
-                        this.unseat(user);
+                        this.unseat(armorStand);
                     }
 
                     if (user.getPreference(Preferences.SITTING_TYPE) == SummonType.INTERACT_SLAB || user.getPreference(Preferences.SITTING_TYPE) == SummonType.COMMAND) {
@@ -194,7 +195,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         stand.setNoGravity(true);
         stand.setInvulnerable(true);
         stand.addScoreboardTag("KE$SitStand#" + user.getUsername());
-        stand.addScoreboardTag("KE$SitStand");
+        stand.addScoreboardTag("KESitStand");
         stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
         user.getPreferences().set(Preferences.SITTING_TYPE, summonType);
         stand.setYaw(yaw);
@@ -217,24 +218,21 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         if (player == null) {
             return;
         }
+        Entity vehicle = player.getVehicle();
+        if (vehicle instanceof ArmorStandEntity armorStand) {
+            unseat(armorStand);
+        }
+    }
 
-        Iterator<UUID> iterator = stands.iterator();
-        while (iterator.hasNext()) {
-            UUID uuid = iterator.next();
-            ArmorStandEntity armorStand = getArmorStand(uuid);
-            if (armorStand != null) {
-                if (armorStand.getScoreboardTags().contains("KE$SitStand#" + user.getUsername())) {
-                    iterator.remove();
-                    player.stopRiding();
-                    armorStand.kill();
-                    player.sendMessage(StringText.of(true, "sit.stop_riding"), true);
-                }
-
-            } else {
-                iterator.remove();
+    private void unseat(ArmorStandEntity armorStandEntity) {
+        if (armorStandEntity.getScoreboardTags().contains("KESitStand")) {
+            Entity passenger = armorStandEntity.getFirstPassenger();
+            if (passenger instanceof PlayerEntity playerEntity) {
+                passenger.stopRiding();
+                armorStandEntity.kill();
+                playerEntity.sendMessage(StringText.of(true, "sit.stop_riding"), true);
             }
         }
-
     }
 
     public void killAll() {
