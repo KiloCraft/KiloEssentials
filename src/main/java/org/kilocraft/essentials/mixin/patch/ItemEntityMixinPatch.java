@@ -22,12 +22,12 @@ public abstract class ItemEntityMixinPatch extends Entity {
 
     @Redirect(method = "tryMerge()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;getBoundingBox()Lnet/minecraft/util/math/Box;"))
     public Box adjustMergeRadius(ItemEntity itemEntity) {
-        return this.getBoundingBox().expand(ServerSettings.getDouble("patch.item_merge.radius"), 0.0D, ServerSettings.getDouble("patch.item_merge.radius"));
+        return this.getBoundingBox().expand(ServerSettings.patch_item_merge_radius, 0.0D, ServerSettings.patch_item_merge_radius);
     }
 
     @Inject(method = "merge(Lnet/minecraft/entity/ItemEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/ItemEntity;Lnet/minecraft/item/ItemStack;)V", at = @At(value = "INVOKE"))
     private static void adjustMotion(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2, CallbackInfo ci) {
-        if (itemEntity.getVelocity().lengthSquared() < itemEntity2.getVelocity().lengthSquared() && ServerSettings.getBoolean("patch.item_merge.adjust_movement")) {
+        if (itemEntity.getVelocity().lengthSquared() < itemEntity2.getVelocity().lengthSquared() && ServerSettings.patch_item_merge_adjust_movement) {
             itemEntity.setVelocity(itemEntity2.getVelocity());
         }
     }

@@ -28,18 +28,13 @@ public abstract class ServerWorldMixinPatch {
             float h = 1.0F;
             boolean b = true;
             switch (i) {
-                case 1023:
-                    soundEvent = SoundEvents.ENTITY_WITHER_SPAWN;
-                    break;
-                case 1028:
+                case 1023 -> soundEvent = SoundEvents.ENTITY_WITHER_SPAWN;
+                case 1028 -> {
                     soundEvent = SoundEvents.ENTITY_ENDER_DRAGON_DEATH;
                     g = 5.0F;
-                    break;
-                case 1038:
-                    soundEvent = SoundEvents.BLOCK_END_PORTAL_SPAWN;
-                    break;
-                default:
-                    b = false;
+                }
+                case 1038 -> soundEvent = SoundEvents.BLOCK_END_PORTAL_SPAWN;
+                default -> b = false;
             }
             if (b)
                 this.playSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), soundEvent, SoundCategory.HOSTILE, g, h);

@@ -42,6 +42,8 @@ public class ServerSettings implements NBTStorage {
     public static int villagerWorkImmunityAfter = 5 * 20;
     public static int villagerWorkImmunityFor = 20;
     public static boolean villagerActiveForPanic = true;
+    public static boolean patch_item_merge_adjust_movement = true;
+    public static double patch_item_merge_radius = 0.5D;
 
 
     public ServerSettings() {
@@ -102,21 +104,15 @@ public class ServerSettings implements NBTStorage {
         //Stuck Wither
         CategorySetting wither = new CategorySetting("wither");
         IntegerSetting check_distance = (IntegerSetting) new IntegerSetting(2, "check_distance").range(-256, 256).onChanged(integer -> wither_check_distance = integer);
-        DoubleSetting tp_distance = (DoubleSetting) new DoubleSetting(1D, "tp_distance").range(-256D, 256D).onChanged(d -> wither_tp_distance = d);
+        DoubleSetting tp_distance = (DoubleSetting) new DoubleSetting(0D, "tp_distance").range(-256D, 256D).onChanged(d -> wither_tp_distance = d);
         wither.addChild(check_distance);
         wither.addChild(tp_distance);
         //per-player-mobcap
         BooleanSetting ppmobcap = (BooleanSetting) new BooleanSetting(false, "ppmobcap").onChanged(bool -> perPlayerMobcap = bool);
 
-        //Enchanting
-        CategorySetting enchanting = new CategorySetting("enchanting");
-        BooleanSetting hasChanged = new BooleanSetting(false, "hasChanged");
-        enchanting.addChild(hasChanged);
-
-
         //Entity merging
         CategorySetting item_merge = new CategorySetting("item_merge");
-        DoubleSetting radius = new DoubleSetting(0.5D, "radius").range(0D, 256D);
+        DoubleSetting radius = (DoubleSetting) new DoubleSetting(0.5D, "radius").range(0D, 256D).onChanged(d -> patch_item_merge_radius = d);
         BooleanSetting adjust_movement = new BooleanSetting(true, "adjust_movement");
         item_merge.addChild(radius);
         item_merge.addChild(adjust_movement);
@@ -131,7 +127,6 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(loadSpawn);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
-        patch.addChild(enchanting);
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
         patch.addChild(global_sound);
