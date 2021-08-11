@@ -13,19 +13,20 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
+import org.kilocraft.essentials.api.util.schedule.SinglePlayerScheduler;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 
 public class HomeCommand extends EssentialCommand {
     private static final SimpleCommandExceptionType MISSING_DIMENSION = new SimpleCommandExceptionType(new LiteralText("The Dimension this home exists in no longer exists"));
@@ -79,13 +80,13 @@ public class HomeCommand extends EssentialCommand {
             return IEssentialCommand.FAILED;
         }
 
-        ScheduledExecutionThread.teleport(user, null, () -> {
+        homeHandler.prepareHomeLocation(user, homeHandler.getHome(name));
+
+        new SinglePlayerScheduler(user, 1, KiloConfig.main().server().cooldown, () -> {
             try {
-                if (user.isOnline()) {
-                    homeHandler.teleportToHome(user, name);
-                    user.sendLangMessage("command.home.teleport.self", name);
-                }
-            } catch (final UnsafeHomeException e) {
+                homeHandler.teleportToHome(user, name);
+                user.sendLangMessage("command.home.teleport.self", name);
+            } catch (UnsafeHomeException e) {
                 if (e.getReason() == UserHomeHandler.Reason.MISSING_DIMENSION) {
                     user.sendError(e.getMessage());
                 }

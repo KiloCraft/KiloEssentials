@@ -6,38 +6,35 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
-import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
+import net.minecraft.world.biome.Biome;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.preference.Preference;
+import org.kilocraft.essentials.api.util.schedule.SinglePlayerScheduler;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
-import org.kilocraft.essentials.mixin.accessor.SpreadPlayerCommandInvoker;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.SimpleProcess;
+import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
-import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
-import java.util.Collections;
 import java.util.Random;
-import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
@@ -51,16 +48,14 @@ public class RtpCommand extends EssentialCommand {
     private static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER_DIMENSIONS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERDIMENSIONS);
     private static final Predicate<ServerCommandSource> PERMISSION_CHECK_MANAGE = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_MANAGE);
     private static final Preference<Integer> RTP_LEFT = Preferences.RANDOM_TELEPORTS_LEFT;
-    private static final String ACTION_MSG = ModConstants.translation("command.rtp.round_try");
 
     public RtpCommand() {
         super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
     }
 
-    void teleport(ServerCommandSource src, ServerPlayerEntity target) throws CommandSyntaxException {
+    void teleport(ServerCommandSource src, ServerPlayerEntity target) {
         OnlineUser targetUser = getUserManager().getOnline(target);
         RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
-        UserUtils.Process.add(targetUser, PROCESS);
         if (targetUser.getPreference(RTP_LEFT) < 0) {
             targetUser.getPreferences().set(RTP_LEFT, 0);
         }
@@ -83,20 +78,33 @@ public class RtpCommand extends EssentialCommand {
         if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
             targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
         }
-        if (cfg.simpleRTP) {
+        boolean done = false;
+        BlockPos pos = null;
+        int x = 0;
+        int z = 0;
+        int tries = 0;
+        while (!done) {
+            if (tries >= cfg.maxTries) {
+                targetUser.sendLangMessage("command.rtp.failed");
+                return;
+            }
             Random r = new Random();
-            double x = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
-            double z = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
-            StatusEffectInstance jump_boost = new StatusEffectInstance(StatusEffects.JUMP_BOOST, 200, 255, false, false);
-            StatusEffectInstance blindness = new StatusEffectInstance(StatusEffects.BLINDNESS, 200, 0, false, false);
-            target.addStatusEffect(jump_boost);
-            target.addStatusEffect(blindness);
-            target.teleport(target.getServerWorld(), x, target.getServerWorld().getTopY(), z, target.getYaw(), target.getPitch());
-        } else {
-            src.withOutput(new NoOuput());
-            SpreadPlayerCommandInvoker.execute(src, new Vec2f(cfg.centerX, cfg.centerZ), cfg.min, cfg.max, src.getWorld().getTopY(), false, Collections.singleton(target));
+            x = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
+            x += cfg.centerX;
+            z = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
+            z += cfg.centerZ;
+            pos = new BlockPos(x, 64, z);
+            Biome biome = target.getServerWorld().getBiome(pos);
+            tries++;
+            if (!(biome.getCategory() == Biome.Category.OCEAN)) done = true;
         }
-        UserUtils.Process.remove(targetUser);
+        //Add a custom ticket to gradually preload chunks
+        target.getServerWorld().getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance() + 1, target.getId()); // Lag reduction
+        final int finalX = x;
+        final int finalZ = z;
+        new SinglePlayerScheduler(targetUser, -1, cfg.teleportCooldown, () -> {
+            target.teleport(target.getServerWorld(), finalX, target.getServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, finalX, finalZ) + 1, finalZ, target.getYaw(), target.getPitch());
+        });
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -215,47 +223,18 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int executePerform(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = this.getOnlineUser(ctx);
-
-        if (UserUtils.Process.isIn(user, PROCESS.getId())) {
-            user.sendLangError("command.rtp.in_process");
-            return FAILED;
-        }
-
         return execute(ctx.getSource(), ctx.getSource().getPlayer());
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser target = getUserManager().getOnline(getPlayer(ctx, "target"));
 
-        if (UserUtils.Process.isIn(target, PROCESS.getId())) {
-            target.sendLangError("command.rtp.in_process");
-            return FAILED;
-        }
-
         return execute(ctx.getSource(), target.asPlayer());
     }
 
-    private int execute(ServerCommandSource source, ServerPlayerEntity target) throws CommandSyntaxException {
+    private int execute(ServerCommandSource source, ServerPlayerEntity target) {
         getUserManager().getOnline(target).sendMessage(messages.commands().rtp().start);
         teleport(source, target);
         return SUCCESS;
-    }
-
-    public static class NoOuput implements CommandOutput {
-        public void sendSystemMessage(Text text, UUID uUID) {
-        }
-
-        public boolean shouldReceiveFeedback() {
-            return false;
-        }
-
-        public boolean shouldTrackOutput() {
-            return false;
-        }
-
-        public boolean shouldBroadcastConsoleToOps() {
-            return false;
-        }
     }
 }

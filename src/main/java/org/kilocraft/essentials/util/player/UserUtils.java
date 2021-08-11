@@ -67,29 +67,6 @@ public class UserUtils {
         return getLuckyUser(uuid).getCachedData().getMetaData(options);
     }
 
-    public static class Process {
-        public static boolean isIn(@NotNull final OnlineUser user, String processId) {
-            return USER_MANAGER.getInProcessUsers().containsKey(user.getUuid()) && USER_MANAGER.getInProcessUsers().get(user.getUuid()).getId().equals(processId);
-        }
-
-        public static void add(@NotNull final OnlineUser user, SimpleProcess<?> process) {
-            USER_MANAGER.getInProcessUsers().put(user.getUuid(), process);
-        }
-
-        public static void remove(@NotNull final OnlineUser user) {
-            USER_MANAGER.getInProcessUsers().remove(user.getUuid());
-        }
-
-        public static boolean isInAny(@NotNull final OnlineUser user) {
-            return USER_MANAGER.getInProcessUsers().containsKey(user.getUuid());
-        }
-
-        @Nullable
-        public static <T> SimpleProcess<T> get(@NotNull final OnlineUser user) {
-            return (SimpleProcess<T>) USER_MANAGER.getInProcessUsers().get(user.getUuid());
-        }
-    }
-
     public static class TpaRequests {
         public static boolean hasRequest(final OnlineUser src, final OnlineUser target) {
             if (PairMap.isInMap(src)) {

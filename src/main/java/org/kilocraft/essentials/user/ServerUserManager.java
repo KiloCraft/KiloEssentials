@@ -431,10 +431,6 @@ public class ServerUserManager implements UserManager, TickListener {
         this.usernameToUUID.remove(player.getEntityName());
         this.users.remove(user);
 
-        if (UserUtils.Process.isInAny(user)) {
-            UserUtils.Process.remove(user);
-        }
-
         try {
             this.handler.save(user);
         } catch (IOException e) {

@@ -7,18 +7,21 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
-import org.kilocraft.essentials.util.commands.KiloCommands;
+import net.minecraft.util.math.ChunkPos;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.extensions.homes.commands.DelhomeCommand;
 import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
 import org.kilocraft.essentials.extensions.homes.commands.HomesCommand;
 import org.kilocraft.essentials.extensions.homes.commands.SethomeCommand;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.ArrayList;
@@ -34,6 +37,8 @@ import java.util.concurrent.CompletableFuture;
  */
 
 public class UserHomeHandler implements ConfigurableFeature {
+    //TODO: Use home cooldown from config
+    public static ChunkTicketType<Integer> HOMES = ChunkTicketType.create("homes", Integer::compareTo, 60);
     private static boolean isEnabled = false;
     private static List<Home> loadedHomes = new ArrayList<>();
     private List<Home> userHomes;
@@ -146,7 +151,24 @@ public class UserHomeHandler implements ConfigurableFeature {
 
             Home.teleportTo(user, home);
         }
+    }
 
+    public void prepareHomeLocation(OnlineUser user, Home home) {
+        if (home == null) return;
+        if (user.isOnline()) {
+            ServerWorld world = KiloEssentials.getMinecraftServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
+
+            if (world == null) {
+                return;
+            }
+
+            if (!userHomes.contains(home)) {
+                return;
+            }
+
+            //Add a custom ticket to gradually preload chunks
+            world.getChunkManager().addTicket(ChunkTicketType.create("home", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(home.getLocation().toPos()), KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
+        }
     }
 
     public NbtCompound serialize(NbtCompound tag) {

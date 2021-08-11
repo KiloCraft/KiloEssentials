@@ -6,21 +6,24 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
+import net.minecraft.util.math.ChunkPos;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
+import org.kilocraft.essentials.api.util.schedule.SinglePlayerScheduler;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.util.Locale;
 
@@ -102,15 +105,15 @@ public class WarpCommand {
             Home home = new Home();
             user.getHomesHandler().addHome();
         }*/
-        ScheduledExecutionThread.teleport(user, null, () -> {
-            if (user.isOnline()) {
-                user.sendLangMessage("command.warp.teleport", warp.getName());
-                user.saveLocation();
-                try {
-                    ServerWarpManager.teleport(user.getCommandSource(), warp);
-                } catch (CommandSyntaxException ignored) {
-                    //We already have a check, which checks if the executor is a player
-                }
+        //Add a custom ticket to gradually preload chunks
+        warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("warp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
+        new SinglePlayerScheduler(user, 1, KiloConfig.main().server().cooldown, () -> {
+            user.sendLangMessage("command.warp.teleport", warp.getName());
+            user.saveLocation();
+            try {
+                ServerWarpManager.teleport(user.getCommandSource(), warp);
+            } catch (CommandSyntaxException ignored) {
+                //We already have a check, which checks if the executor is a player
             }
         });
         return 1;
@@ -166,8 +169,7 @@ public class WarpCommand {
         if (w != null) {
             ServerWarpManager.removeWarp(w);
             user.sendLangMessage("command.warp.remove", warp);
-        }
-        else
+        } else
             throw WARP_NOT_FOUND_EXCEPTION.create();
 
         return 1;

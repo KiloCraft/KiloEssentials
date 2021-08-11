@@ -11,14 +11,15 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.ChunkPos;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -26,12 +27,14 @@ import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
+import org.kilocraft.essentials.api.util.schedule.SinglePlayerScheduler;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.text.Texter;
@@ -388,13 +391,13 @@ public class PlayerWarpCommand extends EssentialCommand {
 //                return -1;
 //            }
 //        }
-        ScheduledExecutionThread.teleport(src, null, () -> {
-            if (src.isOnline()) {
-                src.sendMessage(
-                        KiloConfig.messages().commands().warp().teleportTo
-                                .replace("{WARP_NAME}", warp.getName()));
-                src.teleport(warp.getLocation(), true);
-            }
+        //Add a custom ticket to gradually preload chunks
+        warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("pwarp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance() + 1, src.asPlayer().getId());
+        new SinglePlayerScheduler(src, 1, KiloConfig.main().server().cooldown, () -> {
+            src.sendMessage(
+                    KiloConfig.messages().commands().warp().teleportTo
+                            .replace("{WARP_NAME}", warp.getName()));
+            src.teleport(warp.getLocation(), true);
         });
         return SUCCESS;
     }
