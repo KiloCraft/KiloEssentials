@@ -9,9 +9,6 @@ import java.util.List;
 @ConfigSerializable
 public class WorldConfigSection {
 
-    @Setting(value = "allowTheEnd", comment = "If set to false no one will be able to go to The End")
-    public boolean allowTheEnd = true;
-
     @Setting(value = "disabledDimensions", comment = "Put the identifier of a dimension here to disable it!")
     public List<String> disabledDimensions = Lists.newArrayList("myserver:custom_dimension");
 

@@ -2,7 +2,6 @@ package org.kilocraft.essentials.api.feature;
 
 import net.minecraft.SharedConstants;
 import org.kilocraft.essentials.KiloDebugUtils;
-import org.kilocraft.essentials.KiloEssentialsImpl;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
@@ -12,18 +11,12 @@ import java.util.List;
 public class ConfigurableFeatures {
     private static final List<ConfigurableFeature> features = new ArrayList<>();
     private static final List<TickListener> tickListeners = new ArrayList<>();
-    private static ConfigurableFeatures INSTANCE;
 
-    public ConfigurableFeatures() {
-        KiloEssentialsImpl.getLogger().info("Registering the Configurable Features...");
-        INSTANCE = this;
-    }
-
-    public <F extends ConfigurableFeature> boolean isEnabled(F feature) {
+    public static <F extends ConfigurableFeature> boolean isEnabled(F feature) {
         return features.contains(feature);
     }
 
-    public <F extends ConfigurableFeature> void register(F feature, String configKey) {
+    public static <F extends ConfigurableFeature> void register(F feature, String configKey) {
         try {
             if (KiloConfig.getMainNode().getNode("features").getNode(configKey).getBoolean()) {
                 if (SharedConstants.isDevelopment) {
@@ -42,7 +35,7 @@ public class ConfigurableFeatures {
         }
     }
 
-    public void loadAll(boolean reload) {
+    public static void loadAll(boolean reload) {
         for (ConfigurableFeature feature : features) {
             if (feature instanceof ReloadableConfigurableFeature) {
                 try {
@@ -55,7 +48,7 @@ public class ConfigurableFeatures {
         }
     }
 
-    public void onTick() {
+    public static void onTick() {
         for (TickListener listener : tickListeners) {
             try {
                 listener.onTick();
@@ -65,7 +58,4 @@ public class ConfigurableFeatures {
         }
     }
 
-    public static ConfigurableFeatures getInstance() {
-        return INSTANCE;
-    }
 }

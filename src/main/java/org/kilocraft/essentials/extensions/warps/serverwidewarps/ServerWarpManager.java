@@ -10,7 +10,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;

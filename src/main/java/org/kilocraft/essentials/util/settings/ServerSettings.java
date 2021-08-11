@@ -8,11 +8,11 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.patch.entityActivationRange.ActivationRange;
 import org.kilocraft.essentials.provided.KiloFile;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -20,6 +20,7 @@ import org.kilocraft.essentials.util.settings.values.*;
 import org.kilocraft.essentials.util.settings.values.util.RootSetting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,15 +35,26 @@ public class ServerSettings implements NBTStorage {
     public static final boolean[] entitySpawnCache = new boolean[entities];
     public static RootSetting root = new RootSetting();
     public static boolean perPlayerMobcap = false;
-    public static int tickDistance = -1;
     public static int wither_check_distance = 2;
     public static double wither_tp_distance = 1;
     public static float[][] mobcap;
     public static boolean tickInactiveVillagers = false;
     public static int villagerWorkImmunityAfter = 5 * 20;
     public static int villagerWorkImmunityFor = 20;
-    public static int releaseProtocolVersion = 755;
     public static boolean villagerActiveForPanic = true;
+    public static boolean patch_item_merge_adjust_movement = true;
+    public static double patch_item_merge_radius = 0.5D;
+    public static boolean patch_lobotomize_villagers_enabled = false;
+    public static int patch_lobotomize_villagers_tick_interval = 20;
+    public static boolean tick_utils_automated = false;
+    public static int tick_utils_tick_distance = getViewDistance();
+    public static int tick_utils_min_view_distance = 2;
+    public static int tick_utils_max_view_distance = getViewDistance();
+    public static int tick_utils_min_tick_distance = tick_utils_min_view_distance;
+    public static int tick_utils_max_tick_distance = tick_utils_max_view_distance;
+    public static float tick_utils_min_mobcap = 0F;
+    public static float tick_utils_max_mobcap = 1F;
+    public static float tick_utils_global_mobcap = 1F;
 
 
     public ServerSettings() {
@@ -89,49 +101,61 @@ public class ServerSettings implements NBTStorage {
         ((StringSetting) Objects.requireNonNull(root.getSetting(id))).setValue(value);
     }
 
-    public void registerSettings() {
+    public static int getViewDistance() {
+        return KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance();
+    }
+
+    public static void setViewDistance(int viewDistance) {
+        ServerSettings.setInt("tick_utils.view_distance", viewDistance);
+    }
+
+    public static void registerSettings() {
         //Custom settings
-        IntegerSetting viewDistance = (IntegerSetting) new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getServer().getMinecraftServer().getPlayerManager().setViewDistance(distance));
-        BooleanSetting debug = (BooleanSetting) new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
+        BooleanSetting debug = new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
 
         //Patches
         CategorySetting patch = new CategorySetting("patch");
         //Donkey dupe
         BooleanSetting donkeyDupe = new BooleanSetting(true, "donkey_dupe");
+        //Donkey dupe
+        BooleanSetting loadSpawn = new BooleanSetting(true, "load_spawn");
         //Stuck Wither
         CategorySetting wither = new CategorySetting("wither");
-        IntegerSetting check_distance = (IntegerSetting) new IntegerSetting(2, "check_distance").range(-256, 256).onChanged(integer -> wither_check_distance = integer);
-        DoubleSetting tp_distance = (DoubleSetting) new DoubleSetting(1D, "tp_distance").range(-256D, 256D).onChanged(d -> wither_tp_distance = d);
+        IntegerSetting check_distance = new IntegerSetting(2, "check_distance").range(-256, 256).onChanged(integer -> wither_check_distance = integer);
+        DoubleSetting tp_distance = new DoubleSetting(0D, "tp_distance").range(-256D, 256D).onChanged(d -> wither_tp_distance = d);
         wither.addChild(check_distance);
         wither.addChild(tp_distance);
         //per-player-mobcap
-        BooleanSetting ppmobcap = (BooleanSetting) new BooleanSetting(false, "ppmobcap").onChanged(bool -> perPlayerMobcap = bool);
-
-        //Enchanting
-        CategorySetting enchanting = new CategorySetting("enchanting");
-        BooleanSetting hasChanged = new BooleanSetting(false, "hasChanged");
-        enchanting.addChild(hasChanged);
-
+        BooleanSetting ppmobcap = new BooleanSetting(false, "ppmobcap").onChanged(bool -> perPlayerMobcap = bool);
 
         //Entity merging
         CategorySetting item_merge = new CategorySetting("item_merge");
-        DoubleSetting radius = new DoubleSetting(0.5D, "radius").range(0D, 256D);
+        DoubleSetting radius = new DoubleSetting(0.5D, "radius").range(0D, 256D).onChanged(d -> patch_item_merge_radius = d);
         BooleanSetting adjust_movement = new BooleanSetting(true, "adjust_movement");
         item_merge.addChild(radius);
         item_merge.addChild(adjust_movement);
         //Shulker spawn chance
         DoubleSetting shulker_spawn_chance = new DoubleSetting(0D, "shulker_spawn_chance");
 
+        //Lobotomize Stuck Villagers
+        CategorySetting lobotomize_villagers = new CategorySetting("lobotomize_villagers");
+        {
+            BooleanSetting enabled = new BooleanSetting(false, "enabled").onChanged(bool -> patch_lobotomize_villagers_enabled = bool);
+            IntegerSetting tick_interval = new IntegerSetting(20, "tick_interval").onChanged(integer -> patch_lobotomize_villagers_tick_interval = integer);
+            lobotomize_villagers.addChild(enabled);
+            lobotomize_villagers.addChild(tick_interval);
+        }
+
         //Global sound
         BooleanSetting global_sound = new BooleanSetting(true, "global_sound");
 
-
         patch.addChild(donkeyDupe);
+        patch.addChild(loadSpawn);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
-        patch.addChild(enchanting);
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
+        patch.addChild(lobotomize_villagers);
         patch.addChild(global_sound);
 
         //Activation range
@@ -139,10 +163,10 @@ public class ServerSettings implements NBTStorage {
         CategorySetting general = new CategorySetting("general");
         for (ActivationRange.ActivationType activationType : ActivationRange.ActivationType.values()) {
             CategorySetting type = new CategorySetting(activationType.toString().toLowerCase());
-            IntegerSetting range = (IntegerSetting) new IntegerSetting(activationType.getActivationRange(), "range").onChanged(integer -> activationRange[activationType.ordinal()][0] = integer);
-            IntegerSetting maxPerTick = (IntegerSetting) new IntegerSetting(activationType.getWakeUpInactiveMaxPerTick(), "max_per_tick").onChanged(integer -> activationRange[activationType.ordinal()][1] = integer);
-            IntegerSetting checkEvery = (IntegerSetting) new IntegerSetting(activationType.getWakeUpInactiveEvery(), "check_every").onChanged(integer -> activationRange[activationType.ordinal()][2] = integer);
-            IntegerSetting wakeupFor = (IntegerSetting) new IntegerSetting(activationType.getWakeUpInactiveFor(), "wakeup_for").onChanged(integer -> activationRange[activationType.ordinal()][3] = integer);
+            IntegerSetting range = new IntegerSetting(activationType.getActivationRange(), "range").onChanged(integer -> activationRange[activationType.ordinal()][0] = integer);
+            IntegerSetting maxPerTick = new IntegerSetting(activationType.getWakeUpInactiveMaxPerTick(), "max_per_tick").onChanged(integer -> activationRange[activationType.ordinal()][1] = integer);
+            IntegerSetting checkEvery = new IntegerSetting(activationType.getWakeUpInactiveEvery(), "check_every").onChanged(integer -> activationRange[activationType.ordinal()][2] = integer);
+            IntegerSetting wakeupFor = new IntegerSetting(activationType.getWakeUpInactiveFor(), "wakeup_for").onChanged(integer -> activationRange[activationType.ordinal()][3] = integer);
             type.addChild(range).addChild(maxPerTick).addChild(checkEvery).addChild(wakeupFor);
             general.addChild(type);
         }
@@ -150,15 +174,50 @@ public class ServerSettings implements NBTStorage {
         {
             CategorySetting custom = new CategorySetting("custom");
             CategorySetting villager = new CategorySetting("villager");
-            BooleanSetting tickInactive = (BooleanSetting) new BooleanSetting(true, "tick_inactive").onChanged(bool -> tickInactiveVillagers = bool);
-            IntegerSetting workImmunityAfter = (IntegerSetting) new IntegerSetting(5 * 20, "work_immunity_after").onChanged(integer -> villagerWorkImmunityAfter = integer);
-            IntegerSetting workImmunityFor = (IntegerSetting) new IntegerSetting(5 * 20, "work_immunity_for").onChanged(integer -> villagerWorkImmunityFor = integer);
-            BooleanSetting activeForPanice = (BooleanSetting) new BooleanSetting(true, "active_for_panic").onChanged(bool -> villagerActiveForPanic = bool);
+            BooleanSetting tickInactive = new BooleanSetting(true, "tick_inactive").onChanged(bool -> tickInactiveVillagers = bool);
+            IntegerSetting workImmunityAfter = new IntegerSetting(5 * 20, "work_immunity_after").onChanged(integer -> villagerWorkImmunityAfter = integer);
+            IntegerSetting workImmunityFor = new IntegerSetting(5 * 20, "work_immunity_for").onChanged(integer -> villagerWorkImmunityFor = integer);
+            BooleanSetting activeForPanice = new BooleanSetting(true, "active_for_panic").onChanged(bool -> villagerActiveForPanic = bool);
             villager.addChild(tickInactive).addChild(workImmunityAfter).addChild(workImmunityFor).addChild(activeForPanice);
 
             custom.addChild(villager);
             activation_range.addChild(custom);
         }
+
+        //Tick distance
+        CategorySetting tick_utils = new CategorySetting("tick_utils");
+        CategorySetting automated = new CategorySetting("automated");
+        BooleanSetting enabled = new BooleanSetting(false, "enabled").onChanged(bool -> tick_utils_automated = bool);
+        IntegerSetting tick_distance = new IntegerSetting(-1, "tick_distance").onChanged(integer -> tick_utils_tick_distance = integer);
+        IntegerSetting min_tick_distance = new IntegerSetting(2, "min_tick_distance").onChanged(integer -> tick_utils_min_tick_distance = integer);
+        IntegerSetting max_tick_distance = new IntegerSetting(getViewDistance(), "max_tick_distance").onChanged(integer -> tick_utils_max_tick_distance = integer);
+        IntegerSetting min_view_distance = new IntegerSetting(2, "min_view_distance").onChanged(integer -> tick_utils_min_view_distance = integer);
+        IntegerSetting max_view_distance = new IntegerSetting(getViewDistance(), "max_view_distance").onChanged(integer -> tick_utils_max_view_distance = integer);
+        FloatSetting min_mobcap = new FloatSetting(0F, "min_mobcap").onChanged(d -> tick_utils_min_mobcap = d);
+        FloatSetting max_mobcap = new FloatSetting(1F, "max_mobcap").onChanged(d -> tick_utils_max_mobcap = d);
+        FloatSetting global_mobcap = new FloatSetting(1F, "global_mobcap").onChanged(d -> tick_utils_global_mobcap = d);
+
+        automated.addChild(enabled);
+        automated.addChild(min_tick_distance);
+        automated.addChild(max_tick_distance);
+        automated.addChild(min_view_distance);
+        automated.addChild(max_view_distance);
+        automated.addChild(min_mobcap);
+        automated.addChild(max_mobcap);
+
+        Arrays.fill(entityTickCache, true);
+        BooleanSetting entityTicking = (BooleanSetting) new BooleanSetting(true, "entity").onChanged(bool -> entityTickCache[0] = bool).limitChildren();
+        for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
+            BooleanSetting value = new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entityTickCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
+            entityTicking.addChild(value);
+        }
+        IntegerSetting view_distance = new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getMinecraftServer().getPlayerManager().setViewDistance(distance));
+
+        tick_utils.addChild(automated);
+        tick_utils.addChild(tick_distance);
+        tick_utils.addChild(view_distance);
+        tick_utils.addChild(global_mobcap);
+        tick_utils.addChild(entityTicking);
 
         //Entity Limit
         CategorySetting entity_limit = new CategorySetting("entity_limit");
@@ -176,26 +235,13 @@ public class ServerSettings implements NBTStorage {
             entity_limit.addChild(entity);
         }
 
-        //Ticking
-        CategorySetting tick = new CategorySetting("tick");
-        IntegerSetting distance = (IntegerSetting) new IntegerSetting(-1, "distance").onChanged(integer -> tickDistance = integer);
-        BooleanSetting entity = (BooleanSetting) new BooleanSetting(true, "entity").onChanged(bool -> entityTickCache[0] = bool);
-        for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-            BooleanSetting value = (BooleanSetting) new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entityTickCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
-            entity.addChild(value);
-        }
-        tick.addChild(distance);
-        tick.addChild(entity);
-
         //Spawning
-        CategorySetting spawn = new CategorySetting("spawn");
-        BooleanSetting spawnEntity = (BooleanSetting) new BooleanSetting(true, "entity").onChanged(bool -> entitySpawnCache[0] = bool);
+        CategorySetting spawn = (CategorySetting) new CategorySetting("spawn").limitChildren();
+        Arrays.fill(entitySpawnCache, true);
         for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-            BooleanSetting value = (BooleanSetting) new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entitySpawnCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
-            spawnEntity.addChild(value);
+            BooleanSetting value = new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entitySpawnCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
+            spawn.addChild(value);
         }
-
-        spawn.addChild(spawnEntity);
 
         //Mobcap
         ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][SpawnGroup.values().length + 1];
@@ -203,9 +249,9 @@ public class ServerSettings implements NBTStorage {
         int worldID = 0;
         for (RegistryKey<World> registryKey : RegistryUtils.getWorldsKeySet()) {
             ((RegistryKeyID) registryKey).setID(worldID);
-            FloatSetting world = (FloatSetting) new FloatSetting(1F, registryKey.getValue().getPath()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][0] = f);
+            FloatSetting world = new FloatSetting(1F, registryKey.getValue().getPath()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][0] = f);
             for (SpawnGroup spawnGroup : SpawnGroup.values()) {
-                FloatSetting group = (FloatSetting) new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][spawnGroup.ordinal() + 1] = f);
+                FloatSetting group = new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][spawnGroup.ordinal() + 1] = f);
                 world.addChild(group);
             }
             worldID++;
@@ -213,14 +259,12 @@ public class ServerSettings implements NBTStorage {
         }
 
         root.addChild(activation_range);
-        root.addChild(viewDistance);
         root.addChild(debug);
+        root.addChild(tick_utils);
         root.addChild(entity_limit);
-        root.addChild(tick);
         root.addChild(spawn);
         root.addChild(mobcap);
         root.addChild(patch);
-        KiloCommands.getInstance().register(new SettingCommand());
     }
 
     @Override

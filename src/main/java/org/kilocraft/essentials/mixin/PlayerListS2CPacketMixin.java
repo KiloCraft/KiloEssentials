@@ -3,7 +3,7 @@ package org.kilocraft.essentials.mixin;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.text.Text;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +19,7 @@ public abstract class PlayerListS2CPacketMixin {
 	@Inject(method = "getDisplayName", at = @At(value = "HEAD", target = "Lnet/minecraft/network/packet/s2c/play/PlayerListS2CPacket$Entry;getDisplayName()Lnet/minecraft/text/Text;"), cancellable = true)
 	private void modifyEntry(CallbackInfoReturnable<Text> cir) {
 		if (KiloConfig.main().playerList().useNicknames) {
-			Text text = KiloServer.getServer().getOnlineUser(profile.getId()).getRankedDisplayName();
+			Text text = KiloEssentials.getUserManager().getOnline(profile.getId()).getRankedDisplayName();
 			cir.setReturnValue(text);
 		}
 	}

@@ -107,7 +107,7 @@ public class VoteReceiver extends Thread {
                 InputStream in = socket.getInputStream();
 
                 // Send them our version.
-                writer.write("VOTIFIER " + Votifier.getInstance().getVersion());
+                writer.write("Fabric/Votifier v" + Votifier.getVersion());
                 writer.newLine();
                 writer.flush();
 
@@ -117,7 +117,7 @@ public class VoteReceiver extends Thread {
 
                 // Decrypt the block.
                 try {
-                    block = RSA.decrypt(block, Votifier.getInstance().getKeyPair()
+                    block = RSA.decrypt(block, Votifier.getKeyPair()
                             .getPrivate());
                 } catch (Exception e) {
                     LOGGER.error("Unable to decrypt vote record from " + socket.getInetAddress().toString() + ". Make sure that that your public key matches the one you gave the server list.");
@@ -154,7 +154,7 @@ public class VoteReceiver extends Thread {
                     LOGGER.info("Received vote record -> " + vote);
                 }
 
-                MinecraftServer server = KiloEssentials.getServer().getMinecraftServer();
+                MinecraftServer server = KiloEssentials.getMinecraftServer();
                 ServerCommandSource source = server.getCommandSource();
                 for (String command : KiloConfig.main().votifier().commands) {
                     Optional<GameProfile> optional = server.getUserCache().findByName(vote.getUsername());

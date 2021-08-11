@@ -10,57 +10,23 @@ import org.kilocraft.essentials.extensions.votifier.crypto.RSAKeygen;
 import java.io.File;
 import java.security.KeyPair;
 
-/**
- * The main Votifier plugin class.
- *
- * @author Blake Beaupain
- * @author Kramer Campbell
- */
 public class Votifier {
 
-    /** The logger instance. */
     private static final Logger LOGGER = LogManager.getLogger("KiloEssentials|Votifier");
+    private static final String version = "1.1";
+    private static VoteReceiver voteReceiver;
+    private static KeyPair keyPair;
 
-    /** The Votifier instance. */
-    private static Votifier instance;
+    public static KeyPair getKeyPair() {
+        return keyPair;
+    }
 
-    /** The current Votifier version. */
-    private String version;
-
-    /** The vote receiver. */
-    private VoteReceiver voteReceiver;
-
-    /** The RSA key pair. */
-    private KeyPair keyPair;
-
-
-    /**
-     * Attach custom log filter to logger.
-     */
-
-    public void onEnable() {
-        Votifier.instance = this;
-
-        // Set the plugin version.
-        version = "1.1";
-
-
-
-        /*
-         * Use IP address from server.properties as a default for
-         * configurations. Do not use InetAddress.getLocalHost() as it most
-         * likely will return the main server address instead of the address
-         * assigned to the server.
-         */
-        String hostAddr = KiloEssentials.getServer().getMinecraftServer().getServerIp();
+    public static void onEnable() {
+        String hostAddr = KiloEssentials.getMinecraftServer().getServerIp();
         if (hostAddr == null || hostAddr.length() == 0) {
             hostAddr = "0.0.0.0";
         }
 
-        /*
-         * Create RSA directory and keys if it does not exist; otherwise, read
-         * keys.
-         */
         File rsaDirectory = KiloEssentials.getEssentialsPath().resolve("votifier").toFile();
         try {
             if (!rsaDirectory.exists()) {
@@ -78,7 +44,6 @@ public class Votifier {
 
         // Initialize the receiver.
         String host = hostAddr;
-        /*TODO Add to config*/
         int port = KiloConfig.main().votifier().port;
 
         try {
@@ -91,7 +56,7 @@ public class Votifier {
         }
     }
 
-    public void onDisable() {
+    public static void onDisable() {
         // Interrupt the vote receiver.
         if (voteReceiver != null) {
             voteReceiver.shutdown();
@@ -99,46 +64,11 @@ public class Votifier {
         }
     }
 
-    private void gracefulExit() {
+    private static void gracefulExit() {
         LOGGER.error("Votifier did not initialize properly!");
     }
 
-    /**
-     * Gets the instance.
-     *
-     * @return The instance
-     */
-    public static Votifier getInstance() {
-        return instance;
-    }
-
-    /**
-     * Gets the version.
-     *
-     * @return The version
-     */
-    public String getVersion() {
+    public static String getVersion() {
         return version;
-    }
-
-    /**
-     * Gets the vote receiver.
-     *
-     * @return The vote receiver
-     */
-    public VoteReceiver getVoteReceiver() {
-        return voteReceiver;
-    }
-
-    /**
-     * Gets the keyPair.
-     *
-     * @return The keyPair
-     */
-    public KeyPair getKeyPair() {
-        return keyPair;
-    }
-
-    public Votifier() {
     }
 }

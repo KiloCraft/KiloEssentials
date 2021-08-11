@@ -27,10 +27,6 @@ public class Config {
     @Setting(value = "permissionManager", comment = "Select the PermissionManager to use! Options: vanilla, luckperms")
     private String permissionManager = "luckperms";
 
-    @Setting(value = "startupScript", comment = "Automatically creates the script to startup the server\n" +
-            "Its recommended to start the server with this script so that you can restart it using the restart command later in game")
-    private StartupScriptConfigSection startupScriptSection = new StartupScriptConfigSection();
-
     @Setting(value = "world")
     private WorldConfigSection worldSection = new WorldConfigSection();
 
@@ -102,10 +98,6 @@ public class Config {
 
     public ServerConfigSection server() {
         return serverSection;
-    }
-
-    public StartupScriptConfigSection startupScript() {
-        return startupScriptSection;
     }
 
     public WorldConfigSection world() {

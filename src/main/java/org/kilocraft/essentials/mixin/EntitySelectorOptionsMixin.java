@@ -1,11 +1,11 @@
 package org.kilocraft.essentials.mixin;
 
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.EntitySelectorOptions;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 public abstract class EntitySelectorOptionsMixin {
 
     @Shadow
-    protected static void putOption(String string, EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
+    private static void putOption(String string, EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
     }
 
     @Inject(method = "register", at = @At(value = "INVOKE",
@@ -29,8 +29,7 @@ public abstract class EntitySelectorOptionsMixin {
             boolean negate = entitySelectorReader.readNegationCharacter();
             String permission = entitySelectorReader.getReader().readUnquotedString();
             entitySelectorReader.setPredicate((entity) -> (entity instanceof ServerPlayerEntity &&
-                    KiloEssentials.getInstance().getPermissionUtil()
-                            .hasPermission(entity.getCommandSource(), permission, 2))
+                    Permissions.check(entity, permission, 2))
                     != negate);
         }, (entitySelectorReader) -> true, new LiteralText(""));
     }

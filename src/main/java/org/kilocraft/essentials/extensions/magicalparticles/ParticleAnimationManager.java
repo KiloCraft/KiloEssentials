@@ -18,9 +18,8 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.api.feature.TickListener;
@@ -47,7 +46,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     @Override
     public boolean register() {
         NBTStorageUtil.addCallback(this);
-        KiloCommands.getInstance().register(new MagicalParticlesCommand());
+        KiloCommands.register(new MagicalParticlesCommand());
         return true;
     }
 
@@ -383,7 +382,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
         if (tick > config.getPps() && !uuidIdentifierMap.isEmpty()) {
             try {
                 for (Map.Entry<UUID, Identifier> entry : uuidIdentifierMap.entrySet()) {
-                    ServerPlayerEntity player = KiloServer.getServer().getPlayer(entry.getKey());
+                    ServerPlayerEntity player = KiloEssentials.getMinecraftServer().getPlayerManager().getPlayer(entry.getKey());
 
                     if (player != null && !player.isSpectator()) {
                         runAnimationFrames(player, entry.getValue());

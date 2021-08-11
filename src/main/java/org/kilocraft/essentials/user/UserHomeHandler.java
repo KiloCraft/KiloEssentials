@@ -7,24 +7,26 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
-import org.kilocraft.essentials.KiloCommands;
+import net.minecraft.util.math.ChunkPos;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.extensions.homes.commands.DelhomeCommand;
 import org.kilocraft.essentials.extensions.homes.commands.HomeCommand;
 import org.kilocraft.essentials.extensions.homes.commands.HomesCommand;
 import org.kilocraft.essentials.extensions.homes.commands.SethomeCommand;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,6 +38,8 @@ import java.util.concurrent.CompletableFuture;
  */
 
 public class UserHomeHandler implements ConfigurableFeature {
+    //TODO: Use home cooldown from config
+    public static ChunkTicketType<Integer> HOMES = ChunkTicketType.create("homes", Integer::compareTo, 60);
     private static boolean isEnabled = false;
     private static List<Home> loadedHomes = new ArrayList<>();
     private List<Home> userHomes;
@@ -66,8 +70,8 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-        return CommandSource.suggestMatching(KiloServer.getServer().getOnlineUser(
-                context.getSource().getPlayer()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
+        return CommandSource.suggestMatching(KiloEssentials.getUserManager().getOnline(
+                context.getSource()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
     }
 
     @Override
@@ -82,7 +86,7 @@ public class UserHomeHandler implements ConfigurableFeature {
         }};
 
         for (final EssentialCommand command : commands) {
-            KiloCommands.getInstance().register(command);
+            KiloCommands.register(command);
         }
 
         return true;
@@ -135,7 +139,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
         if (home == null) throw new UnsafeHomeException(null, Reason.NO_HOME);
         if (user.isOnline()) {
-            ServerWorld world = Objects.requireNonNull(KiloEssentials.getServer()).getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
+            ServerWorld world = KiloEssentials.getMinecraftServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
 
             if (world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
@@ -148,7 +152,24 @@ public class UserHomeHandler implements ConfigurableFeature {
 
             Home.teleportTo(user, home);
         }
+    }
 
+    public void prepareHomeLocation(OnlineUser user, Home home) {
+        if (home == null) return;
+        if (user.isOnline()) {
+            ServerWorld world = KiloEssentials.getMinecraftServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
+
+            if (world == null) {
+                return;
+            }
+
+            if (!userHomes.contains(home)) {
+                return;
+            }
+
+            //Add a custom ticket to gradually preload chunks
+            world.getChunkManager().addTicket(ChunkTicketType.create("home", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(home.getLocation().toPos()), ServerSettings.getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
+        }
     }
 
     public NbtCompound serialize(NbtCompound tag) {

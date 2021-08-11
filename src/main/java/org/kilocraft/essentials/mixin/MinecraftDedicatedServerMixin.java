@@ -1,8 +1,8 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
-import org.kilocraft.essentials.api.util.ScheduledExecution;
-import org.kilocraft.essentials.api.util.ScheduledExecutionThread;
+import org.kilocraft.essentials.api.util.schedule.AbstractScheduler;
+import org.kilocraft.essentials.api.util.schedule.ScheduledExecution;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,10 +13,10 @@ public class MinecraftDedicatedServerMixin {
 
     @Inject(method = "executeQueuedCommands", at = @At(value = "RETURN"))
     public void executeScheduledExecutions(CallbackInfo ci) {
-        for (ScheduledExecution scheduledExecution : ScheduledExecutionThread.scheduledExecutions) {
+        for (ScheduledExecution scheduledExecution : AbstractScheduler.scheduledExecutions) {
             scheduledExecution.apply();
         }
-        ScheduledExecutionThread.scheduledExecutions.clear();
+        AbstractScheduler.scheduledExecutions.clear();
     }
 
 }

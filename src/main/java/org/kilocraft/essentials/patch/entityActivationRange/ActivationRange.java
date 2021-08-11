@@ -93,10 +93,10 @@ public class ActivationRange {
         for (ActivationType activationType : ActivationType.values()) {
             maxRange = Math.max(activationRange[activationType.ordinal()][0], maxRange);
         }
-        maxRange = Math.min((KiloEssentials.getServer().getMinecraftServer().getPlayerManager().getViewDistance() << 4) - 8, maxRange);
+        maxRange = Math.min((ServerSettings.getViewDistance() << 4) - 8, maxRange);
         for (PlayerEntity player : world.getPlayers()) {
             if (player.isSpectator()) continue;
-            ((ActivationTypeEntity) player).setActivatedTick(KiloEssentials.getServer().getMinecraftServer().getTicks());
+            ((ActivationTypeEntity) player).setActivatedTick(KiloEssentials.getMinecraftServer().getTicks());
             maxBB = player.getBoundingBox().expand(maxRange, 256, maxRange);
             for (ActivationType activationType : ActivationType.values()) {
                 activationType.boundingBox = player.getBoundingBox().expand(activationRange[activationType.ordinal()][0], 256, activationRange[activationType.ordinal()][0]);
@@ -115,10 +115,10 @@ public class ActivationRange {
      */
     private static void activateEntity(Entity entity) {
         ActivationTypeEntity activationTypeEntity = (ActivationTypeEntity) entity;
-        if (KiloEssentials.getServer().getMinecraftServer().getTicks() > activationTypeEntity.getActivatedTick()) {
+        if (KiloEssentials.getMinecraftServer().getTicks() > activationTypeEntity.getActivatedTick()) {
 
             if (activationTypeEntity.getDefaultActivationState() || activationTypeEntity.getActivationType().boundingBox.intersects(entity.getBoundingBox())) {
-                activationTypeEntity.setActivatedTick(KiloEssentials.getServer().getMinecraftServer().getTicks());
+                activationTypeEntity.setActivatedTick(KiloEssentials.getMinecraftServer().getTicks());
             }
         }
     }
@@ -139,7 +139,7 @@ public class ActivationRange {
             return 2;
         }
         ActivationTypeEntity activationTypeEntity = (ActivationTypeEntity) entity;
-        long inactiveFor = KiloEssentials.getServer().getMinecraftServer().getTicks() - activationTypeEntity.getActivatedTick();
+        long inactiveFor = KiloEssentials.getMinecraftServer().getTicks() - activationTypeEntity.getActivatedTick();
         // quick checks.
         if (activationTypeEntity.getActivationType() != ActivationType.WATER && !(entity instanceof FlyingEntity) && entity.isSubmergedInWater()) {
             return 100;
@@ -230,15 +230,15 @@ public class ActivationRange {
             return true;
         }
 
-        boolean isActive = activationTypeEntity.getActivatedTick() >= KiloEssentials.getServer().getMinecraftServer().getTicks() || activationTypeEntity.getDefaultActivationState();
+        boolean isActive = activationTypeEntity.getActivatedTick() >= KiloEssentials.getMinecraftServer().getTicks() || activationTypeEntity.getDefaultActivationState();
         ((InactiveEntity)entity).setTemporarilyActive(false);
 
         // Should this entity tick?
         if (!isActive) {
-            if ((KiloEssentials.getServer().getMinecraftServer().getTicks() - activationTypeEntity.getActivatedTick() - 1) % 20 == 0) {
+            if ((KiloEssentials.getMinecraftServer().getTicks() - activationTypeEntity.getActivatedTick() - 1) % 20 == 0) {
                 int immunity = checkEntityImmunities(entity);
                 if (immunity >= 0) {
-                    activationTypeEntity.setActivatedTick(KiloEssentials.getServer().getMinecraftServer().getTicks() + immunity);
+                    activationTypeEntity.setActivatedTick(KiloEssentials.getMinecraftServer().getTicks() + immunity);
                 } else {
                     ((InactiveEntity)entity).setTemporarilyActive(true);
                 }
@@ -255,7 +255,7 @@ public class ActivationRange {
         World world = entity.world;
         ActivationTypeEntity activationTypeEntity = (ActivationTypeEntity) entity;
         ActivationType activationType = activationTypeEntity.getActivationType();
-        long inactiveFor = KiloEssentials.getServer().getMinecraftServer().getTicks() - activationTypeEntity.getActivatedTick();
+        long inactiveFor = KiloEssentials.getMinecraftServer().getTicks() - activationTypeEntity.getActivatedTick();
         if (((WorldInfo) world).getRemaining()[activationType.ordinal()] > 0 && inactiveFor > activationRange[activationType.ordinal()][2]) {
             ((WorldInfo) world).getRemaining()[activationType.ordinal()]--;
             return activationRange[activationType.ordinal()][3];

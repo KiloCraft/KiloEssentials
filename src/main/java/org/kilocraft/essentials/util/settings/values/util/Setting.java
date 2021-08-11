@@ -1,7 +1,11 @@
 package org.kilocraft.essentials.util.settings.values.util;
 
+import java.util.List;
+
 public interface Setting {
 
-    String getID();
+    String getFullId();
+
+    List<AbstractSetting> getChildren();
 
 }

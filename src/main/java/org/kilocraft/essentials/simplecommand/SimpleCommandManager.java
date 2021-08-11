@@ -8,13 +8,12 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.user.CommandSourceServerUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +119,7 @@ public class SimpleCommandManager {
         SimpleCommand command = getCommandByLabel(label);
         String str = input.replaceFirst("/", "").replaceFirst(label + " ", "");
         String[] args = str.replaceFirst(label, "").split(" ");
-        CommandSourceUser user = KiloServer.getServer().getCommandSourceUser(source);
+        CommandSourceUser user = new CommandSourceServerUser(source);
 
         try {
             if (command != null) {
@@ -129,7 +128,7 @@ public class SimpleCommandManager {
                     return 0;
                 }
 
-                var = command.executable.execute(source, args, KiloEssentials.getServer());
+                var = command.executable.execute(source, args);
             }
         } catch (CommandSyntaxException e) {
             if (e.getRawMessage().getString().equals("Unknown command")) {

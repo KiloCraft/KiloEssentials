@@ -14,15 +14,16 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.TextColor;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.Cached;
+import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.util.CacheManager;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.ListedText;
 import org.kilocraft.essentials.util.text.Texter;
@@ -30,7 +31,9 @@ import org.kilocraft.essentials.util.text.Texter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayerWarpsCommand extends EssentialCommand {
@@ -73,24 +76,24 @@ public class PlayerWarpsCommand extends EssentialCommand {
             return send(ctx.getSource(), page, list);
         }
 
-        Map<PlayerWarp, String> map = Maps.newHashMap();
-
-        for (UUID owner : PlayerWarpsManager.getOwners()) {
-            AtomicReference<String> name = new AtomicReference<>("");
-
-            this.getEssentials().getUserThenAcceptAsync(owner, (optional) ->
-                    optional.ifPresent((user) -> name.set(user.getFormattedDisplayName()))
-            ).join();
-
-            for (PlayerWarp warp : PlayerWarpsManager.getWarps(owner)) {
-                map.put(warp, name.get());
+        CompletableFuture.runAsync(() -> {
+            Map<PlayerWarp, String> map = Maps.newHashMap();
+            AtomicInteger atomicInteger = new AtomicInteger();
+            for (PlayerWarp warp : PlayerWarpsManager.getWarps()) {
+                getUserManager().getUserThenAcceptAsync(warp.getOwner(), (optional) -> {
+                    String name = optional.isPresent() ? optional.get().getFormattedDisplayName() : "<red><bold>?";
+                    map.put(warp, name);
+                    atomicInteger.incrementAndGet();
+                });
             }
-        }
+            long startTime = System.nanoTime();
+            while (atomicInteger.get() != PlayerWarpsManager.getWarps().size() || startTime + 5000000 > System.nanoTime());
+            List<Map.Entry<PlayerWarp, String>> entries = Lists.newArrayList(map.entrySet());
+            entries.sort(Map.Entry.comparingByKey());
+            CacheManager.cache(new Cached<>(CACHE_KEY, 1, TimeUnit.MINUTES, entries));
+            send(ctx.getSource(), page, entries);
 
-        List<Map.Entry<PlayerWarp, String>> entries = Lists.newArrayList(map.entrySet());
-        entries.sort(Map.Entry.comparingByKey());
-        CacheManager.cache(new Cached<>(CACHE_KEY, 10, TimeUnit.MINUTES, entries));
-        send(ctx.getSource(), page, entries);
+        });
 
         return AWAIT;
     }
@@ -107,7 +110,8 @@ public class PlayerWarpsCommand extends EssentialCommand {
             MutableText text = Texter.newText();
             text.append(new LiteralText(index + ".").styled((style) -> style.withColor(NUM_COLOR)));
             text.append(" ");
-            text.append(warp.getName()).formatted(Formatting.WHITE).styled((style) ->
+            Location location = warp.getLocation();
+            text.append(new LiteralText(warp.getName()).styled((style) ->
                     style.withHoverEvent(Texter.Events.onHover(
                             Texter.newText()
                                     .append(new LiteralText("By ").formatted(Formatting.WHITE))
@@ -115,8 +119,11 @@ public class PlayerWarpsCommand extends EssentialCommand {
                                     .append("\n")
                                     .append(new LiteralText("In ").formatted(Formatting.GRAY))
                                     .append(new LiteralText(RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())))
+                                    .append("\n")
+                                    .append(new LiteralText("At ").formatted(Formatting.GRAY))
+                                    .append(new LiteralText(Math.round(location.getX()) + " " + Math.round(location.getY()) + " " + Math.round(location.getZ())).formatted(Formatting.WHITE))
                     ))
-            );
+            ).formatted(Formatting.WHITE));
             text.append(new LiteralText(" (").formatted(Formatting.DARK_GRAY));
             text.append(new LiteralText(warp.getType()).styled((style) -> style.withColor(PRIMARY_COLOR)));
             text.append(new LiteralText(") ").formatted(Formatting.DARK_GRAY));

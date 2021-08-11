@@ -7,18 +7,22 @@
     "AnimalEntityMixinPatch",
     "ClientConnectionMixin",
     "DecorationItemMixin",
-    "EggEntityMixinPatch",
+    "EggEntityMixin",
     "EnchantCommandMixin",
+    "FilledMapItemMixin",
     "HorseBaseEntityMixin",
-    "ItemEntityMixinPatch",
-    "PropertyMixinPatch",
-    "ServerWorldMixinPatch",
-    "ShulkerEntityMixinPatch",
-    "VillagerBreedTaskMixinPatch",
-    "WitherEntityMixinPatch"
+    "ItemEntityMixin",
+    "MobNavigationMixin",
+    "PlayerAdvancementTrackerMixin",
+    "ServerChunkManagerMixin",
+    "ServerWorldMixin",
+    "ShulkerEntityMixin",
+    "VillagerBreedTaskMixin",
+    "VillagerEntityMixin",
+    "WitherEntityMixin"
   ],
   "server": [
-    "SignBlockEntityMixinPatch"
+    "SignBlockEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -16,8 +16,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
 import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
@@ -74,7 +72,7 @@ public abstract class SpawnHelperMixin {
         SpawnGroup[] spawnGroups = SPAWNABLE_GROUPS;
         for (SpawnGroup spawnGroup : spawnGroups) {
             int currEntityCount = info.getGroupToCount().getInt(spawnGroup);
-            float multiplier = ServerSettings.mobcap[((RegistryKeyID) serverWorld.getRegistryKey()).getID()][0] *
+            float multiplier = ServerSettings.tick_utils_global_mobcap * ServerSettings.mobcap[((RegistryKeyID) serverWorld.getRegistryKey()).getID()][0] *
                     ServerSettings.mobcap[((RegistryKeyID) serverWorld.getRegistryKey()).getID()][spawnGroup.ordinal() + 1];
             int k1 = (int) (spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) info).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea() * multiplier);
             int difference = k1 - currEntityCount;

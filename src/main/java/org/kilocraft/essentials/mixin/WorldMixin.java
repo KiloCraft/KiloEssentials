@@ -1,12 +1,9 @@
 package org.kilocraft.essentials.mixin;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
-import org.kilocraft.essentials.util.math.DataTracker;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

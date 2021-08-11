@@ -2,6 +2,7 @@ package org.kilocraft.essentials.util;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -9,12 +10,13 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
@@ -36,7 +38,7 @@ public class LocationUtil {
     public static boolean canBlockDamage(final Location loc) {
         BlockState state = loc.getWorld().getBlockState(loc.toPos());
 
-        if (!KiloServer.getServer().getMinecraftServer().getGameRules().getBoolean(GameRules.FIRE_DAMAGE)) {
+        if (!KiloEssentials.getMinecraftServer().getGameRules().getBoolean(GameRules.FIRE_DAMAGE)) {
             return false;
         }
 
@@ -83,6 +85,34 @@ public class LocationUtil {
 
         if (!safe) {
             throw new InsecureDestinationException("The destination is not safe!");
+        }
+    }
+
+    public static void processDimension(ServerPlayerEntity player) {
+        boolean kickFromDim = KiloConfig.main().world().kickFromDimension;
+
+        if (kickFromDim && LocationUtil.shouldBlockAccessTo(player.getServerWorld().getDimension()) && player.getServer() != null) {
+            BlockPos pos = player.getSpawnPointPosition();
+            DimensionType dim = RegistryUtils.toDimension(player.getSpawnPointDimension());
+
+            if (pos == null) {
+                OnlineUser user = KiloEssentials.getUserManager().getOnline(player);
+                if (user.getLastSavedLocation() != null) {
+                    pos = user.getLastSavedLocation().toPos();
+                    if (pos == null) {
+                        UserHomeHandler homeHandler = user.getHomesHandler();
+                        assert homeHandler != null;
+                        if (homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getServerWorld().getDimension()) {
+                            pos = user.getHomesHandler().getHomes().get(0).getLocation().toPos();
+                        }
+                    }
+                }
+            }
+
+            if (pos != null) {
+                player.teleport(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.getYaw(), player.getPitch());
+                KiloEssentials.getUserManager().getOnline(player).sendMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getServerWorld().getDimension())));
+            }
         }
     }
 

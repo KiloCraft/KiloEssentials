@@ -16,12 +16,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.EssentialPermission;
-import org.kilocraft.essentials.Format;
-import org.kilocraft.essentials.KiloCommands;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
+import org.kilocraft.essentials.util.Format;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -30,7 +29,7 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
-import org.kilocraft.essentials.servermeta.PlayerListMeta;
+import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -43,7 +42,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public ServerPlayerEntity asPlayer() {
-        return KiloServer.getServer().getPlayer(this.uuid);
+        return KiloEssentials.getMinecraftServer().getPlayerManager().getPlayer(this.uuid);
     }
 
     @Override
@@ -272,7 +271,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             this.clearNickname();
         }
 
-        PlayerListMeta.updateForAll();
+        ServerMetaManager.updateForAll();
     }
 
     public void onLeave() {

@@ -22,31 +22,29 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.EssentialPermission;
-import org.kilocraft.essentials.Format;
-import org.kilocraft.essentials.KiloDebugUtils;
+import org.kilocraft.essentials.*;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.TickListener;
 import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.user.PunishmentManager;
-import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.api.user.UserManager;
+import org.kilocraft.essentials.api.user.*;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.user.punishment.PunishmentEntry;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.StringText;
+import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
-import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
+import org.kilocraft.essentials.events.PlayerEvents;
 import org.kilocraft.essentials.mixin.accessor.ServerConfigEntryAccessor;
+import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.*;
+import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.text.Texter;
@@ -56,8 +54,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -76,6 +77,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private Map<UUID, String> cachedNicknames = new HashMap<>();
 
     public ServerUserManager() {
+        PlayerEvents.DEATH.register(player -> onDeath(getOnline(player)));
     }
 
     @Override
@@ -120,7 +122,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     private CompletableFuture<Optional<User>> getUserAsync(String username) {
         CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() ->
-                KiloServer.getServer().getMinecraftServer().getUserCache().findByName(username).orElse(null)
+                KiloEssentials.getMinecraftServer().getUserCache().findByName(username).orElse(null)
         );
 
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
@@ -281,7 +283,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         if (user.isOnline()) {
-            KiloServer.getServer().getMetaManager().updateDisplayName(((OnlineUser) user).asPlayer());
+            ServerMetaManager.updateDisplayName(((OnlineUser) user).asPlayer());
         }
     }
 
@@ -336,7 +338,7 @@ public class ServerUserManager implements UserManager, TickListener {
         String NICKNAME_CACHE = "nicknames";
         if (!CacheManager.isPresent(NICKNAME_CACHE)) {
             Map<UUID, String> map = new HashMap<>();
-            KiloEssentials.getInstance().getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
+            getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
                 for (User victim : list) {
                     victim.getNickname().ifPresent(nick -> map.put(
                             victim.getUuid(),
@@ -390,7 +392,7 @@ public class ServerUserManager implements UserManager, TickListener {
         user.onJoined();
         if (!user.getPreference(Preferences.VANISH)) KiloChat.onUserJoin(user);
         List<GameProfile> banned = new ArrayList<>();
-        for (BannedPlayerEntry bannedPlayerEntry : KiloEssentials.getServer().getMinecraftServer().getPlayerManager().getUserBanList().values()) {
+        for (BannedPlayerEntry bannedPlayerEntry : KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().values()) {
             Object o = ((ServerConfigEntryAccessor)bannedPlayerEntry).getKey();
             if (o instanceof GameProfile) {
                 GameProfile profile = (GameProfile) o;
@@ -428,10 +430,6 @@ public class ServerUserManager implements UserManager, TickListener {
         }
         this.usernameToUUID.remove(player.getEntityName());
         this.users.remove(user);
-
-        if (UserUtils.Process.isInAny(user)) {
-            UserUtils.Process.remove(user);
-        }
 
         try {
             this.handler.save(user);
@@ -476,7 +474,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
         try {
             if (string.startsWith("/")) {
-                KiloEssentials.getInstance().getCommandHandler().execute(player.getCommandSource(), string);
+                KiloCommands.execute(player.getCommandSource(), string);
             } else {
                 if (punishmentManager.isMuted(user)) {
                     user.sendMessage(getMuteMessage(user));
@@ -518,10 +516,6 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public void onDeath(OnlineUser user) {
         user.saveLocation();
-
-        if (SeatManager.isEnabled() && SeatManager.getInstance().isSitting(user.asPlayer())) {
-            SeatManager.getInstance().unseat(user);
-        }
     }
 
     public UserHandler getHandler() {
@@ -534,20 +528,185 @@ public class ServerUserManager implements UserManager, TickListener {
         }
     }
 
-    public void appendCachedName(ServerUser user) {
-        user.name = user.savedName;
+    public final CompletableFuture<List<User>> getAllUsersThenAcceptAsync(final OnlineUser requester,
+                                                                          final String loadingTitle,
+                                                                          final Consumer<? super List<User>> action) {
+        CommandSourceUser src = new CommandSourceServerUser(requester.getCommandSource());
+        final LoadingText loadingText = new LoadingText(requester.asPlayer(), loadingTitle);
+
+        if (!src.isConsole()) {
+            loadingText.start();
+        }
+
+        final CompletableFuture<List<User>> future = this.getAll();
+        future.thenAcceptAsync(list -> {
+            if (!src.isConsole()) {
+                loadingText.stop();
+            }
+
+            try {
+                action.accept(list);
+            } catch (Exception e) {
+                requester.sendError(e.getMessage());
+            }
+        });
+
+        return future;
+    }
+
+
+    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final ServerCommandSource requester,
+                                                                    final String username,
+                                                                    final Consumer<? super User> action) {
+        if (CommandUtils.isOnline(requester)) {
+            return this.getUserThenAcceptAsync(getOnline(requester.getName()), username, action);
+        }
+
+        final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(username);
+        optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
+            if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
+                new CommandSourceServerUser(requester).sendError(ExceptionMessageNode.USER_NOT_FOUND);
+                return;
+            }
+
+            try {
+                optionalUser.ifPresent(action);
+            } catch (Exception e) {
+                requester.sendError(new LiteralText(e.getMessage()).formatted(Formatting.RED));
+            }
+        }, KiloEssentials.getMinecraftServer());
+
+        return optionalCompletableFuture;
+    }
+
+
+    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final ServerPlayerEntity requester,
+                                                                    final String username,
+                                                                    final Consumer<? super User> action) {
+        return this.getUserThenAcceptAsync(KiloEssentials.getUserManager().getOnline(requester), username, action);
+    }
+
+
+    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final OnlineUser requester,
+                                                                    final String username,
+                                                                    final Consumer<? super User> action) {
+        final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(username);
+        final LoadingText loadingText = new LoadingText(requester.asPlayer());
+        optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
+            loadingText.stop();
+
+            if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
+                requester.sendError(ExceptionMessageNode.USER_NOT_FOUND);
+                return;
+            }
+
+            try {
+                action.accept(optionalUser.get());
+            } catch (Exception e) {
+                requester.sendError(e.getMessage());
+            }
+        }, KiloEssentials.getMinecraftServer());
+
+        if (!optionalCompletableFuture.isDone())
+            loadingText.start();
+
+        return optionalCompletableFuture;
+    }
+
+
+    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final OnlineUser requester,
+                                                                    final UUID uuid,
+                                                                    final Consumer<? super User> action) {
+
+        final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(uuid);
+        final LoadingText loadingText = new LoadingText(requester.asPlayer());
+        optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
+            loadingText.stop();
+
+            if (!optionalUser.isPresent()) {
+                requester.sendError(ExceptionMessageNode.USER_NOT_FOUND);
+                return;
+            }
+
+            try {
+                action.accept(optionalUser.get());
+            } catch (Exception e) {
+                requester.sendError(e.getMessage());
+            }
+        }, KiloEssentials.getMinecraftServer());
+
+        if (!optionalCompletableFuture.isDone())
+            loadingText.start();
+
+        return optionalCompletableFuture;
+    }
+
+
+    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final String username,
+                                                                    final Consumer<? super Optional<User>> action) {
+        if (this.getOnline(username) != null) {
+            return CompletableFuture.completedFuture(Optional.ofNullable(this.getOnline(username)));
+        }
+
+        final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(username);
+        optionalCompletableFuture.thenAcceptAsync(action);
+        return optionalCompletableFuture;
+    }
+
+
+    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(UUID uuid, Consumer<? super Optional<User>> action) {
+        User user = this.getOnline(uuid);
+        if (user != null) {
+            Optional<User> optionalUser = Optional.of(user);
+            action.accept(optionalUser);
+            return CompletableFuture.completedFuture(optionalUser);
+        }
+
+        final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(uuid);
+        optionalCompletableFuture.thenAcceptAsync(action);
+        return optionalCompletableFuture;
+    }
+
+
+    public Optional<User> getUserThenAccept(UUID uuid, Consumer<? super Optional<User>> action) {
+        User user = this.getOnline(uuid);
+        if (user != null) {
+            Optional<User> optionalUser = Optional.of(user);
+            action.accept(optionalUser);
+            return optionalUser;
+        }
+
+        final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(uuid);
+        try {
+            action.accept(optionalCompletableFuture.get());
+        } catch (InterruptedException | ExecutionException ignored) {
+            action.accept(Optional.empty());
+        }
+
+        return Optional.empty();
+    }
+
+
+    public Optional<User> getUser(UUID uuid) {
+        return this.getOffline(uuid).join();
+    }
+
+
+    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final String username, final Consumer<? super Optional<User>> action, final Executor executor) {
+        if (this.getOnline(username) != null) {
+            return CompletableFuture.completedFuture(Optional.ofNullable(this.getOnline(username)));
+        }
+
+        final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(username);
+        optionalCompletableFuture.thenAcceptAsync(action, executor);
+        return optionalCompletableFuture;
     }
 
     public static class LoadingText {
         private AnimatedText animatedText;
 
         public LoadingText(ServerPlayerEntity player) {
-            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player)
-                    .append(StringText.of(true, "general.wait_server.frame1"))
-                    .append(StringText.of(true, "general.wait_server.frame2"))
-                    .append(StringText.of(true, "general.wait_server.frame3"))
-                    .append(StringText.of(true, "general.wait_server.frame4"))
-                    .build();
+            this(player, "general.wait_server");
         }
 
         public LoadingText(ServerPlayerEntity player, String key) {
@@ -586,7 +745,7 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     public static String getMuteMessage(final OnlineUser user) {
-        MutedPlayerEntry entry = KiloServer.getServer().getUserManager().getMutedPlayerList().get(user.asPlayer().getGameProfile());
+        MutedPlayerEntry entry = KiloEssentials.getUserManager().getMutedPlayerList().get(user.asPlayer().getGameProfile());
         assert entry != null;
 
         if (entry.getExpiryDate() == null) {

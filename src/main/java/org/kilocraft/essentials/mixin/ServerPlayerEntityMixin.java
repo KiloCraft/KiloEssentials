@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.util.InteractionHandler;
 import org.kilocraft.essentials.util.LocationUtil;
@@ -33,7 +33,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private void modify(ServerWorld serverWorld, CallbackInfo ci) {
         if (LocationUtil.shouldBlockAccessTo(serverWorld.getDimension())) {
             ci.cancel();
-            KiloServer.getServer().getOnlineUser((ServerPlayerEntity) (Object)this).sendLangMessage("general.dimension_not_allowed", RegistryUtils.dimensionToName(serverWorld.getDimension()));
+            KiloEssentials.getUserManager().getOnline((ServerPlayerEntity) (Object)this).sendLangMessage("general.dimension_not_allowed", RegistryUtils.dimensionToName(serverWorld.getDimension()));
         }
 
         ServerUser.saveLocationOf((ServerPlayerEntity) (Object) this);

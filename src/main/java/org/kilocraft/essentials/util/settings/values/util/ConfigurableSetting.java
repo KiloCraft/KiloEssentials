@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.util.settings.values.util;
 
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
@@ -11,14 +11,15 @@ import java.util.function.Consumer;
 
 public abstract class ConfigurableSetting<K> extends AbstractSetting {
 
-    protected static String commandArgumentValue = "value";
-    private K value;
+    public static String commandArgumentValue = "value";
     private final List<Consumer<K>> onLoad = new ArrayList<>();
+    private K value;
 
     public ConfigurableSetting(K value, String id) {
         super(id);
         this.value = value;
     }
+
 
     @Override
     public void toTag(NbtCompound tag) {
@@ -41,7 +42,7 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
         }
     }
 
-    public abstract RequiredArgumentBuilder<ServerCommandSource, K> valueArgument();
+    public abstract ArgumentType<K> valueArgumentType();
 
     public abstract void setValueFromCommand(CommandContext<ServerCommandSource> ctx);
 
@@ -56,6 +57,8 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
 
     protected abstract void setValue(NbtCompound tag);
 
+    public abstract String getFormattedValue();
+
     protected abstract K getValue(NbtCompound tag);
 
     void changed() {
@@ -68,4 +71,5 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
         this.onLoad.add(consumer);
         return this;
     }
+
 }
