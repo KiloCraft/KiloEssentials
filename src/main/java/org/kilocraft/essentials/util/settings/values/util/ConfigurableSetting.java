@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.util.settings.values.util;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.NbtCompound;
@@ -11,7 +12,7 @@ import java.util.function.Consumer;
 
 public abstract class ConfigurableSetting<K> extends AbstractSetting {
 
-    protected static String commandArgumentValue = "value";
+    public static String commandArgumentValue = "value";
     private K value;
     private final List<Consumer<K>> onLoad = new ArrayList<>();
 
@@ -41,13 +42,15 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
         }
     }
 
-    public abstract RequiredArgumentBuilder<ServerCommandSource, K> valueArgument();
+    public abstract ArgumentType<K> valueArgumentType();
 
     public abstract void setValueFromCommand(CommandContext<ServerCommandSource> ctx);
 
     public K getValue() {
         return value;
     }
+
+    public abstract String getFormattedValue();
 
     public void setValue(K value) {
         this.value = value;

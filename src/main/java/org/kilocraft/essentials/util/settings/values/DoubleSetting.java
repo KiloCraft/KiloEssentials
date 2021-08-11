@@ -1,10 +1,10 @@
 package org.kilocraft.essentials.util.settings.values;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
@@ -21,13 +21,18 @@ public class DoubleSetting extends ConfigurableSetting<Double> implements RangeS
     }
 
     @Override
-    public RequiredArgumentBuilder<ServerCommandSource, Double> valueArgument() {
-        return CommandManager.argument(commandArgumentValue, DoubleArgumentType.doubleArg(from, to));
+    public String getFormattedValue() {
+        return "<light_purple>" +  getValue() + "d";
+    }
+
+    @Override
+    public ArgumentType<Double> valueArgumentType() {
+        return DoubleArgumentType.doubleArg(from, to);
     }
 
     @Override
     public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
-        this.setValue(DoubleArgumentType.getDouble(ctx, commandArgumentValue));
+        this.setValue(Double.parseDouble(StringArgumentType.getString(ctx, commandArgumentValue)));
     }
 
     @Override

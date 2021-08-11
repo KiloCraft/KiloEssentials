@@ -1,10 +1,10 @@
 package org.kilocraft.essentials.util.settings.values;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
@@ -21,13 +21,18 @@ public class IntegerSetting extends ConfigurableSetting<Integer> implements Rang
     }
 
     @Override
-    public RequiredArgumentBuilder<ServerCommandSource, Integer> valueArgument() {
-        return CommandManager.argument(commandArgumentValue, IntegerArgumentType.integer(from, to));
+    public ArgumentType<Integer> valueArgumentType() {
+        return IntegerArgumentType.integer(from, to);
     }
 
     @Override
     public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
-        this.setValue(IntegerArgumentType.getInteger(ctx, commandArgumentValue));
+        this.setValue(Integer.parseInt(StringArgumentType.getString(ctx, commandArgumentValue)));
+    }
+
+    @Override
+    public String getFormattedValue() {
+        return "<gold>" +  getValue();
     }
 
     @Override

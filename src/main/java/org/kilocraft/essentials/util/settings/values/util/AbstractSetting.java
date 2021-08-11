@@ -11,8 +11,6 @@ public abstract class AbstractSetting implements Setting {
     protected final String id;
     protected final List<AbstractSetting> children = new ArrayList<>();
     Setting parent;
-
-
     public AbstractSetting(String id) {
         this.id = id;
     }
@@ -22,17 +20,22 @@ public abstract class AbstractSetting implements Setting {
 
     public abstract void fromTag(NbtCompound tag);
 
+    @Override
+    public List<AbstractSetting> getChildren() {
+        return children;
+    }
+
     public AbstractSetting addChild(AbstractSetting setting) {
         children.add(setting);
         setting.setParent(this);
         return this;
     }
 
-    public List<AbstractSetting> getChildren() {
+    public List<AbstractSetting> getChildrenRecursive() {
         List<AbstractSetting> result = new ArrayList<>();
         result.add(this);
         for (AbstractSetting child : children) {
-            result.addAll(child.getChildren());
+            result.addAll(child.getChildrenRecursive());
         }
         return result;
     }
@@ -41,9 +44,13 @@ public abstract class AbstractSetting implements Setting {
         this.parent = parent;
     }
 
-    public String getID() {
-        String parentID = parent.getID();
+    public String getFullId() {
+        String parentID = parent.getFullId();
         return parentID.equals("") ? id : parentID + "." + id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Nullable
@@ -59,7 +66,6 @@ public abstract class AbstractSetting implements Setting {
         }
         return null;
     }
-
 
 
 }

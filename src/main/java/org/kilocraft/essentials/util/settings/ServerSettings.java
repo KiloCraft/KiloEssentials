@@ -20,6 +20,7 @@ import org.kilocraft.essentials.util.settings.values.*;
 import org.kilocraft.essentials.util.settings.values.util.RootSetting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -205,7 +206,15 @@ public class ServerSettings implements NBTStorage {
         automated.addChild(min_mobcap);
         automated.addChild(max_mobcap);
 
+        Arrays.fill(entityTickCache, true);
+        BooleanSetting entityTicking = new BooleanSetting(true, "entity").onChanged(bool -> entityTickCache[0] = bool);
+        for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
+            BooleanSetting value = new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entityTickCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
+            entityTicking.addChild(value);
+        }
+
         tick_utils.addChild(automated);
+        tick_utils.addChild(entityTicking);
         tick_utils.addChild(tick_distance);
         tick_utils.addChild(global_mobcap);
 
@@ -225,17 +234,9 @@ public class ServerSettings implements NBTStorage {
             entity_limit.addChild(entity);
         }
 
-        //Ticking
-        CategorySetting tick = new CategorySetting("tick");
-        BooleanSetting entity = new BooleanSetting(true, "entity").onChanged(bool -> entityTickCache[0] = bool);
-        for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-            BooleanSetting value = new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entityTickCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
-            entity.addChild(value);
-        }
-        tick.addChild(entity);
-
         //Spawning
         CategorySetting spawn = new CategorySetting("spawn");
+        Arrays.fill(entitySpawnCache, true);
         BooleanSetting spawnEntity = new BooleanSetting(true, "entity").onChanged(bool -> entitySpawnCache[0] = bool);
         for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
             BooleanSetting value = new BooleanSetting(true, Registry.ENTITY_TYPE.getId(entityType).getPath()).onChanged(bool -> entitySpawnCache[Registry.ENTITY_TYPE.getRawId(entityType) + 1] = bool);
@@ -264,7 +265,6 @@ public class ServerSettings implements NBTStorage {
         root.addChild(debug);
         root.addChild(tick_utils);
         root.addChild(entity_limit);
-        root.addChild(tick);
         root.addChild(spawn);
         root.addChild(mobcap);
         root.addChild(patch);

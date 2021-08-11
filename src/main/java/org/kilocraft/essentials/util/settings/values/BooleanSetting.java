@@ -1,10 +1,10 @@
 package org.kilocraft.essentials.util.settings.values;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 
@@ -17,13 +17,18 @@ public class BooleanSetting extends ConfigurableSetting<Boolean> {
     }
 
     @Override
-    public RequiredArgumentBuilder<ServerCommandSource, Boolean> valueArgument() {
-        return CommandManager.argument(commandArgumentValue, BoolArgumentType.bool());
+    public ArgumentType<Boolean> valueArgumentType() {
+        return BoolArgumentType.bool();
     }
 
     @Override
     public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
-        this.setValue(BoolArgumentType.getBool(ctx, commandArgumentValue));
+        this.setValue(Boolean.parseBoolean(StringArgumentType.getString(ctx, commandArgumentValue)));
+    }
+
+    @Override
+    public String getFormattedValue() {
+        return getValue() ? "<green>true" : "<red>false";
     }
 
     @Override
