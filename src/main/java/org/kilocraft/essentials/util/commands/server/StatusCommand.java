@@ -70,7 +70,7 @@ public class StatusCommand extends EssentialCommand {
             for (Entity entity : world.iterateEntities()) {
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     int i = nearbyEntities.get(player);
-                    if (entity.getPos().distanceTo(player.getPos()) < ServerSettings.getInt("view_distance") * 16) i++;
+                    if (entity.getPos().distanceTo(player.getPos()) < ServerSettings.getViewDistance() * 16) i++;
                     nearbyEntities.put(player, i);
                 }
                 entities++;

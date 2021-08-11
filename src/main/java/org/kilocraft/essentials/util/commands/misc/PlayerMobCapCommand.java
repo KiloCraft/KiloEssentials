@@ -11,11 +11,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.SpawnHelper;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.patch.perPlayerMobSpawn.ServerPlayerEntityInterface;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
@@ -37,11 +37,16 @@ public class PlayerMobCapCommand extends EssentialCommand {
         SpawnHelper.Info spawnHelperInfo = world.getChunkManager().getSpawnInfo();
         if (spawnHelperInfo == null) KiloEssentials.getLogger().error("SpawnEntry is null");
         TextComponent.Builder text = Component.text();
-        text.content("Player Mobcaps").color(NamedTextColor.YELLOW).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0]).color(NamedTextColor.GREEN)).append(Component.text(")").color(NamedTextColor.DARK_GRAY)).append(Component.text(":\n").color(NamedTextColor.YELLOW));
+        text.content("Player Mobcaps").color(NamedTextColor.YELLOW).append(Component.text(" (").color(NamedTextColor.DARK_GRAY))
+                .append(Component.text(ServerSettings.tick_utils_global_mobcap).color(NamedTextColor.RED))
+                .append(Component.text(", ").color(NamedTextColor.GRAY))
+                .append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0]).color(NamedTextColor.GREEN))
+                .append(Component.text(")").color(NamedTextColor.DARK_GRAY))
+                .append(Component.text(":\n").color(NamedTextColor.YELLOW));
         for (SpawnGroup spawnGroup : SpawnGroup.values()) {
             int count = serverPlayerEntityInterface.getMobCounts()[spawnGroup.ordinal()];
             String name = spawnGroup.getName();
-            int cap = (int) (spawnGroup.getCapacity() * (ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0] *
+            int cap = (int) (spawnGroup.getCapacity() * (ServerSettings.tick_utils_global_mobcap * ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0] *
                     ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][spawnGroup.ordinal() + 1]));
             text.append(Component.text(name + ": ").color(NamedTextColor.GRAY)).append(Component.text(count).color(NamedTextColor.LIGHT_PURPLE)).append(Component.text("/").color(NamedTextColor.DARK_GRAY)).append(Component.text(cap).color(NamedTextColor.GOLD)).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][spawnGroup.ordinal() + 1]).color(NamedTextColor.AQUA)).append(Component.text(")\n").color(NamedTextColor.DARK_GRAY));
         }

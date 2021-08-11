@@ -93,7 +93,7 @@ public class ActivationRange {
         for (ActivationType activationType : ActivationType.values()) {
             maxRange = Math.max(activationRange[activationType.ordinal()][0], maxRange);
         }
-        maxRange = Math.min((KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance() << 4) - 8, maxRange);
+        maxRange = Math.min((ServerSettings.getViewDistance() << 4) - 8, maxRange);
         for (PlayerEntity player : world.getPlayers()) {
             if (player.isSpectator()) continue;
             ((ActivationTypeEntity) player).setActivatedTick(KiloEssentials.getMinecraftServer().getTicks());

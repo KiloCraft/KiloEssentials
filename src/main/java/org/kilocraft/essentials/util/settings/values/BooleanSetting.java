@@ -8,6 +8,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 
+import java.util.function.Consumer;
+
 public class BooleanSetting extends ConfigurableSetting<Boolean> {
 
     public BooleanSetting(Boolean value, String id) {
@@ -32,5 +34,10 @@ public class BooleanSetting extends ConfigurableSetting<Boolean> {
     @Override
     protected Boolean getValue(NbtCompound tag) {
         return tag.getBoolean("value");
+    }
+
+    @Override
+    public BooleanSetting onChanged(Consumer<Boolean> consumer) {
+        return (BooleanSetting) super.onChanged(consumer);
     }
 }

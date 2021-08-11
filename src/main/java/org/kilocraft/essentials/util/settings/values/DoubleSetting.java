@@ -9,6 +9,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
 
+import java.util.function.Consumer;
+
 public class DoubleSetting extends ConfigurableSetting<Double> implements RangeSetting<Double> {
 
     private Double from = Double.MIN_VALUE;
@@ -36,6 +38,11 @@ public class DoubleSetting extends ConfigurableSetting<Double> implements RangeS
     @Override
     protected Double getValue(NbtCompound tag) {
         return tag.getDouble("value");
+    }
+
+    @Override
+    public DoubleSetting onChanged(Consumer<Double> consumer) {
+        return (DoubleSetting) super.onChanged(consumer);
     }
 
     @Override

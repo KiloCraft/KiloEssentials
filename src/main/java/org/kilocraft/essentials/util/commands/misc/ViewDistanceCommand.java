@@ -33,9 +33,8 @@ public class ViewDistanceCommand extends EssentialCommand {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
 
         if (server.isDedicated()) {
-            if (distance != server.getPlayerManager().getViewDistance()) {
-                server.getPlayerManager().setViewDistance(distance);
-                ServerSettings.setInt("view_distance", distance);
+            if (distance != ServerSettings.getViewDistance()) {
+                ServerSettings.setViewDistance(distance);
                 player.sendMessage(StringText.of(true, "command.viewdistance.set", distance), false);
             }
             return distance;

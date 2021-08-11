@@ -9,6 +9,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
 
+import java.util.function.Consumer;
+
 public class FloatSetting extends ConfigurableSetting<Float> implements RangeSetting<Float> {
 
     private Float from = Float.MIN_VALUE;
@@ -16,6 +18,11 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
 
     public FloatSetting(Float value, String id) {
         super(value, id);
+    }
+
+    @Override
+    public FloatSetting onChanged(Consumer<Float> consumer) {
+        return (FloatSetting) super.onChanged(consumer);
     }
 
     @Override

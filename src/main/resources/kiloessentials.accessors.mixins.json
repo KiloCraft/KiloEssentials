@@ -9,7 +9,7 @@
     "ServerChunkManagerAccessor",
     "SpawnHelperAccessor",
     "SpawnHelperInfoAccessor",
-    "SpreadPlayerCommandInvoker"
+    "TACSAccessor"
   ],
   "server": [
     "EntityAccessor",

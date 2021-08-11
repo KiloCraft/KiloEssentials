@@ -41,7 +41,7 @@ public abstract class ServerChunkManagerMixin extends ChunkManager {
         PlayerMobDistanceMap mobDistanceMap = ((ThreadedAnvilChunkStorageInterface) threadedAnvilChunkStorage).getMobDistanceMap();
         if (mobDistanceMap != null) {
             // update distance map
-            mobDistanceMap.update(this.world.getPlayers(), ServerSettings.tickDistance < 0 ? ((ThreadedAnvilChunkStorageAccessor) threadedAnvilChunkStorage).getWatchDistance() : ServerSettings.tickDistance);
+            mobDistanceMap.update(this.world.getPlayers(), ServerSettings.tick_utils_tick_distance < 0 ? ((ThreadedAnvilChunkStorageAccessor) threadedAnvilChunkStorage).getWatchDistance() : ServerSettings.tick_utils_tick_distance);
             // re-set mob counts
             for (ServerPlayerEntity player : this.world.getPlayers()) {
                 Arrays.fill(((ServerPlayerEntityInterface) player).getMobCounts(), 0);

@@ -24,6 +24,7 @@ import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.Locale;
 
@@ -106,7 +107,7 @@ public class WarpCommand {
             user.getHomesHandler().addHome();
         }*/
         //Add a custom ticket to gradually preload chunks
-        warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("warp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
+        warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("warp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), ServerSettings.getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
         new SinglePlayerScheduler(user, 1, KiloConfig.main().server().cooldown, () -> {
             user.sendLangMessage("command.warp.teleport", warp.getName());
             user.saveLocation();

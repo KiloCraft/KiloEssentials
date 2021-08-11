@@ -77,7 +77,7 @@ public class EntitiesCommand extends EssentialCommand {
                 entitiesByType.put(entity.getType(), entitiesByType.getOrDefault(entity.getType(), 0) + 1);
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     int i = nearbyEntities.getOrDefault(player, 0);
-                    if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) <= ServerSettings.getInt("view_distance") && entity.getEntityWorld().equals(player.getEntityWorld())) {
+                    if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) <= ServerSettings.getViewDistance() && entity.getEntityWorld().equals(player.getEntityWorld())) {
                         i++;
                     }
                     nearbyEntities.put(player, i);
@@ -145,7 +145,7 @@ public class EntitiesCommand extends EssentialCommand {
         HashMap<EntityType<?>, Integer> entitiesByType = new HashMap<>();
         int entities = 0;
         for (Entity entity : player.getServerWorld().iterateEntities()) {
-            if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) <= ServerSettings.getInt("view_distance")) {
+            if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) <= ServerSettings.getViewDistance()) {
                 entitiesByType.put(entity.getType(), entitiesByType.getOrDefault(entity.getType(), 0) + 1);
                 entities++;
             }
@@ -180,7 +180,7 @@ public class EntitiesCommand extends EssentialCommand {
                 if (!entity.getType().equals(entityType)) continue;
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     int i = nearbyEntities.getOrDefault(player, 0);
-                    if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) <= ServerSettings.getInt("view_distance") && entity.getEntityWorld().equals(player.getEntityWorld())) {
+                    if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) <= ServerSettings.getViewDistance() && entity.getEntityWorld().equals(player.getEntityWorld())) {
                         i++;
                     }
                     nearbyEntities.put(player, i);

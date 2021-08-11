@@ -23,6 +23,7 @@ import org.kilocraft.essentials.extensions.homes.commands.HomesCommand;
 import org.kilocraft.essentials.extensions.homes.commands.SethomeCommand;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -167,7 +168,7 @@ public class UserHomeHandler implements ConfigurableFeature {
             }
 
             //Add a custom ticket to gradually preload chunks
-            world.getChunkManager().addTicket(ChunkTicketType.create("home", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(home.getLocation().toPos()), KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
+            world.getChunkManager().addTicket(ChunkTicketType.create("home", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(home.getLocation().toPos()), ServerSettings.getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
         }
     }
 

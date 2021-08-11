@@ -9,6 +9,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
 
+import java.util.function.Consumer;
+
 public class IntegerSetting extends ConfigurableSetting<Integer> implements RangeSetting<Integer> {
 
     private Integer from = Integer.MIN_VALUE;
@@ -36,6 +38,11 @@ public class IntegerSetting extends ConfigurableSetting<Integer> implements Rang
     @Override
     protected Integer getValue(NbtCompound tag) {
         return tag.getInt("value");
+    }
+
+    @Override
+    public IntegerSetting onChanged(Consumer<Integer> consumer) {
+        return (IntegerSetting) super.onChanged(consumer);
     }
 
     @Override

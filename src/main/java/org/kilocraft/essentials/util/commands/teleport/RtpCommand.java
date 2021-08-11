@@ -32,6 +32,7 @@ import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
+import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.Random;
@@ -99,7 +100,7 @@ public class RtpCommand extends EssentialCommand {
             if (!(biome.getCategory() == Biome.Category.OCEAN)) done = true;
         }
         //Add a custom ticket to gradually preload chunks
-        target.getServerWorld().getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance() + 1, target.getId()); // Lag reduction
+        target.getServerWorld().getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), ServerSettings.getViewDistance() + 1, target.getId()); // Lag reduction
         final int finalX = x;
         final int finalZ = z;
         new SinglePlayerScheduler(targetUser, -1, cfg.teleportCooldown, () -> {
