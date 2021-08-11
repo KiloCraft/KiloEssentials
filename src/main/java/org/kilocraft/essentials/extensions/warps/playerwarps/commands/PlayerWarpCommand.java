@@ -311,16 +311,16 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         if (warp == null) {
-            src.sendLangMessage("command.playerwarp.invalid_warp");
-            return FAILED;
-        }
-
-        if (!name.matches("[\\w]{4,20}")) {
-            src.sendLangMessage("command.playerwarp.name_invalid");
+            src.sendLangError("command.playerwarp.invalid_warp");
             return FAILED;
         }
 
         String warpName = StringArgumentType.getString(ctx, "name");
+        if (!warpName.matches("[\\w]{4,20}")) {
+            src.sendLangError("command.playerwarp.name_invalid");
+            return FAILED;
+        }
+
         src.sendLangMessage("command.playerwarp.change_property", "name", warp.getName(), warpName);
         warp.setName(warpName);
 
