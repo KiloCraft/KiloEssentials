@@ -154,7 +154,6 @@ public class KiloEssentials {
         new ServerSettings();
         ServerSettings.registerSettings();
         NBTStorageUtil.onLoad();
-        KiloCommands.register(new SettingCommand());
     }
 
     private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandManager.RegistrationEnvironment environment) {
@@ -168,8 +167,6 @@ public class KiloEssentials {
         ServerMetaManager.updateAll();
         ConfigurableFeatures.loadAll(true);
         NBTStorageUtil.onSave();
-        KiloCommands.register(new SettingCommand());
-        KiloCommands.updateGlobalCommandTree();
     }
 
     private void onReady(MinecraftDedicatedServer server) {

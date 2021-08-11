@@ -9,16 +9,14 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -27,6 +25,10 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.StringText;
+import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
+import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.help.HelpCommand;
 import org.kilocraft.essentials.util.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.util.commands.inventory.AnvilCommand;
@@ -49,11 +51,9 @@ import org.kilocraft.essentials.util.commands.user.SilenceCommand;
 import org.kilocraft.essentials.util.commands.user.WhoIsCommand;
 import org.kilocraft.essentials.util.commands.user.WhoWasCommand;
 import org.kilocraft.essentials.util.commands.world.TimeCommand;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
-import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.settings.SettingCommand;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
@@ -63,9 +63,9 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class KiloCommands {
     private static final List<IEssentialCommand> commands = new ArrayList<>();
-    private static CommandDispatcher<ServerCommandSource> dispatcher;
     private static final SimpleCommandManager simpleCommandManager = new SimpleCommandManager();
     private static final LiteralCommandNode<ServerCommandSource> rootNode = literal("essentials").executes(KiloCommands::sendInfo).build();
+    private static CommandDispatcher<ServerCommandSource> dispatcher;
 
     public static void registerCommands(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         dispatcher = commandDispatcher;
@@ -160,6 +160,7 @@ public class KiloCommands {
         register(new UnBanIpCommand());
         register(new UnMuteCommand());
         register(new ToggleChatCommand());
+        register(new SettingCommand());
 
         dispatcher.getRoot().addChild(rootNode);
 
@@ -363,22 +364,15 @@ public class KiloCommands {
 
             }
         } catch (final Exception e) {
-            final StringBuilder builder = new StringBuilder(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
-            if (SharedConstants.isDevelopment) {
-                KiloEssentials.getLogger().error("Command exception: {}", command, e);
-                StackTraceElement[] stackTraceElements = e.getStackTrace();
+            KiloEssentials.getLogger().error("'" + command + "' threw an exception", e);
 
-                for (int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
-                    builder.append(Texter.exceptionToString(e, true));
-                }
-            }
-
-            executor.sendError(new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, ComponentText.toText(builder.toString())))));
-
-            if (SharedConstants.isDevelopment) {
-                executor.sendError(new LiteralText(Util.getInnermostMessage(e)));
-                KiloEssentials.getLogger().error("'" + command + "' threw an exception", e);
-            }
+            String exception = ExceptionUtils.getStackTrace(e);
+            executor.sendError(new TranslatableText("command.failed")
+                    .styled(style -> style
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, ComponentText.toText(exception)))
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, exception))
+                    )
+            );
 
             return (byte) 0;
 

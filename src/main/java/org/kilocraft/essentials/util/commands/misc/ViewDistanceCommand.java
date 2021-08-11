@@ -44,7 +44,7 @@ public class ViewDistanceCommand extends EssentialCommand {
 
     private int info(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        player.sendMessage(StringText.of(true, "command.viewdistance.info", ServerSettings.getInt("view_distance")), false);
+        player.sendMessage(StringText.of(true, "command.viewdistance.info", ServerSettings.getInt("tick_utils.view_distance")), false);
         return SUCCESS;
     }
 }

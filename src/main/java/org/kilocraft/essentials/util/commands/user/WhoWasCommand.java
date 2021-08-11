@@ -5,8 +5,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
@@ -75,6 +77,7 @@ public class WhoWasCommand extends EssentialCommand {
                 loadingText.stop();
             } catch (Exception e) {
                 src.sendLangError("api.mojang.request_failed", e.getMessage());
+                loadingText.stop();
             }
 
             return AWAIT;
@@ -83,17 +86,16 @@ public class WhoWasCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private int send(OnlineUser user, String name, int page) {
+    private int send(OnlineUser user, String name, int page) throws CommandSyntaxException {
         String uuid;
         try {
             uuid = NameLookup.getPlayerUUID(name);
-
-            if (uuid == null) {
-                throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
-            }
-        } catch (Exception e) {
-            user.sendError(Texter.exceptionToString(e, false));
+        } catch (IOException e) {
+            user.sendLangError("command.whowas.failed", name);
             return FAILED;
+        }
+        if (uuid == null) {
+            throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
         }
 
         if (CacheManager.isPresent(getCacheId(uuid))) {

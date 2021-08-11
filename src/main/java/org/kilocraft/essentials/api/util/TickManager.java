@@ -82,7 +82,7 @@ public class TickManager {
 
     private static void checkViewDistance(double mspt) {
         int viewDistance = ServerSettings.getViewDistance();
-        if (mspt > 45 && ServerSettings.tick_utils_global_mobcap == ServerSettings.tick_utils_min_mobcap && ServerSettings.getViewDistance() > ServerSettings.tick_utils_min_view_distance) {
+        if (mspt > 45 && ServerSettings.tick_utils_global_mobcap <= ServerSettings.tick_utils_min_mobcap && ServerSettings.getViewDistance() > ServerSettings.tick_utils_min_view_distance) {
             ServerSettings.setViewDistance(viewDistance - 1);
         } else if (mspt < 35 && viewDistance < ServerSettings.tick_utils_max_view_distance) {
             ServerSettings.setViewDistance(viewDistance + 1);
@@ -93,7 +93,7 @@ public class TickManager {
         int tickDistance = ServerSettings.tick_utils_tick_distance;
         if (mspt > 40 && tickDistance > ServerSettings.tick_utils_min_tick_distance) {
             ServerSettings.setInt("tick_utils.tick_distance", ServerSettings.tick_utils_tick_distance - 1);
-        } else if (mspt < 30 && tickDistance < ServerSettings.tick_utils_max_tick_distance && ServerSettings.tick_utils_global_mobcap == ServerSettings.tick_utils_max_mobcap) {
+        } else if (mspt < 30 && tickDistance < ServerSettings.tick_utils_max_tick_distance && ServerSettings.tick_utils_global_mobcap >= ServerSettings.tick_utils_max_mobcap) {
             ServerSettings.setInt("tick_utils.tick_distance", ServerSettings.tick_utils_tick_distance + 1);
         }
     }

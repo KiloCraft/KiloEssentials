@@ -706,12 +706,7 @@ public class ServerUserManager implements UserManager, TickListener {
         private AnimatedText animatedText;
 
         public LoadingText(ServerPlayerEntity player) {
-            this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player)
-                    .append(StringText.of(true, "general.wait_server.frame1"))
-                    .append(StringText.of(true, "general.wait_server.frame2"))
-                    .append(StringText.of(true, "general.wait_server.frame3"))
-                    .append(StringText.of(true, "general.wait_server.frame4"))
-                    .build();
+            this(player, "general.wait_server");
         }
 
         public LoadingText(ServerPlayerEntity player, String key) {

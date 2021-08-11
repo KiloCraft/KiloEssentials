@@ -265,7 +265,6 @@ public class ServerSettings implements NBTStorage {
         root.addChild(spawn);
         root.addChild(mobcap);
         root.addChild(patch);
-        KiloCommands.register(new SettingCommand());
     }
 
     @Override
