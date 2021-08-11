@@ -19,9 +19,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(AnimalEntity.class)
-public abstract class AnimalEntityMixinPatch extends PassiveEntity {
+public abstract class AnimalEntityMixin extends PassiveEntity {
 
-    protected AnimalEntityMixinPatch(EntityType<? extends PassiveEntity> entityType, World world) {
+    protected AnimalEntityMixin(EntityType<? extends PassiveEntity> entityType, World world) {
         super(entityType, world);
     }
 

@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WitherEntity.class)
-public abstract class WitherEntityMixinPatch extends HostileEntity {
+public abstract class WitherEntityMixin extends HostileEntity {
 
     @Shadow public abstract int getInvulnerableTimer();
 
-    protected WitherEntityMixinPatch(EntityType<? extends HostileEntity> entityType, World world) {
+    protected WitherEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
     }
 

@@ -44,6 +44,8 @@ public class ServerSettings implements NBTStorage {
     public static boolean villagerActiveForPanic = true;
     public static boolean patch_item_merge_adjust_movement = true;
     public static double patch_item_merge_radius = 0.5D;
+    public static boolean patch_lobotomize_villagers_enabled = false;
+    public static int patch_lobotomize_villagers_tick_interval = 20;
 
 
     public ServerSettings() {
@@ -119,6 +121,13 @@ public class ServerSettings implements NBTStorage {
         //Shulker spawn chance
         DoubleSetting shulker_spawn_chance = new DoubleSetting(0D, "shulker_spawn_chance");
 
+        //Lobotomize Stuck Villagers
+        CategorySetting lobotomize_villagers = new CategorySetting("lobotomize_villagers");
+        BooleanSetting enabled = (BooleanSetting) new BooleanSetting(false, "enabled").onChanged(bool -> patch_lobotomize_villagers_enabled = bool);
+        IntegerSetting tick_interval = (IntegerSetting) new IntegerSetting(20, "tick_interval").onChanged(integer -> patch_lobotomize_villagers_tick_interval = integer);
+        lobotomize_villagers.addChild(enabled);
+        lobotomize_villagers.addChild(tick_interval);
+
         //Global sound
         BooleanSetting global_sound = new BooleanSetting(true, "global_sound");
 
@@ -129,6 +138,7 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(ppmobcap);
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
+        patch.addChild(lobotomize_villagers);
         patch.addChild(global_sound);
 
         //Activation range

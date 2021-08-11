@@ -6,6 +6,7 @@
   "mixins": [
     "MinecraftServerAccessor",
     "PlayerListHeaderS2CPacketMixin",
+    "ServerChunkManagerAccessor",
     "SpawnHelperAccessor",
     "SpawnHelperInfoAccessor",
     "SpreadPlayerCommandInvoker"

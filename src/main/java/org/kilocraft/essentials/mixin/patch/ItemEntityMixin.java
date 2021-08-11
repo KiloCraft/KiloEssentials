@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
-public abstract class ItemEntityMixinPatch extends Entity {
+public abstract class ItemEntityMixin extends Entity {
 
-    public ItemEntityMixinPatch(EntityType<?> entityType, World world) {
+    public ItemEntityMixin(EntityType<?> entityType, World world) {
         super(entityType, world);
     }
 

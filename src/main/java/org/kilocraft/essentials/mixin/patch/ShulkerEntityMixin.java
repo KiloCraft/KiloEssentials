@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 
 @Mixin(ShulkerEntity.class)
-public abstract class ShulkerEntityMixinPatch {
+public abstract class ShulkerEntityMixin {
 
     @Inject(method = "spawnNewShulker", at = @At(value = "HEAD"), cancellable = true)
     public void onShulkerSpawnAttempt(CallbackInfo ci) {

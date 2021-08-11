@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SignBlockEntity.class)
-public abstract class SignBlockEntityMixinPatch {
+public abstract class SignBlockEntityMixin {
 
     @Shadow public abstract ServerCommandSource getCommandSource(ServerPlayerEntity serverPlayerEntity);
 

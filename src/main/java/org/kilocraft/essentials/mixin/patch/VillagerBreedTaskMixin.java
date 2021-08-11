@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(VillagerBreedTask.class)
-public abstract class VillagerBreedTaskMixinPatch {
+public abstract class VillagerBreedTaskMixin {
 
     @Redirect(method = "keepRunning", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;squaredDistanceTo(Lnet/minecraft/entity/Entity;)D"))
     public double noIntenseBreeding(VillagerEntity villagerEntity, Entity entity) {

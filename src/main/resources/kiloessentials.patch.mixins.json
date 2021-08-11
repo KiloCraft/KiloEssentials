@@ -4,20 +4,21 @@
   "package": "org.kilocraft.essentials.mixin.patch",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "AnimalEntityMixinPatch",
+    "AnimalEntityMixin",
     "DecorationItemMixin",
-    "EggEntityMixinPatch",
+    "EggEntityMixin",
     "EnchantCommandMixin",
-    "FilledMapItemMixinPatch",
+    "FilledMapItemMixin",
     "HorseBaseEntityMixin",
-    "ItemEntityMixinPatch",
-    "ServerWorldMixinPatch",
-    "ShulkerEntityMixinPatch",
-    "VillagerBreedTaskMixinPatch",
-    "WitherEntityMixinPatch"
+    "ItemEntityMixin",
+    "ServerWorldMixin",
+    "ShulkerEntityMixin",
+    "VillagerBreedTaskMixin",
+    "VillagerEntityMixin",
+    "WitherEntityMixin"
   ],
   "server": [
-    "SignBlockEntityMixinPatch"
+    "SignBlockEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

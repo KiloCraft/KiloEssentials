@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(FilledMapItem.class)
-public abstract class FilledMapItemMixinPatch {
+public abstract class FilledMapItemMixin {
 
     @Redirect(method = "updateColors", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getWorldChunk(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/chunk/WorldChunk;"))
     public WorldChunk getChunkIfLoaded(World world, BlockPos pos) {

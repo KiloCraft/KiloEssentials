@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.Random;
 
 @Mixin(EggEntity.class)
-public abstract class EggEntityMixinPatch extends ThrownItemEntity {
+public abstract class EggEntityMixin extends ThrownItemEntity {
 
-    public EggEntityMixinPatch(EntityType<? extends ThrownItemEntity> entityType, World world) {
+    public EggEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
     }
 
