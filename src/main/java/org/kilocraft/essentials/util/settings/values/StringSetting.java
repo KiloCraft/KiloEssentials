@@ -1,10 +1,9 @@
 package org.kilocraft.essentials.util.settings.values;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 
@@ -22,13 +21,18 @@ public class StringSetting extends ConfigurableSetting<String> {
     }
 
     @Override
-    public RequiredArgumentBuilder<ServerCommandSource, String> valueArgument() {
-        return CommandManager.argument(commandArgumentValue, quotable ? StringArgumentType.string() : StringArgumentType.word());
+    public ArgumentType<String> valueArgumentType() {
+        return quotable ? StringArgumentType.string() : StringArgumentType.word();
     }
 
     @Override
     public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
         this.setValue(StringArgumentType.getString(ctx, commandArgumentValue));
+    }
+
+    @Override
+    public String getFormattedValue() {
+        return "<green>\"" +  getValue() + "\"";
     }
 
     @Override

@@ -6,19 +6,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import org.kilocraft.essentials.KiloCommands;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
-import org.kilocraft.essentials.commands.LiteralCommandModified;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.*;
@@ -26,11 +25,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 public class ArgumentSuggestions {
-    private static final PlayerManager playerManager = KiloServer.getServer().getPlayerManager();
+    private static final PlayerManager playerManager = KiloEssentials.getMinecraftServer().getPlayerManager();
 
     public static CompletableFuture<Suggestions> users(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         List<String> list = Lists.newArrayList();
-        for (OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+        for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList(KiloCommands.hasPermission(context.getSource(), CommandPermission.VANISH))) {
             if (user.hasNickname()) {
                 list.add(StringUtils.uniformNickname(user.getDisplayName()));
             }
@@ -62,7 +61,7 @@ public class ArgumentSuggestions {
 
     public static CompletableFuture<Suggestions> allPlayerNicks(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
         final List<String> nicks = new ArrayList<>();
-        for (final OnlineUser user : KiloServer.getServer().getUserManager().getOnlineUsersAsList()) {
+        for (final OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList(KiloCommands.hasPermission(context.getSource(), CommandPermission.VANISH))) {
             nicks.add(ComponentText.clearFormatting(user.getDisplayName()));
             nicks.add(user.getUsername());
         }
@@ -76,17 +75,6 @@ public class ArgumentSuggestions {
             dims.add(worldRegistryKey.getValue().getPath());
         }
         return CommandSource.suggestMatching(dims.stream(), builder);
-    }
-
-    public static CompletableFuture<Suggestions> usableCommands(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return KiloCommands.toastSuggestions(context, builder);
-    }
-
-    public static CompletableFuture<Suggestions> commands(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(
-                KiloCommands.getDispatcher().getRoot().getChildren().stream().filter(child -> !child.getName().startsWith(LiteralCommandModified.getNMSCommandPrefix())).map(CommandNode::getName),
-                builder
-        );
     }
 
     public static CompletableFuture<Suggestions> allNonOperators(final CommandContext<ServerCommandSource> context, final SuggestionsBuilder builder) {

@@ -6,9 +6,6 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class RtpSpecsConfigSection {
 
-    @Setting(value = "simpleRTP", comment = "Simple rtp just generates random coordinates and drops the player from the sky instead of heavy calculations")
-    public boolean simpleRTP = false;
-
     @Setting(value = "minimum")
     public int min = 15000;
 
@@ -30,7 +27,7 @@ public class RtpSpecsConfigSection {
     @Setting(value = "defaultAmount", comment = "The Default amount of RTPs for users")
     public int defaultRTPs = 3;
 
-    @Setting(value = "showTries", comment = "If set to true you will see the amount of tries in the action bar while performing an RTP")
-    public boolean showTries = true;
+    @Setting(value = "teleportCooldown", comment = "The time before random teleporting (used to pregenerate the chunks)")
+    public int teleportCooldown = 3;
 
 }

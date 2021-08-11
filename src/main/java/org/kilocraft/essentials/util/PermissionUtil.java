@@ -10,8 +10,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.core.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
@@ -20,6 +18,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+
+//TODO refactor
 public class PermissionUtil {
     private static final Logger logger = (Logger) KiloEssentials.getLogger();
     private static final List<String> pendingPermissions = new ArrayList<>();
@@ -73,21 +73,25 @@ public class PermissionUtil {
     }
 
     private boolean fromLuckPerms(ServerCommandSource src, String perm, int op) {
-        LuckPerms luckPerms = LuckPermsProvider.get();
-
         try {
-            ServerPlayerEntity player = src.getPlayer();
-            User user = luckPerms.getUserManager().getUser(player.getUuid());
+            LuckPerms luckPerms = LuckPermsProvider.get();
+            try {
+                ServerPlayerEntity player = src.getPlayer();
+                User user = luckPerms.getUserManager().getUser(player.getUuid());
 
-            if (user != null) {
-                QueryOptions options = luckPerms.getContextManager().getQueryOptions(player);
-                return user.getCachedData().getPermissionData(options).checkPermission(perm).asBoolean();
+                if (user != null) {
+                    QueryOptions options = luckPerms.getContextManager().getQueryOptions(player);
+                    return user.getCachedData().getPermissionData(options).checkPermission(perm).asBoolean();
+                }
+
+            } catch (CommandSyntaxException ignored) {
             }
-
-        } catch (CommandSyntaxException ignored) {
+            return fallbackPermissionCheck(src, op);
+        } catch (IllegalStateException e) {
+            return false;
         }
 
-        return fallbackPermissionCheck(src, op);
+
     }
 
     public boolean hasPermission(UUID uuid, String perm) {

@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Util;
-import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import java.util.UUID;
 

@@ -19,9 +19,8 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
-import org.kilocraft.essentials.api.server.Server;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
 import org.kilocraft.essentials.extensions.customcommands.config.sections.CustomCommandConfigSection;
 import org.kilocraft.essentials.provided.KiloFile;
@@ -83,7 +82,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
 
         config.commands.forEach((string, cs) -> {
             SimpleCommandManager.unregister(string);
-            SimpleCommand simpleCommand = new SimpleCommand(string, cs.label, (source, args, server) -> runCommand(source, args, server, cs));
+            SimpleCommand simpleCommand = new SimpleCommand(string, cs.label, (source, args) -> runCommand(source, args, cs));
 
             if (cs.reqSection.op != 0) {
                 simpleCommand.requires(cs.reqSection.op);
@@ -99,7 +98,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
         });
     }
 
-    private static int runCommand(ServerCommandSource src, String[] args, Server server, CustomCommandConfigSection cs) throws CommandSyntaxException {
+    private static int runCommand(ServerCommandSource src, String[] args, CustomCommandConfigSection cs) throws CommandSyntaxException {
         int var = 0;
         int iArgs = 0;
         List<String> commands = new ArrayList<>();

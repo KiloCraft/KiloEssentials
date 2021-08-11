@@ -67,6 +67,13 @@ public interface UserManager {
     List<OnlineUser> getOnlineUsersAsList();
 
     /**
+     * Gets a list of the online users
+     * @param includeVanished whether or not to include vanished players
+     * @return An List of online users
+     */
+    List<OnlineUser> getOnlineUsersAsList(boolean includeVanished);
+
+    /**
      * Gets a user who is online based on their GameProfile.
      * @param profile The user's GameProfile.
      * @return An online user, or null if the user isn't online.

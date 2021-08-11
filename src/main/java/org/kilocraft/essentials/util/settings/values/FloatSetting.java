@@ -1,13 +1,15 @@
 package org.kilocraft.essentials.util.settings.values;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
+
+import java.util.function.Consumer;
 
 public class FloatSetting extends ConfigurableSetting<Float> implements RangeSetting<Float> {
 
@@ -19,13 +21,23 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
     }
 
     @Override
-    public RequiredArgumentBuilder<ServerCommandSource, Float> valueArgument() {
-        return CommandManager.argument(commandArgumentValue, FloatArgumentType.floatArg(from, to));
+    public FloatSetting onChanged(Consumer<Float> consumer) {
+        return (FloatSetting) super.onChanged(consumer);
+    }
+
+    @Override
+    public ArgumentType<Float> valueArgumentType() {
+        return FloatArgumentType.floatArg(from, to);
     }
 
     @Override
     public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
-        this.setValue(FloatArgumentType.getFloat(ctx, commandArgumentValue));
+        this.setValue(Float.parseFloat(StringArgumentType.getString(ctx, commandArgumentValue)));
+    }
+
+    @Override
+    public String getFormattedValue() {
+        return "<aqua>" +  getValue() + "f";
     }
 
     @Override

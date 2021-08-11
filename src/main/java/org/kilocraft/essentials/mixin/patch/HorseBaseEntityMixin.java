@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @Mixin(HorseBaseEntity.class)
-public class HorseBaseEntityMixin {
+public abstract class HorseBaseEntityMixin {
 
     HashMap<UUID, ArrayList<UUID>> horseToPlayers = new HashMap<>();
 

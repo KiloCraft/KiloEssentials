@@ -16,9 +16,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.CommandPermission;
-import org.kilocraft.essentials.EssentialPermission;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -30,8 +30,7 @@ import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
@@ -380,7 +379,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public OnlineUser getUser() throws CommandSyntaxException {
-        return KiloServer.getServer().getOnlineUser(source.getPlayer());
+        return KiloEssentials.getUserManager().getOnline(source);
     }
 
     @Override

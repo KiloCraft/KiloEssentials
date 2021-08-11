@@ -10,14 +10,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.util.StringUtils;
 
 import java.util.Objects;
 import java.util.Set;
 
 public class RegistryUtils {
-    private static final MinecraftServer server = KiloServer.getServer().getMinecraftServer();
+    private static final MinecraftServer server = KiloEssentials.getMinecraftServer();
     private static final RegistryKey<World> DEFAULT_WORLD_KEY = World.OVERWORLD;
 
     @Nullable

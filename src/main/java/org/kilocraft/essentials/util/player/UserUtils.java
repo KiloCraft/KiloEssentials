@@ -13,11 +13,9 @@ import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -25,11 +23,10 @@ import java.util.Date;
 import java.util.UUID;
 
 public class UserUtils {
-    private static final ServerUserManager USER_MANAGER = (ServerUserManager) KiloServer.getServer().getUserManager();
-    private static final PermissionUtil.Manager PERM_MANAGER = KiloEssentials.getInstance().getPermissionUtil().getManager();
+    private static final ServerUserManager USER_MANAGER = KiloEssentials.getUserManager();
 
     public static MutableText getDisplayNameWithMeta(OnlineUser user, boolean nickName) {
-        if (PERM_MANAGER == PermissionUtil.Manager.LUCKPERMS) {
+        if (KiloEssentials.getInstance().hasLuckPerms()) {
             return ComponentText.toText(getDisplayNameWithMetaAsString(user, nickName));
         }
 
@@ -39,7 +36,7 @@ public class UserUtils {
 
     public static String getDisplayNameWithMetaAsString(OnlineUser user, boolean nickName) {
         StringBuilder builder = new StringBuilder();
-        if (PERM_MANAGER == PermissionUtil.Manager.LUCKPERMS) {
+        if (KiloEssentials.getInstance().hasLuckPerms()) {
             CachedMetaData metaData = getLuckyMetaData(user.getUuid());
             String prefix = metaData.getPrefix();
             String suffix = metaData.getSuffix();
@@ -68,29 +65,6 @@ public class UserUtils {
         LuckPerms luckPerms = LuckPermsProvider.get();
         QueryOptions options = luckPerms.getContextManager().getStaticQueryOptions();
         return getLuckyUser(uuid).getCachedData().getMetaData(options);
-    }
-
-    public static class Process {
-        public static boolean isIn(@NotNull final OnlineUser user, String processId) {
-            return USER_MANAGER.getInProcessUsers().containsKey(user.getUuid()) && USER_MANAGER.getInProcessUsers().get(user.getUuid()).getId().equals(processId);
-        }
-
-        public static void add(@NotNull final OnlineUser user, SimpleProcess<?> process) {
-            USER_MANAGER.getInProcessUsers().put(user.getUuid(), process);
-        }
-
-        public static void remove(@NotNull final OnlineUser user) {
-            USER_MANAGER.getInProcessUsers().remove(user.getUuid());
-        }
-
-        public static boolean isInAny(@NotNull final OnlineUser user) {
-            return USER_MANAGER.getInProcessUsers().containsKey(user.getUuid());
-        }
-
-        @Nullable
-        public static <T> SimpleProcess<T> get(@NotNull final OnlineUser user) {
-            return (SimpleProcess<T>) USER_MANAGER.getInProcessUsers().get(user.getUuid());
-        }
     }
 
     public static class TpaRequests {

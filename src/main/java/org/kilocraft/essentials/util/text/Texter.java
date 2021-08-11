@@ -3,10 +3,12 @@ package org.kilocraft.essentials.util.text;
 import net.minecraft.SharedConstants;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,43 +31,6 @@ public class Texter {
     public static MutableText newRawText(final String string) {
         return new LiteralText(string);
     }
-
-    public static MutableText exceptionToText(Exception e, boolean requireDevMode) {
-        MutableText text = new LiteralText(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
-
-        if (!requireDevMode && SharedConstants.isDevelopment) {
-            StackTraceElement[] stackTraceElements = e.getStackTrace();
-
-            for (int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
-                text.append("\n\n").append(stackTraceElements[i].getMethodName())
-                        .append("\n ")
-                        .append(stackTraceElements[i].getFileName())
-                        .append(":")
-                        .append(String.valueOf(stackTraceElements[i].getLineNumber()));
-            }
-        }
-
-        return text;
-    }
-
-    public static String exceptionToString(Exception e, boolean requireDevMode) {
-        StringBuilder builder = new StringBuilder(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
-
-        if (!requireDevMode && SharedConstants.isDevelopment) {
-            StackTraceElement[] stackTraceElements = e.getStackTrace();
-
-            for (int i = 0; i < Math.min(stackTraceElements.length, 3); ++i) {
-                builder.append("\n\n").append(stackTraceElements[i].getMethodName())
-                        .append("\n ")
-                        .append(stackTraceElements[i].getFileName())
-                        .append(":")
-                        .append(stackTraceElements[i].getLineNumber());
-            }
-        }
-
-        return builder.toString();
-    }
-
 
     public static MutableText blockStyle(MutableText text) {
         MutableText separator = new LiteralText(SEPARATOR).formatted(Formatting.GRAY);

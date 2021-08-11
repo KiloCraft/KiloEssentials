@@ -12,7 +12,6 @@ public class RootSetting implements Setting {
     private final List<AbstractSetting> children = new ArrayList<>();
     private final HashMap<String, AbstractSetting> cache = new HashMap<>();
 
-
     public RootSetting() {
 
     }
@@ -23,21 +22,19 @@ public class RootSetting implements Setting {
         return this;
     }
 
+    @Override
     public List<AbstractSetting> getChildren() {
-        List<AbstractSetting> result = new ArrayList<>();
-        for (AbstractSetting child : children) {
-            result.addAll(child.getChildren());
-        }
-        return result;
+        return children;
     }
 
     @Override
-    public String getID() {
+    public String getFullId() {
         return "";
     }
 
     @Nullable
-    public AbstractSetting getSetting(String id) {
+    public Setting getSetting(String id) {
+        if (id.equals("")) return this;
         AbstractSetting cached = cache.get(id);
         if (cached != null) {
             return cached;

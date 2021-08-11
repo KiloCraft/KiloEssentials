@@ -4,6 +4,7 @@
   "package": "org.kilocraft.essentials.mixin.vanish",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "ListCommandMixin",
     "PlayerManagerMixin"
   ],
   "injectors": {
