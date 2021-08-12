@@ -122,15 +122,4 @@ public class UserUtils {
         }
     }
 
-    public static class Animate {
-        public static void swingHand(PlayerEntity player) {
-            swingHand(player, Hand.MAIN_HAND);
-        }
-
-        public static void swingHand(PlayerEntity player, Hand hand) {
-            player.swingHand(hand, true);
-        }
-
-    }
-
 }

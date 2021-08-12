@@ -34,7 +34,6 @@ import org.kilocraft.essentials.events.PlayerEvents;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.ArrayList;
@@ -188,7 +187,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             return false;
         }
 
-        UserUtils.Animate.swingHand(player);
+        player.swingHand(Hand.MAIN_HAND, true);
 
         stand.setInvisible(true);
         stand.setNoGravity(true);

@@ -44,7 +44,7 @@ public class NbtCommands {
         }
 
         if (succeededExecutions >= 1 && swingHand) {
-            UserUtils.Animate.swingHand(player);
+            player.swingHand(Hand.MAIN_HAND, true);
         }
 
         return true;
