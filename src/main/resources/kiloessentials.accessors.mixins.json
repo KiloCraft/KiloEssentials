@@ -7,6 +7,7 @@
     "MinecraftServerAccessor",
     "PlayerListHeaderS2CPacketMixin",
     "ServerChunkManagerAccessor",
+    "ServerPlayerEntityAccessor",
     "SpawnHelperAccessor",
     "SpawnHelperInfoAccessor",
     "TACSAccessor"
