@@ -21,7 +21,6 @@
     "ServerWorldMixin",
     "ShulkerEntityMixin",
     "VillagerBreedTaskMixin",
-    "VillagerEntityMixin",
     "WitherEntityMixin"
   ],
   "server": [
