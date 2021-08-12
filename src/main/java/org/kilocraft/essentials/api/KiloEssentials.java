@@ -126,7 +126,6 @@ public class KiloEssentials {
         CommandEvents.REGISTER_COMMAND.register(this::registerCommands);
 
         PlayerEvents.JOINED.register(this::onJoin);
-        PlayerEvents.LEAVE.register(this::onLeave);
         NbtCommands.registerEvents();
     }
 
@@ -145,10 +144,6 @@ public class KiloEssentials {
         ServerMetaManager.onPlayerJoined(player);
         getUserManager().onJoined(player);
         ServerMetaManager.updateAll();
-    }
-
-    private void onLeave(ServerPlayerEntity player) {
-        getUserManager().onLeave(player);
     }
 
     private void load() {
