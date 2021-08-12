@@ -21,6 +21,7 @@
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
     "ShulkerEntityMixin",
+    "ThreadedAnvilChunkStorageEntityTrackerMixin",
     "VillagerBreedTaskMixin",
     "WitherEntityMixin"
   ],
