@@ -35,6 +35,7 @@ public class ServerSettings implements NBTStorage {
     public static final boolean[] entitySpawnCache = new boolean[entities];
     public static RootSetting root = new RootSetting();
     public static boolean perPlayerMobcap = false;
+    public static boolean tick_player_login = false;
     public static int wither_check_distance = 2;
     public static double wither_tp_distance = 1;
     public static float[][] mobcap;
@@ -55,6 +56,7 @@ public class ServerSettings implements NBTStorage {
     public static float tick_utils_min_mobcap = 0F;
     public static float tick_utils_max_mobcap = 1F;
     public static float tick_utils_global_mobcap = 1F;
+    public static int tick_utils_update_rate = 300;
 
 
     public ServerSettings() {
@@ -128,6 +130,9 @@ public class ServerSettings implements NBTStorage {
         //per-player-mobcap
         BooleanSetting ppmobcap = new BooleanSetting(false, "ppmobcap").onChanged(bool -> perPlayerMobcap = bool);
 
+        //tick-player-login
+        BooleanSetting tickPlayerLogin = new BooleanSetting(false, "tick_player_login").onChanged(bool -> tick_player_login = bool);
+
         //Entity merging
         CategorySetting item_merge = new CategorySetting("item_merge");
         DoubleSetting radius = new DoubleSetting(0.5D, "radius").range(0D, 256D).onChanged(d -> patch_item_merge_radius = d);
@@ -153,6 +158,7 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(loadSpawn);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
+        patch.addChild(tickPlayerLogin);
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
         patch.addChild(lobotomize_villagers);
@@ -187,6 +193,7 @@ public class ServerSettings implements NBTStorage {
         //Tick distance
         CategorySetting tick_utils = new CategorySetting("tick_utils");
         CategorySetting automated = new CategorySetting("automated");
+        IntegerSetting update_rate = new IntegerSetting(300, "update_rate").onChanged(integer -> tick_utils_update_rate = integer);
         BooleanSetting enabled = new BooleanSetting(false, "enabled").onChanged(bool -> tick_utils_automated = bool);
         IntegerSetting tick_distance = new IntegerSetting(-1, "tick_distance").onChanged(integer -> tick_utils_tick_distance = integer);
         IntegerSetting min_tick_distance = new IntegerSetting(2, "min_tick_distance").onChanged(integer -> tick_utils_min_tick_distance = integer);
@@ -198,6 +205,7 @@ public class ServerSettings implements NBTStorage {
         FloatSetting global_mobcap = new FloatSetting(1F, "global_mobcap").onChanged(d -> tick_utils_global_mobcap = d);
 
         automated.addChild(enabled);
+        automated.addChild(update_rate);
         automated.addChild(min_tick_distance);
         automated.addChild(max_tick_distance);
         automated.addChild(min_view_distance);

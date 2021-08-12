@@ -15,6 +15,7 @@
     "MobNavigationMixin",
     "PlayerAdvancementTrackerMixin",
     "ServerChunkManagerMixin",
+    "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
     "ShulkerEntityMixin",
     "VillagerBreedTaskMixin",

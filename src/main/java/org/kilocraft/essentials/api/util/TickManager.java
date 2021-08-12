@@ -41,7 +41,7 @@ public class TickManager {
             TICK_TIMES[currentTick % STORED_TICKS] = lastTickLength;
         }
         calculateTps();
-        if (currentTick % 20 == 0 && ServerSettings.tick_utils_automated) automatedTickUtils();
+        if (currentTick % ServerSettings.tick_utils_update_rate == 0 && ServerSettings.tick_utils_automated) automatedTickUtils();
     }
 
     private static void calculateTps() {
