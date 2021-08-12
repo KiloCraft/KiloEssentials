@@ -121,13 +121,26 @@ public class ComponentText {
     }
 
     public static String formatTps(final double tps) {
-        String color;
+        NamedTextColor color;
         if (tps > 15.0D) {
-            color = NamedTextColor.GREEN.toString();
+            color = NamedTextColor.GREEN;
         } else if (tps > 10) {
-            color = NamedTextColor.YELLOW.toString();
+            color = NamedTextColor.YELLOW;
         } else {
-            color = NamedTextColor.RED.toString();
+            color = NamedTextColor.RED;
+        }
+
+        return "<" + color + ">" + ModConstants.DECIMAL_FORMAT.format(tps);
+    }
+
+    public static String formatMspt(final double tps) {
+        NamedTextColor color;
+        if (tps > 50.0D) {
+            color = NamedTextColor.RED;
+        } else if (tps > 45.0D) {
+            color = NamedTextColor.YELLOW;
+        } else {
+            color = NamedTextColor.GREEN;
         }
 
         return "<" + color + ">" + ModConstants.DECIMAL_FORMAT.format(tps);

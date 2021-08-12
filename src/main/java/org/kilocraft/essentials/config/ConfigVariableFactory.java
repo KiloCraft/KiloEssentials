@@ -49,6 +49,7 @@ public class ConfigVariableFactory {
         Validate.notNull(str, "String must not be null!");
         final double memUsagePercent = SystemMonitor.getRamUsedPercentage();
         return new ConfigObjectReplacerUtil("server", str)
+                .append("mspt", ComponentText.formatMspt(TickManager.mspt[0]))
                 .append("tps", TickManager.tps[0])
                 .append("formatted_tps", ComponentText.formatTps(TickManager.tps[0]))
                 .append("tps5", TickManager.tps[3])

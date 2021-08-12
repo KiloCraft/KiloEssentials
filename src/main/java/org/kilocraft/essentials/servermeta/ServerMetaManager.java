@@ -18,7 +18,6 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.mixin.accessor.PlayerListHeaderS2CPacketMixin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,14 +64,12 @@ public class ServerMetaManager {
     }
 
     public static void update(ServerPlayerEntity player) {
-        if (player == null || player.networkHandler == null) {
-            return;
-        }
+        if (player == null || player.networkHandler == null) return;
 
-        PacketByteBuf packetData = new PacketByteBuf(Unpooled.buffer()).
-                writeText(ComponentText.toText(ComponentText.of(formatFor(player, KiloConfig.main().playerList().getHeader()), false))).
-                writeText(ComponentText.toText(ComponentText.of(formatFor(player, KiloConfig.main().playerList().getFooter()), false)));
-        PlayerListHeaderS2CPacketMixin packet = (PlayerListHeaderS2CPacketMixin) new PlayerListHeaderS2CPacket(packetData);
+        PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(
+                ComponentText.toText(formatFor(player, KiloConfig.main().playerList().getHeader())),
+                ComponentText.toText(formatFor(player, KiloConfig.main().playerList().getFooter()))
+        );
 
         player.networkHandler.sendPacket(packet);
     }

@@ -12,7 +12,6 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.patch.entityActivationRange.ActivationRange;
 import org.kilocraft.essentials.provided.KiloFile;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -35,7 +34,7 @@ public class ServerSettings implements NBTStorage {
     public static final boolean[] entitySpawnCache = new boolean[entities];
     public static RootSetting root = new RootSetting();
     public static boolean perPlayerMobcap = false;
-    public static boolean tick_player_login = false;
+    public static boolean notick_player_login = false;
     public static int wither_check_distance = 2;
     public static double wither_tp_distance = 1;
     public static float[][] mobcap;
@@ -131,7 +130,7 @@ public class ServerSettings implements NBTStorage {
         BooleanSetting ppmobcap = new BooleanSetting(false, "ppmobcap").onChanged(bool -> perPlayerMobcap = bool);
 
         //tick-player-login
-        BooleanSetting tickPlayerLogin = new BooleanSetting(false, "tick_player_login").onChanged(bool -> tick_player_login = bool);
+        BooleanSetting noTickPlayerLogin = new BooleanSetting(false, "notick_player_login").onChanged(bool -> notick_player_login = bool);
 
         //Entity merging
         CategorySetting item_merge = new CategorySetting("item_merge");
@@ -158,7 +157,7 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(loadSpawn);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
-        patch.addChild(tickPlayerLogin);
+        patch.addChild(noTickPlayerLogin);
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
         patch.addChild(lobotomize_villagers);

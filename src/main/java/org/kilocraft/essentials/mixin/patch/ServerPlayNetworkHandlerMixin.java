@@ -16,7 +16,7 @@ public class ServerPlayNetworkHandlerMixin {
     private boolean loggedIn = false;
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;playerTick()V"))
     private void loadLoginChunksAsync(ServerPlayerEntity serverPlayer) {
-        if (ServerSettings.tick_player_login) {
+        if (!ServerSettings.notick_player_login) {
             if (this.loggedIn) {
                 serverPlayer.playerTick();
             } else if (ChunkManager.isChunkVisible(serverPlayer.getServerWorld(), serverPlayer.getBlockPos())) {

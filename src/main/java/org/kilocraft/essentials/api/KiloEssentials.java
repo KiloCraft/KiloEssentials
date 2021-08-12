@@ -144,6 +144,7 @@ public class KiloEssentials {
         BrandedServer.provide(player);
         ServerMetaManager.onPlayerJoined(player);
         getUserManager().onJoined(player);
+        ServerMetaManager.updateAll();
     }
 
     private void onLeave(ServerPlayerEntity player) {
@@ -191,7 +192,7 @@ public class KiloEssentials {
     private void onTick() {
         TickManager.onTick();
         int ticks = getMinecraftServer().getTicks();
-        if (ticks % 100 == 0) {
+        if (ticks % KiloConfig.main().playerList().updateRate == 0) {
             ServerMetaManager.updateAll();
             getMinecraftServer().getPlayerManager().getPlayerList().forEach(LocationUtil::processDimension);
         }
