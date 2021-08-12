@@ -12,6 +12,7 @@
     "FilledMapItemMixin",
     "HorseBaseEntityMixin",
     "ItemEntityMixin",
+    "MapStateMixin",
     "MobNavigationMixin",
     "PassiveEntityMixin",
     "PlayerAdvancementTrackerMixin",
