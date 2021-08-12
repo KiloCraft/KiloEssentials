@@ -40,6 +40,6 @@ public class ClientConnectionMixin {
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"))
     public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable throwable, CallbackInfo cb) {
-        KiloEssentials.getLogger().info(ExceptionUtils.getStackTrace(throwable));
+        throwable.printStackTrace();
     }
 }

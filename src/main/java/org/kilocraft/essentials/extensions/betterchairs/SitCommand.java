@@ -60,7 +60,7 @@ public class SitCommand extends EssentialCommand {
         OnlineUser user = getOnlineUser(ctx);
 
         if (SeatManager.getInstance().isSitting(user.asPlayer())) {
-            SeatManager.getInstance().unseat(user);
+            SeatManager.getInstance().unseat(user.asPlayer());
             return FAILED;
         }
 

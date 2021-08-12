@@ -64,10 +64,9 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         INSTANCE = this;
         enabled = true;
         KiloCommands.register(new SitCommand());
-        PlayerEvents.STOP_RIDING.register(player -> unseat(KiloEssentials.getUserManager().getOnline(player)));
-        PlayerEvents.DEATH.register(player -> {
-            if (isSitting(player)) unseat(KiloEssentials.getUserManager().getOnline(player));
-        });
+        PlayerEvents.STOP_RIDING.register(this::unseat);
+        PlayerEvents.DEATH.register(this::unseat);
+        PlayerEvents.LEAVE.register(this::unseat);
         PlayerEvents.INTERACT_BLOCK.register((player, world, stack, hand, hitResult) -> onInteractBlock(player, hitResult, hand) ? ActionResult.SUCCESS : ActionResult.PASS);
         return true;
     }
@@ -209,15 +208,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         return true;
     }
 
-    public void unseat(@NotNull final OnlineUser user) {
-        if (user.asPlayer() == null) {
-            return;
-        }
-        ServerPlayerEntity player = user.asPlayer();
-
-        if (player == null) {
-            return;
-        }
+    public void unseat(@NotNull final ServerPlayerEntity player) {
         Entity vehicle = player.getVehicle();
         if (vehicle instanceof ArmorStandEntity armorStand) {
             unseat(armorStand);
@@ -247,12 +238,11 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     }
 
     public boolean isSitting(@NotNull final ServerPlayerEntity player) {
-        if (!player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity)) {
+        if (!player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity stand)) {
             return false;
         }
 
-        ArmorStandEntity stand = (ArmorStandEntity) player.getVehicle();
-        return stand != null && stand.hasPlayerRider() && stand.getScoreboardTags().contains("KE$SitStand#" + player.getEntityName());
+        return stand.hasPlayerRider() && stand.getScoreboardTags().contains("KE$SitStand#" + player.getEntityName());
     }
 
     private Vec3dLocation getPosForStair(@NotNull final BlockState state, @NotNull final Vec3dLocation loc) {
