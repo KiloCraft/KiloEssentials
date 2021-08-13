@@ -8,6 +8,7 @@
     "PlayerListHeaderS2CPacketMixin",
     "ServerChunkManagerAccessor",
     "ServerPlayerEntityAccessor",
+    "ShulkerEntityAccessor",
     "SpawnHelperAccessor",
     "SpawnHelperInfoAccessor",
     "TACSAccessor"

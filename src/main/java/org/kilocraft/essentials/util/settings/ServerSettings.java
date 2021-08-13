@@ -118,6 +118,8 @@ public class ServerSettings implements NBTStorage {
         CategorySetting patch = new CategorySetting("patch");
         //Donkey dupe
         BooleanSetting donkeyDupe = new BooleanSetting(true, "donkey_dupe");
+        //Shulker dye
+        BooleanSetting dye_shulkers = new BooleanSetting(false, "dye_shulkers");
         //Donkey dupe
         BooleanSetting loadSpawn = new BooleanSetting(true, "load_spawn");
         //Stuck Wither
@@ -154,6 +156,7 @@ public class ServerSettings implements NBTStorage {
         BooleanSetting global_sound = new BooleanSetting(true, "global_sound");
 
         patch.addChild(donkeyDupe);
+        patch.addChild(dye_shulkers);
         patch.addChild(loadSpawn);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
