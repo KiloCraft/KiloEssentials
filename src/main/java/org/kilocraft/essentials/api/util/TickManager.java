@@ -1,9 +1,15 @@
 package org.kilocraft.essentials.api.util;
 
+import net.minecraft.entity.EntityType;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.WorldAccess;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.util.settings.ServerSettings;
@@ -28,6 +34,7 @@ public class TickManager {
     public static double[] tps = new double[TICK_STORAGE_SIZES.length];
     public static double[] mspt = new double[TICK_STORAGE_SIZES.length];
     private static int currentTick = 0;
+
     private TickManager() {
     }
 
@@ -41,7 +48,8 @@ public class TickManager {
             TICK_TIMES[currentTick % STORED_TICKS] = lastTickLength;
         }
         calculateTps();
-        if (currentTick % ServerSettings.tick_utils_update_rate == 0 && ServerSettings.tick_utils_automated) automatedTickUtils();
+        if (currentTick % ServerSettings.tick_utils_update_rate == 0 && ServerSettings.tick_utils_automated)
+            automatedTickUtils();
     }
 
     private static void calculateTps() {
@@ -118,6 +126,26 @@ public class TickManager {
         }
 
         return false;
+    }
+
+    public static boolean isEntityLimitReached(WorldAccess world, BlockPos pos, EntityType<?>... entityType) {
+        if (entityType == null || entityType.length == 0) return true;
+        int range = ServerSettings.getInt("entity_limit." + Registry.ENTITY_TYPE.getId(entityType[0]).getPath() + ".range");
+        int limit = ServerSettings.getInt("entity_limit." + Registry.ENTITY_TYPE.getId(entityType[0]).getPath() + ".limit");
+        // Ignore negative values
+        if (range > 0 && limit > 0) {
+            // Count mobs from all given types
+            int entityCount = 0;
+            for (EntityType<?> type : entityType) {
+                entityCount += world.getEntitiesByType(type, new Box(pos.mutableCopy().add(range, range, range), pos.mutableCopy().add(-range, -range, -range)), EntityPredicates.EXCEPT_SPECTATOR).size();
+            }
+            if (limit <= entityCount) {
+                return true;
+            }
+        }
+        return false;
+
+
     }
 
     public static String getFormattedMSPT() {
