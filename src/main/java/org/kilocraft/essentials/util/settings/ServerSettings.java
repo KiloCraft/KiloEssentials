@@ -46,6 +46,7 @@ public class ServerSettings implements NBTStorage {
     public static double patch_item_merge_radius = 0.5D;
     public static boolean patch_lobotomize_villagers_enabled = false;
     public static int patch_lobotomize_villagers_tick_interval = 20;
+    public static int patch_lobotomize_villagers_update_interval = 300;
     public static boolean tick_utils_automated = false;
     public static int tick_utils_tick_distance = getViewDistance();
     public static int tick_utils_min_view_distance = 2;
@@ -148,8 +149,10 @@ public class ServerSettings implements NBTStorage {
         {
             BooleanSetting enabled = new BooleanSetting(false, "enabled").onChanged(bool -> patch_lobotomize_villagers_enabled = bool);
             IntegerSetting tick_interval = new IntegerSetting(20, "tick_interval").onChanged(integer -> patch_lobotomize_villagers_tick_interval = integer);
+            IntegerSetting update_interval = new IntegerSetting(300, "update_interval").onChanged(integer -> patch_lobotomize_villagers_update_interval = integer);
             lobotomize_villagers.addChild(enabled);
             lobotomize_villagers.addChild(tick_interval);
+            lobotomize_villagers.addChild(update_interval);
         }
 
         //Global sound

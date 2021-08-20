@@ -16,9 +16,7 @@ import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Inspired by: Purpur
@@ -29,10 +27,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(VillagerEntity.class)
 public abstract class VillagerEntityMixin extends MerchantEntity implements InactiveEntity {
+
     private boolean inactive = false;
 
     private boolean slowed = false;
-    private int ticks = 0;
 
     public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
         super(entityType, world);
@@ -44,7 +42,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements Inac
     @Shadow
     public abstract int getExperience();
 
-    //Entity Activation Range
+    // Entity Activation Range
     @Override
     public void inactiveTick() {
         if (this.getHeadRollingTimeLeft() > 0) {
@@ -67,7 +65,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements Inac
         }
     }
 
-    //Entity Activation Range
+    // Entity Activation Range
     @Redirect(method = "mobTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;isAiDisabled()Z"))
     public boolean stopWhenInactive(VillagerEntity villagerEntity) {
         return villagerEntity.isAiDisabled() || inactive;
@@ -75,42 +73,35 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements Inac
 
     @Redirect(method = "mobTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/brain/Brain;tick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;)V"))
     public void shouldTickBrain(Brain<VillagerEntity> brain, ServerWorld world, LivingEntity entity) {
-        if (!inactive) {
-            //Lobotomize villagers
-            this.ticks++;
-            VillagerEntity villager = (VillagerEntity) (Object) this;
-            if (ServerSettings.patch_lobotomize_villagers_enabled && isSlowed(villager)) {
-                if (this.ticks % ServerSettings.patch_lobotomize_villagers_tick_interval == 0) {
-                    brain.tick(world, villager);
-                }
-            } else {
-                brain.tick(world, villager);
-            }
-        }
+        // Lobotomize Villagers
+        if (ServerSettings.patch_lobotomize_villagers_enabled && this.age % ServerSettings.patch_lobotomize_villagers_tick_interval != 0) inactive = inactive || isSlowed();
+
+        // Entity Activation Range
+        if (!inactive) brain.tick(world, (VillagerEntity) (Object) this);
     }
 
-    //Lobotomize villagers
-    private boolean isSlowed(VillagerEntity villager) {
-        if (this.ticks % 300 == 0) {
-            this.slowed = !canTravel(villager, villager.getBlockPos());
+    // Lobotomize villagers
+    private boolean isSlowed() {
+        if (this.age % ServerSettings.patch_lobotomize_villagers_update_interval == 0) {
+            this.slowed = !canTravel(this.getBlockPos());
         }
 
         return this.slowed;
     }
 
-    //Lobotomize villagers
-    private boolean canTravel(VillagerEntity villager, BlockPos pos) {
-        return canTravelTo(villager, pos.east()) || canTravelTo(villager, pos.west()) || canTravelTo(villager, pos.north()) || canTravelTo(villager, pos.south());
+    // Lobotomize villagers
+    private boolean canTravel(BlockPos pos) {
+        return canTravelTo(pos.east()) || canTravelTo(pos.west()) || canTravelTo(pos.north()) || canTravelTo(pos.south());
     }
 
-    //Lobotomize villagers
-    private boolean canTravelTo(VillagerEntity villager, BlockPos pos) {
+    // Lobotomize villagers
+    private boolean canTravelTo(BlockPos pos) {
         // Returns true in case its surrounded by any bed. This way we don't break iron farms.
-        if (ChunkManager.getStateIfVisible(villager.getEntityWorld(), pos).getBlock() instanceof BedBlock) {
+        if (ChunkManager.getStateIfVisible(this.getEntityWorld(), pos).getBlock() instanceof BedBlock) {
             return true;
         }
 
-        Path path = villager.getNavigation().findPathTo(pos, 0);
+        Path path = this.getNavigation().findPathTo(pos, 0);
         return path != null && path.reachesTarget();
     }
 
