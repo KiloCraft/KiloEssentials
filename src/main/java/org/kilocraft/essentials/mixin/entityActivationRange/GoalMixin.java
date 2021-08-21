@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(Goal.class)
-public class GoalMixin {
+public abstract class GoalMixin {
 
     /**
      * @author Drex

@@ -394,8 +394,7 @@ public class ServerUserManager implements UserManager, TickListener {
         List<GameProfile> banned = new ArrayList<>();
         for (BannedPlayerEntry bannedPlayerEntry : KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().values()) {
             Object o = ((ServerConfigEntryAccessor)bannedPlayerEntry).getKey();
-            if (o instanceof GameProfile) {
-                GameProfile profile = (GameProfile) o;
+            if (o instanceof GameProfile profile) {
                 Optional<User> optional = getOffline(profile).join();
                 optional.ifPresent(player -> {
                     if (Objects.equals(player.getLastIp(), user.getLastIp())) banned.add(profile);

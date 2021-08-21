@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientConnection.class)
-public class ClientConnectionMixin {
+public abstract class ClientConnectionMixin {
 
     private static final long MAX_PACKETS_PER_SECOND = 500;
     private int packetsSinceLastInterval = 0;

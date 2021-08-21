@@ -17,7 +17,7 @@ public abstract class PlayerListS2CPacketMixin {
 	@Shadow @Final private GameProfile profile;
 
 	@Inject(method = "getDisplayName", at = @At(value = "HEAD", target = "Lnet/minecraft/network/packet/s2c/play/PlayerListS2CPacket$Entry;getDisplayName()Lnet/minecraft/text/Text;"), cancellable = true)
-	private void modifyEntry(CallbackInfoReturnable<Text> cir) {
+	private void modifyPlayerListEntry(CallbackInfoReturnable<Text> cir) {
 		if (KiloConfig.main().playerList().useNicknames) {
 			Text text = KiloEssentials.getUserManager().getOnline(profile.getId()).getRankedDisplayName();
 			cir.setReturnValue(text);

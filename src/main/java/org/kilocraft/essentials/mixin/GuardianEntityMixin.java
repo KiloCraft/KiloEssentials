@@ -16,9 +16,9 @@ import java.util.Random;
 @Mixin(GuardianEntity.class)
 public abstract class GuardianEntityMixin {
 
+    // Abort guardian spawn logic if entity limit is reached
     @Inject(method = "canSpawn(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/WorldAccess;Lnet/minecraft/entity/SpawnReason;Lnet/minecraft/util/math/BlockPos;Ljava/util/Random;)Z", at = @At(value = "HEAD"), cancellable = true)
     private static void shouldSpawn(EntityType<? extends GuardianEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos blockPos, Random random, CallbackInfoReturnable<Boolean> cir) {
-        // Abort guardian spawn logic if entity limit is reached
         if (TickManager.isEntityLimitReached(world, blockPos, EntityType.GUARDIAN)) cir.setReturnValue(false);
     }
 }

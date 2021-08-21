@@ -14,6 +14,7 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.PlayerEvents;
+import org.kilocraft.essentials.user.OnlineServerUser;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -50,15 +51,17 @@ public abstract class PlayerManagerMixin {
 
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "onPlayerConnect")
-    private void oky$onPlayerConnect$sendToAll(PlayerManager playerManager, Text text, MessageType messageType, UUID uUID) {
-        //Ignored
+    private void cancelJoinMessage(PlayerManager playerManager, Text text, MessageType messageType, UUID uUID) {
+        /**
+        * Moved to {@link org.kilocraft.essentials.chat.KiloChat#onUserJoin(OnlineServerUser)}
+        */
     }
 
     @Redirect(at = @At(value = "INVOKE",
             target = "Lorg/apache/logging/log4j/Logger;info(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V"),
             method = "onPlayerConnect")
-    private void oky$onPlayerConnect$sendToAll(Logger logger, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
-        //Ignored
+    private void cancelLogMessage(Logger logger, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
+        // noop
     }
 
     @Inject(method = "checkCanJoin", at = @At(value = "HEAD"), cancellable = true)
@@ -90,7 +93,7 @@ public abstract class PlayerManagerMixin {
                 }
             }
 
-            cir.setReturnValue(message == null ? null : ComponentText.toText(message));
+            if (message != null) cir.setReturnValue(ComponentText.toText(message));
         } catch (Exception e) {
             e.printStackTrace();
         }

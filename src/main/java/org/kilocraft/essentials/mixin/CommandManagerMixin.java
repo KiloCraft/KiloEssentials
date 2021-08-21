@@ -35,24 +35,24 @@ public abstract class CommandManagerMixin {
     }
 
     @Shadow
-    public abstract int execute(ServerCommandSource serverCommandSource_1, String string_1);
+    public abstract int execute(ServerCommandSource src, String string);
 
     @Shadow
     public abstract CommandDispatcher<ServerCommandSource> getDispatcher();
 
     @Inject(method = "<init>", at = {@At("RETURN")})
-    private void CommandManager(CommandManager.RegistrationEnvironment registrationEnvironment, CallbackInfo ci) {
-        CommandEvents.REGISTER_COMMAND.invoker().register(this.dispatcher, registrationEnvironment);
+    private void CommandManager(CommandManager.RegistrationEnvironment env, CallbackInfo ci) {
+        CommandEvents.REGISTER_COMMAND.invoker().register(this.dispatcher, env);
     }
 
     @Redirect(method = "makeTreeForSource", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/tree/CommandNode;canUse(Ljava/lang/Object;)Z"))
-    private <S> boolean modifySuggestions(CommandNode<S> commandNode, S source) {
-        return canSourceUse(commandNode, source);
+    private <S> boolean modifySuggestions(CommandNode<S> node, S source) {
+        return canSourceUse(node, source);
     }
 
     @Inject(method = "execute", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))
-    private void modifyExecute(ServerCommandSource serverCommandSource_1, String string_1, CallbackInfoReturnable<Integer> cir) {
-        cir.setReturnValue(KiloCommands.execute(serverCommandSource_1, string_1));
+    private void modifyExecute(ServerCommandSource src, String string, CallbackInfoReturnable<Integer> cir) {
+        cir.setReturnValue(KiloCommands.execute(src, string));
     }
 
 }

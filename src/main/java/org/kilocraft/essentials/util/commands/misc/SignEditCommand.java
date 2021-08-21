@@ -10,6 +10,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -20,6 +21,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.state.property.Property;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -234,22 +236,21 @@ public class SignEditCommand extends EssentialCommand {
         }
 
         String inputType = getString(ctx, "type");
-        if (!isValidType(inputType))
+        SignType type = SignType.getByName(inputType);
+        if (type == null) {
             throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Sign Type").create();
+        }
 
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
         BlockState oldState = sign.getCachedState();
-        Block oldBlock = oldState.getBlock();
-        SignType type = SignType.getByName(inputType);
-        boolean wallSign = Registry.BLOCK.getId(oldBlock).getPath().contains("wall");
-        assert type != null;
+        boolean wallSign = oldState.getBlock() instanceof WallSignBlock;
         Block newBlock = wallSign ? type.getWallBlock() : type.getBlock();
-        BlockState newState;
+        BlockState newState = newBlock.getDefaultState();
 
         if (wallSign) {
-            newState = newBlock.getDefaultState().with(Properties.HORIZONTAL_FACING, oldState.get(Properties.HORIZONTAL_FACING));
+            newState = newState.with(Properties.HORIZONTAL_FACING, oldState.get(Properties.HORIZONTAL_FACING));
         } else {
-            newState = newBlock.getDefaultState().with(Properties.ROTATION, oldState.get(Properties.ROTATION));
+            newState = newState.with(Properties.ROTATION, oldState.get(Properties.ROTATION));
         }
 
         SignBlockEntity newSign = new SignBlockEntity(sign.getPos(), sign.getCachedState());
@@ -261,9 +262,8 @@ public class SignEditCommand extends EssentialCommand {
 
         ServerWorld world = player.getServerWorld();
         world.setBlockState(sign.getPos(), newState);
-        //TODO: Relook at this at a later point
-//        world.setBlockEntity(sign.getPos(), newSign);
         world.updateNeighbors(sign.getPos(), newState.getBlock());
+        world.addBlockEntity(newSign);
         user.sendLangMessage( "command.signedit.set_type", inputType);
         return SUCCESS;
     }
@@ -326,15 +326,6 @@ public class SignEditCommand extends EssentialCommand {
 
     private boolean isValidColor(String str) {
         for (DyeColor value : DyeColor.values()) {
-            if (value.getName().equals(str))
-                return true;
-        }
-
-        return false;
-    }
-
-    private boolean isValidType(String str) {
-        for (SignType value : SignType.values()) {
             if (value.getName().equals(str))
                 return true;
         }

@@ -22,7 +22,7 @@ public abstract class SignBlockEntityMixin {
 
     @Shadow @Final private Text[] texts;
 
-    //Fixes the activate method so your hand won't swing if the Sign doesn't have any commands
+    // Fixes the activate method so your hand won't swing if the sign doesn't have any commands
     @Inject(method = "onActivate", at = @At(value = "HEAD"), cancellable = true)
     private void signActivationReturnValue(ServerPlayerEntity serverPlayerEntity, CallbackInfoReturnable<Boolean> cir) {
         for (Text value : texts) {

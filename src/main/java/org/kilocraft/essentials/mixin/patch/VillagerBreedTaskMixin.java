@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(VillagerBreedTask.class)
 public abstract class VillagerBreedTaskMixin {
 
+    // Abort villager breed logic if entity limit is reached
     @Redirect(method = "keepRunning", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;squaredDistanceTo(Lnet/minecraft/entity/Entity;)D"))
     public double noIntenseBreeding(VillagerEntity villagerEntity, Entity entity) {
-        // Abort villager breed logic if entity limit is reached
         return TickManager.isEntityLimitReached(villagerEntity.getEntityWorld(), villagerEntity.getBlockPos(), EntityType.VILLAGER) ? Integer.MAX_VALUE : villagerEntity.squaredDistanceTo(entity);
     }
 

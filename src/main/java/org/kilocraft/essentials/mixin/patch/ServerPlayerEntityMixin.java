@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin {
 
+    // Moves operation to PlayerManager
     @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;moveToSpawn(Lnet/minecraft/server/world/ServerWorld;)V"))
     private void cancelOp(ServerPlayerEntity serverPlayerEntity, ServerWorld world) {
-        // Moves operation to PlayerManager.
     }
 
 }

@@ -21,6 +21,7 @@ public abstract class WitherEntityMixin extends HostileEntity {
         super(entityType, world);
     }
 
+    // Move withers out of bedrock traps
     @Inject(method = "tickMovement", at = @At(value = "HEAD"))
     public void moveIfInBedrock(CallbackInfo ci) {
         if (this.getInvulnerableTimer() > 0) {

@@ -5,7 +5,7 @@ import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(RegistryKey.class)
-public class RegistryKeyMixin<T> implements RegistryKeyID {
+public abstract class RegistryKeyMixin<T> implements RegistryKeyID {
 
     private int id = 0;
 
@@ -18,4 +18,5 @@ public class RegistryKeyMixin<T> implements RegistryKeyID {
     public int getID() {
         return this.id;
     }
+
 }

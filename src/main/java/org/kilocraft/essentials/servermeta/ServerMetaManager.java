@@ -9,6 +9,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -95,6 +96,7 @@ public class ServerMetaManager {
                 if (!weightToTeam.containsKey(weight)) {
                     String name = String.format("%016d", KiloConfig.main().playerList().topToBottom ? weight : 1000000000000000L - weight);
                     team = new Team(scoreboard, name);
+                    team.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
                     weightToTeam.put(weight, team);
                 } else {
                     team = weightToTeam.get(weight);

@@ -27,7 +27,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 @Mixin(ThreadedAnvilChunkStorage.class)
-public class ThreadedAnvilChunkStorageMixin implements ThreadedAnvilChunkStorageInterface {
+public abstract class ThreadedAnvilChunkStorageMixin implements ThreadedAnvilChunkStorageInterface {
 
     PlayerMobDistanceMap playerMobDistanceMap = null;
 

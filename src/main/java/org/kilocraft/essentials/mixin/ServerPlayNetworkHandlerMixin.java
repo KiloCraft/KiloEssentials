@@ -12,11 +12,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,31 +30,20 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Shadow @Final private MinecraftServer server;
 
-    @Shadow @Final private static Logger LOGGER;
+    @Shadow @Final
+    static Logger LOGGER;
 
-    @Inject(
-            method = "onGameMessage", cancellable = true,
-            at = @At(
-                    value = "HEAD",
-                    target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onGameMessage(Lnet/minecraft/network/packet/c2s/play/ChatMessageC2SPacket;)V"
-            )
-    )
+    @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)
     private void modify(ChatMessageC2SPacket chatMessageC2SPacket, CallbackInfo ci) {
         OnlineUser user = KiloEssentials.getUserManager().getOnline(this.player);
-
         if (!KiloConfig.main().chat().useVanillaChat) {
-            ci.cancel();
             KiloEssentials.getUserManager().onChatMessage(user, chatMessageC2SPacket);
+            ci.cancel();
         }
     }
 
-    @Inject(
-            method = "onSignUpdate(Lnet/minecraft/network/packet/c2s/play/UpdateSignC2SPacket;)V", cancellable = true,
-            at = @At(
-                    value = "HEAD",
-                    target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;onSignUpdate(Lnet/minecraft/network/packet/c2s/play/UpdateSignC2SPacket;)V"
-            )
-    )
+
+    @Inject(method = "onSignUpdate(Lnet/minecraft/network/packet/c2s/play/UpdateSignC2SPacket;)V", at = @At("HEAD"), cancellable = true)
     private void modify(UpdateSignC2SPacket updateSignC2SPacket, CallbackInfo ci) {
         ci.cancel();
         NetworkThreadUtils.forceMainThread(updateSignC2SPacket, player.networkHandler, this.player.getServerWorld());
@@ -64,11 +53,10 @@ public abstract class ServerPlayNetworkHandlerMixin {
         if (serverWorld.isChunkLoaded(blockPos)) {
             BlockState blockState = serverWorld.getBlockState(blockPos);
             BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
-            if (!(blockEntity instanceof SignBlockEntity)) {
+            if (!(blockEntity instanceof SignBlockEntity signBlockEntity)) {
                 return;
             }
 
-            SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
             if (!signBlockEntity.isEditable() || signBlockEntity.getEditor() != this.player.getUuid()) {
                 LOGGER.warn("Player {} just tried to change non-editable sign", this.player.getEntityName());
                 return;

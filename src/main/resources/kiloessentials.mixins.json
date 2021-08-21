@@ -4,13 +4,11 @@
   "package": "org.kilocraft.essentials.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "AnvilScreenHandlerMixin",
     "CommandManagerMixin",
-    "CraftingScreenHandlerMixin",
     "DyeItemMixin",
     "EntityMixin",
     "EntitySelectorOptionsMixin",
-    "ForgingScreenHandlerMixin",
+    "EntityServerRayTraceMixin",
     "GuardianEntityMixin",
     "MinecraftDedicatedServerMixin",
     "MinecraftServerMixin",
@@ -21,7 +19,6 @@
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerScoreboardMixin",
-    "WorldChunkMixin",
     "WorldMixin"
   ],
   "injectors": {

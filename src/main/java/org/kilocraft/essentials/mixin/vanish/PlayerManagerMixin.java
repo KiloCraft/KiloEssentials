@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(PlayerManager.class)
-public class PlayerManagerMixin {
+public abstract class PlayerManagerMixin {
 
     private ServerPlayerEntity connectingPlayer;
 
@@ -28,7 +28,7 @@ public class PlayerManagerMixin {
     }
 
     @Redirect(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/network/Packet;)V"))
-    public void onPlayerConnect(PlayerManager playerManager, Packet<?> packet) {
+    public void onlySendNonVanished(PlayerManager playerManager, Packet<?> packet) {
         OnlineUser newPlayer = KiloEssentials.getUserManager().getOnline(connectingPlayer);
         for (OnlineUser onlineUser : KiloEssentials.getUserManager().getOnlineUsersAsList()) {
             if (onlineUser.hasPermission(CommandPermission.VANISH) || !newPlayer.getPreference(Preferences.VANISH)) {
@@ -38,12 +38,13 @@ public class PlayerManagerMixin {
     }
 
     @Redirect(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
-    public int onPlayerConnect$onlySendNonVanished(List<ServerPlayerEntity> list) {
+    public int onlySendNonVanished(List<ServerPlayerEntity> list) {
         for (ServerPlayerEntity player : list) {
             if (!KiloEssentials.getUserManager().getOnline(player).getPreference(Preferences.VANISH) || KiloEssentials.getUserManager().getOnline(connectingPlayer).hasPermission(CommandPermission.VANISH)) {
                 connectingPlayer.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, player));
             }
         }
+        // Stop vanilla implementation, by returning 0 for the player list size
         return 0;
     }
 

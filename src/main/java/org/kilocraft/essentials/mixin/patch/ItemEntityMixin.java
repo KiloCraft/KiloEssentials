@@ -20,11 +20,13 @@ public abstract class ItemEntityMixin extends Entity {
         super(entityType, world);
     }
 
+    // Configurable entity merge radius
     @Redirect(method = "tryMerge()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;getBoundingBox()Lnet/minecraft/util/math/Box;"))
     public Box adjustMergeRadius(ItemEntity itemEntity) {
         return this.getBoundingBox().expand(ServerSettings.patch_item_merge_radius, 0.0D, ServerSettings.patch_item_merge_radius);
     }
 
+    // Adjust item movement on merge
     @Inject(method = "merge(Lnet/minecraft/entity/ItemEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/ItemEntity;Lnet/minecraft/item/ItemStack;)V", at = @At(value = "INVOKE"))
     private static void adjustMotion(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2, CallbackInfo ci) {
         if (itemEntity.getVelocity().lengthSquared() < itemEntity2.getVelocity().lengthSquared() && ServerSettings.patch_item_merge_adjust_movement) {

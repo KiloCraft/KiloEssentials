@@ -16,6 +16,7 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable {
 
     @Redirect(method = "tickEntity", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
     public <T> void shouldTickEntity(Consumer<T> consumer, T t) {
+        // Configurable entity ticking
         if (!ServerSettings.entityTickCache[0]) return;
         if (t instanceof Entity) {
             if (!ServerSettings.entityTickCache[Registry.ENTITY_TYPE.getRawId(((Entity) t).getType()) + 1]) return;

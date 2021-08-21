@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(ListCommand.class)
-public class ListCommandMixin {
+public abstract class ListCommandMixin {
 
     @Redirect(method = "execute", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;getPlayerList()Ljava/util/List;"))
     private static List<ServerPlayerEntity> removeVanishedPlayers(PlayerManager playerManager) {

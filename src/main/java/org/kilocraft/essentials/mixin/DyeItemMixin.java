@@ -2,12 +2,9 @@ package org.kilocraft.essentials.mixin;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
@@ -21,10 +18,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(DyeItem.class)
-public class DyeItemMixin {
+public abstract class DyeItemMixin {
 
     @Shadow @Final private DyeColor color;
 
+    // Allows players to use dye on shulker entities
     @Inject(method = "useOnEntity", at = @At(value = "HEAD"), cancellable = true)
     public void dyeShulkerEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if (entity instanceof ShulkerEntity shulkerEntity && ServerSettings.getBoolean("patch.dye_shulkers")) {

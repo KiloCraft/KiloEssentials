@@ -12,6 +12,7 @@ import java.util.Random;
 @Mixin(ShulkerEntity.class)
 public abstract class ShulkerEntityMixin {
 
+    // Configurable shulker spawn chance
     @Inject(method = "spawnNewShulker", at = @At(value = "HEAD"), cancellable = true)
     public void onShulkerSpawnAttempt(CallbackInfo ci) {
         if (ServerSettings.getDouble("patch.shulker_spawn_chance") >= new Random().nextDouble() * 100) {

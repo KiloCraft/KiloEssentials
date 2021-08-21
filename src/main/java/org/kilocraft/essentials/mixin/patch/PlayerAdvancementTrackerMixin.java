@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
@@ -43,12 +44,14 @@ public abstract class PlayerAdvancementTrackerMixin {
     @Shadow
     protected abstract boolean canSee(Advancement advancement);
 
+    // Redirect method calls to optimized method
     @Inject(method = "updateDisplay", at = @At("HEAD"), cancellable = true)
     private void updateDisplay(Advancement advancement, CallbackInfo ci) {
         this.updateDisplay(advancement, IterationEntryPoint.ROOT);
         ci.cancel();
     }
 
+    // Optimized updateDisplay method
     private void updateDisplay(Advancement advancement, IterationEntryPoint entryPoint) {
         boolean bl = this.canSee(advancement);
         boolean bl2 = this.visibleAdvancements.contains(advancement);
@@ -64,7 +67,7 @@ public abstract class PlayerAdvancementTrackerMixin {
         }
 
         if (bl != bl2 && advancement.getParent() != null) {
-            // Paper - If we're not coming from an iterator consider this to be a root entry, otherwise
+            // If we're not coming from an iterator consider this to be a root entry, otherwise
             // market that we're entering from the parent of an iterator.
             this.updateDisplay(advancement.getParent(), entryPoint == IterationEntryPoint.ITERATOR ? IterationEntryPoint.PARENT_OF_ITERATOR : IterationEntryPoint.ROOT);
         }

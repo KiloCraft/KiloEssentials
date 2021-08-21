@@ -16,11 +16,7 @@ public abstract class PassiveEntityMixin extends MobEntity {
         super(entityType, world);
     }
 
-    /**
-     * Crash fix
-     * Fixes a ClassCastException caused by passive entities casting ZombieEntity$ZombieData to PassiveEntity$PassiveData.
-     */
-
+    // Fixes a ClassCastException caused by passive entities casting ZombieEntity$ZombieData to PassiveEntity$PassiveData
     @ModifyVariable(method = "initialize", at = @At("HEAD"), index = 4)
     private EntityData init(EntityData entityData) {
         if (!(entityData instanceof PassiveEntity.PassiveData)) {
@@ -29,4 +25,5 @@ public abstract class PassiveEntityMixin extends MobEntity {
 
         return entityData;
     }
+
 }

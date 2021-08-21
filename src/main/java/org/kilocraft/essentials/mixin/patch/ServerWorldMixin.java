@@ -19,6 +19,7 @@ public abstract class ServerWorldMixin {
     @Shadow
     public abstract void playSound(PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h);
 
+    // Change global to local sound events
     @Inject(method = "syncGlobalEvent", at = @At(value = "HEAD"), cancellable = true)
     public void shouldWeAnnoyEveryone(int i, BlockPos blockPos, int j, CallbackInfo ci) {
         if (!ServerSettings.getBoolean("patch.global_sound")) {

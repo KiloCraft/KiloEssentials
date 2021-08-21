@@ -14,6 +14,8 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Unique
     private boolean loggedIn = false;
+
+    // Only tick players once their chunks are fully loaded
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;playerTick()V"))
     private void loadLoginChunksAsync(ServerPlayerEntity serverPlayer) {
         if (!ServerSettings.notick_player_login) {

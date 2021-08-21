@@ -36,8 +36,6 @@ public class LiteralCommandModified {
     private static final List<String> vanillaCommandsToRename = new ArrayList<String>(){{
         add("gamemode");
         add("locate");
-        add("op");
-        add("deop");
         add("me");
         add("w");
         add("msg");
