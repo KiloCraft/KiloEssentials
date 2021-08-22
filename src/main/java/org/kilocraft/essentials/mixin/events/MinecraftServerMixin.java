@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.function.BooleanSupplier;
+
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
 
@@ -26,6 +28,11 @@ public abstract class MinecraftServerMixin {
     private void onShutdown(CallbackInfo ci) {
         KiloEssentials.getLogger().info("Shutting down the dedicated server...");
         ServerEvents.STOPPING.invoker().onStop();
+    }
+
+    @Inject(at = @At("HEAD"), method = "tick")
+    private void onTickStart(BooleanSupplier booleanSupplier, CallbackInfo ci) {
+        ServerEvents.TICK.invoker().onTick();
     }
 
 }

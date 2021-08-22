@@ -2,7 +2,7 @@ package org.kilocraft.essentials.util.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.kilocraft.essentials.mixin.CommandManagerMixin;
+import org.kilocraft.essentials.mixin.patch.technical.CommandManagerMixin;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,18 +4,8 @@
   "package": "org.kilocraft.essentials.mixin.accessor",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "MinecraftServerAccessor",
-    "PlayerListHeaderS2CPacketMixin",
-    "ServerChunkManagerAccessor",
-    "ServerPlayerEntityAccessor",
-    "ShulkerEntityAccessor",
-    "SpawnHelperAccessor",
-    "SpawnHelperInfoAccessor",
-    "TACSAccessor"
-  ],
-  "server": [
     "EntityAccessor",
-    "MinecraftServerAccessor",
+    "ServerChunkManagerAccessor",
     "ServerConfigEntryAccessor",
     "SignBlockEntityAccessor"
   ],

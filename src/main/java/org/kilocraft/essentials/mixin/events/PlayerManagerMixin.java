@@ -49,13 +49,11 @@ public abstract class PlayerManagerMixin {
     @Final
     private Whitelist whitelist;
 
-
+    /**
+     * Moved to {@link org.kilocraft.essentials.chat.KiloChat#onUserJoin(OnlineServerUser)}
+     */
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "onPlayerConnect")
-    private void cancelJoinMessage(PlayerManager playerManager, Text text, MessageType messageType, UUID uUID) {
-        /**
-        * Moved to {@link org.kilocraft.essentials.chat.KiloChat#onUserJoin(OnlineServerUser)}
-        */
-    }
+    private void cancelJoinMessage(PlayerManager playerManager, Text text, MessageType messageType, UUID uUID) {}
 
     @Redirect(at = @At(value = "INVOKE",
             target = "Lorg/apache/logging/log4j/Logger;info(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V"),
@@ -71,7 +69,6 @@ public abstract class PlayerManagerMixin {
             ModerationConfigSection.Messages messages = KiloConfig.main().moderation().messages();
             if (this.bannedProfiles.get(gameProfile) != null) {
                 BannedPlayerEntry entry = this.bannedProfiles.get(gameProfile);
-                assert entry != null;
                 if (entry.getExpiryDate() == null) {
                     message = replaceVariables(messages.permBan, entry, true);
                 } else {
@@ -84,12 +81,6 @@ public abstract class PlayerManagerMixin {
                     message = replaceVariables(messages.permIpBan, entry, true);
                 } else {
                     message = replaceVariables(messages.tempIpBan, entry, false);
-                }
-            } else if (this.whitelistEnabled && !this.whitelist.isAllowed(gameProfile)) {
-                if (messages.whitelist.isEmpty()) {
-                    cir.setReturnValue(new TranslatableText("multiplayer.disconnect.not_whitelisted"));
-                } else {
-                    message = messages.whitelist;
                 }
             }
 

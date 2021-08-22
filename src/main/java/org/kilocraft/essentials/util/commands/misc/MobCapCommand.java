@@ -21,14 +21,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.SpawnHelper;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
-import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.perPlayerMobcap.SpawnHelperAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.perPlayerMobcap.SpawnHelperInfoAccessor;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 

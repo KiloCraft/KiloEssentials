@@ -16,10 +16,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.mixin.entityActivationRange.EntityAccessor;
-import org.kilocraft.essentials.mixin.entityActivationRange.LivingEntityAccessor;
-import org.kilocraft.essentials.mixin.entityActivationRange.MobEntityAccessor;
-import org.kilocraft.essentials.mixin.entityActivationRange.PersistentProjectileEntityAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.entityActivationRange.EntityAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.entityActivationRange.LivingEntityAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.entityActivationRange.MobEntityAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.entityActivationRange.PersistentProjectileEntityAccessor;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 public class ActivationRange {
