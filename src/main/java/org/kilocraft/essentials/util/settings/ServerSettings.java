@@ -45,6 +45,7 @@ public class ServerSettings implements NBTStorage {
     public static boolean patch_item_merge_adjust_movement = true;
     public static double patch_item_merge_radius = 0.5D;
     public static boolean patch_lobotomize_villagers_enabled = false;
+    public static boolean patch_eigencraft_redstone = false;
     public static int patch_lobotomize_villagers_tick_interval = 20;
     public static int patch_lobotomize_villagers_update_interval = 300;
     public static boolean tick_utils_automated = false;
@@ -119,7 +120,9 @@ public class ServerSettings implements NBTStorage {
         CategorySetting patch = new CategorySetting("patch");
         //Shulker dye
         BooleanSetting dye_shulkers = new BooleanSetting(false, "dye_shulkers");
-        //Donkey dupe
+        //Eigencraft redstone
+        BooleanSetting eigencraft_redstone = new BooleanSetting(false, "eigencraft_redstone").onChanged(b -> patch_eigencraft_redstone = b);
+        //Load spawn
         BooleanSetting loadSpawn = new BooleanSetting(true, "load_spawn");
         //Stuck Wither
         CategorySetting wither = new CategorySetting("wither");
@@ -157,6 +160,7 @@ public class ServerSettings implements NBTStorage {
         BooleanSetting global_sound = new BooleanSetting(true, "global_sound");
 
         patch.addChild(dye_shulkers);
+        patch.addChild(eigencraft_redstone);
         patch.addChild(loadSpawn);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
