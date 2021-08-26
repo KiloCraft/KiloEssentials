@@ -46,6 +46,7 @@ public class ServerSettings implements NBTStorage {
     public static double patch_item_merge_radius = 0.5D;
     public static boolean patch_lobotomize_villagers_enabled = false;
     public static boolean patch_eigencraft_redstone = false;
+    public static int patch_maxCollisionsPerEntity = 8;
     public static int patch_lobotomize_villagers_tick_interval = 20;
     public static int patch_lobotomize_villagers_update_interval = 300;
     public static boolean tick_utils_automated = false;
@@ -124,6 +125,8 @@ public class ServerSettings implements NBTStorage {
         BooleanSetting eigencraft_redstone = new BooleanSetting(false, "eigencraft_redstone").onChanged(b -> patch_eigencraft_redstone = b);
         //Load spawn
         BooleanSetting loadSpawn = new BooleanSetting(true, "load_spawn");
+        // Max collisions per entity
+        IntegerSetting maxCollisionsPerEntity = new IntegerSetting(8, "maxCollisionsPerEntity").onChanged(integer -> patch_maxCollisionsPerEntity = integer);
         //Stuck Wither
         CategorySetting wither = new CategorySetting("wither");
         IntegerSetting check_distance = new IntegerSetting(2, "check_distance").range(-256, 256).onChanged(integer -> wither_check_distance = integer);
@@ -162,6 +165,7 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(dye_shulkers);
         patch.addChild(eigencraft_redstone);
         patch.addChild(loadSpawn);
+        patch.addChild(maxCollisionsPerEntity);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
         patch.addChild(noTickPlayerLogin);

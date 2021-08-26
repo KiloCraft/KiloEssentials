@@ -13,6 +13,7 @@
     "gameplay.ShulkerEntityAccessor",
     "gameplay.ShulkerEntityMixin",
     "gameplay.WitherEntityMixin",
+    "performance.LivingEntityMixin",
     "performance.FilledMapItemMixin",
     "performance.ItemEntityMixin",
     "performance.MapStateMixin",
