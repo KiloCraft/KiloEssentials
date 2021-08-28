@@ -11,22 +11,17 @@ import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.api.util.TickManager;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
-import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.commands.misc.DiscordCommand;
-import org.kilocraft.essentials.util.commands.misc.VoteCommand;
+import org.kilocraft.essentials.api.util.TickManager;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.CommandEvents;
-import org.kilocraft.essentials.events.listener.LuckPermsListener;
 import org.kilocraft.essentials.events.PlayerEvents;
 import org.kilocraft.essentials.events.ServerEvents;
+import org.kilocraft.essentials.events.listener.LuckPermsListener;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
 import org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
-import org.kilocraft.essentials.extensions.votifier.Votifier;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.WarpCommand;
@@ -35,11 +30,14 @@ import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.NbtCommands;
+import org.kilocraft.essentials.util.commands.KiloCommands;
+import org.kilocraft.essentials.util.commands.misc.DiscordCommand;
+import org.kilocraft.essentials.util.commands.misc.VoteCommand;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 import org.kilocraft.essentials.util.settings.ServerSettings;
-import org.kilocraft.essentials.util.settings.SettingCommand;
 
 import java.io.File;
 import java.io.IOException;
@@ -175,9 +173,6 @@ public class KiloEssentials {
             userManager.getMutedPlayerList().load();
         } catch (IOException e) {
             KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
-        }
-        if (KiloConfig.main().votifier().enabled) {
-            Votifier.onEnable();
         }
         if (this.hasLuckPerms()) {
             LuckPermsListener.register();
