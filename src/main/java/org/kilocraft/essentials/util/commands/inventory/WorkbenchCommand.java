@@ -35,7 +35,7 @@ public class WorkbenchCommand extends EssentialCommand {
     }
 
     public static CraftingScreenHandler createContainer(int syncId, PlayerInventory inventory, PlayerEntity player) {
-        return new CraftingScreenHandler(syncId, inventory, ScreenHandlerContext.EMPTY);
+        return new CraftingScreenHandler(syncId, inventory, ScreenHandlerContext.create(player.world, player.getBlockPos()));
     }
 
 }
