@@ -128,10 +128,10 @@ public class TickManager {
         return false;
     }
 
-    public static boolean isEntityLimitReached(WorldAccess world, BlockPos pos, EntityType<?>... entityType) {
+    public static boolean isEntityLimitReached(WorldAccess world, BlockPos pos, String id, EntityType<?>... entityType) {
         if (entityType == null || entityType.length == 0) return true;
-        int range = ServerSettings.getInt("entity_limit." + Registry.ENTITY_TYPE.getId(entityType[0]).getPath() + ".range");
-        int limit = ServerSettings.getInt("entity_limit." + Registry.ENTITY_TYPE.getId(entityType[0]).getPath() + ".limit");
+        int range = ServerSettings.getInt("entity_limit." + id + ".range");
+        int limit = ServerSettings.getInt("entity_limit." + id + ".limit");
         // Ignore negative values
         if (range > 0 && limit > 0) {
             // Count mobs from all given types
@@ -139,13 +139,13 @@ public class TickManager {
             for (EntityType<?> type : entityType) {
                 entityCount += world.getEntitiesByType(type, new Box(pos.mutableCopy().add(range, range, range), pos.mutableCopy().add(-range, -range, -range)), EntityPredicates.EXCEPT_SPECTATOR).size();
             }
-            if (limit <= entityCount) {
-                return true;
-            }
+            return limit <= entityCount;
         }
         return false;
+    }
 
-
+    public static boolean isEntityLimitReached(WorldAccess world, BlockPos pos, EntityType<?>... entityType) {
+        return isEntityLimitReached(world, pos, Registry.ENTITY_TYPE.getId(entityType[0]).getPath(), entityType);
     }
 
     public static String getFormattedMSPT() {

@@ -195,7 +195,6 @@ public class KiloEssentials {
         if (SeatManager.isEnabled()) {
             SeatManager.getInstance().killAll();
         }
-        Votifier.onDisable();
         LocateBiomeProvided.stopAll();
     }
 

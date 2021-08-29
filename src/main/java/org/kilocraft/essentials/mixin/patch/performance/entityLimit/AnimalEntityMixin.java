@@ -25,7 +25,7 @@ public abstract class AnimalEntityMixin extends PassiveEntity {
 
     @Redirect(method = "interactMob", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getStackInHand(Lnet/minecraft/util/Hand;)Lnet/minecraft/item/ItemStack;"))
     public ItemStack allowBreeding(PlayerEntity playerEntity, Hand hand) {
-        if (TickManager.isEntityLimitReached(this.getEntityWorld(), this.getBlockPos(), this.getType())) {
+        if (TickManager.isEntityLimitReached(this.getEntityWorld(), this.getBlockPos(), "animals", this.getType())) {
             OnlineUser user = KiloEssentials.getUserManager().getOnline((ServerPlayerEntity) playerEntity);
             user.sendLangMessage("template.entity_limit", Registry.ENTITY_TYPE.getId(this.getType()).getPath());
             return ItemStack.EMPTY;
