@@ -9,6 +9,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.BanEntry;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.command.ServerCommandSource;
@@ -22,7 +23,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.*;
+import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.TickListener;
@@ -34,18 +35,16 @@ import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.util.commands.CommandUtils;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.PlayerEvents;
 import org.kilocraft.essentials.mixin.accessor.ServerConfigEntryAccessor;
-import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.*;
+import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
-import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -282,8 +281,9 @@ public class ServerUserManager implements UserManager, TickListener {
             });
         }
 
-        if (user.isOnline()) {
-            ServerMetaManager.updateDisplayName(((OnlineUser) user).asPlayer());
+        if (user instanceof OnlineUser onlineUser) {
+            PlayerListS2CPacket packet = new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, onlineUser.asPlayer());
+            KiloEssentials.getInstance().sendGlobalPacket(packet);
         }
     }
 

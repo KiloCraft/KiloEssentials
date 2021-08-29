@@ -75,6 +75,7 @@
     "util.EntityServerRayTraceMixin",
     "util.MinecraftDedicatedServerMixin",
     "util.RegistryKeyMixin",
+    "util.TeamMixin",
     "vanish.ListCommandMixin",
     "vanish.PlayerManagerMixin"
   ],

@@ -27,7 +27,7 @@ public class PlayerListConfigSection {
         add("<gray>Use <green>/help<gray> for more info");
     }};
 
-    @Setting(value = "customOrder", comment = "Change the player list order")
+    @Setting(value = "customOrder", comment = "Change the player list order (You need luckperms installed for this to work)")
     public boolean customOrder = false;
 
     @Setting(value = "topToBottom", comment = "Changed whether the highest or lowest weight should be on top of the list")
