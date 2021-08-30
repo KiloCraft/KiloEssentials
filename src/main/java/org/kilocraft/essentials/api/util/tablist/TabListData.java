@@ -123,6 +123,7 @@ public class TabListData {
                 this.sendPacketToAll(TeamS2CPacket.changePlayerTeam(fakeTeam, playerName, TeamS2CPacket.Operation.ADD));
             } else {
                 fakeTeam = this.createFakeTeam(joinedTeamWeight);
+                fakeTeam.getPlayerList().add(playerName);
                 this.cachedTeams.put(joinedTeamWeight, fakeTeam);
                 this.sendPacketToAll(TeamS2CPacket.updateTeam(fakeTeam, true));
             }
