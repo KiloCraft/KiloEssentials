@@ -6,7 +6,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.LiteralText;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import net.minecraft.text.TranslatableText;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,22 +24,23 @@ public abstract class ClientConnectionMixin {
     @Shadow
     private PacketListener packetListener;
 
-    @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet<?> packet, CallbackInfo ci) {
-        if (packetListener instanceof ServerPlayNetworkHandler networkHandler) {
-            if ((System.currentTimeMillis() - lastInterval) > 1000) {
-                packetsSinceLastInterval = 0;
-                lastInterval = System.currentTimeMillis();
+    @Inject(method = "channelRead0", at = @At("HEAD"))
+    protected void packetLimit(ChannelHandlerContext channelHandlerContext, Packet<?> packet, CallbackInfo ci) {
+        if (this.packetListener instanceof ServerPlayNetworkHandler networkHandler) {
+            if ((System.currentTimeMillis() - this.lastInterval) > 1000) {
+                this.packetsSinceLastInterval = 0;
+                this.lastInterval = System.currentTimeMillis();
             }
-            if (packetsSinceLastInterval >= MAX_PACKETS_PER_SECOND) {
-                networkHandler.disconnect(new LiteralText("Too Many Packets!"));
+            if (this.packetsSinceLastInterval >= MAX_PACKETS_PER_SECOND) {
+                networkHandler.disconnect(new TranslatableText("disconnect.exceeded_packet_rate"));
             }
-            packetsSinceLastInterval++;
+            this.packetsSinceLastInterval++;
         }
     }
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"))
     public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable throwable, CallbackInfo cb) {
-        throwable.printStackTrace();
+        KiloEssentials.getLogger().warn("An error occurred while processing client connection:", throwable);
     }
+
 }

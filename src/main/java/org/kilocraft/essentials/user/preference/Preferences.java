@@ -54,18 +54,18 @@ public class Preferences {
                     fun.tag().put(fun.setting().getId(), list);
                 }
             }, (fun) -> {
-                if (fun.tag().contains(fun.setting().getId())) {
-                    NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
-                    Map<UUID, String> map = Maps.newHashMap();
-                    for (int i = 0; i < NbtList.size(); i++) {
-                        NbtCompound tag = NbtList.getCompound(i);
-                        if (tag.contains("name") && tag.contains("id")) {
-                            map.put(tag.getUuid("id"), tag.getString("name"));
-                        }
-                    }
-                    fun.set(map);
+        if (fun.tag().contains(fun.setting().getId())) {
+            NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
+            Map<UUID, String> map = Maps.newHashMap();
+            for (int i = 0; i < NbtList.size(); i++) {
+                NbtCompound tag = NbtList.getCompound(i);
+                if (tag.contains("name") && tag.contains("id")) {
+                    map.put(tag.getUuid("id"), tag.getString("name"));
                 }
             }
+            fun.set(map);
+        }
+    }
     );
     public static final Preference<Optional<String>> NICK = new Preference<Optional<String>>(
             "nickname", Optional.empty(),
@@ -83,12 +83,12 @@ public class Preferences {
                     fun.tag().putString(fun.tag().getString(fun.setting().getId()), fun.value().getId());
                 }
             }, (fun) -> {
-                if (!fun.tag().contains(fun.setting().getId())) {
-                    fun.set(ServerChat.Channel.PUBLIC);
-                } else {
-                    fun.set(ServerChat.Channel.getById(fun.tag().getString(fun.setting().getId())));
-                }
-            }
+        if (!fun.tag().contains(fun.setting().getId())) {
+            fun.set(ServerChat.Channel.PUBLIC);
+        } else {
+            fun.set(ServerChat.Channel.getById(fun.tag().getString(fun.setting().getId())));
+        }
+    }
     );
     public static final Preference<Integer> RANDOM_TELEPORTS_LEFT = new Preference<>("rtps_left", KiloConfig.main().rtpSpecs().defaultRTPs);
     public static final Preference<Boolean> DON_NOT_DISTURB = new Preference<>("do_not_disturb", false);
@@ -106,18 +106,18 @@ public class Preferences {
                     }
                 }
             }, (fun) -> {
-                if (fun.tag().contains(fun.setting().getId())) {
-                    List<String> strings = new ArrayList<>();
-                    NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
-                    for (int i = 0; i < 10; i++) {
-                        if (NbtList.getCompound(i) != null && NbtList.getCompound(i).contains("name")) {
-                            strings.add(NbtList.getCompound(i).getString("name"));
-                        }
-                    }
-
-                    fun.set(strings);
+        if (fun.tag().contains(fun.setting().getId())) {
+            List<String> strings = new ArrayList<>();
+            NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
+            for (int i = 0; i < 10; i++) {
+                if (NbtList.getCompound(i) != null && NbtList.getCompound(i).contains("name")) {
+                    strings.add(NbtList.getCompound(i).getString("name"));
                 }
             }
+
+            fun.set(strings);
+        }
+    }
     );
     public static final Preference<Boolean> SOUNDS = new Preference<>("sounds", true);
     public static final Preference<List<String>> PENDING_COMMANDS = new Preference<List<String>>(
@@ -133,17 +133,17 @@ public class Preferences {
                     }
                 }
             }, (fun) -> {
-                if (fun.tag().contains(fun.setting().getId())) {
-                    List<String> strings = new ArrayList<>();
-                    NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
-                    for (int i = 0; i < 10; i++) {
-                        if (NbtList.getCompound(i) != null && NbtList.getCompound(i).contains("cmd")) {
-                            strings.add(NbtList.getCompound(i).getString("cmd"));
-                        }
-                    }
-
-                    fun.set(strings);
+        if (fun.tag().contains(fun.setting().getId())) {
+            List<String> strings = new ArrayList<>();
+            NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.STRING);
+            for (int i = 0; i < 10; i++) {
+                if (NbtList.getCompound(i) != null && NbtList.getCompound(i).contains("cmd")) {
+                    strings.add(NbtList.getCompound(i).getString("cmd"));
                 }
+            }
+
+            fun.set(strings);
+        }
     });
     public static final Preference<List<ServerChat.Channel>> DISABLED_CHATS = new Preference<List<ServerChat.Channel>>(
             "enabled_chats", Lists.newArrayList(),
@@ -158,19 +158,19 @@ public class Preferences {
                     fun.tag().put(fun.setting().getId(), list);
                 }
             }, (fun) -> {
-                if (fun.tag().contains(fun.setting().getId())) {
-                    List<ServerChat.Channel> channels = Lists.newArrayList();
-                    NbtList list = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
-                    for (int i = 0; i < list.size(); i++) {
-                        NbtCompound tag = list.getCompound(i);
-                        ServerChat.Channel channel = ServerChat.Channel.getById(tag.getString("id"));
-                        if (channel != null) {
-                            channels.add(channel);
-                        }
-                    }
-                    fun.set(channels);
+        if (fun.tag().contains(fun.setting().getId())) {
+            List<ServerChat.Channel> channels = Lists.newArrayList();
+            NbtList list = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                NbtCompound tag = list.getCompound(i);
+                ServerChat.Channel channel = ServerChat.Channel.getById(tag.getString("id"));
+                if (channel != null) {
+                    channels.add(channel);
                 }
             }
+            fun.set(channels);
+        }
+    }
     );
     public static final Preference<ServerChat.VisibilityPreference> CHAT_VISIBILITY = new Preference<ServerChat.VisibilityPreference>(
             "chat_visibility", ServerChat.VisibilityPreference.ALL,
@@ -179,13 +179,13 @@ public class Preferences {
                     fun.tag().putString("visibility", fun.value().toString());
                 }
             }, (fun) -> {
-                if (fun.tag().contains("visibility")) {
-                    ServerChat.VisibilityPreference preference = ServerChat.VisibilityPreference.getByName(fun.tag().getString("visibility"));
-                    if (preference != null) {
-                        fun.set(preference);
-                    }
-                }
+        if (fun.tag().contains("visibility")) {
+            ServerChat.VisibilityPreference preference = ServerChat.VisibilityPreference.getByName(fun.tag().getString("visibility"));
+            if (preference != null) {
+                fun.set(preference);
             }
+        }
+    }
     );
 
     @Nullable

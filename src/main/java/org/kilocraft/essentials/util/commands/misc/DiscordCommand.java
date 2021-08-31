@@ -2,12 +2,12 @@ package org.kilocraft.essentials.util.commands.misc;
 
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import static net.minecraft.server.command.CommandManager.literal;
 

@@ -13,7 +13,7 @@ public class LiteralCommandModified {
 
     /**
      * @see CommandManagerMixin
-     *
+     * <p>
      * This only works for Command literals and their sub commands
      */
     private static final List<String> keCommandsToKeep = new ArrayList<>() {{
@@ -33,7 +33,7 @@ public class LiteralCommandModified {
         add("ke_ban-ip");
     }};
 
-    private static final List<String> vanillaCommandsToRename = new ArrayList<String>(){{
+    private static final List<String> vanillaCommandsToRename = new ArrayList<String>() {{
         add("gamemode");
         add("locate");
         add("me");

@@ -24,10 +24,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.HashMap;

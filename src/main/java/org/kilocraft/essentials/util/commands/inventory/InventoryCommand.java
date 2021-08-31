@@ -16,9 +16,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.text.Texter;
 
 public class InventoryCommand extends EssentialCommand {

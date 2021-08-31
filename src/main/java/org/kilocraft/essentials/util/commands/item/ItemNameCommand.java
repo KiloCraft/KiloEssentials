@@ -11,11 +11,11 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
@@ -62,16 +62,16 @@ public class ItemNameCommand {
         if (ModifyItemCommand.validate(user, item, inputString)) return -1;
 
 
-		player.addExperienceLevels(-1);
+        player.addExperienceLevels(-1);
 
         if (inputString.equalsIgnoreCase("reset")) {
             item.removeCustomName();
-            user.sendLangMessage( "command.item.reset", "name", Texter.Legacy.toFormattedString(item.getName()));
+            user.sendLangMessage("command.item.reset", "name", Texter.Legacy.toFormattedString(item.getName()));
             return 1;
         }
 
         String nameToSet = KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING) ? inputString : ComponentText.clearFormatting(inputString);
-        user.sendLangMessage( "command.item.set", "name", nameToSet);
+        user.sendLangMessage("command.item.set", "name", nameToSet);
         item.setCustomName(ComponentText.toText(nameToSet));
 
         return 1;

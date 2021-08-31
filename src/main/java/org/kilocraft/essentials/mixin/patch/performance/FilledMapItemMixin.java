@@ -2,7 +2,6 @@ package org.kilocraft.essentials.mixin.patch.performance;
 
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import org.kilocraft.essentials.patch.ChunkManager;

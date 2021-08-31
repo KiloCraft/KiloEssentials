@@ -11,9 +11,11 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(PassiveEntity.class)
 public abstract class PassiveEntityMixin extends PathAwareEntity implements InactiveEntity {
 
-    @Shadow public abstract int getBreedingAge();
+    @Shadow
+    public abstract int getBreedingAge();
 
-    @Shadow public abstract void setBreedingAge(int i);
+    @Shadow
+    public abstract void setBreedingAge(int i);
 
     protected PassiveEntityMixin(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);

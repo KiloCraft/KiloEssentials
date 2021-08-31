@@ -5,10 +5,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.CommandPermission;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static net.minecraft.command.argument.TimeArgumentType.time;
@@ -18,7 +18,7 @@ public class TimeCommand extends EssentialCommand {
         super("ke_time", CommandPermission.TIME);
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher){
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add")
                 .then(argument("time", time()).executes(context -> executeAdd(context, getInteger(context, "time"))));
 
@@ -37,45 +37,56 @@ public class TimeCommand extends EssentialCommand {
 
         LiteralArgumentBuilder<ServerCommandSource> queryArg = literal("query")
                 .then(
-                        literal("daytime").executes(context -> executeQuery(context, getDayTime(context.getSource().getWorld()),"daytime"))
+                        literal("daytime").executes(context -> executeQuery(context, getDayTime(context.getSource().getWorld()), "daytime"))
                 ).then(
                         literal("gametime").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTime() % 2147483647L), "gametime"))
                 ).then(
-                        literal("day").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L),"day"))
+                        literal("day").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L), "day"))
                 ).then(
-                        literal("timedate").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay()),"time"))
+                        literal("timedate").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay()), "time"))
                 );
 
         commandNode.addChild(setArg.build());
         commandNode.addChild(queryArg.build());
         commandNode.addChild(addArg.build());
     }
-    private static String getFormattedTime(ServerWorld world){return String.format("%02d:%02d", (int)(world.getTimeOfDay() %24000 / 1000)+6, (int)(world.getTimeOfDay() %1000 / 16.6));}
 
-//    private static int getMinute(ServerWorld world){return (int)(world.getTimeOfDay() %1000 / 16.6);}
+    private static String getFormattedTime(ServerWorld world) {
+        return String.format("%02d:%02d", (int) (world.getTimeOfDay() % 24000 / 1000) + 6, (int) (world.getTimeOfDay() % 1000 / 16.6));
+    }
+
+    //    private static int getMinute(ServerWorld world){return (int)(world.getTimeOfDay() %1000 / 16.6);}
 //    private static int getHour(ServerWorld world){return (int)world.getTimeOfDay() %24000 / 1000;}
     private static int getDay(ServerWorld world) {
-        return (int)world.getTimeOfDay() / 24000;
+        return (int) world.getTimeOfDay() / 24000;
     }
 
     private static int getDayTime(ServerWorld serverWorld) {
-        return (int)(serverWorld.getTimeOfDay() % 24000L);
+        return (int) (serverWorld.getTimeOfDay() % 24000L);
     }
 
     private static int executeQuery(CommandContext<ServerCommandSource> context, int time, String query) {
         ServerWorld w = context.getSource().getWorld();
         CommandSourceUser user = new CommandSourceServerUser(context.getSource());
-        switch (query){
-            case "daytime": user.sendLangMessage("command.time.query.daytime", time);break;
-            case "gametime": user.sendLangMessage("command.time.query.gametime", time);break;
-            case "day": user.sendLangMessage("command.time.query.day", time);break;
-            case "time": user.sendLangMessage("command.time.query.time", getDay(w), getFormattedTime(w));break;
+        switch (query) {
+            case "daytime":
+                user.sendLangMessage("command.time.query.daytime", time);
+                break;
+            case "gametime":
+                user.sendLangMessage("command.time.query.gametime", time);
+                break;
+            case "day":
+                user.sendLangMessage("command.time.query.day", time);
+                break;
+            case "time":
+                user.sendLangMessage("command.time.query.time", getDay(w), getFormattedTime(w));
+                break;
         }
 
         return time;
     }
 
-    public static int executeSet(CommandContext<ServerCommandSource> context, int time, String timeName){
+    public static int executeSet(CommandContext<ServerCommandSource> context, int time, String timeName) {
         CommandSourceUser user = new CommandSourceServerUser(context.getSource());
         for (ServerWorld world : context.getSource().getServer().getWorlds()) {
             world.setTimeOfDay(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);

@@ -12,8 +12,11 @@ import java.util.Set;
 @Mixin(GoalSelector.class)
 public abstract class GoalSelectorMixin implements GoalSelectorInterface {
 
-    @Shadow private int timeInterval;
-    @Shadow @Final private Set<PrioritizedGoal> goals;
+    @Shadow
+    private int timeInterval;
+    @Shadow
+    @Final
+    private Set<PrioritizedGoal> goals;
     private int curRate;
 
     private int getCurRate() {

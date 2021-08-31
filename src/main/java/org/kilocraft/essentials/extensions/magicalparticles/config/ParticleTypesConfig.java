@@ -22,7 +22,7 @@ public class ParticleTypesConfig {
             "\nSpecial property for the Type \"dust\" and \"falling_dust\": dustProperties { rgb=[0, 0, 0] scale=1.0F }";
 
     @Setting
-    public Map<String, ParticleTypeConfigSection> types = new HashMap<String, ParticleTypeConfigSection>(){{
+    public Map<String, ParticleTypeConfigSection> types = new HashMap<String, ParticleTypeConfigSection>() {{
         put("default:dragon_breath", new ParticleTypeConfigSection());
     }};
 

@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(WitherEntity.class)
 public abstract class WitherEntityMixin extends HostileEntity {
 
-    @Shadow public abstract int getInvulnerableTimer();
+    @Shadow
+    public abstract int getInvulnerableTimer();
 
     protected WitherEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -26,7 +27,7 @@ public abstract class WitherEntityMixin extends HostileEntity {
     public void moveIfInBedrock(CallbackInfo ci) {
         if (this.getInvulnerableTimer() > 0) {
             if (this.getEntityWorld().getBlockState(this.getBlockPos().add(0, ServerSettings.wither_check_distance, 0)).isIn(BlockTags.WITHER_IMMUNE)
-            || this.getEntityWorld().getBlockState(this.getBlockPos().add(0, ServerSettings.wither_check_distance + 1, 0)).isIn(BlockTags.WITHER_IMMUNE)) {
+                    || this.getEntityWorld().getBlockState(this.getBlockPos().add(0, ServerSettings.wither_check_distance + 1, 0)).isIn(BlockTags.WITHER_IMMUNE)) {
                 this.updatePosition(this.getPos().x, (this.getPos().y + ServerSettings.wither_tp_distance), this.getPos().z);
             }
         }

@@ -8,13 +8,13 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.util.CommandPermission;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public class SayAsCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
         String inputTarget = getString(ctx, "target");
-        String message = StringArgumentType.getString(ctx,"message");
+        String message = StringArgumentType.getString(ctx, "message");
         ServerChat.Channel channel = ServerChat.Channel.getById(StringArgumentType.getString(ctx, "channel"));
         CommandSourceUser src = this.getCommandSource(ctx);
         OnlineUser target = this.getOnlineUser(inputTarget);

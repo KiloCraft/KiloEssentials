@@ -12,17 +12,17 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
@@ -122,7 +122,7 @@ public class SethomeCommand extends EssentialCommand {
 
         return AWAIT;
     }
-    
+
     private static boolean canSet(User user) {
         for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
             String thisPerm = "kiloessentials.command.home.limit." + i;

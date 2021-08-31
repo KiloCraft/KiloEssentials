@@ -17,11 +17,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -79,10 +79,11 @@ public class PowerToolsCommand {
 
         char[] chars = context.getInput().toCharArray();
         for (int i = 0; i < chars.length; i++) {
-            try	{
+            try {
                 inputLine = Integer.parseInt(String.valueOf(chars[i])) - 1;
                 if (chars[i++] == 0) inputLine = chars[i] + '0';
-            } catch (NumberFormatException ignored) { }
+            } catch (NumberFormatException ignored) {
+            }
         }
 
         NbtList commands = item.getNbt().getList("NBTCommands", 8);
@@ -211,7 +212,7 @@ public class PowerToolsCommand {
         itemTag.put("NBTCommands", command);
         item.setNbt(itemTag);
 
-        user.sendLangMessage( "command.item.set", "command", inputLine + 1, "&e:\n &7" + inputLine);
+        user.sendLangMessage("command.item.set", "command", inputLine + 1, "&e:\n &7" + inputLine);
         return 1;
     }
 }

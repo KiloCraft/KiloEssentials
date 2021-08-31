@@ -22,7 +22,7 @@ public class DoubleSetting extends ConfigurableSetting<Double> implements RangeS
 
     @Override
     public String getFormattedValue() {
-        return "<light_purple>" +  getValue() + "d";
+        return "<light_purple>" + getValue() + "d";
     }
 
     @Override

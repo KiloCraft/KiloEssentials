@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** @author Spottedleaf */
+/**
+ * @author Spottedleaf
+ */
 public final class PlayerMobDistanceMap {
 
     private static final PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity> EMPTY_SET = new PooledHashSets.PooledObjectLinkedOpenHashSet<>();
@@ -107,7 +109,7 @@ public final class PlayerMobDistanceMap {
     private void addPlayerTo(final ServerPlayerEntity player, final int chunkX, final int chunkZ) {
         this.playerMap.compute(ChunkPos.toLong(chunkX, chunkZ), (final Long key, final PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity> players) -> {
             if (players == null) {
-                return ((ServerPlayerEntityInterface)player).getCachedSingleMobDistanceMap();
+                return ((ServerPlayerEntityInterface) player).getCachedSingleMobDistanceMap();
             } else {
                 return PlayerMobDistanceMap.this.pooledHashSets.findMapWith(players, player);
             }

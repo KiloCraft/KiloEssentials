@@ -309,7 +309,7 @@ public class ServerUserManager implements UserManager, TickListener {
                 .replace("{LENGTH}", expiry == null ? config.meta().wordPermanent : expiry);
 
 
-            if (silent) {
+        if (silent) {
             ServerChat.Channel.STAFF.send(ComponentText.toText(config.meta().silentPrefix + " " + message));
         } else if (config.meta().broadcast) {
             KiloChat.broadCast(message);
@@ -393,7 +393,7 @@ public class ServerUserManager implements UserManager, TickListener {
         if (!user.getPreference(Preferences.VANISH)) KiloChat.onUserJoin(user);
         List<GameProfile> banned = new ArrayList<>();
         for (BannedPlayerEntry bannedPlayerEntry : KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().values()) {
-            Object o = ((ServerConfigEntryAccessor)bannedPlayerEntry).getKey();
+            Object o = ((ServerConfigEntryAccessor) bannedPlayerEntry).getKey();
             if (o instanceof GameProfile profile) {
                 Optional<User> optional = getOffline(profile).join();
                 optional.ifPresent(player -> {

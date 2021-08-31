@@ -7,11 +7,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.text.OnlineMessageReceptionist;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public interface OnlineUser extends User, OnlineMessageReceptionist {

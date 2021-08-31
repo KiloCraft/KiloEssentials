@@ -15,7 +15,8 @@ public abstract class ItemEntityMixin extends Entity implements InactiveEntity {
     @Shadow
     private int pickupDelay;
 
-    @Shadow private int itemAge;
+    @Shadow
+    private int itemAge;
     private int lastTick = KiloEssentials.getMinecraftServer().getTicks();
 
     public ItemEntityMixin(EntityType<?> entityType, World world) {
@@ -25,7 +26,8 @@ public abstract class ItemEntityMixin extends Entity implements InactiveEntity {
     @Override
     public void inactiveTick() {
         int elapsedTicks = KiloEssentials.getMinecraftServer().getTicks() - this.lastTick;
-        if (this.pickupDelay > 0 && this.pickupDelay != 32767) this.pickupDelay = Math.max((this.pickupDelay - elapsedTicks), 0);
+        if (this.pickupDelay > 0 && this.pickupDelay != 32767)
+            this.pickupDelay = Math.max((this.pickupDelay - elapsedTicks), 0);
         if (this.itemAge != -32768) ++this.itemAge;
         this.lastTick = KiloEssentials.getMinecraftServer().getTicks();
 

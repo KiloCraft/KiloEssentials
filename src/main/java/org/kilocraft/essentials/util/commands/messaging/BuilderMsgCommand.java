@@ -10,13 +10,13 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.EssentialPermission;
 
 import java.util.List;
 
@@ -24,6 +24,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
 public class BuilderMsgCommand extends EssentialCommand {
     private static final ServerChat.Channel THIS_CHANNEL = ServerChat.Channel.BUILDER;
+
     public BuilderMsgCommand() {
         super("buildermsg", src -> Permissions.check(src, EssentialPermission.CHAT_CHANNEL_BUILDERMSG.getNode()));
     }

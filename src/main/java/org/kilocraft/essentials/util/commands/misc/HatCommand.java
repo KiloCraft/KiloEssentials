@@ -13,12 +13,12 @@ import net.minecraft.item.Wearable;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import static net.minecraft.command.argument.EntityArgumentType.player;
 
@@ -53,7 +53,7 @@ public class HatCommand extends EssentialCommand {
         OnlineUser user = getOnlineUser(ctx);
 
         if (handStack.getItem() instanceof Wearable) {
-            user.sendLangMessage( "command.hat.invalid_item");
+            user.sendLangMessage("command.hat.invalid_item");
             return FAILED;
         }
 
@@ -63,9 +63,9 @@ public class HatCommand extends EssentialCommand {
         inventory.armor.set(EquipmentSlot.HEAD.getEntitySlotId(), handStack);
 
         if (CommandUtils.areTheSame(player, target))
-            user.sendLangMessage( "command.hat");
+            user.sendLangMessage("command.hat");
         else {
-            user.sendLangMessage( "command.hat.others", target.getEntityName());
+            user.sendLangMessage("command.hat.others", target.getEntityName());
             getOnlineUser(target).sendLangMessage("command.hat.announce", player.getEntityName());
         }
 

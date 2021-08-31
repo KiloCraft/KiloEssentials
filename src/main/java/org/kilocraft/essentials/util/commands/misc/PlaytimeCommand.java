@@ -6,12 +6,12 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;

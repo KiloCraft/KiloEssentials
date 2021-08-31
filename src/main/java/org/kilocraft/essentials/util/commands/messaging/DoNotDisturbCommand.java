@@ -12,6 +12,7 @@ import org.kilocraft.essentials.user.preference.Preferences;
 
 public class DoNotDisturbCommand extends EssentialCommand {
     private final Preference<Boolean> Preference = Preferences.DON_NOT_DISTURB;
+
     public DoNotDisturbCommand() {
         super("donotdisturb", new String[]{"toggledisturb"});
         this.withUsage("command.donotdisturb.usage");

@@ -9,12 +9,14 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 public interface PlayerContext extends Contextual {
     /**
      * Returns the player that fired this event
+     *
      * @return the player that fired this event
      */
     ServerPlayerEntity getPlayer();
 
     /**
      * Gets the User that fired this event
+     *
      * @return the users that fired this event
      */
     OnlineUser getUser();

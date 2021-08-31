@@ -1,14 +1,11 @@
 package org.kilocraft.essentials.util.text;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

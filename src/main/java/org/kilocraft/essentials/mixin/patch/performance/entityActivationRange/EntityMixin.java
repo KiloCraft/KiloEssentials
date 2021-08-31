@@ -20,11 +20,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements ActivationTypeEntity, InactiveEntity {
 
-    @Shadow public abstract void setVelocity(Vec3d vec3d);
+    @Shadow
+    public abstract void setVelocity(Vec3d vec3d);
 
-    @Shadow public World world;
+    @Shadow
+    public World world;
 
-    @Shadow public abstract Vec3d getVelocity();
+    @Shadow
+    public abstract Vec3d getVelocity();
 
     public boolean defaultActivationState;
     public ActivationRange.ActivationType activationType;
@@ -48,7 +51,7 @@ public abstract class EntityMixin implements ActivationTypeEntity, InactiveEntit
 
     @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;adjustMovementForSneaking(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/entity/MovementType;)Lnet/minecraft/util/math/Vec3d;"), cancellable = true)
     public void ignoreMovementWhileInactive(MovementType movementType, Vec3d vec3d, CallbackInfo ci) {
-        if (isTemporarilyActive && !((Object)this instanceof ItemEntity || (Object)this instanceof AbstractMinecartEntity) && vec3d == getVelocity() && movementType == MovementType.SELF) {
+        if (isTemporarilyActive && !((Object) this instanceof ItemEntity || (Object) this instanceof AbstractMinecartEntity) && vec3d == getVelocity() && movementType == MovementType.SELF) {
             setVelocity(Vec3d.ZERO);
             this.world.getProfiler().pop();
             ci.cancel();

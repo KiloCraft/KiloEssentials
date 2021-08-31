@@ -10,11 +10,11 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import java.util.Map;
 import java.util.UUID;

@@ -16,8 +16,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -30,6 +28,8 @@ import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 

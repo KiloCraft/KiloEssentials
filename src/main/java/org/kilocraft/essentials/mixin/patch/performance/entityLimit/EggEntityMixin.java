@@ -18,7 +18,7 @@ public abstract class EggEntityMixin extends ThrownItemEntity {
         super(entityType, world);
     }
 
-    @Redirect(method = "onCollision", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextInt(I)I",ordinal = 0))
+    @Redirect(method = "onCollision", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextInt(I)I", ordinal = 0))
     public int shouldSpawn(Random random, int bound) {
         return TickManager.isEntityLimitReached(this.world, getBlockPos(), EntityType.CHICKEN) ? 1 : random.nextInt(8);
     }

@@ -7,10 +7,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.util.CommandPermission;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;

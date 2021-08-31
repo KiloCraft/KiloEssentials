@@ -26,7 +26,7 @@ public abstract class ServerWorldMixin {
     public void onEntityTick(Entity entity, CallbackInfo ci) {
         if (!ActivationRange.checkIfActive(entity)) {
             ++entity.age;
-            ((InactiveEntity)entity).inactiveTick();
+            ((InactiveEntity) entity).inactiveTick();
             ci.cancel();
         }
     }
@@ -37,7 +37,7 @@ public abstract class ServerWorldMixin {
             entity.tickRiding();
         } else {
             entity.setVelocity(Vec3d.ZERO);
-            ((InactiveEntity)entity).inactiveTick();
+            ((InactiveEntity) entity).inactiveTick();
             entity.getVehicle().updatePassengerPosition(entity);
         }
     }

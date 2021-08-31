@@ -50,12 +50,12 @@ public abstract class ThreadedAnvilChunkStorageMixin implements ThreadedAnvilChu
         int index = entity.getType().getSpawnGroup().ordinal();
 
         for (ServerPlayerEntity player : this.playerMobDistanceMap.getPlayersInRange(chunkX, chunkZ)) {
-            ++((ServerPlayerEntityInterface)player).getMobCounts()[index];
+            ++((ServerPlayerEntityInterface) player).getMobCounts()[index];
         }
     }
 
     @Override
     public int getMobCountNear(ServerPlayerEntity player, SpawnGroup spawnGroup) {
-        return ((ServerPlayerEntityInterface)player).getMobCounts()[spawnGroup.ordinal()];
+        return ((ServerPlayerEntityInterface) player).getMobCounts()[spawnGroup.ordinal()];
     }
 }

@@ -1,27 +1,25 @@
 package org.kilocraft.essentials.patch.optimizedRedstone;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
-
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.minecraft.world.World;
 import org.kilocraft.essentials.mixin.patch.performance.optimizedRedstone.RedstoneWireBlockAccessor;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Used for the faster redstone algorithm.
  * Original author: theosib
  * Original license: MIT
- *
+ * <p>
  * Ported to Paper and updated to 1.13 by egg82
  */
 public class RedstoneWireTurbo {
@@ -202,9 +200,9 @@ public class RedstoneWireTurbo {
      * See below for more explanation.
      */
     private static final int[] forward_is_north = {2, 3, 16, 19, 0, 4, 1, 5, 7, 8, 17, 20, 12, 13, 18, 21, 6, 9, 22, 14, 11, 10, 23, 15};
-    private static final int[] forward_is_east  = {2, 3, 16, 19, 4, 1, 5, 0, 17, 20, 12, 13, 18, 21, 7, 8, 22, 14, 11, 15, 23, 9, 6, 10};
+    private static final int[] forward_is_east = {2, 3, 16, 19, 4, 1, 5, 0, 17, 20, 12, 13, 18, 21, 7, 8, 22, 14, 11, 15, 23, 9, 6, 10};
     private static final int[] forward_is_south = {2, 3, 16, 19, 1, 5, 0, 4, 12, 13, 18, 21, 7, 8, 17, 20, 11, 15, 23, 10, 6, 14, 22, 9};
-    private static final int[] forward_is_west =  {2, 3, 16, 19, 5, 0, 4, 1, 18, 21, 7, 8, 17, 20, 12, 13, 23, 10, 6, 9, 22, 15, 11, 14};
+    private static final int[] forward_is_west = {2, 3, 16, 19, 5, 0, 4, 1, 18, 21, 7, 8, 17, 20, 12, 13, 23, 10, 6, 9, 22, 15, 11, 14};
 
     /* For any orientation, we end up with the update order defined below.  This order is relative to any redstone wire block
      * that is itself having an update computed, and this center position is marked with C.
@@ -250,7 +248,7 @@ public class RedstoneWireTurbo {
      */
 
     // This allows the above remapping tables to be looked up by cardial direction index
-    private static final int[][] reordering = { forward_is_north, forward_is_east, forward_is_south, forward_is_west };
+    private static final int[][] reordering = {forward_is_north, forward_is_east, forward_is_south, forward_is_west};
 
     /*
      * Input:  Array of UpdateNode objects in an order corresponding to the positions
@@ -436,7 +434,7 @@ public class RedstoneWireTurbo {
         // UpdateNode object.
         BlockState newState;
         if (old_current_change) {
-            newState = ((RedstoneWireBlockInterface)wire).calculateCurrentChanges(worldIn, pos, pos, oldState);
+            newState = ((RedstoneWireBlockInterface) wire).calculateCurrentChanges(worldIn, pos, pos, oldState);
         } else {
             // Looking up block state is slow.  This accelerator includes a version of
             // calculateCurrentChanges that uses cahed wire values for a
@@ -472,7 +470,7 @@ public class RedstoneWireTurbo {
         // Target array of neighbors sorted left-to-right
         upd1.neighbor_nodes = new UpdateNode[24];
 
-        for (int i=0; i<24; i++) {
+        for (int i = 0; i < 24; i++) {
             // Look up each neighbor in the node cache
             final BlockPos pos2 = neighbors[i];
             UpdateNode upd2 = nodeCache.get(pos2);
@@ -511,12 +509,12 @@ public class RedstoneWireTurbo {
         if (fromSouth) cz -= 1;
 
         int heading;
-        if (cx==0 && cz==0) {
+        if (cx == 0 && cz == 0) {
             // If there is no clear direction, try to inherit the heading from ancestor nodes.
             heading = computeHeading(upd1.xbias, upd1.zbias);
 
             // Propagate that heading to descendant nodes.
-            for (int i=0; i<24; i++) {
+            for (int i = 0; i < 24; i++) {
                 final UpdateNode nn = neighbor_nodes[i];
                 if (nn != null) {
                     nn.xbias = upd1.xbias;
@@ -533,7 +531,7 @@ public class RedstoneWireTurbo {
             heading = computeHeading(cx, cz);
 
             // Propagate that heading to descendant nodes.
-            for (int i=0; i<24; i++) {
+            for (int i = 0; i < 24; i++) {
                 final UpdateNode nn = neighbor_nodes[i];
                 if (nn != null) {
                     nn.xbias = cx;
@@ -623,7 +621,7 @@ public class RedstoneWireTurbo {
         currentWalkLayer = 1;
 
         // Loop over all layers
-        while (updateQueue0.size()>0 || updateQueue1.size()>0) {
+        while (updateQueue0.size() > 0 || updateQueue1.size() > 0) {
             // Get the set of blocks in this layer
             final List<UpdateNode> thisLayer = updateQueue0;
 
@@ -716,7 +714,7 @@ public class RedstoneWireTurbo {
         // Therefore we clear the cached block info about all neighbors of
         // the position receiving the update and then re-identify what they are.
         if (upd.neighbor_nodes != null) {
-            for (int i=0; i<24; i++) {
+            for (int i = 0; i < 24; i++) {
                 final UpdateNode upd2 = upd.neighbor_nodes[i];
                 if (upd2 == null) continue;
                 upd2.type = UpdateNode.Type.UNKNOWN;
@@ -749,7 +747,7 @@ public class RedstoneWireTurbo {
         // Check this block's neighbors and see if its power World needs to change
         // Use the calculateCurrentChanges method in BlockRedstoneWire since we have no
         // cached block states at this point.
-        final BlockState newState = ((RedstoneWireBlockInterface)wire).calculateCurrentChanges(worldIn, pos, pos, state);
+        final BlockState newState = ((RedstoneWireBlockInterface) wire).calculateCurrentChanges(worldIn, pos, pos, state);
 
         // If no change, exit
         if (newState == state) {
@@ -782,7 +780,7 @@ public class RedstoneWireTurbo {
         // already performs the update to the block at 'pos', so it is not added to the schedule.
         final UpdateNode upd = new UpdateNode();
         upd.self = pos;
-        upd.parent = source!=null ? source : pos;
+        upd.parent = source != null ? source : pos;
         upd.currentState = newState;
         upd.type = UpdateNode.Type.REDSTONE;
         upd.visited = true;
@@ -804,7 +802,7 @@ public class RedstoneWireTurbo {
 
     // For any array of neighbors in an UpdateNode object, these are always
     // the indices of the four immediate neighbors at the same Y coordinate.
-    private static final int[] rs_neighbors =    {4, 5, 6, 7};
+    private static final int[] rs_neighbors = {4, 5, 6, 7};
     private static final int[] rs_neighbors_up = {9, 11, 13, 15};
     private static final int[] rs_neighbors_dn = {8, 10, 12, 14};
 
@@ -820,14 +818,14 @@ public class RedstoneWireTurbo {
         j = getMaxCurrentStrength(upd, j);
         int l = 0;
 
-        ((RedstoneWireBlockAccessor)wire).setWireGivesPower(false);
+        ((RedstoneWireBlockAccessor) wire).setWireGivesPower(false);
         // Unfortunately, World.isBlockIndirectlyGettingPowered is complicated,
         // and I'm not ready to try to replicate even more functionality from
         // elsewhere in Minecraft into this accelerator.  So sadly, we must
         // suffer the performance hit of this very expensive call.  If there
         // is consistency to what this call returns, we may be able to cache it.
         final int k = worldIn.getReceivedRedstonePower(upd.self);
-        ((RedstoneWireBlockAccessor)wire).setWireGivesPower(true);
+        ((RedstoneWireBlockAccessor) wire).setWireGivesPower(true);
 
         // The variable 'k' holds the maximum redstone power value of any adjacent blocks.
         // If 'k' has the highest World of all neighbors, then the power World of this
@@ -863,8 +861,7 @@ public class RedstoneWireTurbo {
                 if (!neighbor_is_cube) {
                     UpdateNode neighbor_down = upd.neighbor_nodes[rs_neighbors_dn[m]];
                     l = getMaxCurrentStrength(neighbor_down, l);
-                } else
-                if (!center_up_is_cube) {
+                } else if (!center_up_is_cube) {
                     UpdateNode neighbor_up = upd.neighbor_nodes[rs_neighbors_up[m]];
                     l = getMaxCurrentStrength(neighbor_up, l);
                 }

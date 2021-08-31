@@ -6,14 +6,14 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
@@ -51,7 +51,7 @@ public class InvulnerableCommand extends EssentialCommand {
 
         OnlineUser user = KiloEssentials.getUserManager().getOnline(player);
         user.getPreferences().set(Preferences.INVULNERABLE, set);
-        
+
         if (!CommandUtils.areTheSame(source, player))
             user.sendLangMessage("template.#1.announce", source.getName(), "Invulnerable", set);
 

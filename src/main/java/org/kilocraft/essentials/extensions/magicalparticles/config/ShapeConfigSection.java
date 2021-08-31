@@ -18,7 +18,7 @@ public class ShapeConfigSection {
     public float spacing = 0.2f;
 
     @Setting("lineProperties")
-    public LineConfigSection lineConfigSection  = shape.equals("line") ? new LineConfigSection() : null;
+    public LineConfigSection lineConfigSection = shape.equals("line") ? new LineConfigSection() : null;
 
     @Setting("bezierProperties")
     public BezierConfigSection bezierConfigSection = shape.equals("bezier") ? new BezierConfigSection() : null;

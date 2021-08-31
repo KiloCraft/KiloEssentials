@@ -11,9 +11,11 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(AreaEffectCloudEntity.class)
 public abstract class AreaEffectCloudEntityMixin extends Entity implements InactiveEntity {
 
-    @Shadow private int waitTime;
+    @Shadow
+    private int waitTime;
 
-    @Shadow private int duration;
+    @Shadow
+    private int duration;
 
     public AreaEffectCloudEntityMixin(EntityType<?> entityType, World world) {
         super(entityType, world);

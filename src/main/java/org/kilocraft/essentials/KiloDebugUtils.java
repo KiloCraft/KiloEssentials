@@ -108,7 +108,6 @@ public class KiloDebugUtils {
         }
 
 
-
         String debugText = String.format(DEBUG_FORMAT,
                 ComponentText.formatTps(TickManager.tps[0]),
                 TickManager.getFormattedMSPT(), loadedChunks,

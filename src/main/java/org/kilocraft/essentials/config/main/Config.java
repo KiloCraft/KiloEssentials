@@ -61,7 +61,7 @@ public class Config {
     public int maxCachedMessages = 20;
 
     @Setting(value = "playerWarpTypes", comment = "The Types that you can select for making a player warp")
-    public List<String> playerWarpTypes = new ArrayList<String>(){{
+    public List<String> playerWarpTypes = new ArrayList<String>() {{
         this.add("shop");
         this.add("farm");
         this.add("build");
@@ -71,7 +71,7 @@ public class Config {
     }};
 
     @Setting(value = "commandSpyIgnored", comment = "The commands that the command logger will ignore")
-    public List<String> ignoredCommandsForLogging = new ArrayList<String>(){{
+    public List<String> ignoredCommandsForLogging = new ArrayList<String>() {{
         this.add("trigger");
         this.add("msg");
         this.add("tell");
@@ -128,6 +128,8 @@ public class Config {
         return rtpSpecs;
     }
 
-    public MotdConfigSection motd() { return motd; }
+    public MotdConfigSection motd() {
+        return motd;
+    }
 
 }

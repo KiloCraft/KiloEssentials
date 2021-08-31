@@ -12,11 +12,14 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(Entity.class)
 public abstract class EntityServerRayTraceMixin implements EntityServerRayTraceable {
 
-    @Shadow public abstract Vec3d getCameraPosVec(float tickDelta);
+    @Shadow
+    public abstract Vec3d getCameraPosVec(float tickDelta);
 
-    @Shadow public abstract Vec3d getRotationVec(float tickDelta);
+    @Shadow
+    public abstract Vec3d getRotationVec(float tickDelta);
 
-    @Shadow public World world;
+    @Shadow
+    public World world;
 
     // This is marked @Environment(EnvType.CLIENT) (not available in serverside code) so we need to re-implement it.
     @Override
@@ -32,6 +35,7 @@ public abstract class EntityServerRayTraceMixin implements EntityServerRayTracea
                         passThroughFluids ? RaycastContext.FluidHandling.NONE : RaycastContext.FluidHandling.ANY,
                         ((Entity) (Object) this)
                 )
-        );    }
+        );
+    }
 
 }

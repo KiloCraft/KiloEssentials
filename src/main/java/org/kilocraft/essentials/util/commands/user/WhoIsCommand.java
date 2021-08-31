@@ -9,7 +9,6 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -20,6 +19,7 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -119,7 +119,7 @@ public class WhoIsCommand extends EssentialCommand {
         }
 
         if (!target.isOnline() && target.getLastOnline() != null) {
-            text.append("Last Online", Texter.newText("&e" +  TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).styled((style) -> {
+            text.append("Last Online", Texter.newText("&e" + TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).styled((style) -> {
                 return style.withHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getLastOnline())));
             }));
         }

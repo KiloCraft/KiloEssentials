@@ -31,6 +31,7 @@ public class GUIButton {
         QUICK_MOVE(SlotActionType.QUICK_MOVE);
 
         private final SlotActionType type;
+
         ClickAction(final SlotActionType type) {
             this.type = type;
         }

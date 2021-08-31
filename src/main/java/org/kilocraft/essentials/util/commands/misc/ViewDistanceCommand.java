@@ -8,9 +8,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.StringText;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 public class ViewDistanceCommand extends EssentialCommand {

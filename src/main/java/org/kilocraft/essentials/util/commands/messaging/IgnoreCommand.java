@@ -51,7 +51,7 @@ public class IgnoreCommand extends EssentialCommand {
             if (remove) ignoreList.remove(user.getUuid());
             else ignoreList.put(user.getUuid(), user.getUsername());
             src.getPreferences().set(Preferences.IGNORE_LIST, ignoreList);
-            src.sendLangMessage(remove ? "command.ignore.remove" : "command.ignore.add" , user.getNameTag());
+            src.sendLangMessage(remove ? "command.ignore.remove" : "command.ignore.add", user.getNameTag());
 
         });
 

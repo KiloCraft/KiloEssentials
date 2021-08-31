@@ -20,7 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
-    @Shadow public ServerPlayNetworkHandler networkHandler;
+    @Shadow
+    public ServerPlayNetworkHandler networkHandler;
 
     public ServerPlayerEntityMixin(World world, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(world, blockPos, f, gameProfile);
@@ -30,7 +31,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private void modify(ServerWorld serverWorld, CallbackInfo ci) {
         // Restrict dimension access
         if (LocationUtil.shouldBlockAccessTo(serverWorld.getDimension())) {
-            KiloEssentials.getUserManager().getOnline((ServerPlayerEntity) (Object)this).sendLangMessage("general.dimension_not_allowed", RegistryUtils.dimensionToName(serverWorld.getDimension()));
+            KiloEssentials.getUserManager().getOnline((ServerPlayerEntity) (Object) this).sendLangMessage("general.dimension_not_allowed", RegistryUtils.dimensionToName(serverWorld.getDimension()));
             ci.cancel();
         }
         // Save user location for /back

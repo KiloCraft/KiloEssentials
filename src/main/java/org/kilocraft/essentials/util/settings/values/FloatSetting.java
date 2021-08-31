@@ -37,7 +37,7 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
 
     @Override
     public String getFormattedValue() {
-        return "<aqua>" +  getValue() + "f";
+        return "<aqua>" + getValue() + "f";
     }
 
     @Override

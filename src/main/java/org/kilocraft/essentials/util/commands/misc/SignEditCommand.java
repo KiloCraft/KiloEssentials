@@ -21,7 +21,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
-import net.minecraft.state.property.Property;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -30,17 +29,16 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.mixin.accessor.SignBlockEntityAccessor;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
@@ -59,11 +57,11 @@ public class SignEditCommand extends EssentialCommand {
     public SignEditCommand() {
         super("signedit", src ->
                 KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_TEXT) ||
-                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_TEXT) ||
-                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_COMMAND) ||
-                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_SELF) ||
-                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_OTHERS) ||
-                KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_COLOR));
+                        KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_TEXT) ||
+                        KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_COMMAND) ||
+                        KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_SELF) ||
+                        KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_OTHERS) ||
+                        KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_COLOR));
     }
 
     @Override
@@ -132,7 +130,7 @@ public class SignEditCommand extends EssentialCommand {
 
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
         if (blockEntity == null) {
-            user.sendLangMessage( "command.signedit.invalid_block");
+            user.sendLangMessage("command.signedit.invalid_block");
             return FAILED;
         }
 
@@ -141,14 +139,14 @@ public class SignEditCommand extends EssentialCommand {
         if (input.equals("reset")) {
             sign.setTextOnRow(line, new LiteralText(""));
             updateSign(sign, player.getServerWorld(), blockEntity.getPos());
-            user.sendLangMessage( "command.signedit.reset_text", line + 1);
+            user.sendLangMessage("command.signedit.reset_text", line + 1);
             return SUCCESS;
         }
 
         sign.setTextOnRow(line, ComponentText.toText(input));
 
         updateSign(sign, player.getServerWorld(), blockEntity.getPos());
-        user.sendLangMessage( "command.signedit.set_text", line + 1, input);
+        user.sendLangMessage("command.signedit.set_text", line + 1, input);
         return SUCCESS;
     }
 
@@ -160,7 +158,7 @@ public class SignEditCommand extends EssentialCommand {
 
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
         if (blockEntity == null) {
-            user.sendLangMessage( "command.signedit.invalid_block");
+            user.sendLangMessage("command.signedit.invalid_block");
             return FAILED;
         }
 
@@ -170,14 +168,14 @@ public class SignEditCommand extends EssentialCommand {
         if (input.equals("reset")) {
             Text text = ((MutableText) signText.getTexts()[line]).styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "")));
             sign.setTextOnRow(line, text);
-            user.sendLangMessage( "command.signedit.reset_command", line + 1);
+            user.sendLangMessage("command.signedit.reset_command", line + 1);
             return SUCCESS;
         }
 
         Text text = ((MutableText) signText.getTexts()[line]).styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, input)));
         sign.setTextOnRow(line, text);
         updateSign(sign, player.getServerWorld(), blockEntity.getPos());
-        user.sendLangMessage( "command.signedit.set_command", line + 1, input);
+        user.sendLangMessage("command.signedit.set_command", line + 1, input);
         return SUCCESS;
     }
 
@@ -186,7 +184,7 @@ public class SignEditCommand extends EssentialCommand {
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
         OnlineUser user = getOnlineUser(ctx);
         if (blockEntity == null) {
-            user.sendLangMessage( "command.signedit.invalid_block");
+            user.sendLangMessage("command.signedit.invalid_block");
             return FAILED;
         }
 
@@ -199,7 +197,7 @@ public class SignEditCommand extends EssentialCommand {
         sign.setTextColor(dyeColor);
         updateSign(sign, player.getServerWorld(), sign.getPos());
 
-        user.sendLangMessage( "command.signedit.set_color", inputColor);
+        user.sendLangMessage("command.signedit.set_color", inputColor);
         return SUCCESS;
     }
 
@@ -208,7 +206,7 @@ public class SignEditCommand extends EssentialCommand {
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
         OnlineUser user = getOnlineUser(ctx);
         if (blockEntity == null) {
-            user.sendLangMessage( "command.signedit.invalid_block");
+            user.sendLangMessage("command.signedit.invalid_block");
             return FAILED;
         }
 
@@ -219,7 +217,7 @@ public class SignEditCommand extends EssentialCommand {
         target.networkHandler.sendPacket(packet);
 
         if (CommandUtils.areTheSame(ctx.getSource(), target))
-            user.sendLangMessage( "general.open_gui", "Sign");
+            user.sendLangMessage("general.open_gui", "Sign");
         else
             user.sendLangMessage("general.open_gui.others", "Sign", target.getEntityName());
 
@@ -231,7 +229,7 @@ public class SignEditCommand extends EssentialCommand {
         BlockEntity blockEntity = getBlockEntityAtCursor(player);
         OnlineUser user = getOnlineUser(ctx);
         if (blockEntity == null) {
-            user.sendLangMessage( "command.signedit.invalid_block");
+            user.sendLangMessage("command.signedit.invalid_block");
             return FAILED;
         }
 
@@ -264,7 +262,7 @@ public class SignEditCommand extends EssentialCommand {
         world.setBlockState(sign.getPos(), newState);
         world.updateNeighbors(sign.getPos(), newState.getBlock());
         world.addBlockEntity(newSign);
-        user.sendLangMessage( "command.signedit.set_type", inputType);
+        user.sendLangMessage("command.signedit.set_type", inputType);
         return SUCCESS;
     }
 

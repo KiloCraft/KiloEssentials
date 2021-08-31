@@ -27,7 +27,8 @@ public class PlayerDataModifier {
 
         try {
             this.NbtCompound = NbtIo.readCompressed(new FileInputStream(file));
-        } catch (IOException ignored) { }
+        } catch (IOException ignored) {
+        }
 
         return true;
     }

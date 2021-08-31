@@ -1,6 +1,8 @@
 package org.kilocraft.essentials.mixin.events;
 
 import net.minecraft.network.MessageType;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,7 +24,8 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow
     public ServerPlayerEntity player;
 
-    @Shadow public abstract ServerPlayerEntity getPlayer();
+    @Shadow
+    public abstract ServerPlayerEntity getPlayer();
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "onDisconnected")
     private void ke$remove$sendToAll(PlayerManager playerManager, Text text, MessageType messageType, UUID uUID) {
@@ -34,5 +37,4 @@ public abstract class ServerPlayNetworkHandlerMixin {
         PlayerEvents.LEAVE.invoker().onLeave(player);
         KiloEssentials.getUserManager().onLeave(player);
     }
-
 }

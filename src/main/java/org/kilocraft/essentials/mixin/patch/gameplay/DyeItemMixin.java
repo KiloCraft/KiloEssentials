@@ -19,7 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(DyeItem.class)
 public abstract class DyeItemMixin {
 
-    @Shadow @Final private DyeColor color;
+    @Shadow
+    @Final
+    private DyeColor color;
 
     // Allows players to use dye on shulker entities
     @Inject(method = "useOnEntity", at = @At(value = "HEAD"), cancellable = true)
@@ -27,7 +29,7 @@ public abstract class DyeItemMixin {
         if (entity instanceof ShulkerEntity shulkerEntity && ServerSettings.getBoolean("patch.dye_shulkers")) {
             if (shulkerEntity.isAlive() && shulkerEntity.getColor() != this.color) {
                 if (!user.world.isClient) {
-                    ((ShulkerEntityAccessor)shulkerEntity).setColor(this.color);
+                    ((ShulkerEntityAccessor) shulkerEntity).setColor(this.color);
                     user.swingHand(Hand.MAIN_HAND, true);
                     stack.decrement(1);
                 }

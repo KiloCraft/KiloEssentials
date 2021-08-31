@@ -226,12 +226,12 @@ public class ActivationRange {
             return true;
         }
 
-        if (entity instanceof MobEntity && ((MobEntity)entity).getHoldingEntity() instanceof PlayerEntity) {
+        if (entity instanceof MobEntity && ((MobEntity) entity).getHoldingEntity() instanceof PlayerEntity) {
             return true;
         }
 
         boolean isActive = activationTypeEntity.getActivatedTick() >= KiloEssentials.getMinecraftServer().getTicks() || activationTypeEntity.getDefaultActivationState();
-        ((InactiveEntity)entity).setTemporarilyActive(false);
+        ((InactiveEntity) entity).setTemporarilyActive(false);
 
         // Should this entity tick?
         if (!isActive) {
@@ -240,7 +240,7 @@ public class ActivationRange {
                 if (immunity >= 0) {
                     activationTypeEntity.setActivatedTick(KiloEssentials.getMinecraftServer().getTicks() + immunity);
                 } else {
-                    ((InactiveEntity)entity).setTemporarilyActive(true);
+                    ((InactiveEntity) entity).setTemporarilyActive(true);
                 }
                 isActive = true;
             }

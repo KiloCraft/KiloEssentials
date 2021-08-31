@@ -1,4 +1,5 @@
 package org.kilocraft.essentials.mixin.patch.performance;
+
 import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;

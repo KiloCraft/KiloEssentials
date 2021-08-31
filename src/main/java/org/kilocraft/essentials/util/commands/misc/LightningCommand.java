@@ -10,10 +10,10 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import org.kilocraft.essentials.chat.StringText;
+import org.kilocraft.essentials.util.CommandPermission;
 
 public class LightningCommand extends EssentialCommand {
     public LightningCommand() {

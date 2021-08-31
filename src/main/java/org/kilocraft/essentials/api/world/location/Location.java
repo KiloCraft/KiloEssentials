@@ -16,7 +16,9 @@ import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 public interface Location {
     double getX();
+
     double getY();
+
     double getZ();
 
     Identifier getDimension();
@@ -26,20 +28,27 @@ public interface Location {
     EntityRotation getRotation();
 
     ServerWorld getWorld();
+
     boolean isSafe();
+
     boolean isSafeFor(OnlineUser user);
+
     boolean isSafeFor(ServerPlayerEntity player);
 
     NbtCompound toTag();
+
     void fromTag(NbtCompound tag);
 
     void setX(double x);
+
     void setY(double y);
+
     void setZ(double z);
 
     void setRotation(float yaw, float pitch);
 
     void setDimension(Identifier dimension);
+
     void setDimension(DimensionType type);
 
     ChunkPos toChunkPos();

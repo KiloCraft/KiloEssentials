@@ -104,10 +104,9 @@ public class CommandUtils {
         return KiloEssentials.getMinecraftServer().getCommandManager().execute(source, command);
     }
 
-  private static int execute(String command) {
+    private static int execute(String command) {
         return KiloEssentials.getMinecraftServer().getCommandManager().execute(KiloEssentials.getMinecraftServer().getCommandSource(), command);
     }
-
 
 
     private static ServerCommandSource operatorSource(ServerCommandSource src) {
@@ -144,6 +143,7 @@ public class CommandUtils {
 
         final String format;
         final FormatterFunction<String, ServerCommandSource> function;
+
         Formatting(String format, FormatterFunction<String, ServerCommandSource> function) {
             this.format = format;
             this.function = function;

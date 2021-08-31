@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface ServerChunkManagerAccessor {
 
     /*
-    * Copied from:
-    * https://github.com/Wesley1808/ServerCore-Fabric/blob/1.17.1/src/main/java/org/provim/servercore/mixin/accessor/ServerChunkManagerAccessor.java
-    * */
+     * Copied from:
+     * https://github.com/Wesley1808/ServerCore-Fabric/blob/1.17.1/src/main/java/org/provim/servercore/mixin/accessor/ServerChunkManagerAccessor.java
+     * */
 
     @Accessor("ticketManager")
     ChunkTicketManager getTicketManager();

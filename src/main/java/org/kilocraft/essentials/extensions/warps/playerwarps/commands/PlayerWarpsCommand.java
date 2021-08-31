@@ -30,11 +30,9 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayerWarpsCommand extends EssentialCommand {
     static final String CACHE_KEY = "command.playerwarps";
@@ -87,7 +85,8 @@ public class PlayerWarpsCommand extends EssentialCommand {
                 });
             }
             long startTime = System.nanoTime();
-            while (atomicInteger.get() != PlayerWarpsManager.getWarps().size() || startTime + 5000000 > System.nanoTime());
+            while (atomicInteger.get() != PlayerWarpsManager.getWarps().size() || startTime + 5000000 > System.nanoTime())
+                ;
             List<Map.Entry<PlayerWarp, String>> entries = Lists.newArrayList(map.entrySet());
             entries.sort(Map.Entry.comparingByKey());
             CacheManager.cache(new Cached<>(CACHE_KEY, 1, TimeUnit.MINUTES, entries));

@@ -11,7 +11,8 @@ public abstract class MinecraftServerMixin {
 
     @Inject(method = "prepareStartRegion", at = @At(value = "HEAD"), cancellable = true)
     public void noSpawnChunks(CallbackInfo ci) {
-        /*if (!ServerSettings.getBoolean("patch.load_spawn"))*/ ci.cancel();
+        /*if (!ServerSettings.getBoolean("patch.load_spawn"))*/
+        ci.cancel();
     }
 
 }

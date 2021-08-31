@@ -15,9 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin {
-    @Shadow public abstract String getEntityName();
+    @Shadow
+    public abstract String getEntityName();
 
-    @Shadow public abstract Text getName();
+    @Shadow
+    public abstract Text getName();
 
     @Inject(method = "interact", at = @At(value = "HEAD"))
     public void onInteract(Entity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {

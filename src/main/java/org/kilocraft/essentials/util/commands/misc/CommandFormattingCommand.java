@@ -4,8 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.MutableText;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.text.Texter;
 
 public class CommandFormattingCommand extends EssentialCommand {

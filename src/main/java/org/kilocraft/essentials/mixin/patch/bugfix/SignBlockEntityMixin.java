@@ -18,9 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(SignBlockEntity.class)
 public abstract class SignBlockEntityMixin {
 
-    @Shadow public abstract ServerCommandSource getCommandSource(ServerPlayerEntity serverPlayerEntity);
+    @Shadow
+    public abstract ServerCommandSource getCommandSource(ServerPlayerEntity serverPlayerEntity);
 
-    @Shadow @Final private Text[] texts;
+    @Shadow
+    @Final
+    private Text[] texts;
 
     // Fixes the activate method so your hand won't swing if the sign doesn't have any commands
     @Inject(method = "onActivate", at = @At(value = "HEAD"), cancellable = true)

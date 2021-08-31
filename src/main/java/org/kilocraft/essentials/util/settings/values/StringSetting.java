@@ -32,7 +32,7 @@ public class StringSetting extends ConfigurableSetting<String> {
 
     @Override
     public String getFormattedValue() {
-        return "<green>\"" +  getValue() + "\"";
+        return "<green>\"" + getValue() + "\"";
     }
 
     @Override

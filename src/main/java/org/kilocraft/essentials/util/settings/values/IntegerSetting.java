@@ -32,7 +32,7 @@ public class IntegerSetting extends ConfigurableSetting<Integer> implements Rang
 
     @Override
     public String getFormattedValue() {
-        return "<gold>" +  getValue();
+        return "<gold>" + getValue();
     }
 
     @Override

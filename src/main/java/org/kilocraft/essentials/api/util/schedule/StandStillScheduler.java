@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.api.util.schedule;
 
 import net.minecraft.util.math.Vec3d;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
 public abstract class StandStillScheduler extends AbstractScheduler {

@@ -52,7 +52,7 @@ public class ParticleAnimationSection<P extends ParticleEffect> {
         return type;
     }
 
-    public boolean getRelative () {
+    public boolean getRelative() {
         return relative;
     }
 

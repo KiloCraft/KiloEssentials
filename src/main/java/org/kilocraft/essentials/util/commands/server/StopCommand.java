@@ -7,11 +7,11 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.EssentialPermission;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;

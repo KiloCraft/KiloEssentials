@@ -16,10 +16,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.Format;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -30,7 +26,11 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
+import org.kilocraft.essentials.util.Format;
 import org.kilocraft.essentials.util.PermissionUtil;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.net.SocketAddress;
@@ -277,6 +277,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     private static int tick = 0;
+
     public void onTick() {
         tick++;
         ticksPlayed++;

@@ -15,7 +15,7 @@ public class ParticleTypeConfigSection {
     public String name = "Breath of the Dragon";
 
     @Setting("frames")
-    public List<ParticleFrameConfigSection> frames = new ArrayList<ParticleFrameConfigSection>(){{
+    public List<ParticleFrameConfigSection> frames = new ArrayList<ParticleFrameConfigSection>() {{
         add(new ParticleFrameConfigSection());
     }};
 

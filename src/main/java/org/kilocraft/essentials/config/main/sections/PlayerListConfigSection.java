@@ -16,13 +16,13 @@ public class PlayerListConfigSection {
     public int updateRate = 100;
 
     @Setting(value = "header", comment = "Sets the (Tab) PlayerList Header")
-    public List<String> header = new ArrayList<String>(){{
+    public List<String> header = new ArrayList<String>() {{
         add("<rainbow>Minecraft Server");
         add("<gray>Welcome <gold>%user_displayname%");
     }};
 
     @Setting(value = "footer", comment = "Sets the (Tab) PlayerList Footer")
-    public List<String> footer = new ArrayList<String>(){{
+    public List<String> footer = new ArrayList<String>() {{
         add("<gray>Ping: %user_formatted_ping% <dark_gray>-<gray> Online: <aqua>%user_player_count% <dark_gray>-<gray> TPS: <reset>%server_formatted_tps%");
         add("<gray>Use <green>/help<gray> for more info");
     }};

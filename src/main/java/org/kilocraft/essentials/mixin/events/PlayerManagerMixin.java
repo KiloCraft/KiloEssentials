@@ -8,7 +8,6 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.server.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -42,18 +41,12 @@ public abstract class PlayerManagerMixin {
     @Final
     private BannedIpList bannedIps;
 
-    @Shadow
-    private boolean whitelistEnabled;
-
-    @Shadow
-    @Final
-    private Whitelist whitelist;
-
     /**
      * Moved to {@link org.kilocraft.essentials.chat.KiloChat#onUserJoin(OnlineServerUser)}
      */
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "onPlayerConnect")
-    private void cancelJoinMessage(PlayerManager playerManager, Text text, MessageType messageType, UUID uUID) {}
+    private void cancelJoinMessage(PlayerManager playerManager, Text text, MessageType messageType, UUID uUID) {
+    }
 
     @Redirect(at = @At(value = "INVOKE",
             target = "Lorg/apache/logging/log4j/Logger;info(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V"),
@@ -64,30 +57,25 @@ public abstract class PlayerManagerMixin {
 
     @Inject(method = "checkCanJoin", at = @At(value = "HEAD"), cancellable = true)
     private void override$checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Text> cir) {
-        try {
-            String message = null;
-            ModerationConfigSection.Messages messages = KiloConfig.main().moderation().messages();
-            if (this.bannedProfiles.get(gameProfile) != null) {
-                BannedPlayerEntry entry = this.bannedProfiles.get(gameProfile);
-                if (entry.getExpiryDate() == null) {
-                    message = replaceVariables(messages.permBan, entry, true);
-                } else {
-                    message = replaceVariables(messages.tempBan, entry, false);
-                }
-            } else if (this.bannedIps.get(socketAddress) != null) {
-                BannedIpEntry entry = this.bannedIps.get(socketAddress);
-                assert entry != null;
-                if (entry.getExpiryDate() == null) {
-                    message = replaceVariables(messages.permIpBan, entry, true);
-                } else {
-                    message = replaceVariables(messages.tempIpBan, entry, false);
-                }
+        String message = null;
+        ModerationConfigSection.Messages messages = KiloConfig.main().moderation().messages();
+        BannedPlayerEntry bannedPlayerEntry = this.bannedProfiles.get(gameProfile);
+        if (bannedPlayerEntry != null) {
+            if (bannedPlayerEntry.getExpiryDate() == null) {
+                message = replaceVariables(messages.permBan, bannedPlayerEntry, true);
+            } else {
+                message = replaceVariables(messages.tempBan, bannedPlayerEntry, false);
             }
-
-            if (message != null) cir.setReturnValue(ComponentText.toText(message));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else if (this.bannedIps.get(socketAddress) != null) {
+            BannedIpEntry entry = this.bannedIps.get(socketAddress);
+            if (entry.getExpiryDate() == null) {
+                message = replaceVariables(messages.permIpBan, entry, true);
+            } else {
+                message = replaceVariables(messages.tempIpBan, entry, false);
+            }
         }
+
+        if (message != null) cir.setReturnValue(ComponentText.toText(message));
     }
 
 

@@ -6,9 +6,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.events.PlayerEvents;
-import org.kilocraft.essentials.util.player.UserUtils;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 
 public class NbtCommands {
 

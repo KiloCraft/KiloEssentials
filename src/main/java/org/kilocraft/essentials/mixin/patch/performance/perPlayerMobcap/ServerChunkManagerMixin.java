@@ -31,7 +31,9 @@ public abstract class ServerChunkManagerMixin extends ChunkManager {
     @Final
     private ServerWorld world;
 
-    @Shadow @Nullable public abstract SpawnHelper.Info getSpawnInfo();
+    @Shadow
+    @Nullable
+    public abstract SpawnHelper.Info getSpawnInfo();
 
     @Redirect(method = "tickChunks", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/SpawnHelper;setupSpawn(ILjava/lang/Iterable;Lnet/minecraft/world/SpawnHelper$ChunkSource;)Lnet/minecraft/world/SpawnHelper$Info;"))
     public SpawnHelper.Info updateSpawnHelper(int i, Iterable<Entity> iterable, SpawnHelper.ChunkSource chunkSource) {
@@ -56,7 +58,7 @@ public abstract class ServerChunkManagerMixin extends ChunkManager {
     public SpawnHelper.Info setupSpawn(int i, Iterable<Entity> iterable, SpawnHelper.ChunkSource chunkSource, boolean countMobs) {
         if (countMobs) {
             iterable.forEach(entity -> {
-                ((ThreadedAnvilChunkStorageInterface)world.getChunkManager().threadedAnvilChunkStorage).updatePlayerMobTypeMap(entity);
+                ((ThreadedAnvilChunkStorageInterface) world.getChunkManager().threadedAnvilChunkStorage).updatePlayerMobTypeMap(entity);
             });
         }
         return SpawnHelper.setupSpawn(i, iterable, chunkSource);

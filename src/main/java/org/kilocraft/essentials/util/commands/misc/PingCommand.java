@@ -6,11 +6,11 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;

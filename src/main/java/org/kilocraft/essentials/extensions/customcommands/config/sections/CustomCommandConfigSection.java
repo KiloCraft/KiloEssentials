@@ -17,7 +17,7 @@ public class CustomCommandConfigSection {
     public String label = "example";
 
     @Setting("runs")
-    public List<String> executablesList = new ArrayList<String>(){{
+    public List<String> executablesList = new ArrayList<String>() {{
         add("!tellraw ${source.name} {\"text\":\"Example runnable!\"}");
     }};
 

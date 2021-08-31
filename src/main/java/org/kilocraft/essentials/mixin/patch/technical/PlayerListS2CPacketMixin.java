@@ -14,14 +14,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerListS2CPacket.Entry.class)
 public abstract class PlayerListS2CPacketMixin {
-	@Shadow @Final private GameProfile profile;
+    @Shadow
+    @Final
+    private GameProfile profile;
 
-	@Inject(method = "getDisplayName", at = @At(value = "HEAD", target = "Lnet/minecraft/network/packet/s2c/play/PlayerListS2CPacket$Entry;getDisplayName()Lnet/minecraft/text/Text;"), cancellable = true)
-	private void modifyPlayerListEntry(CallbackInfoReturnable<Text> cir) {
-		if (KiloConfig.main().playerList().useNicknames) {
-			Text text = KiloEssentials.getUserManager().getOnline(profile.getId()).getRankedDisplayName();
-			cir.setReturnValue(text);
-		}
-	}
+    @Inject(method = "getDisplayName", at = @At(value = "HEAD", target = "Lnet/minecraft/network/packet/s2c/play/PlayerListS2CPacket$Entry;getDisplayName()Lnet/minecraft/text/Text;"), cancellable = true)
+    private void modifyPlayerListEntry(CallbackInfoReturnable<Text> cir) {
+        if (KiloConfig.main().playerList().useNicknames) {
+            Text text = KiloEssentials.getUserManager().getOnline(profile.getId()).getRankedDisplayName();
+            cir.setReturnValue(text);
+        }
+    }
 
 }

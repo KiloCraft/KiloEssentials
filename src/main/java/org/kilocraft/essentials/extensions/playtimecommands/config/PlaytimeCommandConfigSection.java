@@ -13,7 +13,7 @@ public class PlaytimeCommandConfigSection {
     public long seconds = 100;
 
     @Setting("executes")
-    public List<String> commands = new ArrayList<String>(){{
+    public List<String> commands = new ArrayList<String>() {{
         this.add("give ${user.name} apple 2");
         this.add("sudo ${user.name} say I've reached 100 seconds of playtime!");
     }};

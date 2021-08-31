@@ -47,7 +47,7 @@ public class ParticleFrameConfigSection {
         return Optional.ofNullable(dustParticleSection);
     }
 
-    public Optional<ShapeConfigSection> getShapeSection () {
+    public Optional<ShapeConfigSection> getShapeSection() {
         return Optional.ofNullable(shapeParticleSection);
     }
 

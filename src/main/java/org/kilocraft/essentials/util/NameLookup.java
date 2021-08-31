@@ -39,6 +39,7 @@ public class NameLookup {
 
     /**
      * <h1>NOTE: Avoid running this method <i>Synchronously</i> with the main thread!It blocks while attempting to get a response from Mojang servers!</h1>
+     *
      * @param uuid The UUID of the player to be looked up.
      * @return Returns an array of {@link PreviousPlayerNameEntry} objects, or null if the response couldn't be interpreted.
      * @throws IOException {@link #getPlayerPreviousNames(String)}
@@ -50,6 +51,7 @@ public class NameLookup {
     /**
      * <h1>NOTE: Avoid running this method <i>Synchronously</i> with the main thread! It blocks while attempting to get a response from Mojang servers!</h1>
      * Alternative method accepting an 'OfflinePlayer' (and therefore 'Player') objects as parameter.
+     *
      * @param user The OfflinePlayer object to obtain the UUID from.
      * @return Returns an array of {@link PreviousPlayerNameEntry} objects, or null if the response couldn't be interpreted.
      * @throws IOException {@link #getPlayerPreviousNames(UUID)}
@@ -61,6 +63,7 @@ public class NameLookup {
     /**
      * <h1>NOTE: Avoid running this method <i>Synchronously</i> with the main thread! It blocks while attempting to get a response from Mojang servers!</h1>
      * Alternative method accepting an {@link User} (and therefore {@link net.minecraft.server.network.ServerPlayerEntity}) objects as parameter.
+     *
      * @param uuid The UUID String to lookup
      * @return Returns an array of {@link PreviousPlayerNameEntry} objects, or null if the response couldn't be interpreted.
      * @throws IOException {@link #getRawJsonResponse(URL)} )}
@@ -77,6 +80,7 @@ public class NameLookup {
      * If you don't have the UUID of a player, this method will resolve it for you.<br>
      * The output of this method may be used directly with {@link #getPlayerPreviousNames(String)}.<br>
      * <b>NOTE: as with the rest, this method opens a connection with a remote server, so running it synchronously will block the main thread which will lead to server lag.</b>
+     *
      * @param name The name of the player to lookup.
      * @return A String which represents the player's UUID. <b>Note: the uuid cannot be parsed to a UUID object directly, as it doesnt contain dashes. This feature will be implemented later</b>
      * @throws IOException Inherited by {@link BufferedReader#readLine()}, {@link BufferedReader#close()}, {@link URL}, {@link HttpURLConnection#getInputStream()}
@@ -92,6 +96,7 @@ public class NameLookup {
     /**
      * If you don't have the Username of a player, this method will resolve it for you.<br>
      * <b>NOTE: as with the rest, this method opens a connection with a remote server, so running it synchronously will block the main thread which will lead to server lag.</b>
+     *
      * @param uuid
      * @return
      * @throws IOException
@@ -106,6 +111,7 @@ public class NameLookup {
 
     /**
      * This is a helper method used to read the response of Mojang's API webservers.
+     *
      * @param u the URL to connect to
      * @return a String with the data read.
      * @throws IOException Inherited by {@link BufferedReader#readLine()}, {@link BufferedReader#close()}, {@link URL}, {@link HttpURLConnection#getInputStream()}
@@ -132,6 +138,7 @@ public class NameLookup {
 
         /**
          * Gets the player name of this entry.
+         *
          * @return The name of the player.
          */
         public String getPlayerName() {
@@ -142,6 +149,7 @@ public class NameLookup {
          * Get the time of change of the name.
          * <br><b>Note: This will return 0 if the name is the original (initial) name of the player! Make sure you check if it is 0 before handling!
          * <br>Parsing 0 to a Date will result in the date "01/01/1970".</b>
+         *
          * @return a timestamp in miliseconds that you can turn into a date or handle however you want :)
          */
         public long getChangeTime() {
@@ -150,6 +158,7 @@ public class NameLookup {
 
         /**
          * Check if this name is the name used to register the account (the initial/original name)
+         *
          * @return a boolean, true if it is the the very first name of the player, otherwise false.
          */
         public boolean isPlayersInitialName() {

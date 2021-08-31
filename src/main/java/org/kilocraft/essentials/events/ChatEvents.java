@@ -28,5 +28,5 @@ public class ChatEvents {
     public interface DirectMessageEvent {
         void onDirectMessage(ServerCommandSource source, OnlineUser receiver, String message);
     }
-    
+
 }

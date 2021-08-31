@@ -12,8 +12,8 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.util.CommandPermission;
 
 public class AnvilCommand extends EssentialCommand {
     public AnvilCommand() {

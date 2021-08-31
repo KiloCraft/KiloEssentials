@@ -14,9 +14,13 @@ public interface IEssentialCommand {
     int SUCCESS = 1;
     int AWAIT = 0;
     int FAILED = -1;
+
     LiteralArgumentBuilder<ServerCommandSource> literal(String label);
+
     <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String string, ArgumentType<T> argumentType);
+
     OnlineUser getOnlineUser(String name);
+
     OnlineUser getOnlineUser(UUID uuid) throws CommandSyntaxException;
 
     String getLabel();

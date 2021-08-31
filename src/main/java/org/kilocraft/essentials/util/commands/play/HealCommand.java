@@ -6,12 +6,12 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
 import static net.minecraft.command.argument.EntityArgumentType.player;
@@ -26,7 +26,7 @@ public class HealCommand extends EssentialCommand {
                 .requires(s -> KiloCommands.hasPermission(s, CommandPermission.HEAL_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes(context -> execute(context, getPlayer(context, "target")));
-        
+
         argumentBuilder.executes(context -> execute(context, context.getSource().getPlayer()));
         commandNode.addChild(target.build());
     }

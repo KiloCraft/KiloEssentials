@@ -27,9 +27,9 @@ import java.util.function.Consumer;
 public abstract class ServerChunkManagerMixin {
 
     /*
-    * Copied from:
-    * https://github.com/Wesley1808/ServerCore-Fabric/blob/1.17.1/src/main/java/org/provim/servercore/mixin/performance/ServerChunkManagerMixin.java
-    * */
+     * Copied from:
+     * https://github.com/Wesley1808/ServerCore-Fabric/blob/1.17.1/src/main/java/org/provim/servercore/mixin/performance/ServerChunkManagerMixin.java
+     * */
 
     @Unique
     private final HashSet<ChunkHolder> active = new HashSet<>();

@@ -72,7 +72,7 @@ public class StringUtils {
         public void calculate() throws Exception {
             String[] strings = this.input.split("(?<=[-+*^%/])|(?=[-+*^%/])");
 
-            for (int i = 0; i < strings.length - 2; i+=2) {
+            for (int i = 0; i < strings.length - 2; i += 2) {
                 double x = Double.parseDouble(strings[i]);
                 double y = Double.parseDouble(strings[i + 2]);
 
@@ -132,6 +132,7 @@ public class StringUtils {
 
             private final String name;
             private final String i;
+
             Operator(final String name, final String i) {
                 this.name = name;
                 this.i = i;

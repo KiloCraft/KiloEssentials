@@ -2,12 +2,12 @@ package org.kilocraft.essentials.config;
 
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.api.util.TickManager;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.util.TickManager;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 import org.kilocraft.essentials.util.text.Texter;
 

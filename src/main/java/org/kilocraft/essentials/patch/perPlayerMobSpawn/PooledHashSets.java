@@ -6,7 +6,9 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
 
-/** @author Spottedleaf */
+/**
+ * @author Spottedleaf
+ */
 public class PooledHashSets<E> {
 
     // we really want to avoid that equals() check as much as possible...
@@ -188,7 +190,7 @@ public class PooledHashSets<E> {
         }
 
         boolean add(final E element) {
-            boolean added =  this.set.add(element);
+            boolean added = this.set.add(element);
 
             if (added) {
                 this.hash += hash0(element.hashCode());
@@ -233,7 +235,7 @@ public class PooledHashSets<E> {
                     // Unfortunately we are never equal to our own instance while in use!
                     return false;
                 }
-                return this.hash == ((PooledObjectLinkedOpenHashSet)other).hash && this.set.equals(((PooledObjectLinkedOpenHashSet)other).set);
+                return this.hash == ((PooledObjectLinkedOpenHashSet) other).hash && this.set.equals(((PooledObjectLinkedOpenHashSet) other).set);
             }
         }
 

@@ -17,9 +17,12 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(MoveToTargetPosGoal.class)
 public abstract class MoveToTargetPosGoalMixin extends Goal implements TargetPosition {
 
-    @Shadow protected BlockPos targetPos;
+    @Shadow
+    protected BlockPos targetPos;
 
-    @Shadow @Final protected PathAwareEntity mob;
+    @Shadow
+    @Final
+    protected PathAwareEntity mob;
 
     @Inject(method = "findTargetPos", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/ai/goal/MoveToTargetPosGoal;targetPos:Lnet/minecraft/util/math/BlockPos;"), locals = LocalCapture.CAPTURE_FAILSOFT)
     public void setTargetPos(CallbackInfoReturnable<Boolean> cir, int var1, int var2, BlockPos var3, BlockPos.Mutable mutable, int var5, int var6, int var7, int var8) {
@@ -29,6 +32,6 @@ public abstract class MoveToTargetPosGoalMixin extends Goal implements TargetPos
     @Override
     public void setTargetPosition(BlockPos pos) {
         this.targetPos = pos;
-        ((EntityWithTarget)this.mob).setMovingTarget(pos != BlockPos.ORIGIN ? pos : null);
+        ((EntityWithTarget) this.mob).setMovingTarget(pos != BlockPos.ORIGIN ? pos : null);
     }
 }

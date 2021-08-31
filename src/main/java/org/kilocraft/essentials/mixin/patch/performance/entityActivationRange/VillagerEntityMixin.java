@@ -74,7 +74,8 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements Inac
     @Redirect(method = "mobTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/brain/Brain;tick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;)V"))
     public void shouldTickBrain(Brain<VillagerEntity> brain, ServerWorld world, LivingEntity entity) {
         // Lobotomize Villagers
-        if (ServerSettings.patch_lobotomize_villagers_enabled && this.age % ServerSettings.patch_lobotomize_villagers_tick_interval != 0) inactive = inactive || isSlowed();
+        if (ServerSettings.patch_lobotomize_villagers_enabled && this.age % ServerSettings.patch_lobotomize_villagers_tick_interval != 0)
+            inactive = inactive || isSlowed();
 
         // Entity Activation Range
         if (!inactive) brain.tick(world, (VillagerEntity) (Object) this);

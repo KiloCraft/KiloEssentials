@@ -13,14 +13,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.chat.StringText;
+import org.kilocraft.essentials.util.EssentialPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -34,7 +34,7 @@ import static net.minecraft.command.argument.IdentifierArgumentType.identifier;
 import static org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager.*;
 
 public class MagicalParticlesCommand extends EssentialCommand {
-    public MagicalParticlesCommand(){
+    public MagicalParticlesCommand() {
         super("magicalparticles",
                 src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.MAGIC_PARTICLES_SELF), new String[]{"mp", "particleanimation", "pa"});
     }

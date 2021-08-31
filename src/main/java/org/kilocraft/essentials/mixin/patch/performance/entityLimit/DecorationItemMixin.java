@@ -19,7 +19,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(DecorationItem.class)
 public abstract class DecorationItemMixin extends Item {
 
-    @Shadow protected abstract boolean canPlaceOn(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos);
+    @Shadow
+    protected abstract boolean canPlaceOn(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos);
 
     public DecorationItemMixin(Settings settings) {
         super(settings);
@@ -29,7 +30,7 @@ public abstract class DecorationItemMixin extends Item {
     public boolean canUseItemFrame(DecorationItem decorationItem, PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {
         if (TickManager.isEntityLimitReached(playerEntity.getEntityWorld(), blockPos, EntityType.ITEM_FRAME, EntityType.GLOW_ITEM_FRAME)) {
             OnlineUser user = KiloEssentials.getUserManager().getOnline((ServerPlayerEntity) playerEntity);
-            user.sendLangMessage("template.entity_limit",  "item frame");
+            user.sendLangMessage("template.entity_limit", "item frame");
             return false;
         } else {
             return this.canPlaceOn(playerEntity, direction, itemStack, blockPos);

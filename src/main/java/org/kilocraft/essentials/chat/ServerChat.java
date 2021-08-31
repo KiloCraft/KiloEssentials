@@ -22,15 +22,12 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.chat.ParseResult;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
@@ -41,7 +38,10 @@ import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.RegexLib;
+import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Texter;
@@ -66,7 +66,7 @@ public final class ServerChat {
         TextComponent.Builder text = Component.text();
         text.append(ComponentText.of(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), user))
                 .style(style -> style.hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(hoverEvent(user, channel)))
-                .clickEvent(net.kyori.adventure.text.event.ClickEvent.suggestCommand("/msg " + user.getUsername() + " "))));
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.suggestCommand("/msg " + user.getUsername() + " "))));
         String[] parts = raw.split(" ");
 
         //reorder list entries, so special cases (pings, censor, item)
@@ -416,7 +416,7 @@ public final class ServerChat {
             send(message, MessageType.SYSTEM, Util.NIL_UUID);
         }
 
-            public String getFormat() {
+        public String getFormat() {
             switch (this) {
                 case PUBLIC:
                     return KiloConfig.main().chat().prefixes().publicChat;

@@ -14,9 +14,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.provided.LocateStructureProvided;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.provided.LocateStructureProvided;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
@@ -42,7 +42,8 @@ public class LocateStructureCommand {
 
     private static CompletableFuture<Suggestions> structureNames(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         List<String> strings = new ArrayList<>();
-        for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE) strings.add(structureFeature.getName().toLowerCase());
+        for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE)
+            strings.add(structureFeature.getName().toLowerCase());
         return CommandSource.suggestMatching(strings, builder);
     }
 

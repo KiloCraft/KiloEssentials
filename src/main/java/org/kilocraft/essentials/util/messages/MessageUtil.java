@@ -45,5 +45,5 @@ public class MessageUtil {
 
     public String getGeneral(GeneralMessageNode node, Object... objects) {
         return (objects != null) ? String.format(fromGeneralNode(node), objects) : fromGeneralNode(node);
-     }
+    }
 }

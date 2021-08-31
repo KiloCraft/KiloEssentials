@@ -41,7 +41,8 @@ public class NBTUtils {
 
         try {
             NbtCompound = NbtIo.readCompressed(new FileInputStream(file));
-        } catch (IOException ignored) { }
+        } catch (IOException ignored) {
+        }
 
         return NbtCompound;
     }

@@ -14,9 +14,13 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(MobEntity.class)
 public abstract class MobEntityMixin extends LivingEntity implements InactiveEntity {
 
-    @Shadow @Final protected GoalSelector goalSelector;
+    @Shadow
+    @Final
+    protected GoalSelector goalSelector;
 
-    @Shadow @Final protected GoalSelector targetSelector;
+    @Shadow
+    @Final
+    protected GoalSelector targetSelector;
 
     protected MobEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -25,10 +29,10 @@ public abstract class MobEntityMixin extends LivingEntity implements InactiveEnt
     @Override
     public void inactiveTick() {
         ++this.despawnCounter;
-        if (((GoalSelectorInterface)this.goalSelector).inactiveTick()) {
+        if (((GoalSelectorInterface) this.goalSelector).inactiveTick()) {
             this.goalSelector.tick();
         }
-        if (((GoalSelectorInterface)this.targetSelector).inactiveTick()) {
+        if (((GoalSelectorInterface) this.targetSelector).inactiveTick()) {
             this.targetSelector.tick();
         }
     }
