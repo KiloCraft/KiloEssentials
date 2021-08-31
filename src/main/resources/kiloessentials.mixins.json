@@ -4,6 +4,7 @@
   "package": "org.kilocraft.essentials.mixin.patch",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "bugfix.NetworkThreadUtilsMixin",
     "bugfix.PassiveEntityMixin",
     "bugfix.ServerPlayerEntityMixin",
     "bugfix.SignBlockEntityMixin",
