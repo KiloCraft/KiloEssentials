@@ -19,7 +19,8 @@ public abstract class ForgingScreenHandlerMixin {
             cancellable = true
     )
     public void allowUsage(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-        if (Permissions.check(player, CommandPermission.WORKBENCH.getNode()) && (ForgingScreenHandler) (Object) this instanceof AnvilScreenHandler)
+        if (Permissions.check(player, CommandPermission.ANVIL.getNode()) && (ForgingScreenHandler) (Object) this instanceof AnvilScreenHandler)
             cir.setReturnValue(true);
     }
+
 }

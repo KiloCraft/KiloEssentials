@@ -23,7 +23,8 @@ public abstract class RedstoneWireBlockMixin implements RedstoneWireBlockInterfa
     @Shadow
     protected abstract void update(World world, BlockPos pos, BlockState state);
 
-    @Shadow protected abstract int increasePower(BlockState state);
+    @Shadow
+    protected abstract int increasePower(BlockState state);
 
     RedstoneWireTurbo turbo = new RedstoneWireTurbo((RedstoneWireBlock) (Object) this);
 
