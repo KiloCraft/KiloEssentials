@@ -30,7 +30,7 @@ public abstract class NetworkThreadUtilsMixin {
             cancellable = true
     )
     private static <T extends PacketListener> void fixStackOverFlowOnShutdown(Packet<T> packet, T listener, ServerWorld world, CallbackInfo ci) {
-        if (!world.getServer().isRunning()) ci.cancel();
+        if (world.getServer().isStopped()) ci.cancel();
     }
 
 }

@@ -38,9 +38,5 @@ public abstract class ClientConnectionMixin {
         }
     }
 
-    @Inject(method = "exceptionCaught", at = @At("HEAD"))
-    public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable throwable, CallbackInfo cb) {
-        KiloEssentials.getLogger().warn("An error occurred while processing client connection:", throwable);
-    }
 
 }

@@ -4,6 +4,7 @@
   "package": "org.kilocraft.essentials.mixin.patch",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "bugfix.EntityMixin",
     "bugfix.NetworkThreadUtilsMixin",
     "bugfix.PassiveEntityMixin",
     "bugfix.ServerPlayerEntityMixin",
@@ -74,6 +75,7 @@
     "technical.ServerPlayNetworkHandlerMixin",
     "technical.ServerScoreboardMixin",
     "technical.WorldMixin",
+    "util.ClientConnectionMixin",
     "util.EntityServerRayTraceMixin",
     "util.MinecraftDedicatedServerMixin",
     "util.RegistryKeyMixin",
