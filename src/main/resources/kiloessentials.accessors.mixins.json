@@ -7,6 +7,7 @@
     "EntityAccessor",
     "ServerChunkManagerAccessor",
     "ServerConfigEntryAccessor",
+    "ShulkerBoxScreenHandlerAccessor",
     "SignBlockEntityAccessor"
   ],
   "injectors": {
