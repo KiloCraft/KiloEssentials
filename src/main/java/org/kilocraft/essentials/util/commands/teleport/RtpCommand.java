@@ -12,6 +12,7 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -97,7 +98,14 @@ public class RtpCommand extends EssentialCommand {
             pos = new BlockPos(x, 64, z);
             Biome biome = target.getServerWorld().getBiome(pos);
             tries++;
-            if (!(biome.getCategory() == Biome.Category.OCEAN)) done = true;
+            String biomeId = src.getRegistryManager().get(Registry.BIOME_KEY).getId(biome).toString();
+            done = true;
+            for (String blackListedBiome : cfg.blackListedBiomes) {
+                if (biomeId.equals(blackListedBiome)) {
+                    done = false;
+                    break;
+                }
+            }
         }
         //Add a custom ticket to gradually preload chunks
         target.getServerWorld().getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), ServerSettings.getViewDistance() + 1, target.getId()); // Lag reduction
