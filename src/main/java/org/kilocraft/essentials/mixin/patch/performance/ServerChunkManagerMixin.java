@@ -7,6 +7,7 @@ import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.chunk.WorldChunk;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.util.TickManager;
 import org.kilocraft.essentials.util.settings.ServerSettings;
@@ -44,11 +45,10 @@ public abstract class ServerChunkManagerMixin {
     @Shadow
     private boolean spawnAnimals;
     @Shadow
-    private long lastMobSpawningTime;
-    @Shadow
     @Nullable
     private SpawnHelper.Info spawnInfo;
     private int count;
+    private long lastMobSpawningTime;
 
     /**
      * Stops chunk random ticking and mob spawning if they are outside of the tick distance.
@@ -64,7 +64,7 @@ public abstract class ServerChunkManagerMixin {
                 for (ChunkHolder holder : chunkStorage.getChunkHolders().values()) {
                     Optional<WorldChunk> optional = holder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK).left();
                     if (optional.isPresent()) {
-                        if (TickManager.shouldTick(holder.getPos(), world)) {
+                        if (TickManager.shouldTick(holder.getPos(), this.world)) {
                             this.active.add(holder);
                         } else {
                             // Sends block updates to clients from inactive chunks.
@@ -74,11 +74,13 @@ public abstract class ServerChunkManagerMixin {
                 }
 
                 // Remove inactive chunks
-                this.active.removeIf(holder -> holder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK).left().isEmpty() || !TickManager.shouldTick(holder.getPos(), world));
+                this.active.removeIf(holder -> holder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK).left().isEmpty() || !TickManager.shouldTick(holder.getPos(), this.world));
             }
         }
 
-        long time = this.world.getTime() - this.lastMobSpawningTime;
+        long worldTime = this.world.getTime();
+        long timeDifference = worldTime - this.lastMobSpawningTime;
+        this.lastMobSpawningTime = worldTime;
         var rules = this.world.getGameRules();
         boolean rareSpawn = this.world.getLevelProperties().getTime() % 400L == 0L;
         for (ChunkHolder holder : ServerSettings.tick_utils_tick_distance >= 0 ? this.active : chunkStorage.getChunkHolders().values()) {
@@ -86,7 +88,7 @@ public abstract class ServerChunkManagerMixin {
             if (chunk != null) {
                 var pos = chunk.getPos();
                 if (this.world.method_37115(pos) && !chunkStorage.tooFarFromPlayersToSpawnMobs(pos)) {
-                    chunk.setInhabitedTime(chunk.getInhabitedTime() + time);
+                    chunk.setInhabitedTime(chunk.getInhabitedTime() + timeDifference);
                     if (rules.getBoolean(GameRules.DO_MOB_SPAWNING) && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(pos)) {
                         SpawnHelper.spawn(this.world, chunk, this.spawnInfo, this.spawnAnimals, this.spawnMonsters, rareSpawn);
                     }
