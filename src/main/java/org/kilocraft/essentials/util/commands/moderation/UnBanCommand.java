@@ -18,7 +18,6 @@ import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -45,7 +44,7 @@ public class UnBanCommand extends EssentialCommand {
         CommandSourceUser src = this.getCommandSource(ctx);
         Collection<GameProfile> gameProfiles = GameProfileArgumentType.getProfileArgument(ctx, "profile");
         if (gameProfiles.size() > 1) {
-            throw KiloCommands.getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
+            throw KiloCommands.getException("exception.too_many_selections").create();
         }
         GameProfile profile = gameProfiles.iterator().next();
 

@@ -44,7 +44,6 @@ import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.*;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.AnimatedText;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -564,7 +563,7 @@ public class ServerUserManager implements UserManager, TickListener {
         final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(username);
         optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
             if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
-                new CommandSourceServerUser(requester).sendError(ExceptionMessageNode.USER_NOT_FOUND);
+                new CommandSourceServerUser(requester).sendLangError("exception.user_not_found");
                 return;
             }
 
@@ -595,7 +594,7 @@ public class ServerUserManager implements UserManager, TickListener {
             loadingText.stop();
 
             if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
-                requester.sendError(ExceptionMessageNode.USER_NOT_FOUND);
+                requester.sendLangError("exception.user_not_found");
                 return;
             }
 
@@ -622,8 +621,8 @@ public class ServerUserManager implements UserManager, TickListener {
         optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
             loadingText.stop();
 
-            if (!optionalUser.isPresent()) {
-                requester.sendError(ExceptionMessageNode.USER_NOT_FOUND);
+            if (optionalUser.isEmpty()) {
+                requester.sendLangError("exception.user_not_found");
                 return;
             }
 

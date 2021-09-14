@@ -12,7 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +30,6 @@ import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.Format;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.net.SocketAddress;
 import java.util.Date;
@@ -109,13 +107,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public int sendError(final ExceptionMessageNode node, final Object... objects) {
-        final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        this.sendMessage("<red>" + (objects != null ? String.format(message, objects) : message));
-        return -1;
-    }
-
-    @Override
     public void sendMessage(final Text text) {
         this.asPlayer().sendMessage(text, false);
     }
@@ -143,12 +134,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public Location getLocation() {
         return Vec3dLocation.of(this.asPlayer());
-    }
-
-    @Override
-    public Vec3d getEyeLocation() {
-        Vec3d vec = this.asPlayer().getPos();
-        return new Vec3d(vec.getX(), this.asPlayer().getEyeY(), this.asPlayer().getPos().getZ());
     }
 
     public static OnlineServerUser of(final UUID uuid) {

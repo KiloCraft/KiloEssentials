@@ -17,7 +17,6 @@ import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
 
@@ -96,7 +95,7 @@ public class DelhomeCommand extends EssentialCommand {
             try {
                 user.saveData();
             } catch (IOException e) {
-                source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
+                source.sendLangError("exception.user_cant_save", user.getNameTag(), e.getMessage());
             }
 
             if (CommandUtils.areTheSame(source, user))
@@ -110,7 +109,7 @@ public class DelhomeCommand extends EssentialCommand {
 
     private Text getConfirmationText(String homeName, String user) {
         return new LiteralText("")
-                .append(StringText.of(true, "command.delhome.confirmation_message")
+                .append(StringText.of(true, "command.delhome.confirmation_message", homeName)
                         .formatted(Formatting.YELLOW))
                 .append(new LiteralText(" [").formatted(Formatting.GRAY)
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))

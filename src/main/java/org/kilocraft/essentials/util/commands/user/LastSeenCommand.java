@@ -9,7 +9,6 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public class LastSeenCommand extends EssentialCommand {
     public LastSeenCommand() {
@@ -34,7 +33,7 @@ public class LastSeenCommand extends EssentialCommand {
             }
 
             if (user.getLastOnline() == null) {
-                src.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastOnline");
+                src.sendLangError("exception.no_value_set_user", "lastOnline");
                 return;
             }
 

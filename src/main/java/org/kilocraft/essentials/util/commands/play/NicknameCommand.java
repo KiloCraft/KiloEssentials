@@ -26,7 +26,6 @@ import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.Format;
 import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.player.PlayerDataModifier;
 
 import java.util.ArrayList;
@@ -86,7 +85,7 @@ public class NicknameCommand extends EssentialCommand {
         String unformatted = ComponentText.clearFormatting(nickname);
 
         if (unformatted.length() > maxLength || unformatted.length() < 3) {
-            throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
+            throw KiloCommands.getException("exception.nickname_not_acceptable", maxLength).create();
         }
 
         nickname = Format.validatePermission(target, nickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting.");

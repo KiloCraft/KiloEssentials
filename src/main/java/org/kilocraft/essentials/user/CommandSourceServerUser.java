@@ -12,7 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +30,6 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
 import java.util.Date;
@@ -190,12 +188,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void saveData() throws IOException {
+    public void saveData() {
 
     }
 
     @Override
-    public void trySave() throws CommandSyntaxException {
+    public void trySave() {
 
     }
 
@@ -300,13 +298,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public int sendError(ExceptionMessageNode node, Object... objects) {
-        String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        this.sendMessage("<red>" + (objects != null ? String.format(message, objects) : message));
-        return 1;
-    }
-
-    @Override
     public void sendMessage(Text text) {
         this.source.sendFeedback(text, false);
     }
@@ -329,11 +320,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
     @Override
     public Vec3dLocation getLocationAsVector() throws CommandSyntaxException {
         return this.isConsole() ? null : Vec3dLocation.of(this.source.getPlayer());
-    }
-
-    @Override
-    public Vec3d getEyeLocation() {
-        return null;
     }
 
     @Override

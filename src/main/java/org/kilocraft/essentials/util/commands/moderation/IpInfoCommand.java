@@ -10,7 +10,6 @@ import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
 
 public class IpInfoCommand extends EssentialCommand {
@@ -31,7 +30,7 @@ public class IpInfoCommand extends EssentialCommand {
 
         this.getUserManager().getUserThenAcceptAsync(source.getCommandSource(), this.getUserArgumentInput(ctx, "user"), (user) -> {
             if (user.getLastSocketAddress() == null) {
-                source.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress");
+                source.sendLangError("exception.no_value_set_user", "lastSocketAddress");
                 return;
             }
 

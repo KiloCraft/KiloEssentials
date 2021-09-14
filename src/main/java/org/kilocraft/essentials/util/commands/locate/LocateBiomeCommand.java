@@ -16,7 +16,6 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +50,7 @@ public class LocateBiomeCommand {
         Biome biome = KiloEssentials.getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY).get(IdentifierArgumentType.getIdentifier(ctx, "identifier"));
 
         if (biome == null)
-            throw KiloCommands.getException(ExceptionMessageNode.INCORRECT_IDENTIFIER, "biome").create();
+            throw KiloCommands.getException("exception.incorrect_identifier", "biome").create();
 
         LocateBiomeProvided locator = new LocateBiomeProvided(biome);
         locator.run(ctx);

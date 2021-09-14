@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.provided.LocateStructureProvided;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +50,7 @@ public class LocateStructureCommand {
         StructureFeature<?> structure = Registry.STRUCTURE_FEATURE.get(identifier);
 
         if (structure == null)
-            throw KiloCommands.getException(ExceptionMessageNode.INCORRECT_IDENTIFIER, "structure").create();
+            throw KiloCommands.getException("exception.incorrect_identifier", "structure").create();
 
         StructureLocatorThread locatorThread = new StructureLocatorThread(source, structure);
         Thread thread = new Thread(locatorThread, "Structure locator thread");

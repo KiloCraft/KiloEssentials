@@ -21,7 +21,6 @@ import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
         }
 
         if (!isValidId(identifier)) {
-            throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Particle animation").create();
+            throw KiloCommands.getException("exception.invalid", "Particle animation").create();
         }
 
         if (!canUse(this.getOnlineUser(player), identifier)) {

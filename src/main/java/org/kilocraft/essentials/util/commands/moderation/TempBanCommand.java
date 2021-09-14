@@ -24,7 +24,6 @@ import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.Collection;
 import java.util.Date;
@@ -71,7 +70,7 @@ public class TempBanCommand extends EssentialCommand {
         Date expiry = new Date(TimeDifferenceUtil.parse(time, true));
         Collection<GameProfile> gameProfiles = GameProfileArgumentType.getProfileArgument(ctx, "profile");
         if (gameProfiles.size() > 1) {
-            throw KiloCommands.getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
+            throw KiloCommands.getException("exception.too_many_selections").create();
         }
         GameProfile victim = gameProfiles.iterator().next();
 

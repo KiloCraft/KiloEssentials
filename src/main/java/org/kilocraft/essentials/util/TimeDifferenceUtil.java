@@ -7,7 +7,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -66,7 +65,7 @@ public class TimeDifferenceUtil {
             }
 
             if (!found) {
-                throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_INVALID, time).create();
+                throw KiloCommands.getException("argument.time.invalid", time).create();
             }
 
             if (matcher.group(1) != null && !matcher.group(1).isEmpty()) {
@@ -125,7 +124,7 @@ public class TimeDifferenceUtil {
         }
 
         if (date.getTime() == c.getTimeInMillis()) {
-            throw KiloCommands.getArgException(ArgExceptionMessageNode.TIME_ARGUMENT_INVALID, time).create();
+            throw KiloCommands.getException("argument.time.invalid", time).create();
         }
 
         return c.getTimeInMillis();

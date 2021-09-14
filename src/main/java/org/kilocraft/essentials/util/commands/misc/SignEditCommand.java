@@ -39,7 +39,6 @@ import org.kilocraft.essentials.mixin.accessor.SignBlockEntityAccessor;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +125,7 @@ public class SignEditCommand extends EssentialCommand {
         OnlineUser user = this.getOnlineUser(ctx);
 
         if (ComponentText.clearFormatting(input).length() > 17)
-            throw KiloCommands.getException(ExceptionMessageNode.STRING_TOO_LONG, 17).create();
+            throw KiloCommands.getException("exception.string_too_long", 17).create();
 
         BlockEntity blockEntity = this.getBlockEntityAtCursor(player);
         if (blockEntity == null) {
@@ -190,7 +189,7 @@ public class SignEditCommand extends EssentialCommand {
 
         String inputColor = getIdentifier(ctx, "color").getPath();
         if (!this.isValidColor(inputColor))
-            throw KiloCommands.getException(ExceptionMessageNode.INVALID_DYE_COLOR).create();
+            throw KiloCommands.getException("exception.incorrect_identifier", "dye color").create();
 
         DyeColor dyeColor = DyeColor.valueOf(inputColor.toUpperCase());
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
@@ -236,7 +235,7 @@ public class SignEditCommand extends EssentialCommand {
         String inputType = getString(ctx, "type");
         SignType type = SignType.getByName(inputType);
         if (type == null) {
-            throw KiloCommands.getException(ExceptionMessageNode.INVALID, "Sign Type").create();
+            throw KiloCommands.getException("exception.invalid", "Sign Type").create();
         }
 
         SignBlockEntity sign = (SignBlockEntity) blockEntity;

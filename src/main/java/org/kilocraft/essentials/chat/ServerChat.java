@@ -42,7 +42,6 @@ import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -241,7 +240,7 @@ public final class ServerChat {
         }
 
         if (CommandUtils.areTheSame(source, target)) {
-            throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
+            throw KiloCommands.getException("exception.source_is_target").create();
         }
 
         String msg = message;
@@ -270,7 +269,7 @@ public final class ServerChat {
             }
 
             if (target.ignored(source.getPlayer().getUuid())) {
-                throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
+                throw KiloCommands.getException("exception.ignored", target.getFormattedDisplayName()).create();
             }
         }
 

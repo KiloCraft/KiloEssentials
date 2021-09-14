@@ -7,7 +7,6 @@ import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.chunk.WorldChunk;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.util.TickManager;
 import org.kilocraft.essentials.util.settings.ServerSettings;

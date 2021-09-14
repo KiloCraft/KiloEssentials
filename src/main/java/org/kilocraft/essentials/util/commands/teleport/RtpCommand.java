@@ -31,7 +31,6 @@ import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.kilocraft.essentials.util.text.Texter;
@@ -213,7 +212,7 @@ public class RtpCommand extends EssentialCommand {
         int amountToRemove = getInteger(ctx, "amount");
 
         if ((user.getPreference(RTP_LEFT) - amountToRemove) < 0)
-            throw KiloCommands.getArgException(ArgExceptionMessageNode.NO_NEGATIVE_VALUES).create();
+            throw KiloCommands.getException("argument.general.negative_values").create();
 
         user.getPreferences().set(RTP_LEFT, user.getPreference(RTP_LEFT) - amountToRemove);
         new CommandSourceServerUser(ctx.getSource())

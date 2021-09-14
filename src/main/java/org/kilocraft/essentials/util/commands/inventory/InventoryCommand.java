@@ -60,7 +60,7 @@ public class InventoryCommand extends EssentialCommand {
         final OnlineUser target = this.getOnlineUser(ctx, "target");
 
         if (sender.equals(target)) {
-            sender.sendError(tl("command.inventory.error"));
+            sender.sendLangError("command.inventory.error");
             return FAILED;
         }
 

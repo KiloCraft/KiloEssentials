@@ -1,7 +1,12 @@
 #KiloEssentials
 #Lang file for internal messages
+#api
 api.mojang.request_failed=Failed to query the Servers: %s
 api.mojang.wait=<yellow>Querying for fresh data, Please wait...
+#arguments
+argument.time.invalid=Invalid value, expected a shortened Time Unit value (e.g: 10d) but found '%s'
+argument.general.negative_values=You can't set a negative value for that!
+#Channel
 channel.commandspy.hover=<dark_aqua>Click for more
 channel.invalid=Invalid channel id!
 channel.message.hover.nicked=<gray>Aka <gold>%s\n<yellow>Click to message directly\n<gray>%s
@@ -28,7 +33,7 @@ command.commandspy.inactive=<red>No longer spying on commands
 command.debug.bar.invisible=Debug bar is no longer visible
 command.debug.bar.visible=Debug bar is now visible
 command.debug.mode=Set debug mode to %s
-command.delhome.confirmation_message=<yellow><bold>Hold on!<reset><yellow> You are about to remove a Home!\n<yellow>Are you sure you want to continue?
+command.delhome.confirmation_message=<yellow><bold>Hold on!<reset><yellow> You are about to remove <gold>%s<yellow>!\n<yellow>Are you sure you want to continue?
 command.delhome.other=<red>Removed the Home <gold>%s <red>for <aqua>%s
 command.delhome.self=<red>Removed the Home <gold>%s
 command.delhome.usage=Removes a Home
@@ -194,7 +199,7 @@ command.whowas.failed=An error occurred when trying to lookup %s's name history
 command.whowas.format.initial=<aqua>Initial name
 command.whowas.format.time=<gray>%s ago
 command.whowas.format=<yellow>%s.<white> %s <dark_gray> -
-#General templates
+#Date templates
 date.day=Day
 date.days=Days
 date.hour=Hour
@@ -208,6 +213,26 @@ date.second=Second
 date.seconds=Seconds
 date.year=Year
 date.years=Years
+#Exceptions
+exception.too_many_selections=Only one selection is allowed but the provided selector includes more!
+exception.unknown_command_exception=Unknown command or insufficient permissions
+exception.nickname_not_acceptable=The nickname you enter needs to be between 3 to %s characters and only contain alphanumeric characters. the only allowed extra character is "&"
+exception.illegal_sudo_loop=You can't loop the sudo command!
+exception.contains_enchantment_name=The entered value contains a enchantment name!
+exception.incorrect_identifier=Unknown %s!
+exception.invalid_id=Invalid %s identifier
+exception.invalid_dye_color=Invalid dye color!
+exception.string_too_long=Input is too long! it must be less than %s characters!
+exception.invalid=Invalid %s!
+exception.internal_error=An unexpected internal error occurred while executing the command\nPlease report this bug to a admin or moderator\nMoreInfo for debug:\n class: %s\n cmdSource: %s, Time: %s
+exception.user_not_found=User not found!
+exception.user_never_joined=That user never joined this server!
+exception.user_cant_save=Can not save the User data for %s! Reason:\n%s
+exception.no_value_set_user=No %s value set for that user!
+exception.invalid_page=There %s doesn't have %s pages!
+exception.ignored=You can't do that to %s!
+exception.source_is_target=You can't do that to yourself!
+#General
 general.click_accept=Accept
 general.click_apply=Click to Apply!
 general.click_cancel=Cancel

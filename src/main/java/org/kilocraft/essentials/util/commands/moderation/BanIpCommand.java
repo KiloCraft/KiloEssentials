@@ -21,7 +21,6 @@ import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.events.PunishEvents;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.Date;
 import java.util.List;
@@ -64,7 +63,7 @@ public class BanIpCommand extends EssentialCommand {
         } else {
             this.getUserManager().getUserThenAcceptAsync(src, input, (victim) -> {
                 if (victim.getLastIp() == null) {
-                    src.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress");
+                    src.sendLangError("exception.no_value_set_user", "lastSocketAddress");
                     return;
                 }
 

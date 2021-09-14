@@ -92,6 +92,11 @@ public class KiloEssentials {
         return new File(getWorkingDirectory()).toPath().resolve("essentials");
     }
 
+    public static Path getLangDirPath() {
+        return getEssentialsPath().resolve("lang");
+
+    }
+
     public static String getWorkingDirectory() {
         return System.getProperty("user.dir");
     }
@@ -157,6 +162,7 @@ public class KiloEssentials {
 
     public void reload() {
         BrandedServer.update();
+        ModConstants.loadLanguage();
         ConfigurableFeatures.loadAll(true);
         NBTStorageUtil.onSave();
     }
