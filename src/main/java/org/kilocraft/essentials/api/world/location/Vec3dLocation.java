@@ -22,7 +22,7 @@ import java.text.DecimalFormat;
 import java.util.Objects;
 
 public class Vec3dLocation implements Location {
-    private static DecimalFormat decimalFormat = new DecimalFormat("##.##");
+    private static final DecimalFormat decimalFormat = new DecimalFormat("##.##");
     private double x, y, z;
     private EntityRotation rotation;
     private Identifier dimension;
@@ -74,23 +74,23 @@ public class Vec3dLocation implements Location {
 
     @Override
     public double getX() {
-        return x;
+        return this.x;
     }
 
     @Override
     public double getY() {
-        return y;
+        return this.y;
     }
 
     @Override
     public double getZ() {
-        return z;
+        return this.z;
     }
 
     @Nullable
     @Override
     public Identifier getDimension() {
-        return dimension;
+        return this.dimension;
     }
 
     @Nullable
@@ -101,7 +101,7 @@ public class Vec3dLocation implements Location {
 
     @Override
     public EntityRotation getRotation() {
-        return rotation;
+        return this.rotation;
     }
 
     @Nullable
@@ -122,7 +122,7 @@ public class Vec3dLocation implements Location {
 
     @Override
     public boolean isSafeFor(ServerPlayerEntity player) {
-        return isSafeFor(KiloEssentials.getUserManager().getOnline(player));
+        return this.isSafeFor(KiloEssentials.getUserManager().getOnline(player));
     }
 
     @Override
@@ -131,7 +131,7 @@ public class Vec3dLocation implements Location {
         NbtCompound pos = new NbtCompound();
 
         if (this.useShortDecimals)
-            shortDecimals();
+            this.shortDecimals();
 
         pos.putDouble("x", this.x);
         pos.putDouble("y", this.y);
@@ -142,7 +142,7 @@ public class Vec3dLocation implements Location {
         if (this.dimension != null)
             tag.putString("dim", this.dimension.toString());
 
-        if (rotation.getYaw() != 0 && rotation.getPitch() != 0) {
+        if (this.rotation.getYaw() != 0 && this.rotation.getPitch() != 0) {
             NbtCompound view = new NbtCompound();
             view.putFloat("yaw", this.rotation.getYaw());
             view.putFloat("pitch", this.rotation.getPitch());
@@ -202,7 +202,7 @@ public class Vec3dLocation implements Location {
 
     @Override
     public ChunkPos toChunkPos() {
-        return new ChunkPos(toPos());
+        return new ChunkPos(this.toPos());
     }
 
     @Override
@@ -233,7 +233,7 @@ public class Vec3dLocation implements Location {
     }
 
     public Vec3iLocation toVec3iLocation() {
-        return Vec3iLocation.of((int) x, (int) y, (int) z, rotation.getYaw(), rotation.getPitch(), dimension);
+        return Vec3iLocation.of((int) this.x, (int) this.y, (int) this.z, this.rotation.getYaw(), this.rotation.getPitch(), this.dimension);
     }
 
     public static Vec3dLocation dummy() {
@@ -260,7 +260,7 @@ public class Vec3dLocation implements Location {
     }
 
     public Vec3dLocation center() {
-        return of(x + 0.5D, y, z + 0.5D, rotation.getYaw(), rotation.getPitch(), dimension);
+        return of(this.x + 0.5D, this.y, this.z + 0.5D, this.rotation.getYaw(), this.rotation.getPitch(), this.dimension);
     }
 
     @Override
@@ -269,6 +269,6 @@ public class Vec3dLocation implements Location {
     }
 
     public boolean isUsingShortDecimals() {
-        return useShortDecimals;
+        return this.useShortDecimals;
     }
 }

@@ -24,7 +24,7 @@ public enum ExceptionMessageNode {
     SOURCE_IS_TARGET("source_is_target");
 
 
-    private String key;
+    private final String key;
 
     ExceptionMessageNode(String key) {
         this.key = key;

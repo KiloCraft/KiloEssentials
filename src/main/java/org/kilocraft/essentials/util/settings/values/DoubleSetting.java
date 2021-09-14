@@ -22,12 +22,12 @@ public class DoubleSetting extends ConfigurableSetting<Double> implements RangeS
 
     @Override
     public String getFormattedValue() {
-        return "<light_purple>" + getValue() + "d";
+        return "<light_purple>" + this.getValue() + "d";
     }
 
     @Override
     public ArgumentType<Double> valueArgumentType() {
-        return DoubleArgumentType.doubleArg(from, to);
+        return DoubleArgumentType.doubleArg(this.from, this.to);
     }
 
     @Override

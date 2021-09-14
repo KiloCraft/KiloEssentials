@@ -12,6 +12,6 @@ public abstract class WorldMixin implements WorldInfo {
 
     @Override
     public int[] getRemaining() {
-        return wakeupInactiveRemaining;
+        return this.wakeupInactiveRemaining;
     }
 }

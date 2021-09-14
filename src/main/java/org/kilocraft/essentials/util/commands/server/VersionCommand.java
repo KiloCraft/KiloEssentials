@@ -14,13 +14,13 @@ public class VersionCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::executeVersion);
+        this.argumentBuilder.executes(this::executeVersion);
     }
 
     private int executeVersion(CommandContext<ServerCommandSource> ctx) {
         GameVersion gameVersion = MinecraftVersion.create();
 
-        getCommandSource(ctx).sendLangMessage("command.info.version",
+        this.getCommandSource(ctx).sendLangMessage("command.info.version",
                 ModConstants.getVersionInt(),
                 ModConstants.getBuildType(),
                 ModConstants.getVersionType(),

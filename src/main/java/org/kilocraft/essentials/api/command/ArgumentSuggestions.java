@@ -153,9 +153,9 @@ public class ArgumentSuggestions {
     }
 
     public static class Factory {
-        private String[] args;
-        private Map<Integer, String[]> suggestions;
-        private SuggestionsBuilder builder;
+        private final String[] args;
+        private final Map<Integer, String[]> suggestions;
+        private final SuggestionsBuilder builder;
 
         public Factory(SuggestionsBuilder builder) {
             this.args = builder.getInput().split(" ");
@@ -178,7 +178,7 @@ public class ArgumentSuggestions {
         }
 
         public CompletableFuture<Suggestions> completeFuture() {
-            if (args.length > this.suggestions.size() || this.suggestions.isEmpty() || this.args.length == 0) {
+            if (this.args.length > this.suggestions.size() || this.suggestions.isEmpty() || this.args.length == 0) {
                 return this.builder.buildFuture();
             }
 
@@ -196,7 +196,7 @@ public class ArgumentSuggestions {
         }
 
         public Iterable<String> complete() {
-            if (args.length > this.suggestions.size() || this.suggestions.isEmpty() || this.args.length == 0) {
+            if (this.args.length > this.suggestions.size() || this.suggestions.isEmpty() || this.args.length == 0) {
                 return Collections.emptyList();
             }
 

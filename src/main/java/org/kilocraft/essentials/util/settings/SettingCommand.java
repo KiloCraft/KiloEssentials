@@ -65,14 +65,14 @@ public class SettingCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> settingArgument = argument("setting", StringArgumentType.word());
-        settingArgument.suggests(SETTINGS);
+        RequiredArgumentBuilder<ServerCommandSource, String> settingArgument = this.argument("setting", StringArgumentType.word());
+        settingArgument.suggests(this.SETTINGS);
         settingArgument.executes(this::getValue);
-        RequiredArgumentBuilder<ServerCommandSource, String> valueArgument = argument(ConfigurableSetting.commandArgumentValue, StringArgumentType.word());
-        valueArgument.suggests(VALUES);
+        RequiredArgumentBuilder<ServerCommandSource, String> valueArgument = this.argument(ConfigurableSetting.commandArgumentValue, StringArgumentType.word());
+        valueArgument.suggests(this.VALUES);
         valueArgument.executes(this::setValue);
         settingArgument.then(valueArgument);
-        commandNode.addChild(settingArgument.build());
+        this.commandNode.addChild(settingArgument.build());
     }
 
     public int setValue(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -95,7 +95,7 @@ public class SettingCommand extends EssentialCommand {
             String value = "";
             if (setting instanceof ConfigurableSetting) value = ((ConfigurableSetting<?>) setting).getFormattedValue();
             player.sendMessage(StringText.of(true, "command.setting.title", setting.getFullId().toUpperCase(), value), false);
-            printRecursive(player, abstractSetting, 0);
+            this.printRecursive(player, abstractSetting, 0);
         } else {
             throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
         }
@@ -106,8 +106,8 @@ public class SettingCommand extends EssentialCommand {
         int children = 0;
         for (AbstractSetting child : setting.getChildren()) {
             String preString = "  ".repeat(Math.max(0, depth)) + "- ";
-            if (depth != 0 && children >= MAX_ENTRIES && setting.shouldLimitChildren()) {
-                player.sendMessage(StringText.of(true, "command.setting.more", preString, (setting.getChildren().size() - MAX_ENTRIES)), false);
+            if (depth != 0 && children >= this.MAX_ENTRIES && setting.shouldLimitChildren()) {
+                player.sendMessage(StringText.of(true, "command.setting.more", preString, (setting.getChildren().size() - this.MAX_ENTRIES)), false);
                 return;
             }
             LiteralText text = null;
@@ -120,7 +120,7 @@ public class SettingCommand extends EssentialCommand {
                 text.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/setting " + child.getFullId())));
                 player.sendMessage(text, false);
             }
-            printRecursive(player, child, depth + 1);
+            this.printRecursive(player, child, depth + 1);
             children++;
         }
     }

@@ -36,24 +36,24 @@ public class TempBanCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> victim = argument("profile", GameProfileArgumentType.gameProfile())
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> victim = this.argument("profile", GameProfileArgumentType.gameProfile())
                 .suggests(ArgumentSuggestions::allPlayers);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> time = argument("time", StringArgumentType.word())
+        RequiredArgumentBuilder<ServerCommandSource, String> time = this.argument("time", StringArgumentType.word())
                 .suggests(TimeDifferenceUtil::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), null, false));
 
-        RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
+        RequiredArgumentBuilder<ServerCommandSource, String> reason = this.argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent").then(
-                argument("profile", GameProfileArgumentType.gameProfile())
+        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent").then(
+                this.argument("profile", GameProfileArgumentType.gameProfile())
                         .suggests(ArgumentSuggestions::allPlayers).then(
-                        argument("time", StringArgumentType.word())
+                        this.argument("time", StringArgumentType.word())
                                 .suggests(TimeDifferenceUtil::listSuggestions)
                                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), null, true))
                                 .then(
-                                        argument("reason", StringArgumentType.greedyString())
+                                        this.argument("reason", StringArgumentType.greedyString())
                                                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true))
                                 )
                 )
@@ -87,7 +87,7 @@ public class TempBanCommand extends EssentialCommand {
         }
         PunishEvents.BAN.invoker().onBan(src, EntityIdentifiable.fromGameProfile(victim), reason, false, expiry.getTime(), silent);
 
-        getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
+        this.getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
         return AWAIT;
     }
 

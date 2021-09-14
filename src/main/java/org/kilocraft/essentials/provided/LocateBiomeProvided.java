@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class LocateBiomeProvided implements Command {
-    private static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType((object) -> new TranslatableText("commands.locatebiome.notFound", new Object[]{object}));
+    private static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType((object) -> new TranslatableText("commands.locatebiome.notFound", object));
     private static final List<Thread> threads = new ArrayList<>();
     private final Biome biome;
 
@@ -31,7 +31,7 @@ public class LocateBiomeProvided implements Command {
 
     @Override
     public int run(CommandContext context) {
-        BiomeLocatorThread locatorThread = new BiomeLocatorThread((ServerCommandSource) context.getSource(), biome);
+        BiomeLocatorThread locatorThread = new BiomeLocatorThread((ServerCommandSource) context.getSource(), this.biome);
         Thread thread = new Thread(locatorThread, "Biome locator thread");
         thread.start();
 
@@ -70,9 +70,9 @@ public class LocateBiomeProvided implements Command {
 
 
     static class BiomeLocatorThread implements Runnable {
-        private Logger logger = LogManager.getLogger();
-        private ServerCommandSource source;
-        private Biome biome;
+        private final Logger logger = LogManager.getLogger();
+        private final ServerCommandSource source;
+        private final Biome biome;
 
         public BiomeLocatorThread(ServerCommandSource source, Biome biome) {
             this.source = source;
@@ -81,11 +81,11 @@ public class LocateBiomeProvided implements Command {
 
         @Override
         public void run() {
-            logger.info("Locating biome \"" + LocateBiomeProvided.getBiomeId(biome) + "\", executed by " + source.getName());
+            this.logger.info("Locating biome \"" + LocateBiomeProvided.getBiomeId(this.biome) + "\", executed by " + this.source.getName());
             try {
                 LocateBiomeProvided.execute(this.source, this.biome);
             } catch (CommandSyntaxException e) {
-                source.sendError(new LiteralText(e.getMessage()));
+                this.source.sendError(new LiteralText(e.getMessage()));
             }
         }
     }

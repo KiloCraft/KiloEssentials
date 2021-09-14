@@ -186,7 +186,7 @@ public class ListedText {
      * A small wrapper for a normal String
      */
     private static class StringFilterable implements PagerFilterable {
-        private String string;
+        private final String string;
 
         /**
          * @param string The String
@@ -201,13 +201,13 @@ public class ListedText {
         public boolean accepts(@NotNull Options options) {
             Objects.requireNonNull(options, "Options can not be null");
 
-            return options.matchesPattern(string);
+            return options.matchesPattern(this.string);
         }
 
         @NotNull
         @Override
         public List<String> getAllLines() {
-            return Collections.singletonList(string);
+            return Collections.singletonList(this.string);
         }
     }
 
@@ -215,7 +215,7 @@ public class ListedText {
      * A small wrapper for a normal String
      */
     private static class TextFilterable implements MutableTextPagerFilterable {
-        private MutableText text;
+        private final MutableText text;
 
         /**
          * @param text The {@link MutableText}
@@ -230,13 +230,13 @@ public class ListedText {
         public boolean accepts(@NotNull Options options) {
             Objects.requireNonNull(options, "Options can not be null");
 
-            return options.matchesPattern(Texter.Legacy.toFormattedString(text));
+            return options.matchesPattern(Texter.Legacy.toFormattedString(this.text));
         }
 
         @NotNull
         @Override
         public List<MutableText> getAllLines() {
-            return Collections.singletonList(text);
+            return Collections.singletonList(this.text);
         }
     }
 
@@ -246,10 +246,10 @@ public class ListedText {
      */
     @SuppressWarnings("WeakerAccess")
     public static class Options {
-        private int entriesPerPage;
-        private int pageIndex;
-        private Set<SearchMode> searchModes;
-        private String searchPattern;
+        private final int entriesPerPage;
+        private final int pageIndex;
+        private final Set<SearchMode> searchModes;
+        private final String searchPattern;
 
         private Options(int entriesPerPage, int pageIndex,
                         @NotNull Set<SearchMode> searchModes, @NotNull String searchPattern) {
@@ -269,7 +269,7 @@ public class ListedText {
          * @return The entries per page
          */
         public int getEntriesPerPage() {
-            return entriesPerPage;
+            return this.entriesPerPage;
         }
 
         /**
@@ -278,7 +278,7 @@ public class ListedText {
          * @return The index of the page
          */
         public int getPageIndex() {
-            return pageIndex;
+            return this.pageIndex;
         }
 
         /**
@@ -291,7 +291,7 @@ public class ListedText {
         public boolean matchesPattern(String test) {
             Objects.requireNonNull(test, "test can not be null");
 
-            return searchModes.stream().anyMatch(mode -> mode.accepts(test, searchPattern));
+            return this.searchModes.stream().anyMatch(mode -> mode.accepts(test, this.searchPattern));
         }
 
         /**
@@ -308,10 +308,10 @@ public class ListedText {
         @Override
         public String toString() {
             return "Options{" +
-                    "entriesPerPage=" + entriesPerPage +
-                    ", pageIndex=" + pageIndex +
-                    ", searchModes=" + searchModes +
-                    ", searchPattern='" + searchPattern + '\'' +
+                    "entriesPerPage=" + this.entriesPerPage +
+                    ", pageIndex=" + this.pageIndex +
+                    ", searchModes=" + this.searchModes +
+                    ", searchPattern='" + this.searchPattern + '\'' +
                     '}';
         }
 
@@ -396,7 +396,7 @@ public class ListedText {
                 Objects.requireNonNull(first, "first can not be null");
                 Objects.requireNonNull(rest, "rest can not be null");
 
-                setSearchModes(EnumSet.of(first, rest));
+                this.setSearchModes(EnumSet.of(first, rest));
 
                 return this;
             }
@@ -414,7 +414,7 @@ public class ListedText {
             public Builder addSearchMode(@NotNull SearchMode mode) {
                 Objects.requireNonNull(mode, "mode can not be null");
 
-                searchModes.add(mode);
+                this.searchModes.add(mode);
 
                 return this;
             }
@@ -444,7 +444,7 @@ public class ListedText {
             @SuppressWarnings("unused")
             @NotNull
             public Options build() {
-                return new Options(entriesPerPage, pageIndex, searchModes, searchPattern);
+                return new Options(this.entriesPerPage, this.pageIndex, this.searchModes, this.searchPattern);
             }
         }
     }
@@ -507,7 +507,7 @@ public class ListedText {
         /**
          * The first one is the String to test, the second the pattern
          */
-        private BiFunction<String, String, Boolean> accept;
+        private final BiFunction<String, String, Boolean> accept;
 
         /**
          * @param accept Whether the String is accepted, using the second param
@@ -529,7 +529,7 @@ public class ListedText {
             Objects.requireNonNull(string, "string can not be null");
             Objects.requireNonNull(pattern, "pattern can not be null");
 
-            return accept.apply(string, pattern);
+            return this.accept.apply(string, pattern);
         }
     }
 
@@ -609,7 +609,7 @@ public class ListedText {
         @NotNull
         @SuppressWarnings("unused")
         public List<String> getEntries() {
-            return Collections.unmodifiableList(entries);
+            return Collections.unmodifiableList(this.entries);
         }
 
         /**
@@ -619,7 +619,7 @@ public class ListedText {
          */
         @SuppressWarnings("unused")
         public int getPageIndex() {
-            return pageIndex;
+            return this.pageIndex;
         }
 
         /**
@@ -629,7 +629,7 @@ public class ListedText {
          */
         @SuppressWarnings("unused")
         public int getMaxPages() {
-            return maxPages;
+            return this.maxPages;
         }
 
         public ListedText.Page setStickyHeader(String string) {
@@ -682,8 +682,8 @@ public class ListedText {
             Formatting f1 = Formatting.GOLD;
             Formatting f2 = Formatting.YELLOW;
             Formatting f3 = Formatting.GRAY;
-            int prevPage = pageIndex;
-            int nextPage = pageIndex + 2;
+            int prevPage = this.pageIndex;
+            int nextPage = this.pageIndex + 2;
 
             String SEPARATOR = "-----------------------------------------------------";
             MutableText header = new LiteralText("")
@@ -709,8 +709,8 @@ public class ListedText {
                     .append(new LiteralText("Next").formatted(f1))
                     .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
                     .styled((style) ->
-                            style.withHoverEvent(Texter.Events.onHover(new LiteralText((nextPage <= maxPages) ? ">>>" : ">|").formatted(f3)))
-                                    .withClickEvent(nextPage <= maxPages ? Texter.Events.onClickRun(command.replace("%page%", String.valueOf(nextPage))) : null)
+                            style.withHoverEvent(Texter.Events.onHover(new LiteralText((nextPage <= this.maxPages) ? ">>>" : ">|").formatted(f3)))
+                                    .withClickEvent(nextPage <= this.maxPages ? Texter.Events.onClickRun(command.replace("%page%", String.valueOf(nextPage))) : null)
                     );
 
             MutableText buttons = new LiteralText("")
@@ -718,9 +718,9 @@ public class ListedText {
                     .append(button_prev)
                     .append(" ")
                     .append(
-                            new LiteralText(String.valueOf(pageIndex + 1)).formatted(Formatting.GREEN)
+                            new LiteralText(String.valueOf(this.pageIndex + 1)).formatted(Formatting.GREEN)
                                     .append(new LiteralText("/").formatted(f3))
-                                    .append(new LiteralText(String.valueOf(maxPages)).formatted(Formatting.GREEN))
+                                    .append(new LiteralText(String.valueOf(this.maxPages)).formatted(Formatting.GREEN))
                     )
                     .append(" ")
                     .append(button_next)
@@ -732,7 +732,7 @@ public class ListedText {
 
             MutableText text = new LiteralText("");
             if (this.textEntries == null && this.entries != null) {
-                for (String entry : entries) {
+                for (String entry : this.entries) {
                     text.append(ComponentText.toText(entry)).append("\n");
                 }
             } else if (this.textEntries != null && this.entries == null) {

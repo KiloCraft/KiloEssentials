@@ -31,12 +31,12 @@ public class ModsCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> modArgument = argument("modid", word())
+        RequiredArgumentBuilder<ServerCommandSource, String> modArgument = this.argument("modid", word())
                 .suggests(this::suggestMods)
                 .executes(this::sendInfo);
 
-        commandNode.addChild(modArgument.build());
-        argumentBuilder.executes(this::sendList);
+        this.commandNode.addChild(modArgument.build());
+        this.argumentBuilder.executes(this::sendList);
     }
 
     private int sendList(CommandContext<ServerCommandSource> ctx) {
@@ -51,7 +51,7 @@ public class ModsCommand extends EssentialCommand {
                     meta.getName()
             );
         }
-        getCommandSource(ctx).sendMessage(text.build());
+        this.getCommandSource(ctx).sendMessage(text.build());
         return SUCCESS;
     }
 
@@ -59,17 +59,17 @@ public class ModsCommand extends EssentialCommand {
         String inputId = getString(ctx, "modid");
 
         if (!FabricLoader.getInstance().getModContainer(inputId).isPresent()) {
-            throw MOD_NOT_PRESENT.create();
+            throw this.MOD_NOT_PRESENT.create();
         }
 
         ModMetadata meta = FabricLoader.getInstance().getModContainer(inputId).get().getMetadata();
 
         Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(meta.getName());
         text.append("Version", meta.getVersion().getFriendlyString());
-        text.append("Authors", authorsToArrayText(meta));
+        text.append("Authors", this.authorsToArrayText(meta));
         text.append("Description", meta.getDescription());
 
-        getCommandSource(ctx).sendMessage(text.build());
+        this.getCommandSource(ctx).sendMessage(text.build());
         return SUCCESS;
     }
 

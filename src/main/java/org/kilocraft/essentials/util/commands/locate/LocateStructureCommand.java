@@ -61,9 +61,9 @@ public class LocateStructureCommand {
     }
 
     static class StructureLocatorThread implements Runnable {
-        private Logger logger = LogManager.getLogger();
-        private ServerCommandSource source;
-        private StructureFeature<?> structure;
+        private final Logger logger = LogManager.getLogger();
+        private final ServerCommandSource source;
+        private final StructureFeature<?> structure;
 
         public StructureLocatorThread(ServerCommandSource source, StructureFeature<?> structureFeature) {
             this.source = source;
@@ -72,7 +72,7 @@ public class LocateStructureCommand {
 
         @Override
         public void run() {
-            logger.info("Locating structure \"" + structure + "\", executed by " + source.getName());
+            this.logger.info("Locating structure \"" + this.structure + "\", executed by " + this.source.getName());
             LocateStructureProvided.execute(this.source, this.structure);
         }
     }

@@ -22,7 +22,7 @@ public class WorkbenchCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(WorkbenchCommand::execute);
+        this.argumentBuilder.executes(WorkbenchCommand::execute);
     }
 
     private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

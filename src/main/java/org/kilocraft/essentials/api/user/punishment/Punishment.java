@@ -54,7 +54,7 @@ public class Punishment extends PunishmentEntry {
     public enum Type {
         BAN_IP,
         BAN,
-        MUTE;
+        MUTE
     }
 
     public enum ResultAction {

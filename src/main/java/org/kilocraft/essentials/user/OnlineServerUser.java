@@ -234,7 +234,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         SocketAddress socketAddress = this.getConnection().getAddress();
         if (socketAddress != null) {
-            lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
+            this.lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
         }
 
         super.messageCoolDown = 0;
@@ -248,14 +248,14 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         this.setGameMode(gameMode);
         super.getPreferences().set(Preferences.GAME_MODE, gameMode);
 
-        if (ticksPlayed <= 0) {
-            ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
+        if (this.ticksPlayed <= 0) {
+            this.ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
         } else {
-            this.asPlayer().getStatHandler().setStat(this.asPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME), ticksPlayed);
+            this.asPlayer().getStatHandler().setStat(this.asPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME), this.ticksPlayed);
         }
 
         if (KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF)) {
-            isStaff = true;
+            this.isStaff = true;
         }
 
         if (KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_SELF) || KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_OTHERS)) {
@@ -280,14 +280,14 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     public void onTick() {
         tick++;
-        ticksPlayed++;
+        this.ticksPlayed++;
 
-        if (messageCoolDown > 0) {
-            --messageCoolDown;
+        if (this.messageCoolDown > 0) {
+            --this.messageCoolDown;
         }
 
-        if (systemMessageCoolDown > 0) {
-            --systemMessageCoolDown;
+        if (this.systemMessageCoolDown > 0) {
+            --this.systemMessageCoolDown;
         }
 
         if (tick >= 20) {
@@ -297,7 +297,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             }
 
             if (PlaytimeCommands.isEnabled()) {
-                PlaytimeCommands.getInstance().onUserPlaytimeUp(this, ticksPlayed);
+                PlaytimeCommands.getInstance().onUserPlaytimeUp(this, this.ticksPlayed);
             }
         }
 

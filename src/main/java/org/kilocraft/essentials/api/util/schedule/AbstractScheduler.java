@@ -29,11 +29,11 @@ public abstract class AbstractScheduler {
     public abstract boolean onTick();
 
     public void tick() {
-        if (countdown == 0) {
-            onFinish();
-        } else if (countdown > 0) {
-            boolean success = onTick();
-            countdown--;
+        if (this.countdown == 0) {
+            this.onFinish();
+        } else if (this.countdown > 0) {
+            boolean success = this.onTick();
+            this.countdown--;
             if (success) start(1000, this::tick);
         }
     }

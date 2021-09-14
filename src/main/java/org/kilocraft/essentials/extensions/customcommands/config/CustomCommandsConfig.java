@@ -16,7 +16,7 @@ public class CustomCommandsConfig {
 
     @Setting("commands")
     public Map<String, CustomCommandConfigSection> commands = new HashMap<String, CustomCommandConfigSection>() {{
-        put("default:example", new CustomCommandConfigSection());
+        this.put("default:example", new CustomCommandConfigSection());
     }};
 
 }

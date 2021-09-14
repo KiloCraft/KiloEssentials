@@ -125,28 +125,28 @@ public abstract class RedstoneWireBlockMixin implements RedstoneWireBlockInterfa
      */
     private void updateSurroundingRedstone(World worldIn, BlockPos pos, BlockState state, BlockPos source) {
         if (ServerSettings.patch_eigencraft_redstone) {
-            turbo.updateSurroundingRedstone(worldIn, pos, state, source);
+            this.turbo.updateSurroundingRedstone(worldIn, pos, state, source);
             return;
         }
-        update(worldIn, pos, state);
+        this.update(worldIn, pos, state);
     }
 
     private int getPower(int min, BlockState iblockdata) {
-        return Math.max(min, increasePower(iblockdata));
+        return Math.max(min, this.increasePower(iblockdata));
     }
 
     @Redirect(method = "onBlockAdded", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/RedstoneWireBlock;update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
     public void optimizeRedstoneUpdate(RedstoneWireBlock redstoneWireBlock, World world, BlockPos pos, BlockState state) {
-        updateSurroundingRedstone(world, pos, state, null);
+        this.updateSurroundingRedstone(world, pos, state, null);
     }
 
     @Redirect(method = "onStateReplaced", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/RedstoneWireBlock;update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
     public void optimizeRedstoneUpdate$2(RedstoneWireBlock redstoneWireBlock, World world, BlockPos pos, BlockState state) {
-        updateSurroundingRedstone(world, pos, state, null);
+        this.updateSurroundingRedstone(world, pos, state, null);
     }
 
     @Redirect(method = "neighborUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/RedstoneWireBlock;update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
     public void optimizeRedstoneUpdate$3(RedstoneWireBlock redstoneWireBlock, World world, BlockPos pos, BlockState state, BlockState state2, World world2, BlockPos pos2, Block block, BlockPos fromPos, boolean notify) {
-        updateSurroundingRedstone(world, pos, state, fromPos);
+        this.updateSurroundingRedstone(world, pos, state, fromPos);
     }
 }

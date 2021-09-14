@@ -76,7 +76,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private Map<UUID, String> cachedNicknames = new HashMap<>();
 
     public ServerUserManager() {
-        PlayerEvents.DEATH.register(player -> onDeath(getOnline(player)));
+        PlayerEvents.DEATH.register(player -> this.onDeath(this.getOnline(player)));
     }
 
     @Override
@@ -111,9 +111,9 @@ public class ServerUserManager implements UserManager, TickListener {
             return CompletableFuture.completedFuture(Optional.of(user));
         }
 
-        UUID ret = usernameToUUID.get(username);
+        UUID ret = this.usernameToUUID.get(username);
         if (ret != null) {
-            return getOffline(ret, username);
+            return this.getOffline(ret, username);
         }
 
         return this.getUserAsync(username);
@@ -129,11 +129,11 @@ public class ServerUserManager implements UserManager, TickListener {
 
     @Override
     public CompletableFuture<Optional<User>> getOffline(UUID uuid, String username) {
-        OnlineUser online = getOnline(uuid);
+        OnlineUser online = this.getOnline(uuid);
         if (online != null)
             return CompletableFuture.completedFuture(Optional.of(online));
 
-        if (handler.userExists(uuid)) {
+        if (this.handler.userExists(uuid)) {
             ServerUser serverUser = new ServerUser(uuid);
             serverUser.name = username;
             return CompletableFuture.completedFuture(Optional.of(serverUser));
@@ -144,11 +144,11 @@ public class ServerUserManager implements UserManager, TickListener {
 
     @Override
     public CompletableFuture<Optional<User>> getOffline(UUID uuid) {
-        OnlineUser online = getOnline(uuid);
+        OnlineUser online = this.getOnline(uuid);
         if (online != null)
             return CompletableFuture.completedFuture(Optional.of(online));
 
-        if (handler.userExists(uuid)) {
+        if (this.handler.userExists(uuid)) {
             ServerUser serverUser = new ServerUser(uuid).useSavedName();
             return CompletableFuture.completedFuture(Optional.of(serverUser));
         }
@@ -159,57 +159,57 @@ public class ServerUserManager implements UserManager, TickListener {
     @Override
     @Nullable
     public CompletableFuture<Optional<User>> getOffline(GameProfile profile) {
-        if (profileHasID(profile)) return getOffline(profile.getId(), profile.getName());
+        if (this.profileHasID(profile)) return this.getOffline(profile.getId(), profile.getName());
         return CompletableFuture.completedFuture(Optional.empty());
     }
 
     @Override
     public Map<UUID, OnlineServerUser> getOnlineUsers() {
-        return onlineUsers;
+        return this.onlineUsers;
     }
 
     @Override
     public List<OnlineUser> getOnlineUsersAsList() {
-        return users;
+        return this.users;
     }
 
     @Override
     public List<OnlineUser> getOnlineUsersAsList(boolean includeVanished) {
-        return users.stream().filter(onlineUser -> !onlineUser.getPreference(Preferences.VANISH) || includeVanished).collect(Collectors.toList());
+        return this.users.stream().filter(onlineUser -> !onlineUser.getPreference(Preferences.VANISH) || includeVanished).collect(Collectors.toList());
     }
 
     @Override
     @Nullable
     public OnlineUser getOnline(GameProfile profile) {
-        if (profileIsComplete(profile)) return getOnline(profile.getId());
+        if (this.profileIsComplete(profile)) return this.getOnline(profile.getId());
         return null;
     }
 
     @Override
     @Nullable
     public OnlineUser getOnline(UUID uuid) {
-        return onlineUsers.get(uuid);
+        return this.onlineUsers.get(uuid);
     }
 
     @Override
     @Nullable
     public OnlineUser getOnline(String username) {
-        OnlineUser user = getOnline(usernameToUUID.get(username));
-        return user == null ? getOnlineNickname(username) : user;
+        OnlineUser user = this.getOnline(this.usernameToUUID.get(username));
+        return user == null ? this.getOnlineNickname(username) : user;
     }
 
     @Override
     @Nullable
     public OnlineUser getOnlineNickname(String nickname) {
-        if (usernameToUUID.containsKey(nickname)) {
+        if (this.usernameToUUID.containsKey(nickname)) {
             return this.getOnline(nickname);
         }
 
-        if (nicknameToUUID.containsKey(nickname)) {
-            return this.getOnline(nicknameToUUID.get(nickname));
+        if (this.nicknameToUUID.containsKey(nickname)) {
+            return this.getOnline(this.nicknameToUUID.get(nickname));
         }
 
-        for (OnlineUser user : users) {
+        for (OnlineUser user : this.users) {
             if (user.hasNickname()) {
                 String nick = org.kilocraft.essentials.api.util.StringUtils.stringToUsername(
                         ComponentText.clearFormatting(user.getDisplayName()).replaceAll("\\s+", "")
@@ -226,12 +226,12 @@ public class ServerUserManager implements UserManager, TickListener {
 
     @Override
     public OnlineUser getOnline(ServerPlayerEntity player) {
-        return getOnline(player.getUuid());
+        return this.getOnline(player.getUuid());
     }
 
     @Override
     public OnlineUser getOnline(ServerCommandSource source) throws CommandSyntaxException {
-        return getOnline(source.getPlayer());
+        return this.getOnline(source.getPlayer());
     }
 
     @Override
@@ -253,7 +253,7 @@ public class ServerUserManager implements UserManager, TickListener {
             KiloDebugUtils.getLogger().info("Saving users data, this may take a while...");
         }
 
-        for (OnlineServerUser user : onlineUsers.values()) {
+        for (OnlineServerUser user : this.onlineUsers.values()) {
             try {
                 if (SharedConstants.isDevelopment) {
                     KiloDebugUtils.getLogger().info("Saving user \"{}\"", user.getUsername());
@@ -338,7 +338,7 @@ public class ServerUserManager implements UserManager, TickListener {
         String NICKNAME_CACHE = "nicknames";
         if (!CacheManager.isPresent(NICKNAME_CACHE)) {
             Map<UUID, String> map = new HashMap<>();
-            getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
+            this.getAllUsersThenAcceptAsync(user, "general.please_wait", (list) -> {
                 for (User victim : list) {
                     victim.getNickname().ifPresent(nick -> map.put(
                             victim.getUuid(),
@@ -349,7 +349,7 @@ public class ServerUserManager implements UserManager, TickListener {
                 }
             });
 
-            cachedNicknames = map;
+            this.cachedNicknames = map;
             Cached<Map<UUID, String>> cached = new Cached<>(NICKNAME_CACHE, map);
             CacheManager.cache(cached);
         }
@@ -357,7 +357,7 @@ public class ServerUserManager implements UserManager, TickListener {
         AtomicBoolean canUse = new AtomicBoolean(true);
         String uniformedNickname = org.kilocraft.essentials.api.util.StringUtils.uniformNickname(rawNickname).toLowerCase(Locale.ROOT);
 
-        for (Map.Entry<UUID, String> entry : cachedNicknames.entrySet()) {
+        for (Map.Entry<UUID, String> entry : this.cachedNicknames.entrySet()) {
             UUID uuid = entry.getKey();
             String string = entry.getValue();
             if (string.equalsIgnoreCase(uniformedNickname) && !user.getUuid().equals(uuid)) {
@@ -395,7 +395,7 @@ public class ServerUserManager implements UserManager, TickListener {
         for (BannedPlayerEntry bannedPlayerEntry : KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().values()) {
             Object o = ((ServerConfigEntryAccessor) bannedPlayerEntry).getKey();
             if (o instanceof GameProfile profile) {
-                Optional<User> optional = getOffline(profile).join();
+                Optional<User> optional = this.getOffline(profile).join();
                 optional.ifPresent(player -> {
                     if (Objects.equals(player.getLastIp(), user.getLastIp())) banned.add(profile);
                 });
@@ -475,7 +475,7 @@ public class ServerUserManager implements UserManager, TickListener {
             if (string.startsWith("/")) {
                 KiloCommands.execute(player.getCommandSource(), string);
             } else {
-                if (punishmentManager.isMuted(user)) {
+                if (this.punishmentManager.isMuted(user)) {
                     user.sendMessage(getMuteMessage(user));
                     return;
                 }
@@ -500,7 +500,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     @Override
     public void onTick() {
-        for (OnlineUser user : users) {
+        for (OnlineUser user : this.users) {
             if (user == null) {
                 continue;
             }
@@ -558,7 +558,7 @@ public class ServerUserManager implements UserManager, TickListener {
                                                                     final String username,
                                                                     final Consumer<? super User> action) {
         if (CommandUtils.isOnline(requester)) {
-            return this.getUserThenAcceptAsync(getOnline(requester.getName()), username, action);
+            return this.getUserThenAcceptAsync(this.getOnline(requester.getName()), username, action);
         }
 
         final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(username);

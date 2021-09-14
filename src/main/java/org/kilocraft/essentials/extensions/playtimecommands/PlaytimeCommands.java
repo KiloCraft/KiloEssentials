@@ -29,7 +29,7 @@ public class PlaytimeCommands implements ReloadableConfigurableFeature {
         enabled = true;
         instance = this;
 
-        load();
+        this.load();
         return true;
     }
 
@@ -64,7 +64,7 @@ public class PlaytimeCommands implements ReloadableConfigurableFeature {
         for (PlaytimeCommandConfigSection section : config.sections) {
             if (played == section.seconds) {
                 for (String command : section.commands) {
-                    runCommand(user, command);
+                    this.runCommand(user, command);
                 }
             }
         }

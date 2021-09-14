@@ -22,18 +22,18 @@ public class FeedCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = argument("target", player())
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> target = this.argument("target", player())
                 .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FEED_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
-                .executes(context -> execute(context, getPlayer(context, "target")));
+                .executes(context -> this.execute(context, getPlayer(context, "target")));
 
-        argumentBuilder.executes(context -> execute(context, context.getSource().getPlayer()));
-        commandNode.addChild(target.build());
+        this.argumentBuilder.executes(context -> this.execute(context, context.getSource().getPlayer()));
+        this.commandNode.addChild(target.build());
     }
 
     private int execute(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
-        OnlineUser self = getCommandSource(context);
-        OnlineUser target = getOnlineUser(player);
+        OnlineUser self = this.getCommandSource(context);
+        OnlineUser target = this.getOnlineUser(player);
         if (CommandUtils.areTheSame(self, target)) {
             if (player.getHungerManager().getFoodLevel() == 20)
                 target.sendLangMessage("command.feed.exception.self");

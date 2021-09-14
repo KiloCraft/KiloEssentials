@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface ThreadedAnvilChunkStorageAccessor {
 
     @Accessor("watchDistance")
-    public int getWatchDistance();
+    int getWatchDistance();
 
 }

@@ -24,16 +24,16 @@ public abstract class AbstractSetting implements Setting {
 
     @Override
     public List<AbstractSetting> getChildren() {
-        return children;
+        return this.children;
     }
 
     public boolean shouldLimitChildren() {
-        return limitChildren;
+        return this.limitChildren;
     }
 
 
     public AbstractSetting addChild(AbstractSetting setting) {
-        children.add(setting);
+        this.children.add(setting);
         setting.setParent(this);
         return this;
     }
@@ -41,7 +41,7 @@ public abstract class AbstractSetting implements Setting {
     public List<AbstractSetting> getChildrenRecursive() {
         List<AbstractSetting> result = new ArrayList<>();
         result.add(this);
-        for (AbstractSetting child : children) {
+        for (AbstractSetting child : this.children) {
             result.addAll(child.getChildrenRecursive());
         }
         return result;
@@ -52,12 +52,12 @@ public abstract class AbstractSetting implements Setting {
     }
 
     public String getFullId() {
-        String parentID = parent.getFullId();
-        return parentID.equals("") ? id : parentID + "." + id;
+        String parentID = this.parent.getFullId();
+        return parentID.equals("") ? this.id : parentID + "." + this.id;
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     @Nullable
@@ -65,7 +65,7 @@ public abstract class AbstractSetting implements Setting {
         if (id.equals("")) {
             return this;
         }
-        for (AbstractSetting child : children) {
+        for (AbstractSetting child : this.children) {
             if (id.startsWith(child.id)) {
                 String[] part = id.split("\\.", 2);
                 return child.getSetting(part.length > 1 ? part[1] : "");

@@ -11,8 +11,8 @@ public class LocateCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LocateBiomeCommand.registerAsChild(argumentBuilder);
-        LocateStructureCommand.registerAsChild(argumentBuilder);
+        LocateBiomeCommand.registerAsChild(this.argumentBuilder);
+        LocateStructureCommand.registerAsChild(this.argumentBuilder);
     }
 
 }

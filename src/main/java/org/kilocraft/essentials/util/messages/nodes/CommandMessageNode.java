@@ -5,7 +5,7 @@ public enum CommandMessageNode {
 
     ;
 
-    private String key;
+    private final String key;
 
     CommandMessageNode(String key) {
         this.key = key;

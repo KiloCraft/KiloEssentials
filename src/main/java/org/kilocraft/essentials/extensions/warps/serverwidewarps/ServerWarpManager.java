@@ -25,8 +25,8 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
-    private static ArrayList<String> byName = new ArrayList<>();
-    private static List<ServerWarp> warps = new ArrayList<>();
+    private static final ArrayList<String> byName = new ArrayList<>();
+    private static final List<ServerWarp> warps = new ArrayList<>();
 
     @Override
     public boolean register() {

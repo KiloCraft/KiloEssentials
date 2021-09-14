@@ -18,17 +18,17 @@ public class ShapeConfigSection {
     public float spacing = 0.2f;
 
     @Setting("lineProperties")
-    public LineConfigSection lineConfigSection = shape.equals("line") ? new LineConfigSection() : null;
+    public LineConfigSection lineConfigSection = this.shape.equals("line") ? new LineConfigSection() : null;
 
     @Setting("bezierProperties")
-    public BezierConfigSection bezierConfigSection = shape.equals("bezier") ? new BezierConfigSection() : null;
+    public BezierConfigSection bezierConfigSection = this.shape.equals("bezier") ? new BezierConfigSection() : null;
 
     public Optional<LineConfigSection> getLineConfigSection() {
-        return Optional.ofNullable(lineConfigSection);
+        return Optional.ofNullable(this.lineConfigSection);
     }
 
     public Optional<BezierConfigSection> getBezierConfigSection() {
-        return Optional.ofNullable(bezierConfigSection);
+        return Optional.ofNullable(this.bezierConfigSection);
     }
 
 }

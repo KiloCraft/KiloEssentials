@@ -29,28 +29,28 @@ public class HatCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = argument("target", player())
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = this.argument("target", player())
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.HAT_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes(this::executeOthers);
 
-        commandNode.addChild(targetArgument.build());
-        argumentBuilder.executes(this::execute);
+        this.commandNode.addChild(targetArgument.build());
+        this.argumentBuilder.executes(this::execute);
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return hat(ctx, ctx.getSource().getPlayer());
+        return this.hat(ctx, ctx.getSource().getPlayer());
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return hat(ctx, EntityArgumentType.getPlayer(ctx, "target"));
+        return this.hat(ctx, EntityArgumentType.getPlayer(ctx, "target"));
     }
 
     private int hat(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         PlayerInventory inventory = target.getInventory();
         ItemStack handStack = inventory.getMainHandStack();
-        OnlineUser user = getOnlineUser(ctx);
+        OnlineUser user = this.getOnlineUser(ctx);
 
         if (handStack.getItem() instanceof Wearable) {
             user.sendLangMessage("command.hat.invalid_item");
@@ -66,7 +66,7 @@ public class HatCommand extends EssentialCommand {
             user.sendLangMessage("command.hat");
         else {
             user.sendLangMessage("command.hat.others", target.getEntityName());
-            getOnlineUser(target).sendLangMessage("command.hat.announce", player.getEntityName());
+            this.getOnlineUser(target).sendLangMessage("command.hat.announce", player.getEntityName());
         }
 
 

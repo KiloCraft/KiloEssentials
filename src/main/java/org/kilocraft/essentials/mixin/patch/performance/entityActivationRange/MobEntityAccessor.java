@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface MobEntityAccessor {
 
     @Accessor("targetSelector")
-    public GoalSelector getTargetSelector();
+    GoalSelector getTargetSelector();
 
 }

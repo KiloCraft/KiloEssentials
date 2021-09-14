@@ -23,7 +23,7 @@ public class ParticleTypesConfig {
 
     @Setting
     public Map<String, ParticleTypeConfigSection> types = new HashMap<String, ParticleTypeConfigSection>() {{
-        put("default:dragon_breath", new ParticleTypeConfigSection());
+        this.put("default:dragon_breath", new ParticleTypeConfigSection());
     }};
 
     @Setting(value = "pps", comment = "Particle per second, you can set how fast you want the particles to show up\n" +
@@ -31,12 +31,12 @@ public class ParticleTypesConfig {
     private int pps = 4;
 
     public int getPps() {
-        if (pps < 0 || pps > 20) {
-            pps = 4;
+        if (this.pps < 0 || this.pps > 20) {
+            this.pps = 4;
             KiloEssentials.getLogger().error("Exception while loading the Particle Types, the \"pps\" Value must be between 0 to 20");
         }
 
-        return pps;
+        return this.pps;
     }
 
 }

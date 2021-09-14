@@ -24,13 +24,13 @@ public class EnderchestCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("target", EntityArgumentType.player())
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = this.argument("target", EntityArgumentType.player())
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.ENDERCHEST_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
-                .executes(ctx -> execute(ctx.getSource().getPlayer(), EntityArgumentType.getPlayer(ctx, "target")));
+                .executes(ctx -> this.execute(ctx.getSource().getPlayer(), EntityArgumentType.getPlayer(ctx, "target")));
 
-        argumentBuilder.executes(ctx -> execute(ctx.getSource().getPlayer(), ctx.getSource().getPlayer()));
-        commandNode.addChild(selectorArgument.build());
+        this.argumentBuilder.executes(ctx -> this.execute(ctx.getSource().getPlayer(), ctx.getSource().getPlayer()));
+        this.commandNode.addChild(selectorArgument.build());
     }
 
     private int execute(ServerPlayerEntity sender, ServerPlayerEntity target) {

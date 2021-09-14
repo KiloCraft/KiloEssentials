@@ -30,7 +30,7 @@ public class CalculateCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> inputArgument = argument("input", StringArgumentType.greedyString())
+        RequiredArgumentBuilder<ServerCommandSource, String> inputArgument = this.argument("input", StringArgumentType.greedyString())
                 .suggests(this::operations)
                 .executes(this::execute);
 

@@ -38,20 +38,20 @@ public class TempBanIpCommand extends EssentialCommand {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         RequiredArgumentBuilder<ServerCommandSource, String> victim = this.getUserArgument("target");
 
-        RequiredArgumentBuilder<ServerCommandSource, String> time = argument("time", StringArgumentType.word())
+        RequiredArgumentBuilder<ServerCommandSource, String> time = this.argument("time", StringArgumentType.word())
                 .suggests(TimeDifferenceUtil::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), null, false));
 
-        RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
+        RequiredArgumentBuilder<ServerCommandSource, String> reason = this.argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
+        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent")
                 .then(this.getUserArgument("target").then(
-                        argument("time", StringArgumentType.word())
+                        this.argument("time", StringArgumentType.word())
                                 .suggests(TimeDifferenceUtil::listSuggestions)
                                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), null, true))
                                 .then(
-                                        argument("reason", StringArgumentType.greedyString())
+                                        this.argument("reason", StringArgumentType.greedyString())
                                                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true))
                                 )
                 ));
@@ -67,7 +67,7 @@ public class TempBanIpCommand extends EssentialCommand {
         String input = this.getUserArgumentInput(ctx, "target");
         Matcher matcher = BanIpCommand.PATTERN.matcher(input);
         if (matcher.matches()) {
-            return tempBanIp(src, null, input, time, reason, silent);
+            return this.tempBanIp(src, null, input, time, reason, silent);
         } else {
             this.getUserManager().getUserThenAcceptAsync(src, input, (victim) -> {
                 if (victim.getLastIp() == null) {
@@ -76,7 +76,7 @@ public class TempBanIpCommand extends EssentialCommand {
                 }
 
                 try {
-                    tempBanIp(src, victim, victim.getLastIp(), time, reason, silent);
+                    this.tempBanIp(src, victim, victim.getLastIp(), time, reason, silent);
                 } catch (CommandSyntaxException e) {
                     src.sendError(e.getMessage());
                 }
@@ -106,7 +106,7 @@ public class TempBanIpCommand extends EssentialCommand {
 
         PunishEvents.BAN.invoker().onBan(src, victim, reason, true, expiry.getTime(), silent);
 
-        getUserManager().onPunishmentPerformed(src, victim == null ? new Punishment(src, null, ip, reason, expiry) : new Punishment(src, victim, ip, reason, expiry), Punishment.Type.BAN_IP, time, silent);
+        this.getUserManager().onPunishmentPerformed(src, victim == null ? new Punishment(src, null, ip, reason, expiry) : new Punishment(src, victim, ip, reason, expiry), Punishment.Type.BAN_IP, time, silent);
         return players.size();
     }
 

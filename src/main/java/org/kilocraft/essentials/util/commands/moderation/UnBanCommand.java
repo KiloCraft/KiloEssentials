@@ -30,11 +30,11 @@ public class UnBanCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> user = argument("profile", GameProfileArgumentType.gameProfile())
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> user = this.argument("profile", GameProfileArgumentType.gameProfile())
                 .suggests(this::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
+        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent")
                 .executes((ctx) -> this.execute(ctx, true));
 
         user.then(silent);
@@ -55,7 +55,7 @@ public class UnBanCommand extends EssentialCommand {
         }
 
         KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().remove(profile);
-        getUserManager().onPunishmentRevoked(src, new Punishment(src, EntityIdentifiable.fromGameProfile(profile)), Punishment.Type.BAN, null, silent);
+        this.getUserManager().onPunishmentRevoked(src, new Punishment(src, EntityIdentifiable.fromGameProfile(profile)), Punishment.Type.BAN, null, silent);
 
         return SUCCESS;
     }

@@ -17,14 +17,14 @@ public class RootSetting implements Setting {
     }
 
     public RootSetting addChild(AbstractSetting setting) {
-        children.add(setting);
+        this.children.add(setting);
         setting.setParent(this);
         return this;
     }
 
     @Override
     public List<AbstractSetting> getChildren() {
-        return children;
+        return this.children;
     }
 
     @Override
@@ -35,15 +35,15 @@ public class RootSetting implements Setting {
     @Nullable
     public Setting getSetting(String id) {
         if (id.equals("")) return this;
-        AbstractSetting cached = cache.get(id);
+        AbstractSetting cached = this.cache.get(id);
         if (cached != null) {
             return cached;
         } else {
-            for (AbstractSetting child : children) {
+            for (AbstractSetting child : this.children) {
                 if (id.startsWith(child.id)) {
                     String[] part = id.split("\\.", 2);
                     AbstractSetting result = child.getSetting(part.length > 1 ? part[1] : "");
-                    cache.put(id, result);
+                    this.cache.put(id, result);
                     return result;
                 }
             }
@@ -60,7 +60,7 @@ public class RootSetting implements Setting {
     }
 
     public void fromTag(NbtCompound tag) {
-        for (AbstractSetting child : children) {
+        for (AbstractSetting child : this.children) {
             child.fromTag(tag);
         }
     }

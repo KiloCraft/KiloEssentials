@@ -54,8 +54,8 @@ public class ModifyItemCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        ItemNameCommand.registerChild(argumentBuilder);
-        ItemLoreCommand.registerChild(argumentBuilder);
-        PowerToolsCommand.registerChild(argumentBuilder);
+        ItemNameCommand.registerChild(this.argumentBuilder);
+        ItemLoreCommand.registerChild(this.argumentBuilder);
+        PowerToolsCommand.registerChild(this.argumentBuilder);
     }
 }

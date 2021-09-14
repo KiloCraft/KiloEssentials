@@ -71,117 +71,117 @@ public class PlayerWarpCommand extends EssentialCommand {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         {
-            LiteralArgumentBuilder<ServerCommandSource> addArgument = literal("add");
-            RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", StringArgumentType.word())
+            LiteralArgumentBuilder<ServerCommandSource> addArgument = this.literal("add");
+            RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = this.argument("name", StringArgumentType.word())
                     .executes((ctx) -> this.sendUsage(ctx, "command.playerwarp.usage.provide_type"));
-            RequiredArgumentBuilder<ServerCommandSource, String> typeArgument = argument("type", StringArgumentType.word())
+            RequiredArgumentBuilder<ServerCommandSource, String> typeArgument = this.argument("type", StringArgumentType.word())
                     .suggests(this::typeSuggestions)
                     .executes((ctx) -> this.sendUsage(ctx, "command.playerwarp.usage.provide_desc"));
-            RequiredArgumentBuilder<ServerCommandSource, String> descArgument = argument("description", StringArgumentType.greedyString())
+            RequiredArgumentBuilder<ServerCommandSource, String> descArgument = this.argument("description", StringArgumentType.greedyString())
                     .executes(this::add);
 
             typeArgument.then(descArgument);
             nameArgument.then(typeArgument);
             addArgument.then(nameArgument);
-            commandNode.addChild(addArgument.build());
+            this.commandNode.addChild(addArgument.build());
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove");
-            RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", StringArgumentType.word())
+            LiteralArgumentBuilder<ServerCommandSource> removeArgument = this.literal("remove");
+            RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = this.argument("name", StringArgumentType.word())
                     .suggests(this::personalWarpSuggestions)
                     .executes(this::remove);
 
             removeArgument.then(nameArgument);
-            commandNode.addChild(removeArgument.build());
+            this.commandNode.addChild(removeArgument.build());
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> listArgument = literal("list")
+            LiteralArgumentBuilder<ServerCommandSource> listArgument = this.literal("list")
                     .executes((ctx) -> this.list(ctx, 1, null));
             RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("user")
                     .executes((ctx) -> this.list(ctx, 1, this.getUserArgumentInput(ctx, "user")));
-            RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = argument("page", IntegerArgumentType.integer(1))
+            RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = this.argument("page", IntegerArgumentType.integer(1))
                     .executes((ctx) -> this.list(ctx, IntegerArgumentType.getInteger(ctx, "page"), this.getUserArgumentInput(ctx, "user")));
 
             userArgument.then(pageArgument);
             listArgument.then(userArgument);
-            commandNode.addChild(listArgument.build());
+            this.commandNode.addChild(listArgument.build());
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> setOwnerArgument = literal("setowner")
+            LiteralArgumentBuilder<ServerCommandSource> setOwnerArgument = this.literal("setowner")
                     .requires(src -> KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_ADMIN));
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = argument("warp", StringArgumentType.word())
+            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions);
             RequiredArgumentBuilder<ServerCommandSource, String> ownerArgument = this.getUserArgument("owner")
                     .executes(this::setOwner);
 
             warpArgument.then(ownerArgument);
             setOwnerArgument.then(warpArgument);
-            commandNode.addChild(setOwnerArgument.build());
+            this.commandNode.addChild(setOwnerArgument.build());
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> setNameArgument = literal("setname")
+            LiteralArgumentBuilder<ServerCommandSource> setNameArgument = this.literal("setname")
                     .requires(src -> KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_ADMIN));
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = argument("warp", StringArgumentType.word())
+            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions);
-            RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = argument("name", StringArgumentType.word())
+            RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = this.argument("name", StringArgumentType.word())
                     .executes(this::setName);
 
             warpArgument.then(nameArgument);
             setNameArgument.then(warpArgument);
-            commandNode.addChild(setNameArgument.build());
+            this.commandNode.addChild(setNameArgument.build());
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> setDescriptionArgument = literal("setdescription")
+            LiteralArgumentBuilder<ServerCommandSource> setDescriptionArgument = this.literal("setdescription")
                     .requires(src -> KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_ADMIN));
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = argument("warp", StringArgumentType.word())
+            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions);
-            RequiredArgumentBuilder<ServerCommandSource, String> descriptionArgument = argument("description", StringArgumentType.greedyString())
+            RequiredArgumentBuilder<ServerCommandSource, String> descriptionArgument = this.argument("description", StringArgumentType.greedyString())
                     .executes(this::setDescription);
 
             warpArgument.then(descriptionArgument);
             setDescriptionArgument.then(warpArgument);
-            commandNode.addChild(setDescriptionArgument.build());
+            this.commandNode.addChild(setDescriptionArgument.build());
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> listArgument = literal("info");
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = argument("warp", StringArgumentType.word())
+            LiteralArgumentBuilder<ServerCommandSource> listArgument = this.literal("info");
+            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions)
                     .executes(this::info);
 
             listArgument.then(warpArgument);
-            commandNode.addChild(listArgument.build());
+            this.commandNode.addChild(listArgument.build());
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> teleportArgument = literal("teleport");
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = argument("warp", StringArgumentType.word())
+            LiteralArgumentBuilder<ServerCommandSource> teleportArgument = this.literal("teleport");
+            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions)
                     .executes(this::teleport);
 
             teleportArgument.then(warpArgument);
-            commandNode.addChild(teleportArgument.build());
+            this.commandNode.addChild(teleportArgument.build());
         }
 
     }
 
     private int add(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getOnlineUser(ctx);
+        OnlineUser user = this.getOnlineUser(ctx);
         String name = StringArgumentType.getString(ctx, "name");
         PlayerWarp warp = PlayerWarpsManager.getWarp(name);
 
         if (!canSet(user) && !user.hasPermission(CommandPermission.PLAYER_WARP_LIMIT_BYPASS)) {
-            user.sendMessage(messages.commands().playerWarp().limitReached);
+            user.sendMessage(this.messages.commands().playerWarp().limitReached);
             return FAILED;
         }
 
         if (warp != null && !warp.getOwner().equals(user.getUuid())) {
-            user.sendLangMessage(messages.commands().playerWarp().nameAlreadyTaken);
+            user.sendLangMessage(this.messages.commands().playerWarp().nameAlreadyTaken);
             return FAILED;
         }
 
@@ -210,12 +210,12 @@ public class PlayerWarpCommand extends EssentialCommand {
             PlayerWarpsManager.addWarp(new PlayerWarp(name, user.getLocation(), user.getUuid(), type, desc));
         }
 
-        user.sendMessage(messages.commands().playerWarp().warpSet.replace("{NAME}", name));
+        user.sendMessage(this.messages.commands().playerWarp().warpSet.replace("{NAME}", name));
         return SUCCESS;
     }
 
     private int remove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getOnlineUser(ctx);
+        OnlineUser user = this.getOnlineUser(ctx);
         String input = StringArgumentType.getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
@@ -232,13 +232,13 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         if (!input.startsWith("-confirmed-")) {
-            user.sendMessage(getRemoveConfirmationText(name));
+            user.sendMessage(this.getRemoveConfirmationText(name));
             return FAILED;
         }
 
         PlayerWarpsManager.removeWarp(name);
 
-        user.sendMessage(messages.commands().playerWarp().warpRemoved.replace("{NAME}", name));
+        user.sendMessage(this.messages.commands().playerWarp().warpRemoved.replace("{NAME}", name));
         return SUCCESS;
     }
 
@@ -289,7 +289,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        this.getUserManager().getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "owner"), (user) -> {
+        this.getUserManager().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "owner"), (user) -> {
             warp.setOwner(user.getUuid());
             src.sendLangMessage("command.playerwarp.change_property", "owner", warp.getName(), user.getFormattedDisplayName());
         });
@@ -367,7 +367,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-        this.getUserManager().getUserThenAcceptAsync(src, warp.getOwner(), (user) -> sendInfo(src, warp, user));
+        this.getUserManager().getUserThenAcceptAsync(src, warp.getOwner(), (user) -> this.sendInfo(src, warp, user));
         return AWAIT;
     }
 

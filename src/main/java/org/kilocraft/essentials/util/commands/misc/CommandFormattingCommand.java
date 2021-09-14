@@ -18,11 +18,11 @@ public class CommandFormattingCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::execute);
+        this.argumentBuilder.executes(this::execute);
     }
 
     public int execute(CommandContext<ServerCommandSource> ctx) {
-        getCommandSource(ctx).sendMessage(text);
+        this.getCommandSource(ctx).sendMessage(text);
         return SUCCESS;
     }
 }

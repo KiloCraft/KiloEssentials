@@ -56,7 +56,7 @@ public class RtpCommand extends EssentialCommand {
     }
 
     void teleport(ServerCommandSource src, ServerPlayerEntity target) {
-        OnlineUser targetUser = getUserManager().getOnline(target);
+        OnlineUser targetUser = this.getUserManager().getOnline(target);
         RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
         if (targetUser.getPreference(RTP_LEFT) < 0) {
             targetUser.getPreferences().set(RTP_LEFT, 0);
@@ -117,49 +117,49 @@ public class RtpCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> addArgument = literal("add")
+        LiteralArgumentBuilder<ServerCommandSource> addArgument = this.literal("add")
                 .requires(PERMISSION_CHECK_MANAGE)
-                .then(argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgumentType.player())
                         .suggests(ArgumentSuggestions::allPlayers).then(
-                                argument("amount", IntegerArgumentType.integer(1))
+                                this.argument("amount", IntegerArgumentType.integer(1))
                                         .executes(this::executeAdd)
                         )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set")
+        LiteralArgumentBuilder<ServerCommandSource> setArgument = this.literal("set")
                 .requires(PERMISSION_CHECK_MANAGE)
-                .then(argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgumentType.player())
                         .suggests(ArgumentSuggestions::allPlayers).then(
-                                argument("amount", IntegerArgumentType.integer(1))
+                                this.argument("amount", IntegerArgumentType.integer(1))
                                         .executes(this::executeSet)
                         )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove")
+        LiteralArgumentBuilder<ServerCommandSource> removeArgument = this.literal("remove")
                 .requires(PERMISSION_CHECK_MANAGE)
-                .then(argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgumentType.player())
                         .suggests(ArgumentSuggestions::allPlayers).then(
-                                argument("amount", IntegerArgumentType.integer(1))
+                                this.argument("amount", IntegerArgumentType.integer(1))
                                         .executes(this::executeRemove)
                         )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> sendArgument = literal("send")
+        LiteralArgumentBuilder<ServerCommandSource> sendArgument = this.literal("send")
                 .requires(PERMISSION_CHECK_MANAGE)
-                .then(argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgumentType.player())
                         .suggests(ArgumentSuggestions::allPlayers)
                         .executes(this::executeOthers)
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> checkArgument = literal("check")
+        LiteralArgumentBuilder<ServerCommandSource> checkArgument = this.literal("check")
                 .executes(this::executeLeft)
-                .then(argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgumentType.player())
                         .requires(PERMISSION_CHECK_OTHERS)
                         .suggests(ArgumentSuggestions::allPlayers)
                         .executes(this::executeGet)
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> performArgument = literal("perform")
+        LiteralArgumentBuilder<ServerCommandSource> performArgument = this.literal("perform")
                 .executes(this::executePerform);
 
         this.commandNode.addChild(addArgument.build());
@@ -173,7 +173,7 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getUserManager().getOnline(ctx.getSource());
+        OnlineUser user = this.getUserManager().getOnline(ctx.getSource());
         new CommandSourceServerUser(ctx.getSource())
                 .sendLangMessage("command.rtp.get", user.getDisplayName(), user.getPreference(RTP_LEFT));
 
@@ -181,7 +181,7 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int executeAdd(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getUserManager().getOnline(getPlayer(ctx, "target"));
+        OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         int amountToAdd = getInteger(ctx, "amount");
         user.getPreferences().set(RTP_LEFT, user.getPreference(RTP_LEFT) + amountToAdd);
         new CommandSourceServerUser(ctx.getSource())
@@ -191,7 +191,7 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int executeSet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getUserManager().getOnline(getPlayer(ctx, "target"));
+        OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         int amountToSet = getInteger(ctx, "amount");
         user.getPreferences().set(RTP_LEFT, amountToSet);
         new CommandSourceServerUser(ctx.getSource())
@@ -201,7 +201,7 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int executeGet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getUserManager().getOnline(getPlayer(ctx, "target"));
+        OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         new CommandSourceServerUser(ctx.getSource())
                 .sendLangMessage("command.rtp.get", user.getDisplayName(), user.getPreference(RTP_LEFT));
 
@@ -209,7 +209,7 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int executeRemove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getUserManager().getOnline(getPlayer(ctx, "target"));
+        OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         int amountToRemove = getInteger(ctx, "amount");
 
         if ((user.getPreference(RTP_LEFT) - amountToRemove) < 0)
@@ -232,18 +232,18 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int executePerform(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return execute(ctx.getSource(), ctx.getSource().getPlayer());
+        return this.execute(ctx.getSource(), ctx.getSource().getPlayer());
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser target = getUserManager().getOnline(getPlayer(ctx, "target"));
+        OnlineUser target = this.getUserManager().getOnline(getPlayer(ctx, "target"));
 
-        return execute(ctx.getSource(), target.asPlayer());
+        return this.execute(ctx.getSource(), target.asPlayer());
     }
 
     private int execute(ServerCommandSource source, ServerPlayerEntity target) {
-        getUserManager().getOnline(target).sendMessage(messages.commands().rtp().start);
-        teleport(source, target);
+        this.getUserManager().getOnline(target).sendMessage(this.messages.commands().rtp().start);
+        this.teleport(source, target);
         return SUCCESS;
     }
 }

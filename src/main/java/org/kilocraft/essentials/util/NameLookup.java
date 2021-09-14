@@ -142,7 +142,7 @@ public class NameLookup {
          * @return The name of the player.
          */
         public String getPlayerName() {
-            return name;
+            return this.name;
         }
 
         /**
@@ -153,7 +153,7 @@ public class NameLookup {
          * @return a timestamp in miliseconds that you can turn into a date or handle however you want :)
          */
         public long getChangeTime() {
-            return changeTime;
+            return this.changeTime;
         }
 
         /**
@@ -162,12 +162,12 @@ public class NameLookup {
          * @return a boolean, true if it is the the very first name of the player, otherwise false.
          */
         public boolean isPlayersInitialName() {
-            return getChangeTime() == 0;
+            return this.getChangeTime() == 0;
         }
 
         @Override
         public String toString() {
-            return "Name: " + name + " Date of change: " + new Date(changeTime).toString();
+            return "Name: " + this.name + " Date of change: " + new Date(this.changeTime);
         }
     }
 

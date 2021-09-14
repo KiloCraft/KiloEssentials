@@ -78,7 +78,7 @@ public class UserHandler {
 
 
     public void upgrade() {
-        File[] files = getUserFiles();
+        File[] files = this.getUserFiles();
         if (files == null || files.length <= 0) {
             return;
         }
@@ -89,9 +89,9 @@ public class UserHandler {
         UUID uuid = UUID.fromString(file.getName().replace(".dat", ""));
 
         try {
-            if (upgrade(file, uuid)) {
+            if (this.upgrade(file, uuid)) {
                 KiloEssentials.getLogger().info("Found old data format! Updating the user data format!");
-                upgradeAll();
+                this.upgradeAll();
             }
         } catch (IOException e) {
             KiloEssentials.getLogger().error("Failed at checking the user data!", e);
@@ -104,7 +104,7 @@ public class UserHandler {
         watch.start();
         Pattern pattern = Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
-        for (File file : getUserFiles()) {
+        for (File file : this.getUserFiles()) {
             String strId = file.getName().replace(".dat", "");
             Matcher matcher = pattern.matcher(strId);
             if (!matcher.matches()) {
@@ -112,7 +112,7 @@ public class UserHandler {
             }
             UUID uuid = UUID.fromString(strId);
             try {
-                if (upgrade(file, uuid)) {
+                if (this.upgrade(file, uuid)) {
                     updated++;
                 }
             } catch (IOException e) {

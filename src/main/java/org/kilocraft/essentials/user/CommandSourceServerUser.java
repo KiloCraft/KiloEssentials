@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CommandSourceServerUser implements CommandSourceUser {
-    private ServerCommandSource source;
+    private final ServerCommandSource source;
 
     public CommandSourceServerUser(ServerCommandSource source) {
         this.source = source;
@@ -86,12 +86,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public String getDisplayName() {
-        return source.getName();
+        return this.source.getName();
     }
 
     @Override
     public String getFormattedDisplayName() {
-        return getDisplayName();
+        return this.getDisplayName();
     }
 
     @Override
@@ -131,7 +131,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public @Nullable Location getLastSavedLocation() {
-        return getLocation();
+        return this.getLocation();
     }
 
     @Override
@@ -328,7 +328,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public Vec3dLocation getLocationAsVector() throws CommandSyntaxException {
-        return this.isConsole() ? null : Vec3dLocation.of(source.getPlayer());
+        return this.isConsole() ? null : Vec3dLocation.of(this.source.getPlayer());
     }
 
     @Override
@@ -379,7 +379,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public OnlineUser getUser() throws CommandSyntaxException {
-        return KiloEssentials.getUserManager().getOnline(source);
+        return KiloEssentials.getUserManager().getOnline(this.source);
     }
 
     @Override

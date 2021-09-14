@@ -32,7 +32,7 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class ItemLoreCommand {
-    private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE);
+    private static final Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE);
 
     public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
         LiteralCommandNode<ServerCommandSource> rootCommand = literal("lore")

@@ -30,23 +30,23 @@ public class WhoIsCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = getUserArgument("user")
-                .requires(src -> hasPermission(src, CommandPermission.WHOIS_OTHERS))
+        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("user")
+                .requires(src -> this.hasPermission(src, CommandPermission.WHOIS_OTHERS))
                 .executes(this::executeOthers);
 
-        argumentBuilder.executes(this::executeSelf);
-        commandNode.addChild(userArgument.build());
+        this.argumentBuilder.executes(this::executeSelf);
+        this.commandNode.addChild(userArgument.build());
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        CommandSourceUser user = getCommandSource(ctx);
-        return execute(user, getOnlineUser(ctx));
+        CommandSourceUser user = this.getCommandSource(ctx);
+        return this.execute(user, this.getOnlineUser(ctx));
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) {
-        CommandSourceUser src = getCommandSource(ctx);
-        getUserManager().getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
-            execute(src, user);
+        CommandSourceUser src = this.getCommandSource(ctx);
+        this.getUserManager().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {
+            this.execute(src, user);
         });
 
         return AWAIT;
@@ -136,12 +136,12 @@ public class WhoIsCommand extends EssentialCommand {
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         assert vec.getDimension() != null;
         MutableText loc = Texter.newText(vec.asFormattedString());
-        text.append("Location", getButtonForVec(loc, vec));
+        text.append("Location", this.getButtonForVec(loc, vec));
 
         if (target.getLastSavedLocation() != null) {
             Vec3dLocation savedVec = ((Vec3dLocation) target.getLastSavedLocation()).shortDecimals();
             MutableText lastLoc = Texter.newText(savedVec.asFormattedString());
-            text.append("Saved Location", getButtonForVec(lastLoc, savedVec));
+            text.append("Saved Location", this.getButtonForVec(lastLoc, savedVec));
         }
 
         src.sendMessage(text.build());

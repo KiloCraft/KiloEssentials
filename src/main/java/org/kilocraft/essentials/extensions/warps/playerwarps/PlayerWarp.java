@@ -71,8 +71,8 @@ public class PlayerWarp extends Warp implements Comparable<PlayerWarp> {
     }
 
     public static class Type {
-        private static List<String> types = new ArrayList<>();
-        private String name;
+        private static final List<String> types = new ArrayList<>();
+        private final String name;
 
         public Type(String name) {
             this.name = name;

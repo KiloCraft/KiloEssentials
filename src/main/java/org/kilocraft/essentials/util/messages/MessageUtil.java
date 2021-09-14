@@ -11,16 +11,16 @@ import java.util.Properties;
 import static org.kilocraft.essentials.api.ModConstants.getResourceAsStream;
 
 public class MessageUtil {
-    private Properties GENERAL_MESSAGES = new Properties();
-    private Properties COMMAND_MESSAGES = new Properties();
-    private Properties EXCEPTION_MESSAGES = new Properties();
-    private Properties ARGUMENT_EXCEPTION_MESSAGES = new Properties();
+    private final Properties GENERAL_MESSAGES = new Properties();
+    private final Properties COMMAND_MESSAGES = new Properties();
+    private final Properties EXCEPTION_MESSAGES = new Properties();
+    private final Properties ARGUMENT_EXCEPTION_MESSAGES = new Properties();
 
     public MessageUtil() throws IOException {
-        GENERAL_MESSAGES.load(getResourceAsStream(getPath("general")));
-        COMMAND_MESSAGES.load(getResourceAsStream(getPath("commands")));
-        EXCEPTION_MESSAGES.load(getResourceAsStream(getPath("exceptions")));
-        ARGUMENT_EXCEPTION_MESSAGES.load(getResourceAsStream(getPath("arg_exceptions")));
+        this.GENERAL_MESSAGES.load(getResourceAsStream(this.getPath("general")));
+        this.COMMAND_MESSAGES.load(getResourceAsStream(this.getPath("commands")));
+        this.EXCEPTION_MESSAGES.load(getResourceAsStream(this.getPath("exceptions")));
+        this.ARGUMENT_EXCEPTION_MESSAGES.load(getResourceAsStream(this.getPath("arg_exceptions")));
     }
 
     private String getPath(String fileName) {
@@ -28,22 +28,22 @@ public class MessageUtil {
     }
 
     public String fromGeneralNode(GeneralMessageNode node) {
-        return (!node.getKey().equals("")) ? GENERAL_MESSAGES.getProperty(node.getKey()) : "";
+        return (!node.getKey().equals("")) ? this.GENERAL_MESSAGES.getProperty(node.getKey()) : "";
     }
 
     public String fromCommandNode(CommandMessageNode node) {
-        return (!node.getKey().equals("")) ? COMMAND_MESSAGES.getProperty(node.getKey()) : "";
+        return (!node.getKey().equals("")) ? this.COMMAND_MESSAGES.getProperty(node.getKey()) : "";
     }
 
     public String fromExceptionNode(ExceptionMessageNode node) {
-        return (!node.getKey().equals("")) ? EXCEPTION_MESSAGES.getProperty(node.getKey()) : "";
+        return (!node.getKey().equals("")) ? this.EXCEPTION_MESSAGES.getProperty(node.getKey()) : "";
     }
 
     public String fromArgumentExceptionNode(ArgExceptionMessageNode node) {
-        return (!node.getKey().equals("")) ? ARGUMENT_EXCEPTION_MESSAGES.getProperty(node.getKey()) : "";
+        return (!node.getKey().equals("")) ? this.ARGUMENT_EXCEPTION_MESSAGES.getProperty(node.getKey()) : "";
     }
 
     public String getGeneral(GeneralMessageNode node, Object... objects) {
-        return (objects != null) ? String.format(fromGeneralNode(node), objects) : fromGeneralNode(node);
+        return (objects != null) ? String.format(this.fromGeneralNode(node), objects) : this.fromGeneralNode(node);
     }
 }

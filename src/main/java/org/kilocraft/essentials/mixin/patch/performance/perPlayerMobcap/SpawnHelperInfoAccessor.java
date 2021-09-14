@@ -16,18 +16,18 @@ public interface SpawnHelperInfoAccessor {
 
 
     @Accessor("spawningChunkCount")
-    public int getSpawnChunkCount();
+    int getSpawnChunkCount();
 
     @Accessor("groupToCountView")
-    public Object2IntMap<SpawnGroup> getGroupToCountView();
+    Object2IntMap<SpawnGroup> getGroupToCountView();
 
     @Invoker("test")
-    public boolean test(EntityType<?> entityType, BlockPos blockPos, Chunk chunk);
+    boolean test(EntityType<?> entityType, BlockPos blockPos, Chunk chunk);
 
     @Invoker("run")
-    public void run(MobEntity mobEntity, Chunk chunk);
+    void run(MobEntity mobEntity, Chunk chunk);
 
     @Invoker("isBelowCap")
-    public boolean isBelowCap(SpawnGroup spawnGroup);
+    boolean isBelowCap(SpawnGroup spawnGroup);
 
 }

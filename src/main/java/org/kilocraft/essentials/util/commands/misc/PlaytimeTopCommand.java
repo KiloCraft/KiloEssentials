@@ -37,10 +37,10 @@ public class PlaytimeTopCommand extends EssentialCommand {
 
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, Integer> page = argument("page", IntegerArgumentType.integer(1))
+        final RequiredArgumentBuilder<ServerCommandSource, Integer> page = this.argument("page", IntegerArgumentType.integer(1))
                 .executes(ctx -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), false));
 
-        final LiteralArgumentBuilder<ServerCommandSource> force = literal("force")
+        final LiteralArgumentBuilder<ServerCommandSource> force = this.literal("force")
                 .executes(ctx -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), true));
 
         page.then(force);
@@ -67,7 +67,7 @@ public class PlaytimeTopCommand extends EssentialCommand {
             }
         }
 
-        getUserManager().getAllUsersThenAcceptAsync(src, "general.wait_users", list -> {
+        this.getUserManager().getAllUsersThenAcceptAsync(src, "general.wait_users", list -> {
             final HashMap<String, Integer> map = new HashMap<>();
             long totalTicks = 0L;
 

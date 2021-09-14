@@ -40,13 +40,13 @@ public class BanIpCommand extends EssentialCommand {
         RequiredArgumentBuilder<ServerCommandSource, String> victim = this.getUserArgument("target")
                 .executes((ctx) -> this.execute(ctx, null, false));
 
-        RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
+        RequiredArgumentBuilder<ServerCommandSource, String> reason = this.argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent").then(
+        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent").then(
                 this.getUserArgument("target")
                         .executes((ctx) -> this.execute(ctx, null, true))
-                        .then(argument("reason", StringArgumentType.greedyString())
+                        .then(this.argument("reason", StringArgumentType.greedyString())
                                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), true)))
         );
 
@@ -60,7 +60,7 @@ public class BanIpCommand extends EssentialCommand {
         String input = this.getUserArgumentInput(ctx, "target");
         Matcher matcher = PATTERN.matcher(input);
         if (matcher.matches()) {
-            return banIp(src, null, input, reason, silent);
+            return this.banIp(src, null, input, reason, silent);
         } else {
             this.getUserManager().getUserThenAcceptAsync(src, input, (victim) -> {
                 if (victim.getLastIp() == null) {
@@ -68,7 +68,7 @@ public class BanIpCommand extends EssentialCommand {
                     return;
                 }
 
-                banIp(src, victim, victim.getLastIp(), reason, silent);
+                this.banIp(src, victim, victim.getLastIp(), reason, silent);
             });
 
         }
@@ -94,7 +94,7 @@ public class BanIpCommand extends EssentialCommand {
 
         PunishEvents.BAN.invoker().onBan(src, victim, reason, true, -1L, silent);
 
-        getUserManager().onPunishmentPerformed(src, victim == null ? new Punishment(src, ip, reason) : new Punishment(src, victim, ip, reason, null), Punishment.Type.BAN_IP, null, silent);
+        this.getUserManager().onPunishmentPerformed(src, victim == null ? new Punishment(src, ip, reason) : new Punishment(src, victim, ip, reason, null), Punishment.Type.BAN_IP, null, silent);
         return players.size();
     }
 

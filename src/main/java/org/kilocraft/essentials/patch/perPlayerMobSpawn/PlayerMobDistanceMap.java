@@ -33,7 +33,7 @@ public final class PlayerMobDistanceMap {
     }
 
     public Long2ObjectOpenHashMap<PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity>> getPlayerMap() {
-        return playerMap;
+        return this.playerMap;
     }
 
     public void update(final List<ServerPlayerEntity> currentPlayers, final int newViewDistance) {

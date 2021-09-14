@@ -26,9 +26,9 @@ public class ChatPingConfigSection {
     public String pingedNotPingedFormat = "&a&o&m%PLAYER_DISPLAYNAME%";
 
     @Setting(value = "sound", comment = "The sound you hear when someone pings you")
-    private ChatPingSoundConfigSection chatPingSound = new ChatPingSoundConfigSection(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 3.0D, 1.0D);
+    private final ChatPingSoundConfigSection chatPingSound = new ChatPingSoundConfigSection(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 3.0D, 1.0D);
 
     public ChatPingSoundConfigSection pingSound() {
-        return chatPingSound;
+        return this.chatPingSound;
     }
 }

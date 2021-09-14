@@ -33,12 +33,12 @@ public class VanishCommand extends EssentialCommand {
     private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final OnlineServerUser user = (OnlineServerUser) KiloEssentials.getUserManager().getOnline(ctx.getSource());
 
-        user.getPreferences().set(preference, !user.getPreference(preference));
+        user.getPreferences().set(this.preference, !user.getPreference(this.preference));
 
 
         //TODO: Cancel join event
         List<OnlineUser> online = KiloEssentials.getUserManager().getOnlineUsersAsList();
-        if (user.getPreference(preference)) {
+        if (user.getPreference(this.preference)) {
             for (OnlineUser onlineUser : online) {
                 if (!onlineUser.hasPermission(CommandPermission.VANISH)) {
                     onlineUser.asPlayer().networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.REMOVE_PLAYER, user.asPlayer()));

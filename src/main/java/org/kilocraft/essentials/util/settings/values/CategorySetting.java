@@ -15,14 +15,14 @@ public class CategorySetting extends AbstractSetting {
         for (AbstractSetting child : this.children) {
             child.toTag(setting);
         }
-        tag.put(id, setting);
+        tag.put(this.id, setting);
     }
 
     @Override
     public void fromTag(NbtCompound tag) {
-        if (tag.contains(id)) {
-            NbtCompound setting = tag.getCompound(id);
-            for (AbstractSetting child : children) {
+        if (tag.contains(this.id)) {
+            NbtCompound setting = tag.getCompound(this.id);
+            for (AbstractSetting child : this.children) {
                 child.fromTag(setting);
             }
         }

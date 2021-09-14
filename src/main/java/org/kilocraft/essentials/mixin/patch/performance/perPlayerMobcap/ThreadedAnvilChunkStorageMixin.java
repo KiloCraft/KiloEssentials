@@ -38,7 +38,7 @@ public abstract class ThreadedAnvilChunkStorageMixin implements ThreadedAnvilChu
 
     @Override
     public PlayerMobDistanceMap getMobDistanceMap() {
-        return playerMobDistanceMap;
+        return this.playerMobDistanceMap;
     }
 
     public void updatePlayerMobTypeMap(Entity entity) {

@@ -32,7 +32,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Inject(at = @At(value = "HEAD"), method = "onDisconnected")
     private void onPlayerLeave(Text reason, CallbackInfo ci) {
-        PlayerEvents.LEAVE.invoker().onLeave(player);
-        KiloEssentials.getUserManager().onLeave(player);
+        PlayerEvents.LEAVE.invoker().onLeave(this.player);
+        KiloEssentials.getUserManager().onLeave(this.player);
     }
 }

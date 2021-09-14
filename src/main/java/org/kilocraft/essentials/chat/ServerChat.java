@@ -53,13 +53,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class ServerChat {
-    private static final String DEBUG_EXCEPTION = "--texc";
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
     private static final int LINK_MAX_LENGTH = 20;
     private static final int COMMAND_MAX_LENGTH = 45;
     private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new SimpleCommandExceptionType(StringText.of(true, "command.message.error"));
-    private static ChatConfigSection config = KiloConfig.main().chat();
+    private static final ChatConfigSection config = KiloConfig.main().chat();
 
     public static void sendChatMessage(final OnlineUser user, final String raw, final Channel channel) {
         ChatEvents.CHAT_MESSAGE.invoker().onChat(user.asPlayer(), raw, channel);
@@ -375,7 +374,7 @@ public final class ServerChat {
         STAFF("staff"),
         BUILDER("builder");
 
-        private String id;
+        private final String id;
 
         Channel(String id) {
             this.id = id;
@@ -413,7 +412,7 @@ public final class ServerChat {
         }
 
         public void send(Text message) {
-            send(message, MessageType.SYSTEM, Util.NIL_UUID);
+            this.send(message, MessageType.SYSTEM, Util.NIL_UUID);
         }
 
         public String getFormat() {
@@ -433,7 +432,7 @@ public final class ServerChat {
     public enum MentionTypes {
         PUBLIC,
         PRIVATE,
-        EVERYONE;
+        EVERYONE
     }
 
     public enum VisibilityPreference {

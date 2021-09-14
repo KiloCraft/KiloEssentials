@@ -6,10 +6,10 @@ public class SetHomeNotAllowedException extends Exception {
     private UserHomeHandler.Reason reason;
 
     public SetHomeNotAllowedException() {
-        this.reason = reason = UserHomeHandler.Reason.NO_PERMISSION;
+        this.reason = this.reason = UserHomeHandler.Reason.NO_PERMISSION;
     }
 
     public UserHomeHandler.Reason getReason() {
-        return reason;
+        return this.reason;
     }
 }

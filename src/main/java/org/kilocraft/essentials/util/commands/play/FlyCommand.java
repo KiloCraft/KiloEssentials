@@ -23,25 +23,25 @@ public class FlyCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("player", player())
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = this.argument("player", player())
                 .requires(s -> KiloCommands.hasPermission(s, CommandPermission.FLY_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
-                .executes(c -> toggle(c.getSource(), getPlayer(c, "player")));
+                .executes(c -> this.toggle(c.getSource(), getPlayer(c, "player")));
 
-        RequiredArgumentBuilder<ServerCommandSource, Boolean> setArgument = argument("set", bool())
-                .executes(c -> execute(c.getSource(), getPlayer(c, "player"), getBool(c, "set")));
+        RequiredArgumentBuilder<ServerCommandSource, Boolean> setArgument = this.argument("set", bool())
+                .executes(c -> this.execute(c.getSource(), getPlayer(c, "player"), getBool(c, "set")));
 
         selectorArgument.then(setArgument);
-        commandNode.addChild(selectorArgument.build());
-        argumentBuilder.executes(ctx -> toggle(ctx.getSource(), ctx.getSource().getPlayer()));
+        this.commandNode.addChild(selectorArgument.build());
+        this.argumentBuilder.executes(ctx -> this.toggle(ctx.getSource(), ctx.getSource().getPlayer()));
     }
 
     private int toggle(ServerCommandSource source, ServerPlayerEntity playerEntity) {
-        return execute(source, playerEntity, !playerEntity.getAbilities().allowFlying);
+        return this.execute(source, playerEntity, !playerEntity.getAbilities().allowFlying);
     }
 
     private int execute(ServerCommandSource source, ServerPlayerEntity playerEntity, boolean bool) {
-        OnlineUser user = getUserManager().getOnline(playerEntity);
+        OnlineUser user = this.getUserManager().getOnline(playerEntity);
         user.setFlight(bool);
 
         user.sendLangMessage("template.#1", "Flight", bool, playerEntity.getName().asString());

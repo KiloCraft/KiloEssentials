@@ -35,7 +35,7 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class PowerToolsCommand {
-    private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS, 4);
+    private static final Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS, 4);
 
     public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
         LiteralCommandNode<ServerCommandSource> rootCommand = literal("command")

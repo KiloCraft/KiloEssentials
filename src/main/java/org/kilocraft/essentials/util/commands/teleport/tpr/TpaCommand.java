@@ -56,7 +56,7 @@ public class TpaCommand extends EssentialCommand {
         UserUtils.TpaRequests.add(src, target, false);
 
         src.sendMessage(
-                ComponentText.toText(tl("command.tpa.sent", target.getFormattedDisplayName()))
+                ComponentText.toText(this.tl("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
                         .append(
                                 Texts.bracketed(
@@ -67,7 +67,7 @@ public class TpaCommand extends EssentialCommand {
         );
 
         target.sendMessage(
-                ComponentText.toText(tl("command.tpa.receive", src.getFormattedDisplayName()))
+                ComponentText.toText(this.tl("command.tpa.receive", src.getFormattedDisplayName()))
                         .append(" ")
                         .append(
                                 Texts.bracketed(

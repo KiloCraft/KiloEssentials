@@ -33,25 +33,25 @@ public class HomesCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("user")
-                .requires(src -> hasPermission(src, CommandPermission.HOMES_OTHERS))
+        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
+                .requires(src -> this.hasPermission(src, CommandPermission.HOMES_OTHERS))
                 .executes(this::executeOthers);
 
-        argumentBuilder.executes(this::executeSelf);
-        commandNode.addChild(targetArgument.build());
+        this.argumentBuilder.executes(this::executeSelf);
+        this.commandNode.addChild(targetArgument.build());
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getOnlineUser(ctx);
-        return sendInfo(user, user);
+        OnlineUser user = this.getOnlineUser(ctx);
+        return this.sendInfo(user, user);
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        OnlineUser source = getOnlineUser(player);
+        OnlineUser source = this.getOnlineUser(player);
         String inputName = getString(ctx, "user");
 
-        getUserManager().getUserThenAcceptAsync(player, inputName, (user) -> sendInfo(source, user));
+        this.getUserManager().getUserThenAcceptAsync(player, inputName, (user) -> this.sendInfo(source, user));
         return AWAIT;
     }
 

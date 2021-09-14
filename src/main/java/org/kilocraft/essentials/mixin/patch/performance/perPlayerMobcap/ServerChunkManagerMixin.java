@@ -40,17 +40,17 @@ public abstract class ServerChunkManagerMixin extends ChunkManager {
         //Only update SpawnHelperInfo when mob spawning is enabled
         if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) return this.getSpawnInfo();
         SpawnHelper.Info spawnHelperInfo;
-        PlayerMobDistanceMap mobDistanceMap = ((ThreadedAnvilChunkStorageInterface) threadedAnvilChunkStorage).getMobDistanceMap();
+        PlayerMobDistanceMap mobDistanceMap = ((ThreadedAnvilChunkStorageInterface) this.threadedAnvilChunkStorage).getMobDistanceMap();
         if (mobDistanceMap != null) {
             // update distance map
-            mobDistanceMap.update(this.world.getPlayers(), ServerSettings.tick_utils_tick_distance < 0 ? ((ThreadedAnvilChunkStorageAccessor) threadedAnvilChunkStorage).getWatchDistance() : ServerSettings.tick_utils_tick_distance);
+            mobDistanceMap.update(this.world.getPlayers(), ServerSettings.tick_utils_tick_distance < 0 ? ((ThreadedAnvilChunkStorageAccessor) this.threadedAnvilChunkStorage).getWatchDistance() : ServerSettings.tick_utils_tick_distance);
             // re-set mob counts
             for (ServerPlayerEntity player : this.world.getPlayers()) {
                 Arrays.fill(((ServerPlayerEntityInterface) player).getMobCounts(), 0);
             }
-            spawnHelperInfo = setupSpawn(i, iterable, chunkSource, true);
+            spawnHelperInfo = this.setupSpawn(i, iterable, chunkSource, true);
         } else {
-            spawnHelperInfo = setupSpawn(i, iterable, chunkSource, false);
+            spawnHelperInfo = this.setupSpawn(i, iterable, chunkSource, false);
         }
         return spawnHelperInfo;
     }
@@ -58,7 +58,7 @@ public abstract class ServerChunkManagerMixin extends ChunkManager {
     public SpawnHelper.Info setupSpawn(int i, Iterable<Entity> iterable, SpawnHelper.ChunkSource chunkSource, boolean countMobs) {
         if (countMobs) {
             iterable.forEach(entity -> {
-                ((ThreadedAnvilChunkStorageInterface) world.getChunkManager().threadedAnvilChunkStorage).updatePlayerMobTypeMap(entity);
+                ((ThreadedAnvilChunkStorageInterface) this.world.getChunkManager().threadedAnvilChunkStorage).updatePlayerMobTypeMap(entity);
             });
         }
         return SpawnHelper.setupSpawn(i, iterable, chunkSource);

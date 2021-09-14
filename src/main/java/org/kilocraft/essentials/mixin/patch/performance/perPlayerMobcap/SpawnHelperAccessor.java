@@ -15,12 +15,12 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface SpawnHelperAccessor {
 
     @Accessor("CHUNK_AREA")
-    public static int getChunkArea() {
+    static int getChunkArea() {
         throw new AssertionError();
     }
 
     @Invoker("canSpawn")
-    public static boolean canSpawn(ServerWorld serverWorld, SpawnGroup spawnGroup, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnSettings.SpawnEntry spawnEntry, BlockPos.Mutable mutable, double d) {
+    static boolean canSpawn(ServerWorld serverWorld, SpawnGroup spawnGroup, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnSettings.SpawnEntry spawnEntry, BlockPos.Mutable mutable, double d) {
         throw new AssertionError();
     }
 

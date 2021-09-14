@@ -48,7 +48,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements Inac
         if (this.getHeadRollingTimeLeft() > 0) {
             this.setHeadRollingTimeLeft(this.getHeadRollingTimeLeft() - 1);
         }
-        inactive = !ServerSettings.tickInactiveVillagers;
+        this.inactive = !ServerSettings.tickInactiveVillagers;
         this.mobTick();
         ++this.despawnCounter;
         if (this.world.isClient) {
@@ -68,23 +68,23 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements Inac
     // Entity Activation Range
     @Redirect(method = "mobTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;isAiDisabled()Z"))
     public boolean stopWhenInactive(VillagerEntity villagerEntity) {
-        return villagerEntity.isAiDisabled() || inactive;
+        return villagerEntity.isAiDisabled() || this.inactive;
     }
 
     @Redirect(method = "mobTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/brain/Brain;tick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;)V"))
     public void shouldTickBrain(Brain<VillagerEntity> brain, ServerWorld world, LivingEntity entity) {
         // Lobotomize Villagers
         if (ServerSettings.patch_lobotomize_villagers_enabled && this.age % ServerSettings.patch_lobotomize_villagers_tick_interval != 0)
-            inactive = inactive || isSlowed();
+            this.inactive = this.inactive || this.isSlowed();
 
         // Entity Activation Range
-        if (!inactive) brain.tick(world, (VillagerEntity) (Object) this);
+        if (!this.inactive) brain.tick(world, (VillagerEntity) (Object) this);
     }
 
     // Lobotomize villagers
     private boolean isSlowed() {
         if (this.age % ServerSettings.patch_lobotomize_villagers_update_interval == 0) {
-            this.slowed = !canTravel(this.getBlockPos());
+            this.slowed = !this.canTravel(this.getBlockPos());
         }
 
         return this.slowed;
@@ -92,7 +92,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements Inac
 
     // Lobotomize villagers
     private boolean canTravel(BlockPos pos) {
-        return canTravelTo(pos.east()) || canTravelTo(pos.west()) || canTravelTo(pos.north()) || canTravelTo(pos.south());
+        return this.canTravelTo(pos.east()) || this.canTravelTo(pos.west()) || this.canTravelTo(pos.north()) || this.canTravelTo(pos.south());
     }
 
     // Lobotomize villagers

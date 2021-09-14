@@ -18,13 +18,13 @@ public class SlimeChunkCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::execute);
+        this.argumentBuilder.executes(this::execute);
     }
 
     public int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ChunkPos chunkPos = ctx.getSource().getPlayer().getChunkPos();
         boolean bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((StructureWorldAccess) ctx.getSource().getWorld()).getSeed(), 987234911L).nextInt(10) == 0;
-        getCommandSource(ctx).sendLangMessage("command.slimechunk.info", bl ? "<green>true" : "<red>false");
+        this.getCommandSource(ctx).sendLangMessage("command.slimechunk.info", bl ? "<green>true" : "<red>false");
         return SUCCESS;
     }
 }

@@ -16,9 +16,9 @@ public class GeneralConfigSection {
     public String errorPrefix = "&7[&c ! &7]&7";
 
     @Setting(value = "userTag")
-    private UserTagsConfigSection userTagSection = new UserTagsConfigSection();
+    private final UserTagsConfigSection userTagSection = new UserTagsConfigSection();
 
     public UserTagsConfigSection userTags() {
-        return userTagSection;
+        return this.userTagSection;
     }
 }

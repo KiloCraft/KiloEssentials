@@ -21,16 +21,16 @@ public class ParseResult {
     }
 
     public ParseResult addPinged(OnlineUser user) {
-        pinged.add(user);
+        this.pinged.add(user);
         return this;
     }
 
     public String getInput() {
-        return input;
+        return this.input;
     }
 
     public Component getResult() {
-        return result;
+        return this.result;
     }
 
     public ParseResult setResult(Component result) {
@@ -39,11 +39,11 @@ public class ParseResult {
     }
 
     public List<OnlineUser> getPinged() {
-        return pinged;
+        return this.pinged;
     }
 
     public ParseType getType() {
-        return type;
+        return this.type;
     }
 
     public ParseResult setType(ParseType type) {
@@ -55,7 +55,7 @@ public class ParseResult {
         LINK(),
         ITEM(),
         PING(),
-        RAW();
+        RAW()
     }
 
 }

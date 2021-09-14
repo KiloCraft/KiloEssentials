@@ -21,17 +21,17 @@ public abstract class ServerPlayerEntityMixin implements ServerPlayerEntityInter
 
     @Override
     public PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity> getCachedSingleMobDistanceMap() {
-        return cachedSingleMobDistanceMap;
+        return this.cachedSingleMobDistanceMap;
     }
 
     @Override
     public int[] getMobCounts() {
-        return mobcounts;
+        return this.mobcounts;
     }
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void onInit(MinecraftServer minecraftServer, ServerWorld serverWorld, GameProfile gameProfile, CallbackInfo ci) {
-        cachedSingleMobDistanceMap = new PooledHashSets.PooledObjectLinkedOpenHashSet<>((ServerPlayerEntity) (Object) this);
+        this.cachedSingleMobDistanceMap = new PooledHashSets.PooledObjectLinkedOpenHashSet<>((ServerPlayerEntity) (Object) this);
     }
 
 }

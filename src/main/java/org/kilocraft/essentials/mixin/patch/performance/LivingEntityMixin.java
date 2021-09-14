@@ -26,7 +26,7 @@ public abstract class LivingEntityMixin implements Collidable {
 
     @Override
     public void onCollision() {
-        numCollisions++;
+        this.numCollisions++;
     }
 
     @Inject(method = "tickCramming", at = @At("HEAD"))

@@ -64,7 +64,7 @@ public class InventoryCommand extends EssentialCommand {
             return FAILED;
         }
 
-        sender.asPlayer().openHandledScreen(factory(sender, target));
+        sender.asPlayer().openHandledScreen(this.factory(sender, target));
         sender.sendLangMessage("general.seek_screen", target.getFormattedDisplayName(), "");
         return SUCCESS;
     }

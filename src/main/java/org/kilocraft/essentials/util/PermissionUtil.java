@@ -39,23 +39,23 @@ public class PermissionUtil {
             this.manager = Manager.VANILLA;
         }
 
-        if (manager == Manager.VANILLA) {
+        if (this.manager == Manager.VANILLA) {
             this.present = false;
             return;
         }
 
-        logger.info("Checking {} for Availability", manager.getName());
+        logger.info("Checking {} for Availability", this.manager.getName());
 
         this.present = this.checkPresent();
 
         if (!this.present) {
-            logger.warn("**** {} is not present! Switching to vanilla operator system", manager.getName());
+            logger.warn("**** {} is not present! Switching to vanilla operator system", this.manager.getName());
             logger.warn("     You need to install LuckPerms for Fabric to manage the permissions");
             this.manager = Manager.NONE;
             return;
         }
 
-        logger.info("Using {} as the Permission Manager", manager.getName());
+        logger.info("Using {} as the Permission Manager", this.manager.getName());
 
         logger.info("Registered " + (CommandPermission.values().length + EssentialPermission.values().length) + " permission nodes.");
     }
@@ -66,10 +66,10 @@ public class PermissionUtil {
 
     public boolean hasPermission(ServerCommandSource src, String permission, int opLevel) {
         if (this.present && this.manager == Manager.LUCKPERMS) {
-            return fromLuckPerms(src, permission, opLevel);
+            return this.fromLuckPerms(src, permission, opLevel);
         }
 
-        return fallbackPermissionCheck(src, opLevel);
+        return this.fallbackPermissionCheck(src, opLevel);
     }
 
     private boolean fromLuckPerms(ServerCommandSource src, String perm, int op) {
@@ -86,7 +86,7 @@ public class PermissionUtil {
 
             } catch (CommandSyntaxException ignored) {
             }
-            return fallbackPermissionCheck(src, op);
+            return this.fallbackPermissionCheck(src, op);
         } catch (IllegalStateException e) {
             return false;
         }
@@ -111,12 +111,12 @@ public class PermissionUtil {
     }
 
     private boolean checkPresent() {
-        if (manager == Manager.NONE) {
+        if (this.manager == Manager.NONE) {
             return false;
         }
 
         try {
-            if (manager == Manager.LUCKPERMS) {
+            if (this.manager == Manager.LUCKPERMS) {
                 try {
                     LuckPermsProvider.get();
                     return true;
@@ -124,7 +124,7 @@ public class PermissionUtil {
                 }
             }
 
-            return FabricLoader.getInstance().getModContainer(manager.getName().toLowerCase(Locale.ROOT)).isPresent();
+            return FabricLoader.getInstance().getModContainer(this.manager.getName().toLowerCase(Locale.ROOT)).isPresent();
         } catch (Exception ignored) {
             return false;
         }

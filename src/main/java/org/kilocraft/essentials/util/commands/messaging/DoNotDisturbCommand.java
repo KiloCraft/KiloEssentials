@@ -26,9 +26,9 @@ public class DoNotDisturbCommand extends EssentialCommand {
     private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final ServerUser user = (ServerUser) this.getOnlineUser(ctx);
 
-        user.getPreferences().set(Preference, !user.getPreference(Preference));
+        user.getPreferences().set(this.Preference, !user.getPreference(this.Preference));
 
-        if (user.getPreference(Preference)) {
+        if (user.getPreference(this.Preference)) {
             ((OnlineUser) user).sendLangMessage("command.donotdisturb.on");
         } else {
             ((OnlineUser) user).sendLangMessage("command.donotdisturb.off");

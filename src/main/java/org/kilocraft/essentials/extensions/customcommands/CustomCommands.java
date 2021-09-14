@@ -44,7 +44,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
     @Override
     public boolean register() {
         enabled = true;
-        load();
+        this.load();
         return true;
     }
 

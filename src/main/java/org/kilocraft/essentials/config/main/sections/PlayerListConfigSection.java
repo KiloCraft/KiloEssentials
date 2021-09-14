@@ -17,14 +17,14 @@ public class PlayerListConfigSection {
 
     @Setting(value = "header", comment = "Sets the (Tab) PlayerList Header")
     public List<String> header = new ArrayList<String>() {{
-        add("<rainbow>Minecraft Server");
-        add("<gray>Welcome <gold>%user_displayname%");
+        this.add("<rainbow>Minecraft Server");
+        this.add("<gray>Welcome <gold>%user_displayname%");
     }};
 
     @Setting(value = "footer", comment = "Sets the (Tab) PlayerList Footer")
     public List<String> footer = new ArrayList<String>() {{
-        add("<gray>Ping: %user_formatted_ping% <dark_gray>-<gray> Online: <aqua>%user_player_count% <dark_gray>-<gray> TPS: <reset>%server_formatted_tps%");
-        add("<gray>Use <green>/help<gray> for more info");
+        this.add("<gray>Ping: %user_formatted_ping% <dark_gray>-<gray> Online: <aqua>%user_player_count% <dark_gray>-<gray> TPS: <reset>%server_formatted_tps%");
+        this.add("<gray>Use <green>/help<gray> for more info");
     }};
 
     @Setting(value = "customOrder", comment = "Change the player list order (You need luckperms installed for this to work)")
@@ -35,13 +35,13 @@ public class PlayerListConfigSection {
 
     public String getHeader() {
         StringBuilder str = new StringBuilder();
-        for (String s : header) str.append("\n").append(s);
+        for (String s : this.header) str.append("\n").append(s);
         return str.toString();
     }
 
     public String getFooter() {
         StringBuilder str = new StringBuilder();
-        for (String s : footer) str.append("\n").append(s);
+        for (String s : this.footer) str.append("\n").append(s);
         return str.toString();
     }
 

@@ -37,7 +37,7 @@ public class HugCommand extends EssentialCommand {
         }
 
         for (ServerPlayerEntity player : KiloEssentials.getMinecraftServer().getPlayerManager().getPlayerList()) {
-            OnlineUser target = getOnlineUser(player);
+            OnlineUser target = this.getOnlineUser(player);
 
             if (!target.equals(src)) {
                 validTargets.add(player);
@@ -49,7 +49,7 @@ public class HugCommand extends EssentialCommand {
             return FAILED;
         }
 
-        ServerPlayerEntity mainTarget = getClosest(validTargets, src);
+        ServerPlayerEntity mainTarget = this.getClosest(validTargets, src);
 
         Box eBox = new Box(src.asPlayer().getBlockPos());
         eBox = eBox.expand(2, 2, 2);
@@ -59,7 +59,7 @@ public class HugCommand extends EssentialCommand {
             return FAILED;
         }
 
-        OnlineUser onlineTarget = getOnlineUser(mainTarget);
+        OnlineUser onlineTarget = this.getOnlineUser(mainTarget);
 
         if (!src.hasPermission(CommandPermission.HUG_BYPASS)) {
             src.asPlayer().addExperience(-16);

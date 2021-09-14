@@ -26,17 +26,17 @@ public class IgnoreListCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = getUserArgument("user")
-                .requires(src -> hasPermission(src, CommandPermission.IGNORELIST_OTHERS))
-                .executes(ctx -> execute(ctx, getUserArgumentInput(ctx, "user")));
+        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("user")
+                .requires(src -> this.hasPermission(src, CommandPermission.IGNORELIST_OTHERS))
+                .executes(ctx -> this.execute(ctx, this.getUserArgumentInput(ctx, "user")));
 
-        commandNode.addChild(userArgument.build());
-        argumentBuilder.executes(ctx -> execute(ctx, ctx.getSource().getName()));
+        this.commandNode.addChild(userArgument.build());
+        this.argumentBuilder.executes(ctx -> this.execute(ctx, ctx.getSource().getName()));
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx, String target) throws CommandSyntaxException {
-        OnlineUser src = getOnlineUser(ctx);
-        getUserManager().getUserThenAcceptAsync(src, target, (user) -> {
+        OnlineUser src = this.getOnlineUser(ctx);
+        this.getUserManager().getUserThenAcceptAsync(src, target, (user) -> {
             Map<UUID, String> ignoreList = user.getPreference(Preferences.IGNORE_LIST);
 
             if (ignoreList.isEmpty()) {

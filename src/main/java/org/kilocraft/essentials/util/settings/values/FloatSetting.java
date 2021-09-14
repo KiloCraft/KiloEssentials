@@ -27,7 +27,7 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
 
     @Override
     public ArgumentType<Float> valueArgumentType() {
-        return FloatArgumentType.floatArg(from, to);
+        return FloatArgumentType.floatArg(this.from, this.to);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
 
     @Override
     public String getFormattedValue() {
-        return "<aqua>" + getValue() + "f";
+        return "<aqua>" + this.getValue() + "f";
     }
 
     @Override

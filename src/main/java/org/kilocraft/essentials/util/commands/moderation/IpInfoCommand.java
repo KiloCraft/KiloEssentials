@@ -20,16 +20,16 @@ public class IpInfoCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("user")
+        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
                 .executes(this::execute);
 
-        commandNode.addChild(targetArgument.build());
+        this.commandNode.addChild(targetArgument.build());
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser source = getOnlineUser(ctx);
+        OnlineUser source = this.getOnlineUser(ctx);
 
-        getUserManager().getUserThenAcceptAsync(source.getCommandSource(), getUserArgumentInput(ctx, "user"), (user) -> {
+        this.getUserManager().getUserThenAcceptAsync(source.getCommandSource(), this.getUserArgumentInput(ctx, "user"), (user) -> {
             if (user.getLastSocketAddress() == null) {
                 source.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastSocketAddress");
                 return;
@@ -38,7 +38,7 @@ public class IpInfoCommand extends EssentialCommand {
             String address = user.getLastIp();
 
             source.sendMessage(
-                    Texter.newText(tl("command.ipinfo", user.getUsername()))
+                    Texter.newText(this.tl("command.ipinfo", user.getUsername()))
                             .append(Texter.newRawText(address).styled((style) ->
                                     style.withFormatting(Formatting.GOLD)
                                             .withHoverEvent(Texter.Events.onHover(tl("general.click_copy")))

@@ -9,16 +9,16 @@ public class TwoPlayerScheduler extends StandStillScheduler {
     public TwoPlayerScheduler(OnlineUser sender, OnlineUser receiver, int blocks, int countdown) {
         super(sender, blocks, countdown);
         this.receiver = receiver;
-        tick();
+        this.tick();
     }
 
     @Override
     public boolean onTick() {
-        if (player.isOnline() && !receiver.isOnline()) {
-            player.sendLangMessage("teleport.offline", receiver.getDisplayName());
+        if (this.player.isOnline() && !this.receiver.isOnline()) {
+            this.player.sendLangMessage("teleport.offline", this.receiver.getDisplayName());
             return false;
-        } else if (!player.isOnline() && receiver.isOnline()) {
-            receiver.sendLangMessage("teleport.offline", player.getDisplayName());
+        } else if (!this.player.isOnline() && this.receiver.isOnline()) {
+            this.receiver.sendLangMessage("teleport.offline", this.player.getDisplayName());
             return false;
         }
         return super.onTick();
@@ -26,17 +26,17 @@ public class TwoPlayerScheduler extends StandStillScheduler {
 
     @Override
     void sendAbortMessage() {
-        player.sendLangMessage("teleport.abort");
-        if (receiver != null) receiver.sendLangMessage("teleport.abort.other", player.getDisplayName());
+        this.player.sendLangMessage("teleport.abort");
+        if (this.receiver != null) this.receiver.sendLangMessage("teleport.abort.other", this.player.getDisplayName());
     }
 
     @Override
     public void onFinish() {
-        if (moved()) {
-            sendAbortMessage();
+        if (this.moved()) {
+            this.sendAbortMessage();
         } else {
-            if (player.isOnline() && receiver.isOnline()) {
-                player.teleport(receiver);
+            if (this.player.isOnline() && this.receiver.isOnline()) {
+                this.player.teleport(this.receiver);
             }
         }
     }

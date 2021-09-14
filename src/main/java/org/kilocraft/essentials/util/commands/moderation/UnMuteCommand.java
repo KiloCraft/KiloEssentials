@@ -28,7 +28,7 @@ public class UnMuteCommand extends EssentialCommand {
                 .suggests(this::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
+        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent")
                 .executes((ctx) -> this.execute(ctx, true));
 
         user.then(silent);
@@ -39,14 +39,14 @@ public class UnMuteCommand extends EssentialCommand {
         CommandSourceUser src = this.getCommandSource(ctx);
 
         super.resolveAndGetProfileAsync(ctx, "victim").thenAcceptAsync((victim) -> {
-            getUserManager().getMutedPlayerList().remove(victim);
-            getUserManager().onPunishmentRevoked(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim)), Punishment.Type.MUTE, null, silent);
+            this.getUserManager().getMutedPlayerList().remove(victim);
+            this.getUserManager().onPunishmentRevoked(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim)), Punishment.Type.MUTE, null, silent);
         });
 
         return AWAIT;
     }
 
     private CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(getUserManager().getMutedPlayerList().getNames(), builder);
+        return CommandSource.suggestMatching(this.getUserManager().getMutedPlayerList().getNames(), builder);
     }
 }

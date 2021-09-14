@@ -18,10 +18,10 @@ public class BroadcastCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = argument("message", greedyString())
+        RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = this.argument("message", greedyString())
                 .executes(this::execute);
 
-        commandNode.addChild(messageArgument.build());
+        this.commandNode.addChild(messageArgument.build());
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) {

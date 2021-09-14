@@ -24,11 +24,11 @@ public class RealNameCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> nickArgument = argument("nickname", StringArgumentType.greedyString())
+        RequiredArgumentBuilder<ServerCommandSource, String> nickArgument = this.argument("nickname", StringArgumentType.greedyString())
                 .suggests(ArgumentSuggestions::allPlayerNicks)
                 .executes(this::execute);
 
-        commandNode.addChild(nickArgument.build());
+        this.commandNode.addChild(nickArgument.build());
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) {

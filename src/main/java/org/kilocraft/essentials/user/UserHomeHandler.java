@@ -41,7 +41,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     //TODO: Use home cooldown from config
     public static ChunkTicketType<Integer> HOMES = ChunkTicketType.create("homes", Integer::compareTo, 60);
     private static boolean isEnabled = false;
-    private static List<Home> loadedHomes = new ArrayList<>();
+    private static final List<Home> loadedHomes = new ArrayList<>();
     private List<Home> userHomes;
     private ServerUser serverUser;
 
@@ -79,10 +79,10 @@ public class UserHomeHandler implements ConfigurableFeature {
         isEnabled = true;
 
         List<EssentialCommand> commands = new ArrayList<EssentialCommand>() {{
-            add(new HomeCommand());
-            add(new HomesCommand());
-            add(new SethomeCommand());
-            add(new DelhomeCommand());
+            this.add(new HomeCommand());
+            this.add(new HomesCommand());
+            this.add(new SethomeCommand());
+            this.add(new DelhomeCommand());
         }};
 
         for (final EssentialCommand command : commands) {
@@ -98,7 +98,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public void removeHome(String name) {
-        removeHome(getHome(name));
+        this.removeHome(this.getHome(name));
     }
 
     public void removeHome(Home home) {
@@ -133,7 +133,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public void teleportToHome(OnlineUser user, String name) throws UnsafeHomeException {
-        teleportToHome(user, getHome(name));
+        this.teleportToHome(user, this.getHome(name));
     }
 
     public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
@@ -145,7 +145,7 @@ public class UserHomeHandler implements ConfigurableFeature {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
             }
 
-            if (!userHomes.contains(home)) {
+            if (!this.userHomes.contains(home)) {
                 user.sendLangMessage("command.home.invalid_home");
                 return;
             }
@@ -163,7 +163,7 @@ public class UserHomeHandler implements ConfigurableFeature {
                 return;
             }
 
-            if (!userHomes.contains(home)) {
+            if (!this.userHomes.contains(home)) {
                 return;
             }
 
@@ -191,7 +191,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public enum Reason {
-        UNSAFE_DESTINATION, MISSING_DIMENSION, NO_PERMISSION, NO_HOME;
+        UNSAFE_DESTINATION, MISSING_DIMENSION, NO_PERMISSION, NO_HOME
     }
 
 }

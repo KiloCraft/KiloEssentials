@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface PersistentProjectileEntityAccessor {
 
     @Accessor("inGround")
-    public boolean isInGround();
+    boolean isInGround();
 
 }

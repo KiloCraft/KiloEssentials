@@ -22,7 +22,7 @@ import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 
 public class PlaytimeCommand extends EssentialCommand {
-    private Predicate<ServerCommandSource> PERMISSION_CHECK_MODIFY = src -> hasPermission(src, CommandPermission.PLAYTIME_MODIFY);
+    private final Predicate<ServerCommandSource> PERMISSION_CHECK_MODIFY = src -> this.hasPermission(src, CommandPermission.PLAYTIME_MODIFY);
 
     public PlaytimeCommand() {
         super("playtime", CommandPermission.PLAYTIME_SELF, new String[]{"pt"});
@@ -30,36 +30,36 @@ public class PlaytimeCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = getUserArgument("user")
-                .requires(src -> hasPermission(src, CommandPermission.PLAYTIME_OTHERS))
+        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("user")
+                .requires(src -> this.hasPermission(src, CommandPermission.PLAYTIME_OTHERS))
                 .executes(this::executeOther);
 
-        LiteralArgumentBuilder<ServerCommandSource> increaseArg = literal("increase")
-                .requires(PERMISSION_CHECK_MODIFY)
-                .then(argument("seconds", integer(0))
-                        .executes(ctx -> set(ctx, "increase")));
-        LiteralArgumentBuilder<ServerCommandSource> decreaseArg = literal("decrease")
-                .requires(PERMISSION_CHECK_MODIFY)
-                .then(argument("seconds", integer(0))
-                        .executes(ctx -> set(ctx, "decrease")));
-        LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set")
-                .requires(PERMISSION_CHECK_MODIFY)
-                .then(argument("seconds", integer(0))
-                        .executes(ctx -> set(ctx, "set")));
+        LiteralArgumentBuilder<ServerCommandSource> increaseArg = this.literal("increase")
+                .requires(this.PERMISSION_CHECK_MODIFY)
+                .then(this.argument("seconds", integer(0))
+                        .executes(ctx -> this.set(ctx, "increase")));
+        LiteralArgumentBuilder<ServerCommandSource> decreaseArg = this.literal("decrease")
+                .requires(this.PERMISSION_CHECK_MODIFY)
+                .then(this.argument("seconds", integer(0))
+                        .executes(ctx -> this.set(ctx, "decrease")));
+        LiteralArgumentBuilder<ServerCommandSource> setArg = this.literal("set")
+                .requires(this.PERMISSION_CHECK_MODIFY)
+                .then(this.argument("seconds", integer(0))
+                        .executes(ctx -> this.set(ctx, "set")));
 
         userArgument.then(increaseArg);
         userArgument.then(decreaseArg);
         userArgument.then(setArg);
-        argumentBuilder.executes(this::executeSelf);
-        commandNode.addChild(userArgument.build());
+        this.argumentBuilder.executes(this::executeSelf);
+        this.commandNode.addChild(userArgument.build());
     }
 
     private int set(CommandContext<ServerCommandSource> ctx, String type) {
-        CommandSourceUser src = getCommandSource(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
         int ticks = getInteger(ctx, "seconds") * 20;
 
         AtomicInteger atomicInteger = new AtomicInteger(AWAIT);
-        getUserManager().getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
+        this.getUserManager().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {
             try {
                 user.setTicksPlayed(
                         type.equals("set") ? ticks :
@@ -80,18 +80,18 @@ public class PlaytimeCommand extends EssentialCommand {
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return execute(getCommandSource(ctx), getOnlineUser(ctx));
+        return this.execute(this.getCommandSource(ctx), this.getOnlineUser(ctx));
     }
 
     private int executeOther(CommandContext<ServerCommandSource> ctx) {
-        CommandSourceUser src = getCommandSource(ctx);
-        String inputName = getUserArgumentInput(ctx, "user");
+        CommandSourceUser src = this.getCommandSource(ctx);
+        String inputName = this.getUserArgumentInput(ctx, "user");
 
-        if (getOnlineUser(inputName) != null)
-            return execute(src, getOnlineUser(inputName));
+        if (this.getOnlineUser(inputName) != null)
+            return this.execute(src, this.getOnlineUser(inputName));
 
-        getUserManager().getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
-            execute(src, user);
+        this.getUserManager().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {
+            this.execute(src, user);
         });
 
         return AWAIT;
@@ -102,7 +102,7 @@ public class PlaytimeCommand extends EssentialCommand {
                 TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e');
         String firstJoin = target.getFirstJoin() != null ? TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()) : tl("general.not_present");
 
-        String title = CommandUtils.areTheSame(src, target) ? tl("command.playtime.title.self") : tl("command.playtime.title.others", target.getNameTag());
+        String title = CommandUtils.areTheSame(src, target) ? tl("command.playtime.title.self") : this.tl("command.playtime.title.others", target.getNameTag());
         Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(title);
 
         text.append(tl("command.playtime.total"), pt)

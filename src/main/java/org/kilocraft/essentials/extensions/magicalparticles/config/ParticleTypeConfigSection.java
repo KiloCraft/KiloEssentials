@@ -16,13 +16,13 @@ public class ParticleTypeConfigSection {
 
     @Setting("frames")
     public List<ParticleFrameConfigSection> frames = new ArrayList<ParticleFrameConfigSection>() {{
-        add(new ParticleFrameConfigSection());
+        this.add(new ParticleFrameConfigSection());
     }};
 
     @Setting("requires")
-    private PermissionRequirementConfigSection permissionRequirement = null;
+    private final PermissionRequirementConfigSection permissionRequirement = null;
 
     public Optional<PermissionRequirementConfigSection> permissionRequirement() {
-        return Optional.ofNullable(permissionRequirement);
+        return Optional.ofNullable(this.permissionRequirement);
     }
 }

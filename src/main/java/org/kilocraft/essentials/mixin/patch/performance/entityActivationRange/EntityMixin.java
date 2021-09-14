@@ -36,7 +36,7 @@ public abstract class EntityMixin implements ActivationTypeEntity, InactiveEntit
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void onEntityInit(EntityType<?> entityType, World world, CallbackInfo ci) {
-        activationType = ActivationRange.initializeEntityActivationType((Entity) (Object) this);
+        this.activationType = ActivationRange.initializeEntityActivationType((Entity) (Object) this);
         if (world != null) {
             this.defaultActivationState = ActivationRange.initializeEntityActivationState((Entity) (Object) this);
         } else {
@@ -51,8 +51,8 @@ public abstract class EntityMixin implements ActivationTypeEntity, InactiveEntit
 
     @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;adjustMovementForSneaking(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/entity/MovementType;)Lnet/minecraft/util/math/Vec3d;"), cancellable = true)
     public void ignoreMovementWhileInactive(MovementType movementType, Vec3d vec3d, CallbackInfo ci) {
-        if (isTemporarilyActive && !((Object) this instanceof ItemEntity || (Object) this instanceof AbstractMinecartEntity) && vec3d == getVelocity() && movementType == MovementType.SELF) {
-            setVelocity(Vec3d.ZERO);
+        if (this.isTemporarilyActive && !((Object) this instanceof ItemEntity || (Object) this instanceof AbstractMinecartEntity) && vec3d == this.getVelocity() && movementType == MovementType.SELF) {
+            this.setVelocity(Vec3d.ZERO);
             this.world.getProfiler().pop();
             ci.cancel();
         }
@@ -60,17 +60,17 @@ public abstract class EntityMixin implements ActivationTypeEntity, InactiveEntit
 
     @Override
     public ActivationRange.ActivationType getActivationType() {
-        return activationType;
+        return this.activationType;
     }
 
     @Override
     public boolean getDefaultActivationState() {
-        return defaultActivationState;
+        return this.defaultActivationState;
     }
 
     @Override
     public int getActivatedTick() {
-        return activatedTick;
+        return this.activatedTick;
     }
 
     @Override
@@ -85,11 +85,11 @@ public abstract class EntityMixin implements ActivationTypeEntity, InactiveEntit
 
     @Override
     public boolean isTemporarilyActive() {
-        return isTemporarilyActive;
+        return this.isTemporarilyActive;
     }
 
     @Override
     public void setTemporarilyActive(boolean temporarilyActive) {
-        isTemporarilyActive = temporarilyActive;
+        this.isTemporarilyActive = temporarilyActive;
     }
 }

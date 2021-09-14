@@ -30,22 +30,22 @@ public class SayAsCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        ArgumentCommandNode<ServerCommandSource, String> selectorArg = argument("target", word())
+        ArgumentCommandNode<ServerCommandSource, String> selectorArg = this.argument("target", word())
                 .suggests(this::playerSuggestions)
                 .build();
 
-        ArgumentCommandNode<ServerCommandSource, String> channelArg = argument("channel", word())
+        ArgumentCommandNode<ServerCommandSource, String> channelArg = this.argument("channel", word())
                 .suggests(this::channelIdSuggestions)
                 .build();
 
-        ArgumentCommandNode<ServerCommandSource, String> messageArg = argument("message", greedyString())
+        ArgumentCommandNode<ServerCommandSource, String> messageArg = this.argument("message", greedyString())
                 .suggests(ArgumentSuggestions::noSuggestions)
                 .executes(this::execute)
                 .build();
 
         channelArg.addChild(messageArg);
         selectorArg.addChild(channelArg);
-        commandNode.addChild(selectorArg);
+        this.commandNode.addChild(selectorArg);
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) {

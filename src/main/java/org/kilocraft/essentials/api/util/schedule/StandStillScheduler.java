@@ -18,12 +18,12 @@ public abstract class StandStillScheduler extends AbstractScheduler {
 
     @Override
     public boolean onTick() {
-        if (player.isOnline()) {
-            if (moved()) {
-                sendAbortMessage();
+        if (this.player.isOnline()) {
+            if (this.moved()) {
+                this.sendAbortMessage();
                 return false;
             } else {
-                player.sendLangMessage("teleport.wait", this.countdown);
+                this.player.sendLangMessage("teleport.wait", this.countdown);
                 return true;
             }
         }
@@ -31,7 +31,7 @@ public abstract class StandStillScheduler extends AbstractScheduler {
     }
 
     protected boolean moved() {
-        return blocks >= 0 && player.asPlayer() != null && player.asPlayer().getPos().distanceTo(pos) > blocks;
+        return this.blocks >= 0 && this.player.asPlayer() != null && this.player.asPlayer().getPos().distanceTo(this.pos) > this.blocks;
     }
 
     abstract void sendAbortMessage();

@@ -23,9 +23,9 @@ public class ToggleChatCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> type = argument("type", StringArgumentType.word())
+        RequiredArgumentBuilder<ServerCommandSource, String> type = this.argument("type", StringArgumentType.word())
                 .suggests(this::listSuggestions)
-                .executes((ctx) -> execute(ctx, StringArgumentType.getString(ctx, "type")));
+                .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "type")));
 
         this.argumentBuilder.then(type);
         this.argumentBuilder.executes(this::toggle);
@@ -34,9 +34,9 @@ public class ToggleChatCommand extends EssentialCommand {
     private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         if (src.getPreference(Preferences.CHAT_VISIBILITY) == ServerChat.VisibilityPreference.ALL) {
-            return set(src, ServerChat.VisibilityPreference.MENTIONS);
+            return this.set(src, ServerChat.VisibilityPreference.MENTIONS);
         } else {
-            return set(src, ServerChat.VisibilityPreference.ALL);
+            return this.set(src, ServerChat.VisibilityPreference.ALL);
         }
     }
 
@@ -48,7 +48,7 @@ public class ToggleChatCommand extends EssentialCommand {
             return FAILED;
         }
 
-        return set(src, preference);
+        return this.set(src, preference);
     }
 
     private int set(final OnlineUser src, final ServerChat.VisibilityPreference preference) {

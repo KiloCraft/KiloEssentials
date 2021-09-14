@@ -3,7 +3,9 @@ package org.kilocraft.essentials.util.commands.server;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.world.chunk.Chunk;
 import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 
@@ -15,17 +17,17 @@ public class DebugEssentialsCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> modeOn = literal("on")
-                .executes(ctx -> setDebugMode(ctx, true));
-        LiteralArgumentBuilder<ServerCommandSource> modeOff = literal("off")
-                .executes(ctx -> setDebugMode(ctx, false));
+        LiteralArgumentBuilder<ServerCommandSource> modeOn = this.literal("on")
+                .executes(ctx -> this.setDebugMode(ctx, true));
+        LiteralArgumentBuilder<ServerCommandSource> modeOff = this.literal("off")
+                .executes(ctx -> this.setDebugMode(ctx, false));
 
-        LiteralArgumentBuilder<ServerCommandSource> bar = literal("bar");
+        LiteralArgumentBuilder<ServerCommandSource> bar = this.literal("bar");
         {
-            LiteralArgumentBuilder<ServerCommandSource> barOn = literal("on")
-                    .executes(ctx -> setDebugBar(ctx, true));
-            LiteralArgumentBuilder<ServerCommandSource> barOff = literal("off")
-                    .executes(ctx -> setDebugBar(ctx, false));
+            LiteralArgumentBuilder<ServerCommandSource> barOn = this.literal("on")
+                    .executes(ctx -> this.setDebugBar(ctx, true));
+            LiteralArgumentBuilder<ServerCommandSource> barOff = this.literal("off")
+                    .executes(ctx -> this.setDebugBar(ctx, false));
 
             bar.then(barOn);
             bar.then(barOff);
@@ -38,13 +40,19 @@ public class DebugEssentialsCommand extends EssentialCommand {
 
     private int setDebugMode(final CommandContext<ServerCommandSource> ctx, boolean set) {
         KiloDebugUtils.setDebugMode(set);
-        sendFeedback(ctx, "command.debug.mode", set);
+        try {
+            Chunk chunk = ctx.getSource().getPlayer().getServerWorld().getChunk(ctx.getSource().getPlayer().getBlockPos());
+            this.getCommandSource(ctx).sendMessage("<gold>Inhabited time<yellow>: " + chunk.getInhabitedTime());
+        } catch (CommandSyntaxException e) {
+            e.printStackTrace();
+        }
+        this.sendFeedback(ctx, "command.debug.mode", set);
         return set ? 1 : 0;
     }
 
     private int setDebugBar(final CommandContext<ServerCommandSource> ctx, boolean set) {
         KiloDebugUtils.setDebugBarVisible(set);
-        sendFeedback(ctx, set ? "command.debug.bar.visible" : "command.debug.bar.invisible");
+        this.sendFeedback(ctx, set ? "command.debug.bar.visible" : "command.debug.bar.invisible");
         return set ? 1 : 0;
     }
 

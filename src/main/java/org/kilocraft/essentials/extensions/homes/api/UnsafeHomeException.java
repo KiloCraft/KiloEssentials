@@ -3,8 +3,8 @@ package org.kilocraft.essentials.extensions.homes.api;
 import org.kilocraft.essentials.user.UserHomeHandler;
 
 public class UnsafeHomeException extends Exception {
-    private Home home;
-    private UserHomeHandler.Reason reason;
+    private final Home home;
+    private final UserHomeHandler.Reason reason;
 
     public UnsafeHomeException(Home home, UserHomeHandler.Reason reason) {
         this.home = home;

@@ -8,8 +8,8 @@ public interface ThreadedAnvilChunkStorageInterface {
 
     PlayerMobDistanceMap getMobDistanceMap();
 
-    public void updatePlayerMobTypeMap(Entity entity);
+    void updatePlayerMobTypeMap(Entity entity);
 
-    public int getMobCountNear(ServerPlayerEntity player, SpawnGroup spawnGroup);
+    int getMobCountNear(ServerPlayerEntity player, SpawnGroup spawnGroup);
 
 }

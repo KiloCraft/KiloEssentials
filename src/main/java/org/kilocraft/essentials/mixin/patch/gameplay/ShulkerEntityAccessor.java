@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface ShulkerEntityAccessor {
 
     @Invoker("setColor")
-    public void setColor(DyeColor color);
+    void setColor(DyeColor color);
 
 }

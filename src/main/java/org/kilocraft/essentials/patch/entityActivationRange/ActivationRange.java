@@ -61,25 +61,20 @@ public class ActivationRange {
      */
     public static boolean initializeEntityActivationState(Entity entity) {
         ActivationType activationType = ((ActivationTypeEntity) entity).getActivationType();
-        if (
-                activationRange[activationType.ordinal()][0] <= 0
-                        || entity instanceof EyeOfEnderEntity
-                        || entity instanceof PlayerEntity
-                        || entity instanceof ProjectileEntity
-                        || entity instanceof EnderDragonEntity
-                        || entity instanceof EnderDragonPart
-                        || entity instanceof WitherEntity
-                        || entity instanceof GhastEntity //KiloEssentials
-                        || entity instanceof FireballEntity
-                        || entity instanceof LightningEntity
-                        || entity instanceof TntEntity
-                        || entity instanceof EndCrystalEntity
-                        || entity instanceof FireworkRocketEntity
-                        || entity instanceof TridentEntity) {
-            return true;
-        }
-
-        return false;
+        return activationRange[activationType.ordinal()][0] <= 0
+                || entity instanceof EyeOfEnderEntity
+                || entity instanceof PlayerEntity
+                || entity instanceof ProjectileEntity
+                || entity instanceof EnderDragonEntity
+                || entity instanceof EnderDragonPart
+                || entity instanceof WitherEntity
+                || entity instanceof GhastEntity //KiloEssentials
+                || entity instanceof FireballEntity
+                || entity instanceof LightningEntity
+                || entity instanceof TntEntity
+                || entity instanceof EndCrystalEntity
+                || entity instanceof FireworkRocketEntity
+                || entity instanceof TridentEntity;
     }
 
     /**
@@ -286,19 +281,19 @@ public class ActivationRange {
         }
 
         public int getActivationRange() {
-            return activationRange;
+            return this.activationRange;
         }
 
         public int getWakeUpInactiveMaxPerTick() {
-            return wakeUpInactiveMaxPerTick;
+            return this.wakeUpInactiveMaxPerTick;
         }
 
         public int getWakeUpInactiveEvery() {
-            return wakeUpInactiveEvery;
+            return this.wakeUpInactiveEvery;
         }
 
         public int getWakeUpInactiveFor() {
-            return wakeUpInactiveFor;
+            return this.wakeUpInactiveFor;
         }
     }
 }

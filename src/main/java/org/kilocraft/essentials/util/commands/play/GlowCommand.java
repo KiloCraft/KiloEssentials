@@ -19,7 +19,7 @@ public class GlowCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::set);
+        this.argumentBuilder.executes(this::set);
     }
 
     private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

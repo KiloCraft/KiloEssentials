@@ -102,7 +102,7 @@ public class SimpleCommandManager {
 
     public boolean canExecute(String input) {
         try {
-            for (SimpleCommand command : commands) {
+            for (SimpleCommand command : this.commands) {
                 if (command.label.equals(input.split(" ")[0].replaceFirst("/", ""))) {
                     return true;
                 }
@@ -134,7 +134,7 @@ public class SimpleCommandManager {
             if (e.getRawMessage().getString().equals("Unknown command")) {
                 CommandPermission reqPerm = CommandPermission.getByNode(label);
 
-                if (isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
+                if (this.isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
                     user.sendPermissionError("");
                 else
                     user.sendMessage(KiloConfig.messages().commands().context().executionException);

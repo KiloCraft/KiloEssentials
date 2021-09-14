@@ -22,7 +22,7 @@ public class LightningCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::execute);
+        this.argumentBuilder.executes(this::execute);
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

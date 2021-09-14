@@ -20,7 +20,7 @@ public abstract class GoalSelectorMixin implements GoalSelectorInterface {
     private int curRate;
 
     private int getCurRate() {
-        return curRate;
+        return this.curRate;
     }
 
     private void incRate() {
@@ -29,13 +29,13 @@ public abstract class GoalSelectorMixin implements GoalSelectorInterface {
 
     @Override
     public boolean inactiveTick() {
-        incRate();
-        return getCurRate() % timeInterval == 0;
+        this.incRate();
+        return this.getCurRate() % this.timeInterval == 0;
     }
 
     @Override
     public boolean hasTasks() {
-        for (PrioritizedGoal task : goals) {
+        for (PrioritizedGoal task : this.goals) {
             if (task.isRunning()) {
                 return true;
             }

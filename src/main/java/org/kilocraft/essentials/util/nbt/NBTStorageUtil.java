@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NBTStorageUtil {
-    private static List<NBTStorage> callbacks = new ArrayList<>();
+    private static final List<NBTStorage> callbacks = new ArrayList<>();
 
     public static <C extends NBTStorage> void addCallback(C callback) {
         callbacks.add(callback);

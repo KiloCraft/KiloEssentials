@@ -7,24 +7,24 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class ModerationConfigSection {
 
     @Setting("defaults")
-    private Defaults defaults = new Defaults();
+    private final Defaults defaults = new Defaults();
 
     @Setting("disconnectReasons")
-    private Messages messages = new Messages();
+    private final Messages messages = new Messages();
 
     @Setting("meta")
-    private Meta meta = new Meta();
+    private final Meta meta = new Meta();
 
     public Defaults defaults() {
-        return defaults;
+        return this.defaults;
     }
 
     public Messages messages() {
-        return messages;
+        return this.messages;
     }
 
     public Meta meta() {
-        return meta;
+        return this.meta;
     }
 
     @ConfigSerializable

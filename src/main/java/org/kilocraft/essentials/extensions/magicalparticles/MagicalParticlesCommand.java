@@ -41,26 +41,26 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set");
-        LiteralArgumentBuilder<ServerCommandSource> listArg = literal("list")
+        LiteralArgumentBuilder<ServerCommandSource> setArg = this.literal("set");
+        LiteralArgumentBuilder<ServerCommandSource> listArg = this.literal("list")
                 .executes(this::list);
-        LiteralArgumentBuilder<ServerCommandSource> disableArg = literal("disable")
+        LiteralArgumentBuilder<ServerCommandSource> disableArg = this.literal("disable")
                 .executes(this::disable);
 
-        RequiredArgumentBuilder<ServerCommandSource, Identifier> idArgument = argument("animation", identifier())
+        RequiredArgumentBuilder<ServerCommandSource, Identifier> idArgument = this.argument("animation", identifier())
                 .suggests(this::particleIdSuggestions)
                 .executes(this::set);
 
         setArg.then(idArgument);
-        commandNode.addChild(listArg.build());
-        commandNode.addChild(setArg.build());
-        commandNode.addChild(disableArg.build());
-        argumentBuilder.executes(this::list);
+        this.commandNode.addChild(listArg.build());
+        this.commandNode.addChild(setArg.build());
+        this.commandNode.addChild(disableArg.build());
+        this.argumentBuilder.executes(this::list);
     }
 
     private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        OnlineUser user = getOnlineUser(ctx);
+        OnlineUser user = this.getOnlineUser(ctx);
         boolean silent = false;
         Identifier identifier = getIdentifier(ctx, "animation");
 
@@ -88,7 +88,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
     }
 
     private int list(CommandContext<ServerCommandSource> ctx) {
-        OnlineUser user = getCommandSource(ctx);
+        OnlineUser user = this.getCommandSource(ctx);
         Texter.ListStyle text = Texter.ListStyle.of(
                 "Particle Animations", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY
         );
@@ -107,7 +107,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
                         .append("\n")
                         .append(new LiteralText(tl("general.click_apply")).formatted(Formatting.YELLOW))
                 ),
-                Texter.Events.onClickRun("/mp set " + id.toString() + "--s")
+                Texter.Events.onClickRun("/mp set " + id + "--s")
         ));
 
         user.sendMessage(text.setSize(map.size()).build());
@@ -116,7 +116,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
 
     private int disable(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        CommandSourceUser user = getCommandSource(ctx);
+        CommandSourceUser user = this.getCommandSource(ctx);
         user.sendLangMessage("command.magicalparticles.disabled");
         removePlayer(player.getUuid());
         return SUCCESS;

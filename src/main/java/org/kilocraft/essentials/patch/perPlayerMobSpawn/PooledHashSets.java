@@ -34,7 +34,7 @@ public class PooledHashSets<E> {
                 ++cached.referenceCount;
             }
 
-            decrementReferenceCount(current);
+            this.decrementReferenceCount(current);
 
             return cached;
         }
@@ -60,14 +60,14 @@ public class PooledHashSets<E> {
 
         current.updateAddCache(object, ret);
 
-        decrementReferenceCount(current);
+        this.decrementReferenceCount(current);
         return ret;
     }
 
     // rets null if current.size() == 1
     public PooledObjectLinkedOpenHashSet<E> findMapWithout(final PooledObjectLinkedOpenHashSet<E> current, final E object) {
         if (current.set.size() == 1) {
-            decrementReferenceCount(current);
+            this.decrementReferenceCount(current);
             return null;
         }
 
@@ -78,7 +78,7 @@ public class PooledHashSets<E> {
                 ++cached.referenceCount;
             }
 
-            decrementReferenceCount(current);
+            this.decrementReferenceCount(current);
 
             return cached;
         }
@@ -104,7 +104,7 @@ public class PooledHashSets<E> {
 
         current.updateRemoveCache(object, ret);
 
-        decrementReferenceCount(current);
+        this.decrementReferenceCount(current);
         return ret;
     }
 
@@ -242,7 +242,7 @@ public class PooledHashSets<E> {
         @Override
         public String toString() {
             return "PooledHashSet: size: " + this.set.size() + ", reference count: " + this.referenceCount + ", hash: " +
-                    this.hashCode() + ", identity: " + System.identityHashCode(this) + " map: " + this.set.toString();
+                    this.hashCode() + ", identity: " + System.identityHashCode(this) + " map: " + this.set;
         }
     }
 }

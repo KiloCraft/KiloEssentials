@@ -5,7 +5,7 @@ public enum ArgExceptionMessageNode {
     TIME_ARGUMENT_ERROR("time.unexpected"),
     NO_NEGATIVE_VALUES("general.negative_values");
 
-    private String key;
+    private final String key;
 
     ArgExceptionMessageNode(String key) {
         this.key = key;

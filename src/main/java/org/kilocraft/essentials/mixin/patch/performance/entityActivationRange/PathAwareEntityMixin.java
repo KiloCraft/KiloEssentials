@@ -12,7 +12,7 @@ public abstract class PathAwareEntityMixin implements EntityWithTarget {
 
     @Override
     public BlockPos getMovingTarget() {
-        return movingTarget;
+        return this.movingTarget;
     }
 
     @Override

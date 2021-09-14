@@ -19,36 +19,36 @@ public class TimeCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> addArg = literal("add")
-                .then(argument("time", time()).executes(context -> executeAdd(context, getInteger(context, "time"))));
+        LiteralArgumentBuilder<ServerCommandSource> addArg = this.literal("add")
+                .then(this.argument("time", time()).executes(context -> executeAdd(context, getInteger(context, "time"))));
 
-        LiteralArgumentBuilder<ServerCommandSource> setArg = literal("set")
+        LiteralArgumentBuilder<ServerCommandSource> setArg = this.literal("set")
                 .then(
-                        argument("time", time()).executes(context -> executeAdd(context, getInteger(context, "time")))
+                        this.argument("time", time()).executes(context -> executeAdd(context, getInteger(context, "time")))
                 ).then(
-                        literal("day").executes(context -> executeSet(context, 1000, "Day"))
+                        this.literal("day").executes(context -> executeSet(context, 1000, "Day"))
                 ).then(
-                        literal("noon").executes(context -> executeSet(context, 6000, "noon"))
+                        this.literal("noon").executes(context -> executeSet(context, 6000, "noon"))
                 ).then(
-                        literal("night").executes(context -> executeSet(context, 13000, "Night"))
+                        this.literal("night").executes(context -> executeSet(context, 13000, "Night"))
                 ).then(
-                        literal("midnight").executes(context -> executeSet(context, 18000, "Midnight"))
+                        this.literal("midnight").executes(context -> executeSet(context, 18000, "Midnight"))
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> queryArg = literal("query")
+        LiteralArgumentBuilder<ServerCommandSource> queryArg = this.literal("query")
                 .then(
-                        literal("daytime").executes(context -> executeQuery(context, getDayTime(context.getSource().getWorld()), "daytime"))
+                        this.literal("daytime").executes(context -> executeQuery(context, getDayTime(context.getSource().getWorld()), "daytime"))
                 ).then(
-                        literal("gametime").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTime() % 2147483647L), "gametime"))
+                        this.literal("gametime").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTime() % 2147483647L), "gametime"))
                 ).then(
-                        literal("day").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L), "day"))
+                        this.literal("day").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L), "day"))
                 ).then(
-                        literal("timedate").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay()), "time"))
+                        this.literal("timedate").executes(context -> executeQuery(context, (int) (context.getSource().getWorld().getTimeOfDay()), "time"))
                 );
 
-        commandNode.addChild(setArg.build());
-        commandNode.addChild(queryArg.build());
-        commandNode.addChild(addArg.build());
+        this.commandNode.addChild(setArg.build());
+        this.commandNode.addChild(queryArg.build());
+        this.commandNode.addChild(addArg.build());
     }
 
     private static String getFormattedTime(ServerWorld world) {

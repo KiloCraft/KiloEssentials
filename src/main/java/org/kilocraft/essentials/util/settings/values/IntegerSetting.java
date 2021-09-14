@@ -22,7 +22,7 @@ public class IntegerSetting extends ConfigurableSetting<Integer> implements Rang
 
     @Override
     public ArgumentType<Integer> valueArgumentType() {
-        return IntegerArgumentType.integer(from, to);
+        return IntegerArgumentType.integer(this.from, this.to);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class IntegerSetting extends ConfigurableSetting<Integer> implements Rang
 
     @Override
     public String getFormattedValue() {
-        return "<gold>" + getValue();
+        return "<gold>" + this.getValue();
     }
 
     @Override

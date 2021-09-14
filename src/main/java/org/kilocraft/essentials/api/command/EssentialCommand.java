@@ -237,7 +237,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(StringArgumentType.getString(ctx, label));
-        if (user == null || (user.getPreference(Preferences.VANISH) && !hasPermission(ctx.getSource(), CommandPermission.VANISH)))
+        if (user == null || (user.getPreference(Preferences.VANISH) && !this.hasPermission(ctx.getSource(), CommandPermission.VANISH)))
             throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
 
         return user;
@@ -272,7 +272,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public CompletableFuture<GameProfile> resolveAndGetProfileAsync(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
-        return CompletableFuture.completedFuture(resolveAndGetProfile(ctx, label));
+        return CompletableFuture.completedFuture(this.resolveAndGetProfile(ctx, label));
     }
 
     public GameProfile resolveAndGetProfile(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
