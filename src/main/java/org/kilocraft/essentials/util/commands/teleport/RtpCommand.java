@@ -173,7 +173,7 @@ public class RtpCommand extends EssentialCommand {
 
     private int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getUserManager().getOnline(ctx.getSource());
-        new CommandSourceServerUser(ctx.getSource())
+        CommandSourceServerUser.of(ctx)
                 .sendLangMessage("command.rtp.get", user.getDisplayName(), user.getPreference(RTP_LEFT));
 
         return user.getPreference(RTP_LEFT);
@@ -183,7 +183,7 @@ public class RtpCommand extends EssentialCommand {
         OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         int amountToAdd = getInteger(ctx, "amount");
         user.getPreferences().set(RTP_LEFT, user.getPreference(RTP_LEFT) + amountToAdd);
-        new CommandSourceServerUser(ctx.getSource())
+        CommandSourceServerUser.of(ctx)
                 .sendLangMessage("template.#1", "RTPs left", user.getPreference(RTP_LEFT), user.getDisplayName());
 
         return user.getPreference(RTP_LEFT);
@@ -193,7 +193,7 @@ public class RtpCommand extends EssentialCommand {
         OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         int amountToSet = getInteger(ctx, "amount");
         user.getPreferences().set(RTP_LEFT, amountToSet);
-        new CommandSourceServerUser(ctx.getSource())
+        CommandSourceServerUser.of(ctx)
                 .sendLangMessage("template.#1", "RTPs left", user.getPreference(RTP_LEFT), user.getDisplayName());
 
         return user.getPreference(RTP_LEFT);
@@ -201,7 +201,7 @@ public class RtpCommand extends EssentialCommand {
 
     private int executeGet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
-        new CommandSourceServerUser(ctx.getSource())
+        CommandSourceServerUser.of(ctx)
                 .sendLangMessage("command.rtp.get", user.getDisplayName(), user.getPreference(RTP_LEFT));
 
         return user.getPreference(RTP_LEFT);
@@ -215,7 +215,7 @@ public class RtpCommand extends EssentialCommand {
             throw KiloCommands.getException("argument.general.negative_values").create();
 
         user.getPreferences().set(RTP_LEFT, user.getPreference(RTP_LEFT) - amountToRemove);
-        new CommandSourceServerUser(ctx.getSource())
+        CommandSourceServerUser.of(ctx)
                 .sendLangMessage("template.#1", "RTPs left", user.getPreference(RTP_LEFT), user.getDisplayName());
 
         return user.getPreference(RTP_LEFT);

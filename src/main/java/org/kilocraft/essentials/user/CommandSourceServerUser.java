@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user;
 
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -40,8 +41,16 @@ import java.util.UUID;
 public class CommandSourceServerUser implements CommandSourceUser {
     private final ServerCommandSource source;
 
-    public CommandSourceServerUser(ServerCommandSource source) {
+    private CommandSourceServerUser(ServerCommandSource source) {
         this.source = source;
+    }
+
+    public static CommandSourceServerUser of(ServerCommandSource source) {
+        return new CommandSourceServerUser(source);
+    }
+
+    public static CommandSourceServerUser of(CommandContext<ServerCommandSource> context) {
+        return new CommandSourceServerUser(context.getSource());
     }
 
     @Nullable

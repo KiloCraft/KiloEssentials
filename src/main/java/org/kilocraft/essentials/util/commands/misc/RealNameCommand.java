@@ -33,7 +33,7 @@ public class RealNameCommand extends EssentialCommand {
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
         String input = getString(ctx, "nickname");
-        CommandSourceUser source = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser source = CommandSourceServerUser.of(ctx);
         for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList(KiloCommands.hasPermission(ctx.getSource(), CommandPermission.VANISH))) {
             String nick = ComponentText.clearFormatting(user.getDisplayName());
             if (input.equalsIgnoreCase(nick) || input.equals(user.getUsername())) {

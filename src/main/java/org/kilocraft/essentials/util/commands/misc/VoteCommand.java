@@ -19,7 +19,7 @@ public class VoteCommand implements ConfigurableFeature {
     }
 
     public int execute(CommandContext<ServerCommandSource> ctx) {
-        ((CommandSourceUser) new CommandSourceServerUser(ctx.getSource())).sendMessage(ComponentText.toComponent(KiloConfig.messages().commands().voteMessage));
+        ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendMessage(ComponentText.toComponent(KiloConfig.messages().commands().voteMessage));
         return 1;
     }
 

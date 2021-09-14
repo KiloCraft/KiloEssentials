@@ -219,7 +219,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public CommandSourceUser getCommandSource(final CommandContext<ServerCommandSource> ctx) {
-        return new CommandSourceServerUser(ctx.getSource());
+        return CommandSourceServerUser.of(ctx);
     }
 
     @Override

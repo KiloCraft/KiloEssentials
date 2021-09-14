@@ -20,7 +20,7 @@ public class DiscordCommand implements ConfigurableFeature {
     }
 
     public int execute(CommandContext<ServerCommandSource> ctx) {
-        ((CommandSourceUser) new CommandSourceServerUser(ctx.getSource())).sendMessage(ComponentText.toComponent(KiloConfig.messages().commands().discordMessage));
+        ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendMessage(ComponentText.toComponent(KiloConfig.messages().commands().discordMessage));
         return 1;
     }
 

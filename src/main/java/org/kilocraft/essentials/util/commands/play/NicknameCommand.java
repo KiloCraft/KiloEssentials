@@ -95,7 +95,7 @@ public class NicknameCommand extends EssentialCommand {
             return -1;
         }
 
-        new CommandSourceServerUser(source).sendMessage((target.equals(this.getCommandSource(ctx)) ? this.messages.commands().nickname().setSelf : this.messages.commands().nickname().setOthers)
+        CommandSourceServerUser.of(source).sendMessage((target.equals(this.getCommandSource(ctx)) ? this.messages.commands().nickname().setSelf : this.messages.commands().nickname().setOthers)
                 .replace("{NICK}", target.getNickname().isPresent() ? target.getNickname().get() : target.getDisplayName())
                 .replace("{NICK_NEW}", nickname));
 

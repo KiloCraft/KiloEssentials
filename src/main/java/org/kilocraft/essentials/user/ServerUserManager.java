@@ -529,7 +529,7 @@ public class ServerUserManager implements UserManager, TickListener {
     public final CompletableFuture<List<User>> getAllUsersThenAcceptAsync(final OnlineUser requester,
                                                                           final String loadingTitle,
                                                                           final Consumer<? super List<User>> action) {
-        CommandSourceUser src = new CommandSourceServerUser(requester.getCommandSource());
+        CommandSourceUser src = CommandSourceServerUser.of(requester.getCommandSource());
         final LoadingText loadingText = new LoadingText(requester.asPlayer(), loadingTitle);
 
         if (!src.isConsole()) {
@@ -563,7 +563,7 @@ public class ServerUserManager implements UserManager, TickListener {
         final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(username);
         optionalCompletableFuture.thenAcceptAsync(optionalUser -> {
             if (!optionalUser.isPresent() || optionalUser.get() instanceof NeverJoinedUser) {
-                new CommandSourceServerUser(requester).sendLangError("exception.user_not_found");
+                CommandSourceServerUser.of(requester).sendLangError("exception.user_not_found");
                 return;
             }
 

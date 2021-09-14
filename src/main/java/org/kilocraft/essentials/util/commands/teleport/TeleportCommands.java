@@ -91,7 +91,7 @@ public class TeleportCommands {
                 player.getYaw(), player.getPitch()
         );
 
-        ((CommandSourceUser) new CommandSourceServerUser(ctx.getSource())).sendLangMessage("template.#1", "position",
+        ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendLangMessage("template.#1", "position",
                 getFormattedMessage(player), player.getName().asString());
 
         return 1;
@@ -108,7 +108,7 @@ public class TeleportCommands {
                 sender.getYaw(), sender.getPitch()
         );
 
-        ((CommandSourceUser) new CommandSourceServerUser(ctx.getSource())).sendLangMessage("template.#1", "position",
+        ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendLangMessage("template.#1", "position",
                 getFormattedMessage(target), target.getName().asString());
 
         return 1;
@@ -125,7 +125,7 @@ public class TeleportCommands {
                 target.getYaw(), target.getPitch()
         );
 
-        ((CommandSourceUser) new CommandSourceServerUser(ctx.getSource())).sendLangMessage("template.#1", "position",
+        ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendLangMessage("template.#1", "position",
                 getFormattedMessage(target), target.getName().asString());
 
         return 1;

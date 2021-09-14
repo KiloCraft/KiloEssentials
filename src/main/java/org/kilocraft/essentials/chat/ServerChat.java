@@ -225,7 +225,7 @@ public final class ServerChat {
     }
 
     public static int sendDirectMessage(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
-        CommandSourceUser src = new CommandSourceServerUser(source);
+        CommandSourceUser src = CommandSourceServerUser.of(source);
 
         if (!((ServerUser) target).shouldMessage() && src.getUser() != null) {
             if (!src.isConsole() && src.isOnline() && !((ServerUser) src.getUser()).isStaff()) {
@@ -290,7 +290,7 @@ public final class ServerChat {
 
         ComponentText.toText(ComponentText.removeEvents(ComponentText.of(toSource)));
 
-        new CommandSourceServerUser(source).sendMessage(toSource);
+        CommandSourceServerUser.of(source).sendMessage(toSource);
         target.sendMessage(toTarget);
 
         for (final OnlineServerUser user : KiloEssentials.getUserManager().getOnlineUsers().values()) {

@@ -151,13 +151,13 @@ public class WarpCommand {
 
             text.append(thisWarp);
         }
-        new CommandSourceServerUser(source).sendMessage(text);
+        CommandSourceServerUser.of(source).sendMessage(text);
         return 1;
     }
 
     private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
         ServerWarpManager.addWarp(new ServerWarp(name, Vec3dLocation.of(source.getPlayer()).shortDecimals(), addCommand));
-        CommandSourceUser user = new CommandSourceServerUser(source);
+        CommandSourceUser user = CommandSourceServerUser.of(source);
         user.sendLangMessage("command.warp.set", name);
         registerAliases();
         KiloCommands.updateGlobalCommandTree();
@@ -166,7 +166,7 @@ public class WarpCommand {
 
     private static int executeRemove(ServerCommandSource source, String warp) throws CommandSyntaxException {
         ServerWarp w = ServerWarpManager.getWarp(warp);
-        CommandSourceUser user = new CommandSourceServerUser(source);
+        CommandSourceUser user = CommandSourceServerUser.of(source);
         if (w != null) {
             ServerWarpManager.removeWarp(w);
             user.sendLangMessage("command.warp.remove", warp);

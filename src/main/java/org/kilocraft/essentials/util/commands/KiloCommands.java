@@ -296,7 +296,7 @@ public class KiloCommands {
     }
 
     public static int execute(@NotNull final ServerCommandSource executor, @NotNull final String command) {
-        CommandSourceUser src = new CommandSourceServerUser(executor);
+        CommandSourceUser src = CommandSourceServerUser.of(executor);
         onCommand(executor, command);
 
         if (simpleCommandManager.canExecute(command)) {
@@ -332,7 +332,7 @@ public class KiloCommands {
                     }
 
                     if (isCommand(literalName) && reqPerm != null && !KiloCommands.hasPermission(executor, reqPerm)) {
-                        new CommandSourceServerUser(executor).sendMessage(KiloConfig.messages().commands().context().permissionException);
+                        CommandSourceServerUser.of(executor).sendMessage(KiloConfig.messages().commands().context().permissionException);
                     } else {
                         src.sendMessage(KiloConfig.messages().commands().context().executionException);
                     }

@@ -95,7 +95,7 @@ public class PowerToolsCommand {
         int inputLine = getInteger(ctx, "line") - 1;
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         ItemStack item = player.getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
             user.sendLangMessage("command.item.invalid_item");
@@ -122,7 +122,7 @@ public class PowerToolsCommand {
 
     private static int executeReset(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
             user.sendLangMessage("command.item.invalid_item");
@@ -142,7 +142,7 @@ public class PowerToolsCommand {
     private static int executeList(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         ItemStack item = player.getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
 
@@ -175,7 +175,7 @@ public class PowerToolsCommand {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         String inputString = getString(ctx, "command").replaceFirst("/", "");
         ItemStack item = player.getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
             user.sendLangMessage("command.item.invalid_item");

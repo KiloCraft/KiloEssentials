@@ -164,11 +164,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     @Override
-    public String getNameTag() {
-        return super.getNameTag();
-    }
-
-    @Override
     public void setFlight(final boolean set) {
         this.asPlayer().getAbilities().allowFlying = set;
         this.asPlayer().getAbilities().flying = set;

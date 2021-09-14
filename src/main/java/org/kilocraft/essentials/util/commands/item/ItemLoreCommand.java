@@ -69,7 +69,7 @@ public class ItemLoreCommand {
         int inputLine = getInteger(ctx, "line") - 1;
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         ItemStack item = player.getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
             user.sendLangMessage("command.item.no_item");
@@ -97,7 +97,7 @@ public class ItemLoreCommand {
     private static int executeReset(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (ModifyItemCommand.validate(user, item)) return -1;
 
@@ -117,7 +117,7 @@ public class ItemLoreCommand {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         String inputString = getString(ctx, "text");
         ItemStack item = player.getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (ModifyItemCommand.validate(user, item, inputString)) return -1;
 

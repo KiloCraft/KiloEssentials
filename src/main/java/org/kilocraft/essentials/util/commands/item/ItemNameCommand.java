@@ -57,7 +57,7 @@ public class ItemNameCommand {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         String inputString = getString(ctx, "name");
         ItemStack item = player.getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (ModifyItemCommand.validate(user, item, inputString)) return -1;
 

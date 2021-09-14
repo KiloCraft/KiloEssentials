@@ -119,7 +119,7 @@ public class SimpleCommandManager {
         SimpleCommand command = getCommandByLabel(label);
         String str = input.replaceFirst("/", "").replaceFirst(label + " ", "");
         String[] args = str.replaceFirst(label, "").split(" ");
-        CommandSourceUser user = new CommandSourceServerUser(source);
+        CommandSourceUser user = CommandSourceServerUser.of(source);
 
         try {
             if (command != null) {

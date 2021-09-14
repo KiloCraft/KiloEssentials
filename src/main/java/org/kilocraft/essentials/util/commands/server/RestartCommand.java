@@ -32,14 +32,14 @@ public class RestartCommand {
     private static int execute(ServerCommandSource source, String args) {
         boolean confirmed = args.contains("-confirmed");
 
-        if (!confirmed && !new CommandSourceServerUser(source).isConsole()) {
+        if (!confirmed && !CommandSourceServerUser.of(source).isConsole()) {
 
             LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
             literalText.styled((style) -> style.withFormatting(Formatting.RED)
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to restart the server").formatted(Formatting.YELLOW)))
                     .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/restart -confirmed")));
 
-            new CommandSourceServerUser(source).sendMessage(literalText);
+            CommandSourceServerUser.of(source).sendMessage(literalText);
             return 0;
         }
 
