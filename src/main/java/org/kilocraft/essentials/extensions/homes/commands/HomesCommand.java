@@ -4,25 +4,19 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.item.Item;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.api.containergui.ScreenGUIBuilder;
-import org.kilocraft.essentials.api.containergui.buttons.GUIButton;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.extensions.homes.api.Home;
-import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.text.Texter;
-
-import java.util.List;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 
@@ -75,7 +69,7 @@ public class HomesCommand extends EssentialCommand {
             Vec3dLocation loc = (Vec3dLocation) home.getLocation();
             text.append(home.getName(),
                     Texter.Events.onHover(new LiteralText("")
-                            .append(new LiteralText(tl("general.click_teleport")).formatted(Formatting.YELLOW))
+                            .append(new LiteralText(ModConstants.translation("general.click_teleport")).formatted(Formatting.YELLOW))
                             .append("\n")
                             .append(Texter.newText(loc.asFormattedString()))
                     ),
@@ -83,39 +77,6 @@ public class HomesCommand extends EssentialCommand {
         }
 
         source.sendMessage(text.build());
-        return SUCCESS;
-    }
-
-    private int openScreen(final OnlineUser src, User user) {
-        UserHomeHandler homeHandler = user.getHomesHandler();
-        assert homeHandler != null;
-
-        if (homeHandler.getHomes().size() == 0) {
-            src.sendLangError("command.home.no_home.self");
-            return FAILED;
-        }
-
-        ScreenGUIBuilder builder = new ScreenGUIBuilder()
-                .titled(src.equals(user) ? "Homes" : user.getFormattedDisplayName() + "'s Homes");
-
-        List<Item> wools = ItemTags.WOOL.values();
-        int iconIndex = 0;
-        for (int i = 0; i < homeHandler.getHomes().size(); i++) {
-            Home home = homeHandler.getHomes().get(i);
-
-            iconIndex = iconIndex > wools.size() ? 0 : iconIndex + 1;
-            builder.addButton(
-                    new ScreenGUIBuilder.Button(
-                            new ScreenGUIBuilder.Icon(wools.get(iconIndex))
-                                    .titled(home.getName())
-                                    .addLore(Texter.newRawText("Click to Teleport!").formatted(Formatting.GREEN)).build()
-                    )
-                            .withClickAction(GUIButton.ClickAction.CLICK, () -> Home.teleportTo(src, home))
-                            .build()
-            );
-        }
-
-        builder.handleFor(src.asPlayer());
         return SUCCESS;
     }
 

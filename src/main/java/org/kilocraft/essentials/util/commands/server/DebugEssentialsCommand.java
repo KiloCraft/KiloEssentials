@@ -40,12 +40,6 @@ public class DebugEssentialsCommand extends EssentialCommand {
 
     private int setDebugMode(final CommandContext<ServerCommandSource> ctx, boolean set) {
         KiloDebugUtils.setDebugMode(set);
-        try {
-            Chunk chunk = ctx.getSource().getPlayer().getServerWorld().getChunk(ctx.getSource().getPlayer().getBlockPos());
-            this.getCommandSource(ctx).sendMessage("<gold>Inhabited time<yellow>: " + chunk.getInhabitedTime());
-        } catch (CommandSyntaxException e) {
-            e.printStackTrace();
-        }
         this.sendFeedback(ctx, "command.debug.mode", set);
         return set ? 1 : 0;
     }

@@ -71,7 +71,7 @@ public class WhoIsCommand extends EssentialCommand {
         text.append("UUID",
                 Texter.appendButton(
                         new LiteralText(target.getUuid().toString()),
-                        new LiteralText(tl("general.click_copy")),
+                        new LiteralText(ModConstants.translation("general.click_copy")),
                         ClickEvent.Action.COPY_TO_CLIPBOARD,
                         target.getUuid().toString()
                 )
@@ -79,7 +79,7 @@ public class WhoIsCommand extends EssentialCommand {
         text.append("IP (Last Saved)",
                 Texter.appendButton(
                         new LiteralText(target.getLastSocketAddress()),
-                        new LiteralText(tl("general.click_copy")),
+                        new LiteralText(ModConstants.translation("general.click_copy")),
                         ClickEvent.Action.COPY_TO_CLIPBOARD,
                         target.getLastSocketAddress()
                 )
@@ -152,7 +152,7 @@ public class WhoIsCommand extends EssentialCommand {
         assert vec.getDimension() != null;
         return Texter.appendButton(
                 text,
-                new LiteralText(tl("general.click_tp")),
+                new LiteralText(ModConstants.translation("general.click_tp")),
                 ClickEvent.Action.SUGGEST_COMMAND,
                 "/tpin " + vec.getDimension().toString() + " " +
                         vec.getX() + " " + vec.getY() + " " + vec.getZ() + " @s"

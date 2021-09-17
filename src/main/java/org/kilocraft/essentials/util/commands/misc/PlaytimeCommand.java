@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.User;
@@ -98,15 +99,15 @@ public class PlaytimeCommand extends EssentialCommand {
     }
 
     private int execute(CommandSourceUser src, User target) {
-        String pt = target.getTicksPlayed() <= 0 ? tl("general.not_present") :
+        String pt = target.getTicksPlayed() <= 0 ? ModConstants.translation("general.not_present") :
                 TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e');
-        String firstJoin = target.getFirstJoin() != null ? TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()) : tl("general.not_present");
+        String firstJoin = target.getFirstJoin() != null ? TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime()) : ModConstants.translation("general.not_present");
 
-        String title = CommandUtils.areTheSame(src, target) ? tl("command.playtime.title.self") : this.tl("command.playtime.title.others", target.getNameTag());
+        String title = CommandUtils.areTheSame(src, target) ? ModConstants.translation("command.playtime.title.self") : this.tl("command.playtime.title.others", target.getNameTag());
         Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(title);
 
-        text.append(tl("command.playtime.total"), pt)
-                .append(tl("command.playtime.first_join"), firstJoin);
+        text.append(ModConstants.translation("command.playtime.total"), pt)
+                .append(ModConstants.translation("command.playtime.first_join"), firstJoin);
 
         src.sendMessage(text.build());
         return target.getTicksPlayed();

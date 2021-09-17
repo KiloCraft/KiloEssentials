@@ -14,6 +14,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -104,7 +105,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
                         .append("\n")
                         .append(new LiteralText(animation.getId().toString()).formatted(Formatting.DARK_GRAY))
                         .append("\n")
-                        .append(new LiteralText(tl("general.click_apply")).formatted(Formatting.YELLOW))
+                        .append(new LiteralText(ModConstants.translation("general.click_apply")).formatted(Formatting.YELLOW))
                 ),
                 Texter.Events.onClickRun("/mp set " + id + "--s")
         ));

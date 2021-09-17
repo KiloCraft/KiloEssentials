@@ -727,7 +727,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
     }
 
-    public static String replaceVariables(final String str, final BanEntry<?> entry, final boolean permanent) {
+    public static String replaceBanVariables(final String str, final BanEntry<?> entry, final boolean permanent) {
         ConfigObjectReplacerUtil replacer = new ConfigObjectReplacerUtil("ban", str, true)
                 .append("reason", entry.getReason())
                 .append("source", entry.getSource());

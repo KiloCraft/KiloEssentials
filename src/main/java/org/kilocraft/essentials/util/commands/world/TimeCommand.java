@@ -67,7 +67,7 @@ public class TimeCommand extends EssentialCommand {
 
     private static int executeQuery(CommandContext<ServerCommandSource> context, int time, String query) {
         ServerWorld w = context.getSource().getWorld();
-        CommandSourceUser user = CommandSourceServerUser.of(context.);
+        CommandSourceUser user = CommandSourceServerUser.of(context);
         switch (query) {
             case "daytime":
                 user.sendLangMessage("command.time.query.daytime", time);
@@ -87,7 +87,7 @@ public class TimeCommand extends EssentialCommand {
     }
 
     public static int executeSet(CommandContext<ServerCommandSource> context, int time, String timeName) {
-        CommandSourceUser user = CommandSourceServerUser.of(context.);
+        CommandSourceUser user = CommandSourceServerUser.of(context);
         for (ServerWorld world : context.getSource().getServer().getWorlds()) {
             world.setTimeOfDay(world.getTimeOfDay() - (world.getTimeOfDay() % 24000) + time);
         }
@@ -98,7 +98,7 @@ public class TimeCommand extends EssentialCommand {
     }
 
     public static int executeAdd(CommandContext<ServerCommandSource> context, int timeToAdd) {
-        CommandSourceUser user = CommandSourceServerUser.of(context.);
+        CommandSourceUser user = CommandSourceServerUser.of(context);
         for (ServerWorld world : context.getSource().getServer().getWorlds()) {
             world.setTimeOfDay(world.getTimeOfDay() + timeToAdd);
         }

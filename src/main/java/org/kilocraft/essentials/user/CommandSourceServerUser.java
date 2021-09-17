@@ -298,7 +298,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendPermissionError(@NotNull String hover) {
-        this.sendMessage(ComponentText.of(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(ComponentText.of(hover)))));
+        this.sendMessage(ComponentText.of(ModConstants.translation("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(ComponentText.of(hover)))));
     }
 
     @Override
@@ -318,7 +318,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendLangMessage(@NotNull String key, Object... objects) {
-        this.sendMessage(KiloChat.getFormattedLang(key, objects));
+        this.sendMessage(ModConstants.translation(key, objects));
     }
 
     @Override

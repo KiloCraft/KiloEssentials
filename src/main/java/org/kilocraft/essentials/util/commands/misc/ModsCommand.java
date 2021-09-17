@@ -16,6 +16,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -46,7 +47,7 @@ public class ModsCommand extends EssentialCommand {
             ModMetadata meta = mod.getMetadata();
 
             text.append(
-                    Texter.Events.onHover(tl("general.click_info")),
+                    Texter.Events.onHover(ModConstants.translation("general.click_info")),
                     Texter.Events.onClickRun("/mods " + meta.getId()),
                     meta.getName()
             );
@@ -78,7 +79,7 @@ public class ModsCommand extends EssentialCommand {
         for (Person author : meta.getAuthors()) {
             MutableText mutable = Texter.newText(author.getName());
             mutable.styled((style) -> {
-                style.withHoverEvent(Texter.Events.onHover(tl("general.click_info")));
+                style.withHoverEvent(Texter.Events.onHover(ModConstants.translation("general.click_info")));
                 style.withClickEvent(Texter.Events.onClickRun("mods", meta.getId(), author.getName()));
                 return style;
             });

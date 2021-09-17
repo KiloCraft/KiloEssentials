@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TextColor;
 import net.minecraft.text.Texts;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -59,7 +60,7 @@ public class TpaCommand extends EssentialCommand {
                         .append(" ")
                         .append(
                                 Texts.bracketed(
-                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText(tl("general.click_cancel")))
+                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText(ModConstants.translation("general.click_cancel")))
                                                 .styled(style -> style.withColor(RED_COLOR))
                                 )
                         )
@@ -70,14 +71,14 @@ public class TpaCommand extends EssentialCommand {
                         .append(" ")
                         .append(
                                 Texts.bracketed(
-                                        Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText(tl("general.click_accept")))
+                                        Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText(ModConstants.translation("general.click_accept")))
                                                 .styled(style -> style.withColor(GREEN_COLOR))
                                 )
                         )
                         .append(" ")
                         .append(
                                 Texts.bracketed(
-                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText(tl("general.click_deny")))
+                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText(ModConstants.translation("general.click_deny")))
                                                 .styled(style -> style.withColor(RED_COLOR))
                                 )
                         )

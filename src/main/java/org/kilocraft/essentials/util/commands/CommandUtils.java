@@ -165,7 +165,7 @@ public class CommandUtils {
                 try {
                     var = value.function.accept(src);
                 } catch (Exception e) {
-                    var = String.valueOf(null);
+                    var = "";
                 }
 
                 string = string.replace(formatting, var);

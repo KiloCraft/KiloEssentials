@@ -70,7 +70,7 @@ public class BanCommand extends EssentialCommand {
         if (super.isOnline(victim.getId())) {
             super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
                     ComponentText.toText(
-                            ServerUserManager.replaceVariables(super.config.moderation().messages().permBan, entry, true)
+                            ServerUserManager.replaceBanVariables(super.config.moderation().messages().permBan, entry, true)
                     )
             );
         }

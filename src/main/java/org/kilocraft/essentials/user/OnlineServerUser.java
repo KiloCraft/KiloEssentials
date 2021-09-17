@@ -37,9 +37,11 @@ import java.util.UUID;
 
 public class OnlineServerUser extends ServerUser implements OnlineUser {
 
+    private final ServerPlayerEntity serverPlayerEntity;
+
     @Override
     public ServerPlayerEntity asPlayer() {
-        return KiloEssentials.getMinecraftServer().getPlayerManager().getPlayer(this.uuid);
+        return this.serverPlayerEntity;
     }
 
     @Override
@@ -98,7 +100,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendPermissionError(@NotNull String hover) {
-        this.sendMessage(ComponentText.of(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
+        this.sendMessage(ComponentText.of(ModConstants.translation("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
     }
 
     @Override
@@ -118,7 +120,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendLangMessage(final @NotNull String key, final Object... objects) {
-        this.sendMessage(KiloChat.getFormattedLang(key, objects));
+        this.sendMessage(ModConstants.translation(key, objects));
     }
 
     @Override
@@ -155,6 +157,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     public OnlineServerUser(final ServerPlayerEntity player) {
         super(player.getUuid());
         super.name = player.getEntityName();
+        this.serverPlayerEntity = player;
     }
 
     @Override

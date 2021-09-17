@@ -47,7 +47,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class PlayerWarpCommand extends EssentialCommand {
-    private static final String HEADER = ModConstants.getStrings().getProperty("command.playerwarp.header");
+    private static final String HEADER = ModConstants.translation("command.playerwarp.header");
 
     public PlayerWarpCommand(String label, Predicate<ServerCommandSource> predicate, String[] alias) {
         super(label, predicate, alias);

@@ -84,7 +84,7 @@ public class BanIpCommand extends EssentialCommand {
         bannedIpList.add(entry);
 
         MutableText text = ComponentText.toText(
-                ServerUserManager.replaceVariables(super.config.moderation().messages().permIpBan, entry, true)
+                ServerUserManager.replaceBanVariables(super.config.moderation().messages().permIpBan, entry, true)
         );
 
         for (ServerPlayerEntity player : players) {

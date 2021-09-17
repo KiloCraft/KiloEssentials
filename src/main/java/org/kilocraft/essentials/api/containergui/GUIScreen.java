@@ -1,3 +1,4 @@
+/*
 package org.kilocraft.essentials.api.containergui;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -70,3 +71,4 @@ public class GUIScreen extends ScreenHandler {
     }
 
 }
+*/

@@ -128,10 +128,6 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.MIN_OP_LEVEL = minOpLevel;
     }
 
-    public static String tl(final String key) {
-        return ModConstants.translation(key);
-    }
-
     public ServerUserManager getUserManager() {
         return KiloEssentials.getUserManager();
     }

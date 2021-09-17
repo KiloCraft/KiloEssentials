@@ -28,9 +28,7 @@ public abstract class EntitySelectorOptionsMixin {
         putOption("permission", (entitySelectorReader) -> {
             boolean negate = entitySelectorReader.readNegationCharacter();
             String permission = entitySelectorReader.getReader().readUnquotedString();
-            entitySelectorReader.setPredicate((entity) -> (entity instanceof ServerPlayerEntity &&
-                    Permissions.check(entity, permission, 2))
-                    != negate);
+            entitySelectorReader.setPredicate((entity) -> (Permissions.check(entity, permission, 2)) != negate);
         }, (entitySelectorReader) -> true, new LiteralText(""));
     }
 

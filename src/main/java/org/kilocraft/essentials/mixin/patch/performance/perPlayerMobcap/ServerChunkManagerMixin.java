@@ -6,6 +6,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.SpawnDensityCapper;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.chunk.ChunkManager;
 import org.jetbrains.annotations.Nullable;
@@ -35,8 +36,8 @@ public abstract class ServerChunkManagerMixin extends ChunkManager {
     @Nullable
     public abstract SpawnHelper.Info getSpawnInfo();
 
-    @Redirect(method = "tickChunks", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/SpawnHelper;setupSpawn(ILjava/lang/Iterable;Lnet/minecraft/world/SpawnHelper$ChunkSource;)Lnet/minecraft/world/SpawnHelper$Info;"))
-    public SpawnHelper.Info updateSpawnHelper(int i, Iterable<Entity> iterable, SpawnHelper.ChunkSource chunkSource) {
+    @Redirect(method = "tickChunks", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/SpawnHelper;setupSpawn(ILjava/lang/Iterable;Lnet/minecraft/world/SpawnHelper$ChunkSource;Lnet/minecraft/world/SpawnDensityCapper;)Lnet/minecraft/world/SpawnHelper$Info;"))
+    public SpawnHelper.Info updateSpawnHelper(int spawningChunkCount, Iterable<Entity> entities, SpawnHelper.ChunkSource chunkSource, SpawnDensityCapper spawnDensityCapper) {
         //Only update SpawnHelperInfo when mob spawning is enabled
         if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) return this.getSpawnInfo();
         SpawnHelper.Info spawnHelperInfo;
@@ -48,20 +49,20 @@ public abstract class ServerChunkManagerMixin extends ChunkManager {
             for (ServerPlayerEntity player : this.world.getPlayers()) {
                 Arrays.fill(((ServerPlayerEntityInterface) player).getMobCounts(), 0);
             }
-            spawnHelperInfo = this.setupSpawn(i, iterable, chunkSource, true);
+            spawnHelperInfo = this.setupSpawn(spawningChunkCount, entities, chunkSource, spawnDensityCapper, true);
         } else {
-            spawnHelperInfo = this.setupSpawn(i, iterable, chunkSource, false);
+            spawnHelperInfo = this.setupSpawn(spawningChunkCount, entities, chunkSource, spawnDensityCapper, false);
         }
         return spawnHelperInfo;
     }
 
-    public SpawnHelper.Info setupSpawn(int i, Iterable<Entity> iterable, SpawnHelper.ChunkSource chunkSource, boolean countMobs) {
+    public SpawnHelper.Info setupSpawn(int i, Iterable<Entity> iterable, SpawnHelper.ChunkSource chunkSource, SpawnDensityCapper spawnDensityCapper, boolean countMobs) {
         if (countMobs) {
             iterable.forEach(entity -> {
                 ((ThreadedAnvilChunkStorageInterface) this.world.getChunkManager().threadedAnvilChunkStorage).updatePlayerMobTypeMap(entity);
             });
         }
-        return SpawnHelper.setupSpawn(i, iterable, chunkSource);
+        return SpawnHelper.setupSpawn(i, iterable, chunkSource, spawnDensityCapper);
     }
 
 }

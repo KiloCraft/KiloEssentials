@@ -12,18 +12,6 @@ import org.kilocraft.essentials.user.OnlineServerUser;
 public class KiloChat {
     private static final Messages messages = KiloConfig.messages();
 
-    public static String getFormattedLang(String key) {
-        return getFormattedString(ModConstants.getStrings().getProperty(key));
-    }
-
-    public static String getFormattedLang(String key, Object... objects) {
-        return getFormattedString(ModConstants.getStrings().getProperty(key), objects);
-    }
-
-    private static String getFormattedString(String string, Object... objects) {
-        return (objects.length > 0) ? String.format(string, objects) : string;
-    }
-
     public static void broadCastToConsole(String message) {
         for (String s : message.split("\n")) {
             KiloEssentials.getLogger().info(ComponentText.clearFormatting(s));

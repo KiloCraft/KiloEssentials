@@ -7,6 +7,7 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.util.CommandPermission;
@@ -37,9 +38,9 @@ public class ClearChatCommand extends EssentialCommand {
     private int executeAll(CommandContext<ServerCommandSource> ctx, boolean silent) {
         broadCast(getClearString());
 
-        if (!silent) broadCast(getFormattedLang("command.clearchat.broadcast", ctx.getSource().getName()));
+        if (!silent) broadCast(ModConstants.translation("command.clearchat.broadcast", ctx.getSource().getName()));
 
-        broadCastToConsole(getFormattedLang("command.clearchat.broadcast", ctx.getSource().getName()));
+        broadCastToConsole(ModConstants.translation("command.clearchat.broadcast", ctx.getSource().getName()));
 
         return SUCCESS;
     }
@@ -51,7 +52,7 @@ public class ClearChatCommand extends EssentialCommand {
             this.getOnlineUser(target).sendLangMessage("command.clearchat.singleton", ctx.getSource().getName());
         }
 
-        broadCastToConsole(getFormattedLang("command.clearchat.singleton.broadcast", ctx.getSource().getName(), targets.size()));
+        broadCastToConsole(ModConstants.translation("command.clearchat.singleton.broadcast", ctx.getSource().getName(), targets.size()));
 
         return SUCCESS;
     }

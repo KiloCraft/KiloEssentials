@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
@@ -38,16 +39,14 @@ public class IpInfoCommand extends EssentialCommand {
 
             source.sendMessage(
                     Texter.newText(this.tl("command.ipinfo", user.getUsername()))
-                            .append(Texter.newRawText(address).styled((style) ->
-                                    style.withFormatting(Formatting.GOLD)
-                                            .withHoverEvent(Texter.Events.onHover(tl("general.click_copy")))
-                                            .withClickEvent(Texter.Events.onClickCopy(address))
+                            .append(Texter.newRawText(address).styled((style) -> style.withFormatting(Formatting.GOLD)
+                                    .withHoverEvent(Texter.Events.onHover(ModConstants.translation("general.click_copy")))
+                                    .withClickEvent(Texter.Events.onClickCopy(address))
                             )).append(" ").append(
                             Texter.newText().append(StringUtils.socketAddressToPort(user.getLastSocketAddress()))
-                                    .styled((style) ->
-                                            style.withFormatting(Formatting.AQUA)
-                                                    .withHoverEvent(Texter.Events.onHover(tl("general.click_copy")))
-                                                    .withClickEvent(Texter.Events.onClickCopy(user.getLastSocketAddress()))
+                                    .styled((style) -> style.withFormatting(Formatting.AQUA)
+                                            .withHoverEvent(Texter.Events.onHover(ModConstants.translation("general.click_copy")))
+                                            .withClickEvent(Texter.Events.onClickCopy(user.getLastSocketAddress()))
                                     )
                     )
             );

@@ -96,7 +96,7 @@ public class TempBanIpCommand extends EssentialCommand {
         bannedIpList.add(entry);
 
         MutableText text = ComponentText.toText(
-                ServerUserManager.replaceVariables(super.config.moderation().messages().tempIpBan, entry, false)
+                ServerUserManager.replaceBanVariables(super.config.moderation().messages().tempIpBan, entry, false)
         );
 
         for (ServerPlayerEntity player : players) {
