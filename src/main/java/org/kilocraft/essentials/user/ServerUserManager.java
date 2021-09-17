@@ -440,7 +440,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public void onChatMessage(OnlineUser user, ChatMessageC2SPacket packet) {
         ServerPlayerEntity player = user.asPlayer();
-        NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getServerWorld());
+        NetworkThreadUtils.forceMainThread(packet, player.networkHandler, player.getWorld());
 
         String string = StringUtils.normalizeSpace(packet.getChatMessage()).replaceAll("\\n", "");
         player.updateLastActionTime();

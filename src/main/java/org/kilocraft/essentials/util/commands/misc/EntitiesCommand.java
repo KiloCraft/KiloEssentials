@@ -144,7 +144,7 @@ public class EntitiesCommand extends EssentialCommand {
         ServerPlayerEntity player = EntityArgumentType.getPlayers(ctx, "player").iterator().next();
         HashMap<EntityType<?>, Integer> entitiesByType = new HashMap<>();
         int entities = 0;
-        for (Entity entity : player.getServerWorld().iterateEntities()) {
+        for (Entity entity : player.getWorld().iterateEntities()) {
             if (entity.getChunkPos().getChebyshevDistance(player.getChunkPos()) <= ServerSettings.getViewDistance()) {
                 entitiesByType.put(entity.getType(), entitiesByType.getOrDefault(entity.getType(), 0) + 1);
                 entities++;

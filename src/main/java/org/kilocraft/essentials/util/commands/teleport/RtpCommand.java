@@ -68,7 +68,7 @@ public class RtpCommand extends EssentialCommand {
         }
 
         //Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-        if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
+        if (RegistryUtils.dimensionTypeToRegistryKey(target.getWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
             targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
             return;
         }
@@ -95,7 +95,7 @@ public class RtpCommand extends EssentialCommand {
             z = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
             z += cfg.centerZ;
             pos = new BlockPos(x, 64, z);
-            Biome biome = target.getServerWorld().getBiome(pos);
+            Biome biome = target.getWorld().getBiome(pos);
             tries++;
             String biomeId = src.getRegistryManager().get(Registry.BIOME_KEY).getId(biome).toString();
             done = true;
@@ -107,11 +107,11 @@ public class RtpCommand extends EssentialCommand {
             }
         }
         //Add a custom ticket to gradually preload chunks
-        target.getServerWorld().getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), ServerSettings.getViewDistance() + 1, target.getId()); // Lag reduction
+        target.getWorld().getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), ServerSettings.getViewDistance() + 1, target.getId()); // Lag reduction
         final int finalX = x;
         final int finalZ = z;
         new SinglePlayerScheduler(targetUser, -1, cfg.teleportCooldown, () -> {
-            target.teleport(target.getServerWorld(), finalX, target.getServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, finalX, finalZ) + 1, finalZ, target.getYaw(), target.getPitch());
+            target.teleport(target.getWorld(), finalX, target.getWorld().getTopY(Heightmap.Type.WORLD_SURFACE, finalX, finalZ) + 1, finalZ, target.getYaw(), target.getPitch());
         });
     }
 

@@ -91,7 +91,7 @@ public class LocationUtil {
     public static void processDimension(ServerPlayerEntity player) {
         boolean kickFromDim = KiloConfig.main().world().kickFromDimension;
 
-        if (kickFromDim && LocationUtil.shouldBlockAccessTo(player.getServerWorld().getDimension()) && player.getServer() != null) {
+        if (kickFromDim && LocationUtil.shouldBlockAccessTo(player.getWorld().getDimension()) && player.getServer() != null) {
             BlockPos pos = player.getSpawnPointPosition();
             DimensionType dim = RegistryUtils.toDimension(player.getSpawnPointDimension());
 
@@ -102,7 +102,7 @@ public class LocationUtil {
                     if (pos == null) {
                         UserHomeHandler homeHandler = user.getHomesHandler();
                         assert homeHandler != null;
-                        if (homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getServerWorld().getDimension()) {
+                        if (homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getWorld().getDimension()) {
                             pos = user.getHomesHandler().getHomes().get(0).getLocation().toPos();
                         }
                     }
@@ -111,7 +111,7 @@ public class LocationUtil {
 
             if (pos != null) {
                 player.teleport(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.getYaw(), player.getPitch());
-                KiloEssentials.getUserManager().getOnline(player).sendMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getServerWorld().getDimension())));
+                KiloEssentials.getUserManager().getOnline(player).sendMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getWorld().getDimension())));
             }
         }
     }

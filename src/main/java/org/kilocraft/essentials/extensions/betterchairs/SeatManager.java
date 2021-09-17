@@ -137,7 +137,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             return false;
         }
 
-        ServerWorld world = player.getServerWorld();
+        ServerWorld world = player.getWorld();
         BlockState state = world.getBlockState(pos);
 
         if (world.getBlockState(pos.up()).getBlock() != Blocks.AIR) {

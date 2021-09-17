@@ -416,7 +416,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
             Packet<?> packet = frame.toPacket(player.getPos(), player.bodyYaw);
             if (packet != null) {
-                player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
+                player.getWorld().getChunkManager().sendToNearbyPlayers(player, packet);
             }
         }
 

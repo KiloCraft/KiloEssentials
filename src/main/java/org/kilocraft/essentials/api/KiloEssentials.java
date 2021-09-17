@@ -136,7 +136,7 @@ public class KiloEssentials {
         try {
             LuckPermsProvider.get();
             return true;
-        } catch (IllegalStateException exception) {
+        } catch (NoClassDefFoundError | IllegalStateException exception) {
             return false;
         }
     }

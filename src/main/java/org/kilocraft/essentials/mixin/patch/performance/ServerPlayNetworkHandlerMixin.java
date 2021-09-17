@@ -21,7 +21,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
         if (!ServerSettings.notick_player_login) {
             if (this.loggedIn) {
                 serverPlayer.playerTick();
-            } else if (ChunkManager.isChunkVisible(serverPlayer.getServerWorld(), serverPlayer.getBlockPos())) {
+            } else if (ChunkManager.isChunkVisible(serverPlayer.getWorld(), serverPlayer.getBlockPos())) {
                 this.loggedIn = true;
                 serverPlayer.playerTick();
             }

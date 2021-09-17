@@ -22,7 +22,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Inject(method = "onClickSlot", at = @At(value = "HEAD"), cancellable = true)
     private void patchShulkerDupe(ClickSlotC2SPacket packet, CallbackInfo ci) {
         if (this.player.currentScreenHandler instanceof ShulkerBoxScreenHandlerAccessor screenHandler && screenHandler.getInventory() instanceof ShulkerBoxBlockEntity shulker) {
-            Chunk chunk = ChunkManager.getChunkIfVisible(this.player.getServerWorld(), shulker.getPos());
+            Chunk chunk = ChunkManager.getChunkIfVisible(this.player.getWorld(), shulker.getPos());
             if (chunk == null || chunk.getBlockEntity(shulker.getPos()) != shulker) {
                 ci.cancel();
             }

@@ -37,28 +37,28 @@ public abstract class SpawnHelperMixin {
     private static SpawnGroup[] SPAWNABLE_GROUPS;
 
     @Shadow
-    protected static BlockPos getSpawnPos(World world, WorldChunk worldChunk) {
-        return null;
-    }
-
-    @Shadow
-    protected static boolean isAcceptableSpawnPosition(ServerWorld serverWorld, Chunk chunk, BlockPos.Mutable mutable, double d) {
+    private static boolean isAcceptableSpawnPosition(ServerWorld serverWorld, Chunk chunk, BlockPos.Mutable mutable, double d) {
         return false;
     }
 
     @Shadow
-    protected static Optional<SpawnSettings.SpawnEntry> pickRandomSpawnEntry(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos blockPos) {
+    private static Optional<SpawnSettings.SpawnEntry> pickRandomSpawnEntry(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos blockPos) {
+        return Optional.empty();
+    }
+
+    @Shadow
+    private static MobEntity createMob(ServerWorld serverWorld, EntityType<?> entityType) {
         return null;
     }
 
     @Shadow
-    protected static MobEntity createMob(ServerWorld serverWorld, EntityType<?> entityType) {
-        return null;
-    }
-
-    @Shadow
-    protected static boolean isValidSpawn(ServerWorld serverWorld, MobEntity mobEntity, double d) {
+    private static boolean isValidSpawn(ServerWorld serverWorld, MobEntity mobEntity, double d) {
         return false;
+    }
+
+    @Shadow
+    private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk) {
+        return null;
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class SpawnHelperMixin {
 
 
     private static int spawnEntitiesInChunk(SpawnGroup spawnGroup, ServerWorld serverWorld, WorldChunk worldChunk, SpawnHelper.Checker checker, SpawnHelper.Runner runner, int maxSpawns, Consumer<Entity> trackEntity) {
-        BlockPos blockPos = getSpawnPos(serverWorld, worldChunk);
+        BlockPos blockPos = getRandomPosInChunkSection(serverWorld, worldChunk);
         if (blockPos.getY() >= serverWorld.getBottomY() + 1) {
             return spawnMobsInternal(spawnGroup, serverWorld, worldChunk, blockPos, checker, runner, maxSpawns, trackEntity);
         }

@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.8-SNAPSHOT'
+    id 'fabric-loom' version '0.10.11'
     id 'com.github.johnrengelman.shadow' version '5.1.0'
     id 'maven-publish'
     id 'com.palantir.git-version' version '0.12.2'

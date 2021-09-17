@@ -86,7 +86,7 @@ public class TeleportCommands {
 
         KiloEssentials.getUserManager().getOnline(player).saveLocation();
         ctx.getSource().getPlayer().teleport(
-                player.getServerWorld(),
+                player.getWorld(),
                 vec.getX(), vec.getY(), vec.getZ(),
                 player.getYaw(), player.getPitch()
         );
@@ -103,7 +103,7 @@ public class TeleportCommands {
 
         KiloEssentials.getUserManager().getOnline(target).saveLocation();
         target.teleport(
-                sender.getServerWorld(),
+                sender.getWorld(),
                 sender.getPos().getX(), sender.getPos().getY(), sender.getPos().getZ(),
                 sender.getYaw(), sender.getPitch()
         );

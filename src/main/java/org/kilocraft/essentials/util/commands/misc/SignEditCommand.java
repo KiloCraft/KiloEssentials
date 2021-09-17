@@ -137,14 +137,14 @@ public class SignEditCommand extends EssentialCommand {
 
         if (input.equals("reset")) {
             sign.setTextOnRow(line, new LiteralText(""));
-            this.updateSign(sign, player.getServerWorld(), blockEntity.getPos());
+            this.updateSign(sign, player.getWorld(), blockEntity.getPos());
             user.sendLangMessage("command.signedit.reset_text", line + 1);
             return SUCCESS;
         }
 
         sign.setTextOnRow(line, ComponentText.toText(input));
 
-        this.updateSign(sign, player.getServerWorld(), blockEntity.getPos());
+        this.updateSign(sign, player.getWorld(), blockEntity.getPos());
         user.sendLangMessage("command.signedit.set_text", line + 1, input);
         return SUCCESS;
     }
@@ -173,7 +173,7 @@ public class SignEditCommand extends EssentialCommand {
 
         Text text = ((MutableText) signText.getTexts()[line]).styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, input)));
         sign.setTextOnRow(line, text);
-        this.updateSign(sign, player.getServerWorld(), blockEntity.getPos());
+        this.updateSign(sign, player.getWorld(), blockEntity.getPos());
         user.sendLangMessage("command.signedit.set_command", line + 1, input);
         return SUCCESS;
     }
@@ -194,7 +194,7 @@ public class SignEditCommand extends EssentialCommand {
         DyeColor dyeColor = DyeColor.valueOf(inputColor.toUpperCase());
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
         sign.setTextColor(dyeColor);
-        this.updateSign(sign, player.getServerWorld(), sign.getPos());
+        this.updateSign(sign, player.getWorld(), sign.getPos());
 
         user.sendLangMessage("command.signedit.set_color", inputColor);
         return SUCCESS;
@@ -257,7 +257,7 @@ public class SignEditCommand extends EssentialCommand {
         if (sign.getTextColor() != DyeColor.BLACK)
             newSign.setTextColor(sign.getTextColor());
 
-        ServerWorld world = player.getServerWorld();
+        ServerWorld world = player.getWorld();
         world.setBlockState(sign.getPos(), newState);
         world.updateNeighbors(sign.getPos(), newState.getBlock());
         world.addBlockEntity(newSign);
@@ -272,7 +272,7 @@ public class SignEditCommand extends EssentialCommand {
     }
 
     private BlockEntity getBlockEntityAtCursor(ServerPlayerEntity player) {
-        ServerWorld world = player.getServerWorld();
+        ServerWorld world = player.getWorld();
         HitResult hitResult = ((EntityServerRayTraceable) player).rayTrace(10, 1, true);
         if (hitResult.getType() != HitResult.Type.BLOCK)
             return null;
