@@ -8,23 +8,20 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
 
 //TODO refactor
 public class PermissionUtil {
-    private static final Logger logger = (Logger) KiloEssentials.getLogger();
-    private static final List<String> pendingPermissions = new ArrayList<>();
-    public static String COMMAND_PERMISSION_PREFIX = "kiloessentials.command.";
-    public static String PERMISSION_PREFIX = "kiloessentials.";
+    private static final Logger logger = KiloEssentials.getLogger();
+    public static final String COMMAND_PERMISSION_PREFIX = "kiloessentials.command.";
+    public static final String PERMISSION_PREFIX = "kiloessentials.";
     private final boolean present;
     private Manager manager;
 
@@ -58,10 +55,6 @@ public class PermissionUtil {
         logger.info("Using {} as the Permission Manager", this.manager.getName());
 
         logger.info("Registered " + (CommandPermission.values().length + EssentialPermission.values().length) + " permission nodes.");
-    }
-
-    public static void registerNode(final String node) {
-        pendingPermissions.add(node);
     }
 
     public boolean hasPermission(ServerCommandSource src, String permission, int opLevel) {

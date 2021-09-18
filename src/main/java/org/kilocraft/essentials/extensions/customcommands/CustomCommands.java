@@ -90,7 +90,6 @@ public class CustomCommands implements ReloadableConfigurableFeature {
 
             if (cs.reqSection.permission != null && !cs.reqSection.permission.equalsIgnoreCase("none")) {
                 simpleCommand.requires(cs.reqSection.permission);
-                PermissionUtil.registerNode(cs.reqSection.permission);
             }
 
             SimpleCommandManager.register(simpleCommand);

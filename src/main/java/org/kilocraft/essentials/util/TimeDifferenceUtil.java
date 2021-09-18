@@ -200,39 +200,11 @@ public class TimeDifferenceUtil {
 
     public static CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         String inputChar = String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context)));
-        if (inputChar.matches(RegexLib.START_WITH_DIGITS.get())) {
+        if (inputChar.matches("^\\d+")) {
             return ArgumentSuggestions.suggestAtCursor(VALID_UNITS, context);
         }
 
         return builder.buildFuture();
     }
 
-    public static CompletableFuture<Suggestions> listSuggestionsOLD(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        Stream<String> stream = Arrays.stream(VALID_UNITS).filter((it) -> {
-            String inputChar = String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context)));
-            boolean containsValidUnit = it.equals(inputChar);
-
-            return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
-        });
-
-
-//        return ArgumentCompletions.suggestAtCursor(
-//                Arrays.stream(VALID_UNITS).filter((it) ->{
-//                    String inputChar = String.valueOf(context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)));
-//                    boolean containsValidUnit = it.equals(inputChar);
-//
-//                    return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
-//                }),
-//                context
-//        );
-
-        return ArgumentSuggestions.suggestAtCursor(
-                Arrays.stream(VALID_UNITS).filter((it) -> {
-                    //String input = String.valueOf(ArgumentCompletions.)
-
-                    return true;
-                }),
-                context
-        );
-    }
 }

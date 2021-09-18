@@ -328,7 +328,6 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
             map.put(animation.getId(), animation);
             innerArray.permissionRequirement().ifPresent((requirement) -> {
-                PermissionUtil.registerNode(requirement.permission);
                 animation.setPredicate((user) -> KiloCommands.hasPermission(user.getCommandSource(), requirement.permission, requirement.op));
             });
         });

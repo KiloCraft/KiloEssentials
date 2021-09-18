@@ -78,6 +78,10 @@ public class KiloCommands {
         return Permissions.check(src, perm.getNode(), minOpLevel);
     }
 
+    public static boolean hasPermission(final ServerCommandSource src, final String cmdPerm) {
+        return hasPermission(src, cmdPerm, 2);
+    }
+
     public static boolean hasPermission(final ServerCommandSource src, final String cmdPerm, final int minOpLevel) {
         return Permissions.check(src, cmdPerm, minOpLevel);
     }
@@ -379,7 +383,7 @@ public class KiloCommands {
         return var;
     }
 
-    private static void onCommand(@NotNull final ServerCommandSource executor, @NotNull String command) {
+    public static void onCommand(@NotNull final ServerCommandSource executor, @NotNull String command) {
         if (CommandUtils.isPlayer(executor)) {
             command = command.startsWith("/") ? command.substring(1) : command;
 

@@ -14,18 +14,6 @@ public class ChatConfigSection {
     @Setting(value = "useVanillaChat", comment = "If set to true the KiloEssentials Chat will be disabled")
     public boolean useVanillaChat = false;
 
-    @Setting(value = "kickForUsingIllegalCharacters", comment = "Kicks a player if they use Illegal Characters in the chat\n If set to false they will only get a warning")
-    public boolean kickForUsingIllegalCharacters = false;
-
-    @Setting(value = "kickForSpamming", comment = "Kicks a player if they try to spam the chat\nIf set to false they will only get a warning")
-    public boolean kickForSpamming = true;
-
-    @Setting(value = "spamWarning", comment = "Send this message to the player if they are trying to spam")
-    public String spamWarning = "&cDon't spam!";
-
-    @Setting(value = "itemFormat", comment = "The format someone has to use to show an Item (Main hand) in chat (regex)")
-    public String itemFormat = "\\[item\\]";
-
     @Setting(value = "prefixes", comment = "Sets format and meta of chat channels")
     private final ChatFormatsConfigSection formatsSection = new ChatFormatsConfigSection();
 

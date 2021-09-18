@@ -50,9 +50,9 @@ public abstract class CommandManagerMixin {
         return canSourceUse(node, source);
     }
 
-    @Inject(method = "execute", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))
-    private void modifyExecute(ServerCommandSource src, String string, CallbackInfoReturnable<Integer> cir) {
-        cir.setReturnValue(KiloCommands.execute(src, string));
+    @Inject(method = "execute", at = @At("HEAD"))
+    private void socialSpy(ServerCommandSource src, String string, CallbackInfoReturnable<Integer> cir) {
+        KiloCommands.onCommand(src, string);
     }
 
 }

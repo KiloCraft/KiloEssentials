@@ -88,7 +88,7 @@ public class NicknameCommand extends EssentialCommand {
             throw KiloCommands.getException("exception.nickname_not_acceptable", maxLength).create();
         }
 
-        nickname = Format.validatePermission(target, nickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting.");
+        nickname = Format.validatePermission(target, nickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting");
 
         if (this.getUserManager().shouldNotUseNickname(target, nickname)) {
             target.sendLangMessage("command.nickname.already_taken");

@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.user;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -22,7 +21,6 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.CommandPermission;
@@ -242,13 +240,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         }
 
         if (KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_SELF) || KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_OTHERS)) {
-            this.getPreference(Preferences.NICK).ifPresent(s -> {
-                try {
-                    this.setNickname(Format.validatePermission(this, s, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting."));
-                } catch (CommandSyntaxException e) {
-                    this.clearNickname();
-                }
-            });
+            this.getPreference(Preferences.NICK).ifPresent(oldNickname -> this.setNickname(Format.validatePermission(this, oldNickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting")));
         } else {
             this.clearNickname();
         }

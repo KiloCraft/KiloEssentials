@@ -9,7 +9,6 @@
     "bugfix.PassiveEntityMixin",
     "bugfix.ServerPlayerEntityMixin",
     "bugfix.ServerPlayNetworkHandlerMixin",
-    "bugfix.SignBlockEntityMixin",
     "gameplay.DyeItemMixin",
     "gameplay.EnchantCommandMixin",
     "gameplay.ServerWorldMixin",
