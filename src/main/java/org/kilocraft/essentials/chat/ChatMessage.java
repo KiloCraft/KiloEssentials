@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.MessageType;
+import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -50,11 +51,7 @@ public class ChatMessage {
         this.builder.append(ComponentText.of(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), sender))
                 .style(style -> style.hoverEvent(HoverEvent.showText(sender.hoverEvent()))
                         .clickEvent(net.kyori.adventure.text.event.ClickEvent.suggestCommand("/msg " + sender.getUsername() + " "))));
-        String[] parts = input.split(" ");
-        for (int i = 0; i < parts.length; i++) {
-            this.builder.append(this.parse(parts[i]));
-            if (i != parts.length - 1) this.builder.append(Component.text(" "));
-        }
+        this.builder.append(this.parse(input));
     }
 
     private Component parse(final String input) {
@@ -173,9 +170,9 @@ public class ChatMessage {
                 ServerChat.pingUser(user, this.mentionType);
             }
         }
-        this.channel.send(ComponentText.toText(textComponent), MessageType.CHAT, this.sender.getUuid());
-        KiloChat.broadCastToConsole(textComponent.content());
+        Text text = ComponentText.toText(textComponent);
+        this.channel.send(text, MessageType.CHAT, this.sender.getUuid());
+        KiloChat.broadCastToConsole(text.asString());
     }
-
 
 }
