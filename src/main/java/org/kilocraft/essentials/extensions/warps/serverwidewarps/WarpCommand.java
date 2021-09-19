@@ -63,7 +63,6 @@ public class WarpCommand {
             if (warp.addCommand()) {
                 SimpleCommandManager.register(
                         new SimpleCommand(
-                                "server_warp:" + warp.getName().toLowerCase(Locale.ROOT),
                                 warp.getName().toLowerCase(Locale.ROOT),
                                 (source, args) -> executeTeleport(source, warp.getName())
                         ).withoutArgs()

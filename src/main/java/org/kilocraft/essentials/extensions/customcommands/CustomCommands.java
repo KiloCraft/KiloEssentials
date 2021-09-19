@@ -1,14 +1,10 @@
 package org.kilocraft.essentials.extensions.customcommands;
 
 import com.google.common.reflect.TypeToken;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -17,7 +13,6 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
@@ -25,20 +20,16 @@ import org.kilocraft.essentials.extensions.customcommands.config.sections.Custom
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
-import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public class CustomCommands implements ReloadableConfigurableFeature {
     public static boolean enabled = false;
-    static Map<Identifier, SimpleCommand> map = new HashMap<>();
-    private static ConfigurationNode configNode;
+    private static final List<SimpleCommand> commands = new ArrayList<>();
     private static CustomCommandsConfig config;
 
     @Override
@@ -58,7 +49,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
             ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
                     .setFile(CONFIG_FILE.getFile()).build();
 
-            configNode = loader.load(ConfigurationOptions.defaults()
+            ConfigurationNode configNode = loader.load(ConfigurationOptions.defaults()
                     .setHeader(CustomCommandsConfig.HEADER)
                     .setObjectMapperFactory(DefaultObjectMapperFactory.getInstance())
                     .setShouldCopyDefaults(true));
@@ -75,14 +66,13 @@ public class CustomCommands implements ReloadableConfigurableFeature {
     }
 
     private static void createFromConfig() {
-        if (!map.isEmpty()) {
-            map.forEach((string, cs) -> SimpleCommandManager.unregister(string.toString()));
-            map.clear();
+        if (!commands.isEmpty()) {
+            commands.forEach(sc -> SimpleCommandManager.unregister(sc.getLabel()));
+            commands.clear();
         }
 
-        config.commands.forEach((string, cs) -> {
-            SimpleCommandManager.unregister(string);
-            SimpleCommand simpleCommand = new SimpleCommand(string, cs.label, (source, args) -> runCommand(source, args, cs));
+        for (CustomCommandConfigSection cs : config.commands) {
+            SimpleCommand simpleCommand = new SimpleCommand(cs.label, (source, args) -> runCommand(source, args, cs));
 
             if (cs.reqSection.op != 0) {
                 simpleCommand.requires(cs.reqSection.op);
@@ -93,20 +83,20 @@ public class CustomCommands implements ReloadableConfigurableFeature {
             }
 
             SimpleCommandManager.register(simpleCommand);
-            map.put(new Identifier(string), simpleCommand);
-        });
+            commands.add(simpleCommand);
+        }
+        KiloCommands.updateGlobalCommandTree();
     }
 
     private static int runCommand(ServerCommandSource src, String[] args, CustomCommandConfigSection cs) throws CommandSyntaxException {
         int var = 0;
         int iArgs = 0;
         List<String> commands = new ArrayList<>();
-        for (String s : cs.executablesList) {
-            String cmd = s.replace("${source.name}", src.getName());
+        for (String command : cs.executablesList) {
             //Checks if the command contains an argument object: ${args[<number>]}
             //\$\{args\[\d+]}
-            if (cmd.contains("${args[")) {
-                String[] strings = cmd.split(" ");
+            if (command.contains("${args[")) {
+                String[] strings = command.split(" ");
 
                 for (String string : strings) {
                     if (string.startsWith("${args["))
@@ -120,14 +110,14 @@ public class CustomCommands implements ReloadableConfigurableFeature {
 
                 for (int i = 0; i <= args.length + 1; i++) {
                     try {
-                        cmd = cmd.replaceAll("\\$\\{args\\[" + (i + 1) + "]}", args[i]);
+                        command = command.replaceAll("\\$\\{args\\[" + (i + 1) + "]}", args[i]);
                     } catch (ArrayIndexOutOfBoundsException ignored) {
                     }
                 }
 
             }
 
-            commands.add(cmd);
+            commands.add(command);
         }
 
         for (String s : commands) {
@@ -136,27 +126,6 @@ public class CustomCommands implements ReloadableConfigurableFeature {
         }
 
         return var;
-    }
-
-    public enum SuggestionType {
-        EMPTY("empty"),
-        PLAYERS("players");
-
-        private final String id;
-
-        SuggestionType(String id) {
-            this.id = id;
-        }
-
-        public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
-            switch (this) {
-                case PLAYERS:
-                    return ArgumentSuggestions.allPlayers(ctx, builder);
-
-                default:
-                    return ArgumentSuggestions.noSuggestions(ctx, builder);
-            }
-        }
     }
 
 }

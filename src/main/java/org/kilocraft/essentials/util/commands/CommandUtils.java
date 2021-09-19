@@ -1,17 +1,15 @@
 package org.kilocraft.essentials.util.commands;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.CommandOutput;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 
 import java.util.Objects;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,47 +92,23 @@ public class CommandUtils {
         if (s.startsWith("!")) {
             return execute(operatorSource(src), s.replace("!", ""));
         } else if (s.startsWith("?")) {
-            return execute(s.replaceFirst("\\?", ""));
+            return execute(src.getServer(), s.replaceFirst("\\?", ""));
         } else {
             return execute(src, s);
         }
     }
 
     private static int execute(ServerCommandSource source, String command) {
-        return KiloEssentials.getMinecraftServer().getCommandManager().execute(source, command);
+        return source.getServer().getCommandManager().execute(source, command);
     }
 
-    private static int execute(String command) {
-        return KiloEssentials.getMinecraftServer().getCommandManager().execute(KiloEssentials.getMinecraftServer().getCommandSource(), command);
+    private static int execute(MinecraftServer server, String command) {
+        return execute(server.getCommandSource(), command);
     }
 
 
     private static ServerCommandSource operatorSource(ServerCommandSource src) {
         return src.withLevel(4);
-    }
-
-    private static CommandOutput commandOutput(ServerCommandSource src) {
-        return new CommandOutput() {
-            @Override
-            public void sendSystemMessage(Text text, UUID uUID) {
-                src.sendFeedback(text, false);
-            }
-
-            @Override
-            public boolean shouldReceiveFeedback() {
-                return true;
-            }
-
-            @Override
-            public boolean shouldTrackOutput() {
-                return false;
-            }
-
-            @Override
-            public boolean shouldBroadcastConsoleToOps() {
-                return false;
-            }
-        };
     }
 
     public enum Formatting {

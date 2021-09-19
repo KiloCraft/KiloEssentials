@@ -63,6 +63,7 @@
     "performance.perPlayerMobcap.ThreadedAnvilChunkStorageMixin",
     "technical.ClientConnectionMixin",
     "technical.CommandManagerMixin",
+    "technical.CommandNodeMixin",
     "technical.CraftingScreenHandlerMixin",
     "technical.EntityMixin",
     "technical.EntitySelectorOptionsMixin",
