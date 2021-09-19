@@ -33,7 +33,8 @@ public enum EssentialPermission {
     MAGIC_PARTICLES_SELF("magicparticles"),
     MAGIC_PARTICLES_ADVANCED("magicparticles.advanced"),
     SIT_SELF("sit.self"),
-    SIT_OTHERS("sit.others");
+    SIT_OTHERS("sit.others"),
+    COMMANDS_BYPASS_WORLD("commands.bypass.world");
 
     private final String node;
 

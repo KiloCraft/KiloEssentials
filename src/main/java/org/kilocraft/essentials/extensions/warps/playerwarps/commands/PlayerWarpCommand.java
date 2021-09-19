@@ -468,7 +468,7 @@ public class PlayerWarpCommand extends EssentialCommand {
 
     private Text getTeleportConfirmationText(String warpName) {
         return new LiteralText("")
-                .append(StringText.of(true, "general.loc.unsafe.confirmation")
+                .append(StringText.of("general.loc.unsafe.confirmation")
                         .formatted(Formatting.YELLOW))
                 .append(new LiteralText(" [").formatted(Formatting.GRAY)
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))

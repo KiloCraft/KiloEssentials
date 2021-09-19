@@ -138,7 +138,7 @@ public class SethomeCommand extends EssentialCommand {
 
     private Text getConfirmationText(String homeName, String user) {
         return new LiteralText("")
-                .append(StringText.of(true, "command.sethome.confirmation_message")
+                .append(StringText.of("command.sethome.confirmation_message")
                         .formatted(Formatting.YELLOW))
                 .append(new LiteralText(" [").formatted(Formatting.GRAY)
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))

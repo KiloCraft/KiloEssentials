@@ -40,7 +40,7 @@ import java.util.regex.Matcher;
 
 public final class ServerChat {
     private static final int COMMAND_MAX_LENGTH = 45;
-    private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new SimpleCommandExceptionType(StringText.of(true, "command.message.error"));
+    private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new SimpleCommandExceptionType(StringText.of("command.message.error"));
     private static final ChatConfigSection config = KiloConfig.main().chat();
 
     public static void sendChatMessage(final OnlineUser user, final String raw, final Channel channel) {

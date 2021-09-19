@@ -31,7 +31,7 @@ public class LightningCommand extends EssentialCommand {
         LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(player.getWorld(),
                 null, null, player, new BlockPos(vec3d), SpawnReason.COMMAND, true, false);
 
-        player.sendMessage(StringText.of(true, "command.smite"), true);
+        player.sendMessage(StringText.of("command.smite"), true);
         return player.getWorld().spawnEntity(lightning) ? SUCCESS : FAILED;
     }
 

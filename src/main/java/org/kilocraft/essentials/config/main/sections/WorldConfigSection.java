@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ConfigSerializable
 public class WorldConfigSection {
@@ -17,4 +19,8 @@ public class WorldConfigSection {
 
     @Setting(value = "kickOutMessage", comment = "Set the message for when a player gets kicked back to their spawn point If the dimension is disallowed, Values: %s")
     public String kickOutMessage = "&cThe %s dimension is disabled!";
+
+    @Setting(value = "disabledCommands", comment = "Put the identifier of a dimension and a list of commands to disable them!")
+    public Map<String, List<String>> disabledCommands = Map.of("myserver:custom_dimension", Lists.newArrayList("home", "tpa"));
+
 }

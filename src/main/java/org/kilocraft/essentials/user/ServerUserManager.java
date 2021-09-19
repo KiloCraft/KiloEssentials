@@ -28,7 +28,6 @@ import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.user.punishment.PunishmentEntry;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.ChatMessage;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
@@ -654,10 +653,10 @@ public class ServerUserManager implements UserManager, TickListener {
 
         public LoadingText(ServerPlayerEntity player, String key) {
             this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player)
-                    .append(StringText.of(true, key + ".frame1"))
-                    .append(StringText.of(true, key + ".frame2"))
-                    .append(StringText.of(true, key + ".frame3"))
-                    .append(StringText.of(true, key + ".frame4"))
+                    .append(StringText.of(key + ".frame1"))
+                    .append(StringText.of(key + ".frame2"))
+                    .append(StringText.of(key + ".frame3"))
+                    .append(StringText.of(key + ".frame4"))
                     .build();
         }
 

@@ -78,7 +78,7 @@ public class MobCapCommand extends EssentialCommand {
             throw new SimpleCommandExceptionType(new LiteralText("Invalid spawn group: " + name)).create();
         }
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        player.sendMessage(StringText.of(true, "command.mobpsawn", f, name), false);
+        player.sendMessage(StringText.of("command.mobpsawn", f, name), false);
         return SUCCESS;
     }
 

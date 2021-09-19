@@ -52,7 +52,7 @@ public class Texter {
 
     public static MutableText confirmationMessage(String langKey, MutableText button) {
         return newText()
-                .append(StringText.of(true, langKey))
+                .append(StringText.of(langKey))
                 .append(" ")
                 .append(button);
     }

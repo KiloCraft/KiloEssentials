@@ -83,7 +83,7 @@ public class MagicalParticlesCommand extends EssentialCommand {
         }
 
         addPlayer(player.getUuid(), identifier);
-        player.sendMessage(StringText.of(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
+        player.sendMessage(StringText.of("command.magicalparticles.set", getAnimationName(identifier)), silent);
         return SUCCESS;
     }
 

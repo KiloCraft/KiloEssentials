@@ -104,7 +104,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
                 }
 
                 if (iArgs >= args.length) {
-                    throw new SimpleCommandExceptionType(StringText.of(true, "general.usage", cs.usage)
+                    throw new SimpleCommandExceptionType(StringText.of("general.usage", cs.usage)
                             .formatted(Formatting.RED)).create();
                 }
 

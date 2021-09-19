@@ -220,7 +220,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             if (passenger instanceof PlayerEntity playerEntity) {
                 passenger.stopRiding();
                 armorStandEntity.kill();
-                playerEntity.sendMessage(StringText.of(true, "sit.stop_riding"), true);
+                playerEntity.sendMessage(StringText.of("sit.stop_riding"), true);
             }
         }
     }

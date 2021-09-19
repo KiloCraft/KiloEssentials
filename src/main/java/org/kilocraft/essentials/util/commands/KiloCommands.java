@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.util.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -9,25 +8,24 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.command.CommandException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.*;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
-import org.kilocraft.essentials.api.text.ComponentText;
-import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.commands.help.HelpCommand;
 import org.kilocraft.essentials.util.commands.help.HelpMeCommand;
 import org.kilocraft.essentials.util.commands.inventory.AnvilCommand;
@@ -50,6 +48,7 @@ import org.kilocraft.essentials.util.commands.user.SilenceCommand;
 import org.kilocraft.essentials.util.commands.user.WhoIsCommand;
 import org.kilocraft.essentials.util.commands.user.WhoWasCommand;
 import org.kilocraft.essentials.util.commands.world.TimeCommand;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.SettingCommand;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -69,11 +68,11 @@ public class KiloCommands {
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {
-        return Permissions.check(src, perm.getNode(), 2);
+        return hasPermission(src, perm.getNode(), 2);
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm, final int minOpLevel) {
-        return Permissions.check(src, perm.getNode(), minOpLevel);
+        return hasPermission(src, perm.getNode(), minOpLevel);
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final String cmdPerm) {
@@ -201,7 +200,7 @@ public class KiloCommands {
 
     private static int sendInfo(final CommandContext<ServerCommandSource> ctx) {
         ctx.getSource().sendFeedback(
-                StringText.of(true, "command.info", ModConstants.getMinecraftVersion())
+                StringText.of("command.info", ModConstants.getMinecraftVersion())
                         .formatted(Formatting.GRAY)
                         .append("\n")
                         .append(new LiteralText("GitHub: ").formatted(Formatting.GRAY))
@@ -213,13 +212,6 @@ public class KiloCommands {
                         )), false);
 
         return 1;
-    }
-
-    @Deprecated
-    public static LiteralText getPermissionError(final String hoverText) {
-        final LiteralText literalText = StringText.of(true, "command.exception.permission");
-        literalText.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(hoverText).formatted(Formatting.YELLOW))));
-        return literalText;
     }
 
     public static SimpleCommandExceptionType getException(final String langErrorKey) {
@@ -242,9 +234,8 @@ public class KiloCommands {
         }
     }
 
-    public static void onCommand(@NotNull final ServerCommandSource executor, @NotNull String command) {
+    public static void onCommand(@NotNull final ServerCommandSource executor, final String command) {
         if (CommandUtils.isPlayer(executor)) {
-            command = command.startsWith("/") ? command.substring(1) : command;
 
             boolean isIgnored = false;
             for (String cmd : KiloConfig.main().ignoredCommandsForLogging) {
@@ -262,6 +253,26 @@ public class KiloCommands {
                 }
             }
         }
+    }
+
+    public static boolean isCommandDisabled(ServerCommandSource src, String command) {
+        try {
+            if (KiloEssentials.hasPermissionNode(src, EssentialPermission.COMMANDS_BYPASS_WORLD)) return false;
+            final DimensionType dimensionType = src.getPlayer().getWorld().getDimension();
+            final Identifier identifier = RegistryUtils.toIdentifier(dimensionType);
+            final List<String> disabledCommands = KiloConfig.main().world().disabledCommands.get(identifier.toString());
+            if (disabledCommands != null) {
+                for (String disabledCommand : disabledCommands) {
+                    if (disabledCommand.equals(command)) {
+                        src.sendError(StringText.of("general.dimension_command_disabled", command, identifier.getPath()));
+                        return true;
+                    }
+                }
+            }
+        } catch (CommandSyntaxException noPlayer) {
+            return false;
+        }
+        return false;
     }
 
     public static CommandDispatcher<ServerCommandSource> getDispatcher() {

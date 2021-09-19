@@ -35,7 +35,7 @@ public class HelpMeCommand extends EssentialCommand {
     private int sendHelp(final CommandContext<ServerCommandSource> ctx) {
         final CommandSourceUser src = this.getCommandSource(ctx);
         final Text text = new LiteralText("")
-                .append(StringText.of(true, "command.helpme.prefix"))
+                .append(StringText.of("command.helpme.prefix"))
                 .append(" ")
                 .append(new LiteralText(ctx.getSource().getName()).formatted(Formatting.YELLOW)
                         .append(new LiteralText(": ").formatted(Formatting.WHITE)))
