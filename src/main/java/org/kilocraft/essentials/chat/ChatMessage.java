@@ -172,7 +172,7 @@ public class ChatMessage {
         }
         Text text = ComponentText.toText(textComponent);
         this.channel.send(text, MessageType.CHAT, this.sender.getUuid());
-        KiloChat.broadCastToConsole(text.asString());
+        KiloChat.broadCastToConsole(text.getString());
     }
 
 }
