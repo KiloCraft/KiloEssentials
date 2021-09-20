@@ -61,6 +61,7 @@
     "performance.perPlayerMobcap.SpawnHelperMixin",
     "performance.perPlayerMobcap.ThreadedAnvilChunkStorageAccessor",
     "performance.perPlayerMobcap.ThreadedAnvilChunkStorageMixin",
+    "technical.ArgumentBuilderMixin",
     "technical.ClientConnectionMixin",
     "technical.CommandManagerMixin",
     "technical.CommandNodeMixin",

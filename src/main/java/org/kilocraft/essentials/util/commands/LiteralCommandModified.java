@@ -90,7 +90,6 @@ public class LiteralCommandModified {
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
         if (commandNode instanceof LiteralCommandNode)
             return shouldUse(commandNode.getName()) && commandNode.canUse(source);
-
         return commandNode.canUse(source);
     }
 
