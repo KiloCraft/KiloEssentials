@@ -263,7 +263,7 @@ public class KiloCommands {
             final List<String> disabledCommands = KiloConfig.main().world().disabledCommands.get(identifier.toString());
             if (disabledCommands != null) {
                 for (String disabledCommand : disabledCommands) {
-                    if (disabledCommand.equals(command)) {
+                    if (command.startsWith(disabledCommand)) {
                         src.sendError(StringText.of("general.dimension_command_disabled", command, identifier.getPath()));
                         return true;
                     }
