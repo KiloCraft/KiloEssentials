@@ -20,28 +20,6 @@ public class ComponentText {
         return new LiteralText("");
     }
 
-    /**
-     * Translates a string with legacy style color codes into a Kyori Adventure style.
-     *
-     * @param text Text containing the alternate color code character.
-     * @return String containing the new formatting code style.
-     */
-    public static String updateLegacyStyle(@NotNull final String text) {
-        Validate.notNull(text, "Cannot translate null text");
-        String string = text;
-        final char[] b = text.toCharArray();
-        for (int i = 0; i < b.length; i++) {
-            if (b[i] == '&' && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
-                final @Nullable Format format = Format.getByChar(b[i + 1]);
-                string = string.replace(
-                        String.valueOf('&') + b[i + 1],
-                        "<" + (format == null ? "reset" : format.name().toLowerCase(Locale.ENGLISH)) + ">"
-                );
-            }
-        }
-        return string;
-    }
-
     public static String clearFormatting(@NotNull String textToClear) {
         return stripRainbow(stripGradient(stripEvent(stripFormatting(stripColor(textToClear)))));
     }
@@ -69,9 +47,8 @@ public class ComponentText {
         return of(raw, false);
     }
 
-    public static Component of(@NotNull final String raw, final boolean markdown) {
-        Validate.notNull(raw, "String must not be null!");
-        final String string = raw.contains("&") ? updateLegacyStyle(raw) : raw;
+    public static Component of(@NotNull final String string, final boolean markdown) {
+        Validate.notNull(string, "String must not be null!");
         if (markdown) {
             return MiniMessage.markdown().parse(string);
         }
