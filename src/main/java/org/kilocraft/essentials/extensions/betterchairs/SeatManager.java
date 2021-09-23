@@ -70,10 +70,6 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         return true;
     }
 
-    private boolean hasPermission(@NotNull final ServerPlayerEntity player) {
-        return KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.SIT_SELF);
-    }
-
     @Override
     public void onTick() {
         Iterator<UUID> iterator = this.stands.iterator();
@@ -123,7 +119,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
                         hand != Hand.MAIN_HAND ||
                         !player.getMainHandStack().equals(ItemStack.EMPTY) ||
                         player.getVehicle() != null ||
-                        !this.hasPermission(player) ||
+                        !KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.SIT_SELF) ||
                         player.shouldCancelInteraction() ||
                         hitResult.getSide() == Direction.DOWN ||
                         !user.getPreference(Preferences.CAN_SEAT)

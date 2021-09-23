@@ -37,6 +37,7 @@ public enum EssentialPermission {
     SIT_OTHERS("sit.others"),
     COMMANDS_BYPASS_WORLD("commands.bypass.world");
 
+    public static final String PERMISSION_PREFIX = "kiloessentials.";
     private final String node;
 
     EssentialPermission(String node) {
@@ -44,7 +45,7 @@ public enum EssentialPermission {
     }
 
     public String getNode() {
-        return PermissionUtil.PERMISSION_PREFIX + this.node;
+        return PERMISSION_PREFIX + this.node;
     }
 
     public static EssentialPermission byName(String name) {

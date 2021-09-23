@@ -28,7 +28,6 @@ import org.kilocraft.essentials.api.world.ParticleAnimationSection;
 import org.kilocraft.essentials.api.world.RelativePosition;
 import org.kilocraft.essentials.extensions.magicalparticles.config.*;
 import org.kilocraft.essentials.provided.KiloFile;
-import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 

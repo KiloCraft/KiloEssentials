@@ -26,7 +26,6 @@ import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.Format;
-import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.net.SocketAddress;
@@ -240,7 +239,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         }
 
         if (KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_SELF) || KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_OTHERS)) {
-            this.getPreference(Preferences.NICK).ifPresent(oldNickname -> this.setNickname(Format.validatePermission(this, oldNickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting")));
+            this.getPreference(Preferences.NICK).ifPresent(oldNickname -> this.setNickname(Format.validatePermission(this, oldNickname, CommandPermission.PERMISSION_PREFIX + "nickname.formatting")));
         } else {
             this.clearNickname();
         }

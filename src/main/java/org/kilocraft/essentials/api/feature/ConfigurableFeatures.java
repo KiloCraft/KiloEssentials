@@ -1,7 +1,5 @@
 package org.kilocraft.essentials.api.feature;
 
-import net.minecraft.SharedConstants;
-import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.KiloConfig;
 
@@ -19,9 +17,6 @@ public class ConfigurableFeatures {
     public static <F extends ConfigurableFeature> void register(F feature, String configKey) {
         try {
             if (KiloConfig.getMainNode().getNode("features").getNode(configKey).getBoolean()) {
-                if (SharedConstants.isDevelopment) {
-                    KiloDebugUtils.getLogger().info("Initialing {}", feature.getClass().getName());
-                }
 
                 if (feature instanceof TickListener) {
                     tickListeners.add((TickListener) feature);

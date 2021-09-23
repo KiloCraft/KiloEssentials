@@ -6,7 +6,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.SharedConstants;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.BanEntry;
 import net.minecraft.server.BannedPlayerEntry;
@@ -18,7 +17,6 @@ import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.feature.TickListener;
@@ -27,6 +25,7 @@ import org.kilocraft.essentials.api.user.*;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.user.punishment.PunishmentEntry;
 import org.kilocraft.essentials.api.util.Cached;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.StringText;
@@ -55,7 +54,7 @@ import java.util.stream.Collectors;
 
 public class ServerUserManager implements UserManager, TickListener {
     private static final Pattern DAT_FILE_PATTERN = Pattern.compile(".dat");
-    private static final Pattern USER_FILE_NAME = Pattern.compile(org.kilocraft.essentials.api.util.StringUtils.UUID_PATTERN + "\\.dat");
+    private static final Pattern USER_FILE_NAME = Pattern.compile(StringUtils.UUID_PATTERN + "\\.dat");
     private final UserHandler handler = new UserHandler();
     private final ServerPunishmentManager punishmentManager = new ServerPunishmentManager();
     private final List<OnlineUser> users = new ArrayList<>();
@@ -63,7 +62,6 @@ public class ServerUserManager implements UserManager, TickListener {
     private final Map<String, UUID> usernameToUUID = new HashMap<>();
     private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
     private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
-    private final Map<UUID, SimpleProcess<?>> inProcessUsers = new HashMap<>();
     private final MutedPlayerList mutedPlayerList = new MutedPlayerList(new File(KiloEssentials.getDataDirPath() + "/mutes.json"));
     private Map<UUID, String> cachedNicknames = new HashMap<>();
 
@@ -235,29 +233,14 @@ public class ServerUserManager implements UserManager, TickListener {
         return this.teleportRequestsMap;
     }
 
-    public Map<UUID, SimpleProcess<?>> getInProcessUsers() {
-        return this.inProcessUsers;
-    }
-
     @Override
     public void saveAllUsers() {
-        if (SharedConstants.isDevelopment) {
-            KiloDebugUtils.getLogger().info("Saving users data, this may take a while...");
-        }
-
         for (OnlineServerUser user : this.onlineUsers.values()) {
             try {
-                if (SharedConstants.isDevelopment) {
-                    KiloDebugUtils.getLogger().info("Saving user \"{}\"", user.getUsername());
-                }
                 this.handler.save(user);
             } catch (IOException e) {
                 KiloEssentials.getLogger().fatal("An unexpected exception occurred when saving a user's data!", e);
             }
-        }
-
-        if (SharedConstants.isDevelopment) {
-            KiloDebugUtils.getLogger().info("Saved the users data!");
         }
     }
 
@@ -436,7 +419,7 @@ public class ServerUserManager implements UserManager, TickListener {
         if (this.punishmentManager.isMuted(user)) {
             user.sendMessage(getMuteMessage(user));
         } else {
-            ServerChat.sendChatMessage(user, Format.validatePermission(user, textStream.getRaw(), PermissionUtil.PERMISSION_PREFIX + "chat.formatting"), user.getPreference(Preferences.CHAT_CHANNEL));
+            ServerChat.sendChatMessage(user, Format.validatePermission(user, textStream.getRaw(), EssentialPermission.PERMISSION_PREFIX + "chat.formatting"), user.getPreference(Preferences.CHAT_CHANNEL));
         }
     }
 

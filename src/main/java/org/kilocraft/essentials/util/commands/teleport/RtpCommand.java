@@ -28,7 +28,6 @@ import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -42,7 +41,6 @@ import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
 
 public class RtpCommand extends EssentialCommand {
-    private static final SimpleProcess<Void> PROCESS = new SimpleProcess<>("rtp_process");
     private static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_SELF);
     private static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHERS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERS);
     private static final Predicate<ServerCommandSource> PERMISSION_CHECK_IGNORE_LIMIT = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_BYPASS);

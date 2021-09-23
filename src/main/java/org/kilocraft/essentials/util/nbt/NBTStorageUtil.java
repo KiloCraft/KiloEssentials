@@ -1,8 +1,6 @@
 package org.kilocraft.essentials.util.nbt;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtIo;
-import org.kilocraft.essentials.KiloDebugUtils;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 
@@ -37,10 +35,6 @@ public class NBTStorageUtil {
 
     private static void load() throws IOException {
         for (NBTStorage callback : callbacks) {
-            if (SharedConstants.isDevelopment) {
-                KiloDebugUtils.getLogger().info("Loading data file {} : \"{}\"", callback.getSaveFile().getFile().getName(), callback.getSaveFile().getAbsolutePath());
-            }
-
             if (!callback.getSaveFile().exists()) {
                 save();
                 continue;
@@ -52,10 +46,6 @@ public class NBTStorageUtil {
 
     private static void save() throws IOException {
         for (NBTStorage callback : callbacks) {
-            if (SharedConstants.isDevelopment) {
-                KiloDebugUtils.getLogger().info("Saving data file {} : \"{}\"", callback.getSaveFile().getFile().getName(), callback.getSaveFile().getAbsolutePath());
-            }
-
             save(callback);
         }
     }
