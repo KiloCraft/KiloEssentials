@@ -13,6 +13,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
@@ -32,12 +33,13 @@ import java.util.regex.Pattern;
 public class ChatMessage {
 
     private static final int LINK_MAX_LENGTH = 20;
-    private final TextComponent.Builder builder = Component.text();
     private final List<OnlineUser> pinged = new ArrayList<>();
     private final OnlineUser sender;
     private final ServerChat.Channel channel;
     private ServerChat.MentionTypes mentionType = ServerChat.MentionTypes.PUBLIC;
-    private static final ChatConfigSection config = KiloConfig.main().chat();
+    private final boolean shouldCensor = KiloConfig.main().chat().shouldCensor;
+    private final TextComponent.Builder builder = Component.text();
+    private final TextComponent.Builder censored = this.shouldCensor ? Component.text() : null;
     private static final String ITEM_REGEX = "\\[item\\]";
     private static final String URL_REGEX = "(?:https?:\\/\\/)?(?:www\\.)?([-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b)[-a-zA-Z0-9()@:%_\\+.~#?&//=]*";
     private static final String EVERYONE_REGEX = "@everyone";
@@ -48,27 +50,42 @@ public class ChatMessage {
         this.channel = channel;
         // Fire chat event
         ChatEvents.CHAT_MESSAGE.invoker().onChat(sender.asPlayer(), input, channel);
-        this.builder.append(ComponentText.of(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), sender))
+        Component component = ComponentText.of(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), sender))
                 .style(style -> style.hoverEvent(HoverEvent.showText(sender.hoverEvent()))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.suggestCommand("/msg " + sender.getUsername() + " "))));
-        this.builder.append(this.parse(input));
+                        .clickEvent(ClickEvent.suggestCommand("/msg " + sender.getUsername() + " ")));
+        this.builder.append(component);
+        this.builder.append(this.parse(input, false));
+        if (this.shouldCensor) {
+            this.censored.append(component);
+            this.censored.append(this.parse(input, true));
+
+        }
     }
 
-    private Component parse(final String input) {
+    private Component parse(final String input, boolean censor) {
         TextComponent.Builder builder = Component.text();
         if (input == null || input.equals("")) return builder.build();
         Matcher itemMatcher = Pattern.compile(ITEM_REGEX).matcher(input);
         Matcher urlMatcher = Pattern.compile(URL_REGEX).matcher(input);
         Matcher everyoneMatcher = Pattern.compile(EVERYONE_REGEX).matcher(input);
         Matcher hearthMatcher = Pattern.compile(HEART_REGEX).matcher(input);
+        if (censor) {
+            for (String censored : ModConstants.getCensored()) {
+                Matcher censoredMatcher = Pattern.compile("(?i)" + censored).matcher(input);
+                if (censoredMatcher.find()) {
+                    this.parseMatcher(builder, input, true, censoredMatcher, this::censoredComponent);
+                    return builder.build();
+                }
+            }
+        }
         if (itemMatcher.find() && this.hasPermission(EssentialPermission.CHAT_SHOW_ITEM)) {
-            this.parseMatcher(builder, input, itemMatcher, s -> this.itemComponent());
+            this.parseMatcher(builder, input, censor, itemMatcher, s -> this.itemComponent());
         } else if (urlMatcher.find() && this.hasPermission(EssentialPermission.CHAT_URL)) {
-            this.parseMatcher(builder, input, urlMatcher, s -> this.urlComponent(s, urlMatcher.group(1)));
+            this.parseMatcher(builder, input, censor, urlMatcher, s -> this.urlComponent(s, urlMatcher.group(1)));
         } else if (everyoneMatcher.find() && this.hasPermission(EssentialPermission.CHAT_PING_EVERYONE)) {
-            this.parseMatcher(builder, input, everyoneMatcher, s -> this.everyoneComponent());
+            this.parseMatcher(builder, input, censor, everyoneMatcher, s -> this.everyoneComponent());
         } else if (hearthMatcher.find()) {
-            this.parseMatcher(builder, input, hearthMatcher, s -> this.hearthComponent());
+            this.parseMatcher(builder, input, censor, hearthMatcher, s -> this.hearthComponent());
         } else {
             if (this.hasPermission(EssentialPermission.CHAT_PING_OTHER)) {
                 for (final OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList()) {
@@ -76,11 +93,11 @@ public class ChatMessage {
                     Matcher nickNameMatcher = Pattern.compile(ComponentText.clearFormatting(user.getDisplayName().toLowerCase())).matcher(input.toLowerCase());
                     Matcher userNameMatcher = Pattern.compile(user.getUsername()).matcher(input);
                     if (userNameMatcher.find()) {
-                        this.parseMatcher(builder, input, userNameMatcher, s -> this.pingUserComponent(user));
+                        this.parseMatcher(builder, input, censor, userNameMatcher, s -> this.pingUserComponent(user));
                         this.pinged.add(user);
                         return builder.build();
                     } else if (nickNameMatcher.find()) {
-                        this.parseMatcher(builder, input, nickNameMatcher, s -> this.pingUserComponent(user));
+                        this.parseMatcher(builder, input, censor, nickNameMatcher, s -> this.pingUserComponent(user));
                         this.pinged.add(user);
                         return builder.build();
                     }
@@ -95,13 +112,13 @@ public class ChatMessage {
         return KiloEssentials.hasPermissionNode(this.sender.getCommandSource(), permission);
     }
 
-    private void parseMatcher(TextComponent.Builder builder, String input, Matcher matcher, Function<String, Component> function) {
+    private void parseMatcher(TextComponent.Builder builder, String input, boolean censor, Matcher matcher, Function<String, Component> function) {
         String prefix = input.substring(0, Math.max(0, matcher.start()));
         String matched = matcher.group(0);
         String suffix = input.substring(Math.min(matcher.end(), input.length()));
-        builder.append(this.parse(prefix));
+        builder.append(this.parse(prefix, censor));
         builder.append(function.apply(matched));
-        builder.append(this.parse(suffix));
+        builder.append(this.parse(suffix, censor));
     }
 
     private Component itemComponent() {
@@ -150,6 +167,13 @@ public class ChatMessage {
         return Component.text("@everyone").color(NamedTextColor.AQUA);
     }
 
+    private Component censoredComponent(String input) {
+        String censored = "*".repeat(input.length());
+        return Component.text(censored).style(style ->
+                style.hoverEvent(HoverEvent.showText(Component.text(input).color(NamedTextColor.GRAY)))
+        );
+    }
+
     private Component hearthComponent() {
         return Component.text("♥").color(NamedTextColor.RED);
     }
@@ -166,12 +190,20 @@ public class ChatMessage {
         TextComponent textComponent = this.builder.build();
         for (OnlineUser user : this.pinged) {
             boolean canPing = user.getPreference(Preferences.CHAT_CHANNEL) == this.channel;
-            if (config.ping().pingSound().enabled && canPing) {
+            if (KiloConfig.main().chat().ping().pingSound().enabled && canPing) {
                 ServerChat.pingUser(user, this.mentionType);
             }
         }
         Text text = ComponentText.toText(textComponent);
-        this.channel.send(text, MessageType.CHAT, this.sender.getUuid());
+        if (this.shouldCensor) {
+            Text censored = ComponentText.toText(this.censored.build());
+            // Send the censored message to everyone, but the sender
+            this.channel.send(censored, MessageType.CHAT, this.sender.getUuid(), onlineUser -> !onlineUser.getUuid().equals(this.sender.getUuid()));
+            // Send the uncensored message to the sender
+            this.sender.asPlayer().sendMessage(text, MessageType.CHAT, this.sender.getUuid());
+        } else {
+            this.channel.send(text, MessageType.CHAT, this.sender.getUuid());
+        }
         KiloChat.broadCastToConsole(text.getString());
     }
 

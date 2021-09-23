@@ -36,6 +36,7 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.Locale;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
 public final class ServerChat {
@@ -244,10 +245,14 @@ public final class ServerChat {
         }
 
         public void send(Text message, MessageType messageType, UUID uuid) {
+            this.send(message, messageType, uuid, onlineUser -> true);
+        }
+
+        protected void send(Text message, MessageType messageType, UUID uuid, Predicate<OnlineUser> shouldSend) {
             switch (this) {
                 case PUBLIC:
                     for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList()) {
-                        user.asPlayer().sendMessage(message, messageType, uuid);
+                        if (shouldSend.test(user)) user.asPlayer().sendMessage(message, messageType, uuid);
                     }
                     break;
                 case STAFF:

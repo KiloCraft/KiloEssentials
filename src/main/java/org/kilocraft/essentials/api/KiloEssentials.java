@@ -162,7 +162,7 @@ public class KiloEssentials {
 
     public void reload() {
         BrandedServer.update();
-        ModConstants.loadLanguage();
+        ModConstants.loadFiles();
         ConfigurableFeatures.loadAll(true);
         NBTStorageUtil.onSave();
     }
