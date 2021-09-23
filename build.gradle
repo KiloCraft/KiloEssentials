@@ -78,13 +78,8 @@ dependencies {
     // Luckperms
     implementation "net.luckperms:api:${project.luckperms_version}"
 
-    // Other
+    // Json
     implementation "com.googlecode.json-simple:json-simple:${project.json_simple}"
-    shadow "com.googlecode.json-simple:json-simple:${project.json_simple}"
-
-    implementation "javax.xml.bind:jaxb-api:${project.jaxb_api}"
-    shadow "javax.xml.bind:jaxb-api:${project.jaxb_api}"
-
 }
 
 task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
