@@ -436,8 +436,7 @@ public class ServerUserManager implements UserManager, TickListener {
         if (this.punishmentManager.isMuted(user)) {
             user.sendMessage(getMuteMessage(user));
         } else {
-            final String message = player.shouldFilterMessagesSentTo(player) ? textStream.getFiltered() : textStream.getRaw();
-            ServerChat.sendChatMessage(user, Format.validatePermission(user, message, PermissionUtil.PERMISSION_PREFIX + "chat.formatting"), user.getPreference(Preferences.CHAT_CHANNEL));
+            ServerChat.sendChatMessage(user, Format.validatePermission(user, textStream.getRaw(), PermissionUtil.PERMISSION_PREFIX + "chat.formatting"), user.getPreference(Preferences.CHAT_CHANNEL));
         }
     }
 

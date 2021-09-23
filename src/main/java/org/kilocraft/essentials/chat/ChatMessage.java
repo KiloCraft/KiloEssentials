@@ -37,9 +37,9 @@ public class ChatMessage {
     private final OnlineUser sender;
     private final ServerChat.Channel channel;
     private ServerChat.MentionTypes mentionType = ServerChat.MentionTypes.PUBLIC;
-    private final boolean shouldCensor = KiloConfig.main().chat().shouldCensor;
+    private final boolean shouldCensor;
     private final TextComponent.Builder builder = Component.text();
-    private final TextComponent.Builder censored = this.shouldCensor ? Component.text() : null;
+    private final TextComponent.Builder censored;
     private static final String ITEM_REGEX = "\\[item\\]";
     private static final String URL_REGEX = "(?:https?:\\/\\/)?(?:www\\.)?([-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b)[-a-zA-Z0-9()@:%_\\+.~#?&//=]*";
     private static final String EVERYONE_REGEX = "@everyone";
@@ -48,6 +48,8 @@ public class ChatMessage {
     public ChatMessage(final OnlineUser sender, final String input, final ServerChat.Channel channel) {
         this.sender = sender;
         this.channel = channel;
+        this.shouldCensor = KiloConfig.main().chat().shouldCensor && !KiloEssentials.hasPermissionNode(this.sender.getCommandSource(), EssentialPermission.CHAT_BYPASS_CENSOR);
+        this.censored = this.shouldCensor ? Component.text() : null;
         // Fire chat event
         ChatEvents.CHAT_MESSAGE.invoker().onChat(sender.asPlayer(), input, channel);
         Component component = ComponentText.of(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), sender))
