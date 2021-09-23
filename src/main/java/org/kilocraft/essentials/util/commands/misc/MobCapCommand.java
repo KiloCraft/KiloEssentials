@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,12 +22,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.SpawnHelper;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.mixin.patch.performance.perPlayerMobcap.SpawnHelperAccessor;
-import org.kilocraft.essentials.mixin.patch.performance.perPlayerMobcap.SpawnHelperInfoAccessor;
+import org.kilocraft.essentials.patch.optimizedSpawning.SpawnUtil;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryKeyID;
@@ -34,8 +33,10 @@ import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MobCapCommand extends EssentialCommand {
@@ -83,26 +84,34 @@ public class MobCapCommand extends EssentialCommand {
     }
 
     private int info(CommandContext<ServerCommandSource> ctx, ServerWorld world) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        SpawnHelper.Info spawnHelperInfo = world.getChunkManager().getSpawnInfo();
-        if (spawnHelperInfo == null) KiloEssentials.getLogger().error("SpawnEntry is null");
+        SpawnHelper.Info info = world.getChunkManager().getSpawnInfo();
+        Objects.requireNonNull(info, "SpawnHelper.Info must not be null");
+        sendMobCap(ctx.getSource().getPlayer(), world, "Global MobCap", info.getGroupToCount(), group -> SpawnUtil.getGlobalMobCap(info, world, group));
+        return SUCCESS;
+    }
+
+    public static void sendMobCap(ServerPlayerEntity player, ServerWorld world, String title, Object2IntMap<SpawnGroup> spawnGroupCounts, Function<SpawnGroup, Integer> getSpawnGroupMobCap) {
         TextComponent.Builder text = Component.text();
-        text.content("Mobcaps").color(NamedTextColor.YELLOW)
+        text.content(title).color(NamedTextColor.YELLOW)
                 .append(Component.text(" (").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text(String.format("%.1f", ServerSettings.tick_utils_global_mobcap)).color(NamedTextColor.RED))
                 .append(Component.text(", ").color(NamedTextColor.GRAY))
                 .append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0]).color(NamedTextColor.GREEN))
                 .append(Component.text(")").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text(":\n").color(NamedTextColor.YELLOW));
-        for (SpawnGroup spawnGroup : SpawnGroup.values()) {
-            int count = spawnHelperInfo.getGroupToCount().getOrDefault(spawnGroup, 0);
-            int cap = spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) spawnHelperInfo).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea();
-            cap *= ServerSettings.tick_utils_global_mobcap * ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0] * ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][spawnGroup.ordinal() + 1];
-            String name = spawnGroup.getName();
-            text.append(Component.text(name + ": ").color(NamedTextColor.GRAY)).append(Component.text(count).color(NamedTextColor.LIGHT_PURPLE)).append(Component.text("/").color(NamedTextColor.DARK_GRAY)).append(Component.text(cap).color(NamedTextColor.GOLD)).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][spawnGroup.ordinal() + 1]).color(NamedTextColor.AQUA)).append(Component.text(")\n").color(NamedTextColor.DARK_GRAY));
+        for (SpawnGroup group : SpawnGroup.values()) {
+            int count = spawnGroupCounts.getOrDefault(group, 0);
+            int cap = getSpawnGroupMobCap.apply(group);/**/
+            String name = group.getName();
+            text.append(Component.text(name + ": ").color(NamedTextColor.GRAY))
+                    .append(Component.text(count).color(NamedTextColor.LIGHT_PURPLE))
+                    .append(Component.text("/").color(NamedTextColor.DARK_GRAY))
+                    .append(Component.text(cap).color(NamedTextColor.GOLD))
+                    .append(Component.text(" (").color(NamedTextColor.DARK_GRAY))
+                    .append(Component.text(SpawnUtil.getMobCapMultiplier(world, group)).color(NamedTextColor.AQUA))
+                    .append(Component.text(")\n").color(NamedTextColor.DARK_GRAY));
         }
         player.sendMessage(ComponentText.toText(text.build()), false);
-        return SUCCESS;
     }
 
 }

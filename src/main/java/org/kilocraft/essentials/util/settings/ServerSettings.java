@@ -33,7 +33,7 @@ public class ServerSettings implements NBTStorage {
     public static final boolean[] entityTickCache = new boolean[entities];
     public static final boolean[] entitySpawnCache = new boolean[entities];
     public static RootSetting root = new RootSetting();
-    public static boolean perPlayerMobcap = false;
+    public static boolean optimizedSpawning = true;
     public static boolean notick_player_login = false;
     public static int wither_check_distance = 2;
     public static double wither_tp_distance = 1;
@@ -134,7 +134,7 @@ public class ServerSettings implements NBTStorage {
         wither.addChild(check_distance);
         wither.addChild(tp_distance);
         //per-player-mobcap
-        BooleanSetting ppmobcap = new BooleanSetting(false, "ppmobcap").onChanged(bool -> perPlayerMobcap = bool);
+        BooleanSetting optimizedSpawning = new BooleanSetting(true, "optimizedSpawning").onChanged(bool -> ServerSettings.optimizedSpawning = bool);
 
         //tick-player-login
         BooleanSetting noTickPlayerLogin = new BooleanSetting(false, "notick_player_login").onChanged(bool -> notick_player_login = bool);
@@ -167,7 +167,7 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(loadSpawn);
         patch.addChild(maxCollisionsPerEntity);
         patch.addChild(wither);
-        patch.addChild(ppmobcap);
+        patch.addChild(optimizedSpawning);
         patch.addChild(noTickPlayerLogin);
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
