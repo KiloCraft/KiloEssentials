@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.simplecommand;
 
-public interface CommandNodeInterface {
+public interface ICommandNode {
 
     void removeLiteral(String literal);
 

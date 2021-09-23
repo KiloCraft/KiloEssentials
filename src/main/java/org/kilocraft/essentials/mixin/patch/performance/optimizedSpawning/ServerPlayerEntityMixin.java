@@ -5,14 +5,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import org.kilocraft.essentials.patch.optimizedSpawning.PooledHashSets;
-import org.kilocraft.essentials.patch.optimizedSpawning.ServerPlayerEntityInterface;
+import org.kilocraft.essentials.patch.optimizedSpawning.IServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin implements ServerPlayerEntityInterface {
+public abstract class ServerPlayerEntityMixin implements IServerPlayerEntity {
     private PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity> cachedSingleMobDistanceMap;
 
     @Inject(method = "<init>", at = @At("RETURN"))

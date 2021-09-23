@@ -11,10 +11,10 @@ import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.SpawnDensityCapper;
-import org.kilocraft.essentials.mixin.patch.performance.TACSAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.ThreadedAnvilChunkStorageAccessor;
 import org.kilocraft.essentials.patch.ChunkManager;
 import org.kilocraft.essentials.patch.optimizedSpawning.SpawnUtil;
-import org.kilocraft.essentials.patch.optimizedSpawning.ThreadedAnvilChunkStorageInterface;
+import org.kilocraft.essentials.patch.optimizedSpawning.IThreadedAnvilChunkStorage;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,23 +51,23 @@ public abstract class SpawnDensityCapperMixin {
         }
 
         // Optimizes vanilla code by getting rid of stream allocations.
-        final TACSAccessor chunkStorage = (TACSAccessor) this.threadedAnvilChunkStorage;
+        final ThreadedAnvilChunkStorageAccessor chunkStorage = (ThreadedAnvilChunkStorageAccessor) this.threadedAnvilChunkStorage;
         return this.chunkPosToMobSpawnablePlayers.computeIfAbsent(pos.toLong(), l -> getNearbyPlayers(chunkStorage.getWorld(), pos, chunkStorage.getPlayerChunkWatchingManager().watchingPlayers.keySet()));
     }
 
     @Redirect(method = "canSpawn", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))
     private Iterator<ServerPlayerEntity> usePlayerMobDistanceMap$1(List<ServerPlayerEntity> list, SpawnGroup spawnGroup, ChunkPos chunkPos) {
-        return ServerSettings.optimizedSpawning ? ((ThreadedAnvilChunkStorageInterface) this.threadedAnvilChunkStorage).getPlayerMobDistanceMap().getPlayersInRange(chunkPos).iterator() : list.listIterator();
+        return ServerSettings.optimizedSpawning ? ((IThreadedAnvilChunkStorage) this.threadedAnvilChunkStorage).getPlayerMobDistanceMap().getPlayersInRange(chunkPos).iterator() : list.listIterator();
     }
 
     @Redirect(method = "increaseDensity", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))
     private Iterator<ServerPlayerEntity> usePlayerMobDistanceMap$2(List<ServerPlayerEntity> list, ChunkPos chunkPos, SpawnGroup spawnGroup) {
-        return ServerSettings.optimizedSpawning ? ((ThreadedAnvilChunkStorageInterface) this.threadedAnvilChunkStorage).getPlayerMobDistanceMap().getPlayersInRange(chunkPos).iterator() : list.listIterator();
+        return ServerSettings.optimizedSpawning ? ((IThreadedAnvilChunkStorage) this.threadedAnvilChunkStorage).getPlayerMobDistanceMap().getPlayersInRange(chunkPos).iterator() : list.listIterator();
     }
 
     @Redirect(method = "canSpawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/SpawnDensityCapper$DensityCap;canSpawn(Lnet/minecraft/entity/SpawnGroup;)Z"))
     public boolean modifySpawnCap(SpawnDensityCapper.DensityCap densityCap, SpawnGroup spawnGroup) {
-        return densityCap.spawnGroupsToDensity.getOrDefault(spawnGroup, 0) < SpawnUtil.getPersonalMobCap(((TACSAccessor) this.threadedAnvilChunkStorage).getWorld(), spawnGroup);
+        return densityCap.spawnGroupsToDensity.getOrDefault(spawnGroup, 0) < SpawnUtil.getPersonalMobCap(((ThreadedAnvilChunkStorageAccessor) this.threadedAnvilChunkStorage).getWorld(), spawnGroup);
     }
 
     private static List<ServerPlayerEntity> getNearbyPlayers(ServerWorld world, ChunkPos pos, ObjectSet<ServerPlayerEntity> watchingPlayers) {

@@ -27,7 +27,7 @@
     "performance.ServerPlayerEntityAccessor",
     "performance.ServerPlayerEntityMixin",
     "performance.ServerPlayNetworkHandlerMixin",
-    "performance.TACSAccessor",
+    "performance.ThreadedAnvilChunkStorageAccessor",
     "performance.ThreadedAnvilChunkStorageEntityTrackerMixin",
     "performance.entityActivationRange.AreaEffectCloudEntityMixin",
     "performance.entityActivationRange.ArrowEntityEntity",

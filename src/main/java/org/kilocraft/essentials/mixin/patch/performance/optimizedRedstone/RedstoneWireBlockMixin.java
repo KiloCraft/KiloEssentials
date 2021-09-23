@@ -6,7 +6,7 @@ import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import org.kilocraft.essentials.patch.optimizedRedstone.RedstoneWireBlockInterface;
+import org.kilocraft.essentials.patch.optimizedRedstone.IRedstoneWireBlock;
 import org.kilocraft.essentials.patch.optimizedRedstone.RedstoneWireTurbo;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(RedstoneWireBlock.class)
-public abstract class RedstoneWireBlockMixin implements RedstoneWireBlockInterface {
+public abstract class RedstoneWireBlockMixin implements IRedstoneWireBlock {
 
     @Shadow
     private boolean wiresGivePower;

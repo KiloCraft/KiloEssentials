@@ -11,7 +11,7 @@ import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatusChangeListener;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
-import org.kilocraft.essentials.patch.optimizedSpawning.ThreadedAnvilChunkStorageInterface;
+import org.kilocraft.essentials.patch.optimizedSpawning.IThreadedAnvilChunkStorage;
 import org.kilocraft.essentials.patch.optimizedSpawning.PlayerMobDistanceMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,7 +22,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 @Mixin(ThreadedAnvilChunkStorage.class)
-public abstract class ThreadedAnvilChunkStorageMixin implements ThreadedAnvilChunkStorageInterface {
+public abstract class ThreadedAnvilChunkStorageMixin implements IThreadedAnvilChunkStorage {
     private PlayerMobDistanceMap playerMobDistanceMap;
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))

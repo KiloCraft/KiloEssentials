@@ -56,7 +56,7 @@ public abstract class ServerChunkManagerMixin {
 
     @Redirect(method = "tickChunks", at = @At(value = "INVOKE", target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V", ordinal = 0))
     private <T> void onlyTickActiveChunks(List<ChunkHolder> list, Consumer<? super T> action) {
-        var chunkStorage = (TACSAccessor) this.threadedAnvilChunkStorage;
+        var chunkStorage = (ThreadedAnvilChunkStorageAccessor) this.threadedAnvilChunkStorage;
         if (ServerSettings.tick_utils_tick_distance >= 0) {
             if (this.count++ % 20 == 0) {
                 // Add active chunks

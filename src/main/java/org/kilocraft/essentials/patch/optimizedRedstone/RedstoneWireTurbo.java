@@ -434,7 +434,7 @@ public class RedstoneWireTurbo {
         // UpdateNode object.
         BlockState newState;
         if (old_current_change) {
-            newState = ((RedstoneWireBlockInterface) this.wire).calculateCurrentChanges(worldIn, pos, pos, oldState);
+            newState = ((IRedstoneWireBlock) this.wire).calculateCurrentChanges(worldIn, pos, pos, oldState);
         } else {
             // Looking up block state is slow.  This accelerator includes a version of
             // calculateCurrentChanges that uses cahed wire values for a
@@ -747,7 +747,7 @@ public class RedstoneWireTurbo {
         // Check this block's neighbors and see if its power World needs to change
         // Use the calculateCurrentChanges method in BlockRedstoneWire since we have no
         // cached block states at this point.
-        final BlockState newState = ((RedstoneWireBlockInterface) this.wire).calculateCurrentChanges(worldIn, pos, pos, state);
+        final BlockState newState = ((IRedstoneWireBlock) this.wire).calculateCurrentChanges(worldIn, pos, pos, state);
 
         // If no change, exit
         if (newState == state) {

@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.patch.entityActivationRange;
 
-public interface GoalSelectorInterface {
+public interface IGoalSelector {
 
     boolean hasTasks();
 

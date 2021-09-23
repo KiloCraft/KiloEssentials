@@ -109,7 +109,7 @@ public final class PlayerMobDistanceMap {
     private void addPlayerTo(final ServerPlayerEntity player, final int chunkX, final int chunkZ) {
         this.playerMap.compute(ChunkPos.toLong(chunkX, chunkZ), (final Long key, final PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity> players) -> {
             if (players == null) {
-                return ((ServerPlayerEntityInterface) player).getCachedSingleMobDistanceMap();
+                return ((IServerPlayerEntity) player).getCachedSingleMobDistanceMap();
             } else {
                 return PlayerMobDistanceMap.this.pooledHashSets.findMapWith(players, player);
             }

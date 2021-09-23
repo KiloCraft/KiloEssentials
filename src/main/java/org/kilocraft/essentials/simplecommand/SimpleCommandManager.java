@@ -44,7 +44,7 @@ public class SimpleCommandManager {
     }
 
     public static void unregister(final String id) {
-        ((CommandNodeInterface) KiloCommands.getDispatcher().getRoot()).removeLiteral(id);
+        ((ICommandNode) KiloCommands.getDispatcher().getRoot()).removeLiteral(id);
     }
 
     public static List<SimpleCommand> getCommands() {

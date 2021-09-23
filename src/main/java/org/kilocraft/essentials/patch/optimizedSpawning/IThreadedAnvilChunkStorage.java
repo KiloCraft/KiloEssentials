@@ -1,5 +1,5 @@
 package org.kilocraft.essentials.patch.optimizedSpawning;
 
-public interface ThreadedAnvilChunkStorageInterface {
+public interface IThreadedAnvilChunkStorage {
     PlayerMobDistanceMap getPlayerMobDistanceMap();
 }
