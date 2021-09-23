@@ -58,29 +58,27 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    //Fabric base api
+    // Fabric base api
     modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
-    //shadow "org.spongepowered:configurate-hocon:${project.configurate_version}"
 
-    //Fabric permission api
+    // Fabric permission api
     modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
-    //shadow 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
 
-    //Configurate
+    // Configurate
     implementation "org.spongepowered:configurate-hocon:${project.configurate_version}"
     shadow "org.spongepowered:configurate-hocon:${project.configurate_version}"
 
-    //Adventure
+    // Adventure
     implementation "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
     shadow "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
 
     implementation "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_serializer_version}"
     shadow "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_serializer_version}"
 
-    //Luckperms
+    // Luckperms
     implementation "net.luckperms:api:${project.luckperms_version}"
 
-    //Other
+    // Other
     implementation "com.googlecode.json-simple:json-simple:${project.json_simple}"
     shadow "com.googlecode.json-simple:json-simple:${project.json_simple}"
 

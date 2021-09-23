@@ -26,6 +26,7 @@ import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -38,8 +39,6 @@ import java.util.concurrent.CompletableFuture;
  */
 
 public class UserHomeHandler implements ConfigurableFeature {
-    //TODO: Use home cooldown from config
-    public static ChunkTicketType<Integer> HOMES = ChunkTicketType.create("homes", Integer::compareTo, 60);
     private static boolean isEnabled = false;
     private static final List<Home> loadedHomes = new ArrayList<>();
     private List<Home> userHomes;
@@ -78,12 +77,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     public boolean register() {
         isEnabled = true;
 
-        List<EssentialCommand> commands = new ArrayList<EssentialCommand>() {{
-            this.add(new HomeCommand());
-            this.add(new HomesCommand());
-            this.add(new SethomeCommand());
-            this.add(new DelhomeCommand());
-        }};
+        List<EssentialCommand> commands = Arrays.asList(new HomeCommand(), new HomesCommand(), new SethomeCommand(), new DelhomeCommand());
 
         for (final EssentialCommand command : commands) {
             KiloCommands.register(command);
@@ -167,7 +161,7 @@ public class UserHomeHandler implements ConfigurableFeature {
                 return;
             }
 
-            //Add a custom ticket to gradually preload chunks
+            // Add a custom ticket to gradually preload chunks
             world.getChunkManager().addTicket(ChunkTicketType.create("home", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(home.getLocation().toPos()), ServerSettings.getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
         }
     }

@@ -16,9 +16,9 @@ import org.kilocraft.essentials.util.settings.ServerSettings;
 
 public class TickManager {
 
-    //Ticks worth one real day
+    // Ticks for one real day
     private final static int STORED_TICKS = 72000;
-    //Cached tick times for mspt and tps calculations
+    // Cached tick times for mspt and tps calculations
     private static final long[] TICK_TIMES = new long[STORED_TICKS];
     /*
      * Arrays that store the tps & mspt of the last x seconds
@@ -40,10 +40,10 @@ public class TickManager {
 
     public static void onTick() {
         currentTick = KiloEssentials.getMinecraftServer().getTicks();
-        //Get the tick length of the previous
+        // Get the tick length of the previous tick
         long[] lastTickLengths = KiloEssentials.getMinecraftServer().lastTickLengths;
         long lastTickLength = lastTickLengths[(currentTick + lastTickLengths.length - 1) % lastTickLengths.length];
-        //Make sure the value was initialized
+        // Make sure the value was initialized
         if (lastTickLength != 0) {
             TICK_TIMES[currentTick % STORED_TICKS] = lastTickLength;
         }
@@ -59,16 +59,16 @@ public class TickManager {
     }
 
     private static void writeTpsAndMspt(int index) {
-        //Time used for calculating ticks per second (each tick is at least 50ms long)
+        // Time used for calculating ticks per second (each tick is at least 50ms long)
         double totalTickTime = 0;
-        //Time used for calculating average ms per tick
+        // Time used for calculating average ms per tick
         double actualTotalTickTime = 0;
         int validTicks = 0;
         int length = Math.min(TICK_STORAGE_SIZES[index], STORED_TICKS);
         for (int i = 0; i < length; i++) {
             long tickTime = TICK_TIMES[(currentTick - i + STORED_TICKS) % STORED_TICKS];
             if (tickTime != 0) {
-                //Calculate tick length (has to be at least 50ms, because that is how long the server will wait if it finished quicker)
+                // Calculate tick length (has to be at least 50ms, because that is how long the server will wait if it finished quicker)
                 totalTickTime += Math.max(tickTime, 50000000);
                 actualTotalTickTime += tickTime;
                 validTicks++;

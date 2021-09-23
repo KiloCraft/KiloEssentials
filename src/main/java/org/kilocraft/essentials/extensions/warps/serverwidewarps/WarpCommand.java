@@ -100,12 +100,12 @@ public class WarpCommand {
         source.getPlayer();
         ServerWarp warp = ServerWarpManager.getWarp(name);
         OnlineUser user = KiloEssentials.getUserManager().getOnline(source);
-        //TODO: Set a home for people who warp and don't have a home yet
+        // TODO: Set a home for people who warp and don't have a home yet
 /*        if (UserHomeHandler.isEnabled() && user.getHomesHandler().getHomes().isEmpty()) {
             Home home = new Home();
             user.getHomesHandler().addHome();
         }*/
-        //Add a custom ticket to gradually preload chunks
+        // Add a custom ticket to gradually preload chunks
         warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("warp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), ServerSettings.getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
         new SinglePlayerScheduler(user, 1, KiloConfig.main().server().cooldown, () -> {
             user.sendLangMessage("command.warp.teleport", warp.getName());
@@ -113,7 +113,7 @@ public class WarpCommand {
             try {
                 ServerWarpManager.teleport(user.getCommandSource(), warp);
             } catch (CommandSyntaxException ignored) {
-                //We already have a check, which checks if the executor is a player
+                // We already have a check, which checks if the executor is a player
             }
         });
         return 1;

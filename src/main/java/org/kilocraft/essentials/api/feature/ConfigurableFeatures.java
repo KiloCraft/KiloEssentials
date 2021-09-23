@@ -31,7 +31,7 @@ public class ConfigurableFeatures {
                 feature.register();
             } else features.remove(feature);
         } catch (NullPointerException ignored) {
-            //Don't enable the feature:: PASS
+            // Don't enable the feature
         }
     }
 

@@ -57,7 +57,6 @@ public final class PlayerMobDistanceMap {
             } else {
                 this.updatePlayer(player, oldPosition, newPosition, oldViewDistance, newViewDistance);
             }
-            //this.validatePlayer(player, newViewDistance); // debug only
         }
 
         for (final ServerPlayerEntity player : gone) {
@@ -65,44 +64,6 @@ public final class PlayerMobDistanceMap {
             if (oldPosition != null) {
                 this.removePlayer(player, oldPosition, oldViewDistance);
             }
-        }
-    }
-
-    // expensive op, only for debug
-    private void validatePlayer(final ServerPlayerEntity player, final int viewDistance) {
-        int entiesGot = 0;
-        int expectedEntries = (2 * viewDistance + 1);
-        expectedEntries *= expectedEntries;
-
-        final ChunkPos currPosition = player.getChunkPos();
-
-        final int centerX = currPosition.x;
-        final int centerZ = currPosition.z;
-
-        for (final Long2ObjectLinkedOpenHashMap.Entry<PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity>> entry : this.playerMap.long2ObjectEntrySet()) {
-            final long key = entry.getLongKey();
-            final PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity> map = entry.getValue();
-
-            if (map.referenceCount == 0) {
-                throw new IllegalStateException("Invalid map");
-            }
-
-            if (map.set.contains(player)) {
-                ++entiesGot;
-
-                final int chunkX = ChunkPos.getPackedX(key);
-                final int chunkZ = ChunkPos.getPackedZ(key);
-
-                final int dist = Math.max(Math.abs(chunkX - centerX), Math.abs(chunkZ - centerZ));
-
-                if (dist > viewDistance) {
-                    throw new IllegalStateException("Expected view distance " + viewDistance + ", got " + dist);
-                }
-            }
-        }
-
-        if (entiesGot != expectedEntries) {
-            throw new IllegalStateException("Expected " + expectedEntries + ", got " + entiesGot);
         }
     }
 

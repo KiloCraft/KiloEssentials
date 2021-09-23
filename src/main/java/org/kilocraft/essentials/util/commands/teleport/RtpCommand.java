@@ -61,13 +61,13 @@ public class RtpCommand extends EssentialCommand {
             targetUser.getPreferences().set(RTP_LEFT, 0);
         }
 
-        //Check if the player has any rtps left or permission to ignore the limit
+        // Check if the player has any rtps left or permission to ignore the limit
         if (CommandUtils.areTheSame(src, target) && targetUser.getPreference(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
             targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
             return;
         }
 
-        //Check if the target is in the correct dimension or has permission to perform the command in other dimensions
+        // Check if the target is in the correct dimension or has permission to perform the command in other dimensions
         if (RegistryUtils.dimensionTypeToRegistryKey(target.getWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
             targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
             return;
@@ -106,7 +106,7 @@ public class RtpCommand extends EssentialCommand {
                 }
             }
         }
-        //Add a custom ticket to gradually preload chunks
+        // Add a custom ticket to gradually preload chunks
         target.getWorld().getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), ServerSettings.getViewDistance() + 1, target.getId()); // Lag reduction
         final int finalX = x;
         final int finalZ = z;

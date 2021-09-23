@@ -46,7 +46,7 @@ public class Home {
         if (this.location == null)
             this.location = Vec3dLocation.dummy();
 
-        if (NbtCompound.contains("pos")) { //OLD Format
+        if (NbtCompound.contains("pos")) { // Old format
             this.location.setDimension(new Identifier(NbtCompound.getString("dimension")));
 
             NbtCompound pos = NbtCompound.getCompound("pos");

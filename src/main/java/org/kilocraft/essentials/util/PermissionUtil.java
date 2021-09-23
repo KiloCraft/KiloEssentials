@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 
-//TODO refactor
+// TODO refactor
 public class PermissionUtil {
     private static final Logger logger = KiloEssentials.getLogger();
     public static final String COMMAND_PERMISSION_PREFIX = "kiloessentials.command.";

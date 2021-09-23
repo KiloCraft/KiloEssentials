@@ -36,7 +36,6 @@ public class VanishCommand extends EssentialCommand {
         user.getPreferences().set(this.preference, !user.getPreference(this.preference));
 
 
-        //TODO: Cancel join event
         List<OnlineUser> online = KiloEssentials.getUserManager().getOnlineUsersAsList();
         if (user.getPreference(this.preference)) {
             for (OnlineUser onlineUser : online) {

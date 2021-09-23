@@ -377,7 +377,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     private static int tick = 0;
 
     public void onTick() {
-        //Tick counter logic, only shows the animations once in 4 ticks
+        // Tick counter logic, only shows the animations once in 4 ticks
         tick++;
         if (tick > config.getPps() && !uuidIdentifierMap.isEmpty()) {
             try {

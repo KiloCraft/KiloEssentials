@@ -27,8 +27,8 @@ import static org.kilocraft.essentials.patch.entityActivationRange.ActivationRan
 
 public class ServerSettings implements NBTStorage {
 
-    //TODO: Figure out a clever way to cache values
-    //if we ever get more than 256 entities this will throw IndexOutOfBoundsException
+    // TODO: Figure out a clever way to cache values
+    // if we ever get more than 256 entities this will throw IndexOutOfBoundsException
     private static final int entities = 128;
     public static final boolean[] entityTickCache = new boolean[entities];
     public static final boolean[] entitySpawnCache = new boolean[entities];
@@ -114,41 +114,41 @@ public class ServerSettings implements NBTStorage {
     }
 
     public static void registerSettings() {
-        //Custom settings
+        // Custom settings
         BooleanSetting debug = new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
 
-        //Patches
+        // Patches
         CategorySetting patch = new CategorySetting("patch");
-        //Shulker dye
+        // Shulker dye
         BooleanSetting dye_shulkers = new BooleanSetting(false, "dye_shulkers");
-        //Eigencraft redstone
+        // Eigencraft redstone
         BooleanSetting eigencraft_redstone = new BooleanSetting(false, "eigencraft_redstone").onChanged(b -> patch_eigencraft_redstone = b);
-        //Load spawn
+        // Load spawn
         BooleanSetting loadSpawn = new BooleanSetting(true, "load_spawn");
         // Max collisions per entity
         IntegerSetting maxCollisionsPerEntity = new IntegerSetting(8, "maxCollisionsPerEntity").onChanged(integer -> patch_maxCollisionsPerEntity = integer);
-        //Stuck Wither
+        // Stuck Wither
         CategorySetting wither = new CategorySetting("wither");
         IntegerSetting check_distance = new IntegerSetting(2, "check_distance").range(-256, 256).onChanged(integer -> wither_check_distance = integer);
         DoubleSetting tp_distance = new DoubleSetting(0D, "tp_distance").range(-256D, 256D).onChanged(d -> wither_tp_distance = d);
         wither.addChild(check_distance);
         wither.addChild(tp_distance);
-        //per-player-mobcap
+        // per-player-mobcap
         BooleanSetting optimizedSpawning = new BooleanSetting(true, "optimizedSpawning").onChanged(bool -> ServerSettings.optimizedSpawning = bool);
 
-        //tick-player-login
+        // tick-player-login
         BooleanSetting noTickPlayerLogin = new BooleanSetting(false, "notick_player_login").onChanged(bool -> notick_player_login = bool);
 
-        //Entity merging
+        // Entity merging
         CategorySetting item_merge = new CategorySetting("item_merge");
         DoubleSetting radius = new DoubleSetting(0.5D, "radius").range(0D, 256D).onChanged(d -> patch_item_merge_radius = d);
         BooleanSetting adjust_movement = new BooleanSetting(true, "adjust_movement");
         item_merge.addChild(radius);
         item_merge.addChild(adjust_movement);
-        //Shulker spawn chance
+        // Shulker spawn chance
         DoubleSetting shulker_spawn_chance = new DoubleSetting(0D, "shulker_spawn_chance");
 
-        //Lobotomize Stuck Villagers
+        // Lobotomize Stuck Villagers
         CategorySetting lobotomize_villagers = new CategorySetting("lobotomize_villagers");
         {
             BooleanSetting enabled = new BooleanSetting(false, "enabled").onChanged(bool -> patch_lobotomize_villagers_enabled = bool);
@@ -159,7 +159,7 @@ public class ServerSettings implements NBTStorage {
             lobotomize_villagers.addChild(update_interval);
         }
 
-        //Global sound
+        // Global sound
         BooleanSetting global_sound = new BooleanSetting(true, "global_sound");
 
         patch.addChild(dye_shulkers);
@@ -174,7 +174,7 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(lobotomize_villagers);
         patch.addChild(global_sound);
 
-        //Activation range
+        // Activation range
         CategorySetting activation_range = new CategorySetting("activation_range");
         CategorySetting general = new CategorySetting("general");
         for (ActivationRange.ActivationType activationType : ActivationRange.ActivationType.values()) {
@@ -200,7 +200,7 @@ public class ServerSettings implements NBTStorage {
             activation_range.addChild(custom);
         }
 
-        //Tick distance
+        // Tick distance
         CategorySetting tick_utils = new CategorySetting("tick_utils");
         CategorySetting automated = new CategorySetting("automated");
         IntegerSetting update_rate = new IntegerSetting(300, "update_rate").onChanged(integer -> tick_utils_update_rate = integer);
@@ -237,7 +237,7 @@ public class ServerSettings implements NBTStorage {
         tick_utils.addChild(global_mobcap);
         tick_utils.addChild(entityTicking);
 
-        //Entity Limit
+        // Entity Limit
         CategorySetting entity_limit = new CategorySetting("entity_limit");
         List<String> limit_entries = new ArrayList<>();
         for (EntityType entityType : new EntityType[]{EntityType.GUARDIAN, EntityType.ITEM_FRAME, EntityType.CHICKEN, EntityType.VILLAGER}) {
@@ -253,7 +253,7 @@ public class ServerSettings implements NBTStorage {
             entity_limit.addChild(entity);
         }
 
-        //Spawning
+        // Spawning
         CategorySetting spawn = (CategorySetting) new CategorySetting("spawn").limitChildren();
         Arrays.fill(entitySpawnCache, true);
         for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
@@ -261,7 +261,7 @@ public class ServerSettings implements NBTStorage {
             spawn.addChild(value);
         }
 
-        //Mobcap
+        // Mobcap
         ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][SpawnGroup.values().length + 1];
         CategorySetting mobcap = new CategorySetting("mobcap");
         int worldID = 0;

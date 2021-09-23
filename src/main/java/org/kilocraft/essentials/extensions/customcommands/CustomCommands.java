@@ -93,8 +93,8 @@ public class CustomCommands implements ReloadableConfigurableFeature {
         int iArgs = 0;
         List<String> commands = new ArrayList<>();
         for (String command : cs.executablesList) {
-            //Checks if the command contains an argument object: ${args[<number>]}
-            //\$\{args\[\d+]}
+            // Checks if the command contains an argument object: ${args[<number>]}
+            // Regex: \$\{args\[\d+]}
             if (command.contains("${args[")) {
                 String[] strings = command.split(" ");
 
