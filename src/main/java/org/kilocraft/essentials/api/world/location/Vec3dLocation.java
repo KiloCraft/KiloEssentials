@@ -220,18 +220,6 @@ public class Vec3dLocation implements Location {
         return new Vec3i(this.z, this.y, this.z);
     }
 
-    @Override
-    public Location up() {
-        this.y += 1;
-        return this;
-    }
-
-    @Override
-    public Location down() {
-        this.y -= 1;
-        return this;
-    }
-
     public Vec3iLocation toVec3iLocation() {
         return Vec3iLocation.of((int) this.x, (int) this.y, (int) this.z, this.rotation.getYaw(), this.rotation.getPitch(), this.dimension);
     }

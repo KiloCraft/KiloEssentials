@@ -59,10 +59,22 @@ public interface Location {
 
     Vec3i toVec3i();
 
-    Location up();
+    default double squaredDistanceTo(Location location) {
+        double d = location.getX() - this.getX();
+        double e = location.getY() - this.getY();
+        double f = location.getZ() - this.getZ();
+        return d * d + e * e + f * f;
+    }
 
-    Location down();
+    default Location up() {
+        this.setY(this.getY() + 1);
+        return this;
+    }
 
+    default Location down() {
+        this.setY(this.getY() - 1);
+        return this;
+    }
     default String asString() {
         return ComponentText.clearFormatting(this.asFormattedString());
     }

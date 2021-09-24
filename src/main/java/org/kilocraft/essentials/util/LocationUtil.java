@@ -11,7 +11,9 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
@@ -86,6 +88,19 @@ public class LocationUtil {
         if (!safe) {
             throw new InsecureDestinationException("The destination is not safe!");
         }
+    }
+
+    public static boolean isDestinationToClose(OnlineUser user, Location destination) {
+        // We can only check the distance if the locations are in the same dimension
+        int minDistance = KiloConfig.main().server().minTeleportDistance;
+        if (user.getLocation().getDimension().equals(destination.getDimension()) && minDistance > 0) {
+            double distance = Math.sqrt(user.getLocation().squaredDistanceTo(destination));
+            if (distance < minDistance) {
+                user.sendLangMessage("teleport.too_close", ModConstants.DECIMAL_FORMAT.format(distance), minDistance);
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void processDimension(ServerPlayerEntity player) {

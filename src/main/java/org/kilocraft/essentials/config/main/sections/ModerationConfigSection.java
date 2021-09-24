@@ -50,9 +50,6 @@ public class ModerationConfigSection {
         @Setting(value = "temporaryIpBan", comment = "Disconnect message for temporary ip-bans")
         public String tempIpBan = "&c&lYou have been ip-banned!\n\n&cReason: &f{BAN_REASON} \n&cUntil: &f{BAN_EXPIRY}\n&f{BAN_LEFT} left\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
-        @Setting(value = "whitelist", comment = "Disconnect message for not being whitelisted, leave it empty to use the default in-game translation")
-        public String whitelist = "You are not white-listed on this server!";
-
         @Setting(value = "mute")
         public String mute = "&cYou are muted because of \"{MUTE_REASON}\"";
 

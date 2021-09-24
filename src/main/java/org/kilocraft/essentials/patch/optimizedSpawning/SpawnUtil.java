@@ -12,7 +12,7 @@ public class SpawnUtil {
         return getMobCapMultiplier(world, group.ordinal() + 1);
     }
 
-    private static float getMobCapMultiplier(ServerWorld world, int index) {
+    public static float getMobCapMultiplier(ServerWorld world, int index) {
         return ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][index];
     }
 

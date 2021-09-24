@@ -14,6 +14,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.schedule.SinglePlayerScheduler;
@@ -23,6 +24,7 @@ import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
@@ -97,9 +99,11 @@ public class WarpCommand {
         if (!ServerWarpManager.getWarpsByName().contains(name)) {
             throw WARP_NOT_FOUND_EXCEPTION.create();
         }
-        source.getPlayer();
         ServerWarp warp = ServerWarpManager.getWarp(name);
         OnlineUser user = KiloEssentials.getUserManager().getOnline(source);
+        if (LocationUtil.isDestinationToClose(user, warp.getLocation())) {
+            return IEssentialCommand.FAILED;
+        }
         // TODO: Set a home for people who warp and don't have a home yet
 /*        if (UserHomeHandler.isEnabled() && user.getHomesHandler().getHomes().isEmpty()) {
             Home home = new Home();

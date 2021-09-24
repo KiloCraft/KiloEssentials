@@ -31,7 +31,4 @@ public class FeaturesConfigSection {
 
     @Setting(value = "discordCommand")
     public boolean discordCommand = true;
-
-    @Setting(value = "votifier")
-    public boolean votifier = true;
 }

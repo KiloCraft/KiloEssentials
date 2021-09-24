@@ -36,7 +36,6 @@ public abstract class Warp implements NBTSerializable {
     public NbtCompound toTag() {
         NbtCompound NbtCompound = new NbtCompound();
         NbtCompound.put("loc", this.location.toTag());
-
         return NbtCompound;
     }
 

@@ -21,6 +21,7 @@ import net.minecraft.util.math.ChunkPos;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -32,6 +33,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -381,6 +383,10 @@ public class PlayerWarpCommand extends EssentialCommand {
         if (warp == null) {
             src.sendLangError("command.playerwarp.invalid_warp");
             return FAILED;
+        }
+
+        if (LocationUtil.isDestinationToClose(src, warp.getLocation())) {
+            return IEssentialCommand.FAILED;
         }
 
         // Add a custom ticket to gradually preload chunks

@@ -26,6 +26,7 @@ import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 
 public class HomeCommand extends EssentialCommand {
@@ -75,12 +76,17 @@ public class HomeCommand extends EssentialCommand {
             return IEssentialCommand.FAILED;
         }
 
-        if (homeHandler.getHome(name).shouldTeleport()) {
-            user.sendLangMessage("command.home.invalid_dim", homeHandler.getHome(name).getLocation().getDimensionType().toString());
+        Home home = homeHandler.getHome(name);
+        if (LocationUtil.isDestinationToClose(user, home.getLocation())) {
             return IEssentialCommand.FAILED;
         }
 
-        homeHandler.prepareHomeLocation(user, homeHandler.getHome(name));
+        if (home.shouldTeleport()) {
+            user.sendLangMessage("command.home.invalid_dim", home.getLocation().getDimensionType().toString());
+            return IEssentialCommand.FAILED;
+        }
+
+        homeHandler.prepareHomeLocation(user, home);
 
         new SinglePlayerScheduler(user, 1, KiloConfig.main().server().cooldown, () -> {
             try {
@@ -116,15 +122,6 @@ public class HomeCommand extends EssentialCommand {
             }
 
             Home home = homeHandler.getHome(name);
-
-//            try {
-//                LocationUtil.validateIsSafe(home.getLocation());
-//            } catch (InsecureDestinationException e) {
-//                if (!input.startsWith("-confirmed-")) {
-//                    source.sendMessage(getTeleportConfirmationText(name, user.getUsername()));
-//                    return;
-//                }
-//            }
 
             try {
                 homeHandler.teleportToHome(src, name);

@@ -96,12 +96,12 @@ public class MobCapCommand extends EssentialCommand {
                 .append(Component.text(" (").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text(String.format("%.1f", ServerSettings.tick_utils_global_mobcap)).color(NamedTextColor.RED))
                 .append(Component.text(", ").color(NamedTextColor.GRAY))
-                .append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0]).color(NamedTextColor.GREEN))
+                .append(Component.text(SpawnUtil.getMobCapMultiplier(world, 0)).color(NamedTextColor.GREEN))
                 .append(Component.text(")").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text(":\n").color(NamedTextColor.YELLOW));
         for (SpawnGroup group : SpawnGroup.values()) {
             int count = spawnGroupCounts.getOrDefault(group, 0);
-            int cap = getSpawnGroupMobCap.apply(group);/**/
+            int cap = getSpawnGroupMobCap.apply(group);
             String name = group.getName();
             text.append(Component.text(name + ": ").color(NamedTextColor.GRAY))
                     .append(Component.text(count).color(NamedTextColor.LIGHT_PURPLE))

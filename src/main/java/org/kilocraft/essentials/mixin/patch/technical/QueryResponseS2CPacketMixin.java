@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.ServerMetadata;
+import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -28,10 +29,10 @@ public abstract class QueryResponseS2CPacketMixin {
 
     @Inject(method = "write", at = @At(value = "HEAD"))
     public void updateMetaData(PacketByteBuf buf, CallbackInfo ci) {
-        // Configurable motd
+        // Configurable message of the day
         MotdConfigSection motdConfig = KiloConfig.main().motd();
         if (motdConfig.enabled) {
-            this.metadata.setDescription(ComponentText.toText(ComponentText.of(motdConfig.line1, false).append(Component.text("\n").append(ComponentText.of(motdConfig.line2)))));
+            this.metadata.setDescription(ComponentText.toText(motdConfig.line1).append(new LiteralText("\n").append(ComponentText.toText(motdConfig.line2))));
         }
         ServerMetadata.Players players = this.metadata.getPlayers();
         if (players != null) {

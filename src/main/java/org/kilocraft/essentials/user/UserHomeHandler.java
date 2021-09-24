@@ -144,7 +144,7 @@ public class UserHomeHandler implements ConfigurableFeature {
                 return;
             }
 
-            Home.teleportTo(user, home);
+            home.teleportTo(user);
         }
     }
 
@@ -185,7 +185,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     }
 
     public enum Reason {
-        UNSAFE_DESTINATION, MISSING_DIMENSION, NO_PERMISSION, NO_HOME
+        MISSING_DIMENSION, NO_HOME
     }
 
 }

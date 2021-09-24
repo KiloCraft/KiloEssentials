@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -80,19 +81,12 @@ public class Home {
         return this.location;
     }
 
-    public static void teleportTo(OnlineUser user, Home home) {
+    public void teleportTo(OnlineUser user) {
         ServerPlayerEntity player = user.asPlayer();
-        DimensionType type = RegistryUtils.toDimension(home.getLocation().getDimension());
-        if (type == null) {
-            return;
-        }
-
-        ServerWorld destinationWorld = RegistryUtils.toServerWorld(type);
-        Vec3d destination = new Vec3d(home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ());
         user.saveLocation();
-        destinationWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getId()); // Lag reduction magic
-        player.teleport(destinationWorld, home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ(),
-                home.getLocation().getRotation().getYaw(), home.getLocation().getRotation().getPitch());
+        Location loc = this.getLocation();
+        player.teleport(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(),
+                loc.getRotation().getYaw(), loc.getRotation().getPitch());
     }
 
     public boolean shouldTeleport() {

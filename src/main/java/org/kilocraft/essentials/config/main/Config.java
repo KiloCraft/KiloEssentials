@@ -54,14 +54,8 @@ public class Config {
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")
     public int homesLimit = 10;
 
-    @Setting(value = "playerWarpsLimit", comment = "The maximum amount of warps a player can set")
-    public int playerWarpsLimit = 10;
-
-    @Setting(value = "maxCachedMessage", comment = "The maximum amount of cached Direct Messages per User")
-    public int maxCachedMessages = 20;
-
     @Setting(value = "playerWarpTypes", comment = "The Types that you can select for making a player warp")
-    public List<String> playerWarpTypes = new ArrayList<String>() {{
+    public List<String> playerWarpTypes = new ArrayList<>() {{
         this.add("shop");
         this.add("farm");
         this.add("build");
@@ -71,7 +65,7 @@ public class Config {
     }};
 
     @Setting(value = "commandSpyIgnored", comment = "The commands that the command logger will ignore")
-    public List<String> ignoredCommandsForLogging = new ArrayList<String>() {{
+    public List<String> ignoredCommandsForLogging = new ArrayList<>() {{
         this.add("trigger");
         this.add("msg");
         this.add("tell");
@@ -86,12 +80,6 @@ public class Config {
 
     @Setting(value = "nicknameMaxLength", comment = "The maximum length for a nickname")
     public int nicknameMaxLength = 35;
-
-    @Setting(value = "useNicknamesEverywhere", comment = "Use Nickname/DisplayName Everywhere!")
-    public boolean useNicknamesEverywhere = true;
-
-    @Setting(value = "startHelp", comment = "Minutes until hostile mob spawn near a new player")
-    public int startHelp = 10;
 
     public ServerConfigSection server() {
         return this.serverSection;
@@ -114,10 +102,6 @@ public class Config {
 
     public ChatConfigSection chat() {
         return this.chatSection;
-    }
-
-    public String permissionManager() {
-        return this.permissionManager;
     }
 
     public ModerationConfigSection moderation() {
