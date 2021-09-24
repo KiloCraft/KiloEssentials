@@ -161,6 +161,7 @@ public class KiloEssentials {
     }
 
     public void reload() {
+        KiloConfig.load();
         BrandedServer.update();
         ModConstants.loadFiles();
         ConfigurableFeatures.loadAll(true);
