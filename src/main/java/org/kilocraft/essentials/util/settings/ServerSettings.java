@@ -205,7 +205,10 @@ public class ServerSettings implements NBTStorage {
         CategorySetting automated = new CategorySetting("automated");
         IntegerSetting update_rate = new IntegerSetting(300, "update_rate").onChanged(integer -> tick_utils_update_rate = integer);
         BooleanSetting enabled = new BooleanSetting(false, "enabled").onChanged(bool -> tick_utils_automated = bool);
-        IntegerSetting tick_distance = new IntegerSetting(-1, "tick_distance").onChanged(integer -> tick_utils_tick_distance = integer);
+        IntegerSetting tick_distance = new IntegerSetting(-1, "tick_distance").onChanged(integer -> {
+            tick_utils_tick_distance = integer;
+            KiloEssentials.getMinecraftServer().getPlayerManager().method_38650(integer > 0 ? integer : getViewDistance());
+        });
         IntegerSetting min_tick_distance = new IntegerSetting(2, "min_tick_distance").onChanged(integer -> tick_utils_min_tick_distance = integer);
         IntegerSetting max_tick_distance = new IntegerSetting(getViewDistance(), "max_tick_distance").onChanged(integer -> tick_utils_max_tick_distance = integer);
         IntegerSetting min_view_distance = new IntegerSetting(2, "min_view_distance").onChanged(integer -> tick_utils_min_view_distance = integer);
