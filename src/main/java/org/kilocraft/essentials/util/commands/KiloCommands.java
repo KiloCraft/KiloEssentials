@@ -80,7 +80,11 @@ public class KiloCommands {
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final String cmdPerm, final int minOpLevel) {
-        return Permissions.check(src, cmdPerm, minOpLevel);
+        try {
+            return Permissions.check(src, cmdPerm, minOpLevel);
+        } catch (Exception e) {
+            return src.hasPermissionLevel(minOpLevel);
+        }
     }
 
     private static void registerDefaults() {
