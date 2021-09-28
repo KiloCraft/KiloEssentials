@@ -37,7 +37,7 @@ public class TpAcceptCommand extends EssentialCommand {
 
         boolean toSender = UserUtils.TpaRequests.useRequestAndGetType(sender);
 
-        if (LocationUtil.isDestinationToClose(toSender ? victim : sender, sender.getLocation())) {
+        if (LocationUtil.isDestinationToClose(toSender ? victim : sender, (toSender ? sender : victim).getLocation())) {
             return IEssentialCommand.FAILED;
         }
 
