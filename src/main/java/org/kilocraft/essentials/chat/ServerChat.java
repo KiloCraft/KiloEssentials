@@ -22,6 +22,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
+import org.kilocraft.essentials.config.main.sections.chat.ChatFormatsConfigSection;
 import org.kilocraft.essentials.config.main.sections.chat.ChatPingSoundConfigSection;
 import org.kilocraft.essentials.events.ChatEvents;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
@@ -93,16 +94,7 @@ public final class ServerChat {
             throw KiloCommands.getException("exception.source_is_target").create();
         }
 
-        String msg = message;
-        if (KiloConfig.messages().censorList().censorDirectMessages) {
-            try {
-                msg = processWords(msg);
-            } catch (Exception e) {
-                return -1;
-            }
-        }
-
-        ServerChat.messagePrivately(source, target, msg);
+        ServerChat.messagePrivately(source, target, message);
         return 1;
     }
 
@@ -181,43 +173,6 @@ public final class ServerChat {
         }
     }
 
-    private static String processWords(@NotNull final String message) {
-        String msg = message;
-        String lowerCased = msg.toLowerCase(Locale.ROOT);
-
-        for (String value : KiloConfig.messages().censorList().words) {
-            String s = value.toLowerCase(Locale.ROOT);
-            if (lowerCased.contains(s)) {
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < s.length(); i++) {
-                    builder.append(KiloConfig.messages().censorList().alternateChar);
-                }
-
-                msg = msg.replaceAll(("(?i)" + s), Matcher.quoteReplacement(builder.toString()));
-            }
-        }
-
-
-        return msg;
-    }
-
-    private static String processWord(@NotNull final String input) {
-        String lowerCased = input.toLowerCase(Locale.ROOT);
-        for (String value : KiloConfig.messages().censorList().words) {
-            String s = value.toLowerCase(Locale.ROOT);
-            if (lowerCased.contains(s)) {
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < s.length(); i++) {
-                    builder.append(KiloConfig.messages().censorList().alternateChar);
-                }
-                return builder.toString();
-            }
-        }
-
-        return input;
-    }
-
-
     public enum Channel {
         PUBLIC("public"),
         STAFF("staff"),
@@ -269,16 +224,13 @@ public final class ServerChat {
         }
 
         public String getFormat() {
-            switch (this) {
-                case PUBLIC:
-                    return KiloConfig.main().chat().prefixes().publicChat;
-                case STAFF:
-                    return KiloConfig.main().chat().prefixes().staffChat;
-                case BUILDER:
-                    return KiloConfig.main().chat().prefixes().builderChat;
-            }
+            final ChatFormatsConfigSection formats = KiloConfig.main().chat().prefixes();
+            return switch (this) {
+                case PUBLIC -> formats.publicChat;
+                case STAFF -> formats.staffChat;
+                case BUILDER -> formats.builderChat;
+            };
 
-            return null;
         }
     }
 

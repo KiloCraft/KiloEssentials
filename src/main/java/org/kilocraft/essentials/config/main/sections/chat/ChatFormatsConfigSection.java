@@ -10,7 +10,7 @@ public class ChatFormatsConfigSection {
     public String publicChat = "%user_displayname% <gray>» <reset>";
 
     @Setting("staffChat")
-    public String staffChat = "<red>[<dark_red>Staff]<reset> %user_displayname% <gray>» <reset>";
+    public String staffChat = "<red>[<dark_red>Staff<red>]<reset> %user_displayname% <gray>» <reset>";
 
     @Setting("builderChat")
     public String builderChat = "<green>[<dark_green>Builder]<reset> %user_displayname% <gray>» <reset>";

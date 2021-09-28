@@ -14,9 +14,6 @@ public class Messages {
     @Setting(value = "commands")
     private final CommandsConfigSection commandsSection = new CommandsConfigSection();
 
-    @Setting(value = "censorList")
-    private final MessageCensorList censorList = new MessageCensorList();
-
     public GeneralConfigSection general() {
         return this.generalSection;
     }
@@ -25,7 +22,4 @@ public class Messages {
         return this.commandsSection;
     }
 
-    public MessageCensorList censorList() {
-        return this.censorList;
-    }
 }
