@@ -131,7 +131,6 @@ public class KiloEssentials {
 
         PlayerEvents.JOINED.register(this::onJoin);
         NbtCommands.registerEvents();
-        DiscordFabModule.registerEvents();
     }
 
     public boolean hasLuckPerms() {
@@ -182,6 +181,7 @@ public class KiloEssentials {
         } catch (IOException e) {
             KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
         }
+        DiscordFabModule.registerEvents();
     }
 
     private void onTick() {

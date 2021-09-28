@@ -33,7 +33,7 @@ public class DiscordFabModule {
     public static boolean isLoaded() {
         try {
             return DiscordFab.getInstance() != null;
-        } catch (NoClassDefFoundError e) {
+        } catch (NoClassDefFoundError | RuntimeException e) {
             return false;
         }
     }
