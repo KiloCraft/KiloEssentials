@@ -34,8 +34,6 @@ import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.NbtCommands;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.commands.misc.DiscordCommand;
-import org.kilocraft.essentials.util.commands.misc.VoteCommand;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
@@ -109,8 +107,6 @@ public class KiloEssentials {
         ConfigurableFeatures.register(new SeatManager(), "betterChairs");
         ConfigurableFeatures.register(new CustomCommands(), "customCommands");
         ConfigurableFeatures.register(new ParticleAnimationManager(), "magicalParticles");
-        ConfigurableFeatures.register(new DiscordCommand(), "discordCommand");
-        ConfigurableFeatures.register(new VoteCommand(), "voteCommand");
         ConfigurableFeatures.register(new PlaytimeCommands(), "playtimeCommands");
     }
 

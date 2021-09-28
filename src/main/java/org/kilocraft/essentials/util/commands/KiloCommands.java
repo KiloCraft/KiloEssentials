@@ -26,8 +26,7 @@ import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.commands.help.HelpCommand;
-import org.kilocraft.essentials.util.commands.help.HelpMeCommand;
+import org.kilocraft.essentials.util.commands.messaging.HelpMeCommand;
 import org.kilocraft.essentials.util.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.util.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.util.commands.inventory.InventoryCommand;
@@ -136,7 +135,6 @@ public class KiloCommands {
         register(new ReplyCommand());
         register(new RealNameCommand());
         register(new IpInfoCommand());
-        register(new HelpCommand());
         register(new WhoIsCommand());
         register(new WhoWasCommand());
         register(new PlaytimeCommand());

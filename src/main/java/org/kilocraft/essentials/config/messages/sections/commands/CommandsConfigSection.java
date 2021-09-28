@@ -5,14 +5,6 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public class CommandsConfigSection {
-    @Setting(value = "helpMessage", comment = "temp, will be removed, requires a TextComponent")
-    public String helpMessage = "<green>Example Help Message <aqua>Edit this in /essentials/messages.hocon";
-
-    @Setting(value = "voteCommand", comment = "If you have enabled the VoteCommand feature you can set the message for it here")
-    public String voteMessage = "<green>Example Vote Message <aqua>Edit this in /essentials/messages.hocon";
-
-    @Setting(value = "discordCommand", comment = "If you have enabled the DiscordCommand feature you can set the message for it here")
-    public String discordMessage = "<green>Example Discord Message <aqua>Edit this in /essentials/messages.hocon";
 
     @Setting(value = "broadCastFormat")
     public String broadCastFormat = "&f[&cBroadCast&f]&r %MESSAGE%";

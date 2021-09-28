@@ -26,9 +26,4 @@ public class FeaturesConfigSection {
     @Setting(value = "customCommands", comment = "Add custom commands for your server!")
     public boolean customCommands = true;
 
-    @Setting(value = "voteCommand")
-    public boolean voteCommand = true;
-
-    @Setting(value = "discordCommand")
-    public boolean discordCommand = true;
 }

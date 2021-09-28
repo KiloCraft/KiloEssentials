@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.util.commands.help;
+package org.kilocraft.essentials.util.commands.messaging;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
