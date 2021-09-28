@@ -78,6 +78,9 @@ dependencies {
     // Luckperms
     implementation "net.luckperms:api:${project.luckperms_version}"
 
+    // DiscordFab
+    implementation "com.github.DrexHD:DiscordFab:${project.discordfab_version}"
+
     // Json
     implementation "com.googlecode.json-simple:json-simple:${project.json_simple}"
 }

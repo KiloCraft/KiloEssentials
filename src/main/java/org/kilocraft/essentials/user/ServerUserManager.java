@@ -414,7 +414,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     public void onChatMessage(ServerPlayerEntity player, TextStream.Message textStream) {
         OnlineUser user = this.getOnline(player);
-        if (this.punishmentManager.isMuted(user)) {
+        if (this.punishmentManager.isMuted(user.getUuid())) {
             user.sendMessage(getMuteMessage(user));
         } else {
             ServerChat.sendChatMessage(user, Format.validatePermission(user, textStream.getRaw(), EssentialPermission.PERMISSION_PREFIX + "chat.formatting"), user.getPreference(Preferences.CHAT_CHANNEL));

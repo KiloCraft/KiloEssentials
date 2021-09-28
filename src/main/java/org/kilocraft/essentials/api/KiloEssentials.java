@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.util.TickManager;
 import org.kilocraft.essentials.api.util.tablist.TabListData;
+import org.kilocraft.essentials.compability.DiscordFabModule;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.CommandEvents;
 import org.kilocraft.essentials.events.PlayerEvents;
@@ -130,6 +131,7 @@ public class KiloEssentials {
 
         PlayerEvents.JOINED.register(this::onJoin);
         NbtCommands.registerEvents();
+        DiscordFabModule.registerEvents();
     }
 
     public boolean hasLuckPerms() {

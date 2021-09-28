@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.api.user;
 
-import org.kilocraft.essentials.api.util.EntityIdentifiable;
+import java.util.UUID;
 
 public interface PunishmentManager {
 
-    boolean isMuted(EntityIdentifiable user);
+    boolean isMuted(UUID uuid);
 
 }

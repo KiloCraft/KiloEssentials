@@ -35,11 +35,13 @@ public class ChatMessage {
     private static final int LINK_MAX_LENGTH = 20;
     private final List<OnlineUser> pinged = new ArrayList<>();
     private final OnlineUser sender;
+    private final String input;
     private final ServerChat.Channel channel;
     private ServerChat.MentionTypes mentionType = ServerChat.MentionTypes.PUBLIC;
     private final boolean shouldCensor;
     private final TextComponent.Builder builder = Component.text();
     private final TextComponent.Builder censored;
+    private final List<String> flagged = new ArrayList<>();
     private static final String ITEM_REGEX = "\\[item\\]";
     private static final String URL_REGEX = "(?:https?:\\/\\/)?(?:www\\.)?([-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b)[-a-zA-Z0-9()@:%_\\+.~#?&//=]*";
     private static final String EVERYONE_REGEX = "@everyone";
@@ -47,6 +49,7 @@ public class ChatMessage {
 
     public ChatMessage(final OnlineUser sender, final String input, final ServerChat.Channel channel) {
         this.sender = sender;
+        this.input = input;
         this.channel = channel;
         this.shouldCensor = KiloConfig.main().chat().shouldCensor && !KiloEssentials.hasPermissionNode(this.sender.getCommandSource(), EssentialPermission.CHAT_BYPASS_CENSOR);
         this.censored = this.shouldCensor ? Component.text() : null;
@@ -171,6 +174,7 @@ public class ChatMessage {
 
     private Component censoredComponent(String input) {
         String censored = "*".repeat(input.length());
+        this.flagged.add(input);
         return Component.text(censored).style(style ->
                 style.hoverEvent(HoverEvent.showText(Component.text(input).color(NamedTextColor.GRAY)))
         );
@@ -206,6 +210,7 @@ public class ChatMessage {
         } else {
             this.channel.send(text, MessageType.CHAT, this.sender.getUuid());
         }
+        if (!this.flagged.isEmpty()) ChatEvents.FLAGGED_MESSAGE.invoker().onMessageFlag(this.sender, this.input, this.flagged);
         KiloChat.broadCastToConsole(text.getString());
     }
 
