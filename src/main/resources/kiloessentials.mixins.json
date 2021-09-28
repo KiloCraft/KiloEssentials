@@ -75,7 +75,6 @@
     "technical.ServerPlayNetworkHandlerMixin",
     "technical.ServerScoreboardMixin",
     "technical.WorldMixin",
-    "util.ClientConnectionMixin",
     "util.EntityServerRayTraceMixin",
     "util.MinecraftDedicatedServerMixin",
     "util.RegistryKeyMixin",
