@@ -19,6 +19,7 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.PunishEvents;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.CommandPermission;
@@ -80,7 +81,7 @@ public class TempBanCommand extends EssentialCommand {
         if (super.isOnline(victim.getId())) {
             super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
                     ComponentText.toText(
-                            ServerUserManager.replaceBanVariables(super.config.moderation().messages().tempBan, entry, false)
+                            ServerUserManager.replaceBanVariables(KiloConfig.main().moderation().messages().tempBan, entry, false)
                     )
             );
         }

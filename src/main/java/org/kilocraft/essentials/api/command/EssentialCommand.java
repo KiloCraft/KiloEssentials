@@ -50,7 +50,6 @@ public abstract class EssentialCommand implements IEssentialCommand {
     protected static final transient Logger logger = LogManager.getLogger();
     private static final DynamicCommandExceptionType PROFILE_RESOLVE_EXCEPTION = new DynamicCommandExceptionType((obj) -> Texter.newText("Unexpected error while resolving the requested profile\n" + obj));
     private final String label;
-    public Config config = KiloConfig.main();
     public Messages messages = KiloConfig.messages();
     protected transient String[] alias;
     protected transient LiteralArgumentBuilder<ServerCommandSource> argumentBuilder;
