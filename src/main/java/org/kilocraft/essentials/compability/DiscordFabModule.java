@@ -84,7 +84,8 @@ public class DiscordFabModule {
         Field expiryField = new Field("Expiry:", expiry > 0 ? expireDate.toString() : "Never");
         Field nameField = new Field("Name:", victim.getName());
         Field uuidField = new Field("UUID:", victim.getId().toString());
-        AdvancedDiscordAlertEvent.EVENT.invoker().onAlert(STAFF_REPORTS_CHANNEL_ID, title, null, source.getName(), ChatSynchronizer.getMCAvatarURL(source.getUuid()), thumbnailUrl, color, reasonField, timeField, expiryField, nameField, uuidField);
+        final UUID uuid = source.getUuid();
+        AdvancedDiscordAlertEvent.EVENT.invoker().onAlert(STAFF_REPORTS_CHANNEL_ID, title, null, source.getName(), uuid != null ? ChatSynchronizer.getMCAvatarURL(uuid) : null, thumbnailUrl, color, reasonField, timeField, expiryField, nameField, uuidField);
     }
 
     private static void sendFlaggedMessageReport(OnlineUser sender, final String input, final List<String> flagged) {
