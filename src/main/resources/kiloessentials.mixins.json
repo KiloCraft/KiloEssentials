@@ -71,6 +71,7 @@
     "technical.MinecraftServerMixin",
     "technical.PlayerListS2CPacketMixin",
     "technical.QueryResponseS2CPacketMixin",
+    "technical.ServerHandshakeNetworkHandlerMixin",
     "technical.ServerPlayerEntityMixin",
     "technical.ServerPlayNetworkHandlerMixin",
     "technical.ServerScoreboardMixin",

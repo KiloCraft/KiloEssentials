@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.mixin.patch.technical;
 
 import com.mojang.authlib.GameProfile;
-import net.kyori.adventure.text.Component;
+import net.minecraft.SharedConstants;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.ServerMetadata;
@@ -11,6 +11,7 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.MotdConfigSection;
+import org.kilocraft.essentials.patch.technical.VersionCompability;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,7 +35,7 @@ public abstract class QueryResponseS2CPacketMixin {
         if (motdConfig.enabled) {
             this.metadata.setDescription(ComponentText.toText(motdConfig.line1).append(new LiteralText("\n").append(ComponentText.toText(motdConfig.line2))));
         }
-        ServerMetadata.Players players = this.metadata.getPlayers();
+        final ServerMetadata.Players players = this.metadata.getPlayers();
         if (players != null) {
             // Exclude vanished players from sample list
             List<OnlineUser> online = KiloEssentials.getUserManager().getOnlineUsersAsList(false);
@@ -46,6 +47,16 @@ public abstract class QueryResponseS2CPacketMixin {
             ServerMetadata.Players new_players = new ServerMetadata.Players(players.getPlayerLimit(), online.size());
             new_players.setSample(gameProfiles);
             this.metadata.setPlayers(new_players);
+        }
+        final ServerMetadata.Version version = this.metadata.getVersion();
+        if (version != null) {
+            ServerMetadata.Version newVersion;
+            if (VersionCompability.shouldPretendProtocolVersion()) {
+                newVersion = VersionCompability.getPretendMetaVersion();
+            } else {
+                newVersion = new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion());
+            }
+            this.metadata.setVersion(newVersion);
         }
     }
 }
