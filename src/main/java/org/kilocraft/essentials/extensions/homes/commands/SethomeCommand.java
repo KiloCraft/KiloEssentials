@@ -123,17 +123,32 @@ public class SethomeCommand extends EssentialCommand {
     }
 
     private static boolean canSet(User user) {
-        for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
-            String thisPerm = "kiloessentials.command.home.limit." + i;
-            int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
+        if (KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS))
+            return true;
 
-            if (user.getHomesHandler().homes() + 1 <= allowed &&
-                    KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
-                return true;
+        return user.getHomesHandler().homes() < getHomeLimit(user);
+    }
+
+    /**
+     * TODO: If this feature is more needed, a different solution to this would be a "path" system
+     * kiloessentials.command.home.limit.<path>.x
+     * Example:
+     * Playtime earned homes = kiloessentials.command.home.limit.playtime.x
+     * Donation earned homes = kiloessentials.command.home.limit.donate.x
+    * */
+    private static int getHomeLimit(User user) {
+        return getHomePermissionLimit(user, "kiloessentials.command.home.limit.") +
+                getHomePermissionLimit(user, "kiloessentials.command.home.limit.add.");
+    }
+
+    private static int getHomePermissionLimit(User user, String permission) {
+        int homeLimit = 0;
+        for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
+            if (KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), permission + i)) {
+                homeLimit = i;
             }
         }
-
-        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS);
+        return homeLimit;
     }
 
     private Text getConfirmationText(String homeName, String user) {
