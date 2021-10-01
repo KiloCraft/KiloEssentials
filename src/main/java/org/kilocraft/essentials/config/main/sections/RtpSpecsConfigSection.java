@@ -33,7 +33,7 @@ public class RtpSpecsConfigSection {
     @Setting(value = "teleportCooldown", comment = "The time before random teleporting (used to pregenerate the chunks)")
     public int teleportCooldown = 3;
 
-    @Setting(value = "teleportCooldown", comment = "The time before random teleporting (used to pregenerate the chunks)")
-    public List<String> blackListedBiomes = Arrays.asList("minecraft:warm_ocean", "minecraft:lukewarm_ocean", "minecraft:cold_ocean", "minecraft:deep_warm_ocean", "minecraft:deep_lukewarm_ocean", "minecraft:deep_cold_ocean", "minecraft:deep_frozen_ocean", "minecraft:ocean", "minecraft:the_end", "minecraft:small_end_islands", "minecraft:end_barrens");
+    @Setting(value = "blackListedBiomes", comment = "A list of biomes that are blacklisted for rtp locations")
+    public List<String> blackListedBiomes = Arrays.asList("minecraft:warm_ocean", "minecraft:lukewarm_ocean", "minecraft:cold_ocean", "minecraft:deep_warm_ocean", "minecraft:deep_lukewarm_ocean", "minecraft:deep_cold_ocean", "minecraft:deep_frozen_ocean", "minecraft:deep_ocean", "minecraft:ocean", "minecraft:the_end", "minecraft:small_end_islands", "minecraft:end_barrens");
 
 }
