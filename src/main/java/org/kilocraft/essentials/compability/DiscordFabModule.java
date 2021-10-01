@@ -56,7 +56,6 @@ public class DiscordFabModule {
 
     private static boolean handleDiscordMessage(String minecraftChannelId, String name, UUID sender, String message) {
         if (minecraftChannelId.equals(STAFF_CHANNEL_ID)) {
-            // Create message (using lang) with prefix (name) "@DrexHD >> hey"
             ServerChat.Channel.STAFF.send(ComponentText.toText(ModConstants.translation("compability.discordfab.chat.staff", name, message)), MessageType.CHAT, sender);
             return true;
         } else if (minecraftChannelId.equals(DiscordFabMod.PUBLIC_CHANNEL_ID)){

@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.user.OnlineUser;
-import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
@@ -116,8 +115,7 @@ public class LocationUtil {
                     pos = user.getLastSavedLocation().toPos();
                     if (pos == null) {
                         UserHomeHandler homeHandler = user.getHomesHandler();
-                        assert homeHandler != null;
-                        if (homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getWorld().getDimension()) {
+                        if (homeHandler != null && homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getWorld().getDimension()) {
                             pos = user.getHomesHandler().getHomes().get(0).getLocation().toPos();
                         }
                     }
@@ -125,8 +123,8 @@ public class LocationUtil {
             }
 
             if (pos != null) {
+                KiloEssentials.getUserManager().getOnline(player).sendLangMessage("general.dimension_not_allowed", RegistryUtils.dimensionToName(player.getWorld().getDimension()));
                 player.teleport(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.getYaw(), player.getPitch());
-                KiloEssentials.getUserManager().getOnline(player).sendMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getWorld().getDimension())));
             }
         }
     }
