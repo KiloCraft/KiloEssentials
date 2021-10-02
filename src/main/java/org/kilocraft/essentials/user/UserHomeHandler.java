@@ -162,7 +162,7 @@ public class UserHomeHandler implements ConfigurableFeature {
             }
 
             // Add a custom ticket to gradually preload chunks
-            world.getChunkManager().addTicket(ChunkTicketType.create("home", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(home.getLocation().toPos()), ServerSettings.getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
+            world.getChunkManager().addTicket(ChunkTicketType.create("home", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(home.getLocation().toPos()), 1, user.asPlayer().getId()); // Lag reduction
         }
     }
 

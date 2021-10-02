@@ -38,7 +38,8 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public ServerPlayerEntity asPlayer() {
-        return this.serverPlayerEntity;
+        final ServerPlayerEntity player = KiloEssentials.getMinecraftServer().getPlayerManager().getPlayer(this.uuid);
+        return player != null ? player : this.serverPlayerEntity;
     }
 
     @Override
@@ -63,7 +64,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public void teleport(@NotNull final Location loc, final boolean sendTicket) {
         if (sendTicket) {
-            loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 1, this.asPlayer().getId());
+            loc.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, loc.toChunkPos(), 0, this.asPlayer().getId());
         }
 
         this.asPlayer().teleport(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getRotation().getYaw(), loc.getRotation().getPitch());

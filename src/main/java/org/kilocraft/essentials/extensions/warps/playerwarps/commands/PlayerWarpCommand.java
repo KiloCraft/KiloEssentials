@@ -390,7 +390,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         // Add a custom ticket to gradually preload chunks
-        warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("pwarp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), ServerSettings.getViewDistance() + 1, src.asPlayer().getId());
+        warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("pwarp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), 1, src.asPlayer().getId());
         new SinglePlayerScheduler(src, 1, KiloConfig.main().server().cooldown, () -> {
             src.sendMessage(
                     KiloConfig.messages().commands().warp().teleportTo

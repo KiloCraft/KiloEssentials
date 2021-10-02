@@ -8,8 +8,10 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.WorldChunk;
 import org.kilocraft.essentials.mixin.accessor.ServerChunkManagerAccessor;
 
 public final class ChunkManager {
@@ -23,21 +25,21 @@ public final class ChunkManager {
     }
 
     /**
-     * Returns the BlockState at {@param pos} in {@param world} if the location is loaded.
+     * Returns the BlockState at {@param pos} in {@param world} if the position is loaded.
      */
 
-    public static BlockState getStateIfLoaded(WorldView world, BlockPos pos) {
-        final Chunk chunk = getChunkIfLoaded(world, pos);
+    public static BlockState getStateIfLoaded(World world, BlockPos pos) {
+        final WorldChunk chunk = getChunkIfLoaded(world, pos);
         return chunk != null ? chunk.getBlockState(pos) : Blocks.VOID_AIR.getDefaultState();
     }
 
     /**
-     * Returns the chunk at {@param pos} in {@param world} if the location is loaded.
+     * Returns the chunk at {@param pos} in {@param world} if the position is loaded.
      */
 
-    public static Chunk getChunkIfLoaded(WorldView world, BlockPos pos) {
+    public static WorldChunk getChunkIfLoaded(World world, BlockPos pos) {
         final ChunkHolder holder = getChunkHolder(world, pos);
-        return holder != null ? holder.getCurrentChunk() : null;
+        return holder != null ? holder.getAccessibleFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK).left().orElse(null) : null;
     }
 
     /**
@@ -64,6 +66,14 @@ public final class ChunkManager {
 
     public static boolean isChunkVisible(ServerChunkManager manager, int x, int z) {
         return manager.isTickingFutureReady(ChunkPos.toLong(x, z));
+    }
+
+    public static boolean isChunkLoaded(World world, BlockPos pos) {
+        return isChunkLoaded(getChunkHolder(world, pos));
+    }
+
+    public static boolean isChunkLoaded(ChunkHolder holder) {
+        return holder != null && holder.isAccessible();
     }
 
     /**

@@ -11,21 +11,27 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.Heightmap;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.preference.Preference;
-import org.kilocraft.essentials.api.util.schedule.SinglePlayerScheduler;
+import org.kilocraft.essentials.api.util.schedule.AbstractScheduler;
+import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
+import org.kilocraft.essentials.patch.ChunkManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.EssentialPermission;
@@ -53,7 +59,7 @@ public class RtpCommand extends EssentialCommand {
         super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
     }
 
-    void teleport(ServerCommandSource src, ServerPlayerEntity target) {
+    private void teleport(ServerCommandSource src, ServerPlayerEntity target) {
         OnlineUser targetUser = this.getUserManager().getOnline(target);
         RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
         if (targetUser.getPreference(RTP_LEFT) < 0) {
@@ -62,57 +68,113 @@ public class RtpCommand extends EssentialCommand {
 
         // Check if the player has any rtps left or permission to ignore the limit
         if (CommandUtils.areTheSame(src, target) && targetUser.getPreference(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
-            targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
+            targetUser.sendLangMessage("command.rtp.empty");
             return;
         }
 
         // Check if the target is in the correct dimension or has permission to perform the command in other dimensions
         if (RegistryUtils.dimensionTypeToRegistryKey(target.getWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
-            targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
+            targetUser.sendLangMessage("command.rtp.dimension_exception");
             return;
         }
+
         if (!cfg.broadcastMessage.isEmpty()) {
             KiloChat.broadCast(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName()));
         }
 
-        if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
-            targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
-        }
-        boolean done = false;
-        BlockPos pos = null;
-        int x = 0;
-        int z = 0;
-        int tries = 0;
+        this.attemptTeleport(src, targetUser);
+    }
+
+    private void attemptTeleport(ServerCommandSource src, OnlineUser targetUser) {
         final ServerWorld world = src.getWorld();
-        while (!done) {
-            if (tries >= cfg.maxTries) {
-                targetUser.sendLangMessage("command.rtp.failed");
-                return;
-            }
-            Random r = new Random();
-            x = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
-            x += cfg.centerX;
-            z = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
-            z += cfg.centerZ;
+        targetUser.sendLangMessage("command.rtp.searching");
+        final BlockPos blockPos = this.getBlockPos(world);
+        if (blockPos != null) {
+            ServerPlayerEntity target = targetUser.asPlayer();
+            targetUser.sendLangMessage("command.rtp.loading");
+            // Add a custom ticket to gradually preload chunks
+            world.getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(blockPos), 1, target.getId()); // Lag reduction
+            this.teleport(src, targetUser, world, blockPos.mutableCopy(), 0);
+        } else {
+            targetUser.sendLangMessage("command.rtp.failed.invalid_biome");
+        }
+    }
+
+    @Nullable
+    private BlockPos getBlockPos(ServerWorld world) {
+        Random random = new Random();
+        RtpSpecsConfigSection config = KiloConfig.main().rtpSpecs();
+        BlockPos pos;
+        for (int i = 0; i < config.maxTries; i++) {
+            int x = random.nextInt(config.max - config.min) + config.min * (random.nextBoolean() ? 1 : -1);
+            x += config.centerX;
+            int z = random.nextInt(config.max - config.min) + config.min * (random.nextBoolean() ? 1 : -1);
+            z += config.centerZ;
             pos = new BlockPos(x, 64, z);
             Biome biome = world.getBiome(pos);
-            tries++;
-            String biomeId = src.getRegistryManager().get(Registry.BIOME_KEY).getId(biome).toString();
-            done = true;
-            for (String blackListedBiome : cfg.blackListedBiomes) {
-                if (biomeId.equals(blackListedBiome)) {
-                    done = false;
+            final Identifier identifier = world.getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
+            assert identifier != null;
+            boolean invalidBiome = false;
+            for (final String blackListed : config.blackListedBiomes) {
+                if (identifier.toString().equals(blackListed)) {
+                    invalidBiome = true;
                     break;
                 }
             }
+            if (!invalidBiome) {
+                return pos;
+            }
         }
-        // Add a custom ticket to gradually preload chunks
-        world.getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), ServerSettings.getViewDistance() + 1, target.getId()); // Lag reduction
-        final int finalX = x;
-        final int finalZ = z;
-        new SinglePlayerScheduler(targetUser, -1, cfg.teleportCooldown, () -> {
-            target.teleport(world, finalX, world.getTopY(Heightmap.Type.WORLD_SURFACE, finalX, finalZ) + 1, finalZ, target.getYaw(), target.getPitch());
+        return null;
+    }
+
+    private void teleport(final ServerCommandSource src, final OnlineUser targetUser, final ServerWorld world, final BlockPos.Mutable pos, int attempts) {
+        // Check every ~4 ticks
+        AbstractScheduler.start(175, () -> {
+            final Chunk chunk = ChunkManager.getChunkIfLoaded(world, pos);
+            if (chunk == null) {
+                if (attempts > 70) {
+                    targetUser.sendLangMessage("command.rtp.failed.too_slow");
+                } else {
+                    this.teleport(src, targetUser, world, pos, attempts + 1);
+                }
+            } else {
+                try {
+                    ServerPlayerEntity target = targetUser.asPlayer();
+                    if (target != null) {
+                        pos.setY(this.getY(world, pos.getX(), world.getTopY(), pos.getZ()));
+                        target.teleport(world, pos.getX(), pos.getY(), pos.getZ(), target.getYaw(), target.getPitch());
+                        if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
+                            targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
+                        }
+                        Biome biome = world.getBiome(pos);
+                        final Identifier identifier = world.getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
+                        assert identifier != null;
+                        targetUser.sendLangMessage("command.rtp.success", identifier.getPath(), pos.getX(), pos.getY(), pos.getZ(), RegistryUtils.dimensionToName(world.getDimension()));
+                    }
+                } catch (InsecureDestinationException e) {
+                    targetUser.sendLangMessage("command.rtp.failed.unsafe");
+                }
+            }
         });
+    }
+
+    private int getY(BlockView blockView, int x, int maxY, int z) throws InsecureDestinationException {
+        BlockPos.Mutable mutable = new BlockPos.Mutable(x, (double) (maxY + 1), z);
+        boolean isAir = blockView.getBlockState(mutable).isAir();
+        mutable.move(Direction.DOWN);
+
+        boolean bl3;
+        for (boolean bl2 = blockView.getBlockState(mutable).isAir(); mutable.getY() > blockView.getBottomY(); bl2 = bl3) {
+            mutable.move(Direction.DOWN);
+            bl3 = blockView.getBlockState(mutable).isAir();
+            if (!bl3 && bl2 && isAir) {
+                return mutable.getY() + 1;
+            }
+
+            isAir = bl2;
+        }
+        throw new InsecureDestinationException("The destination does not have any block at this position");
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -241,7 +303,6 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int execute(ServerCommandSource source, ServerPlayerEntity target) {
-        this.getUserManager().getOnline(target).sendMessage(this.messages.commands().rtp().start);
         this.teleport(source, target);
         return SUCCESS;
     }

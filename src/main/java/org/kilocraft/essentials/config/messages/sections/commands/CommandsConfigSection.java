@@ -15,9 +15,6 @@ public class CommandsConfigSection {
     @Setting(value = "serverWideWarps")
     private final WarpCommandConfigSection warpCommand = new WarpCommandConfigSection();
 
-    @Setting(value = "rtp")
-    private final RtpCommandConfigSection rtpSection = new RtpCommandConfigSection();
-
     @Setting(value = "playerWarp")
     private final PlayerWarpCommandConfigSection playerWarpSection = new PlayerWarpCommandConfigSection();
 
@@ -30,10 +27,6 @@ public class CommandsConfigSection {
 
     public WarpCommandConfigSection warp() {
         return this.warpCommand;
-    }
-
-    public RtpCommandConfigSection rtp() {
-        return this.rtpSection;
     }
 
     public NicknameCommandConfigSection nickname() {

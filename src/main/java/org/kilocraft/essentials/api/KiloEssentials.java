@@ -35,6 +35,7 @@ import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.NbtCommands;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
+import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.io.File;
@@ -67,12 +68,16 @@ public class KiloEssentials {
         throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
     }
 
-    public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm) {
-        return Permissions.check(source, perm.getNode(), 2);
+    public static boolean hasPermissionNode(ServerCommandSource src, EssentialPermission perm) {
+        return hasPermissionNode(src, perm, 2);
     }
 
-    public static boolean hasPermissionNode(ServerCommandSource source, EssentialPermission perm, int minOpLevel) {
-        return Permissions.check(source, perm.getNode(), minOpLevel);
+    public static boolean hasPermissionNode(ServerCommandSource src, EssentialPermission perm, int minOpLevel) {
+        try {
+            return Permissions.check(src, perm.getNode(), minOpLevel);
+        } catch (Exception e) {
+            return src.hasPermissionLevel(minOpLevel);
+        }
     }
 
     public static MinecraftDedicatedServer getMinecraftServer() {
@@ -185,7 +190,7 @@ public class KiloEssentials {
         int ticks = getMinecraftServer().getTicks();
         if (ticks % KiloConfig.main().playerList().updateRate == 0) {
             this.tabListData.onTick();
-            getMinecraftServer().getPlayerManager().getPlayerList().forEach(LocationUtil::processDimension);
+            //getMinecraftServer().getPlayerManager().getPlayerList().forEach(LocationUtil::processDimension);
         }
         this.userManager.onTick();
         ConfigurableFeatures.onTick();

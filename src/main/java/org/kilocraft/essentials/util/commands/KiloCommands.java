@@ -32,7 +32,6 @@ import org.kilocraft.essentials.util.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.util.commands.inventory.InventoryCommand;
 import org.kilocraft.essentials.util.commands.inventory.WorkbenchCommand;
 import org.kilocraft.essentials.util.commands.item.ModifyItemCommand;
-import org.kilocraft.essentials.util.commands.locate.LocateCommand;
 import org.kilocraft.essentials.util.commands.messaging.*;
 import org.kilocraft.essentials.util.commands.misc.*;
 import org.kilocraft.essentials.util.commands.moderation.*;
@@ -105,7 +104,6 @@ public class KiloCommands {
         register(new SlimeChunkCommand());
         register(new TextFormattingCommand());
         register(new CommandFormattingCommand());
-        register(new GamemodeCommand());
         register(new RtpCommand());
         register(new BroadcastCommand());
         register(new HealCommand());
@@ -126,7 +124,6 @@ public class KiloCommands {
         register(new BackCommand());
         register(new ModsCommand());
         register(new TpsCommand());
-        register(new LocateCommand());
         register(new MessageCommand());
         register(new DoNotDisturbCommand());
         register(new VanishCommand());

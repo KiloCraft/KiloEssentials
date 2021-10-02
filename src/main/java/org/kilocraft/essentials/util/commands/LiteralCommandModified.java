@@ -17,9 +17,7 @@ public class LiteralCommandModified {
      * This only works for Command literals and their sub commands
      */
     private static final List<String> keCommandsToKeep = new ArrayList<>() {{
-        this.add("ke_gamemode");
         this.add("ke_reload");
-        this.add("ke_locate");
         this.add("ke_op");
         this.add("ke_tp");
         this.add("ke_msg");
@@ -34,8 +32,6 @@ public class LiteralCommandModified {
     }};
 
     private static final List<String> vanillaCommandsToRename = new ArrayList<String>() {{
-        this.add("gamemode");
-        this.add("locate");
         this.add("me");
         this.add("w");
         this.add("msg");
@@ -44,7 +40,6 @@ public class LiteralCommandModified {
         this.add("teammsg");
         this.add("tm");
         this.add("time");
-        this.add("locatebiome");
         this.add("ban");
         this.add("ban-ip");
         this.add("seed");

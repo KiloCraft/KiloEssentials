@@ -6,13 +6,18 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.command.TeleportCommand;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
+import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.util.commands.KiloCommands;
@@ -20,6 +25,7 @@ import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
@@ -73,9 +79,10 @@ public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
         return null;
     }
 
-    public static int teleport(ServerCommandSource source, ServerWarp warp) throws CommandSyntaxException {
-        ServerWorld world = RegistryUtils.toServerWorld(warp.getLocation().getDimensionType());
-        source.getPlayer().teleport(world, warp.getLocation().getX(), warp.getLocation().getY(), warp.getLocation().getZ(),
+    public static int teleport(ServerPlayerEntity player, ServerWarp warp) throws CommandSyntaxException {
+        ServerWorld world = warp.getLocation().getWorld();
+
+        player.teleport(world, warp.getLocation().getX(), warp.getLocation().getY(), warp.getLocation().getZ(),
                 warp.getLocation().getRotation().getYaw(), warp.getLocation().getRotation().getPitch());
 
         return 1;
