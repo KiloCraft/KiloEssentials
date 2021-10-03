@@ -16,6 +16,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -31,12 +32,12 @@ public class ModsCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> modArgument = argument("modid", word())
+        RequiredArgumentBuilder<ServerCommandSource, String> modArgument = this.argument("modid", word())
                 .suggests(this::suggestMods)
                 .executes(this::sendInfo);
 
-        commandNode.addChild(modArgument.build());
-        argumentBuilder.executes(this::sendList);
+        this.commandNode.addChild(modArgument.build());
+        this.argumentBuilder.executes(this::sendList);
     }
 
     private int sendList(CommandContext<ServerCommandSource> ctx) {
@@ -46,12 +47,12 @@ public class ModsCommand extends EssentialCommand {
             ModMetadata meta = mod.getMetadata();
 
             text.append(
-                    Texter.Events.onHover(tl("general.click_info")),
+                    Texter.Events.onHover(ModConstants.translation("general.click_info")),
                     Texter.Events.onClickRun("/mods " + meta.getId()),
                     meta.getName()
             );
         }
-        getCommandSource(ctx).sendMessage(text.build());
+        this.getCommandSource(ctx).sendMessage(text.build());
         return SUCCESS;
     }
 
@@ -59,17 +60,17 @@ public class ModsCommand extends EssentialCommand {
         String inputId = getString(ctx, "modid");
 
         if (!FabricLoader.getInstance().getModContainer(inputId).isPresent()) {
-            throw MOD_NOT_PRESENT.create();
+            throw this.MOD_NOT_PRESENT.create();
         }
 
         ModMetadata meta = FabricLoader.getInstance().getModContainer(inputId).get().getMetadata();
 
         Texter.InfoBlockStyle text = Texter.InfoBlockStyle.of(meta.getName());
         text.append("Version", meta.getVersion().getFriendlyString());
-        text.append("Authors", authorsToArrayText(meta));
+        text.append("Authors", this.authorsToArrayText(meta));
         text.append("Description", meta.getDescription());
 
-        getCommandSource(ctx).sendMessage(text.build());
+        this.getCommandSource(ctx).sendMessage(text.build());
         return SUCCESS;
     }
 
@@ -78,7 +79,7 @@ public class ModsCommand extends EssentialCommand {
         for (Person author : meta.getAuthors()) {
             MutableText mutable = Texter.newText(author.getName());
             mutable.styled((style) -> {
-                style.withHoverEvent(Texter.Events.onHover(tl("general.click_info")));
+                style.withHoverEvent(Texter.Events.onHover(ModConstants.translation("general.click_info")));
                 style.withClickEvent(Texter.Events.onClickRun("mods", meta.getId(), author.getName()));
                 return style;
             });

@@ -20,12 +20,14 @@ public interface UserManager {
 
     /**
      * Returns a list of all the Users
+     *
      * @return a List of all the Users that joined the server at least once
      */
     CompletableFuture<List<User>> getAll();
 
     /**
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
+     *
      * @param username The UUID of the user.
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
      */
@@ -33,7 +35,8 @@ public interface UserManager {
 
     /**
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
-     * @param uuid The UUID of the user.
+     *
+     * @param uuid     The UUID of the user.
      * @param username The name of the user
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
      */
@@ -41,6 +44,7 @@ public interface UserManager {
 
     /**
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
+     *
      * @param uuid The UUID of the user.
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
      */
@@ -48,6 +52,7 @@ public interface UserManager {
 
     /**
      * Returns a future which contains a user who is offline. If the user is online, the future will return immediately.
+     *
      * @param profile The user's GameProfile
      * @return The loaded offline user, otherwise a dummy user if the player has never joined.
      * @throws IllegalArgumentException If the gameprofile is incomplete and no UUID is present.
@@ -56,18 +61,21 @@ public interface UserManager {
 
     /**
      * Gets a map of the online server users
+     *
      * @return An Map of online users, with their UUID
      */
     Map<UUID, OnlineServerUser> getOnlineUsers();
 
     /**
      * Gets a list of the online users
+     *
      * @return An List of online users
      */
     List<OnlineUser> getOnlineUsersAsList();
 
     /**
      * Gets a list of the online users
+     *
      * @param includeVanished whether or not to include vanished players
      * @return An List of online users
      */
@@ -75,6 +83,7 @@ public interface UserManager {
 
     /**
      * Gets a user who is online based on their GameProfile.
+     *
      * @param profile The user's GameProfile.
      * @return An online user, or null if the user isn't online.
      */
@@ -83,6 +92,7 @@ public interface UserManager {
 
     /**
      * Gets a user who is online based on their UUID.
+     *
      * @param uuid The user's UUID.
      * @return An online user, or null if the user isn't online.
      */
@@ -91,6 +101,7 @@ public interface UserManager {
 
     /**
      * Gets a user who is online based on their username.
+     *
      * @param username The user's username.
      * @return An online user, or null if the user isn't online.
      */
@@ -99,6 +110,7 @@ public interface UserManager {
 
     /**
      * Gets a user who is online based on their nickname.
+     *
      * @param nickname The user's GameProfile.
      * @return An online user, or null if no user has the inputted nickname.
      */
@@ -107,6 +119,7 @@ public interface UserManager {
 
     /**
      * Gets a user who is online based on their PlayerEntity.
+     *
      * @param player the PlayerEntity.
      * @return An online user.
      */
@@ -114,6 +127,7 @@ public interface UserManager {
 
     /**
      * Gets a user who is online using a server command source.
+     *
      * @param source The ServerCommandSource to get the user from.
      * @return An online user.
      * @throws CommandSyntaxException If the CommandSource is not a player.
@@ -122,6 +136,7 @@ public interface UserManager {
 
     /**
      * Checks if a user is currently online
+     *
      * @param user to check
      * @return is user online
      */

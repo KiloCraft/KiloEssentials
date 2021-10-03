@@ -12,14 +12,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.Format;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -29,10 +24,12 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.extensions.playtimecommands.PlaytimeCommands;
-import org.kilocraft.essentials.servermeta.ServerMetaManager;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
+import org.kilocraft.essentials.util.Format;
 import org.kilocraft.essentials.util.PermissionUtil;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.net.SocketAddress;
 import java.util.Date;
@@ -40,9 +37,11 @@ import java.util.UUID;
 
 public class OnlineServerUser extends ServerUser implements OnlineUser {
 
+    private final ServerPlayerEntity serverPlayerEntity;
+
     @Override
     public ServerPlayerEntity asPlayer() {
-        return KiloEssentials.getMinecraftServer().getPlayerManager().getPlayer(this.uuid);
+        return this.serverPlayerEntity;
     }
 
     @Override
@@ -101,19 +100,12 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendPermissionError(@NotNull String hover) {
-        this.sendMessage(ComponentText.of(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
+        this.sendMessage(ComponentText.of(ModConstants.translation("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(Component.text(hover)))));
     }
 
     @Override
     public void sendLangError(@NotNull String key, Object... objects) {
         this.sendError(ModConstants.translation(key, objects));
-    }
-
-    @Override
-    public int sendError(final ExceptionMessageNode node, final Object... objects) {
-        final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        this.sendMessage("<red>" + (objects != null ? String.format(message, objects) : message));
-        return -1;
     }
 
     @Override
@@ -128,7 +120,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
     @Override
     public void sendLangMessage(final @NotNull String key, final Object... objects) {
-        this.sendMessage(KiloChat.getFormattedLang(key, objects));
+        this.sendMessage(ModConstants.translation(key, objects));
     }
 
     @Override
@@ -144,12 +136,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     @Override
     public Location getLocation() {
         return Vec3dLocation.of(this.asPlayer());
-    }
-
-    @Override
-    public Vec3d getEyeLocation() {
-        Vec3d vec = this.asPlayer().getPos();
-        return new Vec3d(vec.getX(), this.asPlayer().getEyeY(), this.asPlayer().getPos().getZ());
     }
 
     public static OnlineServerUser of(final UUID uuid) {
@@ -171,17 +157,13 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     public OnlineServerUser(final ServerPlayerEntity player) {
         super(player.getUuid());
         super.name = player.getEntityName();
+        this.serverPlayerEntity = player;
     }
 
     @Override
     public void fromTag(@NotNull final NbtCompound tag) {
         // All the other serialization logic is handled.
         super.fromTag(tag);
-    }
-
-    @Override
-    public String getNameTag() {
-        return super.getNameTag();
     }
 
     @Override
@@ -235,7 +217,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         SocketAddress socketAddress = this.getConnection().getAddress();
         if (socketAddress != null) {
-            lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
+            this.lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
         }
 
         super.messageCoolDown = 0;
@@ -249,14 +231,14 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         this.setGameMode(gameMode);
         super.getPreferences().set(Preferences.GAME_MODE, gameMode);
 
-        if (ticksPlayed <= 0) {
-            ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
+        if (this.ticksPlayed <= 0) {
+            this.ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
         } else {
-            this.asPlayer().getStatHandler().setStat(this.asPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME), ticksPlayed);
+            this.asPlayer().getStatHandler().setStat(this.asPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME), this.ticksPlayed);
         }
 
         if (KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF)) {
-            isStaff = true;
+            this.isStaff = true;
         }
 
         if (KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_SELF) || KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_OTHERS)) {
@@ -271,7 +253,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             this.clearNickname();
         }
 
-        ServerMetaManager.updateForAll();
     }
 
     public void onLeave() {
@@ -279,16 +260,17 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     private static int tick = 0;
+
     public void onTick() {
         tick++;
-        ticksPlayed++;
+        this.ticksPlayed++;
 
-        if (messageCoolDown > 0) {
-            --messageCoolDown;
+        if (this.messageCoolDown > 0) {
+            --this.messageCoolDown;
         }
 
-        if (systemMessageCoolDown > 0) {
-            --systemMessageCoolDown;
+        if (this.systemMessageCoolDown > 0) {
+            --this.systemMessageCoolDown;
         }
 
         if (tick >= 20) {
@@ -298,7 +280,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             }
 
             if (PlaytimeCommands.isEnabled()) {
-                PlaytimeCommands.getInstance().onUserPlaytimeUp(this, ticksPlayed);
+                PlaytimeCommands.getInstance().onUserPlaytimeUp(this, this.ticksPlayed);
             }
         }
 

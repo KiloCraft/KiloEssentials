@@ -16,9 +16,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.text.Texter;
 
 public class InventoryCommand extends EssentialCommand {
@@ -60,11 +60,11 @@ public class InventoryCommand extends EssentialCommand {
         final OnlineUser target = this.getOnlineUser(ctx, "target");
 
         if (sender.equals(target)) {
-            sender.sendError(tl("command.inventory.error"));
+            sender.sendLangError("command.inventory.error");
             return FAILED;
         }
 
-        sender.asPlayer().openHandledScreen(factory(sender, target));
+        sender.asPlayer().openHandledScreen(this.factory(sender, target));
         sender.sendLangMessage("general.seek_screen", target.getFormattedDisplayName(), "");
         return SUCCESS;
     }

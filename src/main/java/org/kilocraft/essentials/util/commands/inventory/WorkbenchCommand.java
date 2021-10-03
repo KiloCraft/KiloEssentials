@@ -12,8 +12,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.util.CommandPermission;
 
 public class WorkbenchCommand extends EssentialCommand {
 
@@ -22,7 +22,7 @@ public class WorkbenchCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(WorkbenchCommand::execute);
+        this.argumentBuilder.executes(WorkbenchCommand::execute);
     }
 
     private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -35,7 +35,7 @@ public class WorkbenchCommand extends EssentialCommand {
     }
 
     public static CraftingScreenHandler createContainer(int syncId, PlayerInventory inventory, PlayerEntity player) {
-        return new CraftingScreenHandler(syncId, inventory, ScreenHandlerContext.EMPTY);
+        return new CraftingScreenHandler(syncId, inventory, ScreenHandlerContext.create(player.world, player.getBlockPos()));
     }
 
 }

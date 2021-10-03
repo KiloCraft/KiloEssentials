@@ -8,9 +8,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.StringText;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 public class ViewDistanceCommand extends EssentialCommand {
@@ -21,10 +21,10 @@ public class ViewDistanceCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, Integer> distance = argument("distance", IntegerArgumentType.integer(2, 32));
+        RequiredArgumentBuilder<ServerCommandSource, Integer> distance = this.argument("distance", IntegerArgumentType.integer(2, 32));
         distance.executes(this::execute);
-        argumentBuilder.executes(this::info);
-        commandNode.addChild(distance.build());
+        this.argumentBuilder.executes(this::info);
+        this.commandNode.addChild(distance.build());
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

@@ -26,18 +26,18 @@ public class FormatPreviewCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = argument("text", greedyString())
+        RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("text", greedyString())
                 .suggests(FormatPreviewCommand::staticSuggestion)
                 .executes(FormatPreviewCommand::execute);
 
-        LiteralArgumentBuilder<ServerCommandSource> legacyArgument = literal("legacy");
-        RequiredArgumentBuilder<ServerCommandSource, String> legacyStringArgument = argument("text", greedyString())
+        LiteralArgumentBuilder<ServerCommandSource> legacyArgument = this.literal("legacy");
+        RequiredArgumentBuilder<ServerCommandSource, String> legacyStringArgument = this.argument("text", greedyString())
                 .suggests(FormatPreviewCommand::legacySuggestion)
                 .executes(FormatPreviewCommand::executeLegacy);
 
         legacyArgument.then(legacyStringArgument);
-        commandNode.addChild(legacyArgument.build());
-        commandNode.addChild(stringArgument.build());
+        this.commandNode.addChild(legacyArgument.build());
+        this.commandNode.addChild(stringArgument.build());
     }
 
     private static int execute(CommandContext<ServerCommandSource> ctx) {

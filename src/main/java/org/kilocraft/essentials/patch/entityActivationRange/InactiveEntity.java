@@ -2,10 +2,10 @@ package org.kilocraft.essentials.patch.entityActivationRange;
 
 public interface InactiveEntity {
 
-    public void inactiveTick();
+    void inactiveTick();
 
-    public boolean isTemporarilyActive();
+    boolean isTemporarilyActive();
 
-    public void setTemporarilyActive(boolean temporarilyActive);
+    void setTemporarilyActive(boolean temporarilyActive);
 
 }

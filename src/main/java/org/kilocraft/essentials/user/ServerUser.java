@@ -9,7 +9,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -25,6 +24,7 @@ import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.user.preference.ServerUserPreferences;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.nbt.NBTUtils;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.Texter;
@@ -82,7 +82,7 @@ public class ServerUser implements User {
         try {
             MANAGER.getHandler().handleUser(this);
         } catch (IOException e) {
-            KiloEssentials.getLogger().fatal("Failed to Load User Data [" + uuid.toString() + "]", e);
+            KiloEssentials.getLogger().fatal("Failed to Load User Data [" + uuid + "]", e);
         }
 
     }
@@ -167,8 +167,8 @@ public class ServerUser implements User {
             };
         }
 
-        this.firstJoin = dateFromString(metaTag.getString("firstJoin"));
-        this.lastOnline = dateFromString(metaTag.getString("lastOnline"));
+        this.firstJoin = this.dateFromString(metaTag.getString("firstJoin"));
+        this.lastOnline = this.dateFromString(metaTag.getString("lastOnline"));
         this.hasJoinedBefore = metaTag.getBoolean("hasJoinedBefore");
 
         if (metaTag.contains("ticksPlayed")) {
@@ -186,7 +186,7 @@ public class ServerUser implements User {
         this.savedName = NbtCompound.getString("name");
         if (cacheTag.contains("IIP")) {
             this.lastSocketAddress = cacheTag.getString("IIP");
-            KiloEssentials.getLogger().info("Updating ip for " + savedName);
+            KiloEssentials.getLogger().info("Updating ip for " + this.savedName);
         }
         this.settings.fromTag(NbtCompound.getCompound("settings"));
     }
@@ -319,7 +319,7 @@ public class ServerUser implements User {
     @Override
     public Location getLocation() {
         if (this.isOnline() || (this.isOnline() && this.location == null)) {
-            updateLocation();
+            this.updateLocation();
         }
 
         return this.location;

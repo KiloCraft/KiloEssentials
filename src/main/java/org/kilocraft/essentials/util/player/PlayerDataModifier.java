@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class PlayerDataModifier {
-    private UUID uuid;
+    private final UUID uuid;
     private NbtCompound NbtCompound;
 
     public PlayerDataModifier(UUID uuid) {
@@ -21,19 +21,20 @@ public class PlayerDataModifier {
     }
 
     public boolean load() {
-        File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
+        File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + this.uuid.toString() + ".dat");
         if (!file.exists())
             return false;
 
         try {
             this.NbtCompound = NbtIo.readCompressed(new FileInputStream(file));
-        } catch (IOException ignored) { }
+        } catch (IOException ignored) {
+        }
 
         return true;
     }
 
     public boolean save() {
-        File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
+        File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + this.uuid.toString() + ".dat");
         if (!file.exists())
             return false;
 

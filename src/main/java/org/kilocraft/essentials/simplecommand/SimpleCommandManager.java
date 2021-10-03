@@ -8,12 +8,12 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +102,7 @@ public class SimpleCommandManager {
 
     public boolean canExecute(String input) {
         try {
-            for (SimpleCommand command : commands) {
+            for (SimpleCommand command : this.commands) {
                 if (command.label.equals(input.split(" ")[0].replaceFirst("/", ""))) {
                     return true;
                 }
@@ -119,7 +119,7 @@ public class SimpleCommandManager {
         SimpleCommand command = getCommandByLabel(label);
         String str = input.replaceFirst("/", "").replaceFirst(label + " ", "");
         String[] args = str.replaceFirst(label, "").split(" ");
-        CommandSourceUser user = new CommandSourceServerUser(source);
+        CommandSourceUser user = CommandSourceServerUser.of(source);
 
         try {
             if (command != null) {
@@ -134,7 +134,7 @@ public class SimpleCommandManager {
             if (e.getRawMessage().getString().equals("Unknown command")) {
                 CommandPermission reqPerm = CommandPermission.getByNode(label);
 
-                if (isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
+                if (this.isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
                     user.sendPermissionError("");
                 else
                     user.sendMessage(KiloConfig.messages().commands().context().executionException);

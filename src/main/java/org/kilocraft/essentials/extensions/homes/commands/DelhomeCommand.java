@@ -11,13 +11,12 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.user.UserHomeHandler;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import java.io.IOException;
 
@@ -32,21 +31,21 @@ public class DelhomeCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = argument("name", word())
+        RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = this.argument("name", word())
                 .suggests(UserHomeHandler::suggestHomes)
                 .executes(this::executeSelf);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = getUserArgument("user")
-                .requires(src -> hasPermission(src, CommandPermission.HOME_OTHERS_REMOVE))
+        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
+                .requires(src -> this.hasPermission(src, CommandPermission.HOME_OTHERS_REMOVE))
                 .executes(this::executeOthers);
 
         homeArgument.then(targetArgument);
-        commandNode.addChild(homeArgument.build());
+        this.commandNode.addChild(homeArgument.build());
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        OnlineUser user = getOnlineUser(player);
+        OnlineUser user = this.getOnlineUser(player);
         UserHomeHandler homeHandler = user.getHomesHandler();
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
@@ -57,7 +56,7 @@ public class DelhomeCommand extends EssentialCommand {
         }
 
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-            user.sendMessage(getConfirmationText(name, ""));
+            user.sendMessage(this.getConfirmationText(name, ""));
             return AWAIT;
         } else {
             homeHandler.removeHome(name);
@@ -70,12 +69,12 @@ public class DelhomeCommand extends EssentialCommand {
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        OnlineUser source = getOnlineUser(player);
+        OnlineUser source = this.getOnlineUser(player);
         String inputName = getString(ctx, "user");
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        getUserManager().getUserThenAcceptAsync(player, inputName, (user) -> {
+        this.getUserManager().getUserThenAcceptAsync(player, inputName, (user) -> {
             UserHomeHandler homeHandler = user.getHomesHandler();
 
             if (!homeHandler.hasHome(name)) {
@@ -87,7 +86,7 @@ public class DelhomeCommand extends EssentialCommand {
             }
 
             if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-                source.sendMessage(getConfirmationText(name, user.getUsername()));
+                source.sendMessage(this.getConfirmationText(name, user.getUsername()));
                 return;
             } else {
                 homeHandler.removeHome(name);
@@ -96,7 +95,7 @@ public class DelhomeCommand extends EssentialCommand {
             try {
                 user.saveData();
             } catch (IOException e) {
-                source.sendError(ExceptionMessageNode.USER_CANT_SAVE, user.getNameTag(), e.getMessage());
+                source.sendLangError("exception.user_cant_save", user.getNameTag(), e.getMessage());
             }
 
             if (CommandUtils.areTheSame(source, user))
@@ -110,7 +109,7 @@ public class DelhomeCommand extends EssentialCommand {
 
     private Text getConfirmationText(String homeName, String user) {
         return new LiteralText("")
-                .append(StringText.of(true, "command.delhome.confirmation_message")
+                .append(StringText.of(true, "command.delhome.confirmation_message", homeName)
                         .formatted(Formatting.YELLOW))
                 .append(new LiteralText(" [").formatted(Formatting.GRAY)
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))

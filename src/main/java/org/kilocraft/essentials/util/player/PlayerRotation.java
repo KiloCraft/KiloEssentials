@@ -12,12 +12,12 @@ public class PlayerRotation implements EntityRotation {
 
     @Override
     public float getYaw() {
-        return yaw;
+        return this.yaw;
     }
 
     @Override
     public float getPitch() {
-        return pitch;
+        return this.pitch;
     }
 
     @Override

@@ -4,19 +4,15 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.query.QueryOptions;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.Date;
@@ -120,17 +116,6 @@ public class UserUtils {
             }
 
         }
-    }
-
-    public static class Animate {
-        public static void swingHand(PlayerEntity player) {
-            swingHand(player, Hand.MAIN_HAND);
-        }
-
-        public static void swingHand(PlayerEntity player, Hand hand) {
-            player.swingHand(hand, true);
-        }
-
     }
 
 }

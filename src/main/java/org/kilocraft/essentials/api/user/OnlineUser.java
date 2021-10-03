@@ -4,15 +4,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.text.OnlineMessageReceptionist;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
 
 public interface OnlineUser extends User, OnlineMessageReceptionist {
     ServerPlayerEntity asPlayer();
@@ -25,13 +23,9 @@ public interface OnlineUser extends User, OnlineMessageReceptionist {
 
     void teleport(@NotNull final OnlineUser user);
 
-    int sendError(ExceptionMessageNode node, Object... objects);
-
     ClientConnection getConnection();
 
     Vec3dLocation getLocationAsVector() throws CommandSyntaxException;
-
-    Vec3d getEyeLocation();
 
     boolean hasPermission(CommandPermission perm);
 

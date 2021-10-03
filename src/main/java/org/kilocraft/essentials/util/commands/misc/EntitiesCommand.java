@@ -24,10 +24,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.HashMap;
@@ -45,25 +45,25 @@ public class EntitiesCommand extends EssentialCommand {
 
         LiteralArgumentBuilder<ServerCommandSource> byPlayer = LiteralArgumentBuilder.literal("byPlayer");
         RequiredArgumentBuilder<ServerCommandSource, EntitySelector> player = CommandManager.argument("player", EntityArgumentType.player())
-                .requires(src -> hasPermission(src, CommandPermission.ENTITIES_PLAYER))
+                .requires(src -> this.hasPermission(src, CommandPermission.ENTITIES_PLAYER))
                 .executes(this::executePlayer);
 
         LiteralArgumentBuilder<ServerCommandSource> byType = LiteralArgumentBuilder.literal("byType");
         RequiredArgumentBuilder<ServerCommandSource, Identifier> type = CommandManager.argument("type", EntitySummonArgumentType.entitySummon())
                 .suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
-                .requires(src -> hasPermission(src, CommandPermission.ENTITIES_TYPE))
+                .requires(src -> this.hasPermission(src, CommandPermission.ENTITIES_TYPE))
                 .executes(this::executeType);
 
         LiteralArgumentBuilder<ServerCommandSource> items = LiteralArgumentBuilder.literal("items");
-        items.requires(src -> hasPermission(src, CommandPermission.ENTITIES_ITEM)).executes(this::executeItem);
+        items.requires(src -> this.hasPermission(src, CommandPermission.ENTITIES_ITEM)).executes(this::executeItem);
 
-        argumentBuilder.executes(this::execute);
+        this.argumentBuilder.executes(this::execute);
 
         byPlayer.then(player);
         byType.then(type);
-        commandNode.addChild(byType.build());
-        commandNode.addChild(byPlayer.build());
-        commandNode.addChild(items.build());
+        this.commandNode.addChild(byType.build());
+        this.commandNode.addChild(byPlayer.build());
+        this.commandNode.addChild(items.build());
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
@@ -87,19 +87,19 @@ public class EntitiesCommand extends EssentialCommand {
         }
         TextComponent.Builder playersHover = Component.text().content("Entities / Player ").color(NamedTextColor.YELLOW)
                 .append(Component.text(":\n").color(NamedTextColor.YELLOW));
-        sortByValue(nearbyEntities).forEach(entry -> {
+        this.sortByValue(nearbyEntities).forEach(entry -> {
             playersHover.append(ComponentText.of(entry.getKey().getEntityName() + ": ").color(NamedTextColor.GRAY))
                     .append(Component.text(entry.getValue() + "\n").color(NamedTextColor.LIGHT_PURPLE));
         });
         TextComponent.Builder entityHover = Component.text().content("Entities by Type:\n").color(NamedTextColor.YELLOW);
         final int[] i = {0};
-        sortByValue(entitiesByType).forEachOrdered(entry -> {
+        this.sortByValue(entitiesByType).forEachOrdered(entry -> {
             entityHover.append(Component.text(entry.getKey().getName().getString()).color(NamedTextColor.GRAY),
                     Component.text("(").color(NamedTextColor.DARK_GRAY),
                     Component.text(entry.getKey().getSpawnGroup().getName()).color(NamedTextColor.AQUA),
                     Component.text(")").color(NamedTextColor.DARK_GRAY),
                     Component.text(": ").color(NamedTextColor.GRAY),
-                    ComponentText.of("<color:" + getHex(entry.getValue(), 1000) + ">" + entry.getValue() + ((i[0] % 3 == 2) ? "\n" : " ")));
+                    ComponentText.of("<color:" + this.getHex(entry.getValue(), 1000) + ">" + entry.getValue() + ((i[0] % 3 == 2) ? "\n" : " ")));
             i[0]++;
         });
         TextComponent.Builder builder = Component.text().content("There are currently ").color(NamedTextColor.YELLOW)
@@ -108,7 +108,7 @@ public class EntitiesCommand extends EssentialCommand {
                         Component.text(players).color(NamedTextColor.GOLD).hoverEvent(HoverEvent.showText(playersHover.build())),
                         Component.text(" players.").color(NamedTextColor.YELLOW));
 
-        getCommandSource(ctx).sendMessage(builder.build());
+        this.getCommandSource(ctx).sendMessage(builder.build());
         return entities;
     }
 
@@ -127,16 +127,16 @@ public class EntitiesCommand extends EssentialCommand {
         TextComponent.Builder itemHover = Component.text().content("Items").color(NamedTextColor.YELLOW)
                 .append(Component.text(":\n").color(NamedTextColor.YELLOW));
         final int[] i = {0};
-        sortByValue(items).forEach(entry -> {
+        this.sortByValue(items).forEach(entry -> {
             itemHover.append(ComponentText.toComponent(new TranslatableText(entry.getKey().getTranslationKey())).color(NamedTextColor.GRAY), ComponentText.of(": ").color(NamedTextColor.GRAY))
-                    .append(ComponentText.of("<color:" + getHex(entry.getValue(), 500) + ">" + entry.getValue() + ((i[0] % 3 == 2) ? "\n" : " ")));
+                    .append(ComponentText.of("<color:" + this.getHex(entry.getValue(), 500) + ">" + entry.getValue() + ((i[0] % 3 == 2) ? "\n" : " ")));
             i[0]++;
         });
         TextComponent.Builder builder = Component.text().content("There are currently ").color(NamedTextColor.YELLOW)
                 .append(Component.text(itemCount).color(NamedTextColor.GOLD).hoverEvent(HoverEvent.showText(itemHover.build())),
                         Component.text(" items loaded.").color(NamedTextColor.YELLOW));
 
-        getCommandSource(ctx).sendMessage(builder.build());
+        this.getCommandSource(ctx).sendMessage(builder.build());
         return itemCount;
     }
 
@@ -151,7 +151,7 @@ public class EntitiesCommand extends EssentialCommand {
             }
         }
         TextComponent.Builder entityHover = Component.text().content("Entities by Type:\n").color(NamedTextColor.YELLOW);
-        sortByValue(entitiesByType).forEach(entry -> {
+        this.sortByValue(entitiesByType).forEach(entry -> {
             entityHover.append(Component.text(entry.getKey().getName().getString()).color(NamedTextColor.GRAY),
                     Component.text("(").color(NamedTextColor.DARK_GRAY),
                     Component.text(entry.getKey().getSpawnGroup().getName()).color(NamedTextColor.AQUA),
@@ -164,7 +164,7 @@ public class EntitiesCommand extends EssentialCommand {
                 .append(Component.text(" currently loads ").color(NamedTextColor.YELLOW),
                         Component.text(entities).color(NamedTextColor.GOLD).hoverEvent(HoverEvent.showText(entityHover.build())),
                         Component.text(" entities.").color(NamedTextColor.YELLOW));
-        getCommandSource(ctx).sendMessage(builder.build());
+        this.getCommandSource(ctx).sendMessage(builder.build());
         return entities;
     }
 
@@ -190,7 +190,7 @@ public class EntitiesCommand extends EssentialCommand {
         }
         TextComponent.Builder playersHover = Component.text()
                 .append(ComponentText.toComponent(entityType.getName()).color(NamedTextColor.YELLOW), Component.text("s / Player :\n").color(NamedTextColor.YELLOW));
-        sortByValue(nearbyEntities).forEach(entry -> {
+        this.sortByValue(nearbyEntities).forEach(entry -> {
             playersHover.append(ComponentText.of(entry.getKey().getEntityName() + ": ").color(NamedTextColor.GRAY))
                     .append(Component.text(entry.getValue() + "\n").color(NamedTextColor.LIGHT_PURPLE));
         });
@@ -201,7 +201,7 @@ public class EntitiesCommand extends EssentialCommand {
                         Component.text(players).color(NamedTextColor.GOLD).hoverEvent(HoverEvent.showText(playersHover.build())),
                         Component.text(" players.").color(NamedTextColor.YELLOW));
 
-        getCommandSource(ctx).sendMessage(builder.build());
+        this.getCommandSource(ctx).sendMessage(builder.build());
         return entities;
     }
 

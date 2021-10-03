@@ -7,7 +7,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextInput;
@@ -15,6 +14,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.util.CacheManager;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.text.ListedText;
 
@@ -37,10 +37,10 @@ public class PlaytimeTopCommand extends EssentialCommand {
 
     @Override
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, Integer> page = argument("page", IntegerArgumentType.integer(1))
+        final RequiredArgumentBuilder<ServerCommandSource, Integer> page = this.argument("page", IntegerArgumentType.integer(1))
                 .executes(ctx -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), false));
 
-        final LiteralArgumentBuilder<ServerCommandSource> force = literal("force")
+        final LiteralArgumentBuilder<ServerCommandSource> force = this.literal("force")
                 .executes(ctx -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), true));
 
         page.then(force);
@@ -67,7 +67,7 @@ public class PlaytimeTopCommand extends EssentialCommand {
             }
         }
 
-        getUserManager().getAllUsersThenAcceptAsync(src, "general.wait_users", list -> {
+        this.getUserManager().getAllUsersThenAcceptAsync(src, "general.wait_users", list -> {
             final HashMap<String, Integer> map = new HashMap<>();
             long totalTicks = 0L;
 

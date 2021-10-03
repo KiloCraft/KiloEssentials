@@ -21,16 +21,16 @@ public class IgnoreCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = getUserArgument("user")
+        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("user")
                 .suggests(ArgumentSuggestions::allPlayersExceptSource)
                 .executes(this::execute);
 
-        commandNode.addChild(userArgument.build());
+        this.commandNode.addChild(userArgument.build());
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser src = getOnlineUser(ctx);
-        String inputName = getUserArgumentInput(ctx, "user");
+        OnlineUser src = this.getOnlineUser(ctx);
+        String inputName = this.getUserArgumentInput(ctx, "user");
         Map<UUID, String> ignoreList = src.getPreference(Preferences.IGNORE_LIST);
         if (inputName.matches("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b")) {
             UUID uuid = UUID.fromString(inputName);
@@ -41,7 +41,7 @@ public class IgnoreCommand extends EssentialCommand {
                 return SUCCESS;
             }
         }
-        getUserManager().getUserThenAcceptAsync(src, inputName, (user) -> {
+        this.getUserManager().getUserThenAcceptAsync(src, inputName, (user) -> {
             if (((ServerUser) user).isStaff() || user.equals(src)) {
                 src.sendLangMessage("command.ignore.error");
                 return;
@@ -51,7 +51,7 @@ public class IgnoreCommand extends EssentialCommand {
             if (remove) ignoreList.remove(user.getUuid());
             else ignoreList.put(user.getUuid(), user.getUsername());
             src.getPreferences().set(Preferences.IGNORE_LIST, ignoreList);
-            src.sendLangMessage(remove ? "command.ignore.remove" : "command.ignore.add" , user.getNameTag());
+            src.sendLangMessage(remove ? "command.ignore.remove" : "command.ignore.add", user.getNameTag());
 
         });
 

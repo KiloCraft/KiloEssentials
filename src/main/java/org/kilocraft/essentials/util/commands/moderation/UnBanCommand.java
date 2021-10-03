@@ -11,14 +11,13 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -30,11 +29,11 @@ public class UnBanCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> user = argument("profile", GameProfileArgumentType.gameProfile())
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> user = this.argument("profile", GameProfileArgumentType.gameProfile())
                 .suggests(this::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent")
+        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent")
                 .executes((ctx) -> this.execute(ctx, true));
 
         user.then(silent);
@@ -45,7 +44,7 @@ public class UnBanCommand extends EssentialCommand {
         CommandSourceUser src = this.getCommandSource(ctx);
         Collection<GameProfile> gameProfiles = GameProfileArgumentType.getProfileArgument(ctx, "profile");
         if (gameProfiles.size() > 1) {
-            throw KiloCommands.getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
+            throw KiloCommands.getException("exception.too_many_selections").create();
         }
         GameProfile profile = gameProfiles.iterator().next();
 
@@ -55,7 +54,7 @@ public class UnBanCommand extends EssentialCommand {
         }
 
         KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().remove(profile);
-        getUserManager().onPunishmentRevoked(src, new Punishment(src, EntityIdentifiable.fromGameProfile(profile)), Punishment.Type.BAN, null, silent);
+        this.getUserManager().onPunishmentRevoked(src, new Punishment(src, EntityIdentifiable.fromGameProfile(profile)), Punishment.Type.BAN, null, silent);
 
         return SUCCESS;
     }

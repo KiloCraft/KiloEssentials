@@ -12,12 +12,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.api.util.TickManager;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
+import org.kilocraft.essentials.api.util.TickManager;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -89,7 +89,7 @@ public class StatusCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::execute);
+        this.argumentBuilder.executes(this::execute);
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) {

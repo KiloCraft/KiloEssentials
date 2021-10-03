@@ -49,18 +49,18 @@ public class ParticleAnimationSection<P extends ParticleEffect> {
     }
 
     public ParticleAnimationSection.Type getType() {
-        return type;
+        return this.type;
     }
 
-    public boolean getRelative () {
-        return relative;
+    public boolean getRelative() {
+        return this.relative;
     }
 
     @Nullable
     public ParticleS2CPacket toPacket(Vec3d vec3d, double rotation) {
-        Vec3d vec = relativePosition.getRelativeVector(vec3d);
+        Vec3d vec = this.relativePosition.getRelativeVector(vec3d);
 
-        if (getRelative()) {
+        if (this.getRelative()) {
             if (rotation < 0) {
                 rotation += 360;
             }
@@ -71,17 +71,17 @@ public class ParticleAnimationSection<P extends ParticleEffect> {
 
             rotation = Math.toRadians(rotation);
 
-            double x = relativePosition.getX() * Math.cos(rotation) - relativePosition.getZ() * Math.sin(rotation);
-            double z = relativePosition.getX() * Math.sin(rotation) + relativePosition.getZ() * Math.cos(rotation);
+            double x = this.relativePosition.getX() * Math.cos(rotation) - this.relativePosition.getZ() * Math.sin(rotation);
+            double z = this.relativePosition.getX() * Math.sin(rotation) + this.relativePosition.getZ() * Math.cos(rotation);
             vec = new Vec3d(x + vec3d.x, vec.y, z + vec3d.z);
         }
 
         return new ParticleS2CPacket(
                 this.effect,
-                longDistance,
+                this.longDistance,
                 vec.getX(), vec.getY(), vec.getZ(),
-                (float) oX, (float) oY, (float) oZ,
-                (float) speed, count
+                (float) this.oX, (float) this.oY, (float) this.oZ,
+                (float) this.speed, this.count
         );
     }
 

@@ -10,11 +10,11 @@ import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandConfigSection;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandsConfig;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.user.OnlineServerUser;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class PlaytimeCommands implements ReloadableConfigurableFeature {
         enabled = true;
         instance = this;
 
-        load();
+        this.load();
         return true;
     }
 
@@ -64,7 +64,7 @@ public class PlaytimeCommands implements ReloadableConfigurableFeature {
         for (PlaytimeCommandConfigSection section : config.sections) {
             if (played == section.seconds) {
                 for (String command : section.commands) {
-                    runCommand(user, command);
+                    this.runCommand(user, command);
                 }
             }
         }

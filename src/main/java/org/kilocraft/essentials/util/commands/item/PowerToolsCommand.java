@@ -17,11 +17,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -35,7 +35,7 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class PowerToolsCommand {
-    private static Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS, 4);
+    private static final Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS, 4);
 
     public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
         LiteralCommandNode<ServerCommandSource> rootCommand = literal("command")
@@ -79,10 +79,11 @@ public class PowerToolsCommand {
 
         char[] chars = context.getInput().toCharArray();
         for (int i = 0; i < chars.length; i++) {
-            try	{
+            try {
                 inputLine = Integer.parseInt(String.valueOf(chars[i])) - 1;
                 if (chars[i++] == 0) inputLine = chars[i] + '0';
-            } catch (NumberFormatException ignored) { }
+            } catch (NumberFormatException ignored) {
+            }
         }
 
         NbtList commands = item.getNbt().getList("NBTCommands", 8);
@@ -94,7 +95,7 @@ public class PowerToolsCommand {
         int inputLine = getInteger(ctx, "line") - 1;
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         ItemStack item = player.getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
             user.sendLangMessage("command.item.invalid_item");
@@ -121,7 +122,7 @@ public class PowerToolsCommand {
 
     private static int executeReset(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
             user.sendLangMessage("command.item.invalid_item");
@@ -141,7 +142,7 @@ public class PowerToolsCommand {
     private static int executeList(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         ItemStack item = player.getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
 
@@ -174,7 +175,7 @@ public class PowerToolsCommand {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         String inputString = getString(ctx, "command").replaceFirst("/", "");
         ItemStack item = player.getMainHandStack();
-        CommandSourceUser user = new CommandSourceServerUser(ctx.getSource());
+        CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
             user.sendLangMessage("command.item.invalid_item");
@@ -211,7 +212,7 @@ public class PowerToolsCommand {
         itemTag.put("NBTCommands", command);
         item.setNbt(itemTag);
 
-        user.sendLangMessage( "command.item.set", "command", inputLine + 1, "&e:\n &7" + inputLine);
+        user.sendLangMessage("command.item.set", "command", inputLine + 1, "&e:\n &7" + inputLine);
         return 1;
     }
 }

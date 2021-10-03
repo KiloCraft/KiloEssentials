@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * This is the global event registry class.
- *
+ * <p>
  * You shouldn't use it directly, but use the {@link EventHandler}
  * or {@link EventHandler} methods instead.
  */

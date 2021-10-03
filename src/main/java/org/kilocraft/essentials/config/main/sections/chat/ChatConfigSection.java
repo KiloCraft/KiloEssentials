@@ -27,24 +27,24 @@ public class ChatConfigSection {
     public String itemFormat = "\\[item\\]";
 
     @Setting(value = "prefixes", comment = "Sets format and meta of chat channels")
-    private ChatFormatsConfigSection formatsSection = new ChatFormatsConfigSection();
+    private final ChatFormatsConfigSection formatsSection = new ChatFormatsConfigSection();
 
     @Setting(value = "privateChat", comment = "Sets the format and meta of private chat channels")
-    private PrivateChatConfigSection privateChatSection = new PrivateChatConfigSection();
+    private final PrivateChatConfigSection privateChatSection = new PrivateChatConfigSection();
 
     @Setting(value = "ping")
-    private ChatPingConfigSection pingSection = new ChatPingConfigSection();
+    private final ChatPingConfigSection pingSection = new ChatPingConfigSection();
 
     public ChatFormatsConfigSection prefixes() {
-        return formatsSection;
+        return this.formatsSection;
     }
 
     public PrivateChatConfigSection privateChat() {
-        return privateChatSection;
+        return this.privateChatSection;
     }
 
     public ChatPingConfigSection ping() {
-        return pingSection;
+        return this.pingSection;
     }
 
 }

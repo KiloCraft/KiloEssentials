@@ -15,8 +15,8 @@ public class CustomCommandsConfig {
     public static final String HEADER = Config.HEADER + "\n\nCustom commands\n" + COMMANDS_DESC;
 
     @Setting("commands")
-    public Map<String, CustomCommandConfigSection> commands = new HashMap<String, CustomCommandConfigSection>(){{
-        put("default:example", new CustomCommandConfigSection());
+    public Map<String, CustomCommandConfigSection> commands = new HashMap<String, CustomCommandConfigSection>() {{
+        this.put("default:example", new CustomCommandConfigSection());
     }};
 
 }

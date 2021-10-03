@@ -2,12 +2,12 @@ package org.kilocraft.essentials.config;
 
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.api.util.TickManager;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.util.TickManager;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.monitor.SystemMonitor;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -49,6 +49,7 @@ public class ConfigVariableFactory {
         Validate.notNull(str, "String must not be null!");
         final double memUsagePercent = SystemMonitor.getRamUsedPercentage();
         return new ConfigObjectReplacerUtil("server", str)
+                .append("mspt", ComponentText.formatMspt(TickManager.mspt[0]))
                 .append("tps", TickManager.tps[0])
                 .append("formatted_tps", ComponentText.formatTps(TickManager.tps[0]))
                 .append("tps5", TickManager.tps[3])

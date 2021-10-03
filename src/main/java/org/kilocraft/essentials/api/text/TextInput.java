@@ -46,13 +46,13 @@ public class TextInput implements ContainedText {
 
     @Override
     public ContainedText append(String... strings) {
-        lines.addAll(Arrays.asList(strings));
+        this.lines.addAll(Arrays.asList(strings));
         return this;
     }
 
     @Override
     public ContainedText append(MutableText... texts) {
-        textLines.addAll(Arrays.asList(texts));
+        this.textLines.addAll(Arrays.asList(texts));
         return this;
     }
 }

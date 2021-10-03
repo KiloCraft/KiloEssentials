@@ -7,7 +7,7 @@ public enum RegexLib {
     URL("\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 
 
-    private String regex;
+    private final String regex;
 
     RegexLib(String regex) {
         this.regex = regex;

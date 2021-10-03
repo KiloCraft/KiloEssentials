@@ -27,7 +27,7 @@ public class PlayerMobCapCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::info);
+        this.argumentBuilder.executes(this::info);
     }
 
     private int info(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

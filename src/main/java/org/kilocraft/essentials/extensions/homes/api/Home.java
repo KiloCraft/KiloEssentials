@@ -32,7 +32,7 @@ public class Home {
     }
 
     public Home(NbtCompound NbtCompound) {
-        fromTag(NbtCompound);
+        this.fromTag(NbtCompound);
     }
 
     public NbtCompound toTag() {
@@ -61,7 +61,7 @@ public class Home {
     }
 
     public UUID getOwner() {
-        return owner_uuid;
+        return this.owner_uuid;
     }
 
     public void setOwner(UUID uuid) {
@@ -69,7 +69,7 @@ public class Home {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {

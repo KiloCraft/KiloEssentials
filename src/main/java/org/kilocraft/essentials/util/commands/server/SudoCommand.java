@@ -29,20 +29,20 @@ public class SudoCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        ArgumentCommandNode<ServerCommandSource, EntitySelector> selectorArg = argument("target", player())
+        ArgumentCommandNode<ServerCommandSource, EntitySelector> selectorArg = this.argument("target", player())
                 .suggests(ArgumentSuggestions::allPlayers)
                 .redirect(dispatcher.getRoot(), redirectModifier())
                 .build();
 
 
-        LiteralCommandNode<ServerCommandSource> asArg = literal("as")
-                .then(argument("targets", EntityArgumentType.entities())
-                        .then(argument("commandWithFormatting", StringArgumentType.greedyString())
+        LiteralCommandNode<ServerCommandSource> asArg = this.literal("as")
+                .then(this.argument("targets", EntityArgumentType.entities())
+                        .then(this.argument("commandWithFormatting", StringArgumentType.greedyString())
                                 .executes(SudoCommand::executeAs)))
                 .build();
 
-        commandNode.addChild(asArg);
-        commandNode.addChild(selectorArg);
+        this.commandNode.addChild(asArg);
+        this.commandNode.addChild(selectorArg);
     }
 
     private static SingleRedirectModifier<ServerCommandSource> redirectModifier() {

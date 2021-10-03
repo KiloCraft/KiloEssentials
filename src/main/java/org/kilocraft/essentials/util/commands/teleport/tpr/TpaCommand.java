@@ -7,14 +7,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TextColor;
 import net.minecraft.text.Texts;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.preference.Preferences;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -41,11 +41,11 @@ public class TpaCommand extends EssentialCommand {
         OnlineUser target = this.getOnlineUser(ctx, "victim");
 
         if (src.equals(target)) {
-            throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
+            throw KiloCommands.getException("exception.source_is_target").create();
         }
 
         if (target.ignored(src.getUuid()) || target.getPreference(Preferences.DON_NOT_DISTURB) || !target.hasPermission(PERMISSION)) {
-            throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
+            throw KiloCommands.getException("exception.ignored", target.getFormattedDisplayName()).create();
         }
 
         if (UserUtils.TpaRequests.hasRequest(src, target)) {
@@ -56,29 +56,29 @@ public class TpaCommand extends EssentialCommand {
         UserUtils.TpaRequests.add(src, target, false);
 
         src.sendMessage(
-                ComponentText.toText(tl("command.tpa.sent", target.getFormattedDisplayName()))
+                ComponentText.toText(this.tl("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
                         .append(
                                 Texts.bracketed(
-                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText(tl("general.click_cancel")))
+                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText(ModConstants.translation("general.click_cancel")))
                                                 .styled(style -> style.withColor(RED_COLOR))
                                 )
                         )
         );
 
         target.sendMessage(
-                ComponentText.toText(tl("command.tpa.receive", src.getFormattedDisplayName()))
+                ComponentText.toText(this.tl("command.tpa.receive", src.getFormattedDisplayName()))
                         .append(" ")
                         .append(
                                 Texts.bracketed(
-                                        Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText(tl("general.click_accept")))
+                                        Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText(ModConstants.translation("general.click_accept")))
                                                 .styled(style -> style.withColor(GREEN_COLOR))
                                 )
                         )
                         .append(" ")
                         .append(
                                 Texts.bracketed(
-                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText(tl("general.click_deny")))
+                                        Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText(ModConstants.translation("general.click_deny")))
                                                 .styled(style -> style.withColor(RED_COLOR))
                                 )
                         )

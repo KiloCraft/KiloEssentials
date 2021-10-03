@@ -7,8 +7,10 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "EntityMixin",
     "MinecraftDedicatedServerMixin",
     "MinecraftServerMixin",
+    "PlayerEntityMixin",
     "PlayerManagerMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayerInteractionManagerMixin",

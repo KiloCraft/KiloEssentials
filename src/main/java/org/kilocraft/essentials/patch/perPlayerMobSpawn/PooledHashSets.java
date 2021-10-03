@@ -6,7 +6,9 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
 
-/** @author Spottedleaf */
+/**
+ * @author Spottedleaf
+ */
 public class PooledHashSets<E> {
 
     // we really want to avoid that equals() check as much as possible...
@@ -32,7 +34,7 @@ public class PooledHashSets<E> {
                 ++cached.referenceCount;
             }
 
-            decrementReferenceCount(current);
+            this.decrementReferenceCount(current);
 
             return cached;
         }
@@ -58,14 +60,14 @@ public class PooledHashSets<E> {
 
         current.updateAddCache(object, ret);
 
-        decrementReferenceCount(current);
+        this.decrementReferenceCount(current);
         return ret;
     }
 
     // rets null if current.size() == 1
     public PooledObjectLinkedOpenHashSet<E> findMapWithout(final PooledObjectLinkedOpenHashSet<E> current, final E object) {
         if (current.set.size() == 1) {
-            decrementReferenceCount(current);
+            this.decrementReferenceCount(current);
             return null;
         }
 
@@ -76,7 +78,7 @@ public class PooledHashSets<E> {
                 ++cached.referenceCount;
             }
 
-            decrementReferenceCount(current);
+            this.decrementReferenceCount(current);
 
             return cached;
         }
@@ -102,7 +104,7 @@ public class PooledHashSets<E> {
 
         current.updateRemoveCache(object, ret);
 
-        decrementReferenceCount(current);
+        this.decrementReferenceCount(current);
         return ret;
     }
 
@@ -188,7 +190,7 @@ public class PooledHashSets<E> {
         }
 
         boolean add(final E element) {
-            boolean added =  this.set.add(element);
+            boolean added = this.set.add(element);
 
             if (added) {
                 this.hash += hash0(element.hashCode());
@@ -233,14 +235,14 @@ public class PooledHashSets<E> {
                     // Unfortunately we are never equal to our own instance while in use!
                     return false;
                 }
-                return this.hash == ((PooledObjectLinkedOpenHashSet)other).hash && this.set.equals(((PooledObjectLinkedOpenHashSet)other).set);
+                return this.hash == ((PooledObjectLinkedOpenHashSet) other).hash && this.set.equals(((PooledObjectLinkedOpenHashSet) other).set);
             }
         }
 
         @Override
         public String toString() {
             return "PooledHashSet: size: " + this.set.size() + ", reference count: " + this.referenceCount + ", hash: " +
-                    this.hashCode() + ", identity: " + System.identityHashCode(this) + " map: " + this.set.toString();
+                    this.hashCode() + ", identity: " + System.identityHashCode(this) + " map: " + this.set;
         }
     }
 }

@@ -11,9 +11,6 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.Format;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -25,8 +22,10 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.Format;
 import org.kilocraft.essentials.util.PermissionUtil;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.player.PlayerDataModifier;
 
 import java.util.ArrayList;
@@ -48,20 +47,20 @@ public class NicknameCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> setSelf = literal("set").requires(PERMISSION_CHECK_EITHER).build();
-        LiteralCommandNode<ServerCommandSource> setOther = literal("set").requires(PERMISSION_CHECK_OTHER).build();
-        ArgumentCommandNode<ServerCommandSource, String> target = getUserArgument("user")
+        LiteralCommandNode<ServerCommandSource> setSelf = this.literal("set").requires(PERMISSION_CHECK_EITHER).build();
+        LiteralCommandNode<ServerCommandSource> setOther = this.literal("set").requires(PERMISSION_CHECK_OTHER).build();
+        ArgumentCommandNode<ServerCommandSource, String> target = this.getUserArgument("user")
                 .requires(PERMISSION_CHECK_OTHER).suggests(ArgumentSuggestions::allPlayers).build();
 
-        ArgumentCommandNode<ServerCommandSource, String> nicknameSelf = argument("nickname", greedyString())
-                .suggests(NicknameCommand::setSelfSuggestions).executes(ctx -> setNickname(ctx, (OnlineServerUser) getOnlineUser(ctx.getSource().getPlayer()))).build();
-        ArgumentCommandNode<ServerCommandSource, String> nicknameOther = argument("nickname", greedyString())
-                .suggests(NicknameCommand::setOthersSuggestions).executes(ctx -> setNickname(ctx, (OnlineServerUser) getOnlineUser(ctx, "user"))).build();
+        ArgumentCommandNode<ServerCommandSource, String> nicknameSelf = this.argument("nickname", greedyString())
+                .suggests(NicknameCommand::setSelfSuggestions).executes(ctx -> this.setNickname(ctx, (OnlineServerUser) this.getOnlineUser(ctx.getSource().getPlayer()))).build();
+        ArgumentCommandNode<ServerCommandSource, String> nicknameOther = this.argument("nickname", greedyString())
+                .suggests(NicknameCommand::setOthersSuggestions).executes(ctx -> this.setNickname(ctx, (OnlineServerUser) this.getOnlineUser(ctx, "user"))).build();
 
-        LiteralCommandNode<ServerCommandSource> resetSelf = literal("reset").requires(PERMISSION_CHECK_SELF).executes(this::resetSelf).build();
-        LiteralCommandNode<ServerCommandSource> resetOther = literal("reset").requires(PERMISSION_CHECK_OTHER).executes(this::resetOther).build();
+        LiteralCommandNode<ServerCommandSource> resetSelf = this.literal("reset").requires(PERMISSION_CHECK_SELF).executes(this::resetSelf).build();
+        LiteralCommandNode<ServerCommandSource> resetOther = this.literal("reset").requires(PERMISSION_CHECK_OTHER).executes(this::resetOther).build();
 
-        LiteralCommandNode<ServerCommandSource> other = literal("other").requires(PERMISSION_CHECK_OTHER).build();
+        LiteralCommandNode<ServerCommandSource> other = this.literal("other").requires(PERMISSION_CHECK_OTHER).build();
 
         setOther.addChild(nicknameOther);
 
@@ -71,11 +70,11 @@ public class NicknameCommand extends EssentialCommand {
         other.addChild(target);
 
 
-        commandNode.addChild(other);
+        this.commandNode.addChild(other);
         setSelf.addChild(nicknameSelf);
 
-        commandNode.addChild(setSelf);
-        commandNode.addChild(resetSelf);
+        this.commandNode.addChild(setSelf);
+        this.commandNode.addChild(resetSelf);
     }
 
     private int setNickname(CommandContext<ServerCommandSource> ctx, OnlineServerUser target) throws CommandSyntaxException {
@@ -86,17 +85,17 @@ public class NicknameCommand extends EssentialCommand {
         String unformatted = ComponentText.clearFormatting(nickname);
 
         if (unformatted.length() > maxLength || unformatted.length() < 3) {
-            throw KiloCommands.getException(ExceptionMessageNode.NICKNAME_NOT_ACCEPTABLE, maxLength).create();
+            throw KiloCommands.getException("exception.nickname_not_acceptable", maxLength).create();
         }
 
         nickname = Format.validatePermission(target, nickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting.");
 
-        if (getUserManager().shouldNotUseNickname(target, nickname)) {
+        if (this.getUserManager().shouldNotUseNickname(target, nickname)) {
             target.sendLangMessage("command.nickname.already_taken");
             return -1;
         }
 
-        new CommandSourceServerUser(source).sendMessage((target.equals(getCommandSource(ctx)) ? messages.commands().nickname().setSelf : messages.commands().nickname().setOthers)
+        CommandSourceServerUser.of(source).sendMessage((target.equals(this.getCommandSource(ctx)) ? this.messages.commands().nickname().setSelf : this.messages.commands().nickname().setOthers)
                 .replace("{NICK}", target.getNickname().isPresent() ? target.getNickname().get() : target.getDisplayName())
                 .replace("{NICK_NEW}", nickname));
 
@@ -112,14 +111,14 @@ public class NicknameCommand extends EssentialCommand {
 
         player.setCustomName(null);
 
-        getCommandSource(ctx).sendMessage(messages.commands().nickname().resetSelf);
+        this.getCommandSource(ctx).sendMessage(this.messages.commands().nickname().resetSelf);
         return SUCCESS;
     }
 
     private int resetOther(CommandContext<ServerCommandSource> ctx) {
-        CommandSourceUser src = getCommandSource(ctx);
+        CommandSourceUser src = this.getCommandSource(ctx);
 
-        getUserManager().getUserThenAcceptAsync(src, getUserArgumentInput(ctx, "user"), (user) -> {
+        this.getUserManager().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {
             user.clearNickname();
 
             if (user.isOnline())
@@ -131,7 +130,7 @@ public class NicknameCommand extends EssentialCommand {
                 dataModifier.setCustomName(null);
                 dataModifier.save();
             }
-            src.sendMessage(messages.commands().nickname().resetOthers
+            src.sendMessage(this.messages.commands().nickname().resetOthers
                     .replace("{TARGET_TAG}", user.getNameTag()));
         });
 

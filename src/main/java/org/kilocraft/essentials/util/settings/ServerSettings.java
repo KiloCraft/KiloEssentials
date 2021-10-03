@@ -12,7 +12,6 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.patch.entityActivationRange.ActivationRange;
 import org.kilocraft.essentials.provided.KiloFile;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -35,6 +34,7 @@ public class ServerSettings implements NBTStorage {
     public static final boolean[] entitySpawnCache = new boolean[entities];
     public static RootSetting root = new RootSetting();
     public static boolean perPlayerMobcap = false;
+    public static boolean notick_player_login = false;
     public static int wither_check_distance = 2;
     public static double wither_tp_distance = 1;
     public static float[][] mobcap;
@@ -45,7 +45,10 @@ public class ServerSettings implements NBTStorage {
     public static boolean patch_item_merge_adjust_movement = true;
     public static double patch_item_merge_radius = 0.5D;
     public static boolean patch_lobotomize_villagers_enabled = false;
+    public static boolean patch_eigencraft_redstone = false;
+    public static int patch_maxCollisionsPerEntity = 8;
     public static int patch_lobotomize_villagers_tick_interval = 20;
+    public static int patch_lobotomize_villagers_update_interval = 300;
     public static boolean tick_utils_automated = false;
     public static int tick_utils_tick_distance = getViewDistance();
     public static int tick_utils_min_view_distance = 2;
@@ -55,6 +58,7 @@ public class ServerSettings implements NBTStorage {
     public static float tick_utils_min_mobcap = 0F;
     public static float tick_utils_max_mobcap = 1F;
     public static float tick_utils_global_mobcap = 1F;
+    public static int tick_utils_update_rate = 300;
 
 
     public ServerSettings() {
@@ -115,10 +119,14 @@ public class ServerSettings implements NBTStorage {
 
         //Patches
         CategorySetting patch = new CategorySetting("patch");
-        //Donkey dupe
-        BooleanSetting donkeyDupe = new BooleanSetting(true, "donkey_dupe");
-        //Donkey dupe
+        //Shulker dye
+        BooleanSetting dye_shulkers = new BooleanSetting(false, "dye_shulkers");
+        //Eigencraft redstone
+        BooleanSetting eigencraft_redstone = new BooleanSetting(false, "eigencraft_redstone").onChanged(b -> patch_eigencraft_redstone = b);
+        //Load spawn
         BooleanSetting loadSpawn = new BooleanSetting(true, "load_spawn");
+        // Max collisions per entity
+        IntegerSetting maxCollisionsPerEntity = new IntegerSetting(8, "maxCollisionsPerEntity").onChanged(integer -> patch_maxCollisionsPerEntity = integer);
         //Stuck Wither
         CategorySetting wither = new CategorySetting("wither");
         IntegerSetting check_distance = new IntegerSetting(2, "check_distance").range(-256, 256).onChanged(integer -> wither_check_distance = integer);
@@ -127,6 +135,9 @@ public class ServerSettings implements NBTStorage {
         wither.addChild(tp_distance);
         //per-player-mobcap
         BooleanSetting ppmobcap = new BooleanSetting(false, "ppmobcap").onChanged(bool -> perPlayerMobcap = bool);
+
+        //tick-player-login
+        BooleanSetting noTickPlayerLogin = new BooleanSetting(false, "notick_player_login").onChanged(bool -> notick_player_login = bool);
 
         //Entity merging
         CategorySetting item_merge = new CategorySetting("item_merge");
@@ -142,17 +153,22 @@ public class ServerSettings implements NBTStorage {
         {
             BooleanSetting enabled = new BooleanSetting(false, "enabled").onChanged(bool -> patch_lobotomize_villagers_enabled = bool);
             IntegerSetting tick_interval = new IntegerSetting(20, "tick_interval").onChanged(integer -> patch_lobotomize_villagers_tick_interval = integer);
+            IntegerSetting update_interval = new IntegerSetting(300, "update_interval").onChanged(integer -> patch_lobotomize_villagers_update_interval = integer);
             lobotomize_villagers.addChild(enabled);
             lobotomize_villagers.addChild(tick_interval);
+            lobotomize_villagers.addChild(update_interval);
         }
 
         //Global sound
         BooleanSetting global_sound = new BooleanSetting(true, "global_sound");
 
-        patch.addChild(donkeyDupe);
+        patch.addChild(dye_shulkers);
+        patch.addChild(eigencraft_redstone);
         patch.addChild(loadSpawn);
+        patch.addChild(maxCollisionsPerEntity);
         patch.addChild(wither);
         patch.addChild(ppmobcap);
+        patch.addChild(noTickPlayerLogin);
         patch.addChild(item_merge);
         patch.addChild(shulker_spawn_chance);
         patch.addChild(lobotomize_villagers);
@@ -187,6 +203,7 @@ public class ServerSettings implements NBTStorage {
         //Tick distance
         CategorySetting tick_utils = new CategorySetting("tick_utils");
         CategorySetting automated = new CategorySetting("automated");
+        IntegerSetting update_rate = new IntegerSetting(300, "update_rate").onChanged(integer -> tick_utils_update_rate = integer);
         BooleanSetting enabled = new BooleanSetting(false, "enabled").onChanged(bool -> tick_utils_automated = bool);
         IntegerSetting tick_distance = new IntegerSetting(-1, "tick_distance").onChanged(integer -> tick_utils_tick_distance = integer);
         IntegerSetting min_tick_distance = new IntegerSetting(2, "min_tick_distance").onChanged(integer -> tick_utils_min_tick_distance = integer);
@@ -198,6 +215,7 @@ public class ServerSettings implements NBTStorage {
         FloatSetting global_mobcap = new FloatSetting(1F, "global_mobcap").onChanged(d -> tick_utils_global_mobcap = d);
 
         automated.addChild(enabled);
+        automated.addChild(update_rate);
         automated.addChild(min_tick_distance);
         automated.addChild(max_tick_distance);
         automated.addChild(min_view_distance);

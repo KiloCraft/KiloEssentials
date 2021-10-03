@@ -18,9 +18,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -33,7 +30,10 @@ import org.kilocraft.essentials.config.messages.Messages;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.NameLookup;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.io.IOException;
@@ -128,10 +128,6 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.MIN_OP_LEVEL = minOpLevel;
     }
 
-    public static String tl(final String key) {
-        return ModConstants.translation(key);
-    }
-
     public ServerUserManager getUserManager() {
         return KiloEssentials.getUserManager();
     }
@@ -219,7 +215,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public CommandSourceUser getCommandSource(final CommandContext<ServerCommandSource> ctx) {
-        return new CommandSourceServerUser(ctx.getSource());
+        return CommandSourceServerUser.of(ctx);
     }
 
     @Override
@@ -237,7 +233,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
 
     public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(StringArgumentType.getString(ctx, label));
-        if (user == null || (user.getPreference(Preferences.VANISH) && !hasPermission(ctx.getSource(), CommandPermission.VANISH)))
+        if (user == null || (user.getPreference(Preferences.VANISH) && !this.hasPermission(ctx.getSource(), CommandPermission.VANISH)))
             throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
 
         return user;
@@ -272,7 +268,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public CompletableFuture<GameProfile> resolveAndGetProfileAsync(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
-        return CompletableFuture.completedFuture(resolveAndGetProfile(ctx, label));
+        return CompletableFuture.completedFuture(this.resolveAndGetProfile(ctx, label));
     }
 
     public GameProfile resolveAndGetProfile(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {

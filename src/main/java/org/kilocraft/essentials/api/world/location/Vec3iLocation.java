@@ -55,22 +55,22 @@ public class Vec3iLocation implements Location {
 
     @Override
     public double getX() {
-        return x;
+        return this.x;
     }
 
     @Override
     public double getY() {
-        return y;
+        return this.y;
     }
 
     @Override
     public double getZ() {
-        return z;
+        return this.z;
     }
 
     @Override
     public Identifier getDimension() {
-        return dimension;
+        return this.dimension;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class Vec3iLocation implements Location {
 
     @Override
     public EntityRotation getRotation() {
-        return rotation;
+        return this.rotation;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class Vec3iLocation implements Location {
 
     @Override
     public boolean isSafeFor(ServerPlayerEntity player) {
-        return isSafeFor(KiloEssentials.getUserManager().getOnline(player));
+        return this.isSafeFor(KiloEssentials.getUserManager().getOnline(player));
     }
 
     @Override
@@ -117,7 +117,7 @@ public class Vec3iLocation implements Location {
         if (this.dimension != null)
             tag.putString("dim", this.dimension.toString());
 
-        if (rotation.getYaw() != 0 && rotation.getPitch() != 0) {
+        if (this.rotation.getYaw() != 0 && this.rotation.getPitch() != 0) {
             NbtCompound view = new NbtCompound();
             view.putFloat("yaw", this.rotation.getYaw());
             view.putFloat("pitch", this.rotation.getPitch());
@@ -176,7 +176,7 @@ public class Vec3iLocation implements Location {
 
     @Override
     public ChunkPos toChunkPos() {
-        return new ChunkPos(toPos());
+        return new ChunkPos(this.toPos());
     }
 
     @Override
@@ -207,7 +207,7 @@ public class Vec3iLocation implements Location {
     }
 
     public Vec3dLocation toVec3dLocation() {
-        return Vec3dLocation.of(x, y, z, rotation.getYaw(), rotation.getPitch(), dimension);
+        return Vec3dLocation.of(this.x, this.y, this.z, this.rotation.getYaw(), this.rotation.getPitch(), this.dimension);
     }
 
     public static Vec3iLocation dummy() {

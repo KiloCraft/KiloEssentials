@@ -9,7 +9,7 @@ import java.util.List;
 @ConfigSerializable
 public class MessageCensorList {
     @Setting(value = "words", comment = "A list of words to censor")
-    public List<String> words = new ArrayList<String>(){{
+    public List<String> words = new ArrayList<String>() {{
         this.add("KiloEssentialsIsBad");
     }};
 

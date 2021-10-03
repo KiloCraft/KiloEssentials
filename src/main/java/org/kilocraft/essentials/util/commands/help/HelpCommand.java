@@ -14,11 +14,11 @@ public class HelpCommand extends EssentialCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::execute);
+        this.argumentBuilder.executes(this::execute);
     }
 
     public int execute(CommandContext<ServerCommandSource> ctx) {
-        new CommandSourceServerUser(ctx.getSource()).sendMessage(ComponentText.toComponent(KiloConfig.messages().commands().helpMessage));
+        CommandSourceServerUser.of(ctx).sendMessage(ComponentText.toComponent(KiloConfig.messages().commands().helpMessage));
         return SUCCESS;
     }
 

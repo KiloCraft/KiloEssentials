@@ -28,7 +28,7 @@ public class BooleanSetting extends ConfigurableSetting<Boolean> {
 
     @Override
     public String getFormattedValue() {
-        return getValue() ? "<green>true" : "<red>false";
+        return this.getValue() ? "<green>true" : "<red>false";
     }
 
     @Override

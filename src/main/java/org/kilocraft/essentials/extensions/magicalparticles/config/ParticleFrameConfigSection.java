@@ -19,10 +19,10 @@ public class ParticleFrameConfigSection {
     public String effect = "dragon_breath";
 
     @Setting("blockProperties")
-    private BlockStateParticleEffectConfigSection blockStateSection = this.isEqualTo(ParticleTypes.BLOCK) || this.isEqualTo(ParticleTypes.ITEM) ? new BlockStateParticleEffectConfigSection() : null;
+    private final BlockStateParticleEffectConfigSection blockStateSection = this.isEqualTo(ParticleTypes.BLOCK) || this.isEqualTo(ParticleTypes.ITEM) ? new BlockStateParticleEffectConfigSection() : null;
 
     @Setting("dustProperties")
-    private DustParticleEffectConfigSection dustParticleSection = this.isEqualTo(ParticleTypes.DUST) || this.isEqualTo(ParticleTypes.FALLING_DUST) ? new DustParticleEffectConfigSection() : null;
+    private final DustParticleEffectConfigSection dustParticleSection = this.isEqualTo(ParticleTypes.DUST) || this.isEqualTo(ParticleTypes.FALLING_DUST) ? new DustParticleEffectConfigSection() : null;
 
     @Setting("longDistance")
     public boolean longDistance = true;
@@ -37,18 +37,18 @@ public class ParticleFrameConfigSection {
     public double speed = 0.0D;
 
     @Setting("shapeProperties")
-    private ShapeConfigSection shapeParticleSection = pos.contains("^") ? new ShapeConfigSection() : null;
+    private final ShapeConfigSection shapeParticleSection = this.pos.contains("^") ? new ShapeConfigSection() : null;
 
     public Optional<BlockStateParticleEffectConfigSection> getBlockStateSection() {
-        return Optional.ofNullable(blockStateSection);
+        return Optional.ofNullable(this.blockStateSection);
     }
 
     public Optional<DustParticleEffectConfigSection> getDustParticleSection() {
-        return Optional.ofNullable(dustParticleSection);
+        return Optional.ofNullable(this.dustParticleSection);
     }
 
-    public Optional<ShapeConfigSection> getShapeSection () {
-        return Optional.ofNullable(shapeParticleSection);
+    public Optional<ShapeConfigSection> getShapeSection() {
+        return Optional.ofNullable(this.shapeParticleSection);
     }
 
     private boolean isEqualTo(ParticleType<?> particleType) {

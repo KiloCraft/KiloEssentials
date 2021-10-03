@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "kilo_essentials",
   "version": "${version}",
-
   "name": "KiloEssentials",
   "description": "Server management made easy with this mod",
   "authors": [
@@ -29,13 +28,8 @@
   "mixins": [
     "kiloessentials.events.mixins.json",
     "kiloessentials.mixins.json",
-    "kiloessentials.accessors.mixins.json",
-    "kiloessentials.patch.mixins.json",
-    "kiloessentials.ear.mixins.json",
-    "kiloessentials.ppm.mixins.json",
-    "kiloessentials.vanish.mixins.json"
+    "kiloessentials.accessors.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.7.1+build.174"
   },

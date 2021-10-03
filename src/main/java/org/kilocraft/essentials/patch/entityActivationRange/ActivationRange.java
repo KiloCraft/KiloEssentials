@@ -16,10 +16,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.mixin.entityActivationRange.EntityAccessor;
-import org.kilocraft.essentials.mixin.entityActivationRange.LivingEntityAccessor;
-import org.kilocraft.essentials.mixin.entityActivationRange.MobEntityAccessor;
-import org.kilocraft.essentials.mixin.entityActivationRange.PersistentProjectileEntityAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.entityActivationRange.EntityAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.entityActivationRange.LivingEntityAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.entityActivationRange.MobEntityAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.entityActivationRange.PersistentProjectileEntityAccessor;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 public class ActivationRange {
@@ -61,25 +61,20 @@ public class ActivationRange {
      */
     public static boolean initializeEntityActivationState(Entity entity) {
         ActivationType activationType = ((ActivationTypeEntity) entity).getActivationType();
-        if (
-                activationRange[activationType.ordinal()][0] <= 0
-                        || entity instanceof EyeOfEnderEntity
-                        || entity instanceof PlayerEntity
-                        || entity instanceof ProjectileEntity
-                        || entity instanceof EnderDragonEntity
-                        || entity instanceof EnderDragonPart
-                        || entity instanceof WitherEntity
-                        || entity instanceof GhastEntity //KiloEssentials
-                        || entity instanceof FireballEntity
-                        || entity instanceof LightningEntity
-                        || entity instanceof TntEntity
-                        || entity instanceof EndCrystalEntity
-                        || entity instanceof FireworkRocketEntity
-                        || entity instanceof TridentEntity) {
-            return true;
-        }
-
-        return false;
+        return activationRange[activationType.ordinal()][0] <= 0
+                || entity instanceof EyeOfEnderEntity
+                || entity instanceof PlayerEntity
+                || entity instanceof ProjectileEntity
+                || entity instanceof EnderDragonEntity
+                || entity instanceof EnderDragonPart
+                || entity instanceof WitherEntity
+                || entity instanceof GhastEntity //KiloEssentials
+                || entity instanceof FireballEntity
+                || entity instanceof LightningEntity
+                || entity instanceof TntEntity
+                || entity instanceof EndCrystalEntity
+                || entity instanceof FireworkRocketEntity
+                || entity instanceof TridentEntity;
     }
 
     /**
@@ -226,12 +221,12 @@ public class ActivationRange {
             return true;
         }
 
-        if (entity instanceof MobEntity && ((MobEntity)entity).getHoldingEntity() instanceof PlayerEntity) {
+        if (entity instanceof MobEntity && ((MobEntity) entity).getHoldingEntity() instanceof PlayerEntity) {
             return true;
         }
 
         boolean isActive = activationTypeEntity.getActivatedTick() >= KiloEssentials.getMinecraftServer().getTicks() || activationTypeEntity.getDefaultActivationState();
-        ((InactiveEntity)entity).setTemporarilyActive(false);
+        ((InactiveEntity) entity).setTemporarilyActive(false);
 
         // Should this entity tick?
         if (!isActive) {
@@ -240,7 +235,7 @@ public class ActivationRange {
                 if (immunity >= 0) {
                     activationTypeEntity.setActivatedTick(KiloEssentials.getMinecraftServer().getTicks() + immunity);
                 } else {
-                    ((InactiveEntity)entity).setTemporarilyActive(true);
+                    ((InactiveEntity) entity).setTemporarilyActive(true);
                 }
                 isActive = true;
             }
@@ -286,19 +281,19 @@ public class ActivationRange {
         }
 
         public int getActivationRange() {
-            return activationRange;
+            return this.activationRange;
         }
 
         public int getWakeUpInactiveMaxPerTick() {
-            return wakeUpInactiveMaxPerTick;
+            return this.wakeUpInactiveMaxPerTick;
         }
 
         public int getWakeUpInactiveEvery() {
-            return wakeUpInactiveEvery;
+            return this.wakeUpInactiveEvery;
         }
 
         public int getWakeUpInactiveFor() {
-            return wakeUpInactiveFor;
+            return this.wakeUpInactiveFor;
         }
     }
 }

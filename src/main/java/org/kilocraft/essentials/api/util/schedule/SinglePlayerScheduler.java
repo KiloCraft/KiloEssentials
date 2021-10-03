@@ -9,7 +9,7 @@ public class SinglePlayerScheduler extends StandStillScheduler {
     public SinglePlayerScheduler(OnlineUser sender, int blocks, int countdown, ScheduledExecution scheduled) {
         super(sender, blocks, countdown);
         this.scheduled = scheduled;
-        tick();
+        this.tick();
     }
 
     @Override
@@ -19,15 +19,15 @@ public class SinglePlayerScheduler extends StandStillScheduler {
 
     @Override
     void sendAbortMessage() {
-        player.sendLangMessage("teleport.abort");
+        this.player.sendLangMessage("teleport.abort");
     }
 
     @Override
     public void onFinish() {
-        if (moved()) {
-            sendAbortMessage();
+        if (this.moved()) {
+            this.sendAbortMessage();
         } else {
-            if (player.isOnline()) scheduled.apply();
+            if (this.player.isOnline()) this.scheduled.apply();
         }
     }
 }

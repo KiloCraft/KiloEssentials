@@ -142,6 +142,6 @@ public enum Format {
 
     @Override
     public String toString() {
-        return toString;
+        return this.toString;
     }
 }

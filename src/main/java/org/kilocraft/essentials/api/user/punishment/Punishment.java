@@ -8,7 +8,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Punishment extends PunishmentEntry {
-    private @Nullable final Date expiry;
+    private @Nullable
+    final Date expiry;
 
     public Punishment(@NotNull final EntityIdentifiable arbiter,
                       @Nullable final EntityIdentifiable victim) {
@@ -53,7 +54,7 @@ public class Punishment extends PunishmentEntry {
     public enum Type {
         BAN_IP,
         BAN,
-        MUTE;
+        MUTE
     }
 
     public enum ResultAction {

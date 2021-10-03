@@ -2,7 +2,7 @@ package org.kilocraft.essentials.util.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.kilocraft.essentials.mixin.CommandManagerMixin;
+import org.kilocraft.essentials.mixin.patch.technical.CommandManagerMixin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,43 +13,41 @@ public class LiteralCommandModified {
 
     /**
      * @see CommandManagerMixin
-     *
+     * <p>
      * This only works for Command literals and their sub commands
      */
     private static final List<String> keCommandsToKeep = new ArrayList<>() {{
-        add("ke_gamemode");
-        add("ke_reload");
-        add("ke_locate");
-        add("ke_op");
-        add("ke_tp");
-        add("ke_msg");
-        add("ke_whisper");
-        add("ke_tell");
-        add("ke_time");
-        add("ke_ban");
-        add("ke_ban");
-        add("ke_kick");
-        add("ke_gamerule");
-        add("ke_ban-ip");
+        this.add("ke_gamemode");
+        this.add("ke_reload");
+        this.add("ke_locate");
+        this.add("ke_op");
+        this.add("ke_tp");
+        this.add("ke_msg");
+        this.add("ke_whisper");
+        this.add("ke_tell");
+        this.add("ke_time");
+        this.add("ke_ban");
+        this.add("ke_ban");
+        this.add("ke_kick");
+        this.add("ke_gamerule");
+        this.add("ke_ban-ip");
     }};
 
-    private static final List<String> vanillaCommandsToRename = new ArrayList<String>(){{
-        add("gamemode");
-        add("locate");
-        add("op");
-        add("deop");
-        add("me");
-        add("w");
-        add("msg");
-        add("whisper");
-        add("tell");
-        add("teammsg");
-        add("tm");
-        add("time");
-        add("locatebiome");
-        add("ban");
-        add("ban-ip");
-        add("seed");
+    private static final List<String> vanillaCommandsToRename = new ArrayList<String>() {{
+        this.add("gamemode");
+        this.add("locate");
+        this.add("me");
+        this.add("w");
+        this.add("msg");
+        this.add("whisper");
+        this.add("tell");
+        this.add("teammsg");
+        this.add("tm");
+        this.add("time");
+        this.add("locatebiome");
+        this.add("ban");
+        this.add("ban-ip");
+        this.add("seed");
     }};
 
     public static String normalizeName(String name) {

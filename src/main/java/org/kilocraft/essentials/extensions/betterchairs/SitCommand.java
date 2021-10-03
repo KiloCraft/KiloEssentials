@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -13,6 +12,7 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.mixin.accessor.EntityAccessor;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.EssentialPermission;
 
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
 import static net.minecraft.command.argument.EntityArgumentType.player;
@@ -24,27 +24,27 @@ public class SitCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> enableArgument = literal("enable")
-                .executes((ctx) -> set(ctx, true))
-                .then(argument("target", player())
+        LiteralArgumentBuilder<ServerCommandSource> enableArgument = this.literal("enable")
+                .executes((ctx) -> this.set(ctx, true))
+                .then(this.argument("target", player())
                         .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
                         .suggests(ArgumentSuggestions::allPlayers)
-                        .executes((ctx) -> setOthers(ctx, true)));
+                        .executes((ctx) -> this.setOthers(ctx, true)));
 
-        LiteralArgumentBuilder<ServerCommandSource> disableArgument = literal("disable")
-                .executes((ctx) -> set(ctx, false))
-                .then(argument("target", player())
+        LiteralArgumentBuilder<ServerCommandSource> disableArgument = this.literal("disable")
+                .executes((ctx) -> this.set(ctx, false))
+                .then(this.argument("target", player())
                         .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
                         .suggests(ArgumentSuggestions::allPlayers)
-                        .executes((ctx) -> setOthers(ctx, false)));
+                        .executes((ctx) -> this.setOthers(ctx, false)));
 
-        argumentBuilder.executes(this::seat);
-        commandNode.addChild(disableArgument.build());
-        commandNode.addChild(enableArgument.build());
+        this.argumentBuilder.executes(this::seat);
+        this.commandNode.addChild(disableArgument.build());
+        this.commandNode.addChild(enableArgument.build());
     }
 
     private int set(CommandContext<ServerCommandSource> ctx, boolean enable) throws CommandSyntaxException {
-        OnlineUser user = getOnlineUser(ctx);
+        OnlineUser user = this.getOnlineUser(ctx);
         user.getPreferences().set(Preferences.CAN_SEAT, enable);
 
         if (user.getPreference(Preferences.CAN_SEAT)) {
@@ -57,10 +57,10 @@ public class SitCommand extends EssentialCommand {
     }
 
     private int seat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = getOnlineUser(ctx);
+        OnlineUser user = this.getOnlineUser(ctx);
 
         if (SeatManager.getInstance().isSitting(user.asPlayer())) {
-            SeatManager.getInstance().unseat(user);
+            SeatManager.getInstance().unseat(user.asPlayer());
             return FAILED;
         }
 
@@ -74,8 +74,8 @@ public class SitCommand extends EssentialCommand {
     }
 
     private int setOthers(CommandContext<ServerCommandSource> ctx, boolean set) throws CommandSyntaxException {
-        CommandSourceUser user = getCommandSource(ctx);
-        OnlineUser target = getOnlineUser(getPlayer(ctx, "target"));
+        CommandSourceUser user = this.getCommandSource(ctx);
+        OnlineUser target = this.getOnlineUser(getPlayer(ctx, "target"));
 
         target.getPreferences().set(Preferences.CAN_SEAT, set);
         user.sendLangMessage("template.#1", "canSit", set, target.getUsername());

@@ -30,11 +30,9 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayerWarpsCommand extends EssentialCommand {
     static final String CACHE_KEY = "command.playerwarps";
@@ -48,10 +46,10 @@ public class PlayerWarpsCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = argument("page", IntegerArgumentType.integer(1))
+        RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = this.argument("page", IntegerArgumentType.integer(1))
                 .executes((ctx) -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> forceArgument = literal("force")
+        LiteralArgumentBuilder<ServerCommandSource> forceArgument = this.literal("force")
                 .executes((ctx) -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), true));
 
         pageArgument.then(forceArgument);
@@ -60,7 +58,7 @@ public class PlayerWarpsCommand extends EssentialCommand {
     }
 
     private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return send(ctx, 1, false);
+        return this.send(ctx, 1, false);
     }
 
     private int send(final CommandContext<ServerCommandSource> ctx, int page, boolean forced) throws CommandSyntaxException {
@@ -73,25 +71,26 @@ public class PlayerWarpsCommand extends EssentialCommand {
 
         if (!forced && CacheManager.isPresent(CACHE_KEY)) {
             List<Map.Entry<PlayerWarp, String>> list = (List<Map.Entry<PlayerWarp, String>>) CacheManager.get(CACHE_KEY).get();
-            return send(ctx.getSource(), page, list);
+            return this.send(ctx.getSource(), page, list);
         }
 
         CompletableFuture.runAsync(() -> {
             Map<PlayerWarp, String> map = Maps.newHashMap();
             AtomicInteger atomicInteger = new AtomicInteger();
             for (PlayerWarp warp : PlayerWarpsManager.getWarps()) {
-                getUserManager().getUserThenAcceptAsync(warp.getOwner(), (optional) -> {
+                this.getUserManager().getUserThenAcceptAsync(warp.getOwner(), (optional) -> {
                     String name = optional.isPresent() ? optional.get().getFormattedDisplayName() : "<red><bold>?";
                     map.put(warp, name);
                     atomicInteger.incrementAndGet();
                 });
             }
             long startTime = System.nanoTime();
-            while (atomicInteger.get() != PlayerWarpsManager.getWarps().size() || startTime + 5000000 > System.nanoTime());
+            while (atomicInteger.get() != PlayerWarpsManager.getWarps().size() || startTime + 5000000 > System.nanoTime())
+                ;
             List<Map.Entry<PlayerWarp, String>> entries = Lists.newArrayList(map.entrySet());
             entries.sort(Map.Entry.comparingByKey());
             CacheManager.cache(new Cached<>(CACHE_KEY, 1, TimeUnit.MINUTES, entries));
-            send(ctx.getSource(), page, entries);
+            this.send(ctx.getSource(), page, entries);
 
         });
 

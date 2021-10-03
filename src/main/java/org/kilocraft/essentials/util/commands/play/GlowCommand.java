@@ -6,20 +6,20 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.util.CommandPermission;
 
 import java.util.Objects;
 
 public class GlowCommand extends EssentialCommand {
-    public GlowCommand () {
+    public GlowCommand() {
         super("glow", CommandPermission.GLOW);
     }
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        argumentBuilder.executes(this::set);
+        this.argumentBuilder.executes(this::set);
     }
 
     private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

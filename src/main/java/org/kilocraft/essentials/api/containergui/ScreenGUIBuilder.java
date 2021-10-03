@@ -1,3 +1,4 @@
+/*
 package org.kilocraft.essentials.api.containergui;
 
 import com.google.common.collect.Lists;
@@ -50,7 +51,7 @@ public class ScreenGUIBuilder {
     }
 
     public ScreenGUIBuilder addButton(@NotNull final GUIButton button) {
-        this.buttons.put(button.forcedSlot == -1 ? buttons.size() : button.forcedSlot, button);
+        this.buttons.put(button.forcedSlot == -1 ? this.buttons.size() : button.forcedSlot, button);
         return this;
     }
 
@@ -117,12 +118,12 @@ public class ScreenGUIBuilder {
         return new NamedScreenHandlerFactory() {
             @Override
             public Text getDisplayName() {
-                return title;
+                return ScreenGUIBuilder.this.title;
             }
 
             @Override
             public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                return createHandledScreen(i, playerInventory, buttons);
+                return ScreenGUIBuilder.this.createHandledScreen(i, playerInventory, ScreenGUIBuilder.this.buttons);
             }
         };
     }
@@ -155,7 +156,7 @@ public class ScreenGUIBuilder {
                 break;
         }
 
-        GUIScreen screen = new GUIScreen(handlerType, sync, inv, new SimpleInventory(rows * 9), rows, buttons);
+        GUIScreen screen = new GUIScreen(handlerType, sync, inv, new SimpleInventory(this.rows * 9), this.rows, buttons);
 
         for (int i = 0; i < screen.slots.size() - 36; i++) {
             screen.setStackInSlot(i, screen.getRevision(), this.background);
@@ -202,7 +203,7 @@ public class ScreenGUIBuilder {
                 return this.icon;
             }
 
-            NbtCompound tag = icon.getNbt();
+            NbtCompound tag = this.icon.getNbt();
             if (tag == null) {
                 tag = new NbtCompound();
             }
@@ -271,3 +272,4 @@ public class ScreenGUIBuilder {
         }
     }
 }
+*/

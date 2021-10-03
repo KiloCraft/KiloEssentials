@@ -1,14 +1,11 @@
 package org.kilocraft.essentials.util.text;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -105,11 +102,11 @@ public class Texter {
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public Formatting getDefaultFormatting() {
-            return defaultFormat;
+            return this.defaultFormat;
         }
 
     }
@@ -277,7 +274,7 @@ public class Texter {
                 builder.append(s);
             }
 
-            return onClickRun("/" + builder.toString());
+            return onClickRun("/" + builder);
         }
 
         public static ClickEvent onClickOpen(String url) {
@@ -324,8 +321,8 @@ public class Texter {
         }
 
         private Formatting formatting() {
-            nextColor = !nextColor;
-            return !nextColor ? aFormat : bFormat;
+            this.nextColor = !this.nextColor;
+            return !this.nextColor ? this.aFormat : this.bFormat;
         }
 
         public MutableText build() {
@@ -333,12 +330,12 @@ public class Texter {
             for (int i = 0; i < this.list.size(); i++) {
                 Object obj = this.list.get(i);
                 if (obj == null) {
-                    text.append(newText(String.valueOf((Object) null)).formatted(formatting()));
+                    text.append(newText(String.valueOf((Object) null)).formatted(this.formatting()));
                 } else if (obj instanceof Text) {
                     text.append((Text) obj);
                 } else {
                     TypeFormat format = TypeFormat.getByClazz(obj.getClass());
-                    text.append(newText(String.valueOf(obj)).formatted(format == null ? formatting() : format.getDefaultFormatting()));
+                    text.append(newText(String.valueOf(obj)).formatted(format == null ? this.formatting() : format.getDefaultFormatting()));
                 }
 
                 if (i != this.list.size()) {
@@ -393,7 +390,7 @@ public class Texter {
         }
 
         public ListStyle append(Object obj, @Nullable HoverEvent hoverEvent, @Nullable ClickEvent clickEvent) {
-            Formatting formatting = nextColor ? bFormat : aFormat;
+            Formatting formatting = this.nextColor ? this.bFormat : this.aFormat;
             MutableText text = obj instanceof MutableText ? ((MutableText) obj).formatted(formatting) :
                     Texter.newText(String.valueOf(obj)).formatted(formatting);
             if (hoverEvent != null) {
@@ -404,7 +401,7 @@ public class Texter {
             }
 
             this.size++;
-            nextColor = !nextColor;
+            this.nextColor = !this.nextColor;
             this.text.append(text).append(" ");
             return this;
         }
@@ -416,11 +413,11 @@ public class Texter {
 
         public MutableText build() {
             this.title = new LiteralText("")
-                    .append(new LiteralText(this.title.getString()).formatted(primary))
+                    .append(new LiteralText(this.title.getString()).formatted(this.primary))
                     .append(" ")
-                    .append(new LiteralText("[").formatted(borders))
+                    .append(new LiteralText("[").formatted(this.borders))
                     .append(new LiteralText(String.valueOf(this.size)).formatted(this.primary))
-                    .append(new LiteralText("]: ")).formatted(borders);
+                    .append(new LiteralText("]: ")).formatted(this.borders);
 
             if (!this.list.isEmpty()) {
                 for (Object o : this.list) {
@@ -503,10 +500,10 @@ public class Texter {
                 } else {
                     TypeFormat typeFormat = TypeFormat.getByClazz(objects.get(i).getClass());
                     text.append(Texter.newText(String.valueOf(objects.get(i)))
-                            .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary));
+                            .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : this.secondary));
 
                     if (i != objects.size()) {
-                        text.append(new LiteralText(", ").formatted(borders));
+                        text.append(new LiteralText(", ").formatted(this.borders));
                     }
                 }
             }
@@ -522,31 +519,31 @@ public class Texter {
                     text.append(objectToText);
                 } else if (objects[i] instanceof List<?>) {
                     List<?> list = (List<?>) objects[i];
-                    text.append(new LiteralText("[").formatted(borders))
-                            .append(new LiteralText(valueObjectSeparator.getString()).formatted(borders));
+                    text.append(new LiteralText("[").formatted(this.borders))
+                            .append(new LiteralText(this.valueObjectSeparator.getString()).formatted(this.borders));
 
                     for (int i1 = 0; i1 < list.size() && i1 < 6; i1++) {
-                        text.append(String.valueOf(list.get(i1))).formatted(secondary);
+                        text.append(String.valueOf(list.get(i1))).formatted(this.secondary);
 
                         if (i != 6 && i != list.size()) {
-                            text.append(", ").formatted(borders);
+                            text.append(", ").formatted(this.borders);
                         } else {
-                            text.append("...").formatted(borders);
+                            text.append("...").formatted(this.borders);
                         }
                     }
 
-                    text.append(new LiteralText("]").formatted(borders));
+                    text.append(new LiteralText("]").formatted(this.borders));
                 } else if (subTitles[i] != null) {
                     TypeFormat typeFormat = TypeFormat.getByClazz(objects[i].getClass());
 
-                    text.append(new LiteralText(subTitles[i]).formatted(secondary))
-                            .append(new LiteralText(valueObjectSeparator.getString()).formatted(borders))
+                    text.append(new LiteralText(subTitles[i]).formatted(this.secondary))
+                            .append(new LiteralText(this.valueObjectSeparator.getString()).formatted(this.borders))
                             .append(ComponentText.toText(String.valueOf(objects[i]))
-                                    .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary)
+                                    .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : this.secondary)
                             );
 
                     if (i != subTitles.length - 1) {
-                        text.append(", ").formatted(borders);
+                        text.append(", ").formatted(this.borders);
                     }
                 }
             }
@@ -556,7 +553,7 @@ public class Texter {
 
         public InfoBlockStyle append(String[] titles, Object... objects) {
             for (int i = 0; i < titles.length; i++) {
-                append(false, false, titles[i], objects[i]).space();
+                this.append(false, false, titles[i], objects[i]).space();
             }
 
             return this;
@@ -575,14 +572,14 @@ public class Texter {
         public InfoBlockStyle append(Object obj) {
             TypeFormat typeFormat = TypeFormat.getByClazz(obj.getClass());
             this.text.append(ComponentText.toText(String.valueOf(obj))
-                    .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary));
+                    .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : this.secondary));
             return this;
         }
 
         public InfoBlockStyle appendRaw(Object obj) {
             TypeFormat typeFormat = TypeFormat.getByClazz(obj.getClass());
             this.text.append(new LiteralText(String.valueOf(obj))
-                    .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary));
+                    .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : this.secondary));
             return this;
         }
 
@@ -604,7 +601,7 @@ public class Texter {
             return this.append(
                     title,
                     ComponentText.toText(String.valueOf(obj))
-                            .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : secondary),
+                            .formatted(typeFormat != null ? typeFormat.getDefaultFormatting() : this.secondary),
                     separateLine,
                     nextLine
             );
@@ -614,15 +611,15 @@ public class Texter {
             if (nextLine)
                 this.text.append("\n");
 
-            if (separateLine && useLineStarter)
-                this.text.append(lineStarter);
+            if (separateLine && this.useLineStarter)
+                this.text.append(this.lineStarter);
 
-            this.text.append(new LiteralText(title).formatted(borders)).append(valueObjectSeparator).append(text);
+            this.text.append(new LiteralText(title).formatted(this.borders)).append(this.valueObjectSeparator).append(text);
             return this;
         }
 
         public MutableText build() {
-            return new LiteralText("").append(header).append(this.text.append("\n")).append(new LiteralText(SEPARATOR).formatted(borders));
+            return new LiteralText("").append(this.header).append(this.text.append("\n")).append(new LiteralText(SEPARATOR).formatted(this.borders));
         }
     }
 }

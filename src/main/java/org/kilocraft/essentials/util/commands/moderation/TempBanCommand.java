@@ -12,8 +12,6 @@ import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -23,8 +21,9 @@ import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.events.PunishEvents;
 import org.kilocraft.essentials.user.ServerUserManager;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.util.Collection;
 import java.util.Date;
@@ -36,24 +35,24 @@ public class TempBanCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> victim = argument("profile", GameProfileArgumentType.gameProfile())
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> victim = this.argument("profile", GameProfileArgumentType.gameProfile())
                 .suggests(ArgumentSuggestions::allPlayers);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> time = argument("time", StringArgumentType.word())
+        RequiredArgumentBuilder<ServerCommandSource, String> time = this.argument("time", StringArgumentType.word())
                 .suggests(TimeDifferenceUtil::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), null, false));
 
-        RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
+        RequiredArgumentBuilder<ServerCommandSource, String> reason = this.argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent").then(
-                argument("profile", GameProfileArgumentType.gameProfile())
+        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent").then(
+                this.argument("profile", GameProfileArgumentType.gameProfile())
                         .suggests(ArgumentSuggestions::allPlayers).then(
-                        argument("time", StringArgumentType.word())
+                        this.argument("time", StringArgumentType.word())
                                 .suggests(TimeDifferenceUtil::listSuggestions)
                                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), null, true))
                                 .then(
-                                        argument("reason", StringArgumentType.greedyString())
+                                        this.argument("reason", StringArgumentType.greedyString())
                                                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "time"), StringArgumentType.getString(ctx, "reason"), true))
                                 )
                 )
@@ -71,7 +70,7 @@ public class TempBanCommand extends EssentialCommand {
         Date expiry = new Date(TimeDifferenceUtil.parse(time, true));
         Collection<GameProfile> gameProfiles = GameProfileArgumentType.getProfileArgument(ctx, "profile");
         if (gameProfiles.size() > 1) {
-            throw KiloCommands.getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
+            throw KiloCommands.getException("exception.too_many_selections").create();
         }
         GameProfile victim = gameProfiles.iterator().next();
 
@@ -81,13 +80,13 @@ public class TempBanCommand extends EssentialCommand {
         if (super.isOnline(victim.getId())) {
             super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
                     ComponentText.toText(
-                            ServerUserManager.replaceVariables(super.config.moderation().messages().tempBan, entry, false)
+                            ServerUserManager.replaceBanVariables(super.config.moderation().messages().tempBan, entry, false)
                     )
             );
         }
         PunishEvents.BAN.invoker().onBan(src, EntityIdentifiable.fromGameProfile(victim), reason, false, expiry.getTime(), silent);
 
-        getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
+        this.getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
         return AWAIT;
     }
 

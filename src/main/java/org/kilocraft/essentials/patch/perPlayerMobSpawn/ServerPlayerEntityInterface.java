@@ -6,5 +6,5 @@ public interface ServerPlayerEntityInterface {
 
     PooledHashSets.PooledObjectLinkedOpenHashSet<ServerPlayerEntity> getCachedSingleMobDistanceMap();
 
-    public int[] getMobCounts();
+    int[] getMobCounts();
 }

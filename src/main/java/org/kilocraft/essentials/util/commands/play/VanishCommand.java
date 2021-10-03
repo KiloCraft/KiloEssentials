@@ -5,7 +5,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -13,6 +12,7 @@ import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.CommandPermission;
 
 import java.util.List;
 
@@ -33,12 +33,12 @@ public class VanishCommand extends EssentialCommand {
     private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         final OnlineServerUser user = (OnlineServerUser) KiloEssentials.getUserManager().getOnline(ctx.getSource());
 
-        user.getPreferences().set(preference, !user.getPreference(preference));
+        user.getPreferences().set(this.preference, !user.getPreference(this.preference));
 
 
         //TODO: Cancel join event
         List<OnlineUser> online = KiloEssentials.getUserManager().getOnlineUsersAsList();
-        if (user.getPreference(preference)) {
+        if (user.getPreference(this.preference)) {
             for (OnlineUser onlineUser : online) {
                 if (!onlineUser.hasPermission(CommandPermission.VANISH)) {
                     onlineUser.asPlayer().networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.REMOVE_PLAYER, user.asPlayer()));

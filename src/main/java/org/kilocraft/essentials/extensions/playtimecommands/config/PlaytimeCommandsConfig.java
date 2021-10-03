@@ -15,7 +15,7 @@ public class PlaytimeCommandsConfig {
             "the \"sudo <player> util\" command has a few special utilities! be sure to check it out!\n" + CustomCommandsConfig.COMMANDS_DESC;
 
     @Setting(value = "sections", comment = "Variables: ${user.name}, ${user.displayname}, ${user.ranked_displayname}")
-    public List<PlaytimeCommandConfigSection> sections = new ArrayList<PlaytimeCommandConfigSection>(){{
+    public List<PlaytimeCommandConfigSection> sections = new ArrayList<PlaytimeCommandConfigSection>() {{
         this.add(new PlaytimeCommandConfigSection());
     }};
 

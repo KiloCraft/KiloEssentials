@@ -1,3 +1,4 @@
+/*
 package org.kilocraft.essentials.api.containergui;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,7 +58,7 @@ public class GUIScreen extends ScreenHandler {
 
     @Override
     public void onSlotClick(int slot, int clickData, SlotActionType slotActionType, PlayerEntity playerEntity) {
-        if (buttons.containsKey(slot)) {
+        if (this.buttons.containsKey(slot)) {
             this.buttons.get(slot).onClick(GUIButton.ClickAction.getBySlotActionType(slotActionType));
         }
 
@@ -70,3 +71,4 @@ public class GUIScreen extends ScreenHandler {
     }
 
 }
+*/

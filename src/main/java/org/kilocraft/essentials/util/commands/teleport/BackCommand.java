@@ -7,11 +7,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
@@ -24,25 +24,25 @@ public class BackCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = argument("target", player())
-                .requires(src -> hasPermission(src, CommandPermission.BACK_OTHERS))
+        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = this.argument("target", player())
+                .requires(src -> this.hasPermission(src, CommandPermission.BACK_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes(this::executeOthers);
 
-        commandNode.addChild(selectorArgument.build());
-        argumentBuilder.executes(this::executeSelf);
+        this.commandNode.addChild(selectorArgument.build());
+        this.argumentBuilder.executes(this::executeSelf);
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return sendBack(ctx, ctx.getSource().getPlayer());
+        return this.sendBack(ctx, ctx.getSource().getPlayer());
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return sendBack(ctx, getPlayer(ctx, "target"));
+        return this.sendBack(ctx, getPlayer(ctx, "target"));
     }
 
     private int sendBack(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) {
-        OnlineUser user = getOnlineUser(target);
+        OnlineUser user = this.getOnlineUser(target);
 
         if (user.getLastSavedLocation() == null) {
             user.sendLangMessage("command.back.no_loc");

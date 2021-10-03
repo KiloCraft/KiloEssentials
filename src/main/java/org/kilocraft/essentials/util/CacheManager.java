@@ -22,7 +22,7 @@ public class CacheManager {
 
     public static <T> Cached<T> get(String id) {
         return (Cached<T>) map.get(id);
-    }   
+    }
 
     public static boolean isPresent(String id) {
         boolean should = map.containsKey(id) && get(id).isValid();

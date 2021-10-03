@@ -4,7 +4,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class RelativePosition {
-    private double x, y, z;
+    private final double x;
+    private final double y;
+    private final double z;
 
     public RelativePosition(double x, double y, double z) {
         this.x = x;
@@ -25,11 +27,11 @@ public class RelativePosition {
     }
 
     public BlockPos getRelativeBlockPos(BlockPos pos) {
-        return new BlockPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+        return new BlockPos(pos.getX() + this.x, pos.getY() + this.y, pos.getZ() + this.z);
     }
 
     public Vec3d getRelativeVector(Vec3d vec) {
-        return new Vec3d(vec.getX() + x, vec.getY() + y, vec.getZ() + z);
+        return new Vec3d(vec.getX() + this.x, vec.getY() + this.y, vec.getZ() + this.z);
     }
 
 }

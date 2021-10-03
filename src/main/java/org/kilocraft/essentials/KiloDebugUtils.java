@@ -38,7 +38,7 @@ public class KiloDebugUtils {
         INSTANCE = this;
         this.minecraftServer = KiloEssentials.getMinecraftServer();
 
-        setupBossBar();
+        this.setupBossBar();
     }
 
     public static void validateDebugMode(boolean reload) {
@@ -83,30 +83,29 @@ public class KiloDebugUtils {
 
     public void onTick() {
         if (SharedConstants.isDevelopment) {
-            update();
+            this.update();
         } else {
-            removeBossBar();
+            this.removeBossBar();
         }
     }
 
     private void removeBossBar() {
-        bossBar.clearPlayers();
-        minecraftServer.getBossBarManager().remove(bossBar);
+        this.bossBar.clearPlayers();
+        this.minecraftServer.getBossBarManager().remove(this.bossBar);
     }
 
     private void setupBossBar() {
-        BossBarManager manager = minecraftServer.getBossBarManager();
-        bossBar = manager.add(DEBUG_BAR, new LiteralText("DebugBar"));
-        bossBar.setMaxValue(20);
-        bossBar.setStyle(BossBar.Style.PROGRESS);
+        BossBarManager manager = this.minecraftServer.getBossBarManager();
+        this.bossBar = manager.add(this.DEBUG_BAR, new LiteralText("DebugBar"));
+        this.bossBar.setMaxValue(20);
+        this.bossBar.setStyle(BossBar.Style.PROGRESS);
     }
 
     public void update() {
         int loadedChunks = 0;
-        for (ServerWorld world : minecraftServer.getWorlds()) {
+        for (ServerWorld world : this.minecraftServer.getWorlds()) {
             loadedChunks = loadedChunks + world.getChunkManager().getTotalChunksLoadedCount();
         }
-
 
 
         String debugText = String.format(DEBUG_FORMAT,
@@ -115,23 +114,23 @@ public class KiloDebugUtils {
                 ModConstants.getVersionInt(), ModConstants.getVersionNick()
         );
 
-        bossBar.setName(Texter.newText().append(DEBUG_TEXT).append(Texter.newText(debugText)));
+        this.bossBar.setName(Texter.newText().append(DEBUG_TEXT).append(Texter.newText(debugText)));
 
         int tps = (int) TickManager.tps[0];
-        bossBar.setValue(tps);
+        this.bossBar.setValue(tps);
 
         if (tps > 15) {
-            bossBar.setColor(BossBar.Color.GREEN);
+            this.bossBar.setColor(BossBar.Color.GREEN);
         } else if (tps > 10) {
-            bossBar.setColor(BossBar.Color.YELLOW);
+            this.bossBar.setColor(BossBar.Color.YELLOW);
         } else if (tps < 10) {
-            bossBar.setColor(BossBar.Color.RED);
+            this.bossBar.setColor(BossBar.Color.RED);
         } else {
-            bossBar.setColor(BossBar.Color.PURPLE);
+            this.bossBar.setColor(BossBar.Color.PURPLE);
         }
 
-        if (minecraftServer.getPlayerManager().getPlayerList() != null) {
-            bossBar.addPlayers(minecraftServer.getPlayerManager().getPlayerList());
+        if (this.minecraftServer.getPlayerManager().getPlayerList() != null) {
+            this.bossBar.addPlayers(this.minecraftServer.getPlayerManager().getPlayerList());
         }
     }
 

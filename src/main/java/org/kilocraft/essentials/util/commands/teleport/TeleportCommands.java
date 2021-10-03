@@ -10,14 +10,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import static net.minecraft.command.argument.DimensionArgumentType.dimension;
@@ -91,7 +91,7 @@ public class TeleportCommands {
                 player.getYaw(), player.getPitch()
         );
 
-        ((CommandSourceUser) new CommandSourceServerUser(ctx.getSource())).sendLangMessage("template.#1", "position",
+        ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendLangMessage("template.#1", "position",
                 getFormattedMessage(player), player.getName().asString());
 
         return 1;
@@ -108,7 +108,7 @@ public class TeleportCommands {
                 sender.getYaw(), sender.getPitch()
         );
 
-        ((CommandSourceUser) new CommandSourceServerUser(ctx.getSource())).sendLangMessage("template.#1", "position",
+        ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendLangMessage("template.#1", "position",
                 getFormattedMessage(target), target.getName().asString());
 
         return 1;
@@ -125,7 +125,7 @@ public class TeleportCommands {
                 target.getYaw(), target.getPitch()
         );
 
-        ((CommandSourceUser) new CommandSourceServerUser(ctx.getSource())).sendLangMessage("template.#1", "position",
+        ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendLangMessage("template.#1", "position",
                 getFormattedMessage(target), target.getName().asString());
 
         return 1;

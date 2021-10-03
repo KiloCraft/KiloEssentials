@@ -19,12 +19,12 @@ public class ConfigObjectReplacerUtil {
     }
 
     public String toVar(String key) {
-        String s = prefix.toLowerCase(Locale.ROOT) + "_" + key.toLowerCase(Locale.ROOT);
-        return isLocal ? "{" + s + "}" : "%" + s + "%";
+        String s = this.prefix.toLowerCase(Locale.ROOT) + "_" + key.toLowerCase(Locale.ROOT);
+        return this.isLocal ? "{" + s + "}" : "%" + s + "%";
     }
 
     public ConfigObjectReplacerUtil append(String key, Object value) {
-        this.text = text.replace(toVar(key), String.valueOf(value));
+        this.text = this.text.replace(this.toVar(key), String.valueOf(value));
         return this;
     }
 

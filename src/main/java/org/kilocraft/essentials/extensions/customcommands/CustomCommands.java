@@ -20,13 +20,13 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
 import org.kilocraft.essentials.extensions.customcommands.config.sections.CustomCommandConfigSection;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.util.PermissionUtil;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
     @Override
     public boolean register() {
         enabled = true;
-        load();
+        this.load();
         return true;
     }
 
@@ -122,7 +122,8 @@ public class CustomCommands implements ReloadableConfigurableFeature {
                 for (int i = 0; i <= args.length + 1; i++) {
                     try {
                         cmd = cmd.replaceAll("\\$\\{args\\[" + (i + 1) + "]}", args[i]);
-                    } catch (ArrayIndexOutOfBoundsException ignored) { }
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                    }
                 }
 
             }
@@ -143,6 +144,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
         PLAYERS("players");
 
         private final String id;
+
         SuggestionType(String id) {
             this.id = id;
         }

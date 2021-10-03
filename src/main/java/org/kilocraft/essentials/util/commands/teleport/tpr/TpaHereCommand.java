@@ -6,13 +6,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Texts;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.preference.Preferences;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.player.UserUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -35,11 +34,11 @@ public class TpaHereCommand extends EssentialCommand {
         OnlineUser target = this.getOnlineUser(ctx, "victim");
 
         if (src.equals(target)) {
-            throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
+            throw KiloCommands.getException("exception.source_is_target").create();
         }
 
         if (target.ignored(src.getUuid()) || target.getPreference(Preferences.DON_NOT_DISTURB) || !target.hasPermission(TpaCommand.PERMISSION)) {
-            throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
+            throw KiloCommands.getException("exception.ignored", target.getFormattedDisplayName()).create();
         }
 
         if (UserUtils.TpaRequests.hasRequest(src, target)) {

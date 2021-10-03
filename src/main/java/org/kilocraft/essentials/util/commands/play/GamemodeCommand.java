@@ -12,12 +12,12 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,14 +32,14 @@ import static org.kilocraft.essentials.util.commands.KiloCommands.getPermissionE
 public class GamemodeCommand extends EssentialCommand {
     public GamemodeCommand() {
         super("ke_gamemode", src ->
-                KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_ADVENTURE) ||
-                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SURVIVAL) ||
-                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SPECTATOR) ||
-                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_CREATIVE) ||
-                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_ADVENTURE) ||
-                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SURVIVAL) ||
-                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SPECTATOR) ||
-                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_CREATIVE),
+                        KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_ADVENTURE) ||
+                                KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SURVIVAL) ||
+                                KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_SPECTATOR) ||
+                                KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_SELF_CREATIVE) ||
+                                KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_ADVENTURE) ||
+                                KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SURVIVAL) ||
+                                KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_SPECTATOR) ||
+                                KiloCommands.hasPermission(src, CommandPermission.GAMEMODE_OTHERS_CREATIVE),
                 new String[]{"gm"});
         this.withUsage("command.gamemode.usage", "mode", "<user> target", "<optional> -silent");
     }
@@ -48,13 +48,13 @@ public class GamemodeCommand extends EssentialCommand {
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> gameTypeArgument = this.argument("mode", string())
                 .suggests(this::suggestGameModes)
-                .executes(ctx -> this.execute(ctx, null, ctx.getSource().getName(),false));
+                .executes(ctx -> this.execute(ctx, null, ctx.getSource().getName(), false));
 
         final RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("target")
-                .executes(ctx -> this.execute(ctx, null, this.getUserArgumentInput(ctx, "target"),false))
+                .executes(ctx -> this.execute(ctx, null, this.getUserArgumentInput(ctx, "target"), false))
                 .then(
                         this.literal("-silent")
-                        .executes(ctx -> this.execute(ctx, null, this.getUserArgumentInput(ctx, "target"), true))
+                                .executes(ctx -> this.execute(ctx, null, this.getUserArgumentInput(ctx, "target"), true))
                 );
 
 
@@ -97,13 +97,13 @@ public class GamemodeCommand extends EssentialCommand {
     }
 
     private GameMode getMode(final String arg) {
-        if  (arg.startsWith("sp") || arg.equals("3"))
+        if (arg.startsWith("sp") || arg.equals("3"))
             return GameMode.SPECTATOR;
-        if  (arg.startsWith("s") || arg.equals("0"))
+        if (arg.startsWith("s") || arg.equals("0"))
             return GameMode.SURVIVAL;
-        if  (arg.startsWith("c") || arg.equals("1"))
+        if (arg.startsWith("c") || arg.equals("1"))
             return GameMode.CREATIVE;
-        if  (arg.startsWith("a") || arg.equals("2"))
+        if (arg.startsWith("a") || arg.equals("2"))
             return GameMode.ADVENTURE;
 
         return null;

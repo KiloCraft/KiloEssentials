@@ -14,10 +14,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.provided.LocateStructureProvided;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.provided.LocateStructureProvided;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +41,8 @@ public class LocateStructureCommand {
 
     private static CompletableFuture<Suggestions> structureNames(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
         List<String> strings = new ArrayList<>();
-        for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE) strings.add(structureFeature.getName().toLowerCase());
+        for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE)
+            strings.add(structureFeature.getName().toLowerCase());
         return CommandSource.suggestMatching(strings, builder);
     }
 
@@ -50,7 +50,7 @@ public class LocateStructureCommand {
         StructureFeature<?> structure = Registry.STRUCTURE_FEATURE.get(identifier);
 
         if (structure == null)
-            throw KiloCommands.getException(ExceptionMessageNode.INCORRECT_IDENTIFIER, "structure").create();
+            throw KiloCommands.getException("exception.incorrect_identifier", "structure").create();
 
         StructureLocatorThread locatorThread = new StructureLocatorThread(source, structure);
         Thread thread = new Thread(locatorThread, "Structure locator thread");
@@ -60,9 +60,9 @@ public class LocateStructureCommand {
     }
 
     static class StructureLocatorThread implements Runnable {
-        private Logger logger = LogManager.getLogger();
-        private ServerCommandSource source;
-        private StructureFeature<?> structure;
+        private final Logger logger = LogManager.getLogger();
+        private final ServerCommandSource source;
+        private final StructureFeature<?> structure;
 
         public StructureLocatorThread(ServerCommandSource source, StructureFeature<?> structureFeature) {
             this.source = source;
@@ -71,7 +71,7 @@ public class LocateStructureCommand {
 
         @Override
         public void run() {
-            logger.info("Locating structure \"" + structure + "\", executed by " + source.getName());
+            this.logger.info("Locating structure \"" + this.structure + "\", executed by " + this.source.getName());
             LocateStructureProvided.execute(this.source, this.structure);
         }
     }

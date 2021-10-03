@@ -24,19 +24,19 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
     @Override
     public void toTag(NbtCompound tag) {
         NbtCompound setting = new NbtCompound();
-        setValue(setting);
-        for (AbstractSetting child : children) {
+        this.setValue(setting);
+        for (AbstractSetting child : this.children) {
             child.toTag(setting);
         }
-        tag.put(id, setting);
+        tag.put(this.id, setting);
     }
 
     @Override
     public void fromTag(NbtCompound tag) {
-        if (tag.contains(id)) {
-            NbtCompound setting = tag.getCompound(id);
-            this.setValue(getValue(setting));
-            for (AbstractSetting child : children) {
+        if (tag.contains(this.id)) {
+            NbtCompound setting = tag.getCompound(this.id);
+            this.setValue(this.getValue(setting));
+            for (AbstractSetting child : this.children) {
                 child.fromTag(setting);
             }
         }
@@ -47,12 +47,12 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
     public abstract void setValueFromCommand(CommandContext<ServerCommandSource> ctx);
 
     public K getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(K value) {
         this.value = value;
-        changed();
+        this.changed();
     }
 
     protected abstract void setValue(NbtCompound tag);
@@ -62,7 +62,7 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
     protected abstract K getValue(NbtCompound tag);
 
     void changed() {
-        for (Consumer<K> consumer : onLoad) {
+        for (Consumer<K> consumer : this.onLoad) {
             consumer.accept(this.getValue());
         }
     }

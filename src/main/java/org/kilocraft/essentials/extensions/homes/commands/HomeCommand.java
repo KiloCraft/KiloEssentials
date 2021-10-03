@@ -52,14 +52,14 @@ public class HomeCommand extends EssentialCommand {
     public final void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = this.argument("name", StringArgumentType.word())
                 .suggests(UserHomeHandler::suggestHomes)
-                .executes(ctx -> executeSelf(ctx, true));
+                .executes(ctx -> this.executeSelf(ctx, true));
 
         final RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
                 .requires(src -> this.hasPermission(src, CommandPermission.HOME_OTHERS_TP))
                 .executes(this::executeOthers);
 
         homeArgument.then(targetArgument);
-        argumentBuilder.executes(ctx -> executeSelf(ctx, false));
+        this.argumentBuilder.executes(ctx -> this.executeSelf(ctx, false));
         this.commandNode.addChild(homeArgument.build());
     }
 

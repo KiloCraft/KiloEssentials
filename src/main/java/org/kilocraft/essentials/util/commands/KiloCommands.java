@@ -51,8 +51,6 @@ import org.kilocraft.essentials.util.commands.user.SilenceCommand;
 import org.kilocraft.essentials.util.commands.user.WhoIsCommand;
 import org.kilocraft.essentials.util.commands.user.WhoWasCommand;
 import org.kilocraft.essentials.util.commands.world.TimeCommand;
-import org.kilocraft.essentials.util.messages.nodes.ArgExceptionMessageNode;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.settings.SettingCommand;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -222,20 +220,18 @@ public class KiloCommands {
         return literalText;
     }
 
-    public static SimpleCommandExceptionType getException(final ExceptionMessageNode node, final Object... objects) {
-        final String message = ModConstants.getMessageUtil().fromExceptionNode(node);
+    public static SimpleCommandExceptionType getException(final String langErrorKey) {
+        return getException(langErrorKey, new Object[0]);
+    }
+
+    public static SimpleCommandExceptionType getException(final String langErrorKey, final Object... objects) {
+        final String message = ModConstants.translation(langErrorKey, objects);
         return KiloCommands.commandException(
                 new LiteralText(objects != null ? String.format(message, objects) : message).formatted(Formatting.RED));
     }
 
-    public static SimpleCommandExceptionType commandException(final Text text) {
+    private static SimpleCommandExceptionType commandException(final Text text) {
         return new SimpleCommandExceptionType(text);
-    }
-
-    public static SimpleCommandExceptionType getArgException(final ArgExceptionMessageNode node, final Object... objects) {
-        final String message = ModConstants.getMessageUtil().fromArgumentExceptionNode(node);
-        return KiloCommands.commandException(
-                new LiteralText(objects != null ? String.format(message, objects) : message).formatted(Formatting.RED));
     }
 
     public static void updateGlobalCommandTree() {
@@ -300,7 +296,7 @@ public class KiloCommands {
     }
 
     public static int execute(@NotNull final ServerCommandSource executor, @NotNull final String command) {
-        CommandSourceUser src = new CommandSourceServerUser(executor);
+        CommandSourceUser src = CommandSourceServerUser.of(executor);
         onCommand(executor, command);
 
         if (simpleCommandManager.canExecute(command)) {
@@ -336,7 +332,7 @@ public class KiloCommands {
                     }
 
                     if (isCommand(literalName) && reqPerm != null && !KiloCommands.hasPermission(executor, reqPerm)) {
-                        new CommandSourceServerUser(executor).sendMessage(KiloConfig.messages().commands().context().permissionException);
+                        CommandSourceServerUser.of(executor).sendMessage(KiloConfig.messages().commands().context().permissionException);
                     } else {
                         src.sendMessage(KiloConfig.messages().commands().context().executionException);
                     }

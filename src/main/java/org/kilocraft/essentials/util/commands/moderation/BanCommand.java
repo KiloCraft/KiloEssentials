@@ -11,8 +11,6 @@ import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -22,7 +20,8 @@ import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.events.PunishEvents;
 import org.kilocraft.essentials.user.ServerUserManager;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.util.Collection;
 import java.util.Date;
@@ -34,19 +33,19 @@ public class BanCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> victim = argument("profile", GameProfileArgumentType.gameProfile())
+        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> victim = this.argument("profile", GameProfileArgumentType.gameProfile())
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes((ctx) -> this.execute(ctx, null, false));
 
-        RequiredArgumentBuilder<ServerCommandSource, String> reason = argument("reason", StringArgumentType.greedyString())
+        RequiredArgumentBuilder<ServerCommandSource, String> reason = this.argument("reason", StringArgumentType.greedyString())
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = literal("-silent").then(
-                argument("profile", GameProfileArgumentType.gameProfile())
+        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent").then(
+                this.argument("profile", GameProfileArgumentType.gameProfile())
                         .suggests(ArgumentSuggestions::allPlayers)
                         .executes((ctx) -> this.execute(ctx, null, true))
                         .then(
-                                argument("reason", StringArgumentType.greedyString())
+                                this.argument("reason", StringArgumentType.greedyString())
                                         .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "reason"), true))
                         )
         );
@@ -61,7 +60,7 @@ public class BanCommand extends EssentialCommand {
         Date date = new Date();
         Collection<GameProfile> gameProfiles = GameProfileArgumentType.getProfileArgument(ctx, "profile");
         if (gameProfiles.size() > 1) {
-            throw KiloCommands.getException(ExceptionMessageNode.TOO_MANY_SELECTIONS).create();
+            throw KiloCommands.getException("exception.too_many_selections").create();
         }
         GameProfile victim = gameProfiles.iterator().next();
 
@@ -71,12 +70,12 @@ public class BanCommand extends EssentialCommand {
         if (super.isOnline(victim.getId())) {
             super.getOnlineUser(victim.getId()).asPlayer().networkHandler.disconnect(
                     ComponentText.toText(
-                            ServerUserManager.replaceVariables(super.config.moderation().messages().permBan, entry, true)
+                            ServerUserManager.replaceBanVariables(super.config.moderation().messages().permBan, entry, true)
                     )
             );
         }
         PunishEvents.BAN.invoker().onBan(src, EntityIdentifiable.fromGameProfile(victim), reason, false, -1L, silent);
-        getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, null, silent);
+        this.getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, null, silent);
 
         return SUCCESS;
     }

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MinecraftDedicatedServerMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeNano()J", ordinal = 1), method = "setupServer")
-    private void oky$setupServer$ready(CallbackInfoReturnable<Boolean> cir) {
+    private void onServerReady(CallbackInfoReturnable<Boolean> cir) {
         ServerEvents.READY.invoker().onReady((MinecraftDedicatedServer) (Object) this);
     }
 }

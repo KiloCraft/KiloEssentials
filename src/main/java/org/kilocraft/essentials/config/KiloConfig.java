@@ -18,8 +18,8 @@ import java.io.IOException;
 /**
  * KiloConfig - Powered by SpongePowered Configurate
  *
- * @version 2.0
  * @author CODY_AI (OnBlock)
+ * @version 2.0
  * @see Config
  * @see Messages
  */

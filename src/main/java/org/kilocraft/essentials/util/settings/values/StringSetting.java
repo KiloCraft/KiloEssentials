@@ -16,13 +16,13 @@ public class StringSetting extends ConfigurableSetting<String> {
     }
 
     public StringSetting quotable() {
-        quotable = true;
+        this.quotable = true;
         return this;
     }
 
     @Override
     public ArgumentType<String> valueArgumentType() {
-        return quotable ? StringArgumentType.string() : StringArgumentType.word();
+        return this.quotable ? StringArgumentType.string() : StringArgumentType.word();
     }
 
     @Override
@@ -32,7 +32,7 @@ public class StringSetting extends ConfigurableSetting<String> {
 
     @Override
     public String getFormattedValue() {
-        return "<green>\"" +  getValue() + "\"";
+        return "<green>\"" + this.getValue() + "\"";
     }
 
     @Override

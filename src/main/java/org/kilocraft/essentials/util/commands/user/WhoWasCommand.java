@@ -5,12 +5,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -19,6 +16,7 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.Cached;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.CacheManager;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.NameLookup;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
 import org.kilocraft.essentials.util.text.ListedText;
@@ -42,21 +40,21 @@ public class WhoWasCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> usernameArgument = getUserArgument("username")
+        RequiredArgumentBuilder<ServerCommandSource, String> usernameArgument = this.getUserArgument("username")
                 .suggests(ArgumentSuggestions::allPlayers)
-                .executes(ctx -> executeOthers(ctx, 1));
+                .executes(ctx -> this.executeOthers(ctx, 1));
 
-        RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = argument("page", IntegerArgumentType.integer(1))
-                .executes(ctx -> executeOthers(ctx, IntegerArgumentType.getInteger(ctx, "page")));
+        RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = this.argument("page", IntegerArgumentType.integer(1))
+                .executes(ctx -> this.executeOthers(ctx, IntegerArgumentType.getInteger(ctx, "page")));
 
-        argumentBuilder.executes(this::executeSelf);
+        this.argumentBuilder.executes(this::executeSelf);
         usernameArgument.then(pageArgument);
-        commandNode.addChild(usernameArgument.build());
+        this.commandNode.addChild(usernameArgument.build());
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(ctx);
-        return send(user, user.getUsername(), 1);
+        return this.send(user, user.getUsername(), 1);
     }
 
     private int executeOthers(CommandContext<ServerCommandSource> ctx, int page) throws CommandSyntaxException {
@@ -73,7 +71,7 @@ public class WhoWasCommand extends EssentialCommand {
 
             try {
                 loadingText.start();
-                send(src, input, page);
+                this.send(src, input, page);
                 loadingText.stop();
             } catch (Exception e) {
                 src.sendLangError("api.mojang.request_failed", e.getMessage());
@@ -101,7 +99,7 @@ public class WhoWasCommand extends EssentialCommand {
         if (CacheManager.isPresent(getCacheId(uuid))) {
             AtomicReference<NameLookup.PreviousPlayerNameEntry[]> reference = new AtomicReference<>();
             CacheManager.ifPresent(getCacheId(uuid), (cached) -> reference.set((NameLookup.PreviousPlayerNameEntry[]) cached));
-            return send(user, name, page, reference.get());
+            return this.send(user, name, page, reference.get());
         }
 
         try {
@@ -110,7 +108,7 @@ public class WhoWasCommand extends EssentialCommand {
             Cached<NameLookup.PreviousPlayerNameEntry[]> cached = new Cached<>(getCacheId(uuid), 3, TimeUnit.HOURS, entries);
             CacheManager.cache(cached);
 
-            return send(user, name, page, entries);
+            return this.send(user, name, page, entries);
         } catch (IOException e) {
             user.sendError("Can not get the data! " + e.getMessage());
             return FAILED;

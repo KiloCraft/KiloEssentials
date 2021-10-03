@@ -14,7 +14,7 @@ public class ServerWarp extends Warp {
 
     public ServerWarp(String name, NbtCompound tag) {
         super(name, null);
-        fromTag(tag);
+        this.fromTag(tag);
     }
 
     public boolean addCommand() {

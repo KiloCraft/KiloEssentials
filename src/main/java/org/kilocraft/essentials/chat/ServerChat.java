@@ -22,15 +22,12 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.chat.ParseResult;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
@@ -41,8 +38,10 @@ import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.ServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.RegexLib;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
+import org.kilocraft.essentials.util.commands.CommandUtils;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -53,20 +52,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class ServerChat {
-    private static final String DEBUG_EXCEPTION = "--texc";
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
     private static final int LINK_MAX_LENGTH = 20;
     private static final int COMMAND_MAX_LENGTH = 45;
     private static final SimpleCommandExceptionType CANT_MESSAGE_EXCEPTION = new SimpleCommandExceptionType(StringText.of(true, "command.message.error"));
-    private static ChatConfigSection config = KiloConfig.main().chat();
+    private static final ChatConfigSection config = KiloConfig.main().chat();
 
     public static void sendChatMessage(final OnlineUser user, final String raw, final Channel channel) {
         ChatEvents.CHAT_MESSAGE.invoker().onChat(user.asPlayer(), raw, channel);
         TextComponent.Builder text = Component.text();
         text.append(ComponentText.of(ConfigVariableFactory.replaceUserVariables(channel.getFormat(), user))
                 .style(style -> style.hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(hoverEvent(user, channel)))
-                .clickEvent(net.kyori.adventure.text.event.ClickEvent.suggestCommand("/msg " + user.getUsername() + " "))));
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.suggestCommand("/msg " + user.getUsername() + " "))));
         String[] parts = raw.split(" ");
 
         //reorder list entries, so special cases (pings, censor, item)
@@ -227,7 +225,7 @@ public final class ServerChat {
     }
 
     public static int sendDirectMessage(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
-        CommandSourceUser src = new CommandSourceServerUser(source);
+        CommandSourceUser src = CommandSourceServerUser.of(source);
 
         if (!((ServerUser) target).shouldMessage() && src.getUser() != null) {
             if (!src.isConsole() && src.isOnline() && !((ServerUser) src.getUser()).isStaff()) {
@@ -242,7 +240,7 @@ public final class ServerChat {
         }
 
         if (CommandUtils.areTheSame(source, target)) {
-            throw KiloCommands.getException(ExceptionMessageNode.SOURCE_IS_TARGET).create();
+            throw KiloCommands.getException("exception.source_is_target").create();
         }
 
         String msg = message;
@@ -271,7 +269,7 @@ public final class ServerChat {
             }
 
             if (target.ignored(source.getPlayer().getUuid())) {
-                throw KiloCommands.getException(ExceptionMessageNode.IGNORED, target.getFormattedDisplayName()).create();
+                throw KiloCommands.getException("exception.ignored", target.getFormattedDisplayName()).create();
             }
         }
 
@@ -292,7 +290,7 @@ public final class ServerChat {
 
         ComponentText.toText(ComponentText.removeEvents(ComponentText.of(toSource)));
 
-        new CommandSourceServerUser(source).sendMessage(toSource);
+        CommandSourceServerUser.of(source).sendMessage(toSource);
         target.sendMessage(toTarget);
 
         for (final OnlineServerUser user : KiloEssentials.getUserManager().getOnlineUsers().values()) {
@@ -375,7 +373,7 @@ public final class ServerChat {
         STAFF("staff"),
         BUILDER("builder");
 
-        private String id;
+        private final String id;
 
         Channel(String id) {
             this.id = id;
@@ -413,10 +411,10 @@ public final class ServerChat {
         }
 
         public void send(Text message) {
-            send(message, MessageType.SYSTEM, Util.NIL_UUID);
+            this.send(message, MessageType.SYSTEM, Util.NIL_UUID);
         }
 
-            public String getFormat() {
+        public String getFormat() {
             switch (this) {
                 case PUBLIC:
                     return KiloConfig.main().chat().prefixes().publicChat;
@@ -433,7 +431,7 @@ public final class ServerChat {
     public enum MentionTypes {
         PUBLIC,
         PRIVATE,
-        EVERYONE;
+        EVERYONE
     }
 
     public enum VisibilityPreference {

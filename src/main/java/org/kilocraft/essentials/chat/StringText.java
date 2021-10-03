@@ -13,11 +13,8 @@ public class StringText {
     }
 
     public static LiteralText of(final boolean withStyle, @NotNull final String key, @Nullable final Object... objects) {
-        final String string = ModConstants.getStrings().getProperty(key);
-        if (string == null) {
-            return new LiteralText(key);
-        }
-        final Component component = ComponentText.of(objects == null ? string : String.format(string, objects), false);
+        final String string = ModConstants.translation(key, objects);
+        final Component component = ComponentText.of(string, false);
         return (LiteralText) ComponentText.toText(withStyle ? component : ComponentText.removeStyle(component));
     }
 

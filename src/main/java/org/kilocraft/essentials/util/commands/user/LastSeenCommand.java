@@ -5,11 +5,10 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.TimeDifferenceUtil;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 public class LastSeenCommand extends EssentialCommand {
     public LastSeenCommand() {
@@ -27,14 +26,14 @@ public class LastSeenCommand extends EssentialCommand {
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
 
-        getUserManager().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {
+        this.getUserManager().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {
             if (user.isOnline()) {
                 src.sendLangError("command.lastseen.online", user.getFormattedDisplayName());
                 return;
             }
 
             if (user.getLastOnline() == null) {
-                src.sendError(ExceptionMessageNode.NO_VALUE_SET_USER, "lastOnline");
+                src.sendLangError("exception.no_value_set_user", "lastOnline");
                 return;
             }
 

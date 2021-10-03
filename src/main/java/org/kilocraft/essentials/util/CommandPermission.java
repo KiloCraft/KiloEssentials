@@ -119,13 +119,13 @@ public enum CommandPermission {
     }
 
     public String getNode() {
-        return PermissionUtil.COMMAND_PERMISSION_PREFIX + node;
+        return PermissionUtil.COMMAND_PERMISSION_PREFIX + this.node;
     }
 
     @Nullable
     public static CommandPermission byName(String name) {
         for (CommandPermission value : CommandPermission.values()) {
-            if (name.toLowerCase().equals(value.node.toLowerCase())) {
+            if (name.equalsIgnoreCase(value.node)) {
                 return value;
             }
         }

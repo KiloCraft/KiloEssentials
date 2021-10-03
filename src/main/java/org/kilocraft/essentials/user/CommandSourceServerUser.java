@@ -1,5 +1,6 @@
 package org.kilocraft.essentials.user;
 
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -12,12 +13,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -30,8 +28,9 @@ import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
 import org.kilocraft.essentials.chat.KiloChat;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
-import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 
 import java.io.IOException;
 import java.util.Date;
@@ -40,10 +39,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CommandSourceServerUser implements CommandSourceUser {
-    private ServerCommandSource source;
+    private final ServerCommandSource source;
 
-    public CommandSourceServerUser(ServerCommandSource source) {
+    private CommandSourceServerUser(ServerCommandSource source) {
         this.source = source;
+    }
+
+    public static CommandSourceServerUser of(ServerCommandSource source) {
+        return new CommandSourceServerUser(source);
+    }
+
+    public static CommandSourceServerUser of(CommandContext<ServerCommandSource> context) {
+        return new CommandSourceServerUser(context.getSource());
     }
 
     @Nullable
@@ -86,12 +93,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public String getDisplayName() {
-        return source.getName();
+        return this.source.getName();
     }
 
     @Override
     public String getFormattedDisplayName() {
-        return getDisplayName();
+        return this.getDisplayName();
     }
 
     @Override
@@ -131,7 +138,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public @Nullable Location getLastSavedLocation() {
-        return getLocation();
+        return this.getLocation();
     }
 
     @Override
@@ -190,12 +197,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void saveData() throws IOException {
+    public void saveData() {
 
     }
 
     @Override
-    public void trySave() throws CommandSyntaxException {
+    public void trySave() {
 
     }
 
@@ -291,19 +298,12 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendPermissionError(@NotNull String hover) {
-        this.sendMessage(ComponentText.of(KiloChat.getFormattedLang("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(ComponentText.of(hover)))));
+        this.sendMessage(ComponentText.of(ModConstants.translation("command.exception.permission")).style(style -> style.hoverEvent(HoverEvent.showText(ComponentText.of(hover)))));
     }
 
     @Override
     public void sendLangError(@NotNull String key, Object... objects) {
         this.sendError(ModConstants.translation(key, objects));
-    }
-
-    @Override
-    public int sendError(ExceptionMessageNode node, Object... objects) {
-        String message = ModConstants.getMessageUtil().fromExceptionNode(node);
-        this.sendMessage("<red>" + (objects != null ? String.format(message, objects) : message));
-        return 1;
     }
 
     @Override
@@ -318,7 +318,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendLangMessage(@NotNull String key, Object... objects) {
-        this.sendMessage(KiloChat.getFormattedLang(key, objects));
+        this.sendMessage(ModConstants.translation(key, objects));
     }
 
     @Override
@@ -328,12 +328,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public Vec3dLocation getLocationAsVector() throws CommandSyntaxException {
-        return this.isConsole() ? null : Vec3dLocation.of(source.getPlayer());
-    }
-
-    @Override
-    public Vec3d getEyeLocation() {
-        return null;
+        return this.isConsole() ? null : Vec3dLocation.of(this.source.getPlayer());
     }
 
     @Override
@@ -379,7 +374,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public OnlineUser getUser() throws CommandSyntaxException {
-        return KiloEssentials.getUserManager().getOnline(source);
+        return KiloEssentials.getUserManager().getOnline(this.source);
     }
 
     @Override

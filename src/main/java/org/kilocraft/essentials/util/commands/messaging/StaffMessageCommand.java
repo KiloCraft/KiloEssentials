@@ -9,13 +9,13 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.kilocraft.essentials.util.EssentialPermission;
 
 import java.util.List;
 
@@ -23,31 +23,32 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
 public class StaffMessageCommand extends EssentialCommand {
     private static final ServerChat.Channel THIS_CHANNEL = ServerChat.Channel.STAFF;
+
     public StaffMessageCommand() {
         super("staffmsg", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_STAFFMSG), new String[]{"sm"});
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> joinArg = literal("on")
-                .executes(ctx -> on(ctx.getSource(), ctx.getSource().getPlayer()))
-                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentSuggestions::allPlayers)
-                        .executes(ctx -> on(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
+        LiteralCommandNode<ServerCommandSource> joinArg = this.literal("on")
+                .executes(ctx -> this.on(ctx.getSource(), ctx.getSource().getPlayer()))
+                .then(this.argument("player", EntityArgumentType.player()).suggests(ArgumentSuggestions::allPlayers)
+                        .executes(ctx -> this.on(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
-        LiteralCommandNode<ServerCommandSource> leaveArg = literal("off")
-                .executes(ctx -> off(ctx.getSource(), ctx.getSource().getPlayer()))
-                .then(argument("player", EntityArgumentType.player()).suggests(ArgumentSuggestions::allPlayers)
-                        .executes(ctx -> off(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
+        LiteralCommandNode<ServerCommandSource> leaveArg = this.literal("off")
+                .executes(ctx -> this.off(ctx.getSource(), ctx.getSource().getPlayer()))
+                .then(this.argument("player", EntityArgumentType.player()).suggests(ArgumentSuggestions::allPlayers)
+                        .executes(ctx -> this.off(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))).build();
 
-        LiteralCommandNode<ServerCommandSource> toggleArg = literal("toggle")
+        LiteralCommandNode<ServerCommandSource> toggleArg = this.literal("toggle")
                 .executes(this::toggle).build();
 
-        ArgumentCommandNode<ServerCommandSource, String> sendArg = argument("message", greedyString())
+        ArgumentCommandNode<ServerCommandSource, String> sendArg = this.argument("message", greedyString())
                 .executes(this::send).build();
 
-        commandNode.addChild(joinArg);
-        commandNode.addChild(leaveArg);
-        commandNode.addChild(toggleArg);
-        commandNode.addChild(sendArg);
+        this.commandNode.addChild(joinArg);
+        this.commandNode.addChild(leaveArg);
+        this.commandNode.addChild(toggleArg);
+        this.commandNode.addChild(sendArg);
     }
 
     private int on(ServerCommandSource source, ServerPlayerEntity player) {

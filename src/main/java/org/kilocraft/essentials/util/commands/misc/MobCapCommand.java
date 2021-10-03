@@ -21,14 +21,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.SpawnHelper;
-import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.mixin.accessor.SpawnHelperAccessor;
-import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.perPlayerMobcap.SpawnHelperAccessor;
+import org.kilocraft.essentials.mixin.patch.performance.perPlayerMobcap.SpawnHelperInfoAccessor;
+import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
@@ -52,17 +52,17 @@ public class MobCapCommand extends EssentialCommand {
 
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, Float> multiplier = argument("multiplier", FloatArgumentType.floatArg(0, 100));
-        multiplier.executes(ctx -> execute(ctx, DimensionArgumentType.getDimensionArgument(ctx, "dimension")));
+        RequiredArgumentBuilder<ServerCommandSource, Float> multiplier = this.argument("multiplier", FloatArgumentType.floatArg(0, 100));
+        multiplier.executes(ctx -> this.execute(ctx, DimensionArgumentType.getDimensionArgument(ctx, "dimension")));
         final RequiredArgumentBuilder<ServerCommandSource, String> spawnGroup = this.argument("name", StringArgumentType.word())
                 .suggests(MobCapCommand::suggestSpawnGroups)
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.MOBCAP_SET));
-        final RequiredArgumentBuilder<ServerCommandSource, Identifier> world = argument("dimension", DimensionArgumentType.dimension());
-        world.executes(ctx -> info(ctx, DimensionArgumentType.getDimensionArgument(ctx, "dimension")));
+        final RequiredArgumentBuilder<ServerCommandSource, Identifier> world = this.argument("dimension", DimensionArgumentType.dimension());
+        world.executes(ctx -> this.info(ctx, DimensionArgumentType.getDimensionArgument(ctx, "dimension")));
         spawnGroup.then(multiplier);
         world.then(spawnGroup);
-        argumentBuilder.executes(ctx -> info(ctx, ctx.getSource().getWorld()));
-        commandNode.addChild(world.build());
+        this.argumentBuilder.executes(ctx -> this.info(ctx, ctx.getSource().getWorld()));
+        this.commandNode.addChild(world.build());
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx, ServerWorld world) throws CommandSyntaxException {

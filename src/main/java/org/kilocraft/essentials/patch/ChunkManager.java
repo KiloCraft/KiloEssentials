@@ -15,9 +15,9 @@ import org.kilocraft.essentials.mixin.accessor.ServerChunkManagerAccessor;
 public final class ChunkManager {
 
     /*
-    * Copied from:
-    * https://github.com/Wesley1808/ServerCore-Fabric/blob/1.17.1/src/main/java/org/provim/servercore/utils/ChunkManager.java
-    * */
+     * Copied from:
+     * https://github.com/Wesley1808/ServerCore-Fabric/blob/1.17.1/src/main/java/org/provim/servercore/utils/ChunkManager.java
+     * */
 
     private ChunkManager() {
     }

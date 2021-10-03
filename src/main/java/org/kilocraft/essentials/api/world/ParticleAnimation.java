@@ -27,16 +27,16 @@ public class ParticleAnimation {
     }
 
     public Identifier getId() {
-        return id;
+        return this.id;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @Nullable
     public Predicate<OnlineUser> predicate() {
-        return predicate;
+        return this.predicate;
     }
 
     public void setPredicate(@Nullable final Predicate<OnlineUser> predicate) {
@@ -44,15 +44,15 @@ public class ParticleAnimation {
     }
 
     public ParticleAnimation append(ParticleAnimationSection<?> frame) {
-        particleAnimationSections.add(frame);
+        this.particleAnimationSections.add(frame);
         return this;
     }
 
     public List<ParticleAnimationSection<?>> getFrames() {
-        return particleAnimationSections;
+        return this.particleAnimationSections;
     }
 
     public int frames() {
-        return particleAnimationSections.size();
+        return this.particleAnimationSections.size();
     }
 }

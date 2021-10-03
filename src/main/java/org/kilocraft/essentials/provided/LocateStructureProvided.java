@@ -37,6 +37,6 @@ public class LocateStructureProvided {
     private static float getDistance(int int_1, int int_2, int int_3, int int_4) {
         int int_5 = int_3 - int_1;
         int int_6 = int_4 - int_2;
-        return MathHelper.sqrt((float)(int_5 * int_5 + int_6 * int_6));
+        return MathHelper.sqrt((float) (int_5 * int_5 + int_6 * int_6));
     }
 }

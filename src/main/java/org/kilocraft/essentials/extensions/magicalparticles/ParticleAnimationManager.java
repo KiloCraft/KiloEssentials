@@ -18,7 +18,6 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.jetbrains.annotations.NotNull;
-import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
@@ -30,6 +29,7 @@ import org.kilocraft.essentials.api.world.RelativePosition;
 import org.kilocraft.essentials.extensions.magicalparticles.config.*;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.PermissionUtil;
+import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 
 import java.io.IOException;
@@ -96,7 +96,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                 if (effect == null) {
                     KiloEssentials.getLogger().error(
                             "Error identifying the Particle type while loading ParticleTypes!" +
-                            " Entered id \"{}\" is not a valid ParticleEffect!", frame.effect
+                                    " Entered id \"{}\" is not a valid ParticleEffect!", frame.effect
                     );
 
                     continue;
@@ -193,7 +193,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                                                 frame.longDistance,
                                                 new RelativePosition(x + t, y + u, z),
                                                 offsetX, offsetY, offsetZ,
-                                                frame.speed, frame.count,true)
+                                                frame.speed, frame.count, true)
                                         );
                                     }
                                 } else {
@@ -203,7 +203,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                                             frame.longDistance,
                                             new RelativePosition(x + t, y + section.size / 2, z),
                                             offsetX, offsetY, offsetZ,
-                                            frame.speed, frame.count,true)
+                                            frame.speed, frame.count, true)
                                     );
 
                                     // Below
@@ -212,7 +212,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                                             frame.longDistance,
                                             new RelativePosition(x + t, y - section.size / 2, z),
                                             offsetX, offsetY, offsetZ,
-                                            frame.speed, frame.count,true)
+                                            frame.speed, frame.count, true)
                                     );
                                 }
                             }
@@ -227,8 +227,8 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                                     realT = 360;
                                 }
 
-                                double newX = section.size / 2*Math.cos(realT) - (section.size / 2)*Math.sin(realT);
-                                double newY = section.size / 2*Math.sin(realT) + (section.size / 2)*Math.cos(realT);
+                                double newX = section.size / 2 * Math.cos(realT) - (section.size / 2) * Math.sin(realT);
+                                double newY = section.size / 2 * Math.sin(realT) + (section.size / 2) * Math.cos(realT);
 
                                 animation.append(new ParticleAnimationSection<>(
                                         particleEffect,
@@ -296,7 +296,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
                                 float step = 1f / distance;
 
-                                for (float t = 0; t <= 1; t+= step) {
+                                for (float t = 0; t <= 1; t += step) {
                                     double[] newPos = getBezierPoint(startPoint, endPoint, startTangent, endTangent, t);
 
                                     animation.append(new ParticleAnimationSection<>(
@@ -376,6 +376,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     }
 
     private static int tick = 0;
+
     public void onTick() {
         //Tick counter logic, only shows the animations once in 4 ticks
         tick++;

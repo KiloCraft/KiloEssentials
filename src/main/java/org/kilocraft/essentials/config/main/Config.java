@@ -22,37 +22,34 @@ public class Config {
     public boolean autoUserUpgrade = true;
 
     @Setting(value = "server")
-    private ServerConfigSection serverSection = new ServerConfigSection();
+    private final ServerConfigSection serverSection = new ServerConfigSection();
 
     @Setting(value = "permissionManager", comment = "Select the PermissionManager to use! Options: vanilla, luckperms")
-    private String permissionManager = "luckperms";
+    private final String permissionManager = "luckperms";
 
     @Setting(value = "world")
-    private WorldConfigSection worldSection = new WorldConfigSection();
+    private final WorldConfigSection worldSection = new WorldConfigSection();
 
     @Setting(value = "playerList", comment = "The appearance of the Player list.\n" +
             "Variables: User: %PLAYER_NAME%, %PLAYER_DISPLAYNAME%, %PLAYER_PING%, %PLAYER_FORMATTED_PING%, %USER_DISPLAYNAME%\n" +
             "Server: %SERVER_NAME%, %SERVER_TPS%, %SERVER_FORMATTED_TPS%, %SERVER_PLAYER_COUNT%, %SERVER_MEMORY_MAX%," +
             " %SERVER_MEMORY_USAGE_PERCENTAGE%, %SERVER_FORMATTED_MEMORY_USAGE_PERCENTAGE%, %SERVER_MEMORY_USAGE_MB%")
-    private PlayerListConfigSection playerListSection = new PlayerListConfigSection();
+    private final PlayerListConfigSection playerListSection = new PlayerListConfigSection();
 
     @Setting(value = "features", comment = "A Set of features you want to enable")
-    private FeaturesConfigSection featuresSection = new FeaturesConfigSection();
+    private final FeaturesConfigSection featuresSection = new FeaturesConfigSection();
 
     @Setting(value = "chat", comment = "Configure the appearance of the Chat Channels")
-    private ChatConfigSection chatSection = new ChatConfigSection();
+    private final ChatConfigSection chatSection = new ChatConfigSection();
 
     @Setting("moderation")
-    private ModerationConfigSection moderationSection = new ModerationConfigSection();
+    private final ModerationConfigSection moderationSection = new ModerationConfigSection();
 
     @Setting(value = "rtpSpecs", comment = "Configure the RTP range")
-    private RtpSpecsConfigSection rtpSpecs = new RtpSpecsConfigSection();
-
-    @Setting(value = "votifier", comment = "Configure the Votifier")
-    private VotifierConfigSection votifier = new VotifierConfigSection();
+    private final RtpSpecsConfigSection rtpSpecs = new RtpSpecsConfigSection();
 
     @Setting(value = "motd", comment = "Configure the message of the day")
-    private MotdConfigSection motd = new MotdConfigSection();
+    private final MotdConfigSection motd = new MotdConfigSection();
 
     @Setting(value = "homesLimit", comment = "The maximum amount of homes a player can set")
     public int homesLimit = 10;
@@ -64,7 +61,7 @@ public class Config {
     public int maxCachedMessages = 20;
 
     @Setting(value = "playerWarpTypes", comment = "The Types that you can select for making a player warp")
-    public List<String> playerWarpTypes = new ArrayList<String>(){{
+    public List<String> playerWarpTypes = new ArrayList<String>() {{
         this.add("shop");
         this.add("farm");
         this.add("build");
@@ -74,7 +71,7 @@ public class Config {
     }};
 
     @Setting(value = "commandSpyIgnored", comment = "The commands that the command logger will ignore")
-    public List<String> ignoredCommandsForLogging = new ArrayList<String>(){{
+    public List<String> ignoredCommandsForLogging = new ArrayList<String>() {{
         this.add("trigger");
         this.add("msg");
         this.add("tell");
@@ -97,42 +94,42 @@ public class Config {
     public int startHelp = 10;
 
     public ServerConfigSection server() {
-        return serverSection;
+        return this.serverSection;
     }
 
     public WorldConfigSection world() {
-        return worldSection;
+        return this.worldSection;
     }
 
     @Setting(value = "disabledItems", comment = "Put the identifier of an item here to disable modifyitem on it!")
     public List<String> disabledItems = Lists.newArrayList("minecraft:barrier");
 
     public PlayerListConfigSection playerList() {
-        return playerListSection;
+        return this.playerListSection;
     }
 
     public FeaturesConfigSection features() {
-        return featuresSection;
+        return this.featuresSection;
     }
 
     public ChatConfigSection chat() {
-        return chatSection;
+        return this.chatSection;
     }
 
     public String permissionManager() {
-        return permissionManager;
+        return this.permissionManager;
     }
 
     public ModerationConfigSection moderation() {
-        return moderationSection;
+        return this.moderationSection;
     }
 
     public RtpSpecsConfigSection rtpSpecs() {
-        return rtpSpecs;
+        return this.rtpSpecs;
     }
 
-    public VotifierConfigSection votifier() { return votifier; }
-
-    public MotdConfigSection motd() { return motd; }
+    public MotdConfigSection motd() {
+        return this.motd;
+    }
 
 }

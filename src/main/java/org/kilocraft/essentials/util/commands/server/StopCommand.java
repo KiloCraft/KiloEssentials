@@ -7,11 +7,11 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
+import org.kilocraft.essentials.util.EssentialPermission;
+import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
@@ -37,7 +37,7 @@ public class StopCommand {
             LiteralText literalText = new LiteralText("Please confirm your action by clicking on this message!");
             literalText.styled((style) -> style.withFormatting(Formatting.RED).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("[!] Click here to stop the server").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stop -confirmed")));
 
-            new CommandSourceServerUser(source).sendMessage(literalText);
+            CommandSourceServerUser.of(source).sendMessage(literalText);
         } else
             KiloEssentials.getMinecraftServer().stop(false);
 
