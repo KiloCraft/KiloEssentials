@@ -2,7 +2,7 @@ package org.kilocraft.essentials.mixin.patch.performance.entityActivationRange;
 
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
-import org.kilocraft.essentials.patch.entityActivationRange.GoalSelectorInterface;
+import org.kilocraft.essentials.patch.entityActivationRange.IGoalSelector;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.Set;
 
 @Mixin(GoalSelector.class)
-public abstract class GoalSelectorMixin implements GoalSelectorInterface {
+public abstract class GoalSelectorMixin implements IGoalSelector {
 
     @Shadow
     private int timeInterval;

@@ -5,7 +5,8 @@ public enum EssentialPermission {
     BUILDER("builder"),
     CHAT_URL("chat.url"),
     CHAT_SHOW_ITEM("chat.show_item"),
-    CHAT_BYPASS("chat.bypass"),
+    CHAT_BYPASS_SPAM("chat.bypass.spam"),
+    CHAT_BYPASS_CENSOR("chat.bypass.censor"),
     CHAT_FORMATTING_COLOR("chat.formatting.color"),
     CHAT_FORMATTING_BASIC("chat.formatting.basic"),
     CHAT_FORMATTING_EVENT("chat.formatting.event"),
@@ -33,8 +34,10 @@ public enum EssentialPermission {
     MAGIC_PARTICLES_SELF("magicparticles"),
     MAGIC_PARTICLES_ADVANCED("magicparticles.advanced"),
     SIT_SELF("sit.self"),
-    SIT_OTHERS("sit.others");
+    SIT_OTHERS("sit.others"),
+    COMMANDS_BYPASS_WORLD("commands.bypass.world");
 
+    public static final String PERMISSION_PREFIX = "kiloessentials.";
     private final String node;
 
     EssentialPermission(String node) {
@@ -42,7 +45,7 @@ public enum EssentialPermission {
     }
 
     public String getNode() {
-        return PermissionUtil.PERMISSION_PREFIX + this.node;
+        return PERMISSION_PREFIX + this.node;
     }
 
     public static EssentialPermission byName(String name) {

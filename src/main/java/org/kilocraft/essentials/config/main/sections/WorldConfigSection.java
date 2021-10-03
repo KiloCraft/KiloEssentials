@@ -5,6 +5,7 @@ import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import java.util.List;
+import java.util.Map;
 
 @ConfigSerializable
 public class WorldConfigSection {
@@ -15,6 +16,7 @@ public class WorldConfigSection {
     @Setting(value = "kickFromDimensionIfNotAllowed", comment = "If set to true and if a player is inside of a disallowed dimension then they'll get kicked back to their spawnpoint")
     public boolean kickFromDimension = true;
 
-    @Setting(value = "kickOutMessage", comment = "Set the message for when a player gets kicked back to their spawn point If the dimension is disallowed, Values: %s")
-    public String kickOutMessage = "&cThe %s dimension is disabled!";
+    @Setting(value = "disabledCommands", comment = "Put the identifier of a dimension and a list of commands to disable them!")
+    public Map<String, List<String>> disabledCommands = Map.of("myserver:custom_dimension", Lists.newArrayList("home", "tpa"));
+
 }

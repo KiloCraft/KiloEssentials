@@ -54,8 +54,8 @@ public class Vec3dLocation implements Location {
 
     public static Vec3dLocation of(ServerPlayerEntity player) {
         Identifier dim = null;
-        if (player.getServerWorld() != null && player.getServerWorld().getDimension() != null) {
-            dim = RegistryUtils.toIdentifier(player.getServerWorld().getDimension());
+        if (player.getWorld() != null && player.getWorld().getDimension() != null) {
+            dim = RegistryUtils.toIdentifier(player.getWorld().getDimension());
         }
         return new Vec3dLocation(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(), dim);
     }
@@ -218,18 +218,6 @@ public class Vec3dLocation implements Location {
     @Override
     public Vec3i toVec3i() {
         return new Vec3i(this.z, this.y, this.z);
-    }
-
-    @Override
-    public Location up() {
-        this.y += 1;
-        return this;
-    }
-
-    @Override
-    public Location down() {
-        this.y -= 1;
-        return this;
     }
 
     public Vec3iLocation toVec3iLocation() {

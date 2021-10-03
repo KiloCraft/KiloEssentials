@@ -24,7 +24,6 @@ import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.Format;
-import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.player.PlayerDataModifier;
 
@@ -88,7 +87,7 @@ public class NicknameCommand extends EssentialCommand {
             throw KiloCommands.getException("exception.nickname_not_acceptable", maxLength).create();
         }
 
-        nickname = Format.validatePermission(target, nickname, PermissionUtil.COMMAND_PERMISSION_PREFIX + "nickname.formatting.");
+        nickname = Format.validatePermission(target, nickname, CommandPermission.PERMISSION_PREFIX + "nickname.formatting");
 
         if (this.getUserManager().shouldNotUseNickname(target, nickname)) {
             target.sendLangMessage("command.nickname.already_taken");

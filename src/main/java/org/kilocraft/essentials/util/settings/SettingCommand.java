@@ -83,7 +83,7 @@ public class SettingCommand extends EssentialCommand {
         configurableSetting.setValueFromCommand(ctx);
         Object value = configurableSetting.getValue();
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        player.sendMessage(StringText.of(true, "command.setting.set", setting.getFullId(), value), false);
+        player.sendMessage(StringText.of("command.setting.set", setting.getFullId(), value), false);
         return SUCCESS;
     }
 
@@ -94,7 +94,7 @@ public class SettingCommand extends EssentialCommand {
         if (setting instanceof AbstractSetting abstractSetting) {
             String value = "";
             if (setting instanceof ConfigurableSetting) value = ((ConfigurableSetting<?>) setting).getFormattedValue();
-            player.sendMessage(StringText.of(true, "command.setting.title", setting.getFullId().toUpperCase(), value), false);
+            player.sendMessage(StringText.of("command.setting.title", setting.getFullId().toUpperCase(), value), false);
             this.printRecursive(player, abstractSetting, 0);
         } else {
             throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
@@ -107,14 +107,14 @@ public class SettingCommand extends EssentialCommand {
         for (AbstractSetting child : setting.getChildren()) {
             String preString = "  ".repeat(Math.max(0, depth)) + "- ";
             if (depth != 0 && children >= this.MAX_ENTRIES && setting.shouldLimitChildren()) {
-                player.sendMessage(StringText.of(true, "command.setting.more", preString, (setting.getChildren().size() - this.MAX_ENTRIES)), false);
+                player.sendMessage(StringText.of("command.setting.more", preString, (setting.getChildren().size() - this.MAX_ENTRIES)), false);
                 return;
             }
             LiteralText text = null;
             if (child instanceof ConfigurableSetting<?> configurableSetting) {
-                text = StringText.of(true, "command.setting.info", preString + child.getId(), configurableSetting.getFormattedValue());
+                text = StringText.of("command.setting.info", preString + child.getId(), configurableSetting.getFormattedValue());
             } else if (child instanceof CategorySetting) {
-                text = StringText.of(true, "command.setting.info", preString + child.getId(), "");
+                text = StringText.of("command.setting.info", preString + child.getId(), "");
             }
             if (text != null) {
                 text.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/setting " + child.getFullId())));

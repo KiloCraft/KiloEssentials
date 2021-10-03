@@ -27,12 +27,10 @@ import org.kilocraft.essentials.api.user.preference.UserPreferences;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,7 +60,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
             } catch (CommandSyntaxException ignored) {
             }
         }
-
         return null;
     }
 

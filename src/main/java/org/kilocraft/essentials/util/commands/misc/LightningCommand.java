@@ -28,11 +28,11 @@ public class LightningCommand extends EssentialCommand {
     private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         Vec3d vec3d = ((EntityServerRayTraceable) player).rayTrace(90.0D, 1.0F, true).getPos();
-        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(player.getServerWorld(),
+        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(player.getWorld(),
                 null, null, player, new BlockPos(vec3d), SpawnReason.COMMAND, true, false);
 
-        player.sendMessage(StringText.of(true, "command.smite"), true);
-        return player.getServerWorld().spawnEntity(lightning) ? SUCCESS : FAILED;
+        player.sendMessage(StringText.of("command.smite"), true);
+        return player.getWorld().spawnEntity(lightning) ? SUCCESS : FAILED;
     }
 
 }

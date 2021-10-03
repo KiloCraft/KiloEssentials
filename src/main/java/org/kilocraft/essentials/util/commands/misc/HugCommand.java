@@ -68,7 +68,7 @@ public class HugCommand extends EssentialCommand {
 
         src.sendLangMessage("command.hug.sent", onlineTarget.getFormattedDisplayName());
         onlineTarget.sendLangMessage("command.hug.recived", src.getFormattedDisplayName());
-        src.asPlayer().getServerWorld().playSound(
+        src.asPlayer().getWorld().playSound(
                 null,
                 src.asPlayer().getBlockPos(),
                 SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE,

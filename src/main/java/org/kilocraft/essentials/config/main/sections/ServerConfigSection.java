@@ -18,4 +18,7 @@ public class ServerConfigSection {
     @Setting(value = "cooldown", comment = "The time you have to wait before you can teleport")
     public int cooldown = 0;
 
+    @Setting(value = "minTeleportDistance", comment = "The minimum distance you have to be away from your destination to teleport to it")
+    public int minTeleportDistance = -1;
+
 }

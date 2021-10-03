@@ -20,7 +20,7 @@ public class NBTUtils {
 
     public static UUID getUUID(NbtCompound tag, String key) {
         UUID uuid;
-        //Get the UUID even if its the old format
+        // Get the UUID even if its the old format
         if (tag.contains(key + "Most") && tag.contains(key + "Least")) {
             uuid = new UUID(tag.getLong(key + "Most"), tag.getLong(key + "Least"));
         } else {

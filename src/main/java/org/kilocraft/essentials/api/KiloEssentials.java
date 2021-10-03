@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.util.TickManager;
 import org.kilocraft.essentials.api.util.tablist.TabListData;
+import org.kilocraft.essentials.compability.DiscordFabModule;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.CommandEvents;
 import org.kilocraft.essentials.events.PlayerEvents;
@@ -33,8 +34,6 @@ import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.NbtCommands;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.commands.misc.DiscordCommand;
-import org.kilocraft.essentials.util.commands.misc.VoteCommand;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
@@ -108,8 +107,6 @@ public class KiloEssentials {
         ConfigurableFeatures.register(new SeatManager(), "betterChairs");
         ConfigurableFeatures.register(new CustomCommands(), "customCommands");
         ConfigurableFeatures.register(new ParticleAnimationManager(), "magicalParticles");
-        ConfigurableFeatures.register(new DiscordCommand(), "discordCommand");
-        ConfigurableFeatures.register(new VoteCommand(), "voteCommand");
         ConfigurableFeatures.register(new PlaytimeCommands(), "playtimeCommands");
     }
 
@@ -136,7 +133,7 @@ public class KiloEssentials {
         try {
             LuckPermsProvider.get();
             return true;
-        } catch (IllegalStateException exception) {
+        } catch (NoClassDefFoundError | IllegalStateException exception) {
             return false;
         }
     }
@@ -161,8 +158,9 @@ public class KiloEssentials {
     }
 
     public void reload() {
+        KiloConfig.load();
         BrandedServer.update();
-        ModConstants.loadLanguage();
+        ModConstants.loadFiles();
         ConfigurableFeatures.loadAll(true);
         NBTStorageUtil.onSave();
     }
@@ -179,6 +177,7 @@ public class KiloEssentials {
         } catch (IOException e) {
             KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
         }
+        DiscordFabModule.registerEvents();
     }
 
     private void onTick() {

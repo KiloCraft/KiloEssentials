@@ -6,9 +6,11 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.schedule.TwoPlayerScheduler;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.player.UserUtils;
 
 public class TpAcceptCommand extends EssentialCommand {
@@ -34,6 +36,11 @@ public class TpAcceptCommand extends EssentialCommand {
         }
 
         boolean toSender = UserUtils.TpaRequests.useRequestAndGetType(sender);
+
+        if (LocationUtil.isDestinationToClose(toSender ? victim : sender, (toSender ? sender : victim).getLocation())) {
+            return IEssentialCommand.FAILED;
+        }
+
         sender.sendLangMessage("command.tpa.accepted.announce", victim.getFormattedDisplayName());
         victim.sendLangMessage("command.tpa.accepted", sender.getFormattedDisplayName());
         new TwoPlayerScheduler(toSender ? victim : sender, toSender ? sender : victim, 5, KiloConfig.main().server().cooldown);

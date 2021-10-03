@@ -2,6 +2,7 @@ package org.kilocraft.essentials.mixin.events;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.MessageType;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.*;
@@ -15,6 +16,7 @@ import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.PlayerEvents;
+import org.kilocraft.essentials.user.preference.Preferences;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,6 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.kilocraft.essentials.user.ServerUserManager.replaceBanVariables;
 
@@ -43,11 +46,6 @@ public abstract class PlayerManagerMixin {
     private BannedIpList bannedIps;
 
     private ServerPlayerEntity lastJoined;
-
-    @ModifyArg(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), index = 0)
-    public Text modifyJoinMessage(Text text) {
-        return ComponentText.toText(ConfigVariableFactory.replaceUserVariables(ModConstants.translation("player.joined"), KiloEssentials.getUserManager().getOnline(this.lastJoined)));
-    }
 
     @Inject(method = "checkCanJoin", at = @At(value = "HEAD"), cancellable = true)
     private void checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Text> cir) {
@@ -80,6 +78,16 @@ public abstract class PlayerManagerMixin {
         } else {
             return serverScoreboard.getTeams();
         }
+    }
+
+    @ModifyArg(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), index = 0)
+    public Text modifyJoinMessage(Text text) {
+        return ComponentText.toText(ConfigVariableFactory.replaceUserVariables(ModConstants.translation("player.joined"), KiloEssentials.getUserManager().getOnline(this.lastJoined)));
+    }
+
+    @Redirect(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
+    public void shouldBroadCastJoin(PlayerManager playerManager, Text message, MessageType type, UUID sender) {
+        if (!KiloEssentials.getUserManager().getOnline(this.lastJoined).getPreference(Preferences.VANISH)) playerManager.broadcastChatMessage(message, type, sender);
     }
 
     @Inject(

@@ -5,8 +5,8 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.kilocraft.essentials.config.main.Config;
 import org.kilocraft.essentials.extensions.customcommands.config.sections.CustomCommandConfigSection;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @ConfigSerializable
 public class CustomCommandsConfig {
@@ -15,8 +15,8 @@ public class CustomCommandsConfig {
     public static final String HEADER = Config.HEADER + "\n\nCustom commands\n" + COMMANDS_DESC;
 
     @Setting("commands")
-    public Map<String, CustomCommandConfigSection> commands = new HashMap<String, CustomCommandConfigSection>() {{
-        this.put("default:example", new CustomCommandConfigSection());
+    public List<CustomCommandConfigSection> commands = new ArrayList<>() {{
+        this.add(new CustomCommandConfigSection());
     }};
 
 }

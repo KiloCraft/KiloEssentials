@@ -14,6 +14,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.schedule.SinglePlayerScheduler;
@@ -23,6 +24,7 @@ import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
@@ -63,7 +65,6 @@ public class WarpCommand {
             if (warp.addCommand()) {
                 SimpleCommandManager.register(
                         new SimpleCommand(
-                                "server_warp:" + warp.getName().toLowerCase(Locale.ROOT),
                                 warp.getName().toLowerCase(Locale.ROOT),
                                 (source, args) -> executeTeleport(source, warp.getName())
                         ).withoutArgs()
@@ -98,15 +99,17 @@ public class WarpCommand {
         if (!ServerWarpManager.getWarpsByName().contains(name)) {
             throw WARP_NOT_FOUND_EXCEPTION.create();
         }
-        source.getPlayer();
         ServerWarp warp = ServerWarpManager.getWarp(name);
         OnlineUser user = KiloEssentials.getUserManager().getOnline(source);
-        //TODO: Set a home for people who warp and don't have a home yet
+        if (LocationUtil.isDestinationToClose(user, warp.getLocation())) {
+            return IEssentialCommand.FAILED;
+        }
+        // TODO: Set a home for people who warp and don't have a home yet
 /*        if (UserHomeHandler.isEnabled() && user.getHomesHandler().getHomes().isEmpty()) {
             Home home = new Home();
             user.getHomesHandler().addHome();
         }*/
-        //Add a custom ticket to gradually preload chunks
+        // Add a custom ticket to gradually preload chunks
         warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("warp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), ServerSettings.getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
         new SinglePlayerScheduler(user, 1, KiloConfig.main().server().cooldown, () -> {
             user.sendLangMessage("command.warp.teleport", warp.getName());
@@ -114,7 +117,7 @@ public class WarpCommand {
             try {
                 ServerWarpManager.teleport(user.getCommandSource(), warp);
             } catch (CommandSyntaxException ignored) {
-                //We already have a check, which checks if the executor is a player
+                // We already have a check, which checks if the executor is a player
             }
         });
         return 1;

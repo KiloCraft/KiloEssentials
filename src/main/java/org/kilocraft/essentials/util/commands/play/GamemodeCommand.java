@@ -23,11 +23,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
-import static org.kilocraft.essentials.util.commands.KiloCommands.getPermissionError;
 
 public class GamemodeCommand extends EssentialCommand {
     public GamemodeCommand() {
@@ -48,21 +46,17 @@ public class GamemodeCommand extends EssentialCommand {
     public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
         final RequiredArgumentBuilder<ServerCommandSource, String> gameTypeArgument = this.argument("mode", string())
                 .suggests(this::suggestGameModes)
-                .executes(ctx -> this.execute(ctx, null, ctx.getSource().getName(), false));
+                .executes(ctx -> this.execute(ctx, null, ctx.getSource().getName()));
 
         final RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("target")
-                .executes(ctx -> this.execute(ctx, null, this.getUserArgumentInput(ctx, "target"), false))
-                .then(
-                        this.literal("-silent")
-                                .executes(ctx -> this.execute(ctx, null, this.getUserArgumentInput(ctx, "target"), true))
-                );
+                .executes(ctx -> this.execute(ctx, null, this.getUserArgumentInput(ctx, "target")));
 
 
         gameTypeArgument.then(targetArgument);
         this.commandNode.addChild(gameTypeArgument.build());
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable final GameMode cValue, final String selection, final boolean silent) throws CommandSyntaxException {
+    private int execute(final CommandContext<ServerCommandSource> ctx, @Nullable final GameMode cValue, final String selection) throws CommandSyntaxException {
         ServerCommandSource src = ctx.getSource();
         OnlineUser sourceUser = this.getOnlineUser(ctx);
         String arg = cValue == null ? getString(ctx, "mode") : cValue.getName();
@@ -73,10 +67,10 @@ public class GamemodeCommand extends EssentialCommand {
         }
 
         if (!this.hasPermission(src, this.getPermission("self", selectedMode))) {
-            throw new SimpleCommandExceptionType(getPermissionError(this.getPermission("self", selectedMode).getNode())).create();
+            sourceUser.sendLangError("command.exception.permission");
+            return FAILED;
         }
 
-        AtomicInteger atomicInteger = new AtomicInteger(IEssentialCommand.AWAIT);
         this.getUserManager().getUserThenAcceptAsync(sourceUser, selection, user -> {
             try {
                 user.getPreferences().set(Preferences.GAME_MODE, selectedMode);
@@ -93,7 +87,7 @@ public class GamemodeCommand extends EssentialCommand {
             sourceUser.sendLangMessage("template.#1", "GameMode", selectedMode.getName(), user.getNameTag());
         });
 
-        return atomicInteger.get();
+        return IEssentialCommand.AWAIT;
     }
 
     private GameMode getMode(final String arg) {

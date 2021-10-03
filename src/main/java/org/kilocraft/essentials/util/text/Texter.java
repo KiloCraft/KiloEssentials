@@ -17,10 +17,6 @@ public class Texter {
         return ComponentText.toText(str);
     }
 
-    public static TranslatableText newTranslatable(String key, Object... objects) {
-        return new TranslatableText(key, objects);
-    }
-
     public static MutableText newText() {
         return new LiteralText("");
     }
@@ -52,7 +48,7 @@ public class Texter {
 
     public static MutableText confirmationMessage(String langKey, MutableText button) {
         return newText()
-                .append(StringText.of(true, langKey))
+                .append(StringText.of(langKey))
                 .append(" ")
                 .append(button);
     }

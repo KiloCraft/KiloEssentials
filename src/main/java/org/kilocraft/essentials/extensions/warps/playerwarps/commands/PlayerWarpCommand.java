@@ -21,6 +21,7 @@ import net.minecraft.util.math.ChunkPos;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -32,6 +33,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -383,15 +385,11 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-//        try {
-//            LocationUtil.validateIsSafe(warp.getLocation());
-//        } catch (InsecureDestinationException e) {
-//            if (!inputName.startsWith("-confirmed-")) {
-//                src.sendMessage(getTeleportConfirmationText(warpName));
-//                return -1;
-//            }
-//        }
-        //Add a custom ticket to gradually preload chunks
+        if (LocationUtil.isDestinationToClose(src, warp.getLocation())) {
+            return IEssentialCommand.FAILED;
+        }
+
+        // Add a custom ticket to gradually preload chunks
         warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("pwarp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), ServerSettings.getViewDistance() + 1, src.asPlayer().getId());
         new SinglePlayerScheduler(src, 1, KiloConfig.main().server().cooldown, () -> {
             src.sendMessage(
@@ -420,7 +418,6 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         for (int i = 0; i < warps.size(); i++) {
             PlayerWarp warp = warps.get(i);
-            //1. (type) Name - The Dimension
             input.append(String.format(LINE_FORMAT, i + 1, warp.getName(), warp.getType(), RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())));
         }
 
@@ -464,18 +461,6 @@ public class PlayerWarpCommand extends EssentialCommand {
                 "command.playerwarp.remove.confirmation_message",
                 Texter.getButton("&7[&eClick here to Confirm&7]", "/pwarp remove -confirmed-" + warpName, Texter.newText("Click").formatted(Formatting.GREEN))
         );
-    }
-
-    private Text getTeleportConfirmationText(String warpName) {
-        return new LiteralText("")
-                .append(StringText.of(true, "general.loc.unsafe.confirmation")
-                        .formatted(Formatting.YELLOW))
-                .append(new LiteralText(" [").formatted(Formatting.GRAY)
-                        .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
-                        .append(new LiteralText("]").formatted(Formatting.GRAY))
-                        .styled((style) -> {
-                            return style.withFormatting(Formatting.GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pwarp teleport -confirmed-" + warpName));
-                        }));
     }
 
 }

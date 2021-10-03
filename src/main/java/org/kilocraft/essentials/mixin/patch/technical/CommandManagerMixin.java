@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.events.CommandEvents;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.spongepowered.asm.mixin.Final;
@@ -50,9 +51,13 @@ public abstract class CommandManagerMixin {
         return canSourceUse(node, source);
     }
 
-    @Inject(method = "execute", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))
-    private void modifyExecute(ServerCommandSource src, String string, CallbackInfoReturnable<Integer> cir) {
-        cir.setReturnValue(KiloCommands.execute(src, string));
+    @Inject(method = "execute", at = @At("HEAD"), cancellable = true)
+    private void socialSpy(ServerCommandSource src, String command, CallbackInfoReturnable<Integer> cir) {
+        command = command.startsWith("/") ? command.substring(1) : command;
+        if (KiloCommands.isCommandDisabled(src, command.split(" ")[0])) {
+            cir.setReturnValue(0);
+        }
+        KiloCommands.onCommand(src, command);
     }
 
 }

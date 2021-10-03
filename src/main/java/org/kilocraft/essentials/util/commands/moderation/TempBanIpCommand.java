@@ -19,6 +19,7 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.util.EntityIdentifiable;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.events.PunishEvents;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.util.CommandPermission;
@@ -96,7 +97,7 @@ public class TempBanIpCommand extends EssentialCommand {
         bannedIpList.add(entry);
 
         MutableText text = ComponentText.toText(
-                ServerUserManager.replaceBanVariables(super.config.moderation().messages().tempIpBan, entry, false)
+                ServerUserManager.replaceBanVariables(KiloConfig.main().moderation().messages().tempIpBan, entry, false)
         );
 
         for (ServerPlayerEntity player : players) {

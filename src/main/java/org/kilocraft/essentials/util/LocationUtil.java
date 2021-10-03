@@ -11,6 +11,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -88,10 +89,23 @@ public class LocationUtil {
         }
     }
 
+    public static boolean isDestinationToClose(OnlineUser user, Location destination) {
+        // We can only check the distance if the locations are in the same dimension
+        int minDistance = KiloConfig.main().server().minTeleportDistance;
+        if (user.getLocation().getDimension().equals(destination.getDimension()) && minDistance > 0) {
+            double distance = Math.sqrt(user.getLocation().squaredDistanceTo(destination));
+            if (distance < minDistance) {
+                user.sendLangMessage("teleport.too_close", ModConstants.DECIMAL_FORMAT.format(distance), minDistance);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void processDimension(ServerPlayerEntity player) {
         boolean kickFromDim = KiloConfig.main().world().kickFromDimension;
 
-        if (kickFromDim && LocationUtil.shouldBlockAccessTo(player.getServerWorld().getDimension()) && player.getServer() != null) {
+        if (kickFromDim && LocationUtil.shouldBlockAccessTo(player.getWorld().getDimension()) && player.getServer() != null) {
             BlockPos pos = player.getSpawnPointPosition();
             DimensionType dim = RegistryUtils.toDimension(player.getSpawnPointDimension());
 
@@ -101,8 +115,7 @@ public class LocationUtil {
                     pos = user.getLastSavedLocation().toPos();
                     if (pos == null) {
                         UserHomeHandler homeHandler = user.getHomesHandler();
-                        assert homeHandler != null;
-                        if (homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getServerWorld().getDimension()) {
+                        if (homeHandler != null && homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getWorld().getDimension()) {
                             pos = user.getHomesHandler().getHomes().get(0).getLocation().toPos();
                         }
                     }
@@ -110,8 +123,8 @@ public class LocationUtil {
             }
 
             if (pos != null) {
+                KiloEssentials.getUserManager().getOnline(player).sendLangMessage("general.dimension_not_allowed", RegistryUtils.dimensionToName(player.getWorld().getDimension()));
                 player.teleport(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.getYaw(), player.getPitch());
-                KiloEssentials.getUserManager().getOnline(player).sendMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getServerWorld().getDimension())));
             }
         }
     }

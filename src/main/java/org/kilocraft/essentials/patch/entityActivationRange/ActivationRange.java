@@ -197,7 +197,7 @@ public class ActivationRange {
             if (entity instanceof CreeperEntity && ((CreeperEntity) entity).isIgnited()) { // isExplosive
                 return 20;
             }
-            if (entity instanceof MobEntity && ((GoalSelectorInterface) ((MobEntityAccessor) entity).getTargetSelector()).hasTasks()) {
+            if (entity instanceof MobEntity && ((IGoalSelector) ((MobEntityAccessor) entity).getTargetSelector()).hasTasks()) {
                 return 0;
             }
         }

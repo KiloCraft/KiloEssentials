@@ -2,48 +2,32 @@ package org.kilocraft.essentials.simplecommand;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.*;
-import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
-import org.kilocraft.essentials.api.user.CommandSourceUser;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.user.CommandSourceServerUser;
-import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SimpleCommandManager {
-    private static SimpleCommandManager INSTANCE;
-    private final List<SimpleCommand> commands;
-    private final List<String> byId;
+    private static final List<SimpleCommand> commands = new ArrayList<>();
 
-    public SimpleCommandManager() {
-        INSTANCE = this;
-        this.commands = new ArrayList<>();
-        this.byId = new ArrayList<>();
-    }
+    public static void register(final SimpleCommand command) {
+        commands.add(command);
 
-    public static void register(SimpleCommand command) {
-        if (INSTANCE != null) {
-            INSTANCE.commands.add(command);
-            INSTANCE.byId.add(command.id);
+        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal(command.getLabel())
+                .requires(src -> canUse(src, command));
 
-            LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal(command.getLabel())
-                    .requires(src -> canUse(src, command));
-
-            if (command.hasArgs) {
-                builder.then(CommandManager.argument("args", StringArgumentType.greedyString())
-                        .suggests(ArgumentSuggestions::noSuggestions));
-            }
-
-            KiloCommands.getDispatcher().register(builder);
+        if (command.hasArgs) {
+            builder.then(CommandManager.argument("args", StringArgumentType.greedyString())
+                    .suggests(ArgumentSuggestions::noSuggestions)
+                    .executes(context -> command.executable.execute(context.getSource(), StringArgumentType.getString(context, "args").split(" ")))
+            );
         }
+        builder.executes(context -> command.executable.execute(context.getSource(), new String[0]));
+
+        KiloCommands.getDispatcher().register(builder);
     }
 
     private static boolean canUse(ServerCommandSource src, SimpleCommand command) {
@@ -53,119 +37,18 @@ public class SimpleCommandManager {
         }
 
         if (command.permReq != null && !command.permReq.isEmpty()) {
-            canUse = canUse || KiloCommands.hasPermission(src, command.permReq, command.opReq == 0 ? 2 : command.opReq);
+            canUse = canUse || KiloCommands.hasPermission(src, command.permReq);
         }
 
-        return canUse && getCommand(command.getId()) != null;
+        return canUse;
     }
 
-    public static void unregister(String id) {
-        if (INSTANCE != null && getCommand(id) != null) {
-            unregister(getCommand(id));
-        }
+    public static void unregister(final String id) {
+        ((ICommandNode) KiloCommands.getDispatcher().getRoot()).removeLiteral(id);
     }
 
-    public static void unregister(SimpleCommand command) {
-        if (INSTANCE != null && INSTANCE.commands != null) {
-            INSTANCE.commands.remove(command);
-            INSTANCE.byId.remove(command.id);
-        }
-    }
-
-    public static SimpleCommand getCommandByLabel(String label) {
-        if (INSTANCE != null && INSTANCE.commands != null)
-            for (SimpleCommand command : INSTANCE.commands) {
-                if (command.label.equals(label)) {
-                    return command;
-                }
-            }
-
-        return null;
-    }
-
-    @Nullable
-    public static SimpleCommand getCommand(String id) {
-        if (INSTANCE != null && INSTANCE.commands != null) {
-            for (SimpleCommand command : INSTANCE.commands) {
-                if (command.id.equals(id)) {
-                    return command;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public List<SimpleCommand> getCommands() {
-        return this.commands;
-    }
-
-    public boolean canExecute(String input) {
-        try {
-            for (SimpleCommand command : this.commands) {
-                if (command.label.equals(input.split(" ")[0].replaceFirst("/", ""))) {
-                    return true;
-                }
-            }
-        } catch (final ArrayIndexOutOfBoundsException ignored) {
-        }
-
-        return false;
-    }
-
-    public int execute(String input, ServerCommandSource source) {
-        int var = 0;
-        String label = input.split(" ")[0].replaceFirst("/", "");
-        SimpleCommand command = getCommandByLabel(label);
-        String str = input.replaceFirst("/", "").replaceFirst(label + " ", "");
-        String[] args = str.replaceFirst(label, "").split(" ");
-        CommandSourceUser user = CommandSourceServerUser.of(source);
-
-        try {
-            if (command != null) {
-                if (command.opReq >= 1 && !source.hasPermissionLevel(command.opReq)) {
-                    user.sendPermissionError("");
-                    return 0;
-                }
-
-                var = command.executable.execute(source, args);
-            }
-        } catch (CommandSyntaxException e) {
-            if (e.getRawMessage().getString().equals("Unknown command")) {
-                CommandPermission reqPerm = CommandPermission.getByNode(label);
-
-                if (this.isCommand(label) && (reqPerm != null && !KiloCommands.hasPermission(source, reqPerm)))
-                    user.sendPermissionError("");
-                else
-                    user.sendMessage(KiloConfig.messages().commands().context().executionException);
-
-            } else {
-                source.sendError(Texts.toText(e.getRawMessage()));
-
-                if (e.getInput() != null && e.getCursor() >= 0) {
-                    int cursor = Math.min(e.getInput().length(), e.getCursor());
-                    MutableText text = (new LiteralText("")).formatted(Formatting.GRAY)
-                            .styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(input).formatted(Formatting.YELLOW))));
-
-                    if (cursor > 10) text.append("...");
-
-                    text.append(e.getInput().substring(Math.max(0, cursor - 10), cursor));
-                    if (cursor < e.getInput().length()) {
-                        Text errorAtPointMessage = (new LiteralText(e.getInput().substring(cursor))).formatted(Formatting.RED, Formatting.UNDERLINE);
-                        text.append(errorAtPointMessage);
-                    }
-
-                    text.append(new LiteralText("<--[HERE]").formatted(Formatting.RED, Formatting.ITALIC));
-                    source.sendError(text);
-                }
-            }
-        }
-
-        return var;
-    }
-
-    private boolean isCommand(String label) {
-        return getCommandByLabel(label) != null;
+    public static List<SimpleCommand> getCommands() {
+        return commands;
     }
 
 }

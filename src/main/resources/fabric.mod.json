@@ -30,6 +30,7 @@
     "kiloessentials.mixins.json",
     "kiloessentials.accessors.mixins.json"
   ],
+  "accessWidener": "kiloessentials.accesswidener",
   "depends": {
     "fabricloader": ">=0.7.1+build.174"
   },

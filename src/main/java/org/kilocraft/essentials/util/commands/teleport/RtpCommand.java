@@ -9,6 +9,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -28,7 +29,6 @@ import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.SimpleProcess;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -42,7 +42,6 @@ import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
 
 public class RtpCommand extends EssentialCommand {
-    private static final SimpleProcess<Void> PROCESS = new SimpleProcess<>("rtp_process");
     private static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_SELF);
     private static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHERS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERS);
     private static final Predicate<ServerCommandSource> PERMISSION_CHECK_IGNORE_LIMIT = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_BYPASS);
@@ -61,14 +60,14 @@ public class RtpCommand extends EssentialCommand {
             targetUser.getPreferences().set(RTP_LEFT, 0);
         }
 
-        //Check if the player has any rtps left or permission to ignore the limit
+        // Check if the player has any rtps left or permission to ignore the limit
         if (CommandUtils.areTheSame(src, target) && targetUser.getPreference(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
             targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
             return;
         }
 
-        //Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-        if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
+        // Check if the target is in the correct dimension or has permission to perform the command in other dimensions
+        if (RegistryUtils.dimensionTypeToRegistryKey(target.getWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
             targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
             return;
         }
@@ -84,6 +83,7 @@ public class RtpCommand extends EssentialCommand {
         int x = 0;
         int z = 0;
         int tries = 0;
+        final ServerWorld world = src.getWorld();
         while (!done) {
             if (tries >= cfg.maxTries) {
                 targetUser.sendLangMessage("command.rtp.failed");
@@ -95,7 +95,7 @@ public class RtpCommand extends EssentialCommand {
             z = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
             z += cfg.centerZ;
             pos = new BlockPos(x, 64, z);
-            Biome biome = target.getServerWorld().getBiome(pos);
+            Biome biome = world.getBiome(pos);
             tries++;
             String biomeId = src.getRegistryManager().get(Registry.BIOME_KEY).getId(biome).toString();
             done = true;
@@ -106,12 +106,12 @@ public class RtpCommand extends EssentialCommand {
                 }
             }
         }
-        //Add a custom ticket to gradually preload chunks
-        target.getServerWorld().getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), ServerSettings.getViewDistance() + 1, target.getId()); // Lag reduction
+        // Add a custom ticket to gradually preload chunks
+        world.getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), ServerSettings.getViewDistance() + 1, target.getId()); // Lag reduction
         final int finalX = x;
         final int finalZ = z;
         new SinglePlayerScheduler(targetUser, -1, cfg.teleportCooldown, () -> {
-            target.teleport(target.getServerWorld(), finalX, target.getServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, finalX, finalZ) + 1, finalZ, target.getYaw(), target.getPitch());
+            target.teleport(world, finalX, world.getTopY(Heightmap.Type.WORLD_SURFACE, finalX, finalZ) + 1, finalZ, target.getYaw(), target.getPitch());
         });
     }
 

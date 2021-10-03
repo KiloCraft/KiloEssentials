@@ -7,6 +7,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 
+import java.util.List;
+
 public class ChatEvents {
 
     public static final Event<ChatEvent> CHAT_MESSAGE = EventFactory.createArrayBacked(ChatEvent.class, (callbacks) -> (player, message, channel) -> {
@@ -27,6 +29,16 @@ public class ChatEvents {
 
     public interface DirectMessageEvent {
         void onDirectMessage(ServerCommandSource source, OnlineUser receiver, String message);
+    }
+
+    public static final Event<FlaggedMessageEvent> FLAGGED_MESSAGE = EventFactory.createArrayBacked(FlaggedMessageEvent.class, (callbacks) -> (source, receiver, message) -> {
+        for (FlaggedMessageEvent callback : callbacks) {
+            callback.onMessageFlag(source, receiver, message);
+        }
+    });
+
+    public interface FlaggedMessageEvent {
+        void onMessageFlag(OnlineUser sender, final String input, final List<String> flagged);
     }
 
 }

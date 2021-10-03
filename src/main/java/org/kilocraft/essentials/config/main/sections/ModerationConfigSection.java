@@ -39,19 +39,16 @@ public class ModerationConfigSection {
     @ConfigSerializable
     public static class Messages {
         @Setting(value = "ban", comment = "Disconnect message for permanent bans")
-        public String permBan = "&c&lYou have been banned!\n\n&cReason: &f{BAN_REASON}\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
+        public String permBan = "&c&lYou have been banned!\n\n&cReason: &f{ban_reason}\n&cBy: &f{ban_source}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
         @Setting(value = "temporaryBan", comment = "Disconnect message for temporary ip-bans")
-        public String tempBan = "&c&lYou have been banned!\n\n&cReason: &f{BAN_REASON} \n&cUntil: &f{BAN_EXPIRY}\n&f{BAN_LEFT} left\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
+        public String tempBan = "&c&lYou have been banned!\n\n&cReason: &f{ban_reason} \n&cUntil: &f{BAN_EXPIRY}\n&f{ban_left} left\n&cBy: &f{ban_source}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
         @Setting(value = "ipBan", comment = "Disconnect message for permanent bans")
-        public String permIpBan = "&c&lYou have been ip-banned!\n\n&cReason: &f{BAN_REASON}\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
+        public String permIpBan = "&c&lYou have been ip-banned!\n\n&cReason: &f{ban_reason}\n&cBy: &f{ban_source}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
         @Setting(value = "temporaryIpBan", comment = "Disconnect message for temporary ip-bans")
-        public String tempIpBan = "&c&lYou have been ip-banned!\n\n&cReason: &f{BAN_REASON} \n&cUntil: &f{BAN_EXPIRY}\n&f{BAN_LEFT} left\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
-
-        @Setting(value = "whitelist", comment = "Disconnect message for not being whitelisted, leave it empty to use the default in-game translation")
-        public String whitelist = "You are not white-listed on this server!";
+        public String tempIpBan = "&c&lYou have been ip-banned!\n\n&cReason: &f{ban_reason} \n&cUntil: &f{BAN_EXPIRY}\n&f{ban_left} left\n&cBy: &f{ban_source}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
         @Setting(value = "mute")
         public String mute = "&cYou are muted because of \"{MUTE_REASON}\"";

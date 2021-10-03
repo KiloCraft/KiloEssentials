@@ -5,7 +5,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.Validate;
@@ -16,9 +15,6 @@ import org.kilocraft.essentials.api.ModConstants;
 import java.util.Locale;
 
 public class ComponentText {
-    public static Text empty() {
-        return new LiteralText("");
-    }
 
     /**
      * Translates a string with legacy style color codes into a Kyori Adventure style.
@@ -28,10 +24,11 @@ public class ComponentText {
      */
     public static String updateLegacyStyle(@NotNull final String text) {
         Validate.notNull(text, "Cannot translate null text");
+        if (!text.contains("&")) return text;
         String string = text;
         final char[] b = text.toCharArray();
         for (int i = 0; i < b.length; i++) {
-            if (b[i] == '&' && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
+            if (b[i] == '&' && i != b.length - 1 && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
                 final @Nullable Format format = Format.getByChar(b[i + 1]);
                 string = string.replace(
                         String.valueOf('&') + b[i + 1],
@@ -41,6 +38,7 @@ public class ComponentText {
         }
         return string;
     }
+
 
     public static String clearFormatting(@NotNull String textToClear) {
         return stripRainbow(stripGradient(stripEvent(stripFormatting(stripColor(textToClear)))));
@@ -65,17 +63,9 @@ public class ComponentText {
         return GsonComponentSerializer.gson().deserialize(json);
     }
 
-    public static Component of(@NotNull final String raw) {
-        return of(raw, false);
-    }
-
-    public static Component of(@NotNull final String raw, final boolean markdown) {
-        Validate.notNull(raw, "String must not be null!");
-        final String string = raw.contains("&") ? updateLegacyStyle(raw) : raw;
-        if (markdown) {
-            return MiniMessage.markdown().parse(string);
-        }
-        return MiniMessage.get().parse(string);
+    public static Component of(@NotNull final String string) {
+        Validate.notNull(string, "String must not be null!");
+        return MiniMessage.get().parse(updateLegacyStyle(string));
     }
 
     public static Component removeEvents(@NotNull final Component component) {

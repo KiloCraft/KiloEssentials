@@ -28,7 +28,6 @@ import org.kilocraft.essentials.api.world.ParticleAnimationSection;
 import org.kilocraft.essentials.api.world.RelativePosition;
 import org.kilocraft.essentials.extensions.magicalparticles.config.*;
 import org.kilocraft.essentials.provided.KiloFile;
-import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
 
@@ -328,7 +327,6 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
             map.put(animation.getId(), animation);
             innerArray.permissionRequirement().ifPresent((requirement) -> {
-                PermissionUtil.registerNode(requirement.permission);
                 animation.setPredicate((user) -> KiloCommands.hasPermission(user.getCommandSource(), requirement.permission, requirement.op));
             });
         });
@@ -378,7 +376,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     private static int tick = 0;
 
     public void onTick() {
-        //Tick counter logic, only shows the animations once in 4 ticks
+        // Tick counter logic, only shows the animations once in 4 ticks
         tick++;
         if (tick > config.getPps() && !uuidIdentifierMap.isEmpty()) {
             try {
@@ -416,7 +414,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
             Packet<?> packet = frame.toPacket(player.getPos(), player.bodyYaw);
             if (packet != null) {
-                player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
+                player.getWorld().getChunkManager().sendToNearbyPlayers(player, packet);
             }
         }
 

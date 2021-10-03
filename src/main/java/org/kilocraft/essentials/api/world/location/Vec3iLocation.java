@@ -46,7 +46,7 @@ public class Vec3iLocation implements Location {
     }
 
     public static Vec3iLocation of(ServerPlayerEntity player) {
-        return new Vec3iLocation((int) player.getX(), (int) player.getY(), (int) player.getZ(), player.getYaw(), player.getPitch(), RegistryUtils.toIdentifier(player.getServerWorld().getDimension()));
+        return new Vec3iLocation((int) player.getX(), (int) player.getY(), (int) player.getZ(), player.getYaw(), player.getPitch(), RegistryUtils.toIdentifier(player.getWorld().getDimension()));
     }
 
     public static Vec3iLocation of(OnlineUser user) {
@@ -192,18 +192,6 @@ public class Vec3iLocation implements Location {
     @Override
     public Vec3i toVec3i() {
         return new Vec3i(this.z, this.y, this.z);
-    }
-
-    @Override
-    public Location up() {
-        this.y += 1;
-        return this;
-    }
-
-    @Override
-    public Location down() {
-        this.y -= 1;
-        return this;
     }
 
     public Vec3dLocation toVec3dLocation() {

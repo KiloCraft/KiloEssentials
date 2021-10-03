@@ -109,7 +109,7 @@ public class DelhomeCommand extends EssentialCommand {
 
     private Text getConfirmationText(String homeName, String user) {
         return new LiteralText("")
-                .append(StringText.of(true, "command.delhome.confirmation_message", homeName)
+                .append(StringText.of("command.delhome.confirmation_message", homeName)
                         .formatted(Formatting.YELLOW))
                 .append(new LiteralText(" [").formatted(Formatting.GRAY)
                         .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
