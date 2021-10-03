@@ -28,6 +28,7 @@ import java.util.UUID;
 public class DiscordFabModule {
 
     private static final String STAFF_REPORTS_CHANNEL_ID = "staff_reports";
+    private static final String STAFF_FLAGGED_MESSAGES = "staff_flagged";
     private static final String STAFF_CHANNEL_ID = "staff";
 
     public static boolean isLoaded() {
@@ -92,7 +93,7 @@ public class DiscordFabModule {
 
         Field messageField = new Field("Message:", input);
         Field flaggedField = new Field("Flagged:", getFlaggedMessage(flagged));
-        AdvancedDiscordAlertEvent.EVENT.invoker().onAlert(STAFF_REPORTS_CHANNEL_ID, "Flagged Message", null, sender.getName(), ChatSynchronizer.getMCAvatarURL(sender.getUuid()), null, Color.ORANGE, messageField, flaggedField);
+        AdvancedDiscordAlertEvent.EVENT.invoker().onAlert(STAFF_FLAGGED_MESSAGES, "Flagged Message", null, sender.getName(), ChatSynchronizer.getMCAvatarURL(sender.getUuid()), null, Color.ORANGE, messageField, flaggedField);
     }
 
     private static String getFlaggedMessage(final List<String> flagged) {
