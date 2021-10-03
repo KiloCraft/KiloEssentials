@@ -13,7 +13,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
@@ -35,10 +34,8 @@ import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.text.Texter;
 
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
 
 public final class ServerChat {
     private static final int COMMAND_MAX_LENGTH = 45;
@@ -51,12 +48,12 @@ public final class ServerChat {
     }
 
     public static void pingUser(final OnlineUser target, final MentionTypes type) {
-        if (target.getPreference(Preferences.DON_NOT_DISTURB) && type != MentionTypes.EVERYONE) {
+        if (target.getPreference(Preferences.DON_NOT_DISTURB)) {
             return;
         }
 
         ChatPingSoundConfigSection cfg = switch (type) {
-            case PUBLIC, EVERYONE -> config.ping().pingSound();
+            case PUBLIC -> config.ping().pingSound();
             case PRIVATE -> config.privateChat().pingSound();
         };
 
@@ -175,13 +172,20 @@ public final class ServerChat {
 
     public enum Channel {
         PUBLIC("public"),
-        STAFF("staff"),
-        BUILDER("builder");
+        STAFF("staff", EssentialPermission.STAFF),
+        BUILDER("builder", EssentialPermission.BUILDER);
 
         private final String id;
+        private final EssentialPermission permission;
 
         Channel(String id) {
             this.id = id;
+            this.permission = null;
+        }
+
+        Channel(String id, EssentialPermission permission) {
+            this.id = id;
+            this.permission = permission;
         }
 
         @Nullable
@@ -199,24 +203,26 @@ public final class ServerChat {
             return this.id;
         }
 
-        public void send(Text message, MessageType messageType, UUID uuid) {
-            this.send(message, messageType, uuid, onlineUser -> true);
+        public void send(final Text message, final Set<UUID> pingedUsers, final Predicate<OnlineUser> shouldSend, final MessageType messageType, final UUID author) {
+            final boolean playSound = KiloConfig.main().chat().ping().pingSound().enabled;
+            for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList()) {
+                if (!shouldSend.test(user)) continue;
+                if (this.permission == null || user.hasPermission(this.permission)) {
+                    final boolean mentioned = pingedUsers.contains(user.getUuid());
+                    if (mentioned && playSound) {
+                        ServerChat.pingUser(user, MentionTypes.PUBLIC);
+                    }
+                    final boolean mentionOnly = user.getPreference(Preferences.CHAT_VISIBILITY) == VisibilityPreference.MENTIONS;
+                    if (mentionOnly && !mentioned && messageType == MessageType.CHAT) {
+                        continue;
+                    }
+                    user.asPlayer().sendMessage(message, messageType, author);
+                }
+            }
         }
 
-        protected void send(Text message, MessageType messageType, UUID uuid, Predicate<OnlineUser> shouldSend) {
-            switch (this) {
-                case PUBLIC:
-                    for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList()) {
-                        if (shouldSend.test(user)) user.asPlayer().sendMessage(message, messageType, uuid);
-                    }
-                    break;
-                case STAFF:
-                    ServerChat.send(message, EssentialPermission.STAFF);
-                    break;
-                case BUILDER:
-                    ServerChat.send(message, EssentialPermission.BUILDER);
-                    break;
-            }
+        public void send(Text message, MessageType messageType, UUID uuid) {
+            this.send(message, new HashSet<>(), (user) -> true, messageType, uuid);
         }
 
         public void send(Text message) {
@@ -236,8 +242,7 @@ public final class ServerChat {
 
     public enum MentionTypes {
         PUBLIC,
-        PRIVATE,
-        EVERYONE
+        PRIVATE
     }
 
     public enum VisibilityPreference {

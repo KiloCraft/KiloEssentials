@@ -90,9 +90,9 @@ public class CommandUtils {
         }
 
         if (s.startsWith("!")) {
-            return execute(operatorSource(src), s.replace("!", ""));
+            return execute(operatorSource(src), s.substring(1));
         } else if (s.startsWith("?")) {
-            return execute(src.getServer(), s.replaceFirst("\\?", ""));
+            return execute(src.getServer(), s.substring(1));
         } else {
             return execute(src, s);
         }

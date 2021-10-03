@@ -28,10 +28,9 @@ public enum Format {
 
     public static String validatePermission(OnlineUser user, String input, String permissionPrefix) {
         for (Format format : Format.values()) {
-            String s = input;
             if (!KiloCommands.hasPermission(user.getCommandSource(), permissionPrefix.concat(".").concat(format.perm))) {
                 for (String regex : format.regex) {
-                    s = s.toLowerCase().replaceAll(regex, "");
+                    input = input.toLowerCase().replaceAll(regex, "");
                 }
             }
         }

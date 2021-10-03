@@ -16,28 +16,27 @@ import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
+import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.config.ConfigVariableFactory;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.main.sections.chat.ChatConfigSection;
 import org.kilocraft.essentials.events.ChatEvents;
-import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ChatMessage {
 
     private static final int LINK_MAX_LENGTH = 20;
-    private final List<OnlineUser> pinged = new ArrayList<>();
+    private final Set<UUID> pinged = new HashSet<>();
     private final OnlineUser sender;
     private final String input;
     private final ServerChat.Channel channel;
-    private ServerChat.MentionTypes mentionType = ServerChat.MentionTypes.PUBLIC;
     private final boolean shouldCensor;
     private final TextComponent.Builder builder = Component.text();
     private final TextComponent.Builder censored;
@@ -63,7 +62,6 @@ public class ChatMessage {
         if (this.shouldCensor) {
             this.censored.append(component);
             this.censored.append(this.parse(input, true));
-
         }
     }
 
@@ -95,15 +93,10 @@ public class ChatMessage {
             if (this.hasPermission(EssentialPermission.CHAT_PING_OTHER)) {
                 for (final OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList()) {
                     if (!user.hasPermission(EssentialPermission.CHAT_GET_PINGED)) continue;
-                    Matcher nickNameMatcher = Pattern.compile(ComponentText.clearFormatting(user.getDisplayName().toLowerCase())).matcher(input.toLowerCase());
                     Matcher userNameMatcher = Pattern.compile(user.getUsername()).matcher(input);
                     if (userNameMatcher.find()) {
                         this.parseMatcher(builder, input, censor, userNameMatcher, s -> this.pingUserComponent(user));
-                        this.pinged.add(user);
-                        return builder.build();
-                    } else if (nickNameMatcher.find()) {
-                        this.parseMatcher(builder, input, censor, nickNameMatcher, s -> this.pingUserComponent(user));
-                        this.pinged.add(user);
+                        this.pinged.add(user.getUuid());
                         return builder.build();
                     }
                 }
@@ -167,8 +160,7 @@ public class ChatMessage {
     }
 
     private Component everyoneComponent() {
-        this.pinged.addAll(KiloEssentials.getUserManager().getOnlineUsersAsList());
-        this.mentionType = ServerChat.MentionTypes.EVERYONE;
+        this.pinged.addAll(KiloEssentials.getUserManager().getOnlineUsersAsList().stream().map(User::getUuid).collect(Collectors.toList()));
         return Component.text("@everyone").color(NamedTextColor.AQUA);
     }
 
@@ -193,22 +185,16 @@ public class ChatMessage {
     }
 
     public void send() {
-        TextComponent textComponent = this.builder.build();
-        for (OnlineUser user : this.pinged) {
-            boolean canPing = user.getPreference(Preferences.CHAT_CHANNEL) == this.channel;
-            if (KiloConfig.main().chat().ping().pingSound().enabled && canPing) {
-                ServerChat.pingUser(user, this.mentionType);
-            }
-        }
-        Text text = ComponentText.toText(textComponent);
+        final Predicate<OnlineUser> IS_SENDER = onlineUser -> onlineUser.getUuid().equals(this.sender.getUuid());
+        Text text = ComponentText.toText(this.builder.build());
         if (this.shouldCensor) {
             Text censored = ComponentText.toText(this.censored.build());
             // Send the censored message to everyone, but the sender
-            this.channel.send(censored, MessageType.CHAT, this.sender.getUuid(), onlineUser -> !onlineUser.getUuid().equals(this.sender.getUuid()));
+            this.channel.send(censored, this.pinged, IS_SENDER.negate(), MessageType.CHAT, this.sender.getUuid());
             // Send the uncensored message to the sender
-            this.sender.asPlayer().sendMessage(text, MessageType.CHAT, this.sender.getUuid());
+            this.channel.send(text, this.pinged, IS_SENDER, MessageType.CHAT, this.sender.getUuid());
         } else {
-            this.channel.send(text, MessageType.CHAT, this.sender.getUuid());
+            this.channel.send(text, this.pinged, (user) -> true, MessageType.CHAT, this.sender.getUuid());
         }
         if (!this.flagged.isEmpty()) ChatEvents.FLAGGED_MESSAGE.invoker().onMessageFlag(this.sender, this.input, this.flagged);
         KiloChat.broadCastToConsole(text.getString());
