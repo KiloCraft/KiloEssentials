@@ -67,7 +67,7 @@ public class RtpCommand extends EssentialCommand {
         }
 
         // Check if the player has any rtps left or permission to ignore the limit
-        if (CommandUtils.areTheSame(src, target) && targetUser.getPreference(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
+        if (targetUser.getPreference(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
             targetUser.sendLangMessage("command.rtp.empty");
             return;
         }
