@@ -22,8 +22,6 @@ public enum EssentialPermission {
     SPY_COMMAND("spy.command"),
     SERVER_MANAGE_STOP("server.manage.stop"),
     SERVER_MANAGE_RESTART("server.manage.restart"),
-    SERVER_MANAGE_OPERATORS("server.manage.operators"),
-    SERVER_MANAGE_MOTD("server.manage.motd"),
     CHAT_CHANNEL_STAFFMSG("chat.channel.staff"),
     CHAT_CHANNEL_BUILDERMSG("chat.channel.builder"),
     RTP_SELF("rtp.self"),

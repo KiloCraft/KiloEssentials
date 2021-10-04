@@ -35,9 +35,9 @@ public abstract class LivingEntityMixin implements Collidable {
     }
 
     @Inject(method = "tickCramming", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;pushAway(Lnet/minecraft/entity/Entity;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-    public void onEntityCollision(CallbackInfo ci, List var1, int var2, int var3, Entity entity, List var5) {
+    public void onEntityCollision(CallbackInfo ci, List<Entity> entitiesInBoundingBox, int maxEntityCramming, int index, Entity pushedEntity) {
         // Increment collision count for the other entity
-        if (entity instanceof Collidable collidable) collidable.onCollision();
+        if (pushedEntity instanceof Collidable collidable) collidable.onCollision();
         // Increment collision count for self
         this.numCollisions++;
     }
