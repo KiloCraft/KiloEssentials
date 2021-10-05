@@ -22,4 +22,7 @@ public class VersionCompability {
         return new ServerMetadata.Version(pretendVersionName, pretendVersionProtocol);
     }
 
+    public static boolean isEnabled() {
+        return false;
+    }
 }

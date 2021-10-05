@@ -49,7 +49,7 @@ public abstract class QueryResponseS2CPacketMixin {
             this.metadata.setPlayers(new_players);
         }
         final ServerMetadata.Version version = this.metadata.getVersion();
-        if (version != null) {
+        if (version != null && VersionCompability.isEnabled()) {
             ServerMetadata.Version newVersion;
             if (VersionCompability.shouldPretendProtocolVersion()) {
                 newVersion = VersionCompability.getPretendMetaVersion();

@@ -27,7 +27,7 @@ public abstract class ServerHandshakeNetworkHandlerMixin {
             at = @At("HEAD")
     )
     public void onRequest(HandshakeC2SPacket packet, CallbackInfo ci) {
-        if (packet.getIntendedState() == NetworkState.STATUS && this.server.acceptsStatusQuery()) {
+        if (packet.getIntendedState() == NetworkState.STATUS && this.server.acceptsStatusQuery() && VersionCompability.isEnabled()) {
             VersionCompability.onHandshake(packet);
         }
     }
