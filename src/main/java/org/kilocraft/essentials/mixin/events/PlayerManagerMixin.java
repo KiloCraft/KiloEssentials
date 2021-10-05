@@ -7,7 +7,6 @@ import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.*;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
@@ -98,6 +97,15 @@ public abstract class PlayerManagerMixin {
             )
     )
     public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
+        PlayerEvents.JOIN.invoker().onJoin(connection, player);
+        this.lastJoined = player;
+    }
+
+    @Inject(
+            method = "onPlayerConnect",
+            at = @At("RETURN")
+    )
+    public void onPlayerConnected(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         PlayerEvents.JOINED.invoker().onJoin(connection, player);
         this.lastJoined = player;
     }

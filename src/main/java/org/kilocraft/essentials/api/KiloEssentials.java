@@ -31,11 +31,9 @@ import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.NbtCommands;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
-import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.io.File;
@@ -130,7 +128,8 @@ public class KiloEssentials {
 
         CommandEvents.REGISTER_COMMAND.register(this::registerCommands);
 
-        PlayerEvents.JOINED.register(this::onJoin);
+        PlayerEvents.JOIN.register(this::onJoin);
+        PlayerEvents.JOINED.register(this::onJoined);
         NbtCommands.registerEvents();
     }
 
@@ -146,6 +145,9 @@ public class KiloEssentials {
     private void onJoin(ClientConnection connection, ServerPlayerEntity player) {
         this.userManager.onJoin(player);
         BrandedServer.provide(player);
+    }
+
+    private void onJoined(ClientConnection connection, ServerPlayerEntity player) {
         this.userManager.onJoined(player);
         this.tabListData.onJoin(player);
     }

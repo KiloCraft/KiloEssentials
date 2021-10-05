@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.events.CommandEvents;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.spongepowered.asm.mixin.Final;
@@ -41,7 +40,7 @@ public abstract class CommandManagerMixin {
     @Shadow
     public abstract CommandDispatcher<ServerCommandSource> getDispatcher();
 
-    @Inject(method = "<init>", at = {@At("RETURN")})
+    @Inject(method = "<init>", at = @At("RETURN"))
     private void CommandManager(CommandManager.RegistrationEnvironment env, CallbackInfo ci) {
         CommandEvents.REGISTER_COMMAND.invoker().register(this.dispatcher, env);
     }

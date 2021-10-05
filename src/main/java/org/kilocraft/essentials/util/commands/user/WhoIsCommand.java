@@ -87,9 +87,8 @@ public class WhoIsCommand extends EssentialCommand {
 
         UserPreferences settings = target.getPreferences();
         text.append("Status",
-                new String[]{"Invulnerable", "GameMode", "Online"},
+                new String[]{"Invulnerable", "Online"},
                 settings.get(Preferences.INVULNERABLE),
-                settings.get(Preferences.GAME_MODE).getName(),
                 target.isOnline()
         );
 

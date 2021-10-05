@@ -212,7 +212,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
     }
 
     public void onJoined() {
-
         SocketAddress socketAddress = this.getConnection().getAddress();
         if (socketAddress != null) {
             this.lastSocketAddress = socketAddress.toString().replaceFirst("/", "");
@@ -220,14 +219,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
 
         super.messageCoolDown = 0;
         super.systemMessageCoolDown = 0;
-
-        GameMode gameMode = super.getPreference(Preferences.GAME_MODE);
-        if (gameMode == null) {
-            gameMode = this.asPlayer().interactionManager.getGameMode();
-        }
-
-        this.setGameMode(gameMode);
-        super.getPreferences().set(Preferences.GAME_MODE, gameMode);
 
         if (this.ticksPlayed <= 0) {
             this.ticksPlayed = this.asPlayer().getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
@@ -244,7 +235,6 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
         } else {
             this.clearNickname();
         }
-
     }
 
     public void onLeave() {

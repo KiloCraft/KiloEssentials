@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.preference.Preference;
@@ -35,11 +34,6 @@ public class Preferences {
                     fun.set(SeatManager.SummonType.getByName(fun.tag().getString(fun.setting().getId())));
                 }
             });
-    public static final Preference<GameMode> GAME_MODE = new Preference<GameMode>(
-            "gamemode", null,
-            (fun) -> fun.tag().putInt(fun.setting().getId(), fun.value().getId()),
-            (fun) -> fun.set(GameMode.byId(fun.tag().getInt(fun.setting().getId())))
-    );
     public static final Preference<Map<UUID, String>> IGNORE_LIST = new Preference<Map<UUID, String>>(
             "ignored", Maps.newHashMap(),
             (fun) -> {

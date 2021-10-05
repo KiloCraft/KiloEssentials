@@ -13,7 +13,7 @@ import org.kilocraft.essentials.api.KiloEssentials;
 
 public class PlayerEvents {
 
-    public static final Event<JoinEvent> JOINED = EventFactory.createArrayBacked(JoinEvent.class, (callbacks) -> (connection, player) -> {
+    public static final Event<JoinEvent> JOIN = EventFactory.createArrayBacked(JoinEvent.class, (callbacks) -> (connection, player) -> {
         try {
             for (JoinEvent callback : callbacks) {
                 callback.onJoin(connection, player);
@@ -24,6 +24,20 @@ public class PlayerEvents {
     });
 
     public interface JoinEvent {
+        void onJoin(ClientConnection connection, ServerPlayerEntity player);
+    }
+
+    public static final Event<JoinedEvent> JOINED = EventFactory.createArrayBacked(JoinedEvent.class, (callbacks) -> (connection, player) -> {
+        try {
+            for (JoinedEvent callback : callbacks) {
+                callback.onJoin(connection, player);
+            }
+        } catch (Exception e) {
+            KiloEssentials.getLogger().fatal("Exception occurred when player joined", e);
+        }
+    });
+
+    public interface JoinedEvent {
         void onJoin(ClientConnection connection, ServerPlayerEntity player);
     }
 
