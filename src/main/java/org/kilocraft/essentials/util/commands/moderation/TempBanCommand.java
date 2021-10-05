@@ -85,7 +85,7 @@ public class TempBanCommand extends EssentialCommand {
                     )
             );
         }
-        PunishEvents.BAN.invoker().onBan(src, EntityIdentifiable.fromGameProfile(victim), reason, false, expiry.getTime(), silent);
+        PunishEvents.BAN.invoker().onBan(src, EntityIdentifiable.fromGameProfile(victim), entry.getReason(), false, expiry.getTime(), silent);
 
         this.getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, time, silent);
         return AWAIT;

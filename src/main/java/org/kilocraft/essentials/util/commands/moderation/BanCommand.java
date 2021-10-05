@@ -75,7 +75,7 @@ public class BanCommand extends EssentialCommand {
                     )
             );
         }
-        PunishEvents.BAN.invoker().onBan(src, EntityIdentifiable.fromGameProfile(victim), reason, false, -1L, silent);
+        PunishEvents.BAN.invoker().onBan(src, EntityIdentifiable.fromGameProfile(victim), entry.getReason(), false, -1L, silent);
         this.getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.BAN, null, silent);
 
         return SUCCESS;

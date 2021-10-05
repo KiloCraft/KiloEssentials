@@ -63,7 +63,7 @@ public class TempMuteCommand extends EssentialCommand {
             MutedPlayerEntry entry = new MutedPlayerEntry(victim, date, src.getName(), expiry, reason);
             this.getUserManager().getMutedPlayerList().add(entry);
 
-            PunishEvents.MUTE.invoker().onMute(src, EntityIdentifiable.fromGameProfile(victim), reason, expiry.getTime(), silent);
+            PunishEvents.MUTE.invoker().onMute(src, EntityIdentifiable.fromGameProfile(victim), entry.getReason(), expiry.getTime(), silent);
 
             this.getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.MUTE, time, silent);
         });

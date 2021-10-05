@@ -21,7 +21,7 @@ public abstract class MuteEntry<T> extends ServerConfigEntry<T> {
         this.creationDate = creationDate;
         this.source = source;
         this.expiryDate = expiryDate;
-        this.reason = reason;
+        this.reason = reason == null ? "Muted by an operator." : reason;
     }
 
     protected MuteEntry(T object, JsonObject jsonObject) {

@@ -92,7 +92,7 @@ public class BanIpCommand extends EssentialCommand {
             player.networkHandler.disconnect(text);
         }
 
-        PunishEvents.BAN.invoker().onBan(src, victim, reason, true, -1L, silent);
+        PunishEvents.BAN.invoker().onBan(src, victim, entry.getReason(), true, -1L, silent);
 
         this.getUserManager().onPunishmentPerformed(src, victim == null ? new Punishment(src, ip, reason) : new Punishment(src, victim, ip, reason, null), Punishment.Type.BAN_IP, null, silent);
         return players.size();

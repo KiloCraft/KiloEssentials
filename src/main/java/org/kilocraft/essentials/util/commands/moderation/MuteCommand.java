@@ -50,7 +50,7 @@ public class MuteCommand extends EssentialCommand {
             MutedPlayerEntry entry = new MutedPlayerEntry(victim, date, src.getName(), null, reason);
             this.getUserManager().getMutedPlayerList().add(entry);
 
-            PunishEvents.MUTE.invoker().onMute(src, EntityIdentifiable.fromGameProfile(victim), reason, -1L, silent);
+            PunishEvents.MUTE.invoker().onMute(src, EntityIdentifiable.fromGameProfile(victim), entry.getReason(), -1L, silent);
 
             this.getUserManager().onPunishmentPerformed(src, new Punishment(src, EntityIdentifiable.fromGameProfile(victim), reason), Punishment.Type.MUTE, null, silent);
         });

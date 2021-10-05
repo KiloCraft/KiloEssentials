@@ -104,7 +104,7 @@ public class TempBanIpCommand extends EssentialCommand {
             player.networkHandler.disconnect(text);
         }
 
-        PunishEvents.BAN.invoker().onBan(src, victim, reason, true, expiry.getTime(), silent);
+        PunishEvents.BAN.invoker().onBan(src, victim, entry.getReason(), true, expiry.getTime(), silent);
 
         this.getUserManager().onPunishmentPerformed(src, victim == null ? new Punishment(src, null, ip, reason, expiry) : new Punishment(src, victim, ip, reason, expiry), Punishment.Type.BAN_IP, time, silent);
         return players.size();
