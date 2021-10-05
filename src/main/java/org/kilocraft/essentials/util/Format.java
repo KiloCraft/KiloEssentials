@@ -1,11 +1,6 @@
 package org.kilocraft.essentials.util;
 
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
@@ -30,7 +25,7 @@ public enum Format {
         for (Format format : Format.values()) {
             if (!KiloCommands.hasPermission(user.getCommandSource(), permissionPrefix.concat(".").concat(format.perm))) {
                 for (String regex : format.regex) {
-                    input = input.toLowerCase().replaceAll(regex, "");
+                    input = input.replaceAll("(?i)" + regex, "");
                 }
             }
         }
