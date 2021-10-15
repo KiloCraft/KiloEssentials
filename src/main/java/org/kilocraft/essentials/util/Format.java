@@ -1,6 +1,7 @@
 package org.kilocraft.essentials.util;
 
 
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
@@ -23,7 +24,7 @@ public enum Format {
 
     public static String validatePermission(OnlineUser user, String input, String permissionPrefix) {
         for (Format format : Format.values()) {
-            if (!KiloCommands.hasPermission(user.getCommandSource(), permissionPrefix.concat(".").concat(format.perm))) {
+            if (!KiloEssentials.hasPermissionNode(user.getCommandSource(), permissionPrefix.concat(".").concat(format.perm))) {
                 for (String regex : format.regex) {
                     input = input.replaceAll("(?i)" + regex, "");
                 }

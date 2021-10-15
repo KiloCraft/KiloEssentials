@@ -7,7 +7,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -66,23 +65,11 @@ public class KiloCommands {
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {
-        return hasPermission(src, perm.getNode(), 2);
+        return KiloEssentials.hasPermissionNode(src, perm);
     }
 
     public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm, final int minOpLevel) {
-        return hasPermission(src, perm.getNode(), minOpLevel);
-    }
-
-    public static boolean hasPermission(final ServerCommandSource src, final String cmdPerm) {
-        return hasPermission(src, cmdPerm, 2);
-    }
-
-    public static boolean hasPermission(final ServerCommandSource src, final String cmdPerm, final int minOpLevel) {
-        try {
-            return Permissions.check(src, cmdPerm, minOpLevel);
-        } catch (Exception e) {
-            return src.hasPermissionLevel(minOpLevel);
-        }
+        return KiloEssentials.hasPermissionNode(src, perm, minOpLevel);
     }
 
     private static void registerDefaults() {
@@ -127,8 +114,6 @@ public class KiloCommands {
         register(new MessageCommand());
         register(new DoNotDisturbCommand());
         register(new VanishCommand());
-        register(new IgnoreCommand());
-        register(new IgnoreListCommand());
         register(new ReplyCommand());
         register(new RealNameCommand());
         register(new IpInfoCommand());

@@ -34,33 +34,6 @@ public class Preferences {
                     fun.set(SeatManager.SummonType.getByName(fun.tag().getString(fun.setting().getId())));
                 }
             });
-    public static final Preference<Map<UUID, String>> IGNORE_LIST = new Preference<Map<UUID, String>>(
-            "ignored", Maps.newHashMap(),
-            (fun) -> {
-                if (!fun.value().isEmpty()) {
-                    NbtList list = new NbtList();
-                    for (Map.Entry<UUID, String> entry : fun.value().entrySet()) {
-                        NbtCompound tag = new NbtCompound();
-                        tag.putString("name", entry.getValue());
-                        tag.putUuid("id", entry.getKey());
-                        list.add(tag);
-                    }
-                    fun.tag().put(fun.setting().getId(), list);
-                }
-            }, (fun) -> {
-        if (fun.tag().contains(fun.setting().getId())) {
-            NbtList NbtList = fun.tag().getList(fun.setting().getId(), NBTTypes.COMPOUND);
-            Map<UUID, String> map = Maps.newHashMap();
-            for (int i = 0; i < NbtList.size(); i++) {
-                NbtCompound tag = NbtList.getCompound(i);
-                if (tag.contains("name") && tag.contains("id")) {
-                    map.put(tag.getUuid("id"), tag.getString("name"));
-                }
-            }
-            fun.set(map);
-        }
-    }
-    );
     public static final Preference<Optional<String>> NICK = new Preference<Optional<String>>(
             "nickname", Optional.empty(),
             (fun) -> fun.value().ifPresent((nickname) -> fun.tag().putString(fun.setting().getId(), nickname)),

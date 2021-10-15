@@ -209,11 +209,6 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public boolean ignored(UUID uuid) {
-        return false;
-    }
-
-    @Override
     public EntityIdentifiable getLastMessageReceptionist() {
         if (this.isOnline()) {
             try {

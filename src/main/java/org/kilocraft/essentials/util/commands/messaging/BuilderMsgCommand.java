@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,7 +25,7 @@ public class BuilderMsgCommand extends EssentialCommand {
     private static final ServerChat.Channel THIS_CHANNEL = ServerChat.Channel.BUILDER;
 
     public BuilderMsgCommand() {
-        super("buildermsg", src -> Permissions.check(src, EssentialPermission.CHAT_CHANNEL_BUILDERMSG.getNode()));
+        super("buildermsg", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.CHAT_CHANNEL_BUILDERMSG.getNode()));
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {

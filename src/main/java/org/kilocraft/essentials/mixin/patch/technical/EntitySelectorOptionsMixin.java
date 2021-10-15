@@ -1,11 +1,10 @@
 package org.kilocraft.essentials.mixin.patch.technical;
 
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.EntitySelectorOptions;
 import net.minecraft.command.EntitySelectorReader;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +27,7 @@ public abstract class EntitySelectorOptionsMixin {
         putOption("permission", (entitySelectorReader) -> {
             boolean negate = entitySelectorReader.readNegationCharacter();
             String permission = entitySelectorReader.getReader().readUnquotedString();
-            entitySelectorReader.setPredicate((entity) -> (Permissions.check(entity, permission, 2)) != negate);
+            entitySelectorReader.setPredicate((entity) -> (KiloEssentials.hasPermissionNode(entity.getCommandSource(), permission)) != negate);
         }, (entitySelectorReader) -> true, new LiteralText(""));
     }
 

@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
@@ -62,7 +63,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
 
             if (PlayerWarpsManager.getWarps(user.getUuid()).size() + 1 <= allowed &&
-                    KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
+                    KiloEssentials.hasPermissionNode(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
                 return true;
             }
         }

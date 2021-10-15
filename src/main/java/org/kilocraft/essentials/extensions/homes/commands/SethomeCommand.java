@@ -12,6 +12,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -144,7 +145,7 @@ public class SethomeCommand extends EssentialCommand {
     private static int getHomePermissionLimit(User user, String permission) {
         int homeLimit = 0;
         for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
-            if (KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), permission + i)) {
+            if (KiloEssentials.hasPermissionNode(((OnlineUser) user).getCommandSource(), permission + i)) {
                 homeLimit = i;
             }
         }

@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
@@ -37,7 +38,7 @@ public class SimpleCommandManager {
         }
 
         if (command.permReq != null && !command.permReq.isEmpty()) {
-            canUse = canUse || KiloCommands.hasPermission(src, command.permReq);
+            canUse = canUse || KiloEssentials.hasPermissionNode(src, command.permReq);
         }
 
         return canUse;

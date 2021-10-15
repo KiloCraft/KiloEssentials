@@ -37,7 +37,7 @@ public class TpaHereCommand extends EssentialCommand {
             throw KiloCommands.getException("exception.source_is_target").create();
         }
 
-        if (target.ignored(src.getUuid()) || target.getPreference(Preferences.DON_NOT_DISTURB) || !target.hasPermission(TpaCommand.PERMISSION)) {
+        if (target.getPreference(Preferences.DON_NOT_DISTURB) || !target.hasPermission(TpaCommand.PERMISSION)) {
             throw KiloCommands.getException("exception.ignored", target.getFormattedDisplayName()).create();
         }
 

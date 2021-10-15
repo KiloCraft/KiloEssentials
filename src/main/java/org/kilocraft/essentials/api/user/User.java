@@ -249,14 +249,6 @@ public interface User extends EntityIdentifiable, NBTSerializable {
      */
     boolean equals(User anotherUser);
 
-    /**
-     * Checks if this user is ignoring another user
-     *
-     * @param uuid the {@link UUID} of the other user to check
-     * @return is This user ignoring the other user
-     */
-    boolean ignored(UUID uuid);
-
     EntityIdentifiable getLastMessageReceptionist();
 
     void setLastMessageReceptionist(EntityIdentifiable entity);

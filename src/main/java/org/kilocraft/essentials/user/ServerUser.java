@@ -400,11 +400,6 @@ public class ServerUser implements User {
     }
 
     @Override
-    public boolean ignored(UUID uuid) {
-        return this.getPreference(Preferences.IGNORE_LIST).containsKey(uuid);
-    }
-
-    @Override
     public EntityIdentifiable getLastMessageReceptionist() {
         return this.lastDmReceptionist;
     }

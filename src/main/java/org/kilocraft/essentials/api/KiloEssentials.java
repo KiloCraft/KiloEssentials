@@ -30,6 +30,7 @@ import org.kilocraft.essentials.provided.BrandedServer;
 import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
+import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.NbtCommands;
 import org.kilocraft.essentials.util.commands.KiloCommands;
@@ -70,10 +71,26 @@ public class KiloEssentials {
         return hasPermissionNode(src, perm, 2);
     }
 
+    public static boolean hasPermissionNode(ServerCommandSource src, CommandPermission perm) {
+        return hasPermissionNode(src, perm.getNode(), 2);
+    }
+
     public static boolean hasPermissionNode(ServerCommandSource src, EssentialPermission perm, int minOpLevel) {
+        return hasPermissionNode(src, perm.getNode(), minOpLevel);
+    }
+
+    public static boolean hasPermissionNode(ServerCommandSource src, CommandPermission perm, int minOpLevel) {
+        return hasPermissionNode(src, perm.getNode(), minOpLevel);
+    }
+
+    public static boolean hasPermissionNode(ServerCommandSource src, String perm) {
+        return hasPermissionNode(src, perm, 2);
+    }
+
+    public static boolean hasPermissionNode(ServerCommandSource src, String perm, int minOpLevel) {
         try {
-            return Permissions.check(src, perm.getNode(), minOpLevel);
-        } catch (Exception e) {
+            return Permissions.check(src, perm);
+        } catch (Throwable e) {
             return src.hasPermissionLevel(minOpLevel);
         }
     }

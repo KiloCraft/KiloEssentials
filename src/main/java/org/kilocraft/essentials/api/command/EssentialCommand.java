@@ -9,7 +9,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -25,13 +24,11 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.StringUtils;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.main.Config;
 import org.kilocraft.essentials.config.messages.Messages;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.NameLookup;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.text.Texter;
@@ -179,19 +176,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
     }
 
     public boolean hasPermission(final ServerCommandSource src, final CommandPermission cmdPerm) {
-        return KiloCommands.hasPermission(src, cmdPerm);
-    }
-
-    public boolean hasPermission(final ServerCommandSource src, final CommandPermission cmdPerm, final int minOpLevel) {
-        return KiloCommands.hasPermission(src, cmdPerm, minOpLevel);
-    }
-
-    public boolean hasPermission(final ServerCommandSource src, final EssentialPermission essPerm) {
-        return Permissions.check(src, essPerm.getNode(), 2);
-    }
-
-    public boolean hasPermission(final ServerCommandSource src, final EssentialPermission essPerm, final int minOpLevel) {
-        return Permissions.check(src, essPerm.getNode(), minOpLevel);
+        return KiloEssentials.hasPermissionNode(src, cmdPerm);
     }
 
     @Override

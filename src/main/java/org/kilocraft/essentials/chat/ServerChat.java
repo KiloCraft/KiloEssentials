@@ -106,10 +106,6 @@ public final class ServerChat {
                 user.sendMessage(ServerUserManager.getMuteMessage(user));
                 return;
             }
-
-            if (target.ignored(source.getPlayer().getUuid())) {
-                throw KiloCommands.getException("exception.ignored", target.getFormattedDisplayName()).create();
-            }
         }
 
         String toSource = format.replace("%SOURCE%", me_format)
