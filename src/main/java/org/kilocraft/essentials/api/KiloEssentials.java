@@ -149,6 +149,7 @@ public class KiloEssentials {
 
         PlayerEvents.JOIN.register(this::onJoin);
         PlayerEvents.JOINED.register(this::onJoined);
+        PlayerEvents.LEAVE.register(this::onLeave);
         NbtCommands.registerEvents();
     }
 
@@ -169,6 +170,10 @@ public class KiloEssentials {
     private void onJoined(ClientConnection connection, ServerPlayerEntity player) {
         this.userManager.onJoined(player);
         this.tabListData.onJoin(player);
+    }
+
+    private void onLeave(ServerPlayerEntity player) {
+        this.tabListData.onLeave(player);
     }
 
     private void load() {
@@ -210,7 +215,7 @@ public class KiloEssentials {
         TickManager.onTick();
         int ticks = getMinecraftServer().getTicks();
         if (ticks % KiloConfig.main().playerList().updateRate == 0) {
-            this.tabListData.onTick();
+            this.tabListData.onUpdate();
             //getMinecraftServer().getPlayerManager().getPlayerList().forEach(LocationUtil::processDimension);
         }
         this.userManager.onTick();
