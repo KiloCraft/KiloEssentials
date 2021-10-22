@@ -29,7 +29,7 @@ public abstract class ServerChunkManagerMixin {
      * */
 
     @Unique
-    private final ObjectLinkedOpenHashSet<ServerChunkManager.class_6635> active = new ObjectLinkedOpenHashSet<>();
+    private final ObjectLinkedOpenHashSet<ServerChunkManager.ChunkWithHolder> active = new ObjectLinkedOpenHashSet<>();
     @Shadow
     @Final
     ServerWorld world;
@@ -60,7 +60,7 @@ public abstract class ServerChunkManagerMixin {
 
     // Only flush active chunks.
     @Redirect(method = "tickChunks", at = @At(value = "INVOKE", target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V", ordinal = 0))
-    private void flushActiveChunks(List<?> list, Consumer<? super ServerChunkManager.class_6635> action) {
+    private void flushActiveChunks(List<?> list, Consumer<? super ServerChunkManager.ChunkWithHolder> action) {
         this.active.forEach(action);
     }
 
@@ -72,7 +72,7 @@ public abstract class ServerChunkManagerMixin {
                 final WorldChunk chunk = holder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK).left().orElse(null);
                 if (chunk != null) {
                     if (TickManager.shouldTick(holder.getPos(), this.world)) {
-                        this.active.add(new ServerChunkManager.class_6635(chunk, holder));
+                        this.active.add(new ServerChunkManager.ChunkWithHolder(chunk, holder));
                     } else {
                         // Sends clients block updates from inactive chunks.
                         holder.flushUpdates(chunk);

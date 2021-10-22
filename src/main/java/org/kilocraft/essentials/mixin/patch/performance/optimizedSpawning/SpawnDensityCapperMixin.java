@@ -72,7 +72,7 @@ public abstract class SpawnDensityCapperMixin {
 
     private static List<ServerPlayerEntity> getNearbyPlayers(ServerWorld world, ChunkPos pos, ObjectSet<ServerPlayerEntity> watchingPlayers) {
         final ChunkTicketManager manager = ChunkManager.getTicketManager(world);
-        if (manager == null || !manager.method_20800(pos.toLong())) {
+        if (manager == null || !manager.shouldTick(pos.toLong())) {
             return List.of();
         }
 
