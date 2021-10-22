@@ -70,6 +70,7 @@
     "technical.MinecraftServerMixin",
     "technical.PlayerListS2CPacketMixin",
     "technical.QueryResponseS2CPacketMixin",
+    "technical.ServerCommandSourceMixin",
     "technical.ServerHandshakeNetworkHandlerMixin",
     "technical.ServerPlayerEntityMixin",
     "technical.ServerPlayNetworkHandlerMixin",

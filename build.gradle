@@ -58,8 +58,14 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    // Fabric base api
-    modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
+    // Fabric API
+    Set<String> apiModules = [
+            'fabric-api-base',
+            'fabric-game-rule-api-v1'
+    ]
+    apiModules.forEach {
+        modImplementation(fabricApi.module(it, project.fabric_version))
+    }
 
     // Fabric permission api
     modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'

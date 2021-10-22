@@ -32,6 +32,7 @@ import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.EssentialPermission;
+import org.kilocraft.essentials.util.ExtraGameRules;
 import org.kilocraft.essentials.util.NbtCommands;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
@@ -52,6 +53,7 @@ public class KiloEssentials {
     public KiloEssentials() {
         INSTANCE = this;
         this.userManager = new ServerUserManager();
+        ExtraGameRules.initialize();
         KiloConfig.load();
         this.registerEvents();
     }
