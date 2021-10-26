@@ -90,7 +90,11 @@ public class KiloEssentials {
     }
 
     public static boolean hasPermissionNode(ServerCommandSource src, String perm, int minOpLevel) {
-        return Permissions.check(src, perm, minOpLevel);
+        try {
+            return Permissions.check(src, perm, minOpLevel);
+        } catch (Throwable e) {
+            return src.hasPermissionLevel(minOpLevel);
+        }
     }
 
     public static MinecraftDedicatedServer getMinecraftServer() {

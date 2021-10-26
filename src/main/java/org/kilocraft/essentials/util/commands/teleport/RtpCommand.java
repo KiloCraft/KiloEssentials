@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -35,10 +36,8 @@ import org.kilocraft.essentials.patch.ChunkManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
-import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.Random;
@@ -59,7 +58,7 @@ public class RtpCommand extends EssentialCommand {
         super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
     }
 
-    private void teleport(ServerCommandSource src, ServerPlayerEntity target) {
+    private void teleport(ServerCommandSource src, ServerPlayerEntity target, ServerWorld targetWorld) {
         OnlineUser targetUser = this.getUserManager().getOnline(target);
         RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
         if (targetUser.getPreference(RTP_LEFT) < 0) {
@@ -73,7 +72,7 @@ public class RtpCommand extends EssentialCommand {
         }
 
         // Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-        if (RegistryUtils.dimensionTypeToRegistryKey(src.getWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
+        if (RegistryUtils.dimensionTypeToRegistryKey(targetWorld.getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
             targetUser.sendLangMessage("command.rtp.dimension_exception");
             return;
         }
@@ -82,19 +81,18 @@ public class RtpCommand extends EssentialCommand {
             KiloChat.broadCast(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName()));
         }
 
-        this.attemptTeleport(src, targetUser);
+        this.attemptTeleport(src, targetUser, targetWorld);
     }
 
-    private void attemptTeleport(ServerCommandSource src, OnlineUser targetUser) {
-        final ServerWorld world = src.getWorld();
+    private void attemptTeleport(ServerCommandSource src, OnlineUser targetUser, ServerWorld targetWorld) {
         targetUser.sendLangMessage("command.rtp.searching");
-        final BlockPos blockPos = this.getBlockPos(world);
+        final BlockPos blockPos = this.getBlockPos(targetWorld);
         if (blockPos != null) {
             ServerPlayerEntity target = targetUser.asPlayer();
             targetUser.sendLangMessage("command.rtp.loading");
             // Add a custom ticket to gradually preload chunks
-            world.getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(blockPos), 1, target.getId()); // Lag reduction
-            this.teleport(src, targetUser, world, blockPos.mutableCopy(), 0);
+            targetWorld.getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(blockPos), 1, target.getId()); // Lag reduction
+            this.teleport(src, targetUser, targetWorld, blockPos.mutableCopy(), 0);
         } else {
             targetUser.sendLangMessage("command.rtp.failed.invalid_biome");
         }
@@ -209,7 +207,10 @@ public class RtpCommand extends EssentialCommand {
                 .requires(PERMISSION_CHECK_MANAGE)
                 .then(this.argument("target", EntityArgumentType.player())
                         .suggests(ArgumentSuggestions::allPlayers)
-                        .executes(this::executeOthers)
+                        .executes(ctx -> this.executeOthers(ctx, null))
+                        .then(this.argument("dimension", DimensionArgumentType.dimension())
+                                .executes(ctx -> this.executeOthers(ctx, DimensionArgumentType.getDimensionArgument(ctx, "dimension")))
+                        )
                 );
 
         LiteralArgumentBuilder<ServerCommandSource> checkArgument = this.literal("check")
@@ -221,7 +222,10 @@ public class RtpCommand extends EssentialCommand {
                 );
 
         LiteralArgumentBuilder<ServerCommandSource> performArgument = this.literal("perform")
-                .executes(this::executePerform);
+                .executes(ctx -> this.executePerform(ctx, null))
+                .then(this.argument("dimension", DimensionArgumentType.dimension())
+                        .executes(ctx -> this.executePerform(ctx, DimensionArgumentType.getDimensionArgument(ctx, "dimension")))
+                );
 
         this.commandNode.addChild(addArgument.build());
         this.commandNode.addChild(setArgument.build());
@@ -292,18 +296,14 @@ public class RtpCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int executePerform(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return this.execute(ctx.getSource(), ctx.getSource().getPlayer());
+    private int executePerform(CommandContext<ServerCommandSource> ctx, @Nullable ServerWorld world) throws CommandSyntaxException {
+        this.teleport(ctx.getSource(), ctx.getSource().getPlayer(), world == null ? ctx.getSource().getWorld() : world);
+        return SUCCESS;
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser target = this.getUserManager().getOnline(getPlayer(ctx, "target"));
-
-        return this.execute(ctx.getSource(), target.asPlayer());
-    }
-
-    private int execute(ServerCommandSource source, ServerPlayerEntity target) {
-        this.teleport(source, target);
+    private int executeOthers(CommandContext<ServerCommandSource> ctx, @Nullable ServerWorld world) throws CommandSyntaxException {
+        final ServerPlayerEntity player = getPlayer(ctx, "target");
+        this.teleport(ctx.getSource(), player, world == null ? player.getWorld() : world);
         return SUCCESS;
     }
 }
