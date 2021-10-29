@@ -10,6 +10,7 @@
     "bugfix.ReadOnlyChunkMixin",
     "bugfix.ServerPlayerEntityMixin",
     "bugfix.ServerPlayNetworkHandlerMixin",
+    "bugfix.SurfaceBuilderMixin",
     "gameplay.DyeItemMixin",
     "gameplay.EnchantCommandMixin",
     "gameplay.ServerWorldMixin",

@@ -10,3 +10,5 @@ accessible field net/minecraft/world/SpawnDensityCapper$DensityCap spawnGroupsTo
 accessible field net/minecraft/world/SpawnDensityCapper playersToDensityCap Ljava/util/Map;
 accessible field net/minecraft/world/SpawnHelper CHUNK_AREA I
 
+accessible    class    net/minecraft/world/gen/surfacebuilder/MaterialRules$BlockStateRule
+
