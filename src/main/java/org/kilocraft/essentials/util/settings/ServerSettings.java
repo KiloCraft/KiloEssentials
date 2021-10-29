@@ -46,6 +46,7 @@ public class ServerSettings implements NBTStorage {
     public static double patch_item_merge_radius = 0.5D;
     public static boolean patch_lobotomize_villagers_enabled = false;
     public static boolean patch_eigencraft_redstone = false;
+    public static boolean patch_tnt_duping = true;
     public static int patch_save_interval = 6000;
     public static int patch_maxCollisionsPerEntity = 8;
     public static int patch_lobotomize_villagers_tick_interval = 20;
@@ -124,6 +125,8 @@ public class ServerSettings implements NBTStorage {
         BooleanSetting dye_shulkers = new BooleanSetting(false, "dye_shulkers");
         // Save Interval
         IntegerSetting save_interval = new IntegerSetting(6000, "save_interval").onChanged(integer -> patch_save_interval = integer);
+        // Tnt duping
+        BooleanSetting tnt_duping = new BooleanSetting(true, "tnt_duping").onChanged(b -> patch_tnt_duping = b);
         // Eigencraft redstone
         BooleanSetting eigencraft_redstone = new BooleanSetting(false, "eigencraft_redstone").onChanged(b -> patch_eigencraft_redstone = b);
         // Load spawn
@@ -167,6 +170,7 @@ public class ServerSettings implements NBTStorage {
 
         patch.addChild(dye_shulkers);
         patch.addChild(save_interval);
+        patch.addChild(tnt_duping);
         patch.addChild(eigencraft_redstone);
         patch.addChild(loadSpawn);
         patch.addChild(maxCollisionsPerEntity);
