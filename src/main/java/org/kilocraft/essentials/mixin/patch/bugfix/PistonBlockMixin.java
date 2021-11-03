@@ -21,6 +21,10 @@ import java.util.Map;
 @Mixin(PistonBlock.class)
 public abstract class PistonBlockMixin {
 
+    /**
+     * Fix piston physics inconsistency
+     */
+
     @Inject(
             method = "move",
             at = @At(
@@ -52,7 +56,6 @@ public abstract class PistonBlockMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void adjustBlockStatesArray(World world, BlockPos pos, Direction dir, boolean retract, CallbackInfoReturnable<Boolean> cir, BlockPos blockPos, PistonHandler pistonHandler, Map<BlockPos, BlockState> map, List<BlockPos> movedBlocks, List<BlockState> oldBlockStates, List<BlockPos> brokenBlocks, BlockState[] blockStates, Direction direction, int i, BlockState blockState6) {
-        // TODO:
         if (ServerSettings.patch_tnt_duping) {
             int size = brokenBlocks.size();
             for (int j = movedBlocks.size() - 1; j >= 0; --j) {

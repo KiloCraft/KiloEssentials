@@ -5,13 +5,10 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "bugfix.EntityMixin",
-    "bugfix.NetworkThreadUtilsMixin",
     "bugfix.PassiveEntityMixin",
     "bugfix.PistonBlockMixin",
-    "bugfix.ReadOnlyChunkMixin",
     "bugfix.ServerPlayerEntityMixin",
     "bugfix.ServerPlayNetworkHandlerMixin",
-    "bugfix.SurfaceBuilderMixin",
     "gameplay.DyeItemMixin",
     "gameplay.EnchantCommandMixin",
     "gameplay.ServerWorldMixin",

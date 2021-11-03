@@ -41,7 +41,7 @@ public abstract class ServerHandshakeNetworkHandlerMixin {
             )
     )
     public int onLogin(HandshakeC2SPacket handshakeC2SPacket) {
-        if (handshakeC2SPacket.getProtocolVersion() == 1073741867) {
+        if (handshakeC2SPacket.getProtocolVersion() == VersionCompability.getPretendMetaVersion().getProtocolVersion()) {
             return SharedConstants.getGameVersion().getProtocolVersion();
         }
         return handshakeC2SPacket.getProtocolVersion();

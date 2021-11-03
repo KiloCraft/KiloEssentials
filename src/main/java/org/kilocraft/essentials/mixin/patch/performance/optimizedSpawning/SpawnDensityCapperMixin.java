@@ -43,7 +43,6 @@ public abstract class SpawnDensityCapperMixin {
      * @author Wesley1808
      * @reason Use PlayerMobDistanceMap instead of Mojang's default implementation.
      */
-
     @Overwrite
     private List<ServerPlayerEntity> getMobSpawnablePlayers(ChunkPos pos) {
         if (ServerSettings.optimizedSpawning) {

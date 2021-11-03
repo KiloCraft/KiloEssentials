@@ -22,7 +22,6 @@ public abstract class PassiveEntityMixin extends MobEntity {
         if (!(entityData instanceof PassiveEntity.PassiveData)) {
             return new PassiveEntity.PassiveData(true);
         }
-
         return entityData;
     }
 
