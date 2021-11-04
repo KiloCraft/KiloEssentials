@@ -94,9 +94,13 @@ public class NicknameCommand extends EssentialCommand {
             return -1;
         }
 
-        CommandSourceServerUser.of(source).sendMessage((target.equals(this.getCommandSource(ctx)) ? this.messages.commands().nickname().setSelf : this.messages.commands().nickname().setOthers)
-                .replace("{NICK}", target.getNickname().isPresent() ? target.getNickname().get() : target.getDisplayName())
-                .replace("{NICK_NEW}", nickname));
+        final CommandSourceServerUser src = CommandSourceServerUser.of(source);
+        String oldNickName = target.getNickname().isPresent() ? target.getNickname().get() : target.getDisplayName();
+        if ((target.equals(this.getCommandSource(ctx)))) {
+            src.sendLangMessage("command.nickname.set_self", nickname, oldNickName);
+        } else {
+            src.sendLangMessage("command.nickname.set_other", nickname, oldNickName, target.getNameTag());
+        }
 
         target.setNickname(nickname);
         player.setCustomName(ComponentText.toText(nickname));
@@ -105,12 +109,11 @@ public class NicknameCommand extends EssentialCommand {
 
     private int resetSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        User user = KiloEssentials.getUserManager().getOnline(player);
+        OnlineUser user = KiloEssentials.getUserManager().getOnline(player);
         user.clearNickname();
 
         player.setCustomName(null);
-
-        this.getCommandSource(ctx).sendMessage(this.messages.commands().nickname().resetSelf);
+        user.sendLangMessage("command.nickname.reset_self");
         return SUCCESS;
     }
 
@@ -129,8 +132,7 @@ public class NicknameCommand extends EssentialCommand {
                 dataModifier.setCustomName(null);
                 dataModifier.save();
             }
-            src.sendMessage(this.messages.commands().nickname().resetOthers
-                    .replace("{TARGET_TAG}", user.getNameTag()));
+            src.sendLangMessage("command.nickname.reset_other", user.getNameTag());
         });
 
         return SUCCESS;

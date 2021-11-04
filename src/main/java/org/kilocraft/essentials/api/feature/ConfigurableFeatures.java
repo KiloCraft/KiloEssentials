@@ -16,7 +16,7 @@ public class ConfigurableFeatures {
 
     public static <F extends ConfigurableFeature> void register(F feature, String configKey) {
         try {
-            if (KiloConfig.getMainNode().getNode("features").getNode(configKey).getBoolean()) {
+            if (KiloConfig.getRootNode().node("features").node(configKey).getBoolean()) {
 
                 if (feature instanceof TickListener) {
                     tickListeners.add((TickListener) feature);

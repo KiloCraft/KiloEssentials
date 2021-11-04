@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.extensions.magicalparticles;
 
-import com.google.common.reflect.TypeToken;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -10,13 +9,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
@@ -26,12 +18,26 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleAnimationSection;
 import org.kilocraft.essentials.api.world.RelativePosition;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.magicalparticles.config.*;
+import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandsConfig;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.ConfigurationOptions;
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.util.MapFactories;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -51,33 +57,26 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
     @Override
     public void load() {
-        loadConfig();
-        createFromConfig();
+        this.loadConfig();
     }
 
-    private static void loadConfig() {
+    public void loadConfig() {
+        Path path = KiloEssentials.getEssentialsPath().resolve("particle_types.conf");
+        final HoconConfigurationLoader hoconLoader = HoconConfigurationLoader.builder()
+                .path(path)
+                .build();
         try {
-            KiloFile CONFIG_FILE = new KiloFile("particle_types.conf", KiloEssentials.getEssentialsPath());
-            if (!CONFIG_FILE.exists()) {
-                CONFIG_FILE.createFile();
-                CONFIG_FILE.pasteFromResources("assets/config/particle_types.conf");
+            if (!path.toFile().exists()) {
+                InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/config/particle_types.conf");
+                assert inputStream != null;
+                Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
             }
-
-            ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
-                    .setFile(CONFIG_FILE.getFile()).build();
-
-            ConfigurationNode configNode = loader.load(ConfigurationOptions.defaults()
-                    .setHeader(ParticleTypesConfig.HEADER)
-                    .setObjectMapperFactory(DefaultObjectMapperFactory.getInstance())
-                    .setShouldCopyDefaults(true));
-
-            config = configNode.getValue(TypeToken.of(ParticleTypesConfig.class), new ParticleTypesConfig());
-
-            loader.save(configNode);
-        } catch (IOException | ObjectMappingException e) {
-            KiloEssentials.getLogger().error("Exception handling a configuration file! " + ParticleAnimationManager.class.getName());
-            e.printStackTrace();
+            final CommentedConfigurationNode rootNode = hoconLoader.load(KiloConfig.configurationOptions().header(ParticleTypesConfig.HEADER));
+            config = rootNode.get(ParticleTypesConfig.class, new ParticleTypesConfig());
+        } catch (IOException e) {
+            KiloEssentials.getLogger().error("Exception handling a configuration file!", e);
         }
+        createFromConfig();
     }
 
     private static void createFromConfig() {
@@ -115,7 +114,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
                 ParticleEffect particleEffect = null;
 
-                if (frame.getBlockStateSection().isPresent() && !frame.getDustParticleSection().isPresent()) {
+                if (frame.getBlockStateSection().isPresent() && frame.getDustParticleSection().isEmpty()) {
                     BlockStateParticleEffectConfigSection section = frame.getBlockStateSection().get();
                     Block block = Registry.BLOCK.get(new Identifier(section.blockId.toLowerCase()));
 
@@ -132,7 +131,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                             Registry.BLOCK.get(new Identifier(frame.getBlockStateSection().get().blockId)).getDefaultState()
                     );
 
-                } else if (frame.getDustParticleSection().isPresent() && !frame.getBlockStateSection().isPresent()) {
+                } else if (frame.getDustParticleSection().isPresent() && frame.getBlockStateSection().isEmpty()) {
                     DustParticleEffectConfigSection section = frame.getDustParticleSection().get();
                     String[] rgb = section.rgb.split(" ");
 
@@ -154,7 +153,11 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                                 Float.parseFloat(rgb[0]), Float.parseFloat(rgb[1]), Float.parseFloat(rgb[2])), section.scale
                         );
                 } else {
-                    particleEffect = (DefaultParticleType) effect;
+                    if (effect instanceof DefaultParticleType defaultType) {
+                        particleEffect = defaultType;
+                    } else {
+                        KiloEssentials.getLogger().warn("Error parsing particle effect \"{}\"", frame.effect);
+                    }
                 }
 
                 if (particleEffect != null) {

@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.extensions.customcommands.config;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.kilocraft.essentials.config.main.Config;
 import org.kilocraft.essentials.extensions.customcommands.config.sections.CustomCommandConfigSection;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,67 +1,49 @@
 package org.kilocraft.essentials.extensions.customcommands;
 
-import com.google.common.reflect.TypeToken;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.chat.StringText;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.customcommands.config.CustomCommandsConfig;
 import org.kilocraft.essentials.extensions.customcommands.config.sections.CustomCommandConfigSection;
-import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 
-import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CustomCommands implements ReloadableConfigurableFeature {
-    public static boolean enabled = false;
     private static final List<SimpleCommand> commands = new ArrayList<>();
     private static CustomCommandsConfig config;
 
     @Override
     public boolean register() {
-        enabled = true;
         this.load();
         return true;
     }
 
     public void load() {
+        Path path = KiloEssentials.getEssentialsPath().resolve("customCommands.conf");
+        final HoconConfigurationLoader hoconLoader = HoconConfigurationLoader.builder()
+                .path(path)
+                .build();
         try {
-            KiloFile CONFIG_FILE = new KiloFile("customCommands.conf", KiloEssentials.getEssentialsPath());
-            if (!CONFIG_FILE.exists()) {
-                CONFIG_FILE.createFile();
-            }
-
-            ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
-                    .setFile(CONFIG_FILE.getFile()).build();
-
-            ConfigurationNode configNode = loader.load(ConfigurationOptions.defaults()
-                    .setHeader(CustomCommandsConfig.HEADER)
-                    .setObjectMapperFactory(DefaultObjectMapperFactory.getInstance())
-                    .setShouldCopyDefaults(true));
-
-            config = configNode.getValue(TypeToken.of(CustomCommandsConfig.class), new CustomCommandsConfig());
-
-            loader.save(configNode);
-        } catch (IOException | ObjectMappingException e) {
-            KiloEssentials.getLogger().error("Exception handling a configuration file! " + CustomCommands.class.getName());
-            e.printStackTrace();
+            final CommentedConfigurationNode rootNode = hoconLoader.load(KiloConfig.configurationOptions().header(CustomCommandsConfig.HEADER));
+            config = rootNode.get(CustomCommandsConfig.class, new CustomCommandsConfig());
+            if (!path.toFile().exists()) hoconLoader.save(rootNode);
+        } catch (ConfigurateException e) {
+            KiloEssentials.getLogger().error("Exception handling a configuration file!", e);
         }
-
         createFromConfig();
     }
 

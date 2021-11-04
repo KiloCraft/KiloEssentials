@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.extensions.magicalparticles.config;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.Optional;
 
@@ -18,17 +18,17 @@ public class ShapeConfigSection {
     public float spacing = 0.2f;
 
     @Setting("lineProperties")
-    public LineConfigSection lineConfigSection = this.shape.equals("line") ? new LineConfigSection() : null;
+    public LineConfigSection lineConfigSection = new LineConfigSection();
 
     @Setting("bezierProperties")
-    public BezierConfigSection bezierConfigSection = this.shape.equals("bezier") ? new BezierConfigSection() : null;
+    public BezierConfigSection bezierConfigSection = new BezierConfigSection();
 
     public Optional<LineConfigSection> getLineConfigSection() {
-        return Optional.ofNullable(this.lineConfigSection);
+        return Optional.ofNullable(this.shape.equals("line") ? this.lineConfigSection : null);
     }
 
     public Optional<BezierConfigSection> getBezierConfigSection() {
-        return Optional.ofNullable(this.bezierConfigSection);
+        return Optional.ofNullable(this.shape.equals("bezier") ? this.bezierConfigSection : null);
     }
 
 }

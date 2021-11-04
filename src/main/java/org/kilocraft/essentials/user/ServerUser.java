@@ -284,10 +284,7 @@ public class ServerUser implements User {
 
     @Override
     public String getNameTag() {
-        String str = this.isOnline() ? KiloConfig.messages().general().userTags().online :
-                KiloConfig.messages().general().userTags().offline;
-        return str.replace("{USER_NAME}", this.name)
-                .replace("{USER_DISPLAYNAME}", this.getFormattedDisplayName());
+        return ModConstants.translation(this.isOnline() ? "player.tag.online" : "player.tag.offline", this.getFormattedDisplayName());
     }
 
     @Override

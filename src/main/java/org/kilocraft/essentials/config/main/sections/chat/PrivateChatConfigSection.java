@@ -1,8 +1,9 @@
 package org.kilocraft.essentials.config.main.sections.chat;
 
 import net.minecraft.sound.SoundEvents;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 public class PrivateChatConfigSection {
@@ -13,10 +14,8 @@ public class PrivateChatConfigSection {
     @Setting(value = "meFormat")
     public String privateChatMeFormat = "&cme";
 
-    @Setting(value = "noMessageToReply")
-    public String noMessagesToReply = "&cYou don't have any messages to reply to!";
-
-    @Setting(value = "sound", comment = "The sound you hear when someone messages you")
+    @Setting(value = "sound")
+    @Comment("The sound you hear when someone messages you")
     private final ChatPingSoundConfigSection chatPingSound = new ChatPingSoundConfigSection(SoundEvents.ENTITY_SILVERFISH_DEATH, 0.09, 1.05D);
 
     public ChatPingSoundConfigSection pingSound() {

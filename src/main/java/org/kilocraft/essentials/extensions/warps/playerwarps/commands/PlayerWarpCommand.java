@@ -179,12 +179,12 @@ public class PlayerWarpCommand extends EssentialCommand {
         PlayerWarp warp = PlayerWarpsManager.getWarp(name);
 
         if (!canSet(user) && !user.hasPermission(CommandPermission.PLAYER_WARP_LIMIT_BYPASS)) {
-            user.sendMessage(this.messages.commands().playerWarp().limitReached);
+            user.sendLangMessage("command.playerwarp.limit");
             return FAILED;
         }
 
         if (warp != null && !warp.getOwner().equals(user.getUuid())) {
-            user.sendLangMessage(this.messages.commands().playerWarp().nameAlreadyTaken);
+            user.sendLangMessage("command.playerwarp.name_taken");
             return FAILED;
         }
 
@@ -213,7 +213,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             PlayerWarpsManager.addWarp(new PlayerWarp(name, user.getLocation(), user.getUuid(), type, desc));
         }
 
-        user.sendMessage(this.messages.commands().playerWarp().warpSet.replace("{NAME}", name));
+        user.sendLangMessage("command.playerwarp.set", name);
         return SUCCESS;
     }
 
@@ -241,7 +241,7 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         PlayerWarpsManager.removeWarp(name);
 
-        user.sendMessage(this.messages.commands().playerWarp().warpRemoved.replace("{NAME}", name));
+        user.sendLangMessage("command.playerwarp.remove", name);
         return SUCCESS;
     }
 
@@ -319,7 +319,7 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         String warpName = StringArgumentType.getString(ctx, "name");
         if (!warpName.matches("[\\w]{4,20}")) {
-            src.sendLangError("command.playerwarp.name_invalid");
+            src.sendLangMessage("command.playerwarp.name_invalid");
             return FAILED;
         }
 
@@ -393,9 +393,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         // Add a custom ticket to gradually preload chunks
         warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("pwarp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), 1, src.asPlayer().getId());
         new SinglePlayerScheduler(src, 1, KiloConfig.main().server().cooldown, () -> {
-            src.sendMessage(
-                    KiloConfig.messages().commands().warp().teleportTo
-                            .replace("{WARP_NAME}", warp.getName()));
+            src.sendLangMessage("command.playerwarp.teleport", warp.getName());
             src.teleport(warp.getLocation(), true);
         });
         return SUCCESS;

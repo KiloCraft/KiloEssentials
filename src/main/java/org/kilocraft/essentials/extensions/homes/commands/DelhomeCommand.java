@@ -56,7 +56,7 @@ public class DelhomeCommand extends EssentialCommand {
         }
 
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-            user.sendMessage(this.getConfirmationText(name, ""));
+            user.sendLangMessage("command.delhome.notice", name, "/delhome -confirmed-" + name);
             return AWAIT;
         } else {
             homeHandler.removeHome(name);
@@ -86,7 +86,7 @@ public class DelhomeCommand extends EssentialCommand {
             }
 
             if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-                source.sendMessage(this.getConfirmationText(name, user.getUsername()));
+                source.sendLangMessage("command.delhome.notice", name, "/delhome -confirmed-" + name + " " + user.getUsername());
                 return;
             } else {
                 homeHandler.removeHome(name);
@@ -107,13 +107,4 @@ public class DelhomeCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private Text getConfirmationText(String homeName, String user) {
-        return new LiteralText("")
-                .append(StringText.of("command.delhome.confirmation_message", homeName)
-                        .formatted(Formatting.YELLOW))
-                .append(new LiteralText(" [").formatted(Formatting.GRAY)
-                        .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
-                        .append(new LiteralText("]").formatted(Formatting.GRAY))
-                        .styled((style) -> style.withFormatting(Formatting.GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/delhome -confirmed-" + homeName + " " + user))));
-    }
 }

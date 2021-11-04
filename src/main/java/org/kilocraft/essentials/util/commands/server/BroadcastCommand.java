@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -25,9 +26,7 @@ public class BroadcastCommand extends EssentialCommand {
     }
 
     private int execute(CommandContext<ServerCommandSource> ctx) {
-        String format = KiloConfig.messages().commands().broadCastFormat;
-        KiloChat.broadCast(
-                format.replace("%MESSAGE%", getString(ctx, "message")));
+        KiloChat.broadCast(ModConstants.translation("command.broadcast", getString(ctx, "message")));
         return SUCCESS;
     }
 }

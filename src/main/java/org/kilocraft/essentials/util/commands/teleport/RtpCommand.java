@@ -288,11 +288,7 @@ public class RtpCommand extends EssentialCommand {
     }
 
     private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        Text text = Texter.confirmationMessage(
-                "command.rtp.confirm",
-                Texter.getButton("&8[&aClick Here to perform&8]", "/rtp perform", Texter.newText("&dConfirm"))
-        );
-        this.getOnlineUser(ctx).sendMessage(text);
+        this.getOnlineUser(ctx).sendLangMessage("command.rtp.notice");
         return SUCCESS;
     }
 

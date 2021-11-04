@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.extensions.playtimecommands.config;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,6 @@ public class PlaytimeCommandConfigSection {
 
     @Setting("executes")
     public List<String> commands = new ArrayList<String>() {{
-        this.add("give ${user.name} apple 2");
         this.add("sudo ${user.name} say I've reached 100 seconds of playtime!");
     }};
 

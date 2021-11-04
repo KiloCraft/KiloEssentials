@@ -36,7 +36,7 @@ public class ReplyCommand extends EssentialCommand {
         EntityIdentifiable lastReceptionist = user.getLastMessageReceptionist();
 
         if (lastReceptionist == null || lastReceptionist.getId() == null) {
-            user.sendLangMessage("chat.privateChat.noMessageToReply");
+            user.sendLangMessage("chat.private_chat.no_message");
             return FAILED;
         }
 

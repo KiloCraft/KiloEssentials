@@ -1,23 +1,18 @@
 package org.kilocraft.essentials.extensions.playtimecommands;
 
-import com.google.common.reflect.TypeToken;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
+import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandConfigSection;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandsConfig;
-import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.user.OnlineServerUser;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.text.Texter;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 
-import java.io.IOException;
+import java.nio.file.Path;
 
 public class PlaytimeCommands implements ReloadableConfigurableFeature {
     private static boolean enabled = false;
@@ -35,26 +30,16 @@ public class PlaytimeCommands implements ReloadableConfigurableFeature {
 
     @Override
     public void load() {
+        Path path = KiloEssentials.getEssentialsPath().resolve("playtimeCommands.conf");
+        final HoconConfigurationLoader hoconLoader = HoconConfigurationLoader.builder()
+                .path(path)
+                .build();
         try {
-            KiloFile CONFIG_FILE = new KiloFile("playtimeCommands.hocon", KiloEssentials.getEssentialsPath());
-            if (!CONFIG_FILE.exists()) {
-                CONFIG_FILE.createFile();
-            }
-
-            ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
-                    .setFile(CONFIG_FILE.getFile()).build();
-
-            ConfigurationNode configNode = loader.load(ConfigurationOptions.defaults()
-                    .setHeader(PlaytimeCommandsConfig.HEADER)
-                    .setObjectMapperFactory(DefaultObjectMapperFactory.getInstance())
-                    .setShouldCopyDefaults(true));
-
-            config = configNode.getValue(TypeToken.of(PlaytimeCommandsConfig.class), new PlaytimeCommandsConfig());
-
-            loader.save(configNode);
-        } catch (IOException | ObjectMappingException e) {
-            KiloEssentials.getLogger().error("Exception handling a configuration file! " + PlaytimeCommandsConfig.class.getName());
-            e.printStackTrace();
+            final CommentedConfigurationNode rootNode = hoconLoader.load(KiloConfig.configurationOptions().header(PlaytimeCommandsConfig.HEADER));
+            config = rootNode.get(PlaytimeCommandsConfig.class, new PlaytimeCommandsConfig());
+            if (!path.toFile().exists()) hoconLoader.save(rootNode);
+        } catch (ConfigurateException e) {
+            KiloEssentials.getLogger().error("Exception handling a configuration file!", e);
         }
     }
 

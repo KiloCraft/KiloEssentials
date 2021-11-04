@@ -4,24 +4,29 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.Objects;
 
 @ConfigSerializable
 public class ChatPingSoundConfigSection {
 
-    @Setting(value = "enabled", comment = "Enable or disable the Chat Ping Sound")
+    @Setting(value = "enabled")
+    @Comment("Enable or disable the Chat Ping Sound")
     public boolean enabled = true;
 
-    @Setting(value = "id", comment = "Sound identifier, you can search for them through the '/playsound' command in the game!")
+    @Setting(value = "id")
+    @Comment("Sound identifier, you can search for them through the '/playsound' command in the game!")
     public String id;
 
-    @Setting(value = "volume", comment = "The volume of the sound, Can be between 0 and 3")
+    @Setting(value = "volume")
+    @Comment("The volume of the sound, Can be between 0 and 3")
     public double volume;
 
-    @Setting(value = "pitch", comment = "Pitch of the sound, can be between 0 and 3, Default: 1.0")
+    @Setting(value = "pitch")
+    @Comment("Pitch of the sound, can be between 0 and 3, Default: 1.0")
     public double pitch;
 
     public ChatPingSoundConfigSection() {

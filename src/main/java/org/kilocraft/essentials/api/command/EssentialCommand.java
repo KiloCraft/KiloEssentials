@@ -23,8 +23,6 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.StringUtils;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.messages.Messages;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.preference.Preferences;
@@ -47,7 +45,6 @@ public abstract class EssentialCommand implements IEssentialCommand {
     protected static final transient Logger logger = LogManager.getLogger();
     private static final DynamicCommandExceptionType PROFILE_RESOLVE_EXCEPTION = new DynamicCommandExceptionType((obj) -> Texter.newText("Unexpected error while resolving the requested profile\n" + obj));
     private final String label;
-    public Messages messages = KiloConfig.messages();
     protected transient String[] alias;
     protected transient LiteralArgumentBuilder<ServerCommandSource> argumentBuilder;
     protected transient LiteralCommandNode<ServerCommandSource> commandNode;

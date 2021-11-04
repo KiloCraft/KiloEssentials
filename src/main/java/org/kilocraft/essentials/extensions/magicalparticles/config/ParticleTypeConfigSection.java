@@ -1,8 +1,8 @@
 package org.kilocraft.essentials.extensions.magicalparticles.config;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.kilocraft.essentials.config.main.sections.PermissionRequirementConfigSection;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -31,9 +31,12 @@
   ],
   "accessWidener": "kiloessentials.accesswidener",
   "depends": {
+    "fabric-api-base": "*",
+    "fabric-game-rule-api-v1": "*",
     "fabricloader": ">=0.12.0"
   },
   "suggests": {
+    "fabric-permissions-api": "*",
     "luckperms": "*"
   }
 }

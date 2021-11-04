@@ -115,9 +115,10 @@ public final class ServerChat {
                 .replace("%TARGET%", me_format)
                 .replace("%MESSAGE%", raw);
 
-        String toSpy = ServerChat.config.socialSpyFormat.replace("%SOURCE%", sourceName)
+        /*String toSpy = ServerChat.config.socialSpyFormat.replace("%SOURCE%", sourceName)
                 .replace("%TARGET%", target.getUsername() + "&r")
-                .replace("%MESSAGE%", raw);
+                .replace("%MESSAGE%", raw);*/
+        String toSpy = ModConstants.translation("chat.social_spy", sourceName, target.getUsername(), raw);
 
         if (target.getPreference(Preferences.SOUNDS)) {
             pingUser(target, MentionTypes.PRIVATE);
@@ -140,28 +141,15 @@ public final class ServerChat {
     }
 
     public static void sendCommandSpy(final ServerCommandSource source, final String command) {
-        String format = ServerChat.config.commandSpyFormat;
         String shortenedCommand = command.substring(0, Math.min(command.length(), COMMAND_MAX_LENGTH));
-        String toSpy = format.replace("%SOURCE%", source.getName()).replace("%COMMAND%", shortenedCommand);
-        MutableText text = Texter.newText(toSpy).formatted(Formatting.GRAY);
 
         if (command.length() > COMMAND_MAX_LENGTH) {
-            text.append("...");
+            shortenedCommand += "...";
         }
-
-        text.styled((style) -> style.withHoverEvent(Texter.Events.onHover(ModConstants.translation("channel.commandspy.hover"))).withClickEvent(Texter.Events.onClickSuggest("/" + command)));
 
         for (OnlineServerUser user : KiloEssentials.getUserManager().getOnlineUsers().values()) {
             if (user.getPreference(Preferences.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {
-                user.sendMessage(text);
-            }
-        }
-    }
-
-    public static void send(Text message, EssentialPermission permission) {
-        for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList()) {
-            if (user.hasPermission(permission)) {
-                user.sendMessage(message);
+                user.sendLangMessage("general.social_spy", source.getName(), shortenedCommand);
             }
         }
     }

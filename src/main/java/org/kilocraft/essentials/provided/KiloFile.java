@@ -35,7 +35,6 @@ public class KiloFile {
         if (this.file.exists()) {
             return;
         }
-
         try {
             this.dir.mkdirs();
             this.file.createNewFile();
