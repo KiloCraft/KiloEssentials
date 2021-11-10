@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.kilocraft.essentials.provided.KiloFile;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -63,9 +64,10 @@ public class ModConstants {
         }
         try {
             // Make sure new values get added
-            lang.load(langInputStream);
+            assert langInputStream != null;
+            lang.load(new InputStreamReader(langInputStream, StandardCharsets.UTF_8));
             // Load properties from language file
-            lang.load(new FileInputStream(LANG_FILE.getFile()));
+            lang.load(new InputStreamReader(new FileInputStream(LANG_FILE.getFile()), StandardCharsets.UTF_8));
             // Save changes to language file
             saveLanguageFile(LANG_FILE.getFile());
         } catch (FileNotFoundException ignored) {
