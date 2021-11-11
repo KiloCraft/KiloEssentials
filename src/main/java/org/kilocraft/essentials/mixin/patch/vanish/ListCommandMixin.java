@@ -15,7 +15,13 @@ import java.util.List;
 @Mixin(ListCommand.class)
 public abstract class ListCommandMixin {
 
-    @Redirect(method = "execute", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;getPlayerList()Ljava/util/List;"))
+    @Redirect(
+            method = "execute",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/PlayerManager;getPlayerList()Ljava/util/List;"
+            )
+    )
     private static List<ServerPlayerEntity> removeVanishedPlayers(PlayerManager playerManager) {
         List<ServerPlayerEntity> list = new ArrayList<>();
         for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList(false)) {

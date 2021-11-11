@@ -11,7 +11,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ServerScoreboard.class)
 public abstract class ServerScoreboardMixin {
 
-    @Redirect(method = {"addPlayerToTeam", "removePlayerFromTeam", "updateScoreboardTeamAndPlayers", "updateScoreboardTeam", "updateRemovedTeam"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/network/Packet;)V"))
+    @Redirect(
+            method = {"addPlayerToTeam", "removePlayerFromTeam", "updateScoreboardTeamAndPlayers", "updateScoreboardTeam", "updateRemovedTeam"},
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/network/Packet;)V"
+            )
+    )
     public void abortPacketIfCustomOrder(PlayerManager playerManager, Packet<?> packet) {
         if (!KiloConfig.main().playerList().customOrder) playerManager.sendToAll(packet);
     }

@@ -14,23 +14,42 @@ import java.util.function.BooleanSupplier;
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;setFavicon(Lnet/minecraft/server/ServerMetadata;)V", ordinal = 0), method = "runServer")
+    // TODO: Use https://github.com/FabricMC/fabric/tree/1.17/fabric-lifecycle-events-v1 instead
+    @Inject(method = "runServer",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/MinecraftServer;setFavicon(Lnet/minecraft/server/ServerMetadata;)V",
+                    ordinal = 0
+            )
+    )
     private void onStarted(CallbackInfo info) {
         ServerEvents.STARTED.invoker().onStarted((MinecraftServer) (Object) this);
     }
 
-    @Inject(method = "save", at = @At(value = "HEAD", target = "Lnet/minecraft/server/MinecraftServer;save(ZZZ)Z"))
+    @Inject(
+            method = "save",
+            at = @At(
+                    value = "HEAD",
+                    target = "Lnet/minecraft/server/MinecraftServer;save(ZZZ)Z"
+            )
+    )
     private void onSave(boolean bl, boolean bl2, boolean bl3, CallbackInfoReturnable<Boolean> cir) {
         ServerEvents.SAVE.invoker().onSave((MinecraftServer) (Object) this);
     }
 
-    @Inject(at = @At("HEAD"), method = "shutdown")
+    @Inject(
+            method = "shutdown",
+            at = @At("HEAD")
+    )
     private void onShutdown(CallbackInfo ci) {
         KiloEssentials.getLogger().info("Shutting down the dedicated server...");
         ServerEvents.STOPPING.invoker().onStop();
     }
 
-    @Inject(at = @At("HEAD"), method = "tick")
+    @Inject(
+            method = "tick",
+            at = @At("HEAD")
+    )
     private void onTickStart(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         ServerEvents.TICK.invoker().onTick();
     }

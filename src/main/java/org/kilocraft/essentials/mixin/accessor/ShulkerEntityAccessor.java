@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.mixin.patch.gameplay;
+package org.kilocraft.essentials.mixin.accessor;
 
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.DyeColor;

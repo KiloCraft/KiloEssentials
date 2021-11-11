@@ -20,14 +20,17 @@ public abstract class ServerWorldMixin {
     public abstract void playSound(PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h);
 
     // Change global to local sound events
-    @Inject(method = "syncGlobalEvent", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(
+            method = "syncGlobalEvent",
+            at = @At("HEAD"),
+            cancellable = true
+    )
     public void shouldWeAnnoyEveryone(int i, BlockPos blockPos, int j, CallbackInfo ci) {
         if (!ServerSettings.getBoolean("patch.global_sound")) {
             ci.cancel();
             SoundEvent soundEvent = null;
             float g = 1.0F;
             float h = 1.0F;
-            boolean b = true;
             switch (i) {
                 case 1023 -> soundEvent = SoundEvents.ENTITY_WITHER_SPAWN;
                 case 1028 -> {
@@ -35,9 +38,8 @@ public abstract class ServerWorldMixin {
                     g = 5.0F;
                 }
                 case 1038 -> soundEvent = SoundEvents.BLOCK_END_PORTAL_SPAWN;
-                default -> b = false;
             }
-            if (b)
+            if (soundEvent != null)
                 this.playSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), soundEvent, SoundCategory.HOSTILE, g, h);
         }
     }

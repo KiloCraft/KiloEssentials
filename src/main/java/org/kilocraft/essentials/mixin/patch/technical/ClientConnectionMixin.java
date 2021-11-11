@@ -22,7 +22,10 @@ public abstract class ClientConnectionMixin {
     @Shadow
     private PacketListener packetListener;
 
-    @Inject(method = "channelRead0", at = @At("HEAD"))
+    @Inject(
+            method = "channelRead0",
+            at = @At("HEAD")
+    )
     protected void packetLimit(ChannelHandlerContext channelHandlerContext, Packet<?> packet, CallbackInfo ci) {
         if (this.packetListener instanceof ServerPlayNetworkHandler networkHandler) {
             if ((System.currentTimeMillis() - this.lastInterval) > 1000) {

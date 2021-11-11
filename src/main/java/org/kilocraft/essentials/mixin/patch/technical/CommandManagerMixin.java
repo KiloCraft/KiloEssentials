@@ -20,11 +20,16 @@ import static org.kilocraft.essentials.util.commands.LiteralCommandModified.*;
 
 @Mixin(CommandManager.class)
 public abstract class CommandManagerMixin {
+    // TODO: Rework
     @Shadow
     @Final
     private CommandDispatcher<ServerCommandSource> dispatcher;
 
-    @Inject(method = "literal", cancellable = true, at = @At(value = "HEAD", target = "Lnet/minecraft/server/command/CommandManager;sendCommandTree(Lnet/minecraft/server/network/ServerPlayerEntity;)V"))
+    @Inject(
+            method = "literal",
+            cancellable = true,
+            at = @At("HEAD")
+    )
     private static void modify(String command, CallbackInfoReturnable<LiteralArgumentBuilder<ServerCommandSource>> cir) {
         if (shouldRenameVanillaCommand(command)) {
             cir.setReturnValue(LiteralArgumentBuilder.literal(getNMSCommandName(command)));
@@ -40,17 +45,31 @@ public abstract class CommandManagerMixin {
     @Shadow
     public abstract CommandDispatcher<ServerCommandSource> getDispatcher();
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void CommandManager(CommandManager.RegistrationEnvironment env, CallbackInfo ci) {
+    // TODO: Use https://github.com/FabricMC/fabric/tree/1.17/fabric-command-api-v1 instead
+    @Inject(
+            method = "<init>",
+            at = @At("RETURN")
+    )
+    private void registerCommands(CommandManager.RegistrationEnvironment env, CallbackInfo ci) {
         CommandEvents.REGISTER_COMMAND.invoker().register(this.dispatcher, env);
     }
 
-    @Redirect(method = "makeTreeForSource", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/tree/CommandNode;canUse(Ljava/lang/Object;)Z"))
+    @Redirect(
+            method = "makeTreeForSource",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/brigadier/tree/CommandNode;canUse(Ljava/lang/Object;)Z"
+            )
+    )
     private <S> boolean modifySuggestions(CommandNode<S> node, S source) {
         return canSourceUse(node, source);
     }
 
-    @Inject(method = "execute", at = @At("HEAD"), cancellable = true)
+    @Inject(
+            method = "execute",
+            at = @At("HEAD"),
+            cancellable = true
+    )
     private void socialSpy(ServerCommandSource src, String command, CallbackInfoReturnable<Integer> cir) {
         command = command.startsWith("/") ? command.substring(1) : command;
         if (KiloCommands.isCommandDisabled(src, command.split(" ")[0])) {

@@ -20,9 +20,14 @@ public abstract class EntitySelectorOptionsMixin {
     private static void putOption(String string, EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
     }
 
-    @Inject(method = "register", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/command/EntitySelectorOptions;putOption(Ljava/lang/String;Lnet/minecraft/command/EntitySelectorOptions$SelectorHandler;Ljava/util/function/Predicate;Lnet/minecraft/text/Text;)V",
-            ordinal = 0), cancellable = true)
+    @Inject(
+            method = "register",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/command/EntitySelectorOptions;putOption(Ljava/lang/String;Lnet/minecraft/command/EntitySelectorOptions$SelectorHandler;Ljava/util/function/Predicate;Lnet/minecraft/text/Text;)V",
+                    ordinal = 0
+            )
+    )
     private static void addPermissionOption(CallbackInfo ci) {
         putOption("permission", (entitySelectorReader) -> {
             boolean negate = entitySelectorReader.readNegationCharacter();

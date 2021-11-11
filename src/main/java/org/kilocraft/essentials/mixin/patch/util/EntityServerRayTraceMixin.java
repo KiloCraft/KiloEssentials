@@ -21,7 +21,9 @@ public abstract class EntityServerRayTraceMixin implements EntityServerRayTracea
     @Shadow
     public World world;
 
-    // This is marked @Environment(EnvType.CLIENT) (not available in serverside code) so we need to re-implement it.
+    /**
+     * This is marked @Environment(EnvType.CLIENT) (not available in serverside code) so we need to re-implement it.
+     */
     @Override
     public HitResult rayTrace(double maxDistance, float f, boolean passThroughFluids) {
         Vec3d cameraPos = this.getCameraPosVec(f);

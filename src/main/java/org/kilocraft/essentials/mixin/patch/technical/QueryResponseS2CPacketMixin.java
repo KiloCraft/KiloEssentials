@@ -28,7 +28,11 @@ public abstract class QueryResponseS2CPacketMixin {
     @Shadow
     private ServerMetadata metadata;
 
-    @Inject(method = "write", at = @At(value = "HEAD"))
+    // TODO: Rework this
+    @Inject(
+            method = "write",
+            at = @At("HEAD")
+    )
     public void updateMetaData(PacketByteBuf buf, CallbackInfo ci) {
         // Configurable message of the day
         MotdConfigSection motdConfig = KiloConfig.main().motd();

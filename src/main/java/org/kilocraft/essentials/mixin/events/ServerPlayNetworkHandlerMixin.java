@@ -30,16 +30,30 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow
     public abstract ServerPlayerEntity getPlayer();
 
-    @ModifyArg(method = "onDisconnected", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), index = 0)
+    @ModifyArg(
+            method = "onDisconnected",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
+            ),
+            index = 0
+    )
     public Text modifyLeaveMessage(Text text) {
         return ComponentText.toText(ConfigVariableFactory.replaceUserVariables(ModConstants.translation("player.left"), KiloEssentials.getUserManager().getOnline(this.player)));
     }
 
-    @Redirect(method = "onDisconnected", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
+    @Redirect(
+            method = "onDisconnected",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
+            )
+    )
     public void shouldBroadCastLeave(PlayerManager playerManager, Text message, MessageType type, UUID sender) {
         if (!KiloEssentials.getUserManager().getOnline(this.player).getPreference(Preferences.VANISH)) playerManager.broadcastChatMessage(message, type, sender);
     }
 
+    // TODO: Use https://github.com/FabricMC/fabric/tree/1.17/fabric-networking-api-v1 instead
     @Inject(at = @At(value = "RETURN"), method = "onDisconnected")
     private void onPlayerLeave(Text reason, CallbackInfo ci) {
         PlayerEvents.LEAVE.invoker().onLeave(this.player);

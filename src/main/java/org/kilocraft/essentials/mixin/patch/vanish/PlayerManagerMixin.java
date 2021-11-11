@@ -20,16 +20,15 @@ import java.util.List;
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
 
-    private ServerPlayerEntity connectingPlayer;
-
-    @Inject(method = "onPlayerConnect", at = @At(value = "HEAD"))
-    public void onPlayerConnect$acquireLocale(ClientConnection clientConnection, ServerPlayerEntity serverPlayerEntity, CallbackInfo ci) {
-        this.connectingPlayer = serverPlayerEntity;
-    }
-
-    @Redirect(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/network/Packet;)V"))
-    public void onlySendNonVanished(PlayerManager playerManager, Packet<?> packet) {
-        OnlineUser newPlayer = KiloEssentials.getUserManager().getOnline(this.connectingPlayer);
+    @Redirect(
+            method = "onPlayerConnect",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/network/Packet;)V"
+            )
+    )
+    public void onlySendNonVanished(PlayerManager playerManager, Packet<?> packet, ClientConnection connection, ServerPlayerEntity player) {
+        OnlineUser newPlayer = KiloEssentials.getUserManager().getOnline(player);
         for (OnlineUser onlineUser : KiloEssentials.getUserManager().getOnlineUsersAsList()) {
             if (onlineUser.hasPermission(CommandPermission.VANISH) || !newPlayer.getPreference(Preferences.VANISH)) {
                 onlineUser.asPlayer().networkHandler.sendPacket(packet);
@@ -37,11 +36,17 @@ public abstract class PlayerManagerMixin {
         }
     }
 
-    @Redirect(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
-    public int onlySendNonVanished(List<ServerPlayerEntity> list) {
+    @Redirect(
+            method = "onPlayerConnect",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/List;size()I"
+            )
+    )
+    public int onlySendNonVanished(List<ServerPlayerEntity> list, ClientConnection connection, ServerPlayerEntity connectingPlayer) {
         for (ServerPlayerEntity player : list) {
-            if (!KiloEssentials.getUserManager().getOnline(player).getPreference(Preferences.VANISH) || KiloEssentials.getUserManager().getOnline(this.connectingPlayer).hasPermission(CommandPermission.VANISH)) {
-                this.connectingPlayer.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, player));
+            if (!KiloEssentials.getUserManager().getOnline(player).getPreference(Preferences.VANISH) || KiloEssentials.getUserManager().getOnline(connectingPlayer).hasPermission(CommandPermission.VANISH)) {
+                connectingPlayer.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, player));
             }
         }
         // Stop vanilla implementation, by returning 0 for the player list size

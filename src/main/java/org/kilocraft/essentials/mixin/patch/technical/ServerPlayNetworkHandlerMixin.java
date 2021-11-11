@@ -22,11 +22,19 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow
     public ServerPlayerEntity player;
 
-    @Shadow public abstract void disconnect(Text reason);
+    @Shadow
+    public abstract void disconnect(Text reason);
 
     private float sentCharacters = 0;
 
-    @Inject(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/filter/TextStream$Message;getFiltered()Ljava/lang/String;"), cancellable = true)
+    @Inject(
+            method = "handleMessage",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/filter/TextStream$Message;getFiltered()Ljava/lang/String;"
+            ),
+            cancellable = true
+    )
     public void onChatMessage(TextStream.Message message, CallbackInfo ci) {
         final float KICK_THRESHOLD = 100;
         if (!KiloConfig.main().chat().useVanillaChat) {
@@ -40,7 +48,10 @@ public abstract class ServerPlayNetworkHandlerMixin {
         }
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(
+            method = "tick",
+            at = @At("HEAD")
+    )
     public void onTick(CallbackInfo ci) {
         // Maximum allowed characters per second
         final float MAX_CPS = 12;
@@ -48,7 +59,13 @@ public abstract class ServerPlayNetworkHandlerMixin {
     }
 
     // Allow adventure formatting on signs
-    @Redirect(method = "onSignUpdate(Lnet/minecraft/network/packet/c2s/play/UpdateSignC2SPacket;Ljava/util/List;)V", at = @At(value = "NEW", target = "net/minecraft/text/LiteralText"))
+    @Redirect(
+            method = "onSignUpdate(Lnet/minecraft/network/packet/c2s/play/UpdateSignC2SPacket;Ljava/util/List;)V",
+            at = @At(
+                    value = "NEW",
+                    target = "net/minecraft/text/LiteralText"
+            )
+    )
     public LiteralText useAdventureFormatting(String input) {
         if (!KiloEssentials.hasPermissionNode(this.player.getCommandSource(), EssentialPermission.SIGN_COLOR)) {
             input = ComponentText.clearFormatting(input);

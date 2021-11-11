@@ -14,7 +14,13 @@ import java.util.function.Consumer;
 @Mixin(World.class)
 public abstract class WorldMixin implements WorldAccess, AutoCloseable {
 
-    @Redirect(method = "tickEntity", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
+    @Redirect(
+            method = "tickEntity",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"
+            )
+    )
     public <T> void shouldTickEntity(Consumer<T> consumer, T t) {
         // Configurable entity ticking
         if (!ServerSettings.entityTickCache[0]) return;

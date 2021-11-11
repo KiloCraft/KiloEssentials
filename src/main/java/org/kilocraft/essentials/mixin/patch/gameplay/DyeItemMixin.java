@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
+import org.kilocraft.essentials.mixin.accessor.ShulkerEntityAccessor;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +25,11 @@ public abstract class DyeItemMixin {
     private DyeColor color;
 
     // Allows players to use dye on shulker entities
-    @Inject(method = "useOnEntity", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(
+            method = "useOnEntity",
+            at = @At(value = "HEAD"),
+            cancellable = true
+    )
     public void dyeShulkerEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if (entity instanceof ShulkerEntity shulkerEntity && ServerSettings.getBoolean("patch.dye_shulkers")) {
             if (shulkerEntity.isAlive() && shulkerEntity.getColor() != this.color) {

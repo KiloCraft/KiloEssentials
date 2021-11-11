@@ -24,7 +24,10 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         super(world, pos, yaw, profile);
     }
 
-    @Inject(method = "teleport", at = @At("RETURN"))
+    @Inject(
+            method = "teleport",
+            at = @At("RETURN")
+    )
     private void updateExperience(ServerWorld serverWorld, double d, double e, double f, float g, float h, CallbackInfo ci) {
         // Update experience upon teleport
         this.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(this.experienceProgress, this.totalExperience, this.experienceLevel));

@@ -15,7 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class EntityMixin {
 
-    @Inject(method = "interactAt", at = @At(value = "HEAD"))
+    @Inject(
+            method = "interactAt",
+            at = @At("HEAD")
+    )
     public void onInteractAt(PlayerEntity playerEntity, Vec3d vec3d, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         InteractionHandler.handleInteraction((ServerPlayerEntity) playerEntity, (Entity) (Object) this, false);
     }

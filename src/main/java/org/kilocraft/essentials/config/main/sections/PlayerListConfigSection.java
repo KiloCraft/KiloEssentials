@@ -12,7 +12,7 @@ public class PlayerListConfigSection {
 
     @Setting(value = "useNickNames")
     @Comment("If set to true the server will attempt to load the player nicknames in the list instead of their username")
-    public boolean useNicknames = false;
+    public boolean useNicknames = true;
 
     @Setting(value = "updateRate")
     @Comment("How often tab lists update (every x ticks)")
@@ -20,7 +20,7 @@ public class PlayerListConfigSection {
 
     @Setting(value = "header")
     @Comment("Sets the (Tab) PlayerList Header")
-    public List<String> header = new ArrayList<String>() {{
+    public List<String> header = new ArrayList<>() {{
         this.add("<rainbow>Minecraft Server");
         this.add("<gray>Welcome <gold>%user_displayname%");
     }};

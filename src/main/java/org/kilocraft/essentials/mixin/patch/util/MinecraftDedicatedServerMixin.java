@@ -11,8 +11,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftDedicatedServer.class)
 public abstract class MinecraftDedicatedServerMixin {
 
-    // Run scheduled commands (usually timed teleports) on main thread
-    @Inject(method = "executeQueuedCommands", at = @At(value = "RETURN"))
+    /**
+     * Run scheduled commands on main thread
+     */
+    @Inject(
+            method =
+                    "executeQueuedCommands",
+            at = @At("RETURN")
+    )
     public void executeScheduledExecutions(CallbackInfo ci) {
         for (ScheduledExecution scheduledExecution : AbstractScheduler.scheduledExecutions) {
             scheduledExecution.apply();

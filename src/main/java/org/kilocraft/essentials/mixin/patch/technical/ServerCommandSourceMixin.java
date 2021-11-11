@@ -18,7 +18,13 @@ public abstract class ServerCommandSourceMixin {
 
     @Shadow @Final private MinecraftServer server;
 
-    @Redirect(method = "sendToOps", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;sendSystemMessage(Lnet/minecraft/text/Text;Ljava/util/UUID;)V"))
+    @Redirect(
+            method = "sendToOps",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/network/ServerPlayerEntity;sendSystemMessage(Lnet/minecraft/text/Text;Ljava/util/UUID;)V"
+            )
+    )
     private void shouldBroadcastToOps(ServerPlayerEntity playerEntity, Text message, UUID sender) {
         if (this.server.getGameRules().getBoolean(ExtraGameRules.BROADCAST_ADMIN_COMMANDS)) playerEntity.sendSystemMessage(message, sender);
     }

@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.kilocraft.essentials.user.ServerUserManager.replaceBanVariables;
@@ -44,9 +45,12 @@ public abstract class PlayerManagerMixin {
     @Final
     private BannedIpList bannedIps;
 
-    private ServerPlayerEntity lastJoined;
-
-    @Inject(method = "checkCanJoin", at = @At(value = "HEAD"), cancellable = true)
+    // TODO: Rework the ban system
+    @Inject(
+            method = "checkCanJoin",
+            at = @At("HEAD"),
+            cancellable = true
+    )
     private void checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Text> cir) {
         String message = null;
         ModerationConfigSection.Messages messages = KiloConfig.main().moderation().messages();
@@ -70,7 +74,14 @@ public abstract class PlayerManagerMixin {
     }
 
 
-    @Redirect(method = "sendScoreboard", at = @At(value = "INVOKE", target = "Lnet/minecraft/scoreboard/ServerScoreboard;getTeams()Ljava/util/Collection;"))
+    // TODO: Move to separate mixin (not an event)
+    @Redirect(
+            method = "sendScoreboard",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/scoreboard/ServerScoreboard;getTeams()Ljava/util/Collection;"
+            )
+    )
     public Collection<Team> changeScoreboardPacket(ServerScoreboard serverScoreboard) {
         if (KiloConfig.main().playerList().customOrder) {
             return Collections.emptyList();
@@ -79,14 +90,27 @@ public abstract class PlayerManagerMixin {
         }
     }
 
-    @ModifyArg(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), index = 0)
-    public Text modifyJoinMessage(Text text) {
-        return ComponentText.toText(ConfigVariableFactory.replaceUserVariables(ModConstants.translation("player.joined"), KiloEssentials.getUserManager().getOnline(this.lastJoined)));
+    @ModifyArg(
+            method = "onPlayerConnect",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
+            ),
+            index = 0
+    )
+    public Text modifyJoinMessage(Text text, ClientConnection connection, ServerPlayerEntity player) {
+        return ComponentText.toText(ConfigVariableFactory.replaceUserVariables(ModConstants.translation("player.joined"), KiloEssentials.getUserManager().getOnline(player)));
     }
 
-    @Redirect(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
-    public void shouldBroadCastJoin(PlayerManager playerManager, Text message, MessageType type, UUID sender) {
-        if (!KiloEssentials.getUserManager().getOnline(this.lastJoined).getPreference(Preferences.VANISH)) playerManager.broadcastChatMessage(message, type, sender);
+    @Redirect(
+            method = "onPlayerConnect",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
+            )
+    )
+    public void shouldBroadCastJoin(PlayerManager playerManager, Text message, MessageType type, UUID sender, ClientConnection connection, ServerPlayerEntity player) {
+        if (!KiloEssentials.getUserManager().getOnline(player).getPreference(Preferences.VANISH)) playerManager.broadcastChatMessage(message, type, sender);
     }
 
     @Inject(
@@ -98,7 +122,6 @@ public abstract class PlayerManagerMixin {
     )
     public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         PlayerEvents.JOIN.invoker().onJoin(connection, player);
-        this.lastJoined = player;
     }
 
     @Inject(
@@ -107,7 +130,6 @@ public abstract class PlayerManagerMixin {
     )
     public void onPlayerConnected(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         PlayerEvents.JOINED.invoker().onJoin(connection, player);
-        this.lastJoined = player;
     }
 
 }

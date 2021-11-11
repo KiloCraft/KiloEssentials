@@ -8,6 +8,7 @@
     "ServerChunkManagerAccessor",
     "ServerConfigEntryAccessor",
     "ShulkerBoxScreenHandlerAccessor",
+    "ShulkerEntityAccessor",
     "SignBlockEntityAccessor"
   ],
   "injectors": {

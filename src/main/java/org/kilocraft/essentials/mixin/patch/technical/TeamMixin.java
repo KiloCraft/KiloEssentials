@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.mixin.patch.util;
+package org.kilocraft.essentials.mixin.patch.technical;
 
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
@@ -16,7 +16,13 @@ public abstract class TeamMixin {
     @Final
     private Scoreboard scoreboard;
 
-    @Redirect(method = {"setDisplayName", "setPrefix", "setSuffix", "setFriendlyFireAllowed", "setShowFriendlyInvisibles", "setNameTagVisibilityRule", "setDeathMessageVisibilityRule", "setCollisionRule", "setColor"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/scoreboard/Scoreboard;updateScoreboardTeam(Lnet/minecraft/scoreboard/Team;)V"))
+    @Redirect(
+            method = {"setDisplayName", "setPrefix", "setSuffix", "setFriendlyFireAllowed", "setShowFriendlyInvisibles", "setNameTagVisibilityRule", "setDeathMessageVisibilityRule", "setCollisionRule", "setColor"},
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/scoreboard/Scoreboard;updateScoreboardTeam(Lnet/minecraft/scoreboard/Team;)V"
+            )
+    )
     public void dontUpdateScoreboardOnFakeTeam(Scoreboard scoreboard, Team team) {
         Team thisTeam = (Team) (Object) this;
         if (!(thisTeam instanceof FakeTeam)) this.scoreboard.updateScoreboardTeam(thisTeam);
