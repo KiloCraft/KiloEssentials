@@ -25,10 +25,9 @@ import net.minecraft.world.SpawnHelper;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.patch.optimizedSpawning.SpawnUtil;
+import org.kilocraft.essentials.patch.SpawnUtil;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.Arrays;
@@ -94,8 +93,6 @@ public class MobCapCommand extends EssentialCommand {
         TextComponent.Builder text = Component.text();
         text.content(title).color(NamedTextColor.YELLOW)
                 .append(Component.text(" (").color(NamedTextColor.DARK_GRAY))
-                .append(Component.text(String.format("%.1f", ServerSettings.tick_utils_global_mobcap)).color(NamedTextColor.RED))
-                .append(Component.text(", ").color(NamedTextColor.GRAY))
                 .append(Component.text(SpawnUtil.getMobCapMultiplier(world, 0)).color(NamedTextColor.GREEN))
                 .append(Component.text(")").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text(":\n").color(NamedTextColor.YELLOW));
