@@ -45,6 +45,8 @@ public abstract class PlayerManagerMixin {
     @Final
     private BannedIpList bannedIps;
 
+    private ServerPlayerEntity connectingPlayer;
+
     // TODO: Rework the ban system
     @Inject(
             method = "checkCanJoin",
@@ -98,8 +100,8 @@ public abstract class PlayerManagerMixin {
             ),
             index = 0
     )
-    public Text modifyJoinMessage(Text text, ClientConnection connection, ServerPlayerEntity player) {
-        return ComponentText.toText(ConfigVariableFactory.replaceUserVariables(ModConstants.translation("player.joined"), KiloEssentials.getUserManager().getOnline(player)));
+    public Text modifyJoinMessage(Text text) {
+        return ComponentText.toText(ConfigVariableFactory.replaceUserVariables(ModConstants.translation("player.joined"), KiloEssentials.getUserManager().getOnline(this.connectingPlayer)));
     }
 
     @Redirect(
@@ -115,21 +117,10 @@ public abstract class PlayerManagerMixin {
 
     @Inject(
             method = "onPlayerConnect",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/server/world/ServerWorld;getGameRules()Lnet/minecraft/world/GameRules;"
-            )
-    )
-    public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
-        PlayerEvents.JOIN.invoker().onJoin(connection, player);
-    }
-
-    @Inject(
-            method = "onPlayerConnect",
-            at = @At("RETURN")
+            at = @At("HEAD")
     )
     public void onPlayerConnected(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
-        PlayerEvents.JOINED.invoker().onJoin(connection, player);
+        this.connectingPlayer = player;
     }
 
 }

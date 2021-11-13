@@ -53,10 +53,8 @@ public abstract class ServerPlayNetworkHandlerMixin {
         if (!KiloEssentials.getUserManager().getOnline(this.player).getPreference(Preferences.VANISH)) playerManager.broadcastChatMessage(message, type, sender);
     }
 
-    // TODO: Use https://github.com/FabricMC/fabric/tree/1.17/fabric-networking-api-v1 instead
     @Inject(at = @At(value = "RETURN"), method = "onDisconnected")
     private void onPlayerLeave(Text reason, CallbackInfo ci) {
-        PlayerEvents.LEAVE.invoker().onLeave(this.player);
         KiloEssentials.getUserManager().onLeave(this.player);
     }
 }

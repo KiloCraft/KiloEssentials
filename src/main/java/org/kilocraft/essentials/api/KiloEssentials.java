@@ -2,21 +2,26 @@ package org.kilocraft.essentials.api;
 
 import com.mojang.brigadier.CommandDispatcher;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
-import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
+import org.kilocraft.essentials.api.util.EntityCommands;
 import org.kilocraft.essentials.api.util.TickManager;
 import org.kilocraft.essentials.api.util.tablist.TabListData;
 import org.kilocraft.essentials.compability.DiscordFabModule;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.events.CommandEvents;
 import org.kilocraft.essentials.events.PlayerEvents;
 import org.kilocraft.essentials.events.ServerEvents;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
@@ -27,7 +32,6 @@ import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.ServerWarpManager;
 import org.kilocraft.essentials.extensions.warps.serverwidewarps.WarpCommand;
 import org.kilocraft.essentials.provided.BrandedServer;
-import org.kilocraft.essentials.provided.LocateBiomeProvided;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.CommandPermission;
@@ -48,7 +52,7 @@ public class KiloEssentials {
     private static KiloEssentials INSTANCE;
     private final ServerUserManager userManager;
     private TabListData tabListData;
-    private MinecraftDedicatedServer server;
+    private MinecraftDedicatedServer dedicatedServer;
 
     public KiloEssentials() {
         INSTANCE = this;
@@ -98,7 +102,7 @@ public class KiloEssentials {
     }
 
     public static MinecraftDedicatedServer getMinecraftServer() {
-        return getInstance().server;
+        return getInstance().dedicatedServer;
     }
 
     public static ServerUserManager getUserManager() {
@@ -115,7 +119,6 @@ public class KiloEssentials {
 
     public static Path getLangDirPath() {
         return getEssentialsPath().resolve("lang");
-
     }
 
     public static String getWorkingDirectory() {
@@ -133,24 +136,22 @@ public class KiloEssentials {
     }
 
     public void sendGlobalPacket(Packet<?> packet) {
-        for (ServerPlayerEntity playerEntity : this.server.getPlayerManager().getPlayerList()) {
+        for (ServerPlayerEntity playerEntity : this.dedicatedServer.getPlayerManager().getPlayerList()) {
             playerEntity.networkHandler.sendPacket(packet);
         }
     }
 
     private void registerEvents() {
-        ServerEvents.READY.register(this::onReady);
-        ServerEvents.RELOAD.register(s -> this.reload());
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> this.onReady((MinecraftDedicatedServer) server));
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((ignored, ignored2, ignored3) -> this.reload());
+        ServerLifecycleEvents.SERVER_STOPPING.register(ignored -> this.onStop());
+        ServerTickEvents.START_SERVER_TICK.register(ignored -> this.onTick());
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> this.onJoin(handler.getConnection(), handler.getPlayer()));
+        CommandRegistrationCallback.EVENT.register(this::registerCommands);
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> this.onLeave(handler.getConnection(), handler.getPlayer()));
         ServerEvents.SAVE.register(s -> this.onSave());
-        ServerEvents.STOPPING.register(this::onStop);
-        ServerEvents.TICK.register(this::onTick);
-
-        CommandEvents.REGISTER_COMMAND.register(this::registerCommands);
-
-        PlayerEvents.JOIN.register(this::onJoin);
-        PlayerEvents.JOINED.register(this::onJoined);
-        PlayerEvents.LEAVE.register(this::onLeave);
         NbtCommands.registerEvents();
+        EntityCommands.registerEvents();
     }
 
     public boolean hasLuckPerms() {
@@ -165,14 +166,10 @@ public class KiloEssentials {
     private void onJoin(ClientConnection connection, ServerPlayerEntity player) {
         this.userManager.onJoin(player);
         BrandedServer.provide(player);
-    }
-
-    private void onJoined(ClientConnection connection, ServerPlayerEntity player) {
-        this.userManager.onJoined(player);
         this.tabListData.onJoin(player);
     }
 
-    private void onLeave(ServerPlayerEntity player) {
+    private void onLeave(ClientConnection connection, ServerPlayerEntity player) {
         this.tabListData.onLeave(player);
     }
 
@@ -182,7 +179,7 @@ public class KiloEssentials {
         NBTStorageUtil.onLoad();
     }
 
-    private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandManager.RegistrationEnvironment environment) {
+    private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         ModConstants.loadConstants();
         KiloCommands.registerCommands(dispatcher);
         registerFeatures();
@@ -197,7 +194,7 @@ public class KiloEssentials {
     }
 
     private void onReady(MinecraftDedicatedServer server) {
-        this.server = server;
+        this.dedicatedServer = server;
         this.load();
         this.tabListData = new TabListData();
         this.userManager.onServerReady();
@@ -227,7 +224,6 @@ public class KiloEssentials {
         if (SeatManager.isEnabled()) {
             SeatManager.getInstance().killAll();
         }
-        LocateBiomeProvided.stopAll();
     }
 
     private void onSave() {

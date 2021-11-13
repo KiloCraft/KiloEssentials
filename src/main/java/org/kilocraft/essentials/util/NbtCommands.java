@@ -1,19 +1,21 @@
 package org.kilocraft.essentials.util;
 
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import org.kilocraft.essentials.events.PlayerEvents;
+import net.minecraft.util.TypedActionResult;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 
 public class NbtCommands {
 
     public static void registerEvents() {
-        PlayerEvents.INTERACT_BLOCK.register((player, world, stack, hand, hitResult) -> fromRightClick(player, hand) ? ActionResult.SUCCESS : ActionResult.PASS);
-        PlayerEvents.INTERACT_ITEM.register((player, world, stack, hand) -> fromRightClick(player, hand) ? ActionResult.SUCCESS : ActionResult.PASS);
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> fromRightClick(player, hand) ? ActionResult.SUCCESS : ActionResult.PASS);
+        UseItemCallback.EVENT.register((player, world, hand) -> fromRightClick(player, hand) ? TypedActionResult.pass(ItemStack.EMPTY) : TypedActionResult.success(ItemStack.EMPTY));
     }
 
     public static boolean fromRightClick(PlayerEntity player, Hand hand) {

@@ -226,9 +226,7 @@ public class OnlineServerUser extends ServerUser implements OnlineUser {
             this.asPlayer().getStatHandler().setStat(this.asPlayer(), Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME), this.ticksPlayed);
         }
 
-        if (KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF)) {
-            this.isStaff = true;
-        }
+        this.isStaff = KiloEssentials.hasPermissionNode(this.getCommandSource(), EssentialPermission.STAFF);
 
         if (KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_SELF) || KiloCommands.hasPermission(this.getCommandSource(), CommandPermission.NICKNAME_OTHERS)) {
             this.getPreference(Preferences.NICK).ifPresent(oldNickname -> this.setNickname(Format.validatePermission(this, oldNickname, CommandPermission.PERMISSION_PREFIX + "nickname.formatting")));

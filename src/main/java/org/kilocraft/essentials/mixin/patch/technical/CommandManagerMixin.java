@@ -5,15 +5,12 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.kilocraft.essentials.events.CommandEvents;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static org.kilocraft.essentials.util.commands.LiteralCommandModified.*;
@@ -21,9 +18,6 @@ import static org.kilocraft.essentials.util.commands.LiteralCommandModified.*;
 @Mixin(CommandManager.class)
 public abstract class CommandManagerMixin {
     // TODO: Rework
-    @Shadow
-    @Final
-    private CommandDispatcher<ServerCommandSource> dispatcher;
 
     @Inject(
             method = "literal",
@@ -44,15 +38,6 @@ public abstract class CommandManagerMixin {
 
     @Shadow
     public abstract CommandDispatcher<ServerCommandSource> getDispatcher();
-
-    // TODO: Use https://github.com/FabricMC/fabric/tree/1.17/fabric-command-api-v1 instead
-    @Inject(
-            method = "<init>",
-            at = @At("RETURN")
-    )
-    private void registerCommands(CommandManager.RegistrationEnvironment env, CallbackInfo ci) {
-        CommandEvents.REGISTER_COMMAND.invoker().register(this.dispatcher, env);
-    }
 
     @Redirect(
             method = "makeTreeForSource",

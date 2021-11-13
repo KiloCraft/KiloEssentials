@@ -61,7 +61,12 @@ dependencies {
     // Fabric API
     Set<String> apiModules = [
             'fabric-api-base',
-            'fabric-game-rule-api-v1'
+            'fabric-command-api-v1',
+            'fabric-entity-events-v1',
+            'fabric-events-interaction-v0',
+            'fabric-game-rule-api-v1',
+            'fabric-lifecycle-events-v1',
+            'fabric-networking-api-v1'
     ]
     apiModules.forEach {
         modImplementation(fabricApi.module(it, project.fabric_version))

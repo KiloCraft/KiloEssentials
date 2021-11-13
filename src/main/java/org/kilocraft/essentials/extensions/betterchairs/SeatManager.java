@@ -1,5 +1,8 @@
 package org.kilocraft.essentials.extensions.betterchairs;
 
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SlabBlock;
@@ -65,8 +68,10 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         KiloCommands.register(new SitCommand());
         PlayerEvents.STOP_RIDING.register(this::unseat);
         PlayerEvents.DEATH.register(this::unseat);
-        PlayerEvents.LEAVE.register(this::unseat);
-        PlayerEvents.INTERACT_BLOCK.register((player, world, stack, hand, hitResult) -> this.onInteractBlock(player, hitResult, hand) ? ActionResult.SUCCESS : ActionResult.PASS);
+        ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, entity, killedEntity) -> {
+        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> this.unseat(handler.getPlayer()));
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> this.onInteractBlock((ServerPlayerEntity) player, hitResult, hand) ? ActionResult.SUCCESS : ActionResult.PASS);
         return true;
     }
 

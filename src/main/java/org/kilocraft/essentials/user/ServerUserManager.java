@@ -5,11 +5,13 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.BanEntry;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.dedicated.DedicatedPlayerManager;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -147,7 +149,6 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     @Override
-    @Nullable
     public CompletableFuture<Optional<User>> getOffline(GameProfile profile) {
         if (this.profileHasID(profile)) return this.getOffline(profile.getId(), profile.getName());
         return CompletableFuture.completedFuture(Optional.empty());
@@ -353,42 +354,72 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     public void onJoin(ServerPlayerEntity playerEntity) {
-        OnlineServerUser serverUser = new OnlineServerUser(playerEntity);
-
-        this.onlineUsers.put(playerEntity.getUuid(), serverUser);
+        OnlineServerUser user = new OnlineServerUser(playerEntity);
+        this.onlineUsers.put(playerEntity.getUuid(), user);
         this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUuid());
-        this.users.add(serverUser);
-
-        serverUser.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, playerEntity.getUuid()));
+        this.users.add(user);
+        user.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, playerEntity.getUuid()));
+        user.onJoined();
+        this.sendBanEntries(user);
     }
 
-    public void onJoined(ServerPlayerEntity playerEntity) {
-        OnlineServerUser user = (OnlineServerUser) this.getOnline(playerEntity);
-        user.onJoined();
-        List<GameProfile> banned = new ArrayList<>();
-        for (BannedPlayerEntry bannedPlayerEntry : KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().values()) {
-            GameProfile profile = ((ServerConfigEntryAccessor<GameProfile>) bannedPlayerEntry).getKey();
-            Optional<User> optional = this.getOffline(profile).join();
-            optional.ifPresent(player -> {
-                if (Objects.equals(player.getLastIp(), user.getLastIp())) banned.add(profile);
-            });
-        }
-        List<OnlineUser> online = new ArrayList<>();
-        for (Map.Entry<UUID, OnlineServerUser> entry : this.onlineUsers.entrySet()) {
-            if (entry.getValue().getLastIp().equals(user.getLastIp())) {
-                online.add(entry.getValue());
+    private void sendBanEntries(OnlineServerUser user) {
+        List<OnlineUser> onlineWithIp = this.getOnlineWithIp(user.getLastIp());
+        CompletableFuture<List<User>> future = this.getBannedUsersWithIp(user.getLastIp());
+        future.thenAccept(bannedUsers -> {
+            if (!bannedUsers.isEmpty() || onlineWithIp.size() > 1) {
+                TextComponent.Builder textBuilder = Component.text();
+                for (User bannedUser : bannedUsers) {
+                    TextComponent component = Component.text("[" + bannedUser.getName() + "] ").color(NamedTextColor.RED);
+                    Date lastOnline = bannedUser.getLastOnline();
+                    TextComponent.Builder hover = Component.text();
+                    hover.append(Component.text("UUID: ").color(NamedTextColor.GRAY),
+                            Component.text(bannedUser.getUuid().toString()).color(NamedTextColor.YELLOW),
+                            Component.text("\nIP: ").color(NamedTextColor.GRAY),
+                            Component.text(Objects.requireNonNull(bannedUser.getLastIp())).color(NamedTextColor.LIGHT_PURPLE),
+                            Component.text("\nPlaytime: ").color(NamedTextColor.GRAY),
+                            TimeDifferenceUtil.convertSecondsToComponent(bannedUser.getTicksPlayed() / 20, NamedTextColor.AQUA, NamedTextColor.AQUA),
+                            Component.text("\nLast Online: ").color(NamedTextColor.GRAY),
+                            Component.text(lastOnline != null ? TimeDifferenceUtil.formatDateDiff(lastOnline.getTime()) : "Never").color(NamedTextColor.GREEN)
+                    );
+                    textBuilder.append(component.style(style -> style.hoverEvent(HoverEvent.showText(hover.build()))));
+                }
+                for (OnlineUser onlineUser : onlineWithIp) {
+                    textBuilder.append(Component.text("[" + onlineUser.getName() + "] ").color(NamedTextColor.GREEN));
+                }
+                ServerChat.Channel.STAFF.send(ComponentText.toText(textBuilder.build()));
             }
+        });
+    }
+
+    private List<OnlineUser> getOnlineWithIp(String lastIp) {
+        List<OnlineUser> result = new ArrayList<>();
+        for (OnlineUser onlineUser : this.getOnlineUsersAsList()) {
+            if (Objects.equals(onlineUser.getLastIp(), lastIp)) result.add(onlineUser);
         }
-        if (!banned.isEmpty() || online.size() > 1) {
-            TextComponent.Builder builder = Component.text();
-            for (GameProfile profile : banned) {
-                builder.append(Component.text("[" + profile.getName() + "] ").color(NamedTextColor.RED));
-            }
-            for (OnlineUser onlineUser : online) {
-                builder.append(Component.text("[" + onlineUser.getName() + "] ").color(NamedTextColor.GREEN));
-            }
-            ServerChat.Channel.STAFF.send(ComponentText.toText(builder.build()));
+        return result;
+    }
+
+    private CompletableFuture<List<User>> getBannedUsersWithIp(String lastIp) {
+        CompletableFuture<List<User>> future = new CompletableFuture<>();
+        List<User> users = new ArrayList<>();
+        List<CompletableFuture<Optional<User>>> futures = new ArrayList<>();
+        DedicatedPlayerManager playerManager = KiloEssentials.getMinecraftServer().getPlayerManager();
+        for (BannedPlayerEntry banned : playerManager.getUserBanList().values()) {
+            GameProfile profile = ((ServerConfigEntryAccessor<GameProfile>) banned).getKey();
+            futures.add(this.getOffline(profile));
         }
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).thenAccept(unused -> {
+            for (CompletableFuture<Optional<User>> f : futures) {
+                f.thenAccept(optional -> {
+                    optional.ifPresent(user -> {
+                        if (Objects.equals(user.getLastIp(), lastIp)) users.add(user);
+                    });
+                });
+            }
+            future.complete(users);
+        });
+        return future;
     }
 
     public void onLeave(ServerPlayerEntity player) {

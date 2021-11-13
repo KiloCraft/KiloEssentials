@@ -4,18 +4,19 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static org.kilocraft.essentials.api.ModConstants.translation;
 
@@ -36,6 +37,26 @@ public class TimeDifferenceUtil {
                 ((hour != 0) ? "&" + numFormat + hour + "&" + typeFormat + " Hours " : "") +
                 ((min != 0) ? "&" + numFormat + min + "&" + typeFormat + " Minutes " : "") +
                 ("&" + numFormat + seconds + "&" + typeFormat + " Sec");
+    }
+
+    public static TextComponent convertSecondsToComponent(int seconds, TextColor numFormat, TextColor typeFormat) {
+        int day = seconds / (24 * 3600);
+        seconds = seconds % (24 * 3600);
+        int hour = seconds / 3600;
+        seconds %= 3600;
+        int min = seconds / 60;
+        seconds %= 60;
+        TextComponent.Builder builder = Component.text();
+
+        if (day > 0) builder.append(Component.text(day).color(numFormat), formatComponent("Day", day).color(typeFormat));
+        if (hour > 0) builder.append(Component.text(hour).color(numFormat), formatComponent("Hour", hour).color(typeFormat));
+        if (min > 0) builder.append(Component.text(min).color(numFormat), formatComponent("Minute", min).color(typeFormat));
+        if (seconds > 0) builder.append(Component.text(seconds).color(numFormat), formatComponent("Second", seconds).color(typeFormat));
+        return builder.build();
+    }
+
+    private static TextComponent formatComponent(String baseName, int value) {
+        return Component.text(" " + baseName + (value != 1 ? "s" : "") + " ");
     }
 
     public static String removeTimePattern(String input) {
