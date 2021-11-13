@@ -11,7 +11,7 @@ import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.MotdConfigSection;
-import org.kilocraft.essentials.patch.technical.VersionCompability;
+import org.kilocraft.essentials.patch.technical.VersionCompatibility;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -53,10 +53,10 @@ public abstract class QueryResponseS2CPacketMixin {
             this.metadata.setPlayers(new_players);
         }
         final ServerMetadata.Version version = this.metadata.getVersion();
-        if (version != null && VersionCompability.isEnabled()) {
+        if (version != null && VersionCompatibility.isEnabled()) {
             ServerMetadata.Version newVersion;
-            if (VersionCompability.shouldPretendProtocolVersion()) {
-                newVersion = VersionCompability.getPretendMetaVersion();
+            if (VersionCompatibility.shouldPretendProtocolVersion()) {
+                newVersion = VersionCompatibility.getPretendMetaVersion();
             } else {
                 newVersion = new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion());
             }

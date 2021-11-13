@@ -3,12 +3,12 @@ package org.kilocraft.essentials.patch.technical;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.server.ServerMetadata;
 
-public class VersionCompability {
+public class VersionCompatibility {
 
     private static int latestProtocolVersion = 0;
 
-    private static final int pretendVersionProtocol = 1073741867;
-    private static final String pretendVersionName = "21w39a";
+    private static final int pretendVersionProtocol = 1073741873;
+    private static final String pretendVersionName = "1.18-pre1";
 
     public static void onHandshake(HandshakeC2SPacket packet) {
         latestProtocolVersion = packet.getProtocolVersion();
@@ -23,6 +23,6 @@ public class VersionCompability {
     }
 
     public static boolean isEnabled() {
-        return false;
+        return true;
     }
 }

@@ -5,8 +5,7 @@ import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
-import org.kilocraft.essentials.patch.technical.VersionCompability;
-import org.kilocraft.essentials.util.settings.ServerSettings;
+import org.kilocraft.essentials.patch.technical.VersionCompatibility;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,8 +26,8 @@ public abstract class ServerHandshakeNetworkHandlerMixin {
             at = @At("HEAD")
     )
     public void onRequest(HandshakeC2SPacket packet, CallbackInfo ci) {
-        if (packet.getIntendedState() == NetworkState.STATUS && this.server.acceptsStatusQuery() && VersionCompability.isEnabled()) {
-            VersionCompability.onHandshake(packet);
+        if (packet.getIntendedState() == NetworkState.STATUS && this.server.acceptsStatusQuery() && VersionCompatibility.isEnabled()) {
+            VersionCompatibility.onHandshake(packet);
         }
     }
 
@@ -41,7 +40,7 @@ public abstract class ServerHandshakeNetworkHandlerMixin {
             )
     )
     public int onLogin(HandshakeC2SPacket handshakeC2SPacket) {
-        if (handshakeC2SPacket.getProtocolVersion() == VersionCompability.getPretendMetaVersion().getProtocolVersion()) {
+        if (handshakeC2SPacket.getProtocolVersion() == VersionCompatibility.getPretendMetaVersion().getProtocolVersion()) {
             return SharedConstants.getGameVersion().getProtocolVersion();
         }
         return handshakeC2SPacket.getProtocolVersion();
