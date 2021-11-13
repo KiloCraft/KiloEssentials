@@ -9,20 +9,18 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
 import org.kilocraft.essentials.api.util.EntityCommands;
 import org.kilocraft.essentials.api.util.TickManager;
+import org.kilocraft.essentials.api.util.tablist.LuckpermsTabListData;
 import org.kilocraft.essentials.api.util.tablist.TabListData;
 import org.kilocraft.essentials.compability.DiscordFabModule;
 import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.events.PlayerEvents;
 import org.kilocraft.essentials.events.ServerEvents;
 import org.kilocraft.essentials.extensions.betterchairs.SeatManager;
 import org.kilocraft.essentials.extensions.customcommands.CustomCommands;
@@ -152,6 +150,7 @@ public class KiloEssentials {
         ServerEvents.SAVE.register(s -> this.onSave());
         NbtCommands.registerEvents();
         EntityCommands.registerEvents();
+        DiscordFabModule.registerEvents();
     }
 
     public boolean hasLuckPerms() {
@@ -196,7 +195,7 @@ public class KiloEssentials {
     private void onReady(MinecraftDedicatedServer server) {
         this.dedicatedServer = server;
         this.load();
-        this.tabListData = new TabListData();
+        this.tabListData = this.hasLuckPerms() ? new LuckpermsTabListData(this) : new TabListData(this);
         this.userManager.onServerReady();
         WarpCommand.registerAliases();
         ConfigurableFeatures.loadAll(false);
@@ -205,7 +204,6 @@ public class KiloEssentials {
         } catch (IOException e) {
             KiloEssentials.getLogger().error("An unexpected error occurred while loading the Muted Player List", e);
         }
-        DiscordFabModule.registerEvents();
     }
 
     private void onTick() {
@@ -213,7 +211,6 @@ public class KiloEssentials {
         int ticks = getMinecraftServer().getTicks();
         if (ticks % KiloConfig.main().playerList().updateRate == 0) {
             this.tabListData.onUpdate();
-            //getMinecraftServer().getPlayerManager().getPlayerList().forEach(LocationUtil::processDimension);
         }
         this.userManager.onTick();
         ConfigurableFeatures.onTick();

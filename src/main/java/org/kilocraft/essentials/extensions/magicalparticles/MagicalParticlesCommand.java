@@ -77,11 +77,6 @@ public class MagicalParticlesCommand extends EssentialCommand {
             throw KiloCommands.getException("exception.invalid", "Particle animation").create();
         }
 
-        if (!canUse(this.getOnlineUser(player), identifier)) {
-            user.sendPermissionError("?");
-            return FAILED;
-        }
-
         addPlayer(player.getUuid(), identifier);
         player.sendMessage(StringText.of("command.magicalparticles.set", getAnimationName(identifier)), silent);
         return SUCCESS;

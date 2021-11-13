@@ -5,7 +5,7 @@ import net.minecraft.scoreboard.Team;
 import org.kilocraft.essentials.mixin.patch.technical.TeamMixin;
 
 /**
- * This is a dummy class for teams used in {@link TabListData}
+ * This is a dummy class for teams used in {@link LuckpermsTabListData}
  * to allow for fake team packets, which don't interfere with
  * any scoreboard data. {@link TeamMixin}
  * is used to cancel any calls to {@link Scoreboard#updateScoreboardTeam(Team)},

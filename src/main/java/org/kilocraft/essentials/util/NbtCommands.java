@@ -15,7 +15,7 @@ public class NbtCommands {
 
     public static void registerEvents() {
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> fromRightClick(player, hand) ? ActionResult.SUCCESS : ActionResult.PASS);
-        UseItemCallback.EVENT.register((player, world, hand) -> fromRightClick(player, hand) ? TypedActionResult.pass(ItemStack.EMPTY) : TypedActionResult.success(ItemStack.EMPTY));
+        UseItemCallback.EVENT.register((player, world, hand) -> fromRightClick(player, hand) ? TypedActionResult.success(ItemStack.EMPTY) : TypedActionResult.pass(ItemStack.EMPTY));
     }
 
     public static boolean fromRightClick(PlayerEntity player, Hand hand) {
