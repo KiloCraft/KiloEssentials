@@ -19,6 +19,7 @@ import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleAnimationSection;
 import org.kilocraft.essentials.api.world.RelativePosition;
 import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.sections.PermissionRequirementConfigSection;
 import org.kilocraft.essentials.extensions.magicalparticles.config.*;
 import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandsConfig;
 import org.kilocraft.essentials.provided.KiloFile;
@@ -82,9 +83,11 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     private static void createFromConfig() {
         map.clear();
         config.types.forEach((string, innerArray) -> {
+            PermissionRequirementConfigSection requirement = innerArray.permissionRequirement();
             ParticleAnimation animation = new ParticleAnimation(
                     new Identifier(string.toLowerCase()),
-                    innerArray.name
+                    innerArray.name,
+                    (user) -> KiloEssentials.hasPermissionNode(user.getCommandSource(), requirement.permission, requirement.op)
             );
 
             for (int i = 0; i < innerArray.frames.size(); i++) {
@@ -329,9 +332,6 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
             }
 
             map.put(animation.getId(), animation);
-            innerArray.permissionRequirement().ifPresent((requirement) -> {
-                animation.setPredicate((user) -> KiloEssentials.hasPermissionNode(user.getCommandSource(), requirement.permission, requirement.op));
-            });
         });
     }
 
@@ -346,7 +346,7 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
     public static boolean canUse(final OnlineUser user, final Identifier identifier) {
         ParticleAnimation animation = map.get(identifier);
-        return animation.predicate() == null || animation.predicate().test(user);
+        return animation.canUse(user);
     }
 
     public static void addPlayer(UUID player, Identifier identifier) {

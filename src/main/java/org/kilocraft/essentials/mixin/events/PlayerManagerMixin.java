@@ -119,8 +119,16 @@ public abstract class PlayerManagerMixin {
             method = "onPlayerConnect",
             at = @At("HEAD")
     )
-    public void onPlayerConnected(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
+    public void acquireLocale(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         this.connectingPlayer = player;
+    }
+
+    @Inject(
+            method = "onPlayerConnect",
+            at = @At("TAIL")
+    )
+    public void onPlayerReady(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
+        PlayerEvents.PLAYER_READY.invoker().onPlayerReady(connection, player);
     }
 
 }

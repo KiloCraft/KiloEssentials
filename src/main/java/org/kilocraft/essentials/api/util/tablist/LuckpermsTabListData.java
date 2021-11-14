@@ -172,13 +172,13 @@ public class LuckpermsTabListData extends TabListData {
 
     public void onJoin(ServerPlayerEntity player) {
         if (KiloConfig.main().playerList().customOrder) {
-            // Send initial team list
-            this.sendTeamList(player);
             // Updated changed / added group for everyone
             this.getGroupForUser(player.getUuid()).thenAccept(group -> {
                 this.createFakeTeam(player).thenAccept(fakeTeam -> {
                     this.cachedTeams.put(player.getUuid(), fakeTeam);
                     this.sendPacketToAll(TeamS2CPacket.updateTeam(fakeTeam, true));
+                    // Send initial team list
+                    this.sendTeamList(player);
                 });
             });
         }

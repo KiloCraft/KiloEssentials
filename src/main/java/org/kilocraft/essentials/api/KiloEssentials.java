@@ -5,6 +5,7 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.network.ClientConnection;
@@ -140,13 +141,14 @@ public class KiloEssentials {
     }
 
     private void registerEvents() {
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.dedicatedServer = (MinecraftDedicatedServer) server);
         ServerLifecycleEvents.SERVER_STARTED.register(server -> this.onReady((MinecraftDedicatedServer) server));
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((ignored, ignored2, ignored3) -> this.reload());
         ServerLifecycleEvents.SERVER_STOPPING.register(ignored -> this.onStop());
         ServerTickEvents.START_SERVER_TICK.register(ignored -> this.onTick());
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> this.onJoin(handler.getConnection(), handler.getPlayer()));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> this.onJoin(handler.getPlayer()));
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> this.onLeave(handler.getConnection(), handler.getPlayer()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> this.onLeave(handler.getPlayer()));
         ServerEvents.SAVE.register(s -> this.onSave());
         NbtCommands.registerEvents();
         EntityCommands.registerEvents();
@@ -162,14 +164,18 @@ public class KiloEssentials {
         }
     }
 
-    private void onJoin(ClientConnection connection, ServerPlayerEntity player) {
+    private void onJoin(ServerPlayerEntity player) {
         this.userManager.onJoin(player);
         BrandedServer.provide(player);
         this.tabListData.onJoin(player);
     }
 
-    private void onLeave(ClientConnection connection, ServerPlayerEntity player) {
+    private void onLeave(ServerPlayerEntity player) {
         this.tabListData.onLeave(player);
+    }
+
+    private void onReady(ServerPlayerEntity player) {
+        this.userManager.onReady(player);
     }
 
     private void load() {
@@ -193,7 +199,6 @@ public class KiloEssentials {
     }
 
     private void onReady(MinecraftDedicatedServer server) {
-        this.dedicatedServer = server;
         this.load();
         this.tabListData = this.hasLuckPerms() ? new LuckpermsTabListData(this) : new TabListData(this);
         this.userManager.onServerReady();

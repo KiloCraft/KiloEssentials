@@ -7,9 +7,9 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 public class PermissionRequirementConfigSection {
 
     @Setting(value = "op")
-    public int op = 2;
+    public int op = 0;
 
     @Setting(value = "perm")
-    public String permission = "myserver.custom.permission.node";
+    public String permission = "kiloessentials.magicparticles.permission.node";
 
 }

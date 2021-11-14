@@ -359,8 +359,12 @@ public class ServerUserManager implements UserManager, TickListener {
         this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUuid());
         this.users.add(user);
         user.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, playerEntity.getUuid()));
-        user.onJoined();
         this.sendBanEntries(user);
+    }
+
+    public void onReady(ServerPlayerEntity playerEntity) {
+        OnlineServerUser user = (OnlineServerUser) this.getOnline(playerEntity);
+        user.onJoined();
     }
 
     private void sendBanEntries(OnlineServerUser user) {

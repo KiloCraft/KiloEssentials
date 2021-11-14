@@ -39,6 +39,13 @@ public class ParticleAnimation {
         return this.predicate;
     }
 
+    public boolean canUse(OnlineUser user) {
+        if (this.predicate != null) {
+            return this.predicate.test(user);
+        }
+        return true;
+    }
+
     public void setPredicate(@Nullable final Predicate<OnlineUser> predicate) {
         this.predicate = predicate;
     }

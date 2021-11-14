@@ -15,14 +15,14 @@ public class ParticleTypeConfigSection {
     public String name = "Breath of the Dragon";
 
     @Setting("frames")
-    public List<ParticleFrameConfigSection> frames = new ArrayList<ParticleFrameConfigSection>() {{
+    public List<ParticleFrameConfigSection> frames = new ArrayList<>() {{
         this.add(new ParticleFrameConfigSection());
     }};
 
     @Setting("requires")
-    private final PermissionRequirementConfigSection permissionRequirement = null;
+    private final PermissionRequirementConfigSection permissionRequirement = new PermissionRequirementConfigSection();
 
-    public Optional<PermissionRequirementConfigSection> permissionRequirement() {
-        return Optional.ofNullable(this.permissionRequirement);
+    public PermissionRequirementConfigSection permissionRequirement() {
+        return this.permissionRequirement;
     }
 }

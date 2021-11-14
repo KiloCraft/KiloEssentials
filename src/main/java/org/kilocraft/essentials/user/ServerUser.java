@@ -310,7 +310,7 @@ public class ServerUser implements User {
     @Override
     public Optional<String> getNickname() {
         Optional<String> optional = this.getPreference(Preferences.NICK);
-        return optional.map(s -> Optional.of(s + "<reset></gradient></rainbow>")).orElse(optional);
+        return optional.map(s -> s + "<reset>").or(() -> optional);
     }
 
     @Override
