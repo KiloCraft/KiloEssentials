@@ -9,7 +9,8 @@
     "ServerConfigEntryAccessor",
     "ShulkerBoxScreenHandlerAccessor",
     "ShulkerEntityAccessor",
-    "SignBlockEntityAccessor"
+    "SignBlockEntityAccessor",
+    "ThreadedAnvilChunkStorageAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -48,8 +48,6 @@ public class TickManager {
             TICK_TIMES[currentTick % STORED_TICKS] = lastTickLength;
         }
         calculateTps();
-        if (currentTick % ServerSettings.tick_utils_update_rate == 0 && ServerSettings.tick_utils_automated)
-            automatedTickUtils();
     }
 
     private static void calculateTps() {
@@ -80,52 +78,6 @@ public class TickManager {
             tps[index] = averageTPS;
             mspt[index] = averageTickLength / 1000000;
         }
-    }
-
-    private static void automatedTickUtils() {
-        checkViewDistance(mspt[0]);
-        checkMobcaps(mspt[0]);
-        checkTickDistance(mspt[0]);
-    }
-
-    private static void checkViewDistance(double mspt) {
-        int viewDistance = ServerSettings.getViewDistance();
-        if (mspt > 45 && ServerSettings.tick_utils_global_mobcap <= ServerSettings.tick_utils_min_mobcap && ServerSettings.getViewDistance() > ServerSettings.tick_utils_min_view_distance) {
-            ServerSettings.setViewDistance(viewDistance - 1);
-        } else if (mspt < 35 && viewDistance < ServerSettings.tick_utils_max_view_distance) {
-            ServerSettings.setViewDistance(viewDistance + 1);
-        }
-    }
-
-    private static void checkTickDistance(double mspt) {
-        int tickDistance = ServerSettings.tick_utils_tick_distance;
-        if (mspt > 40 && tickDistance > ServerSettings.tick_utils_min_tick_distance) {
-            ServerSettings.setInt("tick_utils.tick_distance", ServerSettings.tick_utils_tick_distance - 1);
-        } else if (mspt < 30 && tickDistance < ServerSettings.tick_utils_max_tick_distance && ServerSettings.tick_utils_global_mobcap >= ServerSettings.tick_utils_max_mobcap) {
-            ServerSettings.setInt("tick_utils.tick_distance", ServerSettings.tick_utils_tick_distance + 1);
-        }
-    }
-
-    private static void checkMobcaps(double mspt) {
-        if (mspt > 45 && ServerSettings.tick_utils_tick_distance == ServerSettings.tick_utils_min_tick_distance && ServerSettings.tick_utils_global_mobcap > ServerSettings.tick_utils_min_mobcap) {
-            ServerSettings.setFloat("tick_utils.global_mobcap", ServerSettings.tick_utils_global_mobcap - 0.1F);
-        } else if (mspt < 35 && ServerSettings.tick_utils_global_mobcap < ServerSettings.tick_utils_max_mobcap && ServerSettings.getViewDistance() == ServerSettings.tick_utils_max_view_distance) {
-            ServerSettings.setFloat("tick_utils.global_mobcap", ServerSettings.tick_utils_global_mobcap + 0.1F);
-        }
-    }
-
-    public static boolean shouldTick(ChunkPos pos, ServerWorld world) {
-        if (ServerSettings.tick_utils_tick_distance == -1 || ServerSettings.tick_utils_tick_distance >= ServerSettings.getViewDistance()) {
-            return true;
-        }
-
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            if (player.interactionManager.getGameMode() != GameMode.SPECTATOR && player.getChunkPos().getChebyshevDistance(pos) <= ServerSettings.tick_utils_tick_distance) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static boolean isEntityLimitReached(WorldAccess world, BlockPos pos, String id, EntityType<?>... entityType) {

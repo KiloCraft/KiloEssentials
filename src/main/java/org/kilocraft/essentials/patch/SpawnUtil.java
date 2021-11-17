@@ -1,4 +1,4 @@
-package org.kilocraft.essentials.patch.optimizedSpawning;
+package org.kilocraft.essentials.patch;
 
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.world.ServerWorld;
@@ -17,7 +17,7 @@ public class SpawnUtil {
     }
 
     public static int getPersonalMobCap(ServerWorld world, SpawnGroup group) {
-        return (int) (group.getCapacity() * ServerSettings.tick_utils_global_mobcap * getMobCapMultiplier(world, 0) * getMobCapMultiplier(world, group));
+        return (int) (group.getCapacity() * getMobCapMultiplier(world, 0) * getMobCapMultiplier(world, group));
     }
 
     public static int getGlobalMobCap(SpawnHelper.Info info, ServerWorld world, SpawnGroup group) {

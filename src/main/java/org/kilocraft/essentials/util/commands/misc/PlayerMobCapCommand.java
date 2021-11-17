@@ -9,8 +9,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.SpawnDensityCapper;
 import net.minecraft.world.SpawnHelper;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.mixin.patch.performance.optimizedSpawning.SpawnHelperInfoAccessor;
-import org.kilocraft.essentials.patch.optimizedSpawning.SpawnUtil;
+import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
+import org.kilocraft.essentials.patch.SpawnUtil;
 import org.kilocraft.essentials.util.CommandPermission;
 
 import java.util.Objects;

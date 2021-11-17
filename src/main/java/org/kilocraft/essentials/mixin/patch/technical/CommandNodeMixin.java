@@ -12,9 +12,13 @@ import java.util.Map;
 @Mixin(CommandNode.class)
 public abstract class CommandNodeMixin<S> implements ICommandNode {
 
-    @Shadow @Final private Map<String, LiteralCommandNode<S>> literals;
+    @Shadow
+    @Final
+    private Map<String, LiteralCommandNode<S>> literals;
 
-    @Shadow @Final private Map<String, CommandNode<S>> children;
+    @Shadow
+    @Final
+    private Map<String, CommandNode<S>> children;
 
     @Override
     public void removeLiteral(String literal) {
