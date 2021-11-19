@@ -16,6 +16,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.PlayerEvents;
 import org.kilocraft.essentials.user.preference.Preferences;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -96,7 +97,7 @@ public abstract class PlayerManagerMixin {
             method = "onPlayerConnect",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
+                    target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
             ),
             index = 0
     )
@@ -108,11 +109,11 @@ public abstract class PlayerManagerMixin {
             method = "onPlayerConnect",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
+                    target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
             )
     )
     public void shouldBroadCastJoin(PlayerManager playerManager, Text message, MessageType type, UUID sender, ClientConnection connection, ServerPlayerEntity player) {
-        if (!KiloEssentials.getUserManager().getOnline(player).getPreference(Preferences.VANISH)) playerManager.broadcastChatMessage(message, type, sender);
+        if (!KiloEssentials.getUserManager().getOnline(player).getPreference(Preferences.VANISH)) playerManager.broadcast(message, type, sender);
     }
 
     @Inject(

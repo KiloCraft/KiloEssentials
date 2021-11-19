@@ -7,8 +7,8 @@ plugins {
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 version gitVersion()
 def details = versionDetails()
@@ -92,8 +92,9 @@ dependencies {
     // DiscordFab
     implementation "com.github.DrexHD:DiscordFab:${project.discordfab_version}"
 
-    // Json
-    implementation "com.googlecode.json-simple:json-simple:${project.json_simple}"
+    // Gson
+    //implementation "com.googlecode.json-simple:json-simple:${project.json_simple}"
+    implementation 'com.google.code.gson:gson:2.8.8'
 }
 
 task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
@@ -121,8 +122,8 @@ tasks.withType(JavaCompile).configureEach {
     // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
 
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 16
+    // Minecraft 1.18 upwards uses Java 17.
+    it.options.release = 17
 }
 
 java {

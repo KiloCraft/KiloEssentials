@@ -33,7 +33,6 @@ public class ServerSettings implements NBTStorage {
     public static boolean patch_tnt_duping = true;
     public static int patch_save_interval = 6000;
 
-
     public ServerSettings() {
         NBTStorageUtil.addCallback(this);
     }
@@ -83,7 +82,7 @@ public class ServerSettings implements NBTStorage {
     }
 
     public static void setViewDistance(int viewDistance) {
-        ServerSettings.setInt("tick_utils.view_distance", viewDistance);
+        ServerSettings.setInt("view_distance", viewDistance);
     }
 
     public static void registerSettings() {

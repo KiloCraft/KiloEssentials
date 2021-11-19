@@ -34,7 +34,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             method = "onDisconnected",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
+                    target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
             ),
             index = 0
     )
@@ -46,11 +46,11 @@ public abstract class ServerPlayNetworkHandlerMixin {
             method = "onDisconnected",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
+                    target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"
             )
     )
     public void shouldBroadCastLeave(PlayerManager playerManager, Text message, MessageType type, UUID sender) {
-        if (!KiloEssentials.getUserManager().getOnline(this.player).getPreference(Preferences.VANISH)) playerManager.broadcastChatMessage(message, type, sender);
+        if (!KiloEssentials.getUserManager().getOnline(this.player).getPreference(Preferences.VANISH)) playerManager.broadcast(message, type, sender);
     }
 
     @Inject(at = @At(value = "RETURN"), method = "onDisconnected")
