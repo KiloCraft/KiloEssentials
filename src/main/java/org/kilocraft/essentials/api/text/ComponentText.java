@@ -39,7 +39,6 @@ public class ComponentText {
         return string;
     }
 
-
     public static String clearFormatting(@NotNull String textToClear) {
         return stripRainbow(stripGradient(stripEvent(stripFormatting(stripColor(textToClear)))));
     }
@@ -59,13 +58,9 @@ public class ComponentText {
         return GsonComponentSerializer.gson().deserialize(Text.Serializer.toJson(text));
     }
 
-    public static Component toComponent(@NotNull final String json) {
-        return GsonComponentSerializer.gson().deserialize(json);
-    }
-
     public static Component of(@NotNull final String string) {
         Validate.notNull(string, "String must not be null!");
-        return MiniMessage.get().parse(updateLegacyStyle(string));
+        return MiniMessage.miniMessage().parse(updateLegacyStyle(string));
     }
 
     public static Component removeEvents(@NotNull final Component component) {
@@ -74,10 +69,6 @@ public class ComponentText {
             removeEvents(c);
         }
         return component;
-    }
-
-    public static Component removeStyle(@NotNull final Component component) {
-        return component.style(Style.empty());
     }
 
     public static String formatPercentage(final double percentage) {

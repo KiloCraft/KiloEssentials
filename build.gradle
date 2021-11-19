@@ -93,8 +93,8 @@ dependencies {
     implementation "com.github.DrexHD:DiscordFab:${project.discordfab_version}"
 
     // Gson
-    //implementation "com.googlecode.json-simple:json-simple:${project.json_simple}"
-    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation "com.google.code.gson:gson:${project.gson_version}"
+    shadow "com.google.code.gson:gson:${project.gson_version}"
 }
 
 task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {

@@ -7,7 +7,6 @@ import org.kilocraft.essentials.api.user.PunishmentManager;
 import org.kilocraft.essentials.util.MutedPlayerEntry;
 import org.kilocraft.essentials.util.MutedPlayerList;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
