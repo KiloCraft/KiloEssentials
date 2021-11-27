@@ -126,9 +126,6 @@ public class ServerSettings implements NBTStorage {
         patch.addChild(shulker_spawn_chance);
         patch.addChild(global_sound);
 
-        // View distance
-        IntegerSetting view_distance = new IntegerSetting(10, "view_distance").onChanged(distance -> KiloEssentials.getMinecraftServer().getPlayerManager().setViewDistance(distance));
-
         // Entity Limit
         CategorySetting entity_limit = new CategorySetting("entity_limit");
         List<String> limit_entries = new ArrayList<>();
@@ -163,7 +160,6 @@ public class ServerSettings implements NBTStorage {
         root.addChild(entity_limit);
         root.addChild(mobcap);
         root.addChild(patch);
-        root.addChild(view_distance);
     }
 
     @Override

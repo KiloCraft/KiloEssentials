@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.util.CommandPermission;
@@ -34,7 +35,7 @@ public class ViewDistanceCommand extends EssentialCommand {
 
         if (server.isDedicated()) {
             if (distance != ServerSettings.getViewDistance()) {
-                ServerSettings.setViewDistance(distance);
+                KiloEssentials.getMinecraftServer().getPlayerManager().setViewDistance(distance);
                 player.sendMessage(StringText.of("command.viewdistance.set", distance), false);
             }
             return distance;
@@ -44,7 +45,7 @@ public class ViewDistanceCommand extends EssentialCommand {
 
     private int info(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
-        player.sendMessage(StringText.of("command.viewdistance.info", ServerSettings.getInt("tick_utils.view_distance")), false);
+        player.sendMessage(StringText.of("command.viewdistance.info", ServerSettings.getViewDistance()), false);
         return SUCCESS;
     }
 }

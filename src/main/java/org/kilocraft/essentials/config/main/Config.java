@@ -89,6 +89,9 @@ public class Config {
     @Comment("The maximum length for a nickname")
     public int nicknameMaxLength = 35;
 
+    @Setting(value = "versionCompatibility")
+    public VersionCompatibilityConfigSection versionCompatibility = new VersionCompatibilityConfigSection();
+
     public ServerConfigSection server() {
         return this.serverSection;
     }
