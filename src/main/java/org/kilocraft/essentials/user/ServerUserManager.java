@@ -7,17 +7,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.server.BanEntry;
-import net.minecraft.server.BannedPlayerEntry;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.dedicated.DedicatedPlayerManager;
-import net.minecraft.server.filter.TextStream;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Pair;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
+import net.minecraft.server.dedicated.DedicatedPlayerList;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.TextFilter;
+import net.minecraft.server.players.BanListEntry;
+import net.minecraft.server.players.UserBanListEntry;
+import net.minecraft.util.Tuple;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
@@ -35,7 +34,7 @@ import org.kilocraft.essentials.config.ConfigObjectReplacerUtil;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.ModerationConfigSection;
 import org.kilocraft.essentials.events.PlayerEvents;
-import org.kilocraft.essentials.mixin.accessor.ServerConfigEntryAccessor;
+import org.kilocraft.essentials.mixin.accessor.StoredUserEntryAccessor;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.*;
 import org.kilocraft.essentials.util.commands.CommandUtils;
@@ -63,7 +62,7 @@ public class ServerUserManager implements UserManager, TickListener {
     private final Map<String, UUID> nicknameToUUID = new HashMap<>();
     private final Map<String, UUID> usernameToUUID = new HashMap<>();
     private final Map<UUID, OnlineServerUser> onlineUsers = new HashMap<>();
-    private final Map<UUID, Pair<Pair<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
+    private final Map<UUID, Tuple<Tuple<UUID, Boolean>, Long>> teleportRequestsMap = new HashMap<>();
     private final MutedPlayerList mutedPlayerList = new MutedPlayerList(new File(KiloEssentials.getDataDirPath() + "/mutes.json"));
     private Map<UUID, String> cachedNicknames = new HashMap<>();
 
@@ -113,7 +112,7 @@ public class ServerUserManager implements UserManager, TickListener {
 
     private CompletableFuture<Optional<User>> getUserAsync(String username) {
         CompletableFuture<GameProfile> profileCompletableFuture = CompletableFuture.supplyAsync(() ->
-                KiloEssentials.getMinecraftServer().getUserCache().findByName(username).orElse(null)
+                KiloEssentials.getMinecraftServer().getProfileCache().get(username).orElse(null)
         );
 
         return profileCompletableFuture.thenApplyAsync(profile -> this.getOffline(profile).join());
@@ -216,13 +215,13 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
     @Override
-    public OnlineUser getOnline(ServerPlayerEntity player) {
-        return this.getOnline(player.getUuid());
+    public OnlineUser getOnline(ServerPlayer player) {
+        return this.getOnline(player.getUUID());
     }
 
     @Override
-    public OnlineUser getOnline(ServerCommandSource source) throws CommandSyntaxException {
-        return this.getOnline(source.getPlayer());
+    public OnlineUser getOnline(CommandSourceStack source) throws CommandSyntaxException {
+        return this.getOnline(source.getPlayerOrException());
     }
 
     @Override
@@ -230,7 +229,7 @@ public class ServerUserManager implements UserManager, TickListener {
         return this.onlineUsers.containsKey(user.getUuid());
     }
 
-    public Map<UUID, Pair<Pair<UUID, Boolean>, Long>> getTeleportRequestsMap() {
+    public Map<UUID, Tuple<Tuple<UUID, Boolean>, Long>> getTeleportRequestsMap() {
         return this.teleportRequestsMap;
     }
 
@@ -258,7 +257,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         if (user instanceof OnlineUser onlineUser) {
-            PlayerListS2CPacket packet = new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, onlineUser.asPlayer());
+            ClientboundPlayerInfoPacket packet = new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME, onlineUser.asPlayer());
             KiloEssentials.getInstance().sendGlobalPacket(packet);
         }
     }
@@ -353,16 +352,16 @@ public class ServerUserManager implements UserManager, TickListener {
         return profile != null && profile.getId() != null;
     }
 
-    public void onJoin(ServerPlayerEntity playerEntity) {
+    public void onJoin(ServerPlayer playerEntity) {
         OnlineServerUser user = new OnlineServerUser(playerEntity);
-        this.onlineUsers.put(playerEntity.getUuid(), user);
-        this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUuid());
+        this.onlineUsers.put(playerEntity.getUUID(), user);
+        this.usernameToUUID.put(playerEntity.getGameProfile().getName(), playerEntity.getUUID());
         this.users.add(user);
-        user.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, playerEntity.getUuid()));
+        user.getNickname().ifPresent((nick) -> this.nicknameToUUID.put(nick, playerEntity.getUUID()));
         this.sendBanEntries(user);
     }
 
-    public void onReady(ServerPlayerEntity playerEntity) {
+    public void onReady(ServerPlayer playerEntity) {
         OnlineServerUser user = (OnlineServerUser) this.getOnline(playerEntity);
         user.onJoined();
     }
@@ -408,9 +407,9 @@ public class ServerUserManager implements UserManager, TickListener {
         CompletableFuture<List<User>> future = new CompletableFuture<>();
         List<User> users = new ArrayList<>();
         List<CompletableFuture<Optional<User>>> futures = new ArrayList<>();
-        DedicatedPlayerManager playerManager = KiloEssentials.getMinecraftServer().getPlayerManager();
-        for (BannedPlayerEntry banned : playerManager.getUserBanList().values()) {
-            GameProfile profile = ((ServerConfigEntryAccessor<GameProfile>) banned).getKey();
+        DedicatedPlayerList playerManager = KiloEssentials.getMinecraftServer().getPlayerList();
+        for (UserBanListEntry banned : playerManager.getBans().getEntries()) {
+            GameProfile profile = ((StoredUserEntryAccessor<GameProfile>) banned).getUser();
             futures.add(this.getOffline(profile));
         }
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).thenAccept(unused -> {
@@ -426,26 +425,26 @@ public class ServerUserManager implements UserManager, TickListener {
         return future;
     }
 
-    public void onLeave(ServerPlayerEntity player) {
-        OnlineServerUser user = this.onlineUsers.get(player.getUuid());
+    public void onLeave(ServerPlayer player) {
+        OnlineServerUser user = this.onlineUsers.get(player.getUUID());
         user.onLeave();
         this.teleportRequestsMap.remove(user.getId());
         if (user.getNickname().isPresent()) {
             this.nicknameToUUID.remove(user.getNickname().get());
         }
-        this.usernameToUUID.remove(player.getEntityName());
+        this.usernameToUUID.remove(player.getScoreboardName());
         this.users.remove(user);
 
         try {
             this.handler.save(user);
         } catch (IOException e) {
-            KiloEssentials.getLogger().fatal("Failed to Save User Data [" + player.getEntityName() + "/" + player.getUuidAsString() + "]", e);
+            KiloEssentials.getLogger().fatal("Failed to Save User Data [" + player.getScoreboardName() + "/" + player.getStringUUID() + "]", e);
         }
 
-        this.onlineUsers.remove(player.getUuid());
+        this.onlineUsers.remove(player.getUUID());
     }
 
-    public void onChatMessage(ServerPlayerEntity player, TextStream.Message textStream) {
+    public void onChatMessage(ServerPlayer player, TextFilter.FilteredText textStream) {
         OnlineUser user = this.getOnline(player);
         if (this.punishmentManager.isMuted(user.getUuid())) {
             user.sendMessage(getMuteMessage(user));
@@ -510,11 +509,11 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
 
-    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final ServerCommandSource requester,
+    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final CommandSourceStack requester,
                                                                     final String username,
                                                                     final Consumer<? super User> action) {
         if (CommandUtils.isOnline(requester)) {
-            return this.getUserThenAcceptAsync(this.getOnline(requester.getName()), username, action);
+            return this.getUserThenAcceptAsync(this.getOnline(requester.getTextName()), username, action);
         }
 
         final CompletableFuture<Optional<User>> optionalCompletableFuture = this.getOffline(username);
@@ -527,7 +526,7 @@ public class ServerUserManager implements UserManager, TickListener {
             try {
                 optionalUser.ifPresent(action);
             } catch (Exception e) {
-                requester.sendError(new LiteralText(e.getMessage()).formatted(Formatting.RED));
+                requester.sendFailure(new net.minecraft.network.chat.TextComponent(e.getMessage()).withStyle(ChatFormatting.RED));
             }
         }, KiloEssentials.getMinecraftServer());
 
@@ -535,7 +534,7 @@ public class ServerUserManager implements UserManager, TickListener {
     }
 
 
-    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final ServerPlayerEntity requester,
+    public CompletableFuture<Optional<User>> getUserThenAcceptAsync(final ServerPlayer requester,
                                                                     final String username,
                                                                     final Consumer<? super User> action) {
         return this.getUserThenAcceptAsync(KiloEssentials.getUserManager().getOnline(requester), username, action);
@@ -660,11 +659,11 @@ public class ServerUserManager implements UserManager, TickListener {
     public static class LoadingText {
         private AnimatedText animatedText;
 
-        public LoadingText(ServerPlayerEntity player) {
+        public LoadingText(ServerPlayer player) {
             this(player, "general.wait_server");
         }
 
-        public LoadingText(ServerPlayerEntity player, String key) {
+        public LoadingText(ServerPlayer player, String key) {
             this.animatedText = new AnimatedText(0, 315, TimeUnit.MILLISECONDS, player)
                     .append(StringText.of(key + ".frame1"))
                     .append(StringText.of(key + ".frame2"))
@@ -674,7 +673,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
 
         public LoadingText start() {
-            this.animatedText.setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)).start();
+            this.animatedText.setStyle(Style.EMPTY.applyFormat(ChatFormatting.YELLOW)).start();
             return this;
         }
 
@@ -684,7 +683,7 @@ public class ServerUserManager implements UserManager, TickListener {
         }
     }
 
-    public static String replaceBanVariables(final String str, final BanEntry<?> entry, final boolean permanent) {
+    public static String replaceBanVariables(final String str, final BanListEntry<?> entry, final boolean permanent) {
         ConfigObjectReplacerUtil replacer = new ConfigObjectReplacerUtil("ban", str, true)
                 .append("reason", entry.getReason())
                 .append("source", entry.getSource());
@@ -692,8 +691,8 @@ public class ServerUserManager implements UserManager, TickListener {
         if (!permanent) {
             SimpleDateFormat dateFormat = ModConstants.DATE_FORMAT;
             dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-            replacer.append("expiry", dateFormat.format(entry.getExpiryDate()))
-                    .append("left", TimeDifferenceUtil.formatDateDiff(new Date(), entry.getExpiryDate()));
+            replacer.append("expiry", dateFormat.format(entry.getExpires()))
+                    .append("left", TimeDifferenceUtil.formatDateDiff(new Date(), entry.getExpires()));
         }
 
         return replacer.toString();

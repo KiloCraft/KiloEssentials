@@ -17,7 +17,7 @@ public class ServerPunishmentManager implements PunishmentManager {
     public boolean isMuted(UUID uuid) {
         MutedPlayerList mutedPlayerList = KiloEssentials.getUserManager().getMutedPlayerList();
         MinecraftServer server = KiloEssentials.getMinecraftServer();
-        Optional<GameProfile> optional = server.getUserCache().getByUuid(uuid);
+        Optional<GameProfile> optional = server.getProfileCache().get(uuid);
         if (optional.isEmpty()) {
             return false;
         }

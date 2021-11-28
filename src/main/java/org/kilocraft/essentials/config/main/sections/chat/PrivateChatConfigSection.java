@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.config.main.sections.chat;
 
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.sounds.SoundEvents;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
@@ -16,7 +16,7 @@ public class PrivateChatConfigSection {
 
     @Setting(value = "sound")
     @Comment("The sound you hear when someone messages you")
-    private final ChatPingSoundConfigSection chatPingSound = new ChatPingSoundConfigSection(SoundEvents.ENTITY_SILVERFISH_DEATH, 0.09, 1.05D);
+    private final ChatPingSoundConfigSection chatPingSound = new ChatPingSoundConfigSection(SoundEvents.SILVERFISH_DEATH, 0.09, 1.05D);
 
     public ChatPingSoundConfigSection pingSound() {
         return this.chatPingSound;

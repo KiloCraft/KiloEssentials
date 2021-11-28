@@ -9,11 +9,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.util.CommandPermission;
@@ -23,11 +18,16 @@ import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.Setting;
 
 import java.util.List;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 
 public class SettingCommand extends EssentialCommand {
 
     final int MAX_ENTRIES = 5;
-    SuggestionProvider<ServerCommandSource> SETTINGS = (context, builder) -> {
+    SuggestionProvider<CommandSourceStack> SETTINGS = (context, builder) -> {
         List<String> list = Lists.newArrayList();
         String remaining = builder.getRemaining();
         char[] chars = remaining.toCharArray();
@@ -47,10 +47,10 @@ public class SettingCommand extends EssentialCommand {
             }
         }
 
-        return CommandSource.suggestMatching(list, builder);
+        return SharedSuggestionProvider.suggest(list, builder);
     };
 
-    SuggestionProvider<ServerCommandSource> VALUES = (context, builder) -> {
+    SuggestionProvider<CommandSourceStack> VALUES = (context, builder) -> {
         String id = StringArgumentType.getString(context, "setting");
         Setting setting = ServerSettings.root.getSetting(id);
         if (setting instanceof ConfigurableSetting<?> configSetting) {
@@ -64,61 +64,61 @@ public class SettingCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> settingArgument = this.argument("setting", StringArgumentType.word());
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> settingArgument = this.argument("setting", StringArgumentType.word());
         settingArgument.suggests(this.SETTINGS);
         settingArgument.executes(this::getValue);
-        RequiredArgumentBuilder<ServerCommandSource, String> valueArgument = this.argument(ConfigurableSetting.commandArgumentValue, StringArgumentType.word());
+        RequiredArgumentBuilder<CommandSourceStack, String> valueArgument = this.argument(ConfigurableSetting.commandArgumentValue, StringArgumentType.word());
         valueArgument.suggests(this.VALUES);
         valueArgument.executes(this::setValue);
         settingArgument.then(valueArgument);
         this.commandNode.addChild(settingArgument.build());
     }
 
-    public int setValue(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    public int setValue(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         String id = StringArgumentType.getString(ctx, "setting");
         Setting setting = ServerSettings.root.getSetting(id);
         if (!(setting instanceof ConfigurableSetting<?> configurableSetting))
-            throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
+            throw new SimpleCommandExceptionType(new TextComponent("Invalid setting id: " + id)).create();
         configurableSetting.setValueFromCommand(ctx);
         Object value = configurableSetting.getValue();
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        player.sendMessage(StringText.of("command.setting.set", setting.getFullId(), value), false);
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        player.displayClientMessage(StringText.of("command.setting.set", setting.getFullId(), value), false);
         return SUCCESS;
     }
 
-    public int getValue(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    public int getValue(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         String id = StringArgumentType.getString(ctx, "setting");
         Setting setting = ServerSettings.root.getSetting(id);
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         if (setting instanceof AbstractSetting abstractSetting) {
             String value = "";
             if (setting instanceof ConfigurableSetting) value = ((ConfigurableSetting<?>) setting).getFormattedValue();
-            player.sendMessage(StringText.of("command.setting.title", setting.getFullId().toUpperCase(), value), false);
+            player.displayClientMessage(StringText.of("command.setting.title", setting.getFullId().toUpperCase(), value), false);
             this.printRecursive(player, abstractSetting, 0);
         } else {
-            throw new SimpleCommandExceptionType(new LiteralText("Invalid setting id: " + id)).create();
+            throw new SimpleCommandExceptionType(new TextComponent("Invalid setting id: " + id)).create();
         }
         return 1;
     }
 
-    private void printRecursive(ServerPlayerEntity player, AbstractSetting setting, int depth) {
+    private void printRecursive(ServerPlayer player, AbstractSetting setting, int depth) {
         int children = 0;
         for (AbstractSetting child : setting.getChildren()) {
             String preString = "  ".repeat(Math.max(0, depth)) + "- ";
             if (depth != 0 && children >= this.MAX_ENTRIES && setting.shouldLimitChildren()) {
-                player.sendMessage(StringText.of("command.setting.more", preString, (setting.getChildren().size() - this.MAX_ENTRIES)), false);
+                player.displayClientMessage(StringText.of("command.setting.more", preString, (setting.getChildren().size() - this.MAX_ENTRIES)), false);
                 return;
             }
-            LiteralText text = null;
+            TextComponent text = null;
             if (child instanceof ConfigurableSetting<?> configurableSetting) {
                 text = StringText.of("command.setting.info", preString + child.getId(), configurableSetting.getFormattedValue());
             } else if (child instanceof CategorySetting) {
                 text = StringText.of("command.setting.info", preString + child.getId(), "");
             }
             if (text != null) {
-                text.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/setting " + child.getFullId())));
-                player.sendMessage(text, false);
+                text.withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/setting " + child.getFullId())));
+                player.displayClientMessage(text, false);
             }
             this.printRecursive(player, child, depth + 1);
             children++;

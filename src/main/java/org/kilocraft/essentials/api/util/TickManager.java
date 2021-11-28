@@ -1,15 +1,11 @@
 package org.kilocraft.essentials.api.util;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.GameMode;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.phys.AABB;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.util.settings.ServerSettings;
@@ -39,9 +35,9 @@ public class TickManager {
     }
 
     public static void onTick() {
-        currentTick = KiloEssentials.getMinecraftServer().getTicks();
+        currentTick = KiloEssentials.getMinecraftServer().getTickCount();
         // Get the tick length of the previous tick
-        long[] lastTickLengths = KiloEssentials.getMinecraftServer().lastTickLengths;
+        long[] lastTickLengths = KiloEssentials.getMinecraftServer().tickTimes;
         long lastTickLength = lastTickLengths[(currentTick + lastTickLengths.length - 1) % lastTickLengths.length];
         // Make sure the value was initialized
         if (lastTickLength != 0) {
@@ -80,7 +76,7 @@ public class TickManager {
         }
     }
 
-    public static boolean isEntityLimitReached(WorldAccess world, BlockPos pos, String id, EntityType<?>... entityType) {
+    public static boolean isEntityLimitReached(LevelAccessor world, BlockPos pos, String id, EntityType<?>... entityType) {
         if (entityType == null || entityType.length == 0) return true;
         int range = ServerSettings.getInt("entity_limit." + id + ".range");
         int limit = ServerSettings.getInt("entity_limit." + id + ".limit");
@@ -89,15 +85,15 @@ public class TickManager {
             // Count mobs from all given types
             int entityCount = 0;
             for (EntityType<?> type : entityType) {
-                entityCount += world.getEntitiesByType(type, new Box(pos.mutableCopy().add(range, range, range), pos.mutableCopy().add(-range, -range, -range)), EntityPredicates.EXCEPT_SPECTATOR).size();
+                entityCount += world.getEntities(type, new AABB(pos.mutable().offset(range, range, range), pos.mutable().offset(-range, -range, -range)), EntitySelector.NO_SPECTATORS).size();
             }
             return limit <= entityCount;
         }
         return false;
     }
 
-    public static boolean isEntityLimitReached(WorldAccess world, BlockPos pos, EntityType<?>... entityType) {
-        return isEntityLimitReached(world, pos, Registry.ENTITY_TYPE.getId(entityType[0]).getPath(), entityType);
+    public static boolean isEntityLimitReached(LevelAccessor world, BlockPos pos, EntityType<?>... entityType) {
+        return isEntityLimitReached(world, pos, Registry.ENTITY_TYPE.getKey(entityType[0]).getPath(), entityType);
     }
 
     public static String getFormattedMSPT() {

@@ -1,6 +1,5 @@
 package org.kilocraft.essentials.extensions.warps.playerwarps;
 
-import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.extensions.warps.Warp;
@@ -9,6 +8,7 @@ import org.kilocraft.essentials.util.nbt.NBTUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.nbt.CompoundTag;
 
 public class PlayerWarp extends Warp implements Comparable<PlayerWarp> {
     private UUID owner;
@@ -22,7 +22,7 @@ public class PlayerWarp extends Warp implements Comparable<PlayerWarp> {
         this.description = description;
     }
 
-    public PlayerWarp(String name, NbtCompound tag) {
+    public PlayerWarp(String name, CompoundTag tag) {
         super(name, null);
         this.fromTag(tag);
     }
@@ -48,8 +48,8 @@ public class PlayerWarp extends Warp implements Comparable<PlayerWarp> {
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound NbtCompound = super.toTag();
+    public CompoundTag toTag() {
+        CompoundTag NbtCompound = super.toTag();
         NbtCompound.putString("type", this.type);
         NbtCompound.putString("desc", this.description);
         NBTUtils.putUUID(NbtCompound, "owner", this.owner);
@@ -58,7 +58,7 @@ public class PlayerWarp extends Warp implements Comparable<PlayerWarp> {
     }
 
     @Override
-    public void fromTag(NbtCompound tag) {
+    public void fromTag(CompoundTag tag) {
         super.fromTag(tag);
         this.type = tag.getString("type");
         this.description = tag.getString("desc");

@@ -4,9 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.server.level.ServerPlayer;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -14,8 +14,8 @@ import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 
-import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
-import static net.minecraft.command.argument.EntityArgumentType.player;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
+import static net.minecraft.commands.arguments.EntityArgument.player;
 
 public class BackCommand extends EssentialCommand {
     public BackCommand() {
@@ -23,8 +23,8 @@ public class BackCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> selectorArgument = this.argument("target", player())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, EntitySelector> selectorArgument = this.argument("target", player())
                 .requires(src -> this.hasPermission(src, CommandPermission.BACK_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes(this::executeOthers);
@@ -33,15 +33,15 @@ public class BackCommand extends EssentialCommand {
         this.argumentBuilder.executes(this::executeSelf);
     }
 
-    private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return this.sendBack(ctx, ctx.getSource().getPlayer());
+    private int executeSelf(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        return this.sendBack(ctx, ctx.getSource().getPlayerOrException());
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeOthers(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         return this.sendBack(ctx, getPlayer(ctx, "target"));
     }
 
-    private int sendBack(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) {
+    private int sendBack(CommandContext<CommandSourceStack> ctx, ServerPlayer target) {
         OnlineUser user = this.getOnlineUser(target);
 
         if (user.getLastSavedLocation() == null) {

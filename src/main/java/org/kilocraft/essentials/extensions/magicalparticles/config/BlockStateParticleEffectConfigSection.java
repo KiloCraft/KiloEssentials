@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.extensions.magicalparticles.config;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
@@ -8,6 +8,6 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 public class BlockStateParticleEffectConfigSection {
 
     @Setting("id")
-    public String blockId = Registry.BLOCK.getDefaultId().toString();
+    public String blockId = Registry.BLOCK.getDefaultKey().toString();
 
 }

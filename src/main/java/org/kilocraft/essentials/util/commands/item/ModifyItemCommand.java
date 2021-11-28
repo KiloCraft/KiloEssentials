@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.util.commands.item;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -53,7 +53,7 @@ public class ModifyItemCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         ItemNameCommand.registerChild(this.argumentBuilder);
         ItemLoreCommand.registerChild(this.argumentBuilder);
         PowerToolsCommand.registerChild(this.argumentBuilder);

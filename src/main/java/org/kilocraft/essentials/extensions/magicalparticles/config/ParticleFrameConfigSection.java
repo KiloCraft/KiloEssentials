@@ -1,13 +1,13 @@
 package org.kilocraft.essentials.extensions.magicalparticles.config;
 
-import net.minecraft.particle.ParticleType;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.Optional;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
 
 @ConfigSerializable
 public class ParticleFrameConfigSection {
@@ -60,7 +60,7 @@ public class ParticleFrameConfigSection {
     }
 
     private boolean isEqualTo(ParticleType<?> particleType) {
-        Identifier identifier = Registry.PARTICLE_TYPE.getId(particleType);
+        ResourceLocation identifier = Registry.PARTICLE_TYPE.getKey(particleType);
         return identifier != null && this.effect.equalsIgnoreCase(identifier.getPath());
     }
 }

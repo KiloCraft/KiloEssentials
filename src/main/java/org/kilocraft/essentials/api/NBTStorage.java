@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.provided.KiloFile;
 
@@ -18,13 +18,13 @@ public interface NBTStorage {
      *
      * @return the Tag to save
      */
-    NbtCompound serialize();
+    CompoundTag serialize();
 
     /**
      * Deserialize all the Data from the NbtCompound
      *
      * @param NbtCompound the Tag to get the data from
      */
-    void deserialize(@NotNull NbtCompound NbtCompound);
+    void deserialize(@NotNull CompoundTag NbtCompound);
 
 }

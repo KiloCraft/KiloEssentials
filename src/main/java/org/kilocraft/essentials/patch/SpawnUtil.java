@@ -1,27 +1,27 @@
 package org.kilocraft.essentials.patch;
 
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.SpawnHelper;
-import org.kilocraft.essentials.util.registry.RegistryKeyID;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.NaturalSpawner;
+import org.kilocraft.essentials.util.registry.IResourceKey;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 public class SpawnUtil {
 
-    public static float getMobCapMultiplier(ServerWorld world, SpawnGroup group) {
+    public static float getMobCapMultiplier(ServerLevel world, MobCategory group) {
         return getMobCapMultiplier(world, group.ordinal() + 1);
     }
 
-    public static float getMobCapMultiplier(ServerWorld world, int index) {
-        return ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][index];
+    public static float getMobCapMultiplier(ServerLevel world, int index) {
+        return ServerSettings.mobcap[((IResourceKey) world.dimension()).getID()][index];
     }
 
-    public static int getPersonalMobCap(ServerWorld world, SpawnGroup group) {
-        return (int) (group.getCapacity() * getMobCapMultiplier(world, 0) * getMobCapMultiplier(world, group));
+    public static int getPersonalMobCap(ServerLevel world, MobCategory group) {
+        return (int) (group.getMaxInstancesPerChunk() * getMobCapMultiplier(world, 0) * getMobCapMultiplier(world, group));
     }
 
-    public static int getGlobalMobCap(SpawnHelper.Info info, ServerWorld world, SpawnGroup group) {
-        return getPersonalMobCap(world, group) * info.getSpawningChunkCount() / SpawnHelper.CHUNK_AREA;
+    public static int getGlobalMobCap(NaturalSpawner.SpawnState info, ServerLevel world, MobCategory group) {
+        return getPersonalMobCap(world, group) * info.getSpawnableChunkCount() / NaturalSpawner.MAGIC_NUMBER;
     }
 
 }

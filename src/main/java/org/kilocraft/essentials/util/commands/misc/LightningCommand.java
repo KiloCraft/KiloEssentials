@@ -3,13 +3,13 @@ package org.kilocraft.essentials.util.commands.misc;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.phys.Vec3;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.util.EntityServerRayTraceable;
 import org.kilocraft.essentials.chat.StringText;
@@ -21,18 +21,18 @@ public class LightningCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         this.argumentBuilder.executes(this::execute);
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        Vec3d vec3d = ((EntityServerRayTraceable) player).rayTrace(90.0D, 1.0F, true).getPos();
-        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(player.getWorld(),
-                null, null, player, new BlockPos(vec3d), SpawnReason.COMMAND, true, false);
+    private int execute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        Vec3 vec3d = ((EntityServerRayTraceable) player).rayTrace(90.0D, 1.0F, true).getLocation();
+        LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(player.getLevel(),
+                null, null, player, new BlockPos(vec3d), MobSpawnType.COMMAND, true, false);
 
-        player.sendMessage(StringText.of("command.smite"), true);
-        return player.getWorld().spawnEntity(lightning) ? SUCCESS : FAILED;
+        player.displayClientMessage(StringText.of("command.smite"), true);
+        return player.getLevel().addFreshEntity(lightning) ? SUCCESS : FAILED;
     }
 
 }

@@ -11,11 +11,11 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.Person;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.util.text.Texter;
@@ -31,8 +31,8 @@ public class ModsCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> modArgument = this.argument("modid", word())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> modArgument = this.argument("modid", word())
                 .suggests(this::suggestMods)
                 .executes(this::sendInfo);
 
@@ -40,8 +40,8 @@ public class ModsCommand extends EssentialCommand {
         this.argumentBuilder.executes(this::sendList);
     }
 
-    private int sendList(CommandContext<ServerCommandSource> ctx) {
-        Texter.ListStyle text = Texter.ListStyle.of("Mods", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY);
+    private int sendList(CommandContext<CommandSourceStack> ctx) {
+        Texter.ListStyle text = Texter.ListStyle.of("Mods", ChatFormatting.GOLD, ChatFormatting.DARK_GRAY, ChatFormatting.WHITE, ChatFormatting.GRAY);
 
         for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
             ModMetadata meta = mod.getMetadata();
@@ -56,7 +56,7 @@ public class ModsCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int sendInfo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int sendInfo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         String inputId = getString(ctx, "modid");
 
         if (!FabricLoader.getInstance().getModContainer(inputId).isPresent()) {
@@ -74,11 +74,11 @@ public class ModsCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private MutableText authorsToArrayText(ModMetadata meta) {
+    private MutableComponent authorsToArrayText(ModMetadata meta) {
         Texter.ArrayStyle text = new Texter.ArrayStyle();
         for (Person author : meta.getAuthors()) {
-            MutableText mutable = Texter.newText(author.getName());
-            mutable.styled((style) -> {
+            MutableComponent mutable = Texter.newText(author.getName());
+            mutable.withStyle((style) -> {
                 style.withHoverEvent(Texter.Events.onHover(ModConstants.translation("general.click_info")));
                 style.withClickEvent(Texter.Events.onClickRun("mods", meta.getId(), author.getName()));
                 return style;
@@ -90,10 +90,10 @@ public class ModsCommand extends EssentialCommand {
     }
 
 
-    private CompletableFuture<Suggestions> suggestMods(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(FabricLoader.getInstance().getAllMods().stream()
+    private CompletableFuture<Suggestions> suggestMods(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(FabricLoader.getInstance().getAllMods().stream()
                 .map(mod -> mod.getMetadata().getId()), builder);
     }
 
-    private final SimpleCommandExceptionType MOD_NOT_PRESENT = new SimpleCommandExceptionType(new LiteralText("Can't find a mod with that name/id!"));
+    private final SimpleCommandExceptionType MOD_NOT_PRESENT = new SimpleCommandExceptionType(new TextComponent("Can't find a mod with that name/id!"));
 }

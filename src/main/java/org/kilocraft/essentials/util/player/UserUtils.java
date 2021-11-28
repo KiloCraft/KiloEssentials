@@ -4,10 +4,10 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.query.QueryOptions;
-import net.minecraft.scoreboard.Team;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.Pair;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -21,13 +21,13 @@ import java.util.UUID;
 public class UserUtils {
     private static final ServerUserManager USER_MANAGER = KiloEssentials.getUserManager();
 
-    public static MutableText getDisplayNameWithMeta(OnlineUser user, boolean nickName) {
+    public static MutableComponent getDisplayNameWithMeta(OnlineUser user, boolean nickName) {
         if (KiloEssentials.getInstance().hasLuckPerms()) {
             return ComponentText.toText(getDisplayNameWithMetaAsString(user, nickName));
         }
 
-        return user.asPlayer().getScoreboardTeam() == null ? Texter.newText(user.getFormattedDisplayName()) :
-                Team.decorateName(user.asPlayer().getScoreboardTeam(), new LiteralText(user.getFormattedDisplayName()));
+        return user.asPlayer().getTeam() == null ? Texter.newText(user.getFormattedDisplayName()) :
+                PlayerTeam.formatNameForTeam(user.asPlayer().getTeam(), new TextComponent(user.getFormattedDisplayName()));
     }
 
     public static String getDisplayNameWithMetaAsString(OnlineUser user, boolean nickName) {
@@ -66,8 +66,8 @@ public class UserUtils {
     public static class TpaRequests {
         public static boolean hasRequest(final OnlineUser src, final OnlineUser target) {
             if (PairMap.isInMap(src)) {
-                if (PairMap.get(src).getLeft().getLeft().equals(target.getUuid())) {
-                    if (new Date().getTime() - PairMap.get(src).getRight() > 60000) {
+                if (PairMap.get(src).getA().getA().equals(target.getUuid())) {
+                    if (new Date().getTime() - PairMap.get(src).getB() > 60000) {
                         PairMap.remove(src);
                         return false;
                     } else {
@@ -80,7 +80,7 @@ public class UserUtils {
         }
 
         public static boolean useRequestAndGetType(final OnlineUser src) {
-            boolean toSender = PairMap.get(src).getLeft().getRight();
+            boolean toSender = PairMap.get(src).getA().getB();
             PairMap.remove(src);
             return toSender;
         }
@@ -92,8 +92,8 @@ public class UserUtils {
         public static void add(@NotNull final OnlineUser src, @NotNull final OnlineUser target, boolean here) {
             USER_MANAGER.getTeleportRequestsMap().put(
                     src.getUuid(),
-                    new Pair<>(
-                            new Pair<>(
+                    new Tuple<>(
+                            new Tuple<>(
                                     target.getUuid(),
                                     here
                             ),
@@ -103,7 +103,7 @@ public class UserUtils {
         }
 
         private static class PairMap {
-            private static Pair<Pair<UUID, Boolean>, Long> get(@NotNull final OnlineUser user) {
+            private static Tuple<Tuple<UUID, Boolean>, Long> get(@NotNull final OnlineUser user) {
                 return USER_MANAGER.getTeleportRequestsMap().get(user.getUuid());
             }
 

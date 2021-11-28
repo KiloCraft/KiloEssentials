@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.util.commands;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -15,48 +15,48 @@ import java.util.regex.Pattern;
 
 public class CommandUtils {
 
-    public static boolean isConsole(ServerCommandSource source) {
+    public static boolean isConsole(CommandSourceStack source) {
         try {
-            source.getEntityOrThrow();
+            source.getEntityOrException();
             return false;
         } catch (CommandSyntaxException e) {
             return true;
         }
     }
 
-    public static boolean isPlayer(ServerCommandSource source) {
+    public static boolean isPlayer(CommandSourceStack source) {
         try {
-            source.getPlayer();
+            source.getPlayerOrException();
             return true;
         } catch (CommandSyntaxException e) {
             return false;
         }
     }
 
-    public static void failIfConsole(ServerCommandSource source) throws CommandSyntaxException {
-        source.getEntityOrThrow();
+    public static void failIfConsole(CommandSourceStack source) throws CommandSyntaxException {
+        source.getEntityOrException();
     }
 
-    public static boolean isOnline(ServerCommandSource source) {
+    public static boolean isOnline(CommandSourceStack source) {
         try {
-            source.getPlayer();
+            source.getPlayerOrException();
             return true;
         } catch (CommandSyntaxException e) {
             return false;
         }
     }
 
-    public static boolean areTheSame(ServerPlayerEntity playerEntity1, ServerPlayerEntity playerEntity2) {
-        return playerEntity1.getUuid().equals(playerEntity2.getUuid());
+    public static boolean areTheSame(ServerPlayer playerEntity1, ServerPlayer playerEntity2) {
+        return playerEntity1.getUUID().equals(playerEntity2.getUUID());
     }
 
-    public static boolean areTheSame(ServerCommandSource source, ServerPlayerEntity playerEntity) {
-        return source.getName().equals(playerEntity.getName().asString());
+    public static boolean areTheSame(CommandSourceStack source, ServerPlayer playerEntity) {
+        return source.getTextName().equals(playerEntity.getName().getContents());
     }
 
-    public static boolean areTheSame(ServerCommandSource source, OnlineUser user) {
+    public static boolean areTheSame(CommandSourceStack source, OnlineUser user) {
         try {
-            return source.getPlayer().getUuid().equals(user.getUuid());
+            return source.getPlayerOrException().getUUID().equals(user.getUuid());
         } catch (CommandSyntaxException ignored) {
             return false;
         }
@@ -70,19 +70,19 @@ public class CommandUtils {
         return user1.getUuid().equals(user2.getUuid());
     }
 
-    public static boolean areTheSame(ServerCommandSource source, User user) {
+    public static boolean areTheSame(CommandSourceStack source, User user) {
         try {
-            return source.getPlayer().getUuid().equals(user.getUuid());
+            return source.getPlayerOrException().getUUID().equals(user.getUuid());
         } catch (CommandSyntaxException ignored) {
             return false;
         }
     }
 
-    public static String getDisplayName(ServerCommandSource source) throws CommandSyntaxException {
-        return isConsole(source) ? source.getName() : source.getPlayer().getDisplayName().asString();
+    public static String getDisplayName(CommandSourceStack source) throws CommandSyntaxException {
+        return isConsole(source) ? source.getTextName() : source.getPlayerOrException().getDisplayName().getContents();
     }
 
-    public static int runCommandWithFormatting(@NotNull final ServerCommandSource src, @NotNull final String cmd) {
+    public static int runCommandWithFormatting(@NotNull final CommandSourceStack src, @NotNull final String cmd) {
         String s = cmd;
         Matcher matcher = Formatting.PATTERN.matcher(cmd);
         if (matcher.find()) {
@@ -98,27 +98,27 @@ public class CommandUtils {
         }
     }
 
-    private static int execute(ServerCommandSource source, String command) {
-        return source.getServer().getCommandManager().execute(source, command);
+    private static int execute(CommandSourceStack source, String command) {
+        return source.getServer().getCommands().performCommand(source, command);
     }
 
     private static int execute(MinecraftServer server, String command) {
-        return execute(server.getCommandSource(), command);
+        return execute(server.createCommandSourceStack(), command);
     }
 
 
-    private static ServerCommandSource operatorSource(ServerCommandSource src) {
-        return src.withLevel(4);
+    private static CommandSourceStack operatorSource(CommandSourceStack src) {
+        return src.withPermission(4);
     }
 
     public enum Formatting {
-        SRC_NAME("source.name", ServerCommandSource::getName),
-        SRC_UUID("source.uuid", (src) -> Objects.requireNonNull(src.getEntity()).getUuid().toString());
+        SRC_NAME("source.name", CommandSourceStack::getTextName),
+        SRC_UUID("source.uuid", (src) -> Objects.requireNonNull(src.getEntity()).getUUID().toString());
 
         final String format;
-        final FormatterFunction<String, ServerCommandSource> function;
+        final FormatterFunction<String, CommandSourceStack> function;
 
-        Formatting(String format, FormatterFunction<String, ServerCommandSource> function) {
+        Formatting(String format, FormatterFunction<String, CommandSourceStack> function) {
             this.format = format;
             this.function = function;
         }
@@ -127,7 +127,7 @@ public class CommandUtils {
             return "${" + this.format + "}";
         }
 
-        public static String format(@NotNull final String cmd, @NotNull final ServerCommandSource src) {
+        public static String format(@NotNull final String cmd, @NotNull final CommandSourceStack src) {
             String string = cmd;
             for (Formatting value : values()) {
                 final String formatting = value.getFormat();

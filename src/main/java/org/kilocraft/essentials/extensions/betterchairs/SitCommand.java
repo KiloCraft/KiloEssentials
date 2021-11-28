@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -14,8 +14,8 @@ import org.kilocraft.essentials.mixin.accessor.EntityAccessor;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.EssentialPermission;
 
-import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
-import static net.minecraft.command.argument.EntityArgumentType.player;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
+import static net.minecraft.commands.arguments.EntityArgument.player;
 
 public class SitCommand extends EssentialCommand {
     public SitCommand() {
@@ -23,15 +23,15 @@ public class SitCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> enableArgument = this.literal("enable")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> enableArgument = this.literal("enable")
                 .executes((ctx) -> this.set(ctx, true))
                 .then(this.argument("target", player())
                         .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
                         .suggests(ArgumentSuggestions::allPlayers)
                         .executes((ctx) -> this.setOthers(ctx, true)));
 
-        LiteralArgumentBuilder<ServerCommandSource> disableArgument = this.literal("disable")
+        LiteralArgumentBuilder<CommandSourceStack> disableArgument = this.literal("disable")
                 .executes((ctx) -> this.set(ctx, false))
                 .then(this.argument("target", player())
                         .requires(src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SIT_OTHERS))
@@ -43,7 +43,7 @@ public class SitCommand extends EssentialCommand {
         this.commandNode.addChild(enableArgument.build());
     }
 
-    private int set(CommandContext<ServerCommandSource> ctx, boolean enable) throws CommandSyntaxException {
+    private int set(CommandContext<CommandSourceStack> ctx, boolean enable) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(ctx);
         user.getPreferences().set(Preferences.CAN_SEAT, enable);
 
@@ -56,7 +56,7 @@ public class SitCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int seat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int seat(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(ctx);
 
         if (SeatManager.getInstance().isSitting(user.asPlayer())) {
@@ -73,7 +73,7 @@ public class SitCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int setOthers(CommandContext<ServerCommandSource> ctx, boolean set) throws CommandSyntaxException {
+    private int setOthers(CommandContext<CommandSourceStack> ctx, boolean set) throws CommandSyntaxException {
         CommandSourceUser user = this.getCommandSource(ctx);
         OnlineUser target = this.getOnlineUser(getPlayer(ctx, "target"));
 

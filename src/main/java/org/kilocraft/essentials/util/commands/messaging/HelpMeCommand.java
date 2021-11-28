@@ -3,10 +3,10 @@ package org.kilocraft.essentials.util.commands.messaging;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -25,21 +25,21 @@ public class HelpMeCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = this.argument("message", greedyString())
+    public void register(final CommandDispatcher<CommandSourceStack> dispatcher) {
+        final RequiredArgumentBuilder<CommandSourceStack, String> messageArgument = this.argument("message", greedyString())
                 .executes(this::sendHelp);
 
         this.commandNode.addChild(messageArgument.build());
     }
 
-    private int sendHelp(final CommandContext<ServerCommandSource> ctx) {
+    private int sendHelp(final CommandContext<CommandSourceStack> ctx) {
         final CommandSourceUser src = this.getCommandSource(ctx);
-        final Text text = new LiteralText("")
+        final Component text = new TextComponent("")
                 .append(StringText.of("command.helpme.prefix"))
                 .append(" ")
-                .append(new LiteralText(ctx.getSource().getName()).formatted(Formatting.YELLOW)
-                        .append(new LiteralText(": ").formatted(Formatting.WHITE)))
-                .append(Texter.newText(getString(ctx, "message")).formatted(Formatting.WHITE));
+                .append(new TextComponent(ctx.getSource().getTextName()).withStyle(ChatFormatting.YELLOW)
+                        .append(new TextComponent(": ").withStyle(ChatFormatting.WHITE)))
+                .append(Texter.newText(getString(ctx, "message")).withStyle(ChatFormatting.WHITE));
 
         int i = 0;
         for (final OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList()) {

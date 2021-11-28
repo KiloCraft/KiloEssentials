@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.util.settings.values;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.kilocraft.essentials.util.settings.values.util.AbstractSetting;
 
 public class CategorySetting extends AbstractSetting {
@@ -10,8 +10,8 @@ public class CategorySetting extends AbstractSetting {
     }
 
     @Override
-    public void toTag(NbtCompound tag) {
-        NbtCompound setting = new NbtCompound();
+    public void toTag(CompoundTag tag) {
+        CompoundTag setting = new CompoundTag();
         for (AbstractSetting child : this.children) {
             child.toTag(setting);
         }
@@ -19,9 +19,9 @@ public class CategorySetting extends AbstractSetting {
     }
 
     @Override
-    public void fromTag(NbtCompound tag) {
+    public void fromTag(CompoundTag tag) {
         if (tag.contains(this.id)) {
-            NbtCompound setting = tag.getCompound(this.id);
+            CompoundTag setting = tag.getCompound(this.id);
             for (AbstractSetting child : this.children) {
                 child.fromTag(setting);
             }

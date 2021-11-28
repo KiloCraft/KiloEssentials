@@ -2,10 +2,10 @@ package org.kilocraft.essentials.api.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.text.Component;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.GameMode;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.Connection;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -19,9 +19,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public interface OnlineUser extends User, OnlineMessageReceptionist {
-    ServerPlayerEntity asPlayer();
+    ServerPlayer asPlayer();
 
-    ServerCommandSource getCommandSource();
+    CommandSourceStack getCommandSource();
 
     void sendSystemMessage(Object sysMessage);
 
@@ -29,7 +29,7 @@ public interface OnlineUser extends User, OnlineMessageReceptionist {
 
     void teleport(@NotNull final OnlineUser user);
 
-    ClientConnection getConnection();
+    Connection getConnection();
 
     Vec3dLocation getLocationAsVector() throws CommandSyntaxException;
 
@@ -39,7 +39,7 @@ public interface OnlineUser extends User, OnlineMessageReceptionist {
 
     void setFlight(boolean set);
 
-    void setGameMode(GameMode mode);
+    void setGameMode(GameType mode);
 
     default Component hoverEvent() {
         String date = String.format(ModConstants.translation("channel.message.hover.time"), new SimpleDateFormat(ModConstants.translation("channel.message.hover.time_format")).format(new Date()));

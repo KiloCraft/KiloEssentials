@@ -2,7 +2,7 @@ package org.kilocraft.essentials.util.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.kilocraft.essentials.mixin.patch.technical.CommandManagerMixin;
+import org.kilocraft.essentials.mixin.patch.technical.CommandsMixin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ public class LiteralCommandModified {
     private static final String keCommandPrefix = "ke_";
 
     /**
-     * @see CommandManagerMixin
+     * @see CommandsMixin
      * <p>
      * This only works for Command literals and their sub commands
      */

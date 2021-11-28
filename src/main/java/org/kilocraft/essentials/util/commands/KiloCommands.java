@@ -7,14 +7,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
@@ -25,7 +17,6 @@ import org.kilocraft.essentials.chat.StringText;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.commands.messaging.HelpMeCommand;
 import org.kilocraft.essentials.util.commands.inventory.AnvilCommand;
 import org.kilocraft.essentials.util.commands.inventory.EnderchestCommand;
 import org.kilocraft.essentials.util.commands.inventory.InventoryCommand;
@@ -51,24 +42,32 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.dimension.DimensionType;
 
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.literal;
 
 public class KiloCommands {
     private static final List<IEssentialCommand> commands = new ArrayList<>();
-    private static final LiteralCommandNode<ServerCommandSource> rootNode = literal("essentials").executes(KiloCommands::sendInfo).build();
-    private static CommandDispatcher<ServerCommandSource> dispatcher;
+    private static final LiteralCommandNode<CommandSourceStack> rootNode = literal("essentials").executes(KiloCommands::sendInfo).build();
+    private static CommandDispatcher<CommandSourceStack> dispatcher;
 
-    public static void registerCommands(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+    public static void registerCommands(CommandDispatcher<CommandSourceStack> commandDispatcher) {
         dispatcher = commandDispatcher;
         registerDefaults();
     }
 
-    public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm) {
+    public static boolean hasPermission(final CommandSourceStack src, final CommandPermission perm) {
         return KiloEssentials.hasPermissionNode(src, perm);
     }
 
-    public static boolean hasPermission(final ServerCommandSource src, final CommandPermission perm, final int minOpLevel) {
+    public static boolean hasPermission(final CommandSourceStack src, final CommandPermission perm, final int minOpLevel) {
         return KiloEssentials.hasPermissionNode(src, perm, minOpLevel);
     }
 
@@ -165,11 +164,11 @@ public class KiloCommands {
         if (command.getForkType().shouldRegisterOnMain()) {
             if (command.getAlias() != null) {
                 for (String alias : command.getAlias()) {
-                    LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal(alias)
+                    LiteralArgumentBuilder<CommandSourceStack> argumentBuilder = literal(alias)
                             .requires(command.getRootPermissionPredicate())
                             .executes(command.getArgumentBuilder().getCommand());
 
-                    for (CommandNode<ServerCommandSource> child : command.getCommandNode().getChildren()) {
+                    for (CommandNode<CommandSourceStack> child : command.getCommandNode().getChildren()) {
                         argumentBuilder.then(child);
                     }
 
@@ -182,14 +181,14 @@ public class KiloCommands {
         }
     }
 
-    private static int sendInfo(final CommandContext<ServerCommandSource> ctx) {
-        ctx.getSource().sendFeedback(
+    private static int sendInfo(final CommandContext<CommandSourceStack> ctx) {
+        ctx.getSource().sendSuccess(
                 StringText.of("command.info", ModConstants.getMinecraftVersion())
-                        .formatted(Formatting.GRAY)
+                        .withStyle(ChatFormatting.GRAY)
                         .append("\n")
-                        .append(new LiteralText("GitHub: ").formatted(Formatting.GRAY))
-                        .append(Texts.bracketed(new LiteralText("github.com/KiloCraft/KiloEssentials/")
-                                .styled(style -> style.withFormatting(Formatting.GOLD)
+                        .append(new TextComponent("GitHub: ").withStyle(ChatFormatting.GRAY))
+                        .append(ComponentUtils.wrapInSquareBrackets(new TextComponent("github.com/KiloCraft/KiloEssentials/")
+                                .withStyle(style -> style.applyFormat(ChatFormatting.GOLD)
                                         .withClickEvent(Texter.Events.onClickOpen("https://github.com/KiloCraft/KiloEssentials/"))
                                         .withHoverEvent(Texter.Events.onHover("&eClick to open"))
                                 )
@@ -205,20 +204,20 @@ public class KiloCommands {
     public static SimpleCommandExceptionType getException(final String langErrorKey, final Object... objects) {
         final String message = ModConstants.translation(langErrorKey, objects);
         return KiloCommands.commandException(
-                new LiteralText(objects != null ? String.format(message, objects) : message).formatted(Formatting.RED));
+                new TextComponent(objects != null ? String.format(message, objects) : message).withStyle(ChatFormatting.RED));
     }
 
-    private static SimpleCommandExceptionType commandException(final Text text) {
+    private static SimpleCommandExceptionType commandException(final Component text) {
         return new SimpleCommandExceptionType(text);
     }
 
     public static void updateGlobalCommandTree() {
-        for (ServerPlayerEntity player : KiloEssentials.getMinecraftServer().getPlayerManager().getPlayerList()) {
-            KiloEssentials.getMinecraftServer().getPlayerManager().sendCommandTree(player);
+        for (ServerPlayer player : KiloEssentials.getMinecraftServer().getPlayerList().getPlayers()) {
+            KiloEssentials.getMinecraftServer().getPlayerList().sendPlayerPermissionLevel(player);
         }
     }
 
-    public static void onCommand(@NotNull final ServerCommandSource executor, final String command) {
+    public static void onCommand(@NotNull final CommandSourceStack executor, final String command) {
         if (CommandUtils.isPlayer(executor)) {
 
             boolean isIgnored = false;
@@ -233,22 +232,22 @@ public class KiloCommands {
                 ServerChat.sendCommandSpy(executor, command);
 
                 if (KiloConfig.main().server().logCommands) {
-                    KiloEssentials.getLogger().info("[" + executor.getName() + "]: " + command);
+                    KiloEssentials.getLogger().info("[" + executor.getTextName() + "]: " + command);
                 }
             }
         }
     }
 
-    public static boolean isCommandDisabled(ServerCommandSource src, String command) {
+    public static boolean isCommandDisabled(CommandSourceStack src, String command) {
         try {
             if (KiloEssentials.hasPermissionNode(src, EssentialPermission.COMMANDS_BYPASS_WORLD)) return false;
-            final DimensionType dimensionType = src.getPlayer().getWorld().getDimension();
-            final Identifier identifier = RegistryUtils.toIdentifier(dimensionType);
+            final DimensionType dimensionType = src.getPlayerOrException().getLevel().dimensionType();
+            final ResourceLocation identifier = RegistryUtils.toIdentifier(dimensionType);
             final List<String> disabledCommands = KiloConfig.main().world().disabledCommands.get(identifier.toString());
             if (disabledCommands != null) {
                 for (String disabledCommand : disabledCommands) {
                     if (command.startsWith(disabledCommand)) {
-                        src.sendError(StringText.of("general.dimension_command_disabled", command, identifier.getPath()));
+                        src.sendFailure(StringText.of("general.dimension_command_disabled", command, identifier.getPath()));
                         return true;
                     }
                 }
@@ -259,7 +258,7 @@ public class KiloCommands {
         return false;
     }
 
-    public static CommandDispatcher<ServerCommandSource> getDispatcher() {
+    public static CommandDispatcher<CommandSourceStack> getDispatcher() {
         return dispatcher;
     }
 

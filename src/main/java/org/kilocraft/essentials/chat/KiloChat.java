@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.chat;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 
@@ -13,7 +13,7 @@ public class KiloChat {
     }
 
     public static void broadCast(String message) {
-        for (ServerPlayerEntity player : KiloEssentials.getMinecraftServer().getPlayerManager().getPlayerList()) {
+        for (ServerPlayer player : KiloEssentials.getMinecraftServer().getPlayerList().getPlayers()) {
             KiloEssentials.getUserManager().getOnline(player).sendMessage(message);
         }
     }

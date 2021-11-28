@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.api.world;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 public class RelativePosition {
     private final double x;
@@ -30,8 +30,8 @@ public class RelativePosition {
         return new BlockPos(pos.getX() + this.x, pos.getY() + this.y, pos.getZ() + this.z);
     }
 
-    public Vec3d getRelativeVector(Vec3d vec) {
-        return new Vec3d(vec.getX() + this.x, vec.getY() + this.y, vec.getZ() + this.z);
+    public Vec3 getRelativeVector(Vec3 vec) {
+        return new Vec3(vec.x() + this.x, vec.y() + this.y, vec.z() + this.z);
     }
 
 }

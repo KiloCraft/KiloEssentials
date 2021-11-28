@@ -8,8 +8,8 @@
   },
   "mixins": [
     "MinecraftServerMixin",
-    "PlayerManagerMixin",
-    "ServerPlayerEntityMixin",
-    "ServerPlayNetworkHandlerMixin"
+    "PlayerListMixin",
+    "ServerPlayerMixin",
+    "ServerGamePacketListenerImplMixin"
   ]
 }

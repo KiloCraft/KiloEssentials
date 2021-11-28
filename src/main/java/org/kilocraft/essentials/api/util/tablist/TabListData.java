@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.api.util.tablist;
 
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
+import net.minecraft.network.protocol.game.ClientboundTabListPacket;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -25,21 +25,21 @@ public class TabListData {
         this.kiloEssentials.sendGlobalPacket(packet);
     }
 
-    private void updateTabHeaderFooter(@NotNull ServerPlayerEntity player) {
-        PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(
+    private void updateTabHeaderFooter(@NotNull ServerPlayer player) {
+        ClientboundTabListPacket packet = new ClientboundTabListPacket(
                 ComponentText.toText(formatFor(player, KiloConfig.main().playerList().getHeader())),
                 ComponentText.toText(formatFor(player, KiloConfig.main().playerList().getFooter()))
         );
-        player.networkHandler.sendPacket(packet);
+        player.connection.send(packet);
     }
 
     private void updateTabHeaderFooterEveryone() {
-        for (ServerPlayerEntity player : KiloEssentials.getMinecraftServer().getPlayerManager().getPlayerList()) {
+        for (ServerPlayer player : KiloEssentials.getMinecraftServer().getPlayerList().getPlayers()) {
             this.updateTabHeaderFooter(player);
         }
     }
 
-    private static String formatFor(@NotNull final ServerPlayerEntity player, @NotNull final String string) {
+    private static String formatFor(@NotNull final ServerPlayer player, @NotNull final String string) {
         final OnlineUser user = KiloEssentials.getUserManager().getOnline(player);
         String s = ConfigVariableFactory.replaceServerVariables(string);
         return ConfigVariableFactory.replaceOnlineUserVariables(s, user);
@@ -47,16 +47,16 @@ public class TabListData {
 
     public void onUpdate() {
         this.updateTabHeaderFooterEveryone();
-        for (ServerPlayerEntity player : KiloEssentials.getMinecraftServer().getPlayerManager().getPlayerList()) {
-            this.sendPacketToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
+        for (ServerPlayer player : KiloEssentials.getMinecraftServer().getPlayerList().getPlayers()) {
+            this.sendPacketToAll(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME, player));
         }
     }
 
-    public void onJoin(ServerPlayerEntity player) {
+    public void onJoin(ServerPlayer player) {
         this.updateTabHeaderFooterEveryone();
     }
 
-    public void onLeave(ServerPlayerEntity player) {
+    public void onLeave(ServerPlayer player) {
         this.updateTabHeaderFooterEveryone();
     }
 

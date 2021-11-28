@@ -3,15 +3,15 @@ package org.kilocraft.essentials.util.commands.inventory;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.stat.Stats;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingMenu;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.util.CommandPermission;
 
@@ -21,21 +21,21 @@ public class WorkbenchCommand extends EssentialCommand {
         super("workbench", CommandPermission.WORKBENCH, new String[]{"craftingbench", "craft"});
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         this.argumentBuilder.executes(WorkbenchCommand::execute);
     }
 
-    private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
+    private static int execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
 
-        player.openHandledScreen(new SimpleNamedScreenHandlerFactory(WorkbenchCommand::createContainer, new TranslatableText("container.crafting")));
-        player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
+        player.openMenu(new SimpleMenuProvider(WorkbenchCommand::createContainer, new TranslatableComponent("container.crafting")));
+        player.awardStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 
         return SUCCESS;
     }
 
-    public static CraftingScreenHandler createContainer(int syncId, PlayerInventory inventory, PlayerEntity player) {
-        return new CraftingScreenHandler(syncId, inventory, ScreenHandlerContext.create(player.world, player.getBlockPos()));
+    public static CraftingMenu createContainer(int syncId, Inventory inventory, Player player) {
+        return new CraftingMenu(syncId, inventory, ContainerLevelAccess.create(player.level, player.blockPosition()));
     }
 
 }

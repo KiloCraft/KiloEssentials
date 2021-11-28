@@ -8,7 +8,6 @@ import com.github.hansi132.discordfab.discordbot.api.events.AdvancedDiscordAlert
 import com.github.hansi132.discordfab.discordbot.api.events.DiscordMessageEvent;
 import com.github.hansi132.discordfab.discordbot.api.events.MinecraftMessageEvent;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
-import net.minecraft.network.MessageType;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -24,6 +23,7 @@ import java.awt.*;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.network.chat.ChatType;
 
 public class DiscordFabModule {
 
@@ -50,17 +50,17 @@ public class DiscordFabModule {
         });
         ChatEvents.FLAGGED_MESSAGE.register(DiscordFabModule::sendFlaggedMessageReport);
         ChatEvents.CHAT_MESSAGE.register((player, message, channel) -> {
-            if (isLoaded()) MinecraftMessageEvent.EVENT.invoker().onMessage(channel.getId(), player.getUuid(), message);
+            if (isLoaded()) MinecraftMessageEvent.EVENT.invoker().onMessage(channel.getId(), player.getUUID(), message);
         });
         if (isLoaded()) DiscordMessageEvent.EVENT.register(DiscordFabModule::handleDiscordMessage);
     }
 
     private static boolean handleDiscordMessage(String minecraftChannelId, String name, UUID sender, String message) {
         if (minecraftChannelId.equals(STAFF_CHANNEL_ID)) {
-            ServerChat.Channel.STAFF.send(ComponentText.toText(ModConstants.translation("compability.discordfab.chat.staff", name, message)), MessageType.CHAT, sender);
+            ServerChat.Channel.STAFF.send(ComponentText.toText(ModConstants.translation("compability.discordfab.chat.staff", name, message)), ChatType.CHAT, sender);
             return true;
         } else if (minecraftChannelId.equals(DiscordFabMod.PUBLIC_CHANNEL_ID)){
-            ServerChat.Channel.PUBLIC.send(ComponentText.toText(ModConstants.translation("compability.discordfab.chat.public", name, message)), MessageType.CHAT, sender);
+            ServerChat.Channel.PUBLIC.send(ComponentText.toText(ModConstants.translation("compability.discordfab.chat.public", name, message)), ChatType.CHAT, sender);
             return true;
         } else {
             // If we return true, discordfab will see this message as handled and won't sent it to minecraft

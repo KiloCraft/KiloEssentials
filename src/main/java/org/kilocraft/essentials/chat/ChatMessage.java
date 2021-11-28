@@ -8,10 +8,9 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.MessageType;
-import net.minecraft.text.Text;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.world.item.ItemStack;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -121,17 +120,17 @@ public class ChatMessage {
 
     private Component itemComponent() {
         TextComponent.Builder builder = Component.text();
-        ItemStack itemStack = this.sender.asPlayer().getMainHandStack();
-        NbtCompound tag = itemStack.getNbt();
+        ItemStack itemStack = this.sender.asPlayer().getMainHandItem();
+        CompoundTag tag = itemStack.getTag();
         builder.append(Component.text("["))
-                .append(ComponentText.toComponent(itemStack.getName()))
+                .append(ComponentText.toComponent(itemStack.getHoverName()))
                 .append(Component.text("]"));
         builder.style(
                 style -> style
                         .hoverEvent(
                                 HoverEvent.showItem(
                                         Key.key(RegistryUtils.toIdentifier(itemStack.getItem())), 1,
-                                        BinaryTagHolder.of(tag == null ? new NbtCompound().toString() : tag.toString())
+                                        BinaryTagHolder.of(tag == null ? new CompoundTag().toString() : tag.toString())
                                 )
                         )
         );
@@ -186,15 +185,15 @@ public class ChatMessage {
 
     public void send() {
         final Predicate<OnlineUser> IS_SENDER = onlineUser -> onlineUser.getUuid().equals(this.sender.getUuid());
-        Text text = ComponentText.toText(this.builder.build());
+        net.minecraft.network.chat.Component text = ComponentText.toText(this.builder.build());
         if (this.shouldCensor) {
-            Text censored = ComponentText.toText(this.censored.build());
+            net.minecraft.network.chat.Component censored = ComponentText.toText(this.censored.build());
             // Send the censored message to everyone, but the sender
-            this.channel.send(censored, this.pinged, IS_SENDER.negate(), MessageType.CHAT, this.sender.getUuid());
+            this.channel.send(censored, this.pinged, IS_SENDER.negate(), ChatType.CHAT, this.sender.getUuid());
             // Send the uncensored message to the sender
-            this.channel.send(text, this.pinged, IS_SENDER, MessageType.CHAT, this.sender.getUuid());
+            this.channel.send(text, this.pinged, IS_SENDER, ChatType.CHAT, this.sender.getUuid());
         } else {
-            this.channel.send(text, this.pinged, (user) -> true, MessageType.CHAT, this.sender.getUuid());
+            this.channel.send(text, this.pinged, (user) -> true, ChatType.CHAT, this.sender.getUuid());
         }
         if (!this.flagged.isEmpty()) ChatEvents.FLAGGED_MESSAGE.invoker().onMessageFlag(this.sender, this.input, this.flagged);
         KiloChat.broadCastToConsole(text.getString());

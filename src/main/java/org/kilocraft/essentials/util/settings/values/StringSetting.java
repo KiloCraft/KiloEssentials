@@ -3,8 +3,8 @@ package org.kilocraft.essentials.util.settings.values;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 
 public class StringSetting extends ConfigurableSetting<String> {
@@ -26,7 +26,7 @@ public class StringSetting extends ConfigurableSetting<String> {
     }
 
     @Override
-    public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
+    public void setValueFromCommand(CommandContext<CommandSourceStack> ctx) {
         this.setValue(StringArgumentType.getString(ctx, commandArgumentValue));
     }
 
@@ -36,12 +36,12 @@ public class StringSetting extends ConfigurableSetting<String> {
     }
 
     @Override
-    protected void setValue(NbtCompound tag) {
+    protected void setValue(CompoundTag tag) {
         tag.putString("value", this.getValue());
     }
 
     @Override
-    protected String getValue(NbtCompound tag) {
+    protected String getValue(CompoundTag tag) {
         return tag.getString("value");
     }
 

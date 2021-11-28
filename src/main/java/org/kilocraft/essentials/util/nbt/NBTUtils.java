@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.util.nbt;
 
-import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 
@@ -14,30 +14,30 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class NBTUtils {
-    public static void putUUID(NbtCompound tag, String key, UUID uuid) {
-        tag.putUuid(key, uuid);
+    public static void putUUID(CompoundTag tag, String key, UUID uuid) {
+        tag.putUUID(key, uuid);
     }
 
-    public static UUID getUUID(NbtCompound tag, String key) {
+    public static UUID getUUID(CompoundTag tag, String key) {
         UUID uuid;
         // Get the UUID even if its the old format
         if (tag.contains(key + "Most") && tag.contains(key + "Least")) {
             uuid = new UUID(tag.getLong(key + "Most"), tag.getLong(key + "Least"));
         } else {
-            uuid = tag.getUuid(key);
+            uuid = tag.getUUID(key);
         }
 
         return uuid;
     }
 
     @Nullable
-    public static NbtCompound getPlayerTag(UUID uuid) {
+    public static CompoundTag getPlayerTag(UUID uuid) {
         File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
 
         if (!file.exists())
             return null;
 
-        NbtCompound NbtCompound = null;
+        CompoundTag NbtCompound = null;
 
         try {
             NbtCompound = NbtIo.readCompressed(new FileInputStream(file));
@@ -47,7 +47,7 @@ public class NBTUtils {
         return NbtCompound;
     }
 
-    public static boolean savePlayerFromTag(UUID uuid, NbtCompound tag) {
+    public static boolean savePlayerFromTag(UUID uuid, CompoundTag tag) {
         File file = new File(KiloEssentials.getWorkingDirectory() + "world/playerdata/" + uuid.toString() + ".dat");
         if (!file.exists())
             return false;
@@ -62,30 +62,30 @@ public class NBTUtils {
     }
 
     @Nullable
-    public static EnderChestInventory tagToEnderchest(NbtCompound tag) {
+    public static PlayerEnderChestContainer tagToEnderchest(CompoundTag tag) {
         if (!tag.contains("EnderItems"))
             return null;
 
-        EnderChestInventory inv = new EnderChestInventory();
-        inv.readNbtList(tag.getList("EnderItems", 10));
+        PlayerEnderChestContainer inv = new PlayerEnderChestContainer();
+        inv.fromTag(tag.getList("EnderItems", 10));
         return inv;
     }
 
-    public static void savePlayerEnderchest(UUID uuid, EnderChestInventory inv) {
-        NbtCompound tag = getPlayerTag(uuid);
+    public static void savePlayerEnderchest(UUID uuid, PlayerEnderChestContainer inv) {
+        CompoundTag tag = getPlayerTag(uuid);
         if (tag == null)
             return;
 
-        tag.put("EnderItems", inv.toNbtList());
+        tag.put("EnderItems", inv.createTag());
         savePlayerFromTag(uuid, tag);
     }
 
-    public static void setPlayerCustomName(UUID uuid, Text text) {
-        NbtCompound tag = getPlayerTag(uuid);
+    public static void setPlayerCustomName(UUID uuid, Component text) {
+        CompoundTag tag = getPlayerTag(uuid);
         if (tag == null)
             return;
 
-        tag.putString("CustomName", Text.Serializer.toJson(text));
+        tag.putString("CustomName", Component.Serializer.toJson(text));
         savePlayerFromTag(uuid, tag);
     }
 

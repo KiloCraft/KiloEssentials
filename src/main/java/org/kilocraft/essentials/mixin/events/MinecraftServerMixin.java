@@ -11,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MinecraftServerMixin {
 
     @Inject(
-            method = "save",
+            method = "saveAllChunks",
             at = @At("HEAD")
     )
-    private void onSave(boolean bl, boolean bl2, boolean bl3, CallbackInfoReturnable<Boolean> cir) {
+    private void saveAllEvent(boolean bl, boolean bl2, boolean bl3, CallbackInfoReturnable<Boolean> cir) {
         ServerEvents.SAVE.invoker().onSave((MinecraftServer) (Object) this);
     }
 

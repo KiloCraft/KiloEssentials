@@ -1,14 +1,14 @@
 package org.kilocraft.essentials.api.world.location;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.phys.Vec3;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.EntityRotation;
@@ -19,9 +19,9 @@ import org.kilocraft.essentials.util.registry.RegistryUtils;
 public class Vec3iLocation implements Location {
     private int x, y, z;
     private EntityRotation rotation;
-    private Identifier dimension;
+    private ResourceLocation dimension;
 
-    private Vec3iLocation(int x, int y, int z, float yaw, float pitch, Identifier dimension) {
+    private Vec3iLocation(int x, int y, int z, float yaw, float pitch, ResourceLocation dimension) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -29,7 +29,7 @@ public class Vec3iLocation implements Location {
         this.dimension = dimension;
     }
 
-    public static Vec3iLocation of(int x, int y, int z, float yaw, float pitch, Identifier dimension) {
+    public static Vec3iLocation of(int x, int y, int z, float yaw, float pitch, ResourceLocation dimension) {
         return new Vec3iLocation(x, y, z, yaw, pitch, dimension);
     }
 
@@ -45,8 +45,8 @@ public class Vec3iLocation implements Location {
         return of(Vec3i.getX(), Vec3i.getY(), Vec3i.getZ());
     }
 
-    public static Vec3iLocation of(ServerPlayerEntity player) {
-        return new Vec3iLocation((int) player.getX(), (int) player.getY(), (int) player.getZ(), player.getYaw(), player.getPitch(), RegistryUtils.toIdentifier(player.getWorld().getDimension()));
+    public static Vec3iLocation of(ServerPlayer player) {
+        return new Vec3iLocation((int) player.getX(), (int) player.getY(), (int) player.getZ(), player.getYRot(), player.getXRot(), RegistryUtils.toIdentifier(player.getLevel().dimensionType()));
     }
 
     public static Vec3iLocation of(OnlineUser user) {
@@ -69,7 +69,7 @@ public class Vec3iLocation implements Location {
     }
 
     @Override
-    public Identifier getDimension() {
+    public ResourceLocation getDimension() {
         return this.dimension;
     }
 
@@ -84,7 +84,7 @@ public class Vec3iLocation implements Location {
     }
 
     @Override
-    public ServerWorld getWorld() {
+    public ServerLevel getWorld() {
         return RegistryUtils.toServerWorld(this.getDimensionType());
     }
 
@@ -99,14 +99,14 @@ public class Vec3iLocation implements Location {
     }
 
     @Override
-    public boolean isSafeFor(ServerPlayerEntity player) {
+    public boolean isSafeFor(ServerPlayer player) {
         return this.isSafeFor(KiloEssentials.getUserManager().getOnline(player));
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
-        NbtCompound pos = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
+        CompoundTag pos = new CompoundTag();
 
         pos.putInt("x", this.x);
         pos.putInt("y", this.y);
@@ -118,7 +118,7 @@ public class Vec3iLocation implements Location {
             tag.putString("dim", this.dimension.toString());
 
         if (this.rotation.getYaw() != 0 && this.rotation.getPitch() != 0) {
-            NbtCompound view = new NbtCompound();
+            CompoundTag view = new CompoundTag();
             view.putFloat("yaw", this.rotation.getYaw());
             view.putFloat("pitch", this.rotation.getPitch());
             tag.put("view", view);
@@ -128,18 +128,18 @@ public class Vec3iLocation implements Location {
     }
 
     @Override
-    public void fromTag(NbtCompound tag) {
-        NbtCompound pos = tag.getCompound("pos");
+    public void fromTag(CompoundTag tag) {
+        CompoundTag pos = tag.getCompound("pos");
 
         this.x = pos.getInt("x");
         this.y = pos.getInt("y");
         this.z = pos.getInt("z");
 
         if (tag.contains("dim"))
-            this.dimension = new Identifier(tag.getString("dim"));
+            this.dimension = new ResourceLocation(tag.getString("dim"));
 
         if (tag.contains("view")) {
-            NbtCompound view = tag.getCompound("view");
+            CompoundTag view = tag.getCompound("view");
             this.rotation = new PlayerRotation(view.getFloat("yaw"), view.getFloat("pitch"));
         }
     }
@@ -165,7 +165,7 @@ public class Vec3iLocation implements Location {
     }
 
     @Override
-    public void setDimension(Identifier dimension) {
+    public void setDimension(ResourceLocation dimension) {
         this.dimension = dimension;
     }
 
@@ -185,8 +185,8 @@ public class Vec3iLocation implements Location {
     }
 
     @Override
-    public Vec3d toVec3d() {
-        return new Vec3d(this.x, this.y, this.z);
+    public Vec3 toVec3d() {
+        return new Vec3(this.x, this.y, this.z);
     }
 
     @Override

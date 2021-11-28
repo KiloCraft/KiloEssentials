@@ -1,13 +1,13 @@
 package org.kilocraft.essentials.util.registry;
 
-import net.minecraft.item.Item;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -18,12 +18,12 @@ import java.util.Set;
 
 public class RegistryUtils {
     private static final MinecraftServer server = KiloEssentials.getMinecraftServer();
-    private static final RegistryKey<World> DEFAULT_WORLD_KEY = World.OVERWORLD;
+    private static final ResourceKey<Level> DEFAULT_WORLD_KEY = Level.OVERWORLD;
 
     @Nullable
-    public static ServerWorld toServerWorld(@NotNull final DimensionType type) {
-        for (ServerWorld world : server.getWorlds()) {
-            if (world.getDimension() == type) {
+    public static ServerLevel toServerWorld(@NotNull final DimensionType type) {
+        for (ServerLevel world : server.getAllLevels()) {
+            if (world.dimensionType() == type) {
                 return world;
             }
         }
@@ -31,19 +31,19 @@ public class RegistryUtils {
         return null;
     }
 
-    public static Identifier toIdentifier(@NotNull final DimensionType type) {
-        RegistryKey<World> key = dimensionTypeToRegistryKey(type);
-        return key == null ? Objects.requireNonNull(dimensionTypeToRegistryKey(toDimension(DEFAULT_WORLD_KEY))).getValue() : key.getValue();
+    public static ResourceLocation toIdentifier(@NotNull final DimensionType type) {
+        ResourceKey<Level> key = dimensionTypeToRegistryKey(type);
+        return key == null ? Objects.requireNonNull(dimensionTypeToRegistryKey(toDimension(DEFAULT_WORLD_KEY))).location() : key.location();
     }
 
     @Nullable
-    public static RegistryKey<World> toWorldKey(@NotNull final DimensionType type) {
-        return toServerWorld(type) == null ? null : Objects.requireNonNull(toServerWorld(type)).getRegistryKey();
+    public static ResourceKey<Level> toWorldKey(@NotNull final DimensionType type) {
+        return toServerWorld(type) == null ? null : Objects.requireNonNull(toServerWorld(type)).dimension();
     }
 
-    public static DimensionType toDimension(@NotNull final Identifier identifier) {
-        for (RegistryKey<World> worldRegistryKey : getWorldsKeySet()) {
-            if (worldRegistryKey.getValue().equals(identifier)) {
+    public static DimensionType toDimension(@NotNull final ResourceLocation identifier) {
+        for (ResourceKey<Level> worldRegistryKey : getWorldsKeySet()) {
+            if (worldRegistryKey.location().equals(identifier)) {
                 return toDimension(worldRegistryKey);
             }
         }
@@ -51,31 +51,31 @@ public class RegistryUtils {
         return null;
     }
 
-    public static DimensionType toDimension(@NotNull final RegistryKey<World> key) {
-        return server.getWorld(key).getDimension();
+    public static DimensionType toDimension(@NotNull final ResourceKey<Level> key) {
+        return server.getLevel(key).dimensionType();
     }
 
-    public static String dimensionToName(@NotNull final Identifier identifier) {
+    public static String dimensionToName(@NotNull final ResourceLocation identifier) {
         return dimensionToName(toDimension(identifier));
     }
 
     public static String dimensionToName(@Nullable final DimensionType type) {
-        RegistryKey<World> key = type == null ? null : dimensionTypeToRegistryKey(type);
+        ResourceKey<Level> key = type == null ? null : dimensionTypeToRegistryKey(type);
         if (key == null) {
             return String.valueOf((Object) null);
         }
 
-        return key == World.OVERWORLD ? "Overworld"
-                : key == World.NETHER ? "The Nether"
-                : key == World.END ? "The End"
-                : StringUtils.normalizeCapitalization(key.getValue().getPath());
+        return key == Level.OVERWORLD ? "Overworld"
+                : key == Level.NETHER ? "The Nether"
+                : key == Level.END ? "The End"
+                : StringUtils.normalizeCapitalization(key.location().getPath());
     }
 
     @Nullable
-    public static RegistryKey<World> dimensionTypeToRegistryKey(@NotNull final DimensionType type) {
-        for (RegistryKey<World> worldRegistryKey : getWorldsKeySet()) {
-            final DimensionType dim = server.getWorld(worldRegistryKey).getDimension();
-            if (dim.equals(type)) {
+    public static ResourceKey<Level> dimensionTypeToRegistryKey(@NotNull final DimensionType type) {
+        for (ResourceKey<Level> worldRegistryKey : getWorldsKeySet()) {
+            final DimensionType dim = server.getLevel(worldRegistryKey).dimensionType();
+            if (dim.equalTo(type)) {
                 return worldRegistryKey;
             }
         }
@@ -83,29 +83,29 @@ public class RegistryUtils {
         return null;
     }
 
-    public static Set<RegistryKey<World>> getWorldsKeySet() {
-        return server.getWorldRegistryKeys();
+    public static Set<ResourceKey<Level>> getWorldsKeySet() {
+        return server.levelKeys();
     }
 
     public static boolean isOverworld(@NotNull final DimensionType type) {
-        return type == toDimension(DimensionType.OVERWORLD_REGISTRY_KEY.getValue());
+        return type == toDimension(DimensionType.OVERWORLD_LOCATION.location());
     }
 
     public static boolean isNether(@NotNull final DimensionType type) {
-        return type == toDimension(DimensionType.THE_NETHER_REGISTRY_KEY.getValue());
+        return type == toDimension(DimensionType.NETHER_LOCATION.location());
     }
 
     public static boolean isEnd(@NotNull final DimensionType type) {
-        return type == toDimension(DimensionType.THE_END_REGISTRY_KEY.getValue());
+        return type == toDimension(DimensionType.END_LOCATION.location());
     }
 
     public static String toIdentifier(@NotNull Item item) {
-        return Registry.ITEM.getId(item).toString();
+        return Registry.ITEM.getKey(item).toString();
     }
 
     @Nullable
     public static Item toItem(@NotNull String item) {
-        return Registry.ITEM.get(new Identifier(item));
+        return Registry.ITEM.get(new ResourceLocation(item));
     }
 
 }

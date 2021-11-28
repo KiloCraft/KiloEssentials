@@ -4,12 +4,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ChunkTicketType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.ChunkPos;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.feature.ConfigurableFeature;
@@ -30,6 +24,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.world.level.ChunkPos;
 
 /**
  * @author CODY_AI
@@ -68,8 +68,8 @@ public class UserHomeHandler implements ConfigurableFeature {
         return list;
     }
 
-    public static CompletableFuture<Suggestions> suggestHomes(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-        return CommandSource.suggestMatching(KiloEssentials.getUserManager().getOnline(
+    public static CompletableFuture<Suggestions> suggestHomes(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+        return SharedSuggestionProvider.suggest(KiloEssentials.getUserManager().getOnline(
                 context.getSource()).getHomesHandler().getHomes().stream().map(Home::getName), builder);
     }
 
@@ -133,7 +133,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     public void teleportToHome(OnlineUser user, Home home) throws UnsafeHomeException {
         if (home == null) throw new UnsafeHomeException(null, Reason.NO_HOME);
         if (user.isOnline()) {
-            ServerWorld world = KiloEssentials.getMinecraftServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
+            ServerLevel world = KiloEssentials.getMinecraftServer().getLevel(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
 
             if (world == null) {
                 throw new UnsafeHomeException(home, Reason.MISSING_DIMENSION);
@@ -151,7 +151,7 @@ public class UserHomeHandler implements ConfigurableFeature {
     public void prepareHomeLocation(OnlineUser user, Home home) {
         if (home == null) return;
         if (user.isOnline()) {
-            ServerWorld world = KiloEssentials.getMinecraftServer().getWorld(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
+            ServerLevel world = KiloEssentials.getMinecraftServer().getLevel(RegistryUtils.dimensionTypeToRegistryKey(home.getLocation().getDimensionType()));
 
             if (world == null) {
                 return;
@@ -162,11 +162,11 @@ public class UserHomeHandler implements ConfigurableFeature {
             }
 
             // Add a custom ticket to gradually preload chunks
-            world.getChunkManager().addTicket(ChunkTicketType.create("home", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(home.getLocation().toPos()), 1, user.asPlayer().getId()); // Lag reduction
+            world.getChunkSource().addRegionTicket(TicketType.create("home", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(home.getLocation().toPos()), 1, user.asPlayer().getId()); // Lag reduction
         }
     }
 
-    public NbtCompound serialize(NbtCompound tag) {
+    public CompoundTag serialize(CompoundTag tag) {
         for (Home userHome : this.userHomes) {
             tag.put(userHome.getName(), userHome.toTag());
         }
@@ -174,8 +174,8 @@ public class UserHomeHandler implements ConfigurableFeature {
         return tag;
     }
 
-    public void deserialize(NbtCompound NbtCompound) {
-        for (String key : NbtCompound.getKeys()) {
+    public void deserialize(CompoundTag NbtCompound) {
+        for (String key : NbtCompound.getAllKeys()) {
             Home home = new Home(NbtCompound.getCompound(key));
             home.setName(key);
             home.setOwner(this.serverUser.uuid);

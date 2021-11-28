@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -19,14 +19,14 @@ public class TpAcceptCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("victim")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> selectorArgument = this.getOnlineUserArgument("victim")
                 .executes(this::accept);
 
         this.commandNode.addChild(selectorArgument.build());
     }
 
-    private int accept(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int accept(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser victim = this.getOnlineUser(ctx);
         OnlineUser sender = this.getOnlineUser(ctx, "victim");
 

@@ -1,19 +1,19 @@
 package org.kilocraft.essentials.api.util.schedule;
 
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
 public abstract class StandStillScheduler extends AbstractScheduler {
 
     protected final OnlineUser player;
     private final int blocks;
-    private final Vec3d pos;
+    private final Vec3 pos;
 
     public StandStillScheduler(OnlineUser player, int blocks, int countdown) {
         super(countdown);
         this.player = player;
         this.blocks = blocks;
-        this.pos = player.asPlayer().getPos();
+        this.pos = player.asPlayer().position();
     }
 
     @Override
@@ -31,7 +31,7 @@ public abstract class StandStillScheduler extends AbstractScheduler {
     }
 
     protected boolean moved() {
-        return this.blocks >= 0 && this.player.asPlayer() != null && this.player.asPlayer().getPos().distanceTo(this.pos) > this.blocks;
+        return this.blocks >= 0 && this.player.asPlayer() != null && this.player.asPlayer().position().distanceTo(this.pos) > this.blocks;
     }
 
     abstract void sendAbortMessage();

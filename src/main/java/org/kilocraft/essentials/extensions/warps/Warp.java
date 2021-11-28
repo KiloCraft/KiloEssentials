@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.extensions.warps;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.NBTSerializable;
@@ -33,14 +33,14 @@ public abstract class Warp implements NBTSerializable {
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound NbtCompound = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag NbtCompound = new CompoundTag();
         NbtCompound.put("loc", this.location.toTag());
         return NbtCompound;
     }
 
     @Override
-    public void fromTag(NbtCompound tag) {
+    public void fromTag(CompoundTag tag) {
         if (this.location == null) {
             this.location = Vec3dLocation.dummy();
         }

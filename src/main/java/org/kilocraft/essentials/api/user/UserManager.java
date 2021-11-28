@@ -2,8 +2,6 @@ package org.kilocraft.essentials.api.user;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
 import org.kilocraft.essentials.api.user.punishment.PunishmentEntry;
@@ -15,6 +13,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 
 public interface UserManager {
 
@@ -123,7 +123,7 @@ public interface UserManager {
      * @param player the PlayerEntity.
      * @return An online user.
      */
-    OnlineUser getOnline(ServerPlayerEntity player);
+    OnlineUser getOnline(ServerPlayer player);
 
     /**
      * Gets a user who is online using a server command source.
@@ -132,7 +132,7 @@ public interface UserManager {
      * @return An online user.
      * @throws CommandSyntaxException If the CommandSource is not a player.
      */
-    OnlineUser getOnline(ServerCommandSource source) throws CommandSyntaxException;
+    OnlineUser getOnline(CommandSourceStack source) throws CommandSyntaxException;
 
     /**
      * Checks if a user is currently online

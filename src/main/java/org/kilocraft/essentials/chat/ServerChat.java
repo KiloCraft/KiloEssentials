@@ -2,17 +2,6 @@ package org.kilocraft.essentials.chat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
@@ -36,6 +25,15 @@ import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.*;
 import java.util.function.Predicate;
+import net.minecraft.Util;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
 
 public final class ServerChat {
     private static final int COMMAND_MAX_LENGTH = 45;
@@ -60,19 +58,19 @@ public final class ServerChat {
         pingUser(target.asPlayer(), cfg);
     }
 
-    private static void pingUser(final ServerPlayerEntity target, final ChatPingSoundConfigSection cfg) {
-        Vec3d vec3d = target.getCommandSource().getPosition();
-        if (target.networkHandler != null) {
-            target.networkHandler.sendPacket(
-                    new PlaySoundIdS2CPacket(
-                            new Identifier(cfg.id),
-                            SoundCategory.MASTER,
+    private static void pingUser(final ServerPlayer target, final ChatPingSoundConfigSection cfg) {
+        Vec3 vec3d = target.createCommandSourceStack().getPosition();
+        if (target.connection != null) {
+            target.connection.send(
+                    new ClientboundCustomSoundPacket(
+                            new ResourceLocation(cfg.id),
+                            SoundSource.MASTER,
                             vec3d, (float) cfg.volume, (float) cfg.pitch)
             );
         }
     }
 
-    public static int sendDirectMessage(final ServerCommandSource source, final OnlineUser target, final String message) throws CommandSyntaxException {
+    public static int sendDirectMessage(final CommandSourceStack source, final OnlineUser target, final String message) throws CommandSyntaxException {
         CommandSourceUser src = CommandSourceServerUser.of(source);
 
         if (!((ServerUser) target).shouldMessage() && src.getUser() != null) {
@@ -95,10 +93,10 @@ public final class ServerChat {
         return 1;
     }
 
-    public static void messagePrivately(final ServerCommandSource source, final OnlineUser target, final String raw) throws CommandSyntaxException {
+    public static void messagePrivately(final CommandSourceStack source, final OnlineUser target, final String raw) throws CommandSyntaxException {
         String format = ServerChat.config.privateChat().privateChat;
         String me_format = ServerChat.config.privateChat().privateChatMeFormat;
-        String sourceName = source.getName();
+        String sourceName = source.getTextName();
 
         if (CommandUtils.isPlayer(source)) {
             OnlineUser user = KiloEssentials.getUserManager().getOnline(source);
@@ -140,7 +138,7 @@ public final class ServerChat {
         KiloChat.broadCastToConsole(toSpy);
     }
 
-    public static void sendCommandSpy(final ServerCommandSource source, final String command) {
+    public static void sendCommandSpy(final CommandSourceStack source, final String command) {
         String shortenedCommand = command.substring(0, Math.min(command.length(), COMMAND_MAX_LENGTH));
 
         if (command.length() > COMMAND_MAX_LENGTH) {
@@ -149,7 +147,7 @@ public final class ServerChat {
 
         for (OnlineServerUser user : KiloEssentials.getUserManager().getOnlineUsers().values()) {
             if (user.getPreference(Preferences.COMMAND_SPY) && !CommandUtils.areTheSame(source, user)) {
-                user.sendLangMessage("general.social_spy", source.getName(), shortenedCommand);
+                user.sendLangMessage("general.social_spy", source.getTextName(), shortenedCommand);
             }
         }
     }
@@ -187,7 +185,7 @@ public final class ServerChat {
             return this.id;
         }
 
-        public void send(final Text message, final Set<UUID> pingedUsers, final Predicate<OnlineUser> shouldSend, final MessageType messageType, final UUID author) {
+        public void send(final Component message, final Set<UUID> pingedUsers, final Predicate<OnlineUser> shouldSend, final ChatType messageType, final UUID author) {
             final boolean playSound = KiloConfig.main().chat().ping().pingSound().enabled;
             for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList()) {
                 if (!shouldSend.test(user)) continue;
@@ -197,7 +195,7 @@ public final class ServerChat {
                         ServerChat.pingUser(user, MentionTypes.PUBLIC);
                     }
                     final boolean mentionOnly = user.getPreference(Preferences.CHAT_VISIBILITY) == VisibilityPreference.MENTIONS;
-                    if (mentionOnly && !mentioned && messageType == MessageType.CHAT) {
+                    if (mentionOnly && !mentioned && messageType == ChatType.CHAT) {
                         continue;
                     }
                     user.asPlayer().sendMessage(message, messageType, author);
@@ -205,12 +203,12 @@ public final class ServerChat {
             }
         }
 
-        public void send(Text message, MessageType messageType, UUID uuid) {
+        public void send(Component message, ChatType messageType, UUID uuid) {
             this.send(message, new HashSet<>(), (user) -> true, messageType, uuid);
         }
 
-        public void send(Text message) {
-            this.send(message, MessageType.SYSTEM, Util.NIL_UUID);
+        public void send(Component message) {
+            this.send(message, ChatType.SYSTEM, Util.NIL_UUID);
         }
 
         public String getFormat() {

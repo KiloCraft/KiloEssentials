@@ -4,14 +4,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.command.TeleportCommand;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -79,17 +77,17 @@ public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
         return null;
     }
 
-    public static int teleport(ServerPlayerEntity player, ServerWarp warp) throws CommandSyntaxException {
-        ServerWorld world = warp.getLocation().getWorld();
+    public static int teleport(ServerPlayer player, ServerWarp warp) throws CommandSyntaxException {
+        ServerLevel world = warp.getLocation().getWorld();
 
-        player.teleport(world, warp.getLocation().getX(), warp.getLocation().getY(), warp.getLocation().getZ(),
+        player.teleportTo(world, warp.getLocation().getX(), warp.getLocation().getY(), warp.getLocation().getZ(),
                 warp.getLocation().getRotation().getYaw(), warp.getLocation().getRotation().getPitch());
 
         return 1;
     }
 
-    public static CompletableFuture<Suggestions> suggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(warps.stream().map(ServerWarp::getName), builder);
+    public static CompletableFuture<Suggestions> suggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(warps.stream().map(ServerWarp::getName), builder);
     }
 
     @Override
@@ -98,8 +96,8 @@ public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
     }
 
     @Override
-    public NbtCompound serialize() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag serialize() {
+        CompoundTag tag = new CompoundTag();
         for (ServerWarp warp : warps) {
             tag.put(warp.getName(), warp.toTag());
         }
@@ -108,10 +106,10 @@ public class ServerWarpManager implements ConfigurableFeature, NBTStorage {
     }
 
     @Override
-    public void deserialize(@NotNull NbtCompound NbtCompound) {
+    public void deserialize(@NotNull CompoundTag NbtCompound) {
         warps.clear();
         byName.clear();
-        NbtCompound.getKeys().forEach((key) -> {
+        NbtCompound.getAllKeys().forEach((key) -> {
             warps.add(new ServerWarp(key, NbtCompound.getCompound(key)));
             byName.add(key);
         });

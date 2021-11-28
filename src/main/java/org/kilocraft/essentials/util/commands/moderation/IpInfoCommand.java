@@ -4,8 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -19,14 +19,14 @@ public class IpInfoCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> targetArgument = this.getUserArgument("user")
                 .executes(this::execute);
 
         this.commandNode.addChild(targetArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser source = this.getOnlineUser(ctx);
 
         this.getUserManager().getUserThenAcceptAsync(source.getCommandSource(), this.getUserArgumentInput(ctx, "user"), (user) -> {
@@ -39,12 +39,12 @@ public class IpInfoCommand extends EssentialCommand {
 
             source.sendMessage(
                     Texter.newText(this.tl("command.ipinfo", user.getUsername()))
-                            .append(Texter.newRawText(address).styled((style) -> style.withFormatting(Formatting.GOLD)
+                            .append(Texter.newRawText(address).withStyle((style) -> style.applyFormat(ChatFormatting.GOLD)
                                     .withHoverEvent(Texter.Events.onHover(ModConstants.translation("general.click_copy")))
                                     .withClickEvent(Texter.Events.onClickCopy(address))
                             )).append(" ").append(
                             Texter.newText().append(StringUtils.socketAddressToPort(user.getLastSocketAddress()))
-                                    .styled((style) -> style.withFormatting(Formatting.AQUA)
+                                    .withStyle((style) -> style.applyFormat(ChatFormatting.AQUA)
                                             .withHoverEvent(Texter.Events.onHover(ModConstants.translation("general.click_copy")))
                                             .withClickEvent(Texter.Events.onClickCopy(user.getLastSocketAddress()))
                                     )

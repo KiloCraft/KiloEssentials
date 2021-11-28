@@ -4,18 +4,18 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.protocol.game.ClientboundContainerSetDataPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.item.ItemStack;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.CommandPermission;
@@ -26,36 +26,36 @@ public class InventoryCommand extends EssentialCommand {
         super("inventory", CommandPermission.SEEK_INVENTORY, new String[]{"inv", "seekinv"});
     }
 
-    private static void setSlotsInit(ServerPlayerEntity target, ScreenHandler handler) {
+    private static void setSlotsInit(ServerPlayer target, AbstractContainerMenu handler) {
         for (int i = 0; i < 36; i++) {
-            handler.setStackInSlot(i, handler.getRevision(), target.getInventory().main.get(i));
+            handler.setItem(i, handler.getStateId(), target.getInventory().items.get(i));
         }
 
         for (int i = 0; i < 4; i++) {
-            handler.setStackInSlot(i + 36, handler.getRevision(), target.getInventory().armor.get(i));
+            handler.setItem(i + 36, handler.getStateId(), target.getInventory().armor.get(i));
         }
 
-        handler.setStackInSlot(44, handler.getRevision(), target.getInventory().offHand.get(0));
+        handler.setItem(44, handler.getStateId(), target.getInventory().offhand.get(0));
     }
 
-    private static void copySlotsFromInventory(ServerPlayerEntity target, ScreenHandler handler, int slotID) {
+    private static void copySlotsFromInventory(ServerPlayer target, AbstractContainerMenu handler, int slotID) {
         if (slotID < 36) {
-            target.getInventory().main.set(slotID, handler.getStacks().get(slotID));
+            target.getInventory().items.set(slotID, handler.getItems().get(slotID));
         } else if (slotID < 40) {
-            target.getInventory().armor.set(slotID - 36, handler.getStacks().get(slotID));
+            target.getInventory().armor.set(slotID - 36, handler.getItems().get(slotID));
         } else if (slotID == 44) {
-            target.getInventory().offHand.set(0, handler.getStacks().get(slotID));
+            target.getInventory().offhand.set(0, handler.getItems().get(slotID));
         }
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getOnlineUserArgument("target")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> userArgument = this.getOnlineUserArgument("target")
                 .executes(this::execute);
 
         this.commandNode.addChild(userArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         final OnlineUser sender = this.getOnlineUser(ctx);
         final OnlineUser target = this.getOnlineUser(ctx, "target");
 
@@ -64,17 +64,17 @@ public class InventoryCommand extends EssentialCommand {
             return FAILED;
         }
 
-        sender.asPlayer().openHandledScreen(this.factory(sender, target));
+        sender.asPlayer().openMenu(this.factory(sender, target));
         sender.sendLangMessage("general.seek_screen", target.getFormattedDisplayName(), "");
         return SUCCESS;
     }
 
-    private NamedScreenHandlerFactory factory(final OnlineUser src, final OnlineUser target) {
-        return new NamedScreenHandlerFactory() {
+    private MenuProvider factory(final OnlineUser src, final OnlineUser target) {
+        return new MenuProvider() {
             @Override
-            public Text getDisplayName() {
-                Text text;
-                Text translatable = new TranslatableText("container.inventory");
+            public Component getDisplayName() {
+                Component text;
+                Component translatable = new TranslatableComponent("container.inventory");
 
                 if (src.equals(target)) {
                     text = Texter.newText().append(translatable).append(" ").append(target.getFormattedDisplayName());
@@ -86,18 +86,18 @@ public class InventoryCommand extends EssentialCommand {
             }
 
             @Override
-            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                ScreenHandler handler = GenericContainerScreenHandler.createGeneric9x5(syncId, src.asPlayer().getInventory());
-                handler.addListener(new ScreenHandlerListener() {
+            public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
+                AbstractContainerMenu handler = ChestMenu.fiveRows(syncId, src.asPlayer().getInventory());
+                handler.addSlotListener(new ContainerListener() {
 
                     @Override
-                    public void onSlotUpdate(ScreenHandler screenHandler, int i, ItemStack itemStack) {
+                    public void slotChanged(AbstractContainerMenu screenHandler, int i, ItemStack itemStack) {
                         copySlotsFromInventory(target.asPlayer(), handler, syncId);
                     }
 
                     @Override
-                    public void onPropertyUpdate(ScreenHandler screenHandler, int i, int j) {
-                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(screenHandler.syncId, i, j));
+                    public void dataChanged(AbstractContainerMenu screenHandler, int i, int j) {
+                        ((ServerPlayer) player).connection.send(new ClientboundContainerSetDataPacket(screenHandler.containerId, i, j));
                     }
                 });
 

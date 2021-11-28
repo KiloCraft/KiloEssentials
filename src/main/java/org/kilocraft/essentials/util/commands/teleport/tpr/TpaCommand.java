@@ -4,9 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TextColor;
-import net.minecraft.text.Texts;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.TextColor;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -20,8 +20,8 @@ import org.kilocraft.essentials.util.text.Texter;
 
 public class TpaCommand extends EssentialCommand {
     public static final CommandPermission PERMISSION = CommandPermission.TELEPORTREQUEST;
-    public static final TextColor GREEN_COLOR = TextColor.parse("EF2828");
-    public static final TextColor RED_COLOR = TextColor.parse("38F71A");
+    public static final TextColor GREEN_COLOR = TextColor.parseColor("EF2828");
+    public static final TextColor RED_COLOR = TextColor.parseColor("38F71A");
 
     public TpaCommand() {
         super("tpa", PERMISSION, new String[]{"tpr"});
@@ -29,14 +29,14 @@ public class TpaCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("victim")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> selectorArgument = this.getOnlineUserArgument("victim")
                 .executes(this::request);
 
         this.commandNode.addChild(selectorArgument.build());
     }
 
-    private int request(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int request(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         OnlineUser target = this.getOnlineUser(ctx, "victim");
 
@@ -59,9 +59,9 @@ public class TpaCommand extends EssentialCommand {
                 ComponentText.toText(this.tl("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
                         .append(
-                                Texts.bracketed(
+                                ComponentUtils.wrapInSquareBrackets(
                                         Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText(ModConstants.translation("general.click_cancel")))
-                                                .styled(style -> style.withColor(RED_COLOR))
+                                                .withStyle(style -> style.withColor(RED_COLOR))
                                 )
                         )
         );
@@ -70,16 +70,16 @@ public class TpaCommand extends EssentialCommand {
                 ComponentText.toText(this.tl("command.tpa.receive", src.getFormattedDisplayName()))
                         .append(" ")
                         .append(
-                                Texts.bracketed(
+                                ComponentUtils.wrapInSquareBrackets(
                                         Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText(ModConstants.translation("general.click_accept")))
-                                                .styled(style -> style.withColor(GREEN_COLOR))
+                                                .withStyle(style -> style.withColor(GREEN_COLOR))
                                 )
                         )
                         .append(" ")
                         .append(
-                                Texts.bracketed(
+                                ComponentUtils.wrapInSquareBrackets(
                                         Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText(ModConstants.translation("general.click_deny")))
-                                                .styled(style -> style.withColor(RED_COLOR))
+                                                .withStyle(style -> style.withColor(RED_COLOR))
                                 )
                         )
         );

@@ -7,8 +7,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -20,6 +18,8 @@ import org.kilocraft.essentials.util.CommandPermission;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 public class UnBanIpCommand extends EssentialCommand {
     public UnBanIpCommand() {
@@ -27,19 +27,19 @@ public class UnBanIpCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> user = this.argument("target", StringArgumentType.word())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> user = this.argument("target", StringArgumentType.word())
                 .suggests(this::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent")
+        LiteralArgumentBuilder<CommandSourceStack> silent = this.literal("-silent")
                 .executes((ctx) -> this.execute(ctx, true));
 
         user.then(silent);
         this.argumentBuilder.then(user);
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx, boolean silent) {
+    private int execute(final CommandContext<CommandSourceStack> ctx, boolean silent) {
         CommandSourceUser src = this.getCommandSource(ctx);
         String input = this.getUserArgumentInput(ctx, "target");
 
@@ -53,7 +53,7 @@ public class UnBanIpCommand extends EssentialCommand {
                     return;
                 }
 
-                if (!KiloEssentials.getMinecraftServer().getPlayerManager().getIpBanList().isBanned(user.getLastIp())) {
+                if (!KiloEssentials.getMinecraftServer().getPlayerList().getIpBans().isBanned(user.getLastIp())) {
                     src.sendLangError("command.unban.not_banned", user.getName());
                     return;
                 }
@@ -66,12 +66,12 @@ public class UnBanIpCommand extends EssentialCommand {
     }
 
     private int unBan(final CommandSourceUser src, @Nullable final EntityIdentifiable victim, @NotNull final String ip, boolean silent) {
-        KiloEssentials.getMinecraftServer().getPlayerManager().getIpBanList().remove(ip);
+        KiloEssentials.getMinecraftServer().getPlayerList().getIpBans().remove(ip);
         this.getUserManager().onPunishmentRevoked(src, victim == null ? new Punishment(src, ip) : new Punishment(src, victim, ip, null, null), Punishment.Type.BAN_IP, null, silent);
         return SUCCESS;
     }
 
-    private CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(KiloEssentials.getMinecraftServer().getPlayerManager().getIpBanList().getNames(), builder);
+    private CompletableFuture<Suggestions> listSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(KiloEssentials.getMinecraftServer().getPlayerList().getIpBans().getUserList(), builder);
     }
 }

@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.provided;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.server.level.ServerPlayer;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -15,8 +15,8 @@ public class BrandedServer {
         KiloEssentials.getInstance().sendGlobalPacket(toPacket());
     }
 
-    public static void provide(ServerPlayerEntity player) {
-        player.networkHandler.sendPacket(toPacket());
+    public static void provide(ServerPlayer player) {
+        player.connection.send(toPacket());
     }
 
     public static String getFinalBrandName() {
@@ -27,10 +27,10 @@ public class BrandedServer {
                 String.format(ModConstants.getProperties().getProperty("server.brand.custom"), configBrand + "&r"));
     }
 
-    private static CustomPayloadS2CPacket toPacket() {
-        return new CustomPayloadS2CPacket(
-                CustomPayloadS2CPacket.BRAND,
-                (new PacketByteBuf(Unpooled.buffer())).writeString(getFinalBrandName())
+    private static ClientboundCustomPayloadPacket toPacket() {
+        return new ClientboundCustomPayloadPacket(
+                ClientboundCustomPayloadPacket.BRAND,
+                (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(getFinalBrandName())
         );
     }
 

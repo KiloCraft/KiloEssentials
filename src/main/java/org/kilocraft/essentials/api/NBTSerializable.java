@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 
 public interface NBTSerializable {
     /**
@@ -8,12 +8,12 @@ public interface NBTSerializable {
      *
      * @return The Tag to Save
      */
-    NbtCompound toTag();
+    CompoundTag toTag();
 
     /**
      * Get all the data from the NbtCompound for deserialization
      *
      * @param tag Tag to get the data from
      */
-    void fromTag(NbtCompound tag);
+    void fromTag(CompoundTag tag);
 }

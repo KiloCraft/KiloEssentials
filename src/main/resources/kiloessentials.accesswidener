@@ -1,14 +1,7 @@
 accessWidener v1 named
 
-accessible class net/minecraft/world/SpawnDensityCapper$DensityCap
-
-accessible method net/minecraft/world/SpawnDensityCapper$DensityCap <init> ()V
-accessible method net/minecraft/server/world/ServerChunkManager$ChunkWithHolder <init> (Lnet/minecraft/world/chunk/WorldChunk;Lnet/minecraft/server/world/ChunkHolder;)V
-
-accessible field net/minecraft/server/world/PlayerChunkWatchingManager watchingPlayers Lit/unimi/dsi/fastutil/objects/Object2BooleanMap;
-accessible field net/minecraft/world/SpawnDensityCapper$DensityCap spawnGroupsToDensity Lit/unimi/dsi/fastutil/objects/Object2IntMap;
-accessible field net/minecraft/world/SpawnDensityCapper playersToDensityCap Ljava/util/Map;
-accessible field net/minecraft/world/SpawnHelper CHUNK_AREA I
-
-accessible    class    net/minecraft/world/gen/surfacebuilder/MaterialRules$BlockStateRule
-
+accessible class net/minecraft/world/level/LocalMobCapCalculator$MobCounts
+accessible method net/minecraft/world/level/LocalMobCapCalculator$MobCounts <init> ()V
+accessible field net/minecraft/world/level/LocalMobCapCalculator$MobCounts counts Lit/unimi/dsi/fastutil/objects/Object2IntMap;
+accessible field net/minecraft/world/level/LocalMobCapCalculator playerMobCounts Ljava/util/Map;
+accessible field net/minecraft/world/level/NaturalSpawner MAGIC_NUMBER I

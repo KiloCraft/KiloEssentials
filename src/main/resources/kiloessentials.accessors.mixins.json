@@ -5,12 +5,13 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "EntityAccessor",
-    "ServerChunkManagerAccessor",
-    "ServerConfigEntryAccessor",
-    "ShulkerBoxScreenHandlerAccessor",
-    "ShulkerEntityAccessor",
+    "ServerChunkCacheAccessor",
+    "StoredUserEntryAccessor",
+    "ShulkerBoxMenuAccessor",
+    "ShulkerAccessor",
     "SignBlockEntityAccessor",
-    "ThreadedAnvilChunkStorageAccessor"
+    "SpawnStateAccessor",
+    "ChunkMapAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

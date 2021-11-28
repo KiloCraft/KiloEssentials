@@ -2,11 +2,6 @@ package org.kilocraft.essentials.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -34,6 +29,11 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
  * Main User Implementation
@@ -46,8 +46,8 @@ import java.util.UUID;
  * @see OnlineUser
  * @see org.kilocraft.essentials.api.user.CommandSourceUser
  * @see org.kilocraft.essentials.user.UserHandler
- * @see net.minecraft.entity.player.PlayerEntity
- * @see net.minecraft.server.network.ServerPlayerEntity
+ * @see net.minecraft.world.entity.player.Player
+ * @see net.minecraft.server.level.ServerPlayer
  * @since 1.5
  */
 
@@ -87,10 +87,10 @@ public class ServerUser implements User {
 
     }
 
-    public NbtCompound toTag() {
-        NbtCompound mainTag = new NbtCompound();
-        NbtCompound metaTag = new NbtCompound();
-        NbtCompound cacheTag = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag mainTag = new CompoundTag();
+        CompoundTag metaTag = new CompoundTag();
+        CompoundTag cacheTag = new CompoundTag();
 
         // Here we store the players current location
         if (this.location != null) {
@@ -120,7 +120,7 @@ public class ServerUser implements User {
         }
 
         if (UserHomeHandler.isEnabled() || this.homeHandler != null) {
-            NbtCompound homeTag = new NbtCompound();
+            CompoundTag homeTag = new CompoundTag();
             this.homeHandler.serialize(homeTag);
             mainTag.put("homes", homeTag);
         }
@@ -132,9 +132,9 @@ public class ServerUser implements User {
         return mainTag;
     }
 
-    public void fromTag(@NotNull NbtCompound NbtCompound) {
-        NbtCompound metaTag = NbtCompound.getCompound("meta");
-        NbtCompound cacheTag = NbtCompound.getCompound("cache");
+    public void fromTag(@NotNull CompoundTag NbtCompound) {
+        CompoundTag metaTag = NbtCompound.getCompound("meta");
+        CompoundTag cacheTag = NbtCompound.getCompound("cache");
 
         if (cacheTag.contains("lastLoc")) {
             this.lastLocation = Vec3dLocation.dummy();
@@ -153,7 +153,7 @@ public class ServerUser implements User {
 
 
         if (cacheTag.contains("dmRec")) {
-            NbtCompound lastDmTag = cacheTag.getCompound("dmRec");
+            CompoundTag lastDmTag = cacheTag.getCompound("dmRec");
             this.lastDmReceptionist = new EntityIdentifiable() {
                 @Override
                 public UUID getId() {
@@ -192,7 +192,7 @@ public class ServerUser implements User {
     }
 
     public void updateLocation() {
-        if (this.isOnline() && ((OnlineUser) this).asPlayer().getPos() != null) {
+        if (this.isOnline() && ((OnlineUser) this).asPlayer().position() != null) {
             this.location = Vec3dLocation.of(((OnlineUser) this).asPlayer()).shortDecimals();
         }
     }
@@ -254,7 +254,7 @@ public class ServerUser implements User {
     }
 
     @Override
-    public Text getRankedDisplayName() {
+    public Component getRankedDisplayName() {
         if (this.isOnline()) {
             return UserUtils.getDisplayNameWithMeta((OnlineUser) this, true);
         }
@@ -274,7 +274,7 @@ public class ServerUser implements User {
     }
 
     @Override
-    public Text getRankedName() {
+    public Component getRankedName() {
         if (this.isOnline()) {
             return UserUtils.getDisplayNameWithMeta((OnlineUser) this, false);
         }
@@ -380,7 +380,7 @@ public class ServerUser implements User {
         try {
             this.saveData();
         } catch (IOException e) {
-            throw new SimpleCommandExceptionType(new LiteralText(e.getMessage()).formatted(Formatting.RED)).create();
+            throw new SimpleCommandExceptionType(new TextComponent(e.getMessage()).withStyle(ChatFormatting.RED)).create();
         }
     }
 
@@ -406,7 +406,7 @@ public class ServerUser implements User {
         this.lastDmReceptionist = entity;
     }
 
-    public static void saveLocationOf(ServerPlayerEntity player) {
+    public static void saveLocationOf(ServerPlayer player) {
         OnlineUser user = KiloEssentials.getUserManager().getOnline(player);
 
         if (user != null) {

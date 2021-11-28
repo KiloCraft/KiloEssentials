@@ -3,17 +3,17 @@ package org.kilocraft.essentials.util.commands.misc;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.SpawnDensityCapper;
-import net.minecraft.world.SpawnHelper;
 import org.kilocraft.essentials.api.command.EssentialCommand;
-import org.kilocraft.essentials.mixin.accessor.SpawnHelperInfoAccessor;
+import org.kilocraft.essentials.mixin.accessor.SpawnStateAccessor;
 import org.kilocraft.essentials.patch.SpawnUtil;
 import org.kilocraft.essentials.util.CommandPermission;
 
 import java.util.Objects;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.LocalMobCapCalculator;
+import net.minecraft.world.level.NaturalSpawner;
 
 public class PlayerMobCapCommand extends EssentialCommand {
 
@@ -22,17 +22,17 @@ public class PlayerMobCapCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         this.argumentBuilder.executes(this::info);
     }
 
-    private int info(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        ServerWorld world = ctx.getSource().getWorld();
-        SpawnHelper.Info info = world.getChunkManager().getSpawnInfo();
+    private int info(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        ServerLevel world = ctx.getSource().getLevel();
+        NaturalSpawner.SpawnState info = world.getChunkSource().getLastSpawnState();
         Objects.requireNonNull(info, "SpawnHelper.Info must not be null");
-        SpawnDensityCapper.DensityCap densityCap = ((SpawnHelperInfoAccessor) info).getDensityCapper().playersToDensityCap.getOrDefault(player, new SpawnDensityCapper.DensityCap());
-        MobCapCommand.sendMobCap(player, world, "Personal MobCap", densityCap.spawnGroupsToDensity, group -> SpawnUtil.getPersonalMobCap(world, group));
+        LocalMobCapCalculator.MobCounts densityCap = ((SpawnStateAccessor) info).getLocalMobCapCalculator().playerMobCounts.getOrDefault(player, new LocalMobCapCalculator.MobCounts());
+        MobCapCommand.sendMobCap(player, world, "Personal MobCap", densityCap.counts, group -> SpawnUtil.getPersonalMobCap(world, group));
         return SUCCESS;
     }
 

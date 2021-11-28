@@ -1,15 +1,15 @@
 package org.kilocraft.essentials.util;
 
 import com.google.gson.JsonObject;
-import net.minecraft.server.ServerConfigEntry;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.players.StoredUserEntry;
 
-public abstract class MuteEntry<T> extends ServerConfigEntry<T> {
+public abstract class MuteEntry<T> extends StoredUserEntry<T> {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
     protected final Date creationDate;
     protected final String source;
@@ -58,14 +58,14 @@ public abstract class MuteEntry<T> extends ServerConfigEntry<T> {
         return this.reason;
     }
 
-    public abstract Text toText();
+    public abstract Component toText();
 
-    boolean isInvalid() {
+    boolean hasExpired() {
         return this.expiryDate != null && this.expiryDate.before(new Date());
     }
 
     @Override
-    protected void write(JsonObject jsonObject) {
+    protected void serialize(JsonObject jsonObject) {
         jsonObject.addProperty("created", DATE_FORMAT.format(this.creationDate));
         jsonObject.addProperty("source", this.source);
         jsonObject.addProperty("expires", this.expiryDate == null ? "forever" : DATE_FORMAT.format(this.expiryDate));

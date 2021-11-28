@@ -137,7 +137,7 @@ public class ModConstants {
     }
 
     public static String getMappingsVersion() {
-        return ModConstants.properties.getProperty("fabric_yarn_mappings");
+        return ModConstants.properties.getProperty("fabric_mappings");
     }
 
     public static String getLoaderVersion() {

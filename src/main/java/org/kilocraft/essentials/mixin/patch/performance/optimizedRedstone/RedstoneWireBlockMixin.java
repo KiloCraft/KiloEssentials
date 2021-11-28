@@ -1,11 +1,11 @@
 package org.kilocraft.essentials.mixin.patch.performance.optimizedRedstone;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.kilocraft.essentials.patch.optimizedRedstone.IRedstoneWireBlock;
 import org.kilocraft.essentials.patch.optimizedRedstone.RedstoneWireTurbo;
 import org.kilocraft.essentials.util.settings.ServerSettings;
@@ -14,29 +14,29 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(RedstoneWireBlock.class)
+@Mixin(RedStoneWireBlock.class)
 public abstract class RedstoneWireBlockMixin implements IRedstoneWireBlock {
 
     @Shadow
-    private boolean wiresGivePower;
+    private boolean shouldSignal;
 
     @Shadow
-    protected abstract void update(World world, BlockPos pos, BlockState state);
+    protected abstract void updatePowerStrength(Level level, BlockPos blockPos, BlockState blockState);
 
     @Shadow
-    protected abstract int increasePower(BlockState state);
+    protected abstract int getWireSignal(BlockState blockState);
 
-    RedstoneWireTurbo turbo = new RedstoneWireTurbo((RedstoneWireBlock) (Object) this);
+    RedstoneWireTurbo turbo = new RedstoneWireTurbo((RedStoneWireBlock) (Object) this);
 
     @Override
-    public BlockState calculateCurrentChanges(World worldIn, BlockPos pos1, BlockPos pos2, BlockState state) {
+    public BlockState calculateCurrentChanges(Level worldIn, BlockPos pos1, BlockPos pos2, BlockState state) {
         BlockState iblockstate = state;
-        int i = state.get(RedstoneWireBlock.POWER);
+        int i = state.getValue(RedStoneWireBlock.POWER);
         int j = 0;
         j = this.getPower(j, worldIn.getBlockState(pos2));
-        this.wiresGivePower = false;
-        int k = worldIn.getReceivedRedstonePower(pos1);
-        this.wiresGivePower = true;
+        this.shouldSignal = false;
+        int k = worldIn.getBestNeighborSignal(pos1);
+        this.shouldSignal = true;
 
         if (!ServerSettings.patch_eigencraft_redstone) {
             // This code is totally redundant to if statements just below the loop.
@@ -53,20 +53,20 @@ public abstract class RedstoneWireBlockMixin implements IRedstoneWireBlock {
         // following loop can affect the power level of the wire.  Therefore, the loop is
         // skipped if k is already 15.
         if (!ServerSettings.patch_eigencraft_redstone || k < 15) {
-            for (Direction enumfacing : Direction.Type.HORIZONTAL) {
-                BlockPos blockpos = pos1.offset(enumfacing);
+            for (Direction enumfacing : Direction.Plane.HORIZONTAL) {
+                BlockPos blockpos = pos1.relative(enumfacing);
                 boolean flag = blockpos.getX() != pos2.getX() || blockpos.getZ() != pos2.getZ();
 
                 if (flag) {
                     l = this.getPower(l, worldIn.getBlockState(blockpos));
                 }
 
-                if (worldIn.getBlockState(blockpos).isSolidBlock(worldIn, blockpos) && !worldIn.getBlockState(pos1.up()).isSolidBlock(worldIn, pos1)) {
+                if (worldIn.getBlockState(blockpos).isRedstoneConductor(worldIn, blockpos) && !worldIn.getBlockState(pos1.above()).isRedstoneConductor(worldIn, pos1)) {
                     if (flag && pos1.getY() >= pos2.getY()) {
-                        l = this.getPower(l, worldIn.getBlockState(blockpos.up()));
+                        l = this.getPower(l, worldIn.getBlockState(blockpos.above()));
                     }
-                } else if (!worldIn.getBlockState(blockpos).isSolidBlock(worldIn, blockpos) && flag && pos1.getY() <= pos2.getY()) {
-                    l = this.getPower(l, worldIn.getBlockState(blockpos.down()));
+                } else if (!worldIn.getBlockState(blockpos).isRedstoneConductor(worldIn, blockpos) && flag && pos1.getY() <= pos2.getY()) {
+                    l = this.getPower(l, worldIn.getBlockState(blockpos.below()));
                 }
             }
         }
@@ -96,10 +96,10 @@ public abstract class RedstoneWireBlockMixin implements IRedstoneWireBlock {
         }
 
         if (i != j) {
-            state = state.with(RedstoneWireBlock.POWER, j);
+            state = state.setValue(RedStoneWireBlock.POWER, j);
 
             if (worldIn.getBlockState(pos1) == iblockstate) {
-                worldIn.setBlockState(pos1, state, 2);
+                worldIn.setBlock(pos1, state, 2);
             }
 
             // 1.16(.1?) dropped the need for blocks needing updates.
@@ -123,30 +123,48 @@ public abstract class RedstoneWireBlockMixin implements IRedstoneWireBlock {
      * this.neighborChanged and a few other methods in this class.
      * Note: Added 'source' argument so as to help determine direction of information flow
      */
-    private void updateSurroundingRedstone(World worldIn, BlockPos pos, BlockState state, BlockPos source) {
+    private void updateSurroundingRedstone(Level worldIn, BlockPos pos, BlockState state, BlockPos source) {
         if (ServerSettings.patch_eigencraft_redstone) {
             this.turbo.updateSurroundingRedstone(worldIn, pos, state, source);
             return;
         }
-        this.update(worldIn, pos, state);
+        this.updatePowerStrength(worldIn, pos, state);
     }
 
     private int getPower(int min, BlockState iblockdata) {
-        return Math.max(min, this.increasePower(iblockdata));
+        return Math.max(min, this.getWireSignal(iblockdata));
     }
 
-    @Redirect(method = "onBlockAdded", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/RedstoneWireBlock;update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
-    public void optimizeRedstoneUpdate(RedstoneWireBlock redstoneWireBlock, World world, BlockPos pos, BlockState state) {
+    @Redirect(
+            method = "onPlace",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/block/RedStoneWireBlock;updatePowerStrength(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V"
+            )
+    )
+    public void optimizeRedstoneUpdate(RedStoneWireBlock redstoneWireBlock, Level world, BlockPos pos, BlockState state) {
         this.updateSurroundingRedstone(world, pos, state, null);
     }
 
-    @Redirect(method = "onStateReplaced", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/RedstoneWireBlock;update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
-    public void optimizeRedstoneUpdate$2(RedstoneWireBlock redstoneWireBlock, World world, BlockPos pos, BlockState state) {
+    @Redirect(
+            method = "onRemove",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/block/RedStoneWireBlock;updatePowerStrength(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V"
+            )
+    )
+    public void optimizeRedstoneUpdate$2(RedStoneWireBlock redstoneWireBlock, Level world, BlockPos pos, BlockState state) {
         this.updateSurroundingRedstone(world, pos, state, null);
     }
 
-    @Redirect(method = "neighborUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/RedstoneWireBlock;update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
-    public void optimizeRedstoneUpdate$3(RedstoneWireBlock redstoneWireBlock, World world, BlockPos pos, BlockState state, BlockState state2, World world2, BlockPos pos2, Block block, BlockPos fromPos, boolean notify) {
+    @Redirect(
+            method = "neighborChanged",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/block/RedStoneWireBlock;updatePowerStrength(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V"
+            )
+    )
+    public void optimizeRedstoneUpdate$3(RedStoneWireBlock redstoneWireBlock, Level world, BlockPos pos, BlockState state, BlockState state2, Level world2, BlockPos pos2, Block block, BlockPos fromPos, boolean notify) {
         this.updateSurroundingRedstone(world, pos, state, fromPos);
     }
 }

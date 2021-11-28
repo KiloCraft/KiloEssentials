@@ -2,14 +2,14 @@ package org.kilocraft.essentials.util;
 
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.mixin.accessor.ServerConfigEntryAccessor;
+import org.kilocraft.essentials.mixin.accessor.StoredUserEntryAccessor;
 
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class MutedPlayerEntry extends MuteEntry<GameProfile> {
     public MutedPlayerEntry(GameProfile gameProfile) {
@@ -25,16 +25,16 @@ public class MutedPlayerEntry extends MuteEntry<GameProfile> {
     }
 
     protected void fromJson(JsonObject jsonObject) {
-        if (((ServerConfigEntryAccessor<?>) this).getKey() != null) {
-            jsonObject.addProperty("uuid", ((GameProfile) ((ServerConfigEntryAccessor<?>) this).getKey()).getId() == null ? "" : ((GameProfile) ((ServerConfigEntryAccessor<?>) this).getKey()).getId().toString());
-            jsonObject.addProperty("name", ((GameProfile) ((ServerConfigEntryAccessor<?>) this).getKey()).getName());
-            super.write(jsonObject);
+        if (((StoredUserEntryAccessor<?>) this).getUser() != null) {
+            jsonObject.addProperty("uuid", ((GameProfile) ((StoredUserEntryAccessor<?>) this).getUser()).getId() == null ? "" : ((GameProfile) ((StoredUserEntryAccessor<?>) this).getUser()).getId().toString());
+            jsonObject.addProperty("name", ((GameProfile) ((StoredUserEntryAccessor<?>) this).getUser()).getName());
+            super.serialize(jsonObject);
         }
     }
 
-    public Text toText() {
-        GameProfile gameProfile = (GameProfile) ((ServerConfigEntryAccessor<?>) this).getKey();
-        return new LiteralText(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));
+    public Component toText() {
+        GameProfile gameProfile = (GameProfile) ((StoredUserEntryAccessor<?>) this).getUser();
+        return new TextComponent(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));
     }
 
     private static GameProfile profileFromJson(JsonObject jsonObject) {

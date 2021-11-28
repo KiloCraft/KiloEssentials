@@ -5,8 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,19 +42,19 @@ public class ComponentText {
         return stripRainbow(stripGradient(stripEvent(stripFormatting(stripColor(textToClear)))));
     }
 
-    public static Text toText(@NotNull final Component component) {
+    public static net.minecraft.network.chat.Component toText(@NotNull final Component component) {
         Validate.notNull(component, "Component must not be null!");
-        return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component));
+        return net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component));
     }
 
-    public static MutableText toText(@NotNull final String raw) {
+    public static MutableComponent toText(@NotNull final String raw) {
         Validate.notNull(raw, "Input must not be null!");
-        return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(of(raw)));
+        return net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.gson().serialize(of(raw)));
     }
 
-    public static Component toComponent(@NotNull final Text text) {
+    public static Component toComponent(@NotNull final net.minecraft.network.chat.Component text) {
         Validate.notNull(text, "Text must not be null!");
-        return GsonComponentSerializer.gson().deserialize(Text.Serializer.toJson(text));
+        return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(text));
     }
 
     public static Component of(@NotNull final String string) {

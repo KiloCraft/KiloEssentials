@@ -1,17 +1,16 @@
 package org.kilocraft.essentials.api.text;
 
-import net.minecraft.text.MutableText;
-
 import java.util.List;
+import net.minecraft.network.chat.MutableComponent;
 
 public interface ContainedText {
     String asString();
 
     List<String> getLines();
 
-    List<MutableText> getTextLines();
+    List<MutableComponent> getTextLines();
 
     ContainedText append(final String... strings);
 
-    ContainedText append(final MutableText... texts);
+    ContainedText append(final MutableComponent... texts);
 }

@@ -1,18 +1,18 @@
 package org.kilocraft.essentials.util.settings;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
 import org.kilocraft.essentials.provided.KiloFile;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
-import org.kilocraft.essentials.util.registry.RegistryKeyID;
+import org.kilocraft.essentials.util.registry.IResourceKey;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 import org.kilocraft.essentials.util.settings.values.*;
 import org.kilocraft.essentials.util.settings.values.util.RootSetting;
@@ -78,7 +78,7 @@ public class ServerSettings implements NBTStorage {
     }
 
     public static int getViewDistance() {
-        return KiloEssentials.getMinecraftServer().getPlayerManager().getViewDistance();
+        return KiloEssentials.getMinecraftServer().getPlayerList().getViewDistance();
     }
 
     public static void setViewDistance(int viewDistance) {
@@ -87,7 +87,7 @@ public class ServerSettings implements NBTStorage {
 
     public static void registerSettings() {
         // Custom settings
-        BooleanSetting debug = new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.isDevelopment = b);
+        BooleanSetting debug = new BooleanSetting(false, "debug").onChanged(b -> SharedConstants.IS_RUNNING_IN_IDE = b);
 
         // Patches
         CategorySetting patch = new CategorySetting("patch");
@@ -130,7 +130,7 @@ public class ServerSettings implements NBTStorage {
         CategorySetting entity_limit = new CategorySetting("entity_limit");
         List<String> limit_entries = new ArrayList<>();
         for (EntityType<?> entityType : new EntityType[]{EntityType.GUARDIAN, EntityType.ITEM_FRAME, EntityType.CHICKEN}) {
-            limit_entries.add(Registry.ENTITY_TYPE.getId(entityType).getPath());
+            limit_entries.add(Registry.ENTITY_TYPE.getKey(entityType).getPath());
         }
         for (String limit_entry : limit_entries) {
             CategorySetting entity = new CategorySetting(limit_entry);
@@ -142,14 +142,14 @@ public class ServerSettings implements NBTStorage {
         }
 
         // Mobcap
-        ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][SpawnGroup.values().length + 1];
+        ServerSettings.mobcap = new float[RegistryUtils.getWorldsKeySet().size()][MobCategory.values().length + 1];
         CategorySetting mobcap = new CategorySetting("mobcap");
         int worldID = 0;
-        for (RegistryKey<World> registryKey : RegistryUtils.getWorldsKeySet()) {
-            ((RegistryKeyID) registryKey).setID(worldID);
-            FloatSetting world = new FloatSetting(1F, registryKey.getValue().getPath()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][0] = f);
-            for (SpawnGroup spawnGroup : SpawnGroup.values()) {
-                FloatSetting group = new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((RegistryKeyID) registryKey).getID()][spawnGroup.ordinal() + 1] = f);
+        for (ResourceKey<Level> registryKey : RegistryUtils.getWorldsKeySet()) {
+            ((IResourceKey) registryKey).setID(worldID);
+            FloatSetting world = new FloatSetting(1F, registryKey.location().getPath()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((IResourceKey) registryKey).getID()][0] = f);
+            for (MobCategory spawnGroup : MobCategory.values()) {
+                FloatSetting group = new FloatSetting(1F, spawnGroup.getName().toLowerCase()).range(0F, 100F).onChanged(f -> ServerSettings.mobcap[((IResourceKey) registryKey).getID()][spawnGroup.ordinal() + 1] = f);
                 world.addChild(group);
             }
             worldID++;
@@ -168,12 +168,12 @@ public class ServerSettings implements NBTStorage {
     }
 
     @Override
-    public NbtCompound serialize() {
+    public CompoundTag serialize() {
         return root.toTag();
     }
 
     @Override
-    public void deserialize(@NotNull NbtCompound tag) {
+    public void deserialize(@NotNull CompoundTag tag) {
         root.fromTag(tag);
     }
 

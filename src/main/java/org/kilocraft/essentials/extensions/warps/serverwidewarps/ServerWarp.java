@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.extensions.warps.serverwidewarps;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.extensions.warps.Warp;
 
@@ -12,7 +12,7 @@ public class ServerWarp extends Warp {
         this.addCommand = addCommand;
     }
 
-    public ServerWarp(String name, NbtCompound tag) {
+    public ServerWarp(String name, CompoundTag tag) {
         super(name, null);
         this.fromTag(tag);
     }
@@ -22,8 +22,8 @@ public class ServerWarp extends Warp {
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound NbtCompound = super.toTag();
+    public CompoundTag toTag() {
+        CompoundTag NbtCompound = super.toTag();
 
         if (this.addCommand) {
             NbtCompound.putBoolean("addCmd", true);
@@ -33,7 +33,7 @@ public class ServerWarp extends Warp {
     }
 
     @Override
-    public void fromTag(NbtCompound tag) {
+    public void fromTag(CompoundTag tag) {
         super.fromTag(tag);
 
         if (tag.contains("addCmd")) {

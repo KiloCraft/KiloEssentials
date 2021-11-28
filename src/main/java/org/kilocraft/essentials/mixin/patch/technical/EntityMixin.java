@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.mixin.patch.technical;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,27 +16,20 @@ public abstract class EntityMixin {
     String rightCommand = "";
 
     @Inject(
-            method = "readNbt",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/nbt/NbtCompound;getList(Ljava/lang/String;I)Lnet/minecraft/nbt/NbtList;",
-                    ordinal = 0
-            )
+            method = "load",
+            at = @At("TAIL")
     )
-    public void addCommandFromTag(NbtCompound tag, CallbackInfo ci) {
+    public void addCommandFromTag(CompoundTag tag, CallbackInfo ci) {
         if (tag.contains("command")) this.command = tag.getString("command");
         if (tag.contains("leftCommand")) this.leftCommand = tag.getString("leftCommand");
         if (tag.contains("rightCommand")) this.rightCommand = tag.getString("rightCommand");
     }
 
     @Inject(
-            method = "writeNbt",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/nbt/NbtCompound;put(Ljava/lang/String;Lnet/minecraft/nbt/NbtElement;)Lnet/minecraft/nbt/NbtElement;"
-            )
+            method = "saveWithoutId",
+            at = @At("TAIL")
     )
-    public void addCommandToTag(NbtCompound tag, CallbackInfoReturnable<NbtCompound> cir) {
+    public void addCommandToTag(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
         if (!this.command.equals("")) tag.putString("command", this.command);
         if (!this.leftCommand.equals("")) tag.putString("leftCommand", this.leftCommand);
         if (!this.rightCommand.equals("")) tag.putString("rightCommand", this.rightCommand);

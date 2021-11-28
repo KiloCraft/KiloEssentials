@@ -2,8 +2,8 @@ package org.kilocraft.essentials.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.network.Connection;
+import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerEvents {
 
@@ -19,7 +19,7 @@ public class PlayerEvents {
     });
 
     public interface PlayerReadyEvent {
-        void onPlayerReady(ClientConnection connection, ServerPlayerEntity player);
+        void onPlayerReady(Connection connection, ServerPlayer player);
     }
 
     public static final Event<StopRidingEvent> STOP_RIDING = EventFactory.createArrayBacked(StopRidingEvent.class, (callbacks) -> (player) -> {
@@ -29,7 +29,7 @@ public class PlayerEvents {
     });
 
     public interface StopRidingEvent {
-        void onStopRiding(ServerPlayerEntity player);
+        void onStopRiding(ServerPlayer player);
     }
 
     public static final Event<DeathEvent> DEATH = EventFactory.createArrayBacked(DeathEvent.class, (callbacks) -> (player) -> {
@@ -39,7 +39,7 @@ public class PlayerEvents {
     });
 
     public interface DeathEvent {
-        void onDeath(ServerPlayerEntity player);
+        void onDeath(ServerPlayer player);
     }
 
 }

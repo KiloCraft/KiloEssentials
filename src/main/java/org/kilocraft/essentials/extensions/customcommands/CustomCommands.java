@@ -2,8 +2,6 @@ package org.kilocraft.essentials.extensions.customcommands;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.feature.ReloadableConfigurableFeature;
 import org.kilocraft.essentials.chat.StringText;
@@ -21,6 +19,8 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
 
 public class CustomCommands implements ReloadableConfigurableFeature {
     private static final List<SimpleCommand> commands = new ArrayList<>();
@@ -70,7 +70,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
         KiloCommands.updateGlobalCommandTree();
     }
 
-    private static int runCommand(ServerCommandSource src, String[] args, CustomCommandConfigSection cs) throws CommandSyntaxException {
+    private static int runCommand(CommandSourceStack src, String[] args, CustomCommandConfigSection cs) throws CommandSyntaxException {
         int var = 0;
         int iArgs = 0;
         List<String> commands = new ArrayList<>();
@@ -87,7 +87,7 @@ public class CustomCommands implements ReloadableConfigurableFeature {
 
                 if (iArgs >= args.length) {
                     throw new SimpleCommandExceptionType(StringText.of("general.usage", cs.usage)
-                            .formatted(Formatting.RED)).create();
+                            .withStyle(ChatFormatting.RED)).create();
                 }
 
                 for (int i = 0; i <= args.length + 1; i++) {

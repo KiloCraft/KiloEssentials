@@ -4,10 +4,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -26,8 +26,8 @@ public class HomesCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> targetArgument = this.getUserArgument("user")
                 .requires(src -> this.hasPermission(src, CommandPermission.HOMES_OTHERS))
                 .executes(this::executeOthers);
 
@@ -35,13 +35,13 @@ public class HomesCommand extends EssentialCommand {
         this.commandNode.addChild(targetArgument.build());
     }
 
-    private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeSelf(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(ctx);
         return this.sendInfo(user, user);
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int executeOthers(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         OnlineUser source = this.getOnlineUser(player);
         String inputName = getString(ctx, "user");
 
@@ -62,14 +62,14 @@ public class HomesCommand extends EssentialCommand {
 
         Texter.ListStyle text = Texter.ListStyle.of(
                 areTheSame ? "Homes" : user.getFormattedDisplayName() + "'s Homes"
-                , Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY
+                , ChatFormatting.GOLD, ChatFormatting.DARK_GRAY, ChatFormatting.WHITE, ChatFormatting.GRAY
         );
 
         for (Home home : user.getHomesHandler().getHomes()) {
             Vec3dLocation loc = (Vec3dLocation) home.getLocation();
             text.append(home.getName(),
-                    Texter.Events.onHover(new LiteralText("")
-                            .append(new LiteralText(ModConstants.translation("general.click_teleport")).formatted(Formatting.YELLOW))
+                    Texter.Events.onHover(new TextComponent("")
+                            .append(new TextComponent(ModConstants.translation("general.click_teleport")).withStyle(ChatFormatting.YELLOW))
                             .append("\n")
                             .append(Texter.newText(loc.asFormattedString()))
                     ),

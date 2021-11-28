@@ -6,14 +6,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.SharedConstants;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.world.GameMode;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -37,17 +36,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CommandSourceServerUser implements CommandSourceUser {
-    private final ServerCommandSource source;
+    private final CommandSourceStack source;
 
-    private CommandSourceServerUser(ServerCommandSource source) {
+    private CommandSourceServerUser(CommandSourceStack source) {
         this.source = source;
     }
 
-    public static CommandSourceServerUser of(ServerCommandSource source) {
+    public static CommandSourceServerUser of(CommandSourceStack source) {
         return new CommandSourceServerUser(source);
     }
 
-    public static CommandSourceServerUser of(CommandContext<ServerCommandSource> context) {
+    public static CommandSourceServerUser of(CommandContext<CommandSourceStack> context) {
         return new CommandSourceServerUser(context.getSource());
     }
 
@@ -65,7 +64,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public String getUsername() {
-        return this.source.getName();
+        return this.source.getTextName();
     }
 
     @Override
@@ -90,7 +89,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public String getDisplayName() {
-        return this.source.getName();
+        return this.source.getTextName();
     }
 
     @Override
@@ -99,8 +98,8 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public Text getRankedDisplayName() {
-        return new LiteralText(this.getDisplayName());
+    public net.minecraft.network.chat.Component getRankedDisplayName() {
+        return new TextComponent(this.getDisplayName());
     }
 
     @Override
@@ -109,8 +108,8 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public Text getRankedName() {
-        return new LiteralText(this.getDisplayName());
+    public net.minecraft.network.chat.Component getRankedName() {
+        return new TextComponent(this.getDisplayName());
     }
 
     @Override
@@ -205,7 +204,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public boolean equals(User anotherUser) {
-        return this.source.getName().equals(anotherUser.getUsername());
+        return this.source.getTextName().equals(anotherUser.getUsername());
     }
 
     @Override
@@ -235,16 +234,16 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Nullable
     @Override
-    public ServerPlayerEntity asPlayer() {
+    public ServerPlayer asPlayer() {
         try {
-            return this.source.getPlayer();
+            return this.source.getPlayerOrException();
         } catch (CommandSyntaxException ignored) {
             return null;
         }
     }
 
     @Override
-    public ServerCommandSource getCommandSource() {
+    public CommandSourceStack getCommandSource() {
         return this.source;
     }
 
@@ -255,8 +254,8 @@ public class CommandSourceServerUser implements CommandSourceUser {
         } catch (CommandSyntaxException ignored) {
             if (sysMessage instanceof String) {
                 this.sendMessage((String) sysMessage);
-            } else if (sysMessage instanceof Text) {
-                this.sendMessage((Text) sysMessage);
+            } else if (sysMessage instanceof net.minecraft.network.chat.Component) {
+                this.sendMessage((net.minecraft.network.chat.Component) sysMessage);
             } else {
                 this.sendMessage(String.valueOf(sysMessage));
             }
@@ -273,10 +272,10 @@ public class CommandSourceServerUser implements CommandSourceUser {
 
     @Override
     public void sendMessage(String message) {
-        MutableText text = new LiteralText(CommandUtils.isConsole(this.source) ? "\n" : "");
-        this.sendMessage(text.append(ComponentText.toText(message).styled(style -> {
-            if (SharedConstants.isDevelopment && this.hasPermission(EssentialPermission.DEBUG)) {
-                return style.withHoverEvent(new net.minecraft.text.HoverEvent(net.minecraft.text.HoverEvent.Action.SHOW_TEXT, new LiteralText(message)));
+        MutableComponent text = new TextComponent(CommandUtils.isConsole(this.source) ? "\n" : "");
+        this.sendMessage(text.append(ComponentText.toText(message).withStyle(style -> {
+            if (SharedConstants.IS_RUNNING_IN_IDE && this.hasPermission(EssentialPermission.DEBUG)) {
+                return style.withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, new TextComponent(message)));
             }
             return style;
         })));
@@ -299,8 +298,8 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void sendMessage(Text text) {
-        this.source.sendFeedback(text, false);
+    public void sendMessage(net.minecraft.network.chat.Component text) {
+        this.source.sendSuccess(text, false);
     }
 
     @Override
@@ -314,13 +313,13 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public ClientConnection getConnection() {
+    public Connection getConnection() {
         return null;
     }
 
     @Override
     public Vec3dLocation getLocationAsVector() throws CommandSyntaxException {
-        return this.isConsole() ? null : Vec3dLocation.of(this.source.getPlayer());
+        return this.isConsole() ? null : Vec3dLocation.of(this.source.getPlayerOrException());
     }
 
     @Override
@@ -355,7 +354,7 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public void setGameMode(GameMode mode) {
+    public void setGameMode(GameType mode) {
 
     }
 
@@ -370,18 +369,18 @@ public class CommandSourceServerUser implements CommandSourceUser {
     }
 
     @Override
-    public NbtCompound toTag() {
+    public CompoundTag toTag() {
         return null;
     }
 
     @Override
-    public void fromTag(NbtCompound tag) {
+    public void fromTag(CompoundTag tag) {
 
     }
 
     @Override
     public String getName() {
-        return this.source.getName();
+        return this.source.getTextName();
     }
 
     @Override

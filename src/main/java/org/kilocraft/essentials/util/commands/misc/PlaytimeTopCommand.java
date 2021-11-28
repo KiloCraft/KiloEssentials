@@ -6,7 +6,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.TextInput;
@@ -25,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import net.minecraft.commands.CommandSourceStack;
 
 public class PlaytimeTopCommand extends EssentialCommand {
     private static final String LINE_FORMAT = ModConstants.translation("command.playtimetop.format");
@@ -36,11 +36,11 @@ public class PlaytimeTopCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, Integer> page = this.argument("page", IntegerArgumentType.integer(1))
+    public void register(final CommandDispatcher<CommandSourceStack> dispatcher) {
+        final RequiredArgumentBuilder<CommandSourceStack, Integer> page = this.argument("page", IntegerArgumentType.integer(1))
                 .executes(ctx -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), false));
 
-        final LiteralArgumentBuilder<ServerCommandSource> force = this.literal("force")
+        final LiteralArgumentBuilder<CommandSourceStack> force = this.literal("force")
                 .executes(ctx -> this.send(ctx, IntegerArgumentType.getInteger(ctx, "page"), true));
 
         page.then(force);
@@ -48,11 +48,11 @@ public class PlaytimeTopCommand extends EssentialCommand {
         this.commandNode.addChild(page.build());
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(final CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         return this.send(ctx, 1, false);
     }
 
-    private int send(final CommandContext<ServerCommandSource> ctx, int page, boolean force) throws CommandSyntaxException {
+    private int send(final CommandContext<CommandSourceStack> ctx, int page, boolean force) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
 
         if (!force && CacheManager.isPresent(CACHE_ID)) {

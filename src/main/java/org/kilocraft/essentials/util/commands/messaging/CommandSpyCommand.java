@@ -3,7 +3,7 @@ package org.kilocraft.essentials.util.commands.messaging;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -18,11 +18,11 @@ public class CommandSpyCommand extends EssentialCommand {
         super("commandspy", src -> KiloEssentials.hasPermissionNode(src, EssentialPermission.SPY_COMMAND));
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         this.argumentBuilder.executes(this::execute);
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         Boolean set = !src.getPreference(COMMAND_SPY);
         src.getPreferences().set(COMMAND_SPY, set);

@@ -2,8 +2,8 @@ package org.kilocraft.essentials.util.commands.misc;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -16,13 +16,13 @@ public class BuilderCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         this.argumentBuilder.executes(this::execute);
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) {
+    private int execute(CommandContext<CommandSourceStack> ctx) {
         Texter.ListStyle text = Texter.ListStyle.of(
-                "Builders", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY
+                "Builders", ChatFormatting.GOLD, ChatFormatting.DARK_GRAY, ChatFormatting.WHITE, ChatFormatting.GRAY
         );
 
         for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList()) {

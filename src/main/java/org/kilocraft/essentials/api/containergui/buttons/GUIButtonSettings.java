@@ -1,10 +1,9 @@
 package org.kilocraft.essentials.api.containergui.buttons;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-
 import java.util.Map;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class GUIButtonSettings {
     public static GUIButtonSettings dummy() {
@@ -16,6 +15,6 @@ public class GUIButtonSettings {
 
     public boolean dummy;
     public ItemStack icon;
-    public Text name;
+    public Component name;
     public Map<GUIButton.ClickAction, Runnable> actions;
 }

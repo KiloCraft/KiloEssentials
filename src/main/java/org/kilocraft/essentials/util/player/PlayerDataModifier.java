@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.util.player;
 
-import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
 import org.kilocraft.essentials.api.KiloEssentials;
 
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class PlayerDataModifier {
     private final UUID uuid;
-    private NbtCompound NbtCompound;
+    private CompoundTag NbtCompound;
 
     public PlayerDataModifier(UUID uuid) {
         this.uuid = uuid;
@@ -47,20 +47,20 @@ public class PlayerDataModifier {
         return false;
     }
 
-    public NbtCompound getNbt() {
+    public CompoundTag getNbt() {
         return this.NbtCompound;
     }
 
-    public void setCustomName(Text text) {
+    public void setCustomName(Component text) {
         if (text != null)
-            this.NbtCompound.putString("CustomName", Text.Serializer.toJson(text));
+            this.NbtCompound.putString("CustomName", Component.Serializer.toJson(text));
         else
             this.NbtCompound.remove("CustomName");
     }
 
-    public EnderChestInventory getEnderChest() {
-        EnderChestInventory inv = new EnderChestInventory();
-        inv.readNbtList(this.NbtCompound.getList("EnderItems", 10));
+    public PlayerEnderChestContainer getEnderChest() {
+        PlayerEnderChestContainer inv = new PlayerEnderChestContainer();
+        inv.fromTag(this.NbtCompound.getList("EnderItems", 10));
         return inv;
     }
 

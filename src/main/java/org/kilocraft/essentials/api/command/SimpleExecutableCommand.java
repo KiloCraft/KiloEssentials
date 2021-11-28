@@ -1,9 +1,9 @@
 package org.kilocraft.essentials.api.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 
 @FunctionalInterface
 public interface SimpleExecutableCommand {
-    int execute(ServerCommandSource source, String[] args) throws CommandSyntaxException;
+    int execute(CommandSourceStack source, String[] args) throws CommandSyntaxException;
 }

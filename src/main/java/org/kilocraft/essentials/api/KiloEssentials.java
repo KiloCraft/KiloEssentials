@@ -8,11 +8,10 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.luckperms.api.LuckPermsProvider;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.Packet;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.dedicated.MinecraftDedicatedServer;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.feature.ConfigurableFeatures;
@@ -51,7 +50,7 @@ public class KiloEssentials {
     private static KiloEssentials INSTANCE;
     private final ServerUserManager userManager;
     private TabListData tabListData;
-    private MinecraftDedicatedServer dedicatedServer;
+    private DedicatedServer dedicatedServer;
 
     public KiloEssentials() {
         INSTANCE = this;
@@ -72,35 +71,35 @@ public class KiloEssentials {
         throw new RuntimeException("Its too early to get a static instance of KiloEssentials!");
     }
 
-    public static boolean hasPermissionNode(ServerCommandSource src, EssentialPermission perm) {
+    public static boolean hasPermissionNode(CommandSourceStack src, EssentialPermission perm) {
         return hasPermissionNode(src, perm, 2);
     }
 
-    public static boolean hasPermissionNode(ServerCommandSource src, CommandPermission perm) {
+    public static boolean hasPermissionNode(CommandSourceStack src, CommandPermission perm) {
         return hasPermissionNode(src, perm.getNode(), 2);
     }
 
-    public static boolean hasPermissionNode(ServerCommandSource src, EssentialPermission perm, int minOpLevel) {
+    public static boolean hasPermissionNode(CommandSourceStack src, EssentialPermission perm, int minOpLevel) {
         return hasPermissionNode(src, perm.getNode(), minOpLevel);
     }
 
-    public static boolean hasPermissionNode(ServerCommandSource src, CommandPermission perm, int minOpLevel) {
+    public static boolean hasPermissionNode(CommandSourceStack src, CommandPermission perm, int minOpLevel) {
         return hasPermissionNode(src, perm.getNode(), minOpLevel);
     }
 
-    public static boolean hasPermissionNode(ServerCommandSource src, String perm) {
+    public static boolean hasPermissionNode(CommandSourceStack src, String perm) {
         return hasPermissionNode(src, perm, 2);
     }
 
-    public static boolean hasPermissionNode(ServerCommandSource src, String perm, int minOpLevel) {
+    public static boolean hasPermissionNode(CommandSourceStack src, String perm, int minOpLevel) {
         try {
             return Permissions.check(src, perm, minOpLevel);
         } catch (Throwable e) {
-            return src.hasPermissionLevel(minOpLevel);
+            return src.hasPermission(minOpLevel);
         }
     }
 
-    public static MinecraftDedicatedServer getMinecraftServer() {
+    public static DedicatedServer getMinecraftServer() {
         return getInstance().dedicatedServer;
     }
 
@@ -135,14 +134,14 @@ public class KiloEssentials {
     }
 
     public void sendGlobalPacket(Packet<?> packet) {
-        for (ServerPlayerEntity playerEntity : this.dedicatedServer.getPlayerManager().getPlayerList()) {
-            playerEntity.networkHandler.sendPacket(packet);
+        for (ServerPlayer playerEntity : this.dedicatedServer.getPlayerList().getPlayers()) {
+            playerEntity.connection.send(packet);
         }
     }
 
     private void registerEvents() {
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.dedicatedServer = (MinecraftDedicatedServer) server);
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> this.onReady((MinecraftDedicatedServer) server));
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.dedicatedServer = (DedicatedServer) server);
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> this.onReady((DedicatedServer) server));
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((ignored, ignored2, ignored3) -> this.reload());
         ServerLifecycleEvents.SERVER_STOPPING.register(ignored -> this.onStop());
         ServerTickEvents.START_SERVER_TICK.register(ignored -> this.onTick());
@@ -164,17 +163,17 @@ public class KiloEssentials {
         }
     }
 
-    private void onJoin(ServerPlayerEntity player) {
+    private void onJoin(ServerPlayer player) {
         this.userManager.onJoin(player);
         BrandedServer.provide(player);
         this.tabListData.onJoin(player);
     }
 
-    private void onLeave(ServerPlayerEntity player) {
+    private void onLeave(ServerPlayer player) {
         this.tabListData.onLeave(player);
     }
 
-    private void onReady(ServerPlayerEntity player) {
+    private void onReady(ServerPlayer player) {
         this.userManager.onReady(player);
     }
 
@@ -184,7 +183,7 @@ public class KiloEssentials {
         NBTStorageUtil.onLoad();
     }
 
-    private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+    private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
         ModConstants.loadConstants();
         KiloCommands.registerCommands(dispatcher);
         registerFeatures();
@@ -198,7 +197,7 @@ public class KiloEssentials {
         NBTStorageUtil.onSave();
     }
 
-    private void onReady(MinecraftDedicatedServer server) {
+    private void onReady(DedicatedServer server) {
         this.load();
         this.tabListData = this.hasLuckPerms() ? new LuckpermsTabListData(this) : new TabListData(this);
         this.userManager.onServerReady();
@@ -213,7 +212,7 @@ public class KiloEssentials {
 
     private void onTick() {
         TickManager.onTick();
-        int ticks = getMinecraftServer().getTicks();
+        int ticks = getMinecraftServer().getTickCount();
         if (ticks % KiloConfig.main().playerList().updateRate == 0) {
             this.tabListData.onUpdate();
         }

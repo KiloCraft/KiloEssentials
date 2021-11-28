@@ -62,7 +62,7 @@ public class NameLookup {
 
     /**
      * <h1>NOTE: Avoid running this method <i>Synchronously</i> with the main thread! It blocks while attempting to get a response from Mojang servers!</h1>
-     * Alternative method accepting an {@link User} (and therefore {@link net.minecraft.server.network.ServerPlayerEntity}) objects as parameter.
+     * Alternative method accepting an {@link User} (and therefore {@link net.minecraft.server.level.ServerPlayer}) objects as parameter.
      *
      * @param uuid The UUID String to lookup
      * @return Returns an array of {@link PreviousPlayerNameEntry} objects, or null if the response couldn't be interpreted.

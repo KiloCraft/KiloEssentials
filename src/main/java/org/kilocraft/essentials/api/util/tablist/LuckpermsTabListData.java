@@ -19,9 +19,9 @@ import net.luckperms.api.node.types.ChatMetaNode;
 import net.luckperms.api.node.types.InheritanceNode;
 import net.luckperms.api.node.types.MetaNode;
 import net.luckperms.api.node.types.WeightNode;
-import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
+import net.minecraft.server.level.ServerPlayer;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.config.KiloConfig;
@@ -78,13 +78,13 @@ public class LuckpermsTabListData extends TabListData {
         UUID uuid = user.getUniqueId();
         final FakeTeam fakeTeam = this.cachedTeams.get(uuid);
         if (fakeTeam != null) {
-            this.sendPacketToAll(TeamS2CPacket.updateRemovedTeam(fakeTeam));
+            this.sendPacketToAll(ClientboundSetPlayerTeamPacket.createRemovePacket(fakeTeam));
         }
-        final ServerPlayerEntity player = KiloEssentials.getMinecraftServer().getPlayerManager().getPlayer(uuid);
+        final ServerPlayer player = KiloEssentials.getMinecraftServer().getPlayerList().getPlayer(uuid);
         if (Objects.nonNull(player)) {
             this.createFakeTeam(player).thenAccept(newFakeTeam -> {
-                this.cachedTeams.put(player.getUuid(), newFakeTeam);
-                this.sendPacketToAll(TeamS2CPacket.updateTeam(newFakeTeam, true));
+                this.cachedTeams.put(player.getUUID(), newFakeTeam);
+                this.sendPacketToAll(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(newFakeTeam, true));
             });
         }
     }
@@ -97,9 +97,9 @@ public class LuckpermsTabListData extends TabListData {
                 .collect(Collectors.toList()));
     }
 
-    private void sendTeamList(ServerPlayerEntity player) {
+    private void sendTeamList(ServerPlayer player) {
         for (FakeTeam cachedTeam : this.cachedTeams.values()) {
-            player.networkHandler.sendPacket(TeamS2CPacket.updateTeam(cachedTeam, true));
+            player.connection.send(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(cachedTeam, true));
         }
     }
 
@@ -107,9 +107,9 @@ public class LuckpermsTabListData extends TabListData {
         return group.getWeight().isPresent() ? group.getWeight().getAsInt() : 0;
     }
 
-    private CompletableFuture<FakeTeam> createFakeTeam(ServerPlayerEntity player) {
+    private CompletableFuture<FakeTeam> createFakeTeam(ServerPlayer player) {
         CompletableFuture<FakeTeam> fakeTeamFuture = new CompletableFuture<>();
-        this.getLuckPermsUser(player.getUuid()).thenAccept(user -> {
+        this.getLuckPermsUser(player.getUUID()).thenAccept(user -> {
             this.getLuckPermsGroup(user.getPrimaryGroup()).thenAccept(group -> {
                 final long weight = this.getGroupWeight(group);
                 String name = String.format("%016d%s", KiloConfig.main().playerList().topToBottom ? weight : 1000000000000000L - weight, user.getUsername());
@@ -121,17 +121,17 @@ public class LuckpermsTabListData extends TabListData {
         return fakeTeamFuture;
     }
 
-    private void configureTeam(FakeTeam fakeTeam, User user, ServerPlayerEntity player) {
-        fakeTeam.setShowFriendlyInvisibles(false);
+    private void configureTeam(FakeTeam fakeTeam, User user, ServerPlayer player) {
+        fakeTeam.setSeeFriendlyInvisibles(false);
         final CachedMetaData metaData = user.getCachedData().getMetaData();
         final String color = metaData.getMetaValue("color");
         if (color != null) {
-            Formatting formatting = Formatting.byName(color);
+            ChatFormatting formatting = ChatFormatting.getByName(color);
             if (formatting != null) fakeTeam.setColor(formatting);
         }
-        fakeTeam.setPrefix(ComponentText.toText(Objects.requireNonNullElse(metaData.getPrefix(), "")));
-        fakeTeam.setSuffix(ComponentText.toText(Objects.requireNonNullElse(metaData.getSuffix(), "")));
-        fakeTeam.getPlayerList().add(player.getEntityName());
+        fakeTeam.setPlayerPrefix(ComponentText.toText(Objects.requireNonNullElse(metaData.getPrefix(), "")));
+        fakeTeam.setPlayerSuffix(ComponentText.toText(Objects.requireNonNullElse(metaData.getSuffix(), "")));
+        fakeTeam.getPlayers().add(player.getScoreboardName());
     }
 
     private CompletableFuture<Group> getGroupForUser(UUID uuid) {
@@ -170,13 +170,13 @@ public class LuckpermsTabListData extends TabListData {
         return luckPermsGroupFuture;
     }
 
-    public void onJoin(ServerPlayerEntity player) {
+    public void onJoin(ServerPlayer player) {
         if (KiloConfig.main().playerList().customOrder) {
             // Updated changed / added group for everyone
-            this.getGroupForUser(player.getUuid()).thenAccept(group -> {
+            this.getGroupForUser(player.getUUID()).thenAccept(group -> {
                 this.createFakeTeam(player).thenAccept(fakeTeam -> {
-                    this.cachedTeams.put(player.getUuid(), fakeTeam);
-                    this.sendPacketToAll(TeamS2CPacket.updateTeam(fakeTeam, true));
+                    this.cachedTeams.put(player.getUUID(), fakeTeam);
+                    this.sendPacketToAll(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(fakeTeam, true));
                     // Send initial team list
                     this.sendTeamList(player);
                 });
@@ -185,14 +185,14 @@ public class LuckpermsTabListData extends TabListData {
         super.onJoin(player);
     }
 
-    public void onLeave(ServerPlayerEntity player) {
+    public void onLeave(ServerPlayer player) {
         if (KiloConfig.main().playerList().customOrder) {
-            final FakeTeam fakeTeam = this.cachedTeams.get(player.getUuid());
+            final FakeTeam fakeTeam = this.cachedTeams.get(player.getUUID());
             if (fakeTeam != null) {
-                this.sendPacketToAll(TeamS2CPacket.updateRemovedTeam(fakeTeam));
-                this.cachedTeams.remove(player.getUuid());
+                this.sendPacketToAll(ClientboundSetPlayerTeamPacket.createRemovePacket(fakeTeam));
+                this.cachedTeams.remove(player.getUUID());
             } else {
-                LOGGER.error("Couldn't find fake team for " + player.getUuid());
+                LOGGER.error("Couldn't find fake team for " + player.getUUID());
             }
         }
         super.onLeave(player);

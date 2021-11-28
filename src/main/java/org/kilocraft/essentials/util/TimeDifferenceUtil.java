@@ -7,7 +7,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
@@ -219,7 +219,7 @@ public class TimeDifferenceUtil {
         return sb.toString().trim();
     }
 
-    public static CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    public static CompletableFuture<Suggestions> listSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         String inputChar = String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context)));
         if (inputChar.matches("^\\d+")) {
             return ArgumentSuggestions.suggestAtCursor(VALID_UNITS, context);

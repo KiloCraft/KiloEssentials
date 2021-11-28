@@ -1,6 +1,6 @@
 package org.kilocraft.essentials.api.containergui.buttons;
 
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.world.inventory.ClickType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,20 +24,20 @@ public class GUIButton {
     }
 
     public enum ClickAction {
-        CLICK(SlotActionType.PICKUP),
-        PICKUP_ALL(SlotActionType.PICKUP_ALL),
-        CLONE(SlotActionType.CLONE),
-        DROP(SlotActionType.THROW),
-        QUICK_MOVE(SlotActionType.QUICK_MOVE);
+        CLICK(ClickType.PICKUP),
+        PICKUP_ALL(ClickType.PICKUP_ALL),
+        CLONE(ClickType.CLONE),
+        DROP(ClickType.THROW),
+        QUICK_MOVE(ClickType.QUICK_MOVE);
 
-        private final SlotActionType type;
+        private final ClickType type;
 
-        ClickAction(final SlotActionType type) {
+        ClickAction(final ClickType type) {
             this.type = type;
         }
 
         @Nullable
-        public static ClickAction getBySlotActionType(@NotNull final SlotActionType type) {
+        public static ClickAction getBySlotActionType(@NotNull final ClickType type) {
             for (ClickAction value : values()) {
                 if (value.type == type) {
                     return value;

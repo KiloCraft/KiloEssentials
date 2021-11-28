@@ -3,8 +3,8 @@ package org.kilocraft.essentials.util.commands.server;
 import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.MinecraftVersion;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.DetectedVersion;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 
@@ -13,12 +13,12 @@ public class VersionCommand extends EssentialCommand {
         super("version");
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         this.argumentBuilder.executes(this::executeVersion);
     }
 
-    private int executeVersion(CommandContext<ServerCommandSource> ctx) {
-        GameVersion gameVersion = MinecraftVersion.create();
+    private int executeVersion(CommandContext<CommandSourceStack> ctx) {
+        GameVersion gameVersion = DetectedVersion.tryDetectVersion();
 
         this.getCommandSource(ctx).sendLangMessage("command.info.version",
                 ModConstants.getVersionInt(),

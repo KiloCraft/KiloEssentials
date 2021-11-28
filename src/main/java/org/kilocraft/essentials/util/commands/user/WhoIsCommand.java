@@ -4,11 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -29,8 +29,8 @@ public class WhoIsCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("user")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> userArgument = this.getUserArgument("user")
                 .requires(src -> this.hasPermission(src, CommandPermission.WHOIS_OTHERS))
                 .executes(this::executeOthers);
 
@@ -38,12 +38,12 @@ public class WhoIsCommand extends EssentialCommand {
         this.commandNode.addChild(userArgument.build());
     }
 
-    private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeSelf(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         CommandSourceUser user = this.getCommandSource(ctx);
         return this.execute(user, this.getOnlineUser(ctx));
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx) {
+    private int executeOthers(CommandContext<CommandSourceStack> ctx) {
         CommandSourceUser src = this.getCommandSource(ctx);
         this.getUserManager().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {
             this.execute(src, user);
@@ -53,7 +53,7 @@ public class WhoIsCommand extends EssentialCommand {
     }
 
     private int execute(CommandSourceUser src, User target) {
-        Texter.InfoBlockStyle text = new Texter.InfoBlockStyle("Who's " + target.getNameTag(), Formatting.GOLD, Formatting.AQUA, Formatting.GRAY);
+        Texter.InfoBlockStyle text = new Texter.InfoBlockStyle("Who's " + target.getNameTag(), ChatFormatting.GOLD, ChatFormatting.AQUA, ChatFormatting.GRAY);
 
         text.append("DisplayName", target.getFormattedDisplayName())
                 .space()
@@ -61,7 +61,7 @@ public class WhoIsCommand extends EssentialCommand {
                 .space()
                 .append(
                         Texter.appendButton(
-                                Texter.newText("( More )").formatted(Formatting.GRAY),
+                                Texter.newText("( More )").withStyle(ChatFormatting.GRAY),
                                 Texter.newText("Click to see the name history"),
                                 ClickEvent.Action.RUN_COMMAND,
                                 "/whowas " + target.getUsername()
@@ -70,16 +70,16 @@ public class WhoIsCommand extends EssentialCommand {
 
         text.append("UUID",
                 Texter.appendButton(
-                        new LiteralText(target.getUuid().toString()),
-                        new LiteralText(ModConstants.translation("general.click_copy")),
+                        new TextComponent(target.getUuid().toString()),
+                        new TextComponent(ModConstants.translation("general.click_copy")),
                         ClickEvent.Action.COPY_TO_CLIPBOARD,
                         target.getUuid().toString()
                 )
         );
         text.append("IP (Last Saved)",
                 Texter.appendButton(
-                        new LiteralText(target.getLastSocketAddress()),
-                        new LiteralText(ModConstants.translation("general.click_copy")),
+                        new TextComponent(target.getLastSocketAddress()),
+                        new TextComponent(ModConstants.translation("general.click_copy")),
                         ClickEvent.Action.COPY_TO_CLIPBOARD,
                         target.getLastSocketAddress()
                 )
@@ -97,8 +97,8 @@ public class WhoIsCommand extends EssentialCommand {
             text.append("Survival status",
                     new String[]{"Health", "FoodLevel", "Saturation"},
                     ModConstants.DECIMAL_FORMAT.format(user.asPlayer().getHealth()),
-                    ModConstants.DECIMAL_FORMAT.format(user.asPlayer().getHungerManager().getFoodLevel()),
-                    ModConstants.DECIMAL_FORMAT.format(user.asPlayer().getHungerManager().getSaturationLevel())
+                    ModConstants.DECIMAL_FORMAT.format(user.asPlayer().getFoodData().getFoodLevel()),
+                    ModConstants.DECIMAL_FORMAT.format(user.asPlayer().getFoodData().getSaturationLevel())
             );
         }
 
@@ -112,13 +112,13 @@ public class WhoIsCommand extends EssentialCommand {
             text.append("Playtime", TimeDifferenceUtil.convertSecondsToString(target.getTicksPlayed() / 20, '6', 'e'));
         }
         if (target.getFirstJoin() != null) {
-            text.append("First joined", Texter.newText("&e" + TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime())).styled((style) -> {
+            text.append("First joined", Texter.newText("&e" + TimeDifferenceUtil.formatDateDiff(target.getFirstJoin().getTime())).withStyle((style) -> {
                 return style.withHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getFirstJoin())));
             }));
         }
 
         if (!target.isOnline() && target.getLastOnline() != null) {
-            text.append("Last Online", Texter.newText("&e" + TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).styled((style) -> {
+            text.append("Last Online", Texter.newText("&e" + TimeDifferenceUtil.formatDateDiff(target.getLastOnline().getTime())).withStyle((style) -> {
                 return style.withHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(target.getLastOnline())));
             }));
         }
@@ -134,12 +134,12 @@ public class WhoIsCommand extends EssentialCommand {
 
         Vec3dLocation vec = ((Vec3dLocation) target.getLocation()).shortDecimals();
         assert vec.getDimension() != null;
-        MutableText loc = Texter.newText(vec.asFormattedString());
+        MutableComponent loc = Texter.newText(vec.asFormattedString());
         text.append("Location", this.getButtonForVec(loc, vec));
 
         if (target.getLastSavedLocation() != null) {
             Vec3dLocation savedVec = ((Vec3dLocation) target.getLastSavedLocation()).shortDecimals();
-            MutableText lastLoc = Texter.newText(savedVec.asFormattedString());
+            MutableComponent lastLoc = Texter.newText(savedVec.asFormattedString());
             text.append("Saved Location", this.getButtonForVec(lastLoc, savedVec));
         }
 
@@ -147,11 +147,11 @@ public class WhoIsCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private MutableText getButtonForVec(MutableText text, Vec3dLocation vec) {
+    private MutableComponent getButtonForVec(MutableComponent text, Vec3dLocation vec) {
         assert vec.getDimension() != null;
         return Texter.appendButton(
                 text,
-                new LiteralText(ModConstants.translation("general.click_tp")),
+                new TextComponent(ModConstants.translation("general.click_tp")),
                 ClickEvent.Action.SUGGEST_COMMAND,
                 "/tpin " + vec.getDimension().toString() + " " +
                         vec.getX() + " " + vec.getY() + " " + vec.getZ() + " @s"
