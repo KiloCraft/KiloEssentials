@@ -5,9 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,9 +14,6 @@ import org.kilocraft.essentials.api.ModConstants;
 import java.util.Locale;
 
 public class ComponentText {
-    public static Text empty() {
-        return new LiteralText("");
-    }
 
     /**
      * Translates a string with legacy style color codes into a Kyori Adventure style.
@@ -28,10 +23,11 @@ public class ComponentText {
      */
     public static String updateLegacyStyle(@NotNull final String text) {
         Validate.notNull(text, "Cannot translate null text");
+        if (!text.contains("&")) return text;
         String string = text;
         final char[] b = text.toCharArray();
         for (int i = 0; i < b.length; i++) {
-            if (b[i] == '&' && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
+            if (b[i] == '&' && i != b.length - 1 && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
                 final @Nullable Format format = Format.getByChar(b[i + 1]);
                 string = string.replace(
                         String.valueOf('&') + b[i + 1],
@@ -46,36 +42,24 @@ public class ComponentText {
         return stripRainbow(stripGradient(stripEvent(stripFormatting(stripColor(textToClear)))));
     }
 
-    public static Text toText(@NotNull final Component component) {
+    public static net.minecraft.network.chat.Component toText(@NotNull final Component component) {
         Validate.notNull(component, "Component must not be null!");
-        return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component));
+        return net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component));
     }
 
-    public static MutableText toText(@NotNull final String raw) {
+    public static MutableComponent toText(@NotNull final String raw) {
         Validate.notNull(raw, "Input must not be null!");
-        return Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(of(raw)));
+        return net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.gson().serialize(of(raw)));
     }
 
-    public static Component toComponent(@NotNull final Text text) {
+    public static Component toComponent(@NotNull final net.minecraft.network.chat.Component text) {
         Validate.notNull(text, "Text must not be null!");
-        return GsonComponentSerializer.gson().deserialize(Text.Serializer.toJson(text));
+        return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(text));
     }
 
-    public static Component toComponent(@NotNull final String json) {
-        return GsonComponentSerializer.gson().deserialize(json);
-    }
-
-    public static Component of(@NotNull final String raw) {
-        return of(raw, false);
-    }
-
-    public static Component of(@NotNull final String raw, final boolean markdown) {
-        Validate.notNull(raw, "String must not be null!");
-        final String string = raw.contains("&") ? updateLegacyStyle(raw) : raw;
-        if (markdown) {
-            return MiniMessage.markdown().parse(string);
-        }
-        return MiniMessage.get().parse(string);
+    public static Component of(@NotNull final String string) {
+        Validate.notNull(string, "String must not be null!");
+        return MiniMessage.miniMessage().parse(updateLegacyStyle(string));
     }
 
     public static Component removeEvents(@NotNull final Component component) {
@@ -84,10 +68,6 @@ public class ComponentText {
             removeEvents(c);
         }
         return component;
-    }
-
-    public static Component removeStyle(@NotNull final Component component) {
-        return component.style(Style.empty());
     }
 
     public static String formatPercentage(final double percentage) {

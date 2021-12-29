@@ -1,21 +1,20 @@
 package org.kilocraft.essentials.api.text;
 
 import com.google.common.collect.Lists;
-import net.minecraft.text.MutableText;
-
 import java.util.Arrays;
 import java.util.List;
+import net.minecraft.network.chat.MutableComponent;
 
 public class TextInput implements ContainedText {
     private final List<String> lines;
-    private final List<MutableText> textLines;
+    private final List<MutableComponent> textLines;
 
     public TextInput(String... strings) {
         this();
         this.append(strings);
     }
 
-    public TextInput(MutableText... texts) {
+    public TextInput(MutableComponent... texts) {
         this();
         this.append(texts);
     }
@@ -40,7 +39,7 @@ public class TextInput implements ContainedText {
     }
 
     @Override
-    public List<MutableText> getTextLines() {
+    public List<MutableComponent> getTextLines() {
         return this.textLines;
     }
 
@@ -51,7 +50,7 @@ public class TextInput implements ContainedText {
     }
 
     @Override
-    public ContainedText append(MutableText... texts) {
+    public ContainedText append(MutableComponent... texts) {
         this.textLines.addAll(Arrays.asList(texts));
         return this;
     }

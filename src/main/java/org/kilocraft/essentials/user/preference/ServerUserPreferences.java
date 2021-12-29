@@ -1,13 +1,13 @@
 package org.kilocraft.essentials.user.preference;
 
 import com.google.common.collect.Maps;
-import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.preference.Preference;
 import org.kilocraft.essentials.api.user.preference.UserPreferences;
 
 import java.util.Map;
+import net.minecraft.nbt.CompoundTag;
 
 public class ServerUserPreferences implements UserPreferences {
     private final Map<String, Object> SETTINGS;
@@ -32,8 +32,8 @@ public class ServerUserPreferences implements UserPreferences {
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
         for (Map.Entry<String, Object> entry : this.SETTINGS.entrySet()) {
             Preference<?> preference = Preferences.getById(entry.getKey());
             if (preference != null) {
@@ -49,8 +49,8 @@ public class ServerUserPreferences implements UserPreferences {
     }
 
     @Override
-    public void fromTag(@NotNull final NbtCompound tag) {
-        for (String key : tag.getKeys()) {
+    public void fromTag(@NotNull final CompoundTag tag) {
+        for (String key : tag.getAllKeys()) {
             Preference<?> preference = Preferences.getById(key);
             if (preference != null) {
                 try {

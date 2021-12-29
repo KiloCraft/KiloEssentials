@@ -8,9 +8,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.GameProfileArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -21,6 +18,9 @@ import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.GameProfileArgument;
 
 public class UnBanCommand extends EssentialCommand {
     public UnBanCommand() {
@@ -28,38 +28,38 @@ public class UnBanCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, GameProfileArgumentType.GameProfileArgument> user = this.argument("profile", GameProfileArgumentType.gameProfile())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, GameProfileArgument.Result> user = this.argument("profile", GameProfileArgument.gameProfile())
                 .suggests(this::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent")
+        LiteralArgumentBuilder<CommandSourceStack> silent = this.literal("-silent")
                 .executes((ctx) -> this.execute(ctx, true));
 
         user.then(silent);
         this.argumentBuilder.then(user);
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx, boolean silent) throws CommandSyntaxException {
+    private int execute(final CommandContext<CommandSourceStack> ctx, boolean silent) throws CommandSyntaxException {
         CommandSourceUser src = this.getCommandSource(ctx);
-        Collection<GameProfile> gameProfiles = GameProfileArgumentType.getProfileArgument(ctx, "profile");
+        Collection<GameProfile> gameProfiles = GameProfileArgument.getGameProfiles(ctx, "profile");
         if (gameProfiles.size() > 1) {
             throw KiloCommands.getException("exception.too_many_selections").create();
         }
         GameProfile profile = gameProfiles.iterator().next();
 
-        if (!KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().contains(profile)) {
+        if (!KiloEssentials.getMinecraftServer().getPlayerList().getBans().isBanned(profile)) {
             src.sendLangError("command.unban.not_banned", profile.getName());
             return FAILED;
         }
 
-        KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().remove(profile);
+        KiloEssentials.getMinecraftServer().getPlayerList().getBans().remove(profile);
         this.getUserManager().onPunishmentRevoked(src, new Punishment(src, EntityIdentifiable.fromGameProfile(profile)), Punishment.Type.BAN, null, silent);
 
         return SUCCESS;
     }
 
-    private CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(KiloEssentials.getMinecraftServer().getPlayerManager().getUserBanList().getNames(), builder);
+    private CompletableFuture<Suggestions> listSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(KiloEssentials.getMinecraftServer().getPlayerList().getBans().getUserList(), builder);
     }
 }

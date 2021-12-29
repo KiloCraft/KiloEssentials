@@ -2,7 +2,7 @@ package org.kilocraft.essentials.util.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.kilocraft.essentials.mixin.patch.technical.CommandManagerMixin;
+import org.kilocraft.essentials.mixin.patch.technical.CommandsMixin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +12,12 @@ public class LiteralCommandModified {
     private static final String keCommandPrefix = "ke_";
 
     /**
-     * @see CommandManagerMixin
+     * @see CommandsMixin
      * <p>
      * This only works for Command literals and their sub commands
      */
     private static final List<String> keCommandsToKeep = new ArrayList<>() {{
-        this.add("ke_gamemode");
         this.add("ke_reload");
-        this.add("ke_locate");
         this.add("ke_op");
         this.add("ke_tp");
         this.add("ke_msg");
@@ -34,8 +32,6 @@ public class LiteralCommandModified {
     }};
 
     private static final List<String> vanillaCommandsToRename = new ArrayList<String>() {{
-        this.add("gamemode");
-        this.add("locate");
         this.add("me");
         this.add("w");
         this.add("msg");
@@ -44,7 +40,6 @@ public class LiteralCommandModified {
         this.add("teammsg");
         this.add("tm");
         this.add("time");
-        this.add("locatebiome");
         this.add("ban");
         this.add("ban-ip");
         this.add("seed");
@@ -90,7 +85,6 @@ public class LiteralCommandModified {
     public static <S> boolean canSourceUse(CommandNode<S> commandNode, S source) {
         if (commandNode instanceof LiteralCommandNode)
             return shouldUse(commandNode.getName()) && commandNode.canUse(source);
-
         return commandNode.canUse(source);
     }
 

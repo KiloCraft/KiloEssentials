@@ -1,13 +1,13 @@
 package org.kilocraft.essentials.extensions.magicalparticles.config;
 
-import net.minecraft.util.registry.Registry;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import net.minecraft.core.Registry;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 public class BlockStateParticleEffectConfigSection {
 
     @Setting("id")
-    public String blockId = Registry.BLOCK.getDefaultId().toString();
+    public String blockId = Registry.BLOCK.getDefaultKey().toString();
 
 }

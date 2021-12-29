@@ -6,13 +6,13 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -26,10 +26,11 @@ import org.kilocraft.essentials.extensions.homes.api.Home;
 import org.kilocraft.essentials.extensions.homes.api.UnsafeHomeException;
 import org.kilocraft.essentials.user.UserHomeHandler;
 import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 
 public class HomeCommand extends EssentialCommand {
-    private static final SimpleCommandExceptionType MISSING_DIMENSION = new SimpleCommandExceptionType(new LiteralText("The Dimension this home exists in no longer exists"));
+    private static final SimpleCommandExceptionType MISSING_DIMENSION = new SimpleCommandExceptionType(new TextComponent("The Dimension this home exists in no longer exists"));
 
     public HomeCommand() {
         super("home", CommandPermission.HOME_SELF_TP);
@@ -49,12 +50,12 @@ public class HomeCommand extends EssentialCommand {
     }
 
     @Override
-    public final void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = this.argument("name", StringArgumentType.word())
+    public final void register(final CommandDispatcher<CommandSourceStack> dispatcher) {
+        final RequiredArgumentBuilder<CommandSourceStack, String> homeArgument = this.argument("name", StringArgumentType.word())
                 .suggests(UserHomeHandler::suggestHomes)
                 .executes(ctx -> this.executeSelf(ctx, true));
 
-        final RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
+        final RequiredArgumentBuilder<CommandSourceStack, String> targetArgument = this.getUserArgument("user")
                 .requires(src -> this.hasPermission(src, CommandPermission.HOME_OTHERS_TP))
                 .executes(this::executeOthers);
 
@@ -63,8 +64,8 @@ public class HomeCommand extends EssentialCommand {
         this.commandNode.addChild(homeArgument.build());
     }
 
-    private int executeSelf(final CommandContext<ServerCommandSource> ctx, boolean hasInput) throws CommandSyntaxException {
-        final ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int executeSelf(final CommandContext<CommandSourceStack> ctx, boolean hasInput) throws CommandSyntaxException {
+        final ServerPlayer player = ctx.getSource().getPlayerOrException();
         final OnlineUser user = this.getOnlineUser(player);
         final UserHomeHandler homeHandler = user.getHomesHandler();
         final String input = hasInput ? StringArgumentType.getString(ctx, "name") : "home";
@@ -75,12 +76,17 @@ public class HomeCommand extends EssentialCommand {
             return IEssentialCommand.FAILED;
         }
 
-        if (homeHandler.getHome(name).shouldTeleport()) {
-            user.sendLangMessage("command.home.invalid_dim", homeHandler.getHome(name).getLocation().getDimensionType().toString());
+        Home home = homeHandler.getHome(name);
+        if (LocationUtil.isDestinationToClose(user, home.getLocation())) {
             return IEssentialCommand.FAILED;
         }
 
-        homeHandler.prepareHomeLocation(user, homeHandler.getHome(name));
+        if (home.shouldTeleport()) {
+            user.sendLangMessage("command.home.invalid_dim", home.getLocation().getDimensionType().toString());
+            return IEssentialCommand.FAILED;
+        }
+
+        homeHandler.prepareHomeLocation(user, home);
 
         new SinglePlayerScheduler(user, 1, KiloConfig.main().server().cooldown, () -> {
             try {
@@ -96,8 +102,8 @@ public class HomeCommand extends EssentialCommand {
         return IEssentialCommand.SUCCESS;
     }
 
-    private int executeOthers(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        final ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int executeOthers(final CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        final ServerPlayer player = ctx.getSource().getPlayerOrException();
         final String input = StringArgumentType.getString(ctx, "name");
         final String name = input.replaceFirst("-confirmed-", "");
         final OnlineUser src = this.getOnlineUser(player);
@@ -117,15 +123,6 @@ public class HomeCommand extends EssentialCommand {
 
             Home home = homeHandler.getHome(name);
 
-//            try {
-//                LocationUtil.validateIsSafe(home.getLocation());
-//            } catch (InsecureDestinationException e) {
-//                if (!input.startsWith("-confirmed-")) {
-//                    source.sendMessage(getTeleportConfirmationText(name, user.getUsername()));
-//                    return;
-//                }
-//            }
-
             try {
                 homeHandler.teleportToHome(src, name);
             } catch (final UnsafeHomeException e) {
@@ -144,15 +141,15 @@ public class HomeCommand extends EssentialCommand {
         return IEssentialCommand.AWAIT;
     }
 
-    private Text getTeleportConfirmationText(String homeName, String owner) {
-        return new LiteralText("")
-                .append(StringText.of(true, "general.loc.unsafe.confirmation")
-                        .formatted(Formatting.YELLOW))
-                .append(new LiteralText(" [").formatted(Formatting.GRAY)
-                        .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
-                        .append(new LiteralText("]").formatted(Formatting.GRAY))
-                        .styled((style) -> {
-                            return style.withFormatting(Formatting.GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home -confirmed-" + homeName + " " + owner));
+    private Component getTeleportConfirmationText(String homeName, String owner) {
+        return new TextComponent("")
+                .append(StringText.of("general.loc.unsafe.confirmation")
+                        .withStyle(ChatFormatting.YELLOW))
+                .append(new TextComponent(" [").withStyle(ChatFormatting.GRAY)
+                        .append(new TextComponent("Click here to Confirm").withStyle(ChatFormatting.GREEN))
+                        .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+                        .withStyle((style) -> {
+                            return style.applyFormat(ChatFormatting.GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Confirm").withStyle(ChatFormatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home -confirmed-" + homeName + " " + owner));
                         }));
     }
 

@@ -1,7 +1,6 @@
 package org.kilocraft.essentials.api.user;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.NBTSerializable;
 import org.kilocraft.essentials.api.user.preference.Preference;
@@ -14,6 +13,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.network.chat.Component;
 
 /**
  * User, better way for handling Data related to Players
@@ -25,8 +25,8 @@ import java.util.UUID;
  * @see NeverJoinedUser
  * @see UserHomeHandler
  * @see org.kilocraft.essentials.user.UserHandler
- * @see net.minecraft.entity.player.PlayerEntity
- * @see net.minecraft.server.network.ServerPlayerEntity
+ * @see net.minecraft.world.entity.player.Player
+ * @see net.minecraft.server.level.ServerPlayer
  * @since 1.5
  */
 public interface User extends EntityIdentifiable, NBTSerializable {
@@ -89,11 +89,11 @@ public interface User extends EntityIdentifiable, NBTSerializable {
     String getFormattedDisplayName();
 
     /**
-     * Gets the modified Display name as a {@link Text}
+     * Gets the modified Display name as a {@link Component}
      *
      * @return Team modified Display name
      */
-    Text getRankedDisplayName();
+    Component getRankedDisplayName();
 
     /**
      * Gets the modified Display name as a {@link String}
@@ -103,11 +103,11 @@ public interface User extends EntityIdentifiable, NBTSerializable {
     String getRankedDisplayNameAsString();
 
     /**
-     * Gets the modified name as a {@link Text}
+     * Gets the modified name as a {@link Component}
      *
      * @return Team modified name
      */
-    Text getRankedName();
+    Component getRankedName();
 
     /**
      * Gets the name tag of this user (can be configured through the config file)
@@ -248,14 +248,6 @@ public interface User extends EntityIdentifiable, NBTSerializable {
      * @return is This equals to another user
      */
     boolean equals(User anotherUser);
-
-    /**
-     * Checks if this user is ignoring another user
-     *
-     * @param uuid the {@link UUID} of the other user to check
-     * @return is This user ignoring the other user
-     */
-    boolean ignored(UUID uuid);
 
     EntityIdentifiable getLastMessageReceptionist();
 

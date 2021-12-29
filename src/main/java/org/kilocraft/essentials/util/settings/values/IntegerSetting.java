@@ -4,12 +4,12 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
 
 import java.util.function.Consumer;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
 
 public class IntegerSetting extends ConfigurableSetting<Integer> implements RangeSetting<Integer> {
 
@@ -26,7 +26,7 @@ public class IntegerSetting extends ConfigurableSetting<Integer> implements Rang
     }
 
     @Override
-    public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
+    public void setValueFromCommand(CommandContext<CommandSourceStack> ctx) {
         this.setValue(Integer.parseInt(StringArgumentType.getString(ctx, commandArgumentValue)));
     }
 
@@ -36,12 +36,12 @@ public class IntegerSetting extends ConfigurableSetting<Integer> implements Rang
     }
 
     @Override
-    protected void setValue(NbtCompound tag) {
+    protected void setValue(CompoundTag tag) {
         tag.putInt("value", this.getValue());
     }
 
     @Override
-    protected Integer getValue(NbtCompound tag) {
+    protected Integer getValue(CompoundTag tag) {
         return tag.getInt("value");
     }
 

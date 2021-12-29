@@ -4,12 +4,12 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
 
 import java.util.function.Consumer;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
 
 public class DoubleSetting extends ConfigurableSetting<Double> implements RangeSetting<Double> {
 
@@ -31,17 +31,17 @@ public class DoubleSetting extends ConfigurableSetting<Double> implements RangeS
     }
 
     @Override
-    public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
+    public void setValueFromCommand(CommandContext<CommandSourceStack> ctx) {
         this.setValue(Double.parseDouble(StringArgumentType.getString(ctx, commandArgumentValue)));
     }
 
     @Override
-    protected void setValue(NbtCompound tag) {
+    protected void setValue(CompoundTag tag) {
         tag.putDouble("value", this.getValue());
     }
 
     @Override
-    protected Double getValue(NbtCompound tag) {
+    protected Double getValue(CompoundTag tag) {
         return tag.getDouble("value");
     }
 

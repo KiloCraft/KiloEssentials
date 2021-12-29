@@ -7,12 +7,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -28,9 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 
-import static net.minecraft.command.argument.IdentifierArgumentType.getIdentifier;
-import static net.minecraft.command.argument.IdentifierArgumentType.identifier;
+import static net.minecraft.commands.arguments.ResourceLocationArgument.getId;
+import static net.minecraft.commands.arguments.ResourceLocationArgument.id;
 import static org.kilocraft.essentials.extensions.magicalparticles.ParticleAnimationManager.*;
 
 public class MagicalParticlesCommand extends EssentialCommand {
@@ -40,14 +40,14 @@ public class MagicalParticlesCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> setArg = this.literal("set");
-        LiteralArgumentBuilder<ServerCommandSource> listArg = this.literal("list")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> setArg = this.literal("set");
+        LiteralArgumentBuilder<CommandSourceStack> listArg = this.literal("list")
                 .executes(this::list);
-        LiteralArgumentBuilder<ServerCommandSource> disableArg = this.literal("disable")
+        LiteralArgumentBuilder<CommandSourceStack> disableArg = this.literal("disable")
                 .executes(this::disable);
 
-        RequiredArgumentBuilder<ServerCommandSource, Identifier> idArgument = this.argument("animation", identifier())
+        RequiredArgumentBuilder<CommandSourceStack, ResourceLocation> idArgument = this.argument("animation", id())
                 .suggests(this::particleIdSuggestions)
                 .executes(this::set);
 
@@ -58,15 +58,15 @@ public class MagicalParticlesCommand extends EssentialCommand {
         this.argumentBuilder.executes(this::list);
     }
 
-    private int set(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int set(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         OnlineUser user = this.getOnlineUser(ctx);
         boolean silent = false;
-        Identifier identifier = getIdentifier(ctx, "animation");
+        ResourceLocation identifier = getId(ctx, "animation");
 
         if (identifier.getPath().endsWith("--s")) {
             silent = true;
-            identifier = new Identifier(identifier.toString().replaceFirst("--s", ""));
+            identifier = new ResourceLocation(identifier.toString().replaceFirst("--s", ""));
         }
 
         if (!isValidId(identifier)) {
@@ -82,30 +82,30 @@ public class MagicalParticlesCommand extends EssentialCommand {
             return FAILED;
         }
 
-        addPlayer(player.getUuid(), identifier);
-        player.sendMessage(StringText.of(true, "command.magicalparticles.set", getAnimationName(identifier)), silent);
+        addPlayer(player.getUUID(), identifier);
+        player.displayClientMessage(StringText.of("command.magicalparticles.set", getAnimationName(identifier)), silent);
         return SUCCESS;
     }
 
-    private int list(CommandContext<ServerCommandSource> ctx) {
+    private int list(CommandContext<CommandSourceStack> ctx) {
         OnlineUser user = this.getCommandSource(ctx);
         Texter.ListStyle text = Texter.ListStyle.of(
-                "Particle Animations", Formatting.GOLD, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY
+                "Particle Animations", ChatFormatting.GOLD, ChatFormatting.DARK_GRAY, ChatFormatting.WHITE, ChatFormatting.GRAY
         );
 
         text.append("&cdisable",
-                Texter.Events.onHover(new LiteralText("Click Here to Disable").formatted(Formatting.GOLD)
+                Texter.Events.onHover(new TextComponent("Click Here to Disable").withStyle(ChatFormatting.GOLD)
                 ),
                 Texter.Events.onClickRun("/mp disable")
         ).append("&7|&r");
 
         map.forEach((id, animation) -> text.append(id.getPath(),
-                Texter.Events.onHover(new LiteralText("")
-                        .append(new LiteralText(animation.getName()).formatted(Formatting.GOLD))
+                Texter.Events.onHover(new TextComponent("")
+                        .append(new TextComponent(animation.getName()).withStyle(ChatFormatting.GOLD))
                         .append("\n")
-                        .append(new LiteralText(animation.getId().toString()).formatted(Formatting.DARK_GRAY))
+                        .append(new TextComponent(animation.getId().toString()).withStyle(ChatFormatting.DARK_GRAY))
                         .append("\n")
-                        .append(new LiteralText(ModConstants.translation("general.click_apply")).formatted(Formatting.YELLOW))
+                        .append(new TextComponent(ModConstants.translation("general.click_apply")).withStyle(ChatFormatting.YELLOW))
                 ),
                 Texter.Events.onClickRun("/mp set " + id + "--s")
         ));
@@ -114,25 +114,25 @@ public class MagicalParticlesCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int disable(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int disable(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         CommandSourceUser user = this.getCommandSource(ctx);
         user.sendLangMessage("command.magicalparticles.disabled");
-        removePlayer(player.getUuid());
+        removePlayer(player.getUUID());
         return SUCCESS;
     }
 
-    private CompletableFuture<Suggestions> particleIdSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+    private CompletableFuture<Suggestions> particleIdSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(context);
         List<String> usableAnimations = new ArrayList<>();
-        for (Map.Entry<Identifier, ParticleAnimation> entry : map.entrySet()) {
+        for (Map.Entry<ResourceLocation, ParticleAnimation> entry : map.entrySet()) {
             ParticleAnimation animation = entry.getValue();
 
-            if (animation.predicate() == null || (animation.predicate() != null && animation.predicate().test(user))) {
+            if (animation.canUse(user)) {
                 usableAnimations.add(entry.getKey().getPath());
             }
         }
-        return CommandSource.suggestMatching(usableAnimations, builder);
+        return SharedSuggestionProvider.suggest(usableAnimations, builder);
     }
 
 }

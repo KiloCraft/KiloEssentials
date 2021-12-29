@@ -1,12 +1,14 @@
 package org.kilocraft.essentials.config.main.sections;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 public class MotdConfigSection {
 
-    @Setting(value = "enabled", comment = "Enable custom motd feature")
+    @Setting(value = "enabled")
+    @Comment("Enable custom motd feature")
     public boolean enabled = false;
 
     @Setting(value = "line1")

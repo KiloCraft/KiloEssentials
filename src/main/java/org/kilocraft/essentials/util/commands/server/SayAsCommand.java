@@ -6,8 +6,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -20,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
 
@@ -29,16 +29,16 @@ public class SayAsCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        ArgumentCommandNode<ServerCommandSource, String> selectorArg = this.argument("target", word())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        ArgumentCommandNode<CommandSourceStack, String> selectorArg = this.argument("target", word())
                 .suggests(this::playerSuggestions)
                 .build();
 
-        ArgumentCommandNode<ServerCommandSource, String> channelArg = this.argument("channel", word())
+        ArgumentCommandNode<CommandSourceStack, String> channelArg = this.argument("channel", word())
                 .suggests(this::channelIdSuggestions)
                 .build();
 
-        ArgumentCommandNode<ServerCommandSource, String> messageArg = this.argument("message", greedyString())
+        ArgumentCommandNode<CommandSourceStack, String> messageArg = this.argument("message", greedyString())
                 .suggests(ArgumentSuggestions::noSuggestions)
                 .executes(this::execute)
                 .build();
@@ -48,7 +48,7 @@ public class SayAsCommand extends EssentialCommand {
         this.commandNode.addChild(selectorArg);
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) {
+    private int execute(CommandContext<CommandSourceStack> ctx) {
         String inputTarget = getString(ctx, "target");
         String message = StringArgumentType.getString(ctx, "message");
         ServerChat.Channel channel = ServerChat.Channel.getById(StringArgumentType.getString(ctx, "channel"));
@@ -63,16 +63,16 @@ public class SayAsCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private CompletableFuture<Suggestions> playerSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        List<String> strings = new ArrayList<>(Arrays.asList(KiloEssentials.getMinecraftServer().getPlayerManager().getPlayerNames()));
-        return CommandSource.suggestMatching(strings, builder);
+    private CompletableFuture<Suggestions> playerSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        List<String> strings = new ArrayList<>(Arrays.asList(KiloEssentials.getMinecraftServer().getPlayerList().getPlayerNamesArray()));
+        return SharedSuggestionProvider.suggest(strings, builder);
     }
 
-    private CompletableFuture<Suggestions> channelIdSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    private CompletableFuture<Suggestions> channelIdSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         List<String> strings = new ArrayList<>();
         for (ServerChat.Channel value : ServerChat.Channel.values()) {
             strings.add(value.getId());
         }
-        return CommandSource.suggestMatching(strings, builder);
+        return SharedSuggestionProvider.suggest(strings, builder);
     }
 }

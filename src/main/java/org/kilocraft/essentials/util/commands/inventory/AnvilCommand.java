@@ -3,15 +3,15 @@ package org.kilocraft.essentials.util.commands.inventory;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.AnvilScreenHandler;
-import net.minecraft.screen.ForgingScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.ItemCombinerMenu;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.util.CommandPermission;
 
@@ -20,17 +20,17 @@ public class AnvilCommand extends EssentialCommand {
         super("anvil", CommandPermission.ANVIL);
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         this.argumentBuilder.executes(this::execute);
     }
 
-    private int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-        player.openHandledScreen(new SimpleNamedScreenHandlerFactory(this::createMenu, new TranslatableText("container.repair")));
+    private int execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        player.openMenu(new SimpleMenuProvider(this::createMenu, new TranslatableComponent("container.repair")));
         return SUCCESS;
     }
 
-    private ForgingScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new AnvilScreenHandler(syncId, playerInventory, ScreenHandlerContext.create(player.world, player.getBlockPos()));
+    private ItemCombinerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
+        return new AnvilMenu(syncId, playerInventory, ContainerLevelAccess.create(player.level, player.blockPosition()));
     }
 }

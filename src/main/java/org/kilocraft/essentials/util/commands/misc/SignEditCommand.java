@@ -7,28 +7,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.WallSignBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -43,14 +21,36 @@ import org.kilocraft.essentials.util.commands.KiloCommands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.WallSignBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.HitResult;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
-import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
-import static net.minecraft.command.argument.EntityArgumentType.player;
-import static net.minecraft.command.argument.IdentifierArgumentType.getIdentifier;
-import static net.minecraft.command.argument.IdentifierArgumentType.identifier;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
+import static net.minecraft.commands.arguments.EntityArgument.player;
+import static net.minecraft.commands.arguments.ResourceLocationArgument.getId;
+import static net.minecraft.commands.arguments.ResourceLocationArgument.id;
 
 public class SignEditCommand extends EssentialCommand {
     public SignEditCommand() {
@@ -64,42 +64,42 @@ public class SignEditCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> editNode = this.literal("text");
-        LiteralArgumentBuilder<ServerCommandSource> guiNode = this.literal("gui")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> editNode = this.literal("text");
+        LiteralArgumentBuilder<CommandSourceStack> guiNode = this.literal("gui")
                 .requires(src -> this.hasPermission(src, CommandPermission.SIGNEDIT_GUI_SELF))
-                .executes(ctx -> this.openGui(ctx, ctx.getSource().getPlayer()));
-        LiteralArgumentBuilder<ServerCommandSource> dyeColorNode = this.literal("color");
-        LiteralArgumentBuilder<ServerCommandSource> executesNode = this.literal("runs")
+                .executes(ctx -> this.openGui(ctx, ctx.getSource().getPlayerOrException()));
+        LiteralArgumentBuilder<CommandSourceStack> dyeColorNode = this.literal("color");
+        LiteralArgumentBuilder<CommandSourceStack> executesNode = this.literal("runs")
                 .requires(src -> this.hasPermission(src, CommandPermission.SIGNEDIT_COMMAND));
-        LiteralArgumentBuilder<ServerCommandSource> typeNode = this.literal("type")
+        LiteralArgumentBuilder<CommandSourceStack> typeNode = this.literal("type")
                 .requires(src -> this.hasPermission(src, CommandPermission.SIGNEDIT_COLOR));
 
-        RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = this.argument("line", integer(1, 4))
+        RequiredArgumentBuilder<CommandSourceStack, Integer> lineArgument = this.argument("line", integer(1, 4))
                 .suggests(ArgumentSuggestions::noSuggestions);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("string", greedyString())
+        RequiredArgumentBuilder<CommandSourceStack, String> stringArgument = this.argument("string", greedyString())
                 .suggests(this::setTextSuggestions)
                 .executes(this::setText);
 
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> guiSelectorArgument = this.argument("target", player())
+        RequiredArgumentBuilder<CommandSourceStack, EntitySelector> guiSelectorArgument = this.argument("target", player())
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_GUI_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> this.openGui(ctx, getPlayer(ctx, "target")));
 
-        RequiredArgumentBuilder<ServerCommandSource, Identifier> dyeColorArgument = this.argument("color", identifier())
+        RequiredArgumentBuilder<CommandSourceStack, ResourceLocation> dyeColorArgument = this.argument("color", id())
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.SIGNEDIT_COLOR))
                 .suggests(this::dyeColorSuggestions)
                 .executes(this::setDyeColor);
 
-        RequiredArgumentBuilder<ServerCommandSource, Integer> executesLineArgument = this.argument("line", integer(1, 4))
+        RequiredArgumentBuilder<CommandSourceStack, Integer> executesLineArgument = this.argument("line", integer(1, 4))
                 .suggests(ArgumentSuggestions::noSuggestions);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> executesArgument = this.argument("command", greedyString())
+        RequiredArgumentBuilder<CommandSourceStack, String> executesArgument = this.argument("command", greedyString())
                 .suggests(this::setCommandSuggestions)
                 .executes(this::setCommand);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> typeArgument = this.argument("type", string())
+        RequiredArgumentBuilder<CommandSourceStack, String> typeArgument = this.argument("type", string())
                 .suggests(this::typeSuggestions)
                 .executes(this::setType);
 
@@ -115,11 +115,11 @@ public class SignEditCommand extends EssentialCommand {
         this.commandNode.addChild(dyeColorNode.build());
         this.commandNode.addChild(executesNode.build());
         this.commandNode.addChild(typeNode.build());
-        this.argumentBuilder.executes(ctx -> this.openGui(ctx, ctx.getSource().getPlayer()));
+        this.argumentBuilder.executes(ctx -> this.openGui(ctx, ctx.getSource().getPlayerOrException()));
     }
 
-    private int setText(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int setText(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         int line = getInteger(ctx, "line") - 1;
         String input = getString(ctx, "string");
         OnlineUser user = this.getOnlineUser(ctx);
@@ -136,21 +136,21 @@ public class SignEditCommand extends EssentialCommand {
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
 
         if (input.equals("reset")) {
-            sign.setTextOnRow(line, new LiteralText(""));
-            this.updateSign(sign, player.getServerWorld(), blockEntity.getPos());
+            sign.setMessage(line, new TextComponent(""));
+            this.updateSign(sign, player.getLevel(), blockEntity.getBlockPos());
             user.sendLangMessage("command.signedit.reset_text", line + 1);
             return SUCCESS;
         }
 
-        sign.setTextOnRow(line, ComponentText.toText(input));
+        sign.setMessage(line, ComponentText.toText(input));
 
-        this.updateSign(sign, player.getServerWorld(), blockEntity.getPos());
+        this.updateSign(sign, player.getLevel(), blockEntity.getBlockPos());
         user.sendLangMessage("command.signedit.set_text", line + 1, input);
         return SUCCESS;
     }
 
-    private int setCommand(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int setCommand(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         int line = getInteger(ctx, "line") - 1;
         String input = getString(ctx, "command");
         OnlineUser user = this.getOnlineUser(ctx);
@@ -165,21 +165,21 @@ public class SignEditCommand extends EssentialCommand {
         SignBlockEntityAccessor signText = ((SignBlockEntityAccessor) sign);
 
         if (input.equals("reset")) {
-            Text text = ((MutableText) signText.getTexts()[line]).styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "")));
-            sign.setTextOnRow(line, text);
+            Component text = ((MutableComponent) signText.getMessages()[line]).withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "")));
+            sign.setMessage(line, text);
             user.sendLangMessage("command.signedit.reset_command", line + 1);
             return SUCCESS;
         }
 
-        Text text = ((MutableText) signText.getTexts()[line]).styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, input)));
-        sign.setTextOnRow(line, text);
-        this.updateSign(sign, player.getServerWorld(), blockEntity.getPos());
+        Component text = ((MutableComponent) signText.getMessages()[line]).withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, input)));
+        sign.setMessage(line, text);
+        this.updateSign(sign, player.getLevel(), blockEntity.getBlockPos());
         user.sendLangMessage("command.signedit.set_command", line + 1, input);
         return SUCCESS;
     }
 
-    private int setDyeColor(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int setDyeColor(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         BlockEntity blockEntity = this.getBlockEntityAtCursor(player);
         OnlineUser user = this.getOnlineUser(ctx);
         if (blockEntity == null) {
@@ -187,21 +187,21 @@ public class SignEditCommand extends EssentialCommand {
             return FAILED;
         }
 
-        String inputColor = getIdentifier(ctx, "color").getPath();
+        String inputColor = getId(ctx, "color").getPath();
         if (!this.isValidColor(inputColor))
             throw KiloCommands.getException("exception.incorrect_identifier", "dye color").create();
 
         DyeColor dyeColor = DyeColor.valueOf(inputColor.toUpperCase());
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
-        sign.setTextColor(dyeColor);
-        this.updateSign(sign, player.getServerWorld(), sign.getPos());
+        sign.setColor(dyeColor);
+        this.updateSign(sign, player.getLevel(), sign.getBlockPos());
 
         user.sendLangMessage("command.signedit.set_color", inputColor);
         return SUCCESS;
     }
 
-    private int openGui(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int openGui(CommandContext<CommandSourceStack> ctx, ServerPlayer target) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         BlockEntity blockEntity = this.getBlockEntityAtCursor(player);
         OnlineUser user = this.getOnlineUser(ctx);
         if (blockEntity == null) {
@@ -210,21 +210,21 @@ public class SignEditCommand extends EssentialCommand {
         }
 
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
-        sign.setEditor(target.getUuid());
+        sign.setAllowedPlayerEditor(target.getUUID());
 
-        SignEditorOpenS2CPacket packet = new SignEditorOpenS2CPacket(sign.getPos());
-        target.networkHandler.sendPacket(packet);
+        ClientboundOpenSignEditorPacket packet = new ClientboundOpenSignEditorPacket(sign.getBlockPos());
+        target.connection.send(packet);
 
         if (CommandUtils.areTheSame(ctx.getSource(), target))
             user.sendLangMessage("general.open_gui", "Sign");
         else
-            user.sendLangMessage("general.open_gui.others", "Sign", target.getEntityName());
+            user.sendLangMessage("general.open_gui.others", "Sign", target.getScoreboardName());
 
         return SUCCESS;
     }
 
-    private int setType(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int setType(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         BlockEntity blockEntity = this.getBlockEntityAtCursor(player);
         OnlineUser user = this.getOnlineUser(ctx);
         if (blockEntity == null) {
@@ -239,86 +239,86 @@ public class SignEditCommand extends EssentialCommand {
         }
 
         SignBlockEntity sign = (SignBlockEntity) blockEntity;
-        BlockState oldState = sign.getCachedState();
+        BlockState oldState = sign.getBlockState();
         boolean wallSign = oldState.getBlock() instanceof WallSignBlock;
         Block newBlock = wallSign ? type.getWallBlock() : type.getBlock();
-        BlockState newState = newBlock.getDefaultState();
+        BlockState newState = newBlock.defaultBlockState();
 
         if (wallSign) {
-            newState = newState.with(Properties.HORIZONTAL_FACING, oldState.get(Properties.HORIZONTAL_FACING));
+            newState = newState.setValue(BlockStateProperties.HORIZONTAL_FACING, oldState.getValue(BlockStateProperties.HORIZONTAL_FACING));
         } else {
-            newState = newState.with(Properties.ROTATION, oldState.get(Properties.ROTATION));
+            newState = newState.setValue(BlockStateProperties.ROTATION_16, oldState.getValue(BlockStateProperties.ROTATION_16));
         }
 
-        SignBlockEntity newSign = new SignBlockEntity(sign.getPos(), sign.getCachedState());
+        SignBlockEntity newSign = new SignBlockEntity(sign.getBlockPos(), sign.getBlockState());
         for (int i = 0; i < 4; i++) {
-            newSign.setTextOnRow(i, ((SignBlockEntityAccessor) sign).getTexts()[i]);
+            newSign.setMessage(i, ((SignBlockEntityAccessor) sign).getMessages()[i]);
         }
-        if (sign.getTextColor() != DyeColor.BLACK)
-            newSign.setTextColor(sign.getTextColor());
+        if (sign.getColor() != DyeColor.BLACK)
+            newSign.setColor(sign.getColor());
 
-        ServerWorld world = player.getServerWorld();
-        world.setBlockState(sign.getPos(), newState);
-        world.updateNeighbors(sign.getPos(), newState.getBlock());
-        world.addBlockEntity(newSign);
+        ServerLevel world = player.getLevel();
+        world.setBlockAndUpdate(sign.getBlockPos(), newState);
+        world.blockUpdated(sign.getBlockPos(), newState.getBlock());
+        world.setBlockEntity(newSign);
         user.sendLangMessage("command.signedit.set_type", inputType);
         return SUCCESS;
     }
 
-    private void updateSign(SignBlockEntity sign, ServerWorld world, BlockPos pos) {
-        sign.markDirty();
+    private void updateSign(SignBlockEntity sign, ServerLevel world, BlockPos pos) {
+        sign.setChanged();
         BlockState state = world.getBlockState(pos);
-        world.updateListeners(pos, state, state, 3);
+        world.sendBlockUpdated(pos, state, state, 3);
     }
 
-    private BlockEntity getBlockEntityAtCursor(ServerPlayerEntity player) {
-        ServerWorld world = player.getServerWorld();
+    private BlockEntity getBlockEntityAtCursor(ServerPlayer player) {
+        ServerLevel world = player.getLevel();
         HitResult hitResult = ((EntityServerRayTraceable) player).rayTrace(10, 1, true);
         if (hitResult.getType() != HitResult.Type.BLOCK)
             return null;
-        BlockEntity entity = world.getBlockEntity(new BlockPos(hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ()));
+        BlockEntity entity = world.getBlockEntity(new BlockPos(hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z()));
         if (entity != null && entity.getType() == BlockEntityType.SIGN)
             return entity;
 
         return null;
     }
 
-    private CompletableFuture<Suggestions> dyeColorSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    private CompletableFuture<Suggestions> dyeColorSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         List<String> strings = new ArrayList<>();
         for (DyeColor value : DyeColor.values()) strings.add(value.getName());
-        return CommandSource.suggestMatching(strings, builder);
+        return SharedSuggestionProvider.suggest(strings, builder);
     }
 
-    private CompletableFuture<Suggestions> setTextSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+    private CompletableFuture<Suggestions> setTextSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         List<String> strings = new ArrayList<>();
         strings.add("reset");
-        return CommandSource.suggestMatching(strings, builder);
+        return SharedSuggestionProvider.suggest(strings, builder);
     }
 
-    private CompletableFuture<Suggestions> setCommandSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+    private CompletableFuture<Suggestions> setCommandSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         List<String> strings = new ArrayList<>();
         strings.add("reset");
-        ServerPlayerEntity player = context.getSource().getPlayer();
+        ServerPlayer player = context.getSource().getPlayerOrException();
         int line = getInteger(context, "line") - 1;
 
         BlockEntity blockEntity = this.getBlockEntityAtCursor(player);
         if (blockEntity != null) {
             SignBlockEntity sign = (SignBlockEntity) blockEntity;
-            ClickEvent clickEvent = ((SignBlockEntityAccessor) sign).getTexts()[line].getStyle().getClickEvent();
+            ClickEvent clickEvent = ((SignBlockEntityAccessor) sign).getMessages()[line].getStyle().getClickEvent();
 
             if (clickEvent != null && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
                 strings.add(clickEvent.getValue());
-                return CommandSource.suggestMatching(strings, builder);
+                return SharedSuggestionProvider.suggest(strings, builder);
             }
         }
 
         return ArgumentSuggestions.noSuggestions(context, builder);
     }
 
-    private CompletableFuture<Suggestions> typeSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    private CompletableFuture<Suggestions> typeSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         List<String> strings = new ArrayList<>();
         for (SignType value : SignType.values()) strings.add(value.getName());
-        return CommandSource.suggestMatching(strings, builder);
+        return SharedSuggestionProvider.suggest(strings, builder);
     }
 
     private boolean isValidColor(String str) {

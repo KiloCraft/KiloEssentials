@@ -1,7 +1,7 @@
 package org.kilocraft.essentials.config.main.sections.chat;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 public class ChatFormatsConfigSection {
@@ -10,7 +10,7 @@ public class ChatFormatsConfigSection {
     public String publicChat = "%user_displayname% <gray>» <reset>";
 
     @Setting("staffChat")
-    public String staffChat = "<red>[<dark_red>Staff]<reset> %user_displayname% <gray>» <reset>";
+    public String staffChat = "<red>[<dark_red>Staff<red>]<reset> %user_displayname% <gray>» <reset>";
 
     @Setting("builderChat")
     public String builderChat = "<green>[<dark_green>Builder]<reset> %user_displayname% <gray>» <reset>";

@@ -1,8 +1,11 @@
 package org.kilocraft.essentials.config.main.sections;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
+
+// TODO: move to en_us.properties
 @ConfigSerializable
 public class ModerationConfigSection {
 
@@ -32,26 +35,29 @@ public class ModerationConfigSection {
         @Setting(value = "mute")
         public String mute = "Muted by an operator";
 
-        @Setting(value = "ban", comment = "The Default kick reason")
+        @Setting(value = "ban")
+        @Comment("The Default kick reason")
         public String ban = "Banned by an operator";
     }
 
     @ConfigSerializable
     public static class Messages {
-        @Setting(value = "ban", comment = "Disconnect message for permanent bans")
-        public String permBan = "&c&lYou have been banned!\n\n&cReason: &f{BAN_REASON}\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
-        @Setting(value = "temporaryBan", comment = "Disconnect message for temporary ip-bans")
-        public String tempBan = "&c&lYou have been banned!\n\n&cReason: &f{BAN_REASON} \n&cUntil: &f{BAN_EXPIRY}\n&f{BAN_LEFT} left\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
+        @Setting(value = "ban")
+        @Comment("Disconnect message for permanent bans")
+        public String permBan = "&c&lYou have been banned!\n\n&cReason: &f{ban_reason}\n&cBy: &f{ban_source}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
-        @Setting(value = "ipBan", comment = "Disconnect message for permanent bans")
-        public String permIpBan = "&c&lYou have been ip-banned!\n\n&cReason: &f{BAN_REASON}\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
+        @Setting(value = "temporaryBan")
+        @Comment("Disconnect message for temporary ip-bans")
+        public String tempBan = "&c&lYou have been banned!\n\n&cReason: &f{ban_reason} \n&cUntil: &f{BAN_EXPIRY}\n&f{ban_left} left\n&cBy: &f{ban_source}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
-        @Setting(value = "temporaryIpBan", comment = "Disconnect message for temporary ip-bans")
-        public String tempIpBan = "&c&lYou have been ip-banned!\n\n&cReason: &f{BAN_REASON} \n&cUntil: &f{BAN_EXPIRY}\n&f{BAN_LEFT} left\n&cBy: &f{BAN_SOURCE}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
+        @Setting(value = "ipBan")
+        @Comment("Disconnect message for permanent bans")
+        public String permIpBan = "&c&lYou have been ip-banned!\n\n&cReason: &f{ban_reason}\n&cBy: &f{ban_source}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
-        @Setting(value = "whitelist", comment = "Disconnect message for not being whitelisted, leave it empty to use the default in-game translation")
-        public String whitelist = "You are not white-listed on this server!";
+        @Setting(value = "temporaryIpBan")
+        @Comment("Disconnect message for temporary ip-bans")
+        public String tempIpBan = "&c&lYou have been ip-banned!\n\n&cReason: &f{ban_reason} \n&cUntil: &f{BAN_EXPIRY}\n&f{ban_left} left\n&cBy: &f{ban_source}\n\n&9Appeal at: &fdiscord.gg/uzuQEe9";
 
         @Setting(value = "mute")
         public String mute = "&cYou are muted because of \"{MUTE_REASON}\"";
@@ -62,10 +68,12 @@ public class ModerationConfigSection {
 
     @ConfigSerializable
     public static class Meta {
-        @Setting(value = "broadcast", comment = "Defines whether bans should be announced in global or only in staff chat")
+        @Setting(value = "broadcast")
+        @Comment("Defines whether bans should be announced in global or only in staff chat")
         public boolean broadcast = true;
 
-        @Setting(value = "performedMessage", comment = "Sets the broadcast message")
+        @Setting(value = "performedMessage")
+        @Comment("Sets the broadcast message")
         public String performed = "{VICTIM} was {TYPE} by {SOURCE} for \"{REASON}\" &7(&c{LENGTH}&7)";
 
         @Setting(value = "revokedMessage")

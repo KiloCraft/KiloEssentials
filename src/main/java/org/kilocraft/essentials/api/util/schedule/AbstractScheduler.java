@@ -13,12 +13,16 @@ public abstract class AbstractScheduler {
         this.countdown = countdown;
     }
 
-    private static void start(long wait, ScheduledExecution s) {
+    public static void scheduleForNextTick(ScheduledExecution s) {
+        scheduledExecutions.add(s);
+    }
+
+    public static void start(long wait, ScheduledExecution s) {
         CompletableFuture.runAsync(() -> {
             Thread.currentThread().setName("KiloScheduler");
             try {
                 Thread.sleep(wait);
-                scheduledExecutions.add(s);
+                scheduleForNextTick(s);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 Thread.currentThread().interrupt();

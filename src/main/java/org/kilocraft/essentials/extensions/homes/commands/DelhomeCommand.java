@@ -4,13 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.StringText;
@@ -19,6 +12,8 @@ import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 
 import java.io.IOException;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -30,12 +25,12 @@ public class DelhomeCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = this.argument("name", word())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> homeArgument = this.argument("name", word())
                 .suggests(UserHomeHandler::suggestHomes)
                 .executes(this::executeSelf);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
+        RequiredArgumentBuilder<CommandSourceStack, String> targetArgument = this.getUserArgument("user")
                 .requires(src -> this.hasPermission(src, CommandPermission.HOME_OTHERS_REMOVE))
                 .executes(this::executeOthers);
 
@@ -43,8 +38,8 @@ public class DelhomeCommand extends EssentialCommand {
         this.commandNode.addChild(homeArgument.build());
     }
 
-    private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int executeSelf(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         OnlineUser user = this.getOnlineUser(player);
         UserHomeHandler homeHandler = user.getHomesHandler();
         String input = getString(ctx, "name");
@@ -56,7 +51,7 @@ public class DelhomeCommand extends EssentialCommand {
         }
 
         if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-            user.sendMessage(this.getConfirmationText(name, ""));
+            user.sendLangMessage("command.delhome.notice", name, "/delhome -confirmed-" + name);
             return AWAIT;
         } else {
             homeHandler.removeHome(name);
@@ -67,8 +62,8 @@ public class DelhomeCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int executeOthers(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         OnlineUser source = this.getOnlineUser(player);
         String inputName = getString(ctx, "user");
         String input = getString(ctx, "name");
@@ -86,7 +81,7 @@ public class DelhomeCommand extends EssentialCommand {
             }
 
             if (homeHandler.hasHome(name) && !input.startsWith("-confirmed-")) {
-                source.sendMessage(this.getConfirmationText(name, user.getUsername()));
+                source.sendLangMessage("command.delhome.notice", name, "/delhome -confirmed-" + name + " " + user.getUsername());
                 return;
             } else {
                 homeHandler.removeHome(name);
@@ -107,13 +102,4 @@ public class DelhomeCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private Text getConfirmationText(String homeName, String user) {
-        return new LiteralText("")
-                .append(StringText.of(true, "command.delhome.confirmation_message", homeName)
-                        .formatted(Formatting.YELLOW))
-                .append(new LiteralText(" [").formatted(Formatting.GRAY)
-                        .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
-                        .append(new LiteralText("]").formatted(Formatting.GRAY))
-                        .styled((style) -> style.withFormatting(Formatting.GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/delhome -confirmed-" + homeName + " " + user))));
-    }
 }

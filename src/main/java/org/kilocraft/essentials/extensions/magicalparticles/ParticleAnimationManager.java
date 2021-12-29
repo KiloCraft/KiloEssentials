@@ -1,22 +1,18 @@
 package org.kilocraft.essentials.extensions.magicalparticles;
 
-import com.google.common.reflect.TypeToken;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.particle.*;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.registry.Registry;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.DefaultObjectMapperFactory;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.NBTStorage;
@@ -26,21 +22,35 @@ import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.ParticleAnimation;
 import org.kilocraft.essentials.api.world.ParticleAnimationSection;
 import org.kilocraft.essentials.api.world.RelativePosition;
+import org.kilocraft.essentials.config.KiloConfig;
+import org.kilocraft.essentials.config.main.sections.PermissionRequirementConfigSection;
 import org.kilocraft.essentials.extensions.magicalparticles.config.*;
+import org.kilocraft.essentials.extensions.playtimecommands.config.PlaytimeCommandsConfig;
 import org.kilocraft.essentials.provided.KiloFile;
-import org.kilocraft.essentials.util.PermissionUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTStorageUtil;
-
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.ConfigurationOptions;
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.util.MapFactories;
+import com.mojang.math.Vector3f;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ParticleAnimationManager implements ReloadableConfigurableFeature, TickListener, NBTStorage {
-    static Map<Identifier, ParticleAnimation> map = new HashMap<>();
-    private static final Map<UUID, Identifier> uuidIdentifierMap = new HashMap<>();
+    static Map<ResourceLocation, ParticleAnimation> map = new HashMap<>();
+    private static final Map<UUID, ResourceLocation> uuidIdentifierMap = new HashMap<>();
     private static ParticleTypesConfig config;
 
     @Override
@@ -52,41 +62,36 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
 
     @Override
     public void load() {
-        loadConfig();
-        createFromConfig();
+        this.loadConfig();
     }
 
-    private static void loadConfig() {
+    public void loadConfig() {
+        Path path = KiloEssentials.getEssentialsPath().resolve("particle_types.conf");
+        final HoconConfigurationLoader hoconLoader = HoconConfigurationLoader.builder()
+                .path(path)
+                .build();
         try {
-            KiloFile CONFIG_FILE = new KiloFile("particle_types.conf", KiloEssentials.getEssentialsPath());
-            if (!CONFIG_FILE.exists()) {
-                CONFIG_FILE.createFile();
-                CONFIG_FILE.pasteFromResources("assets/config/particle_types.conf");
+            if (!path.toFile().exists()) {
+                InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/config/particle_types.conf");
+                assert inputStream != null;
+                Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
             }
-
-            ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
-                    .setFile(CONFIG_FILE.getFile()).build();
-
-            ConfigurationNode configNode = loader.load(ConfigurationOptions.defaults()
-                    .setHeader(ParticleTypesConfig.HEADER)
-                    .setObjectMapperFactory(DefaultObjectMapperFactory.getInstance())
-                    .setShouldCopyDefaults(true));
-
-            config = configNode.getValue(TypeToken.of(ParticleTypesConfig.class), new ParticleTypesConfig());
-
-            loader.save(configNode);
-        } catch (IOException | ObjectMappingException e) {
-            KiloEssentials.getLogger().error("Exception handling a configuration file! " + ParticleAnimationManager.class.getName());
-            e.printStackTrace();
+            final CommentedConfigurationNode rootNode = hoconLoader.load(KiloConfig.configurationOptions().header(ParticleTypesConfig.HEADER));
+            config = rootNode.get(ParticleTypesConfig.class, new ParticleTypesConfig());
+        } catch (IOException e) {
+            KiloEssentials.getLogger().error("Exception handling a configuration file!", e);
         }
+        createFromConfig();
     }
 
     private static void createFromConfig() {
         map.clear();
         config.types.forEach((string, innerArray) -> {
+            PermissionRequirementConfigSection requirement = innerArray.permissionRequirement();
             ParticleAnimation animation = new ParticleAnimation(
-                    new Identifier(string.toLowerCase()),
-                    innerArray.name
+                    new ResourceLocation(string.toLowerCase()),
+                    innerArray.name,
+                    (user) -> KiloEssentials.hasPermissionNode(user.getCommandSource(), requirement.permission, requirement.op)
             );
 
             for (int i = 0; i < innerArray.frames.size(); i++) {
@@ -114,13 +119,13 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                 double y = Double.parseDouble(pI[1]);
                 double z = Double.parseDouble(pI[2]);
 
-                ParticleEffect particleEffect = null;
+                ParticleOptions particleEffect = null;
 
-                if (frame.getBlockStateSection().isPresent() && !frame.getDustParticleSection().isPresent()) {
+                if (frame.getBlockStateSection().isPresent() && frame.getDustParticleSection().isEmpty()) {
                     BlockStateParticleEffectConfigSection section = frame.getBlockStateSection().get();
-                    Block block = Registry.BLOCK.get(new Identifier(section.blockId.toLowerCase()));
+                    Block block = Registry.BLOCK.get(new ResourceLocation(section.blockId.toLowerCase()));
 
-                    if (block == Blocks.AIR && Registry.BLOCK.getDefaultId().getPath().equalsIgnoreCase(section.blockId)) {
+                    if (block == Blocks.AIR && Registry.BLOCK.getDefaultKey().getPath().equalsIgnoreCase(section.blockId)) {
                         KiloEssentials.getLogger().warn(
                                 "Error while initializing a ParticleSection! Id: \"{}\", Section: {}. " +
                                         "Default block id \"air\" found! The entered block id \"{}\" is wrong!",
@@ -128,12 +133,12 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                         );
                     }
 
-                    particleEffect = new BlockStateParticleEffect(
+                    particleEffect = new BlockParticleOption(
                             ParticleTypes.BLOCK,
-                            Registry.BLOCK.get(new Identifier(frame.getBlockStateSection().get().blockId)).getDefaultState()
+                            Registry.BLOCK.get(new ResourceLocation(frame.getBlockStateSection().get().blockId)).defaultBlockState()
                     );
 
-                } else if (frame.getDustParticleSection().isPresent() && !frame.getBlockStateSection().isPresent()) {
+                } else if (frame.getDustParticleSection().isPresent() && frame.getBlockStateSection().isEmpty()) {
                     DustParticleEffectConfigSection section = frame.getDustParticleSection().get();
                     String[] rgb = section.rgb.split(" ");
 
@@ -151,11 +156,15 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                     }
 
                     if (shouldContinue)
-                        particleEffect = new DustParticleEffect(new Vec3f(
+                        particleEffect = new DustParticleOptions(new Vector3f(
                                 Float.parseFloat(rgb[0]), Float.parseFloat(rgb[1]), Float.parseFloat(rgb[2])), section.scale
                         );
                 } else {
-                    particleEffect = (DefaultParticleType) effect;
+                    if (effect instanceof SimpleParticleType defaultType) {
+                        particleEffect = defaultType;
+                    } else {
+                        KiloEssentials.getLogger().warn("Error parsing particle effect \"{}\"", frame.effect);
+                    }
                 }
 
                 if (particleEffect != null) {
@@ -327,10 +336,6 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
             }
 
             map.put(animation.getId(), animation);
-            innerArray.permissionRequirement().ifPresent((requirement) -> {
-                PermissionUtil.registerNode(requirement.permission);
-                animation.setPredicate((user) -> KiloCommands.hasPermission(user.getCommandSource(), requirement.permission, requirement.op));
-            });
         });
     }
 
@@ -343,12 +348,12 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
         return result;
     }
 
-    public static boolean canUse(final OnlineUser user, final Identifier identifier) {
+    public static boolean canUse(final OnlineUser user, final ResourceLocation identifier) {
         ParticleAnimation animation = map.get(identifier);
-        return animation.predicate() == null || animation.predicate().test(user);
+        return animation.canUse(user);
     }
 
-    public static void addPlayer(UUID player, Identifier identifier) {
+    public static void addPlayer(UUID player, ResourceLocation identifier) {
         uuidIdentifierMap.remove(player, identifier);
         uuidIdentifierMap.put(player, identifier);
     }
@@ -361,12 +366,12 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
         return uuidIdentifierMap.containsKey(player);
     }
 
-    public static boolean isValidId(Identifier id) {
+    public static boolean isValidId(ResourceLocation id) {
         return map.containsKey(id);
     }
 
-    public static Identifier getIdFromPath(String path) {
-        AtomicReference<Identifier> identifier = new AtomicReference<>();
+    public static ResourceLocation getIdFromPath(String path) {
+        AtomicReference<ResourceLocation> identifier = new AtomicReference<>();
         map.forEach((id, am) -> {
             if (id.getPath().equals(path))
                 identifier.set(id);
@@ -378,12 +383,12 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     private static int tick = 0;
 
     public void onTick() {
-        //Tick counter logic, only shows the animations once in 4 ticks
+        // Tick counter logic, only shows the animations once in 4 ticks
         tick++;
         if (tick > config.getPps() && !uuidIdentifierMap.isEmpty()) {
             try {
-                for (Map.Entry<UUID, Identifier> entry : uuidIdentifierMap.entrySet()) {
-                    ServerPlayerEntity player = KiloEssentials.getMinecraftServer().getPlayerManager().getPlayer(entry.getKey());
+                for (Map.Entry<UUID, ResourceLocation> entry : uuidIdentifierMap.entrySet()) {
+                    ServerPlayer player = KiloEssentials.getMinecraftServer().getPlayerList().getPlayer(entry.getKey());
 
                     if (player != null && !player.isSpectator()) {
                         runAnimationFrames(player, entry.getValue());
@@ -397,15 +402,15 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
         }
     }
 
-    static String getAnimationName(Identifier id) {
+    static String getAnimationName(ResourceLocation id) {
         return map.get(id).getName();
     }
 
-    private static void runAnimationFrames(final ServerPlayerEntity player, Identifier id) {
+    private static void runAnimationFrames(final ServerPlayer player, ResourceLocation id) {
         ParticleAnimation animation = map.get(id);
 
         if (animation == null) {
-            removePlayer(player.getUuid());
+            removePlayer(player.getUUID());
             return;
         }
 
@@ -414,9 +419,9 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
                 continue;
             }
 
-            Packet<?> packet = frame.toPacket(player.getPos(), player.bodyYaw);
+            Packet<?> packet = frame.toPacket(player.position(), player.yBodyRot);
             if (packet != null) {
-                player.getServerWorld().getChunkManager().sendToNearbyPlayers(player, packet);
+                player.getLevel().getChunkSource().broadcastAndSend(player, packet);
             }
         }
 
@@ -429,17 +434,17 @@ public class ParticleAnimationManager implements ReloadableConfigurableFeature, 
     }
 
     @Override
-    public NbtCompound serialize() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag serialize() {
+        CompoundTag tag = new CompoundTag();
         uuidIdentifierMap.forEach((uuid, identifier) -> tag.putString(uuid.toString(), identifier.toString()));
         return tag;
     }
 
     @Override
-    public void deserialize(@NotNull NbtCompound NbtCompound) {
+    public void deserialize(@NotNull CompoundTag NbtCompound) {
         uuidIdentifierMap.clear();
-        for (String key : NbtCompound.getKeys()) {
-            uuidIdentifierMap.put(UUID.fromString(key), new Identifier(NbtCompound.getString(key)));
+        for (String key : NbtCompound.getAllKeys()) {
+            uuidIdentifierMap.put(UUID.fromString(key), new ResourceLocation(NbtCompound.getString(key)));
         }
     }
 }

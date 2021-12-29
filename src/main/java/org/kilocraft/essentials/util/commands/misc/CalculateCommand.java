@@ -6,7 +6,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -15,6 +14,7 @@ import org.kilocraft.essentials.util.CommandPermission;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import net.minecraft.commands.CommandSourceStack;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,15 +29,15 @@ public class CalculateCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> inputArgument = this.argument("input", StringArgumentType.greedyString())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> inputArgument = this.argument("input", StringArgumentType.greedyString())
                 .suggests(this::operations)
                 .executes(this::execute);
 
         this.commandNode.addChild(inputArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) {
+    private int execute(CommandContext<CommandSourceStack> ctx) {
         CommandSourceUser src = this.getCommandSource(ctx);
         String input = StringArgumentType.getString(ctx, "input");
 //        StringUtils.Calculator calculator = new StringUtils.Calculator(input);
@@ -72,7 +72,7 @@ public class CalculateCommand extends EssentialCommand {
         return result.intValue();
     }
 
-    private CompletableFuture<Suggestions> operations(final CommandContext<ServerCommandSource> ctx, final SuggestionsBuilder builder) {
+    private CompletableFuture<Suggestions> operations(final CommandContext<CommandSourceStack> ctx, final SuggestionsBuilder builder) {
         ArrayList<String> operations = new ArrayList<>();
 //        List<String> commands = Arrays.asList(super.getAlias());
         List<String> commands = new LinkedList<String>(Arrays.asList(super.getAlias()));

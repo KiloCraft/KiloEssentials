@@ -5,15 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ChunkTicketType;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.ChunkPos;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.util.schedule.SinglePlayerScheduler;
@@ -23,27 +16,36 @@ import org.kilocraft.essentials.simplecommand.SimpleCommand;
 import org.kilocraft.essentials.simplecommand.SimpleCommandManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.Locale;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.world.level.ChunkPos;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 
 public class WarpCommand {
-    private static final SimpleCommandExceptionType WARP_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Can not find the warp specified!"));
-    private static final SimpleCommandExceptionType NO_WARPS = new SimpleCommandExceptionType(new LiteralText("There are no Warps set!"));
+    private static final SimpleCommandExceptionType WARP_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new TextComponent("Can not find the warp specified!"));
+    private static final SimpleCommandExceptionType NO_WARPS = new SimpleCommandExceptionType(new TextComponent("There are no Warps set!"));
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = literal("warp")
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> builder = literal("warp")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.WARP));
-        RequiredArgumentBuilder<ServerCommandSource, String> warpArg = argument("warp", word());
-        LiteralArgumentBuilder<ServerCommandSource> listLiteral = literal("warps");
+        RequiredArgumentBuilder<CommandSourceStack, String> warpArg = argument("warp", word());
+        LiteralArgumentBuilder<CommandSourceStack> listLiteral = literal("warps");
 
         warpArg.executes(c -> executeTeleport(c.getSource(), getString(c, "warp")));
         listLiteral.executes(c -> executeList(c.getSource()));
@@ -63,7 +65,6 @@ public class WarpCommand {
             if (warp.addCommand()) {
                 SimpleCommandManager.register(
                         new SimpleCommand(
-                                "server_warp:" + warp.getName().toLowerCase(Locale.ROOT),
                                 warp.getName().toLowerCase(Locale.ROOT),
                                 (source, args) -> executeTeleport(source, warp.getName())
                         ).withoutArgs()
@@ -72,11 +73,11 @@ public class WarpCommand {
         }
     }
 
-    private static void registerAdmin(LiteralArgumentBuilder<ServerCommandSource> builder, CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> aliasAdd = literal("setwarp");
-        LiteralArgumentBuilder<ServerCommandSource> aliasRemove = literal("delwarp");
-        RequiredArgumentBuilder<ServerCommandSource, String> removeArg = argument("warp", word());
-        RequiredArgumentBuilder<ServerCommandSource, String> addArg = argument("name", word());
+    private static void registerAdmin(LiteralArgumentBuilder<CommandSourceStack> builder, CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> aliasAdd = literal("setwarp");
+        LiteralArgumentBuilder<CommandSourceStack> aliasRemove = literal("delwarp");
+        RequiredArgumentBuilder<CommandSourceStack, String> removeArg = argument("warp", word());
+        RequiredArgumentBuilder<CommandSourceStack, String> addArg = argument("name", word());
 
         aliasAdd.requires(s -> KiloCommands.hasPermission(s, CommandPermission.SETWARP));
         aliasRemove.requires(s -> KiloCommands.hasPermission(s, CommandPermission.DELWARP));
@@ -94,58 +95,60 @@ public class WarpCommand {
         dispatcher.register(aliasRemove);
     }
 
-    private static int executeTeleport(ServerCommandSource source, String name) throws CommandSyntaxException {
+    private static int executeTeleport(CommandSourceStack source, String name) throws CommandSyntaxException {
         if (!ServerWarpManager.getWarpsByName().contains(name)) {
             throw WARP_NOT_FOUND_EXCEPTION.create();
         }
-        source.getPlayer();
         ServerWarp warp = ServerWarpManager.getWarp(name);
         OnlineUser user = KiloEssentials.getUserManager().getOnline(source);
-        //TODO: Set a home for people who warp and don't have a home yet
+        if (LocationUtil.isDestinationToClose(user, warp.getLocation())) {
+            return IEssentialCommand.FAILED;
+        }
+        // TODO: Set a home for people who warp and don't have a home yet
 /*        if (UserHomeHandler.isEnabled() && user.getHomesHandler().getHomes().isEmpty()) {
             Home home = new Home();
             user.getHomesHandler().addHome();
         }*/
-        //Add a custom ticket to gradually preload chunks
-        warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("warp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), ServerSettings.getViewDistance() + 1, user.asPlayer().getId()); // Lag reduction
-        new SinglePlayerScheduler(user, 1, KiloConfig.main().server().cooldown, () -> {
-            user.sendLangMessage("command.warp.teleport", warp.getName());
-            user.saveLocation();
-            try {
-                ServerWarpManager.teleport(user.getCommandSource(), warp);
-            } catch (CommandSyntaxException ignored) {
-                //We already have a check, which checks if the executor is a player
-            }
-        });
+        // Add a custom ticket to gradually preload chunks
+        warp.getLocation().getWorld().getChunkSource().addRegionTicket(TicketType.create("warp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), 1, user.asPlayer().getId()); // Lag reduction
+            new SinglePlayerScheduler(user, 1, KiloConfig.main().server().cooldown, () -> {
+                user.sendLangMessage("command.warp.teleport", warp.getName());
+                user.saveLocation();
+                try {
+                    ServerWarpManager.teleport(user.asPlayer(), warp);
+                } catch (CommandSyntaxException ignored) {
+                    // We already have a check, which checks if the executor is a player
+                }
+            });
         return 1;
     }
 
-    private static int executeList(ServerCommandSource source) throws CommandSyntaxException {
+    private static int executeList(CommandSourceStack source) throws CommandSyntaxException {
         int warpsSize = ServerWarpManager.getWarps().size();
 
         if (warpsSize == 0)
             throw NO_WARPS.create();
 
-        MutableText text = new LiteralText("Warps").formatted(Formatting.GOLD)
-                .append(new LiteralText(" [ ").formatted(Formatting.DARK_GRAY))
-                .append(new LiteralText(String.valueOf(warpsSize)).formatted(Formatting.LIGHT_PURPLE))
-                .append(new LiteralText(" ]: ").formatted(Formatting.DARK_GRAY));
+        MutableComponent text = new TextComponent("Warps").withStyle(ChatFormatting.GOLD)
+                .append(new TextComponent(" [ ").withStyle(ChatFormatting.DARK_GRAY))
+                .append(new TextComponent(String.valueOf(warpsSize)).withStyle(ChatFormatting.LIGHT_PURPLE))
+                .append(new TextComponent(" ]: ").withStyle(ChatFormatting.DARK_GRAY));
 
         int i = 0;
         boolean nextColor = false;
         for (ServerWarp warp : ServerWarpManager.getWarps()) {
-            LiteralText thisWarp = new LiteralText("");
+            TextComponent thisWarp = new TextComponent("");
             i++;
 
-            Formatting thisFormat = nextColor ? Formatting.WHITE : Formatting.GRAY;
+            ChatFormatting thisFormat = nextColor ? ChatFormatting.WHITE : ChatFormatting.GRAY;
 
-            thisWarp.append(new LiteralText(warp.getName()).styled((style) -> style.withFormatting(thisFormat).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new LiteralText("[i] ").formatted(Formatting.YELLOW)
-                            .append(new LiteralText("Click to teleport!").formatted(Formatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+            thisWarp.append(new TextComponent(warp.getName()).withStyle((style) -> style.applyFormat(thisFormat).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new TextComponent("[i] ").withStyle(ChatFormatting.YELLOW)
+                            .append(new TextComponent("Click to teleport!").withStyle(ChatFormatting.GREEN)))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                     "/warp " + warp.getName()))));
 
             if (warpsSize != i)
-                thisWarp.append(new LiteralText(", ").formatted(Formatting.DARK_GRAY));
+                thisWarp.append(new TextComponent(", ").withStyle(ChatFormatting.DARK_GRAY));
 
             nextColor = !nextColor;
 
@@ -155,8 +158,8 @@ public class WarpCommand {
         return 1;
     }
 
-    private static int executeAdd(ServerCommandSource source, String name, boolean addCommand) throws CommandSyntaxException {
-        ServerWarpManager.addWarp(new ServerWarp(name, Vec3dLocation.of(source.getPlayer()).shortDecimals(), addCommand));
+    private static int executeAdd(CommandSourceStack source, String name, boolean addCommand) throws CommandSyntaxException {
+        ServerWarpManager.addWarp(new ServerWarp(name, Vec3dLocation.of(source.getPlayerOrException()).shortDecimals(), addCommand));
         CommandSourceUser user = CommandSourceServerUser.of(source);
         user.sendLangMessage("command.warp.set", name);
         registerAliases();
@@ -164,7 +167,7 @@ public class WarpCommand {
         return 1;
     }
 
-    private static int executeRemove(ServerCommandSource source, String warp) throws CommandSyntaxException {
+    private static int executeRemove(CommandSourceStack source, String warp) throws CommandSyntaxException {
         ServerWarp w = ServerWarpManager.getWarp(warp);
         CommandSourceUser user = CommandSourceServerUser.of(source);
         if (w != null) {

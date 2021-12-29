@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.CommandPermission;
@@ -16,14 +16,14 @@ public class LastSeenCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("user")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> userArgument = this.getUserArgument("user")
                 .executes(this::execute);
 
         this.commandNode.addChild(userArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
 
         this.getUserManager().getUserThenAcceptAsync(src, this.getUserArgumentInput(ctx, "user"), (user) -> {

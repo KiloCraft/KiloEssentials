@@ -19,8 +19,8 @@ public class ConfigVariableFactory {
         return new ConfigObjectReplacerUtil("user", string)
                 .append("rankedName", user.getRankedDisplayNameAsString())
                 .append("ranked_displayName", Texter.Legacy.toFormattedString(user.getRankedDisplayName()))
-                .append("ping", user.asPlayer().pingMilliseconds)
-                .append("formatted_ping", ComponentText.formatPing(user.asPlayer().pingMilliseconds))
+                .append("ping", user.asPlayer().latency)
+                .append("formatted_ping", ComponentText.formatPing(user.asPlayer().latency))
                 .toString();
     }
 
@@ -56,7 +56,7 @@ public class ConfigVariableFactory {
                 .append("formatted_tps5", ComponentText.formatTps(TickManager.tps[3]))
                 .append("tps15", TickManager.tps[4])
                 .append("formatted_tps15", ComponentText.formatTps(TickManager.tps[4]))
-                .append("max_players", KiloEssentials.getMinecraftServer().getPlayerManager().getMaxPlayerCount())
+                .append("max_players", KiloEssentials.getMinecraftServer().getPlayerList().getMaxPlayers())
                 .append("name", KiloConfig.main().server().name)
                 .append("memory_max", String.valueOf(SystemMonitor.getRamMaxMB()))
                 .append("memory_usage_percentage", memUsagePercent)

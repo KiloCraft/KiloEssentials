@@ -113,13 +113,15 @@ public enum CommandPermission {
     HUG_BYPASS("hug.bypass");
 
     private final String node;
+    public static final String PERMISSION_PREFIX = EssentialPermission.PERMISSION_PREFIX + "command.";
+
 
     CommandPermission(String string) {
         this.node = string;
     }
 
     public String getNode() {
-        return PermissionUtil.COMMAND_PERMISSION_PREFIX + this.node;
+        return PERMISSION_PREFIX + this.node;
     }
 
     @Nullable

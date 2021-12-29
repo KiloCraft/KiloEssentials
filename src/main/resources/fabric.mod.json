@@ -7,7 +7,6 @@
   "authors": [
     {
       "name": "ItsIlya",
-      "minecraft": "bf651b48-7395-4988-ae47-07f8f6b72a22",
       "contact": {
         "github": "https://github.com/OnBlock"
       }
@@ -30,10 +29,14 @@
     "kiloessentials.mixins.json",
     "kiloessentials.accessors.mixins.json"
   ],
+  "accessWidener": "kiloessentials.accesswidener",
   "depends": {
-    "fabricloader": ">=0.7.1+build.174"
+    "fabric-api-base": "*",
+    "fabric-game-rule-api-v1": "*",
+    "fabricloader": ">=0.12.0"
   },
   "suggests": {
+    "fabric-permissions-api": "*",
     "luckperms": "*"
   }
 }

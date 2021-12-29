@@ -3,19 +3,19 @@ package org.kilocraft.essentials.util.commands.moderation;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.util.CommandPermission;
 
 import java.util.Collection;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 
-import static net.minecraft.command.argument.EntityArgumentType.getPlayers;
-import static net.minecraft.command.argument.EntityArgumentType.players;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
+import static net.minecraft.commands.arguments.EntityArgument.players;
 import static org.kilocraft.essentials.chat.KiloChat.*;
 
 public class ClearChatCommand extends EssentialCommand {
@@ -23,8 +23,8 @@ public class ClearChatCommand extends EssentialCommand {
         super("clearchat", CommandPermission.CLEARCHAT);
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetsArgument = this.argument("targets", players())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, EntitySelector> targetsArgument = this.argument("targets", players())
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> this.executeMultiple(ctx, getPlayers(ctx, "targets"), false))
                 .then(this.literal("-silent")
@@ -35,24 +35,24 @@ public class ClearChatCommand extends EssentialCommand {
         this.commandNode.addChild(targetsArgument.build());
     }
 
-    private int executeAll(CommandContext<ServerCommandSource> ctx, boolean silent) {
+    private int executeAll(CommandContext<CommandSourceStack> ctx, boolean silent) {
         broadCast(getClearString());
 
-        if (!silent) broadCast(ModConstants.translation("command.clearchat.broadcast", ctx.getSource().getName()));
+        if (!silent) broadCast(ModConstants.translation("command.clearchat.broadcast", ctx.getSource().getTextName()));
 
-        broadCastToConsole(ModConstants.translation("command.clearchat.broadcast", ctx.getSource().getName()));
+        broadCastToConsole(ModConstants.translation("command.clearchat.broadcast", ctx.getSource().getTextName()));
 
         return SUCCESS;
     }
 
-    private int executeMultiple(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> targets, boolean silent) {
-        for (ServerPlayerEntity target : targets) {
-            this.getOnlineUser(target).sendMessage(new LiteralText(getClearString()));
+    private int executeMultiple(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> targets, boolean silent) {
+        for (ServerPlayer target : targets) {
+            this.getOnlineUser(target).sendMessage(new TextComponent(getClearString()));
 
-            this.getOnlineUser(target).sendLangMessage("command.clearchat.singleton", ctx.getSource().getName());
+            this.getOnlineUser(target).sendLangMessage("command.clearchat.singleton", ctx.getSource().getTextName());
         }
 
-        broadCastToConsole(ModConstants.translation("command.clearchat.singleton.broadcast", ctx.getSource().getName(), targets.size()));
+        broadCastToConsole(ModConstants.translation("command.clearchat.singleton.broadcast", ctx.getSource().getTextName(), targets.size()));
 
         return SUCCESS;
     }

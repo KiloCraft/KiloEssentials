@@ -1,14 +1,14 @@
 plugins {
-    id 'fabric-loom' version '0.8-SNAPSHOT'
-    id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'maven-publish'
     id 'com.palantir.git-version' version '0.12.2'
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 version gitVersion()
 def details = versionDetails()
@@ -43,6 +43,10 @@ repositories {
     // for more information about repositories.
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/kiloessentials.accesswidener")
+}
+
 shadowJar {
     classifier = "shadow"
     configurations = [project.configurations.shadow]
@@ -51,38 +55,46 @@ shadowJar {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    mappings minecraft.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    //Fabric base api
-    modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
-    //shadow "org.spongepowered:configurate-hocon:${project.configurate_version}"
+    // Fabric API
+    Set<String> apiModules = [
+            'fabric-api-base',
+            'fabric-command-api-v1',
+            'fabric-entity-events-v1',
+            'fabric-events-interaction-v0',
+            'fabric-game-rule-api-v1',
+            'fabric-lifecycle-events-v1',
+            'fabric-networking-api-v1'
+    ]
+    apiModules.forEach {
+        modImplementation(fabricApi.module(it, project.fabric_version))
+    }
 
-    //Fabric permission api
+    // Fabric permission api
     modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
-    //shadow 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
 
-    //Configurate
+    // Configurate
     implementation "org.spongepowered:configurate-hocon:${project.configurate_version}"
     shadow "org.spongepowered:configurate-hocon:${project.configurate_version}"
 
-    //Adventure
+    // Adventure
     implementation "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
     shadow "net.kyori:adventure-text-minimessage:${project.kyori_adventure_minimessage_version}"
 
     implementation "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_serializer_version}"
     shadow "net.kyori:adventure-text-serializer-gson:${project.kyori_adventure_serializer_version}"
 
-    //Luckperms
+    // Luckperms
     implementation "net.luckperms:api:${project.luckperms_version}"
 
-    //Other
-    implementation "com.googlecode.json-simple:json-simple:${project.json_simple}"
-    shadow "com.googlecode.json-simple:json-simple:${project.json_simple}"
+    // DiscordFab
+    implementation "com.github.DrexHD:DiscordFab:${project.discordfab_version}"
 
-    implementation "javax.xml.bind:jaxb-api:${project.jaxb_api}"
-    shadow "javax.xml.bind:jaxb-api:${project.jaxb_api}"
-
+    // Gson
+    implementation "com.google.code.gson:gson:${project.gson_version}"
+    shadow "com.google.code.gson:gson:${project.gson_version}"
 }
 
 task remapJar(type: net.fabricmc.loom.task.RemapJarTask, overwrite: true) {
@@ -97,7 +109,7 @@ processResources {
     }
     filesMatching("mod.properties") {
         expand "version": version, "version_int": project.mod_version, "built_at": buildTime, "fabric_loader_version": project.loader_version,
-                "fabric_yarn_mappings": project.yarn_mappings, "mc_version": project.minecraft_version,
+                "fabric_mappings": project.minecraft_version, "mc_version": project.minecraft_version,
                 "git_hash": details.gitHash, "git_hash_full": details.gitHashFull, "git_branch": details.branchName, "build_type": buildType, "version_nick": project.mod_version_nick,
                 "version_type": project.mod_version_type
     }
@@ -110,8 +122,8 @@ tasks.withType(JavaCompile).configureEach {
     // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
 
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 16
+    // Minecraft 1.18 upwards uses Java 17.
+    it.options.release = 17
 }
 
 java {

@@ -1,30 +1,29 @@
 package org.kilocraft.essentials.util.text;
 
-import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
+import net.minecraft.server.level.ServerPlayer;
 
 public class AnimatedText {
-    private List<Text> frames;
+    private List<Component> frames;
     private int frame;
     private Runnable runnable;
     private ScheduledExecutorService executorService;
     private TimeUnit timeUnit;
     private int initialDelay;
     private int nextFrameTime;
-    private ServerPlayerEntity player;
+    private ServerPlayer player;
 
-    public AnimatedText(int initialDelay, int delay, TimeUnit timeUnit, ServerPlayerEntity player) {
+    public AnimatedText(int initialDelay, int delay, TimeUnit timeUnit, ServerPlayer player) {
         this.frames = new ArrayList<>();
         this.timeUnit = timeUnit;
         this.initialDelay = initialDelay;
@@ -33,18 +32,18 @@ public class AnimatedText {
         this.executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
-    public AnimatedText append(Text text) {
+    public AnimatedText append(Component text) {
         this.frames.add(text);
         return this;
     }
 
-    public List<Text> getFrames() {
+    public List<Component> getFrames() {
         return this.frames;
     }
 
     public AnimatedText setStyle(Style style) {
-        for (Text frame : this.frames) {
-            ((MutableText) frame).setStyle(style);
+        for (Component frame : this.frames) {
+            ((MutableComponent) frame).setStyle(style);
         }
 
         return this;
@@ -61,9 +60,9 @@ public class AnimatedText {
                 this.frame = 0;
             }
 
-            if (this.player.networkHandler != null) {
-                this.player.networkHandler.sendPacket(new TitleFadeS2CPacket(1, this.nextFrameTime, -1));
-                this.player.networkHandler.sendPacket(new OverlayMessageS2CPacket(this.frames.get(this.frame)));
+            if (this.player.connection != null) {
+                this.player.connection.send(new ClientboundSetTitlesAnimationPacket(1, this.nextFrameTime, -1));
+                this.player.connection.send(new ClientboundSetActionBarTextPacket(this.frames.get(this.frame)));
             }
             this.frame++;
         };
@@ -83,7 +82,7 @@ public class AnimatedText {
         this.executorService.shutdown();
 
         if (this.player != null)
-            this.player.networkHandler.sendPacket(new OverlayMessageS2CPacket(new LiteralText("")));
+            this.player.connection.send(new ClientboundSetActionBarTextPacket(new TextComponent("")));
     }
 
     public void remove() {

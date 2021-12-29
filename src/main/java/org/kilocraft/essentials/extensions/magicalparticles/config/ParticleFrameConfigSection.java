@@ -1,13 +1,13 @@
 package org.kilocraft.essentials.extensions.magicalparticles.config;
 
-import net.minecraft.particle.ParticleType;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.Optional;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
 
 @ConfigSerializable
 public class ParticleFrameConfigSection {
@@ -19,10 +19,10 @@ public class ParticleFrameConfigSection {
     public String effect = "dragon_breath";
 
     @Setting("blockProperties")
-    private final BlockStateParticleEffectConfigSection blockStateSection = this.isEqualTo(ParticleTypes.BLOCK) || this.isEqualTo(ParticleTypes.ITEM) ? new BlockStateParticleEffectConfigSection() : null;
+    public final BlockStateParticleEffectConfigSection blockStateSection = new BlockStateParticleEffectConfigSection();
 
     @Setting("dustProperties")
-    private final DustParticleEffectConfigSection dustParticleSection = this.isEqualTo(ParticleTypes.DUST) || this.isEqualTo(ParticleTypes.FALLING_DUST) ? new DustParticleEffectConfigSection() : null;
+    public final DustParticleEffectConfigSection dustParticleSection = new DustParticleEffectConfigSection();
 
     @Setting("longDistance")
     public boolean longDistance = true;
@@ -40,11 +40,19 @@ public class ParticleFrameConfigSection {
     private final ShapeConfigSection shapeParticleSection = this.pos.contains("^") ? new ShapeConfigSection() : null;
 
     public Optional<BlockStateParticleEffectConfigSection> getBlockStateSection() {
-        return Optional.ofNullable(this.blockStateSection);
+        if (this.isEqualTo(ParticleTypes.BLOCK) || this.isEqualTo(ParticleTypes.ITEM)) {
+            return Optional.of(this.blockStateSection);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public Optional<DustParticleEffectConfigSection> getDustParticleSection() {
-        return Optional.ofNullable(this.dustParticleSection);
+        if (this.isEqualTo(ParticleTypes.DUST) || this.isEqualTo(ParticleTypes.FALLING_DUST)) {
+            return Optional.of(this.dustParticleSection);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public Optional<ShapeConfigSection> getShapeSection() {
@@ -52,7 +60,7 @@ public class ParticleFrameConfigSection {
     }
 
     private boolean isEqualTo(ParticleType<?> particleType) {
-        Identifier identifier = Registry.PARTICLE_TYPE.getId(particleType);
+        ResourceLocation identifier = Registry.PARTICLE_TYPE.getKey(particleType);
         return identifier != null && this.effect.equalsIgnoreCase(identifier.getPath());
     }
 }

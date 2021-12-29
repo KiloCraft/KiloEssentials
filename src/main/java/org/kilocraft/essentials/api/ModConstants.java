@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.kilocraft.essentials.provided.KiloFile;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -12,24 +14,49 @@ import java.util.*;
 public class ModConstants {
     private static final Properties properties = new Properties();
     private static final Properties lang = new Properties();
+
+    public static List<String> getCensored() {
+        return censored;
+    }
+
+    private static final List<String> censored = new ArrayList<>();
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+    private static final String censoredFile = "censored.txt";
     private static final String langFile = "en_us.properties";
-    private static final String defaultResourcesPath = "assets/lang/" + langFile;
-    private static final InputStream defaultInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(defaultResourcesPath);
+    private static final InputStream langInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/lang/" + langFile);
 
     private ModConstants() {}
 
     public static void loadConstants() {
         try {
             properties.load(ModConstants.class.getClassLoader().getResourceAsStream("mod.properties"));
-            loadLanguage();
+            loadFiles();
         } catch (final IOException e) {
             KiloEssentials.getLogger().error("There was an error loading the mod properties file", e);
         }
     }
 
-    public static void loadLanguage() {
+    public static void loadFiles() {
+        loadCensoredList();
+        loadLanguage();
+    }
+
+    private static void loadCensoredList() {
+        KiloFile CENSORED_FILE = new KiloFile(censoredFile, KiloEssentials.getEssentialsPath());
+        if (!CENSORED_FILE.exists()) {
+            CENSORED_FILE.createFile();
+            CENSORED_FILE.pasteFromResources("assets/config/" + censoredFile);
+        }
+        censored.clear();
+        try {
+            censored.addAll(Files.readAllLines(CENSORED_FILE.getFile().toPath()));
+        } catch (IOException e) {
+            KiloEssentials.getLogger().error("There was an error loading the censored words file", e);
+        }
+    }
+
+    private static void loadLanguage() {
         // TODO: Make languages configurable
         KiloFile LANG_FILE = new KiloFile(langFile, KiloEssentials.getLangDirPath());
         if (!LANG_FILE.exists()) {
@@ -37,9 +64,10 @@ public class ModConstants {
         }
         try {
             // Make sure new values get added
-            lang.load(defaultInputStream);
+            assert langInputStream != null;
+            lang.load(new InputStreamReader(langInputStream, StandardCharsets.UTF_8));
             // Load properties from language file
-            lang.load(new FileInputStream(LANG_FILE.getFile()));
+            lang.load(new InputStreamReader(new FileInputStream(LANG_FILE.getFile()), StandardCharsets.UTF_8));
             // Save changes to language file
             saveLanguageFile(LANG_FILE.getFile());
         } catch (FileNotFoundException ignored) {
@@ -109,7 +137,7 @@ public class ModConstants {
     }
 
     public static String getMappingsVersion() {
-        return ModConstants.properties.getProperty("fabric_yarn_mappings");
+        return ModConstants.properties.getProperty("fabric_mappings");
     }
 
     public static String getLoaderVersion() {

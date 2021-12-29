@@ -8,9 +8,9 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.TextComponent;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
@@ -25,13 +25,13 @@ public class FormatPreviewCommand extends EssentialCommand {
         super("formatpreview");
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> stringArgument = this.argument("text", greedyString())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> stringArgument = this.argument("text", greedyString())
                 .suggests(FormatPreviewCommand::staticSuggestion)
                 .executes(FormatPreviewCommand::execute);
 
-        LiteralArgumentBuilder<ServerCommandSource> legacyArgument = this.literal("legacy");
-        RequiredArgumentBuilder<ServerCommandSource, String> legacyStringArgument = this.argument("text", greedyString())
+        LiteralArgumentBuilder<CommandSourceStack> legacyArgument = this.literal("legacy");
+        RequiredArgumentBuilder<CommandSourceStack, String> legacyStringArgument = this.argument("text", greedyString())
                 .suggests(FormatPreviewCommand::legacySuggestion)
                 .executes(FormatPreviewCommand::executeLegacy);
 
@@ -40,9 +40,9 @@ public class FormatPreviewCommand extends EssentialCommand {
         this.commandNode.addChild(stringArgument.build());
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx) {
+    private static int execute(CommandContext<CommandSourceStack> ctx) {
         final String text = getString(ctx, "text");
-        ctx.getSource().sendFeedback(ComponentText.toText(
+        ctx.getSource().sendSuccess(ComponentText.toText(
                 Component.text("Text Preview", NamedTextColor.YELLOW)
                         .append(Component.newline())
                         .append(ComponentText.of(text))
@@ -51,10 +51,10 @@ public class FormatPreviewCommand extends EssentialCommand {
         return text.length();
     }
 
-    private static int executeLegacy(CommandContext<ServerCommandSource> ctx) {
+    private static int executeLegacy(CommandContext<CommandSourceStack> ctx) {
         final String text = getString(ctx, "text");
-        ctx.getSource().sendFeedback(
-                new LiteralText("Text Preview").formatted(Formatting.YELLOW)
+        ctx.getSource().sendSuccess(
+                new TextComponent("Text Preview").withStyle(ChatFormatting.YELLOW)
                         .append("\n").append(ComponentText.toText(text))
                 , false
         );
@@ -63,11 +63,11 @@ public class FormatPreviewCommand extends EssentialCommand {
     }
 
 
-    private static CompletableFuture<Suggestions> staticSuggestion(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    private static CompletableFuture<Suggestions> staticSuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         return ArgumentSuggestions.suggestAtCursor(new String[]{"<", ">"}, context);
     }
 
-    private static CompletableFuture<Suggestions> legacySuggestion(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    private static CompletableFuture<Suggestions> legacySuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         return ArgumentSuggestions.suggestAtCursor("&", context);
     }
 }

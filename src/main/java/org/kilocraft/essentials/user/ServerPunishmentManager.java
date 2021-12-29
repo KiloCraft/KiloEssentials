@@ -4,31 +4,31 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.PunishmentManager;
-import org.kilocraft.essentials.api.util.EntityIdentifiable;
+import org.kilocraft.essentials.util.MutedPlayerEntry;
 import org.kilocraft.essentials.util.MutedPlayerList;
 
 import java.util.Date;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ServerPunishmentManager implements PunishmentManager {
 
-    public ServerPunishmentManager() {
-    }
-
     @Override
-    public boolean isMuted(EntityIdentifiable user) {
+    public boolean isMuted(UUID uuid) {
         MutedPlayerList mutedPlayerList = KiloEssentials.getUserManager().getMutedPlayerList();
         MinecraftServer server = KiloEssentials.getMinecraftServer();
-        Optional<GameProfile> profile = server.getUserCache().getByUuid(user.getId());
-        if (profile.isEmpty()) {
+        Optional<GameProfile> optional = server.getProfileCache().get(uuid);
+        if (optional.isEmpty()) {
             return false;
         }
 
-        if (mutedPlayerList.contains(profile.get()) && mutedPlayerList.get(profile.get()) != null) {
-            Date expiry = Objects.requireNonNull(mutedPlayerList.get(profile.get())).getExpiryDate();
+        final MutedPlayerEntry mutedPlayerEntry = mutedPlayerList.get(optional.get());
+        if (mutedPlayerEntry != null) {
+            Date expiry = mutedPlayerEntry.getExpiryDate();
             if (expiry != null) {
                 return new Date().before(expiry);
+            } else {
+                return true;
             }
         }
         return false;

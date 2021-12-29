@@ -1,16 +1,17 @@
 package org.kilocraft.essentials.util;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.material.Material;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -28,7 +29,7 @@ public class LocationUtil {
     }
 
     public static boolean isBlockSafeFor(OnlineUser user, final Location loc) {
-        return user.asPlayer().isCreative() || user.getPreference(Preferences.INVULNERABLE) || (isBlockSafe(loc) && !user.asPlayer().isFireImmune());
+        return user.asPlayer().isCreative() || user.getPreference(Preferences.INVULNERABLE) || (isBlockSafe(loc) && !user.asPlayer().fireImmune());
     }
 
     public static boolean isBlockSafe(final Location loc) {
@@ -38,11 +39,11 @@ public class LocationUtil {
     public static boolean canBlockDamage(final Location loc) {
         BlockState state = loc.getWorld().getBlockState(loc.toPos());
 
-        if (!KiloEssentials.getMinecraftServer().getGameRules().getBoolean(GameRules.FIRE_DAMAGE)) {
+        if (!KiloEssentials.getMinecraftServer().getGameRules().getBoolean(GameRules.RULE_FIRE_DAMAGE)) {
             return false;
         }
 
-        return state.getMaterial().isBurnable();
+        return state.getMaterial().isFlammable();
     }
 
     public static boolean isBlockLiquid(final Location loc) {
@@ -54,7 +55,7 @@ public class LocationUtil {
     }
 
     public static void validateIsSafe(@NotNull final Location loc) throws InsecureDestinationException {
-        ServerWorld world = loc.getWorld();
+        ServerLevel world = loc.getWorld();
         Vec3dLocation vector = (Vec3dLocation) loc;
         BlockPos pos;
         BlockState state;
@@ -69,16 +70,16 @@ public class LocationUtil {
             pos = vector.toPos();
             state = world.getBlockState(pos);
             Material material = state.getMaterial();
-            Biome.Category category = world.getBiome(pos).getCategory();
+            Biome.BiomeCategory category = world.getBiome(pos).getBiomeCategory();
 
             if (!LocationUtil.hasSolidGround(vector)) {
                 safe = false;
                 continue;
             }
 
-            hasAirSpace = !isNether || world.getBlockState(pos.up()).isAir();
+            hasAirSpace = !isNether || world.getBlockState(pos.above()).isAir();
             safe = hasAirSpace && !material.isLiquid() && material != Material.FIRE &&
-                    category != Biome.Category.OCEAN && category != Biome.Category.RIVER &&
+                    category != Biome.BiomeCategory.OCEAN && category != Biome.BiomeCategory.RIVER &&
                     !isBlockLiquid(vector.down());
 
         } while (tries <= 5 && !safe);
@@ -88,12 +89,25 @@ public class LocationUtil {
         }
     }
 
-    public static void processDimension(ServerPlayerEntity player) {
+    public static boolean isDestinationToClose(OnlineUser user, Location destination) {
+        // We can only check the distance if the locations are in the same dimension
+        int minDistance = KiloConfig.main().server().minTeleportDistance;
+        if (user.getLocation().getDimension().equals(destination.getDimension()) && minDistance > 0) {
+            double distance = Math.sqrt(user.getLocation().squaredDistanceTo(destination));
+            if (distance < minDistance) {
+                user.sendLangMessage("teleport.too_close", ModConstants.DECIMAL_FORMAT.format(distance), minDistance);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void processDimension(ServerPlayer player) {
         boolean kickFromDim = KiloConfig.main().world().kickFromDimension;
 
-        if (kickFromDim && LocationUtil.shouldBlockAccessTo(player.getServerWorld().getDimension()) && player.getServer() != null) {
-            BlockPos pos = player.getSpawnPointPosition();
-            DimensionType dim = RegistryUtils.toDimension(player.getSpawnPointDimension());
+        if (kickFromDim && LocationUtil.shouldBlockAccessTo(player.getLevel().dimensionType()) && player.getServer() != null) {
+            BlockPos pos = player.getRespawnPosition();
+            DimensionType dim = RegistryUtils.toDimension(player.getRespawnDimension());
 
             if (pos == null) {
                 OnlineUser user = KiloEssentials.getUserManager().getOnline(player);
@@ -101,8 +115,7 @@ public class LocationUtil {
                     pos = user.getLastSavedLocation().toPos();
                     if (pos == null) {
                         UserHomeHandler homeHandler = user.getHomesHandler();
-                        assert homeHandler != null;
-                        if (homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getServerWorld().getDimension()) {
+                        if (homeHandler != null && homeHandler.getHomes().get(0) != null && homeHandler.getHomes().get(0).getLocation().getDimensionType() != player.getLevel().dimensionType()) {
                             pos = user.getHomesHandler().getHomes().get(0).getLocation().toPos();
                         }
                     }
@@ -110,8 +123,8 @@ public class LocationUtil {
             }
 
             if (pos != null) {
-                player.teleport(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.getYaw(), player.getPitch());
-                KiloEssentials.getUserManager().getOnline(player).sendMessage(String.format(KiloConfig.main().world().kickOutMessage, RegistryUtils.dimensionToName(player.getServerWorld().getDimension())));
+                KiloEssentials.getUserManager().getOnline(player).sendLangMessage("general.dimension_not_allowed", RegistryUtils.dimensionToName(player.getLevel().dimensionType()));
+                player.teleportTo(RegistryUtils.toServerWorld(dim), pos.getX(), pos.getY(), pos.getZ(), player.getYRot(), player.getXRot());
             }
         }
     }
@@ -123,7 +136,7 @@ public class LocationUtil {
         return location;
     }
 
-    private static int getLevelOnGround(@NotNull final BlockPos pos, @NotNull BlockView view) {
+    private static int getLevelOnGround(@NotNull final BlockPos pos, @NotNull BlockGetter view) {
         BlockPos blockPos = new BlockPos(pos.getX(), pos.getY(), pos.getZ());
 
         BlockState state;
@@ -132,7 +145,7 @@ public class LocationUtil {
                 return 257;
             }
 
-            blockPos = blockPos.down();
+            blockPos = blockPos.below();
             state = view.getBlockState(blockPos);
         } while (state.isAir());
 
@@ -141,7 +154,7 @@ public class LocationUtil {
 
     public static boolean hasSolidGround(@NotNull final Location loc) {
         BlockPos blockPos = loc.toPos();
-        BlockView view = loc.getWorld();
+        BlockGetter view = loc.getWorld();
         BlockState state;
         Material material;
 
@@ -150,7 +163,7 @@ public class LocationUtil {
                 return false;
             }
 
-            blockPos = blockPos.down();
+            blockPos = blockPos.below();
             state = view.getBlockState(blockPos);
             material = state.getMaterial();
 
@@ -166,17 +179,17 @@ public class LocationUtil {
     public static void posOnGroundWothAirSpaceOnTop(@NotNull final Location loc, boolean passLiquid) {
         BlockPos pos = loc.toPos();
         BlockState state, state2, state3;
-        BlockView view = loc.getWorld();
+        BlockGetter view = loc.getWorld();
 
         do {
             if (pos.getY() <= 0) {
                 return;
             }
 
-            pos = pos.down();
+            pos = pos.below();
             state = view.getBlockState(pos);
-            state2 = view.getBlockState(pos.up());
-            state3 = view.getBlockState(pos.up(2));
+            state2 = view.getBlockState(pos.above());
+            state3 = view.getBlockState(pos.above(2));
         } while (!state.isAir() && state2.isAir() && state3.isAir() && (!passLiquid || state.getMaterial().isLiquid()));
 
         loc.setY(pos.getY());

@@ -4,8 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.NeverJoinedUser;
@@ -23,27 +23,27 @@ public class ReplyCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
-        final RequiredArgumentBuilder<ServerCommandSource, String> messageArgument = this.argument("message", greedyString())
+    public void register(final CommandDispatcher<CommandSourceStack> dispatcher) {
+        final RequiredArgumentBuilder<CommandSourceStack, String> messageArgument = this.argument("message", greedyString())
                 .executes(this::execute);
 
         this.commandNode.addChild(messageArgument.build());
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(final CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = KiloEssentials.getUserManager().getOnline(ctx.getSource());
         String message = getString(ctx, "message");
         EntityIdentifiable lastReceptionist = user.getLastMessageReceptionist();
 
         if (lastReceptionist == null || lastReceptionist.getId() == null) {
-            user.sendLangMessage("chat.privateChat.noMessageToReply");
+            user.sendLangMessage("chat.private_chat.no_message");
             return FAILED;
         }
 
         OnlineUser target = KiloEssentials.getUserManager().getOnline(lastReceptionist.getId());
 
         if (target == null || target instanceof NeverJoinedUser) {
-            throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
+            throw EntityArgument.NO_PLAYERS_FOUND.create();
         }
 
         return ServerChat.sendDirectMessage(ctx.getSource(), target, message);

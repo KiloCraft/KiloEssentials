@@ -1,14 +1,14 @@
 package org.kilocraft.essentials.api.world;
 
-import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class ParticleAnimationSection<P extends ParticleEffect> {
+public class ParticleAnimationSection<P extends ParticleOptions> {
     private final P effect;
     private final boolean longDistance;
     private final RelativePosition relativePosition;
@@ -40,7 +40,7 @@ public class ParticleAnimationSection<P extends ParticleEffect> {
 
     @Nullable
     public static ParticleType<?> getEffectByName(String name) {
-        for (Identifier id : Registry.PARTICLE_TYPE.getIds()) {
+        for (ResourceLocation id : Registry.PARTICLE_TYPE.keySet()) {
             if (id.getPath().equals(name.toLowerCase()))
                 return Registry.PARTICLE_TYPE.get(id);
         }
@@ -57,8 +57,8 @@ public class ParticleAnimationSection<P extends ParticleEffect> {
     }
 
     @Nullable
-    public ParticleS2CPacket toPacket(Vec3d vec3d, double rotation) {
-        Vec3d vec = this.relativePosition.getRelativeVector(vec3d);
+    public ClientboundLevelParticlesPacket toPacket(Vec3 vec3d, double rotation) {
+        Vec3 vec = this.relativePosition.getRelativeVector(vec3d);
 
         if (this.getRelative()) {
             if (rotation < 0) {
@@ -73,13 +73,13 @@ public class ParticleAnimationSection<P extends ParticleEffect> {
 
             double x = this.relativePosition.getX() * Math.cos(rotation) - this.relativePosition.getZ() * Math.sin(rotation);
             double z = this.relativePosition.getX() * Math.sin(rotation) + this.relativePosition.getZ() * Math.cos(rotation);
-            vec = new Vec3d(x + vec3d.x, vec.y, z + vec3d.z);
+            vec = new Vec3(x + vec3d.x, vec.y, z + vec3d.z);
         }
 
-        return new ParticleS2CPacket(
+        return new ClientboundLevelParticlesPacket(
                 this.effect,
                 this.longDistance,
-                vec.getX(), vec.getY(), vec.getZ(),
+                vec.x(), vec.y(), vec.z(),
                 (float) this.oX, (float) this.oY, (float) this.oZ,
                 (float) this.speed, this.count
         );

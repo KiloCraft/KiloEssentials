@@ -5,15 +5,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -23,36 +14,45 @@ import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.nbt.NBTTypes;
 
 import java.util.function.Predicate;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 
 public class ItemLoreCommand {
-    private static final Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE);
+    private static final Predicate<CommandSourceStack> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_LORE);
 
-    public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
-        LiteralCommandNode<ServerCommandSource> rootCommand = literal("lore")
+    public static void registerChild(LiteralArgumentBuilder<CommandSourceStack> builder) {
+        LiteralCommandNode<CommandSourceStack> rootCommand = literal("lore")
                 .requires(PERMISSION_CHECK)
                 .build();
 
-        LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset")
+        LiteralArgumentBuilder<CommandSourceStack> resetArgument = literal("reset")
                 .executes(ItemLoreCommand::executeReset);
 
-        LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove");
-        RequiredArgumentBuilder<ServerCommandSource, Integer> removeLineArgument = argument("line", integer(1, 10))
+        LiteralArgumentBuilder<CommandSourceStack> removeArgument = literal("remove");
+        RequiredArgumentBuilder<CommandSourceStack, Integer> removeLineArgument = argument("line", integer(1, 10))
                 .suggests(ArgumentSuggestions::noSuggestions)
                 .executes(ItemLoreCommand::executeRemove);
 
-        LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
+        LiteralArgumentBuilder<CommandSourceStack> setArgument = literal("set");
 
-        RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 10))
+        RequiredArgumentBuilder<CommandSourceStack, Integer> lineArgument = argument("line", integer(1, 10))
                 .suggests(ArgumentSuggestions::noSuggestions);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> textArgument = argument("text", greedyString())
+        RequiredArgumentBuilder<CommandSourceStack, String> textArgument = argument("text", greedyString())
                 .suggests(ArgumentSuggestions::noSuggestions)
                 .executes(ItemLoreCommand::execute);
 
@@ -65,10 +65,10 @@ public class ItemLoreCommand {
         builder.then(rootCommand);
     }
 
-    private static int executeRemove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private static int executeRemove(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         int inputLine = getInteger(ctx, "line") - 1;
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        ItemStack item = player.getMainHandStack();
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        ItemStack item = player.getMainHandItem();
         CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
@@ -76,12 +76,12 @@ public class ItemLoreCommand {
             return -1;
         }
 
-        if (!item.hasNbt() || item.getNbt() == null || !item.getNbt().contains("display") || !item.getNbt().getCompound("display").contains("Lore")) {
+        if (!item.hasTag() || item.getTag() == null || !item.getTag().contains("display") || !item.getTag().getCompound("display").contains("Lore")) {
             user.sendLangMessage("command.item.nothing_to_reset");
             return -1;
         }
 
-        NbtList lore = item.getNbt().getCompound("display").getList("Lore", NBTTypes.STRING);
+        ListTag lore = item.getTag().getCompound("display").getList("Lore", NBTTypes.STRING);
 
         if (inputLine >= lore.size()) {
             user.sendLangMessage("command.item.nothing_to_reset");
@@ -94,69 +94,69 @@ public class ItemLoreCommand {
         return 1;
     }
 
-    private static int executeReset(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
+    private static int executeReset(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        ItemStack item = ctx.getSource().getPlayerOrException().getMainHandItem();
         CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (ModifyItemCommand.validate(user, item)) return -1;
 
-        if (item.getNbt() == null) {
+        if (item.getTag() == null) {
             user.sendLangMessage("command.item.nothing_to_reset");
             return -1;
         }
 
-        player.addExperienceLevels(-1);
+        player.giveExperienceLevels(-1);
 
-        item.getNbt().getCompound("display").remove("Lore");
+        item.getTag().getCompound("display").remove("Lore");
         user.sendLangMessage("command.item.lore.reset");
         return 1;
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private static int execute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         String inputString = getString(ctx, "text");
-        ItemStack item = player.getMainHandStack();
+        ItemStack item = player.getMainHandItem();
         CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (ModifyItemCommand.validate(user, item, inputString)) return -1;
 
-        NbtCompound itemTag = item.getNbt();
+        CompoundTag itemTag = item.getTag();
 
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
-            if (ComponentText.clearFormatting(inputString).contains(enchantment.getName(1).getString())) {
+            if (ComponentText.clearFormatting(inputString).contains(enchantment.getFullname(1).getString())) {
                 user.sendLangMessage("command.item.contains_enchantment_name");
                 return -1;
             }
         }
 
-        if (!item.hasNbt()) {
-            itemTag = new NbtCompound();
+        if (!item.hasTag()) {
+            itemTag = new CompoundTag();
         }
 
         if (!itemTag.contains("display")) {
-            itemTag.put("display", new NbtCompound());
+            itemTag.put("display", new CompoundTag());
         }
 
-        NbtList lore = itemTag.getCompound("display").getList("Lore", 8);
+        ListTag lore = itemTag.getCompound("display").getList("Lore", 8);
         int inputLine = getInteger(ctx, "line") - 1;
 
         if (lore == null) {
-            lore = new NbtList();
+            lore = new ListTag();
         }
 
         if (inputLine > lore.size() - 1) {
             for (int i = lore.size(); i <= inputLine; i++) {
-                lore.add(NbtString.of("{\"text\":\"\"}"));
+                lore.add(StringTag.valueOf("{\"text\":\"\"}"));
             }
         }
 
         String text = KiloCommands.hasPermission(ctx.getSource(), CommandPermission.ITEM_FORMATTING) ? inputString : ComponentText.clearFormatting(inputString);
 
-        player.addExperienceLevels(-1);
-        lore.set(inputLine, NbtString.of(Text.Serializer.toJson(ComponentText.toText(text))));
+        player.giveExperienceLevels(-1);
+        lore.set(inputLine, StringTag.valueOf(Component.Serializer.toJson(ComponentText.toText(text))));
         itemTag.getCompound("display").put("Lore", lore);
-        item.setNbt(itemTag);
+        item.setTag(itemTag);
 
         user.sendLangMessage("command.item.lore.set", inputLine + 1, text);
         return 1;

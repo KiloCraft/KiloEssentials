@@ -3,7 +3,7 @@ package org.kilocraft.essentials.util.commands.messaging;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.preference.Preference;
@@ -19,11 +19,11 @@ public class DoNotDisturbCommand extends EssentialCommand {
     }
 
     @Override
-    public final void register(final CommandDispatcher<ServerCommandSource> dispatcher) {
+    public final void register(final CommandDispatcher<CommandSourceStack> dispatcher) {
         this.argumentBuilder.executes(this::toggle);
     }
 
-    private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int toggle(final CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         final ServerUser user = (ServerUser) this.getOnlineUser(ctx);
 
         user.getPreferences().set(this.Preference, !user.getPreference(this.Preference));

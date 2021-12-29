@@ -9,33 +9,32 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.DimensionArgumentType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.SpawnHelper;
-import org.kilocraft.essentials.api.KiloEssentials;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.NaturalSpawner;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.chat.StringText;
-import org.kilocraft.essentials.mixin.patch.performance.perPlayerMobcap.SpawnHelperAccessor;
-import org.kilocraft.essentials.mixin.patch.performance.perPlayerMobcap.SpawnHelperInfoAccessor;
+import org.kilocraft.essentials.patch.SpawnUtil;
 import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
-import org.kilocraft.essentials.util.registry.RegistryKeyID;
 import org.kilocraft.essentials.util.settings.ServerSettings;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MobCapCommand extends EssentialCommand {
@@ -44,65 +43,71 @@ public class MobCapCommand extends EssentialCommand {
         super("mobcap", CommandPermission.MOBCAP_QUERY);
     }
 
-    public static CompletableFuture<Suggestions> suggestSpawnGroups(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        List<String> list = Arrays.stream(SpawnGroup.values()).map(SpawnGroup::getName).collect(Collectors.toList());
+    public static CompletableFuture<Suggestions> suggestSpawnGroups(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        List<String> list = Arrays.stream(MobCategory.values()).map(MobCategory::getName).collect(Collectors.toList());
         list.add("global");
-        return CommandSource.suggestMatching(list, builder);
+        return SharedSuggestionProvider.suggest(list, builder);
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, Float> multiplier = this.argument("multiplier", FloatArgumentType.floatArg(0, 100));
-        multiplier.executes(ctx -> this.execute(ctx, DimensionArgumentType.getDimensionArgument(ctx, "dimension")));
-        final RequiredArgumentBuilder<ServerCommandSource, String> spawnGroup = this.argument("name", StringArgumentType.word())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, Float> multiplier = this.argument("multiplier", FloatArgumentType.floatArg(0, 100));
+        multiplier.executes(ctx -> this.execute(ctx, DimensionArgument.getDimension(ctx, "dimension")));
+        final RequiredArgumentBuilder<CommandSourceStack, String> spawnGroup = this.argument("name", StringArgumentType.word())
                 .suggests(MobCapCommand::suggestSpawnGroups)
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.MOBCAP_SET));
-        final RequiredArgumentBuilder<ServerCommandSource, Identifier> world = this.argument("dimension", DimensionArgumentType.dimension());
-        world.executes(ctx -> this.info(ctx, DimensionArgumentType.getDimensionArgument(ctx, "dimension")));
+        final RequiredArgumentBuilder<CommandSourceStack, ResourceLocation> world = this.argument("dimension", DimensionArgument.dimension());
+        world.executes(ctx -> this.info(ctx, DimensionArgument.getDimension(ctx, "dimension")));
         spawnGroup.then(multiplier);
         world.then(spawnGroup);
-        this.argumentBuilder.executes(ctx -> this.info(ctx, ctx.getSource().getWorld()));
+        this.argumentBuilder.executes(ctx -> this.info(ctx, ctx.getSource().getLevel()));
         this.commandNode.addChild(world.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx, ServerWorld world) throws CommandSyntaxException {
+    private int execute(CommandContext<CommandSourceStack> ctx, ServerLevel world) throws CommandSyntaxException {
         float f = FloatArgumentType.getFloat(ctx, "multiplier");
         String name = StringArgumentType.getString(ctx, "name");
-        Optional<SpawnGroup> spawnGroup = Optional.ofNullable(SpawnGroup.byName(name));
-        Identifier id = world.getRegistryKey().getValue();
+        Optional<MobCategory> spawnGroup = Optional.ofNullable(MobCategory.byName(name));
+        ResourceLocation id = world.dimension().location();
         if (spawnGroup.isPresent()) {
             ServerSettings.setFloat("mobcap." + id.getPath() + "." + spawnGroup.get().getName().toLowerCase(), f);
         } else if (name.equals("global")) {
             ServerSettings.setFloat("mobcap." + id.getPath(), f);
         } else {
-            throw new SimpleCommandExceptionType(new LiteralText("Invalid spawn group: " + name)).create();
+            throw new SimpleCommandExceptionType(new net.minecraft.network.chat.TextComponent("Invalid spawn group: " + name)).create();
         }
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        player.sendMessage(StringText.of(true, "command.mobpsawn", f, name), false);
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        player.displayClientMessage(StringText.of("command.mobpsawn", f, name), false);
         return SUCCESS;
     }
 
-    private int info(CommandContext<ServerCommandSource> ctx, ServerWorld world) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        SpawnHelper.Info spawnHelperInfo = world.getChunkManager().getSpawnInfo();
-        if (spawnHelperInfo == null) KiloEssentials.getLogger().error("SpawnEntry is null");
+    private int info(CommandContext<CommandSourceStack> ctx, ServerLevel world) throws CommandSyntaxException {
+        NaturalSpawner.SpawnState info = world.getChunkSource().getLastSpawnState();
+        Objects.requireNonNull(info, "SpawnHelper.Info must not be null");
+        sendMobCap(ctx.getSource().getPlayerOrException(), world, "Global MobCap", info.getMobCategoryCounts(), group -> SpawnUtil.getGlobalMobCap(info, world, group));
+        return SUCCESS;
+    }
+
+    public static void sendMobCap(ServerPlayer player, ServerLevel world, String title, Object2IntMap<MobCategory> spawnGroupCounts, Function<MobCategory, Integer> getSpawnGroupMobCap) {
         TextComponent.Builder text = Component.text();
-        text.content("Mobcaps").color(NamedTextColor.YELLOW)
+        text.content(title).color(NamedTextColor.YELLOW)
                 .append(Component.text(" (").color(NamedTextColor.DARK_GRAY))
-                .append(Component.text(String.format("%.1f", ServerSettings.tick_utils_global_mobcap)).color(NamedTextColor.RED))
-                .append(Component.text(", ").color(NamedTextColor.GRAY))
-                .append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0]).color(NamedTextColor.GREEN))
+                .append(Component.text(SpawnUtil.getMobCapMultiplier(world, 0)).color(NamedTextColor.GREEN))
                 .append(Component.text(")").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text(":\n").color(NamedTextColor.YELLOW));
-        for (SpawnGroup spawnGroup : SpawnGroup.values()) {
-            int count = spawnHelperInfo.getGroupToCount().getOrDefault(spawnGroup, 0);
-            int cap = spawnGroup.getCapacity() * ((SpawnHelperInfoAccessor) spawnHelperInfo).getSpawnChunkCount() / SpawnHelperAccessor.getChunkArea();
-            cap *= ServerSettings.tick_utils_global_mobcap * ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][0] * ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][spawnGroup.ordinal() + 1];
-            String name = spawnGroup.getName();
-            text.append(Component.text(name + ": ").color(NamedTextColor.GRAY)).append(Component.text(count).color(NamedTextColor.LIGHT_PURPLE)).append(Component.text("/").color(NamedTextColor.DARK_GRAY)).append(Component.text(cap).color(NamedTextColor.GOLD)).append(Component.text(" (").color(NamedTextColor.DARK_GRAY)).append(Component.text(ServerSettings.mobcap[((RegistryKeyID) world.getRegistryKey()).getID()][spawnGroup.ordinal() + 1]).color(NamedTextColor.AQUA)).append(Component.text(")\n").color(NamedTextColor.DARK_GRAY));
+        for (MobCategory group : MobCategory.values()) {
+            int count = spawnGroupCounts.getOrDefault(group, 0);
+            int cap = getSpawnGroupMobCap.apply(group);
+            String name = group.getName();
+            text.append(Component.text(name + ": ").color(NamedTextColor.GRAY))
+                    .append(Component.text(count).color(NamedTextColor.LIGHT_PURPLE))
+                    .append(Component.text("/").color(NamedTextColor.DARK_GRAY))
+                    .append(Component.text(cap).color(NamedTextColor.GOLD))
+                    .append(Component.text(" (").color(NamedTextColor.DARK_GRAY))
+                    .append(Component.text(SpawnUtil.getMobCapMultiplier(world, group)).color(NamedTextColor.AQUA))
+                    .append(Component.text(")\n").color(NamedTextColor.DARK_GRAY));
         }
-        player.sendMessage(ComponentText.toText(text.build()), false);
-        return SUCCESS;
+        player.displayClientMessage(ComponentText.toText(text.build()), false);
     }
 
 }

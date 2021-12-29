@@ -4,11 +4,11 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 
 import java.util.function.Consumer;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
 
 public class BooleanSetting extends ConfigurableSetting<Boolean> {
 
@@ -22,7 +22,7 @@ public class BooleanSetting extends ConfigurableSetting<Boolean> {
     }
 
     @Override
-    public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
+    public void setValueFromCommand(CommandContext<CommandSourceStack> ctx) {
         this.setValue(Boolean.parseBoolean(StringArgumentType.getString(ctx, commandArgumentValue)));
     }
 
@@ -32,12 +32,12 @@ public class BooleanSetting extends ConfigurableSetting<Boolean> {
     }
 
     @Override
-    protected void setValue(NbtCompound tag) {
+    protected void setValue(CompoundTag tag) {
         tag.putBoolean("value", this.getValue());
     }
 
     @Override
-    protected Boolean getValue(NbtCompound tag) {
+    protected Boolean getValue(CompoundTag tag) {
         return tag.getBoolean("value");
     }
 

@@ -2,12 +2,11 @@ package org.kilocraft.essentials.util.settings.values.util;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.ServerCommandSource;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
 
 public abstract class ConfigurableSetting<K> extends AbstractSetting {
 
@@ -22,8 +21,8 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
 
 
     @Override
-    public void toTag(NbtCompound tag) {
-        NbtCompound setting = new NbtCompound();
+    public void toTag(CompoundTag tag) {
+        CompoundTag setting = new CompoundTag();
         this.setValue(setting);
         for (AbstractSetting child : this.children) {
             child.toTag(setting);
@@ -32,9 +31,9 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
     }
 
     @Override
-    public void fromTag(NbtCompound tag) {
+    public void fromTag(CompoundTag tag) {
         if (tag.contains(this.id)) {
-            NbtCompound setting = tag.getCompound(this.id);
+            CompoundTag setting = tag.getCompound(this.id);
             this.setValue(this.getValue(setting));
             for (AbstractSetting child : this.children) {
                 child.fromTag(setting);
@@ -44,7 +43,7 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
 
     public abstract ArgumentType<K> valueArgumentType();
 
-    public abstract void setValueFromCommand(CommandContext<ServerCommandSource> ctx);
+    public abstract void setValueFromCommand(CommandContext<CommandSourceStack> ctx);
 
     public K getValue() {
         return this.value;
@@ -55,11 +54,11 @@ public abstract class ConfigurableSetting<K> extends AbstractSetting {
         this.changed();
     }
 
-    protected abstract void setValue(NbtCompound tag);
+    protected abstract void setValue(CompoundTag tag);
 
     public abstract String getFormattedValue();
 
-    protected abstract K getValue(NbtCompound tag);
+    protected abstract K getValue(CompoundTag tag);
 
     void changed() {
         for (Consumer<K> consumer : this.onLoad) {

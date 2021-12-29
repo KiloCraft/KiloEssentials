@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -23,15 +23,15 @@ public class RealNameCommand extends EssentialCommand {
         this.withUsage("command.realname.usage", "nickname");
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> nickArgument = this.argument("nickname", StringArgumentType.greedyString())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> nickArgument = this.argument("nickname", StringArgumentType.greedyString())
                 .suggests(ArgumentSuggestions::allPlayerNicks)
                 .executes(this::execute);
 
         this.commandNode.addChild(nickArgument.build());
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) {
+    private int execute(CommandContext<CommandSourceStack> ctx) {
         String input = getString(ctx, "nickname");
         CommandSourceUser source = CommandSourceServerUser.of(ctx);
         for (OnlineUser user : KiloEssentials.getUserManager().getOnlineUsersAsList(KiloCommands.hasPermission(ctx.getSource(), CommandPermission.VANISH))) {

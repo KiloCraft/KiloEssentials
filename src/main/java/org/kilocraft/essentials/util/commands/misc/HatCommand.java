@@ -4,15 +4,15 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Wearable;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Wearable;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -20,7 +20,7 @@ import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
-import static net.minecraft.command.argument.EntityArgumentType.player;
+import static net.minecraft.commands.arguments.EntityArgument.player;
 
 public class HatCommand extends EssentialCommand {
     public HatCommand() {
@@ -28,8 +28,8 @@ public class HatCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, EntitySelector> targetArgument = this.argument("target", player())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, EntitySelector> targetArgument = this.argument("target", player())
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.HAT_OTHERS))
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes(this::executeOthers);
@@ -38,18 +38,18 @@ public class HatCommand extends EssentialCommand {
         this.argumentBuilder.executes(this::execute);
     }
 
-    private int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return this.hat(ctx, ctx.getSource().getPlayer());
+    private int execute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        return this.hat(ctx, ctx.getSource().getPlayerOrException());
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return this.hat(ctx, EntityArgumentType.getPlayer(ctx, "target"));
+    private int executeOthers(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        return this.hat(ctx, EntityArgument.getPlayer(ctx, "target"));
     }
 
-    private int hat(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        PlayerInventory inventory = target.getInventory();
-        ItemStack handStack = inventory.getMainHandStack();
+    private int hat(CommandContext<CommandSourceStack> ctx, ServerPlayer target) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        Inventory inventory = target.getInventory();
+        ItemStack handStack = inventory.getSelected();
         OnlineUser user = this.getOnlineUser(ctx);
 
         if (handStack.getItem() instanceof Wearable) {
@@ -57,16 +57,16 @@ public class HatCommand extends EssentialCommand {
             return FAILED;
         }
 
-        ItemStack head = inventory.armor.get(EquipmentSlot.HEAD.getEntitySlotId());
+        ItemStack head = inventory.armor.get(EquipmentSlot.HEAD.getIndex());
 
-        target.setStackInHand(Hand.MAIN_HAND, head);
-        inventory.armor.set(EquipmentSlot.HEAD.getEntitySlotId(), handStack);
+        target.setItemInHand(InteractionHand.MAIN_HAND, head);
+        inventory.armor.set(EquipmentSlot.HEAD.getIndex(), handStack);
 
         if (CommandUtils.areTheSame(player, target))
             user.sendLangMessage("command.hat");
         else {
-            user.sendLangMessage("command.hat.others", target.getEntityName());
-            this.getOnlineUser(target).sendLangMessage("command.hat.announce", player.getEntityName());
+            user.sendLangMessage("command.hat.others", target.getScoreboardName());
+            this.getOnlineUser(target).sendLangMessage("command.hat.announce", player.getScoreboardName());
         }
 
 

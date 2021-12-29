@@ -7,14 +7,14 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.user.preference.Preferences;
 
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 public class ToggleChatCommand extends EssentialCommand {
     public ToggleChatCommand() {
@@ -22,8 +22,8 @@ public class ToggleChatCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> type = this.argument("type", StringArgumentType.word())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> type = this.argument("type", StringArgumentType.word())
                 .suggests(this::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, StringArgumentType.getString(ctx, "type")));
 
@@ -31,7 +31,7 @@ public class ToggleChatCommand extends EssentialCommand {
         this.argumentBuilder.executes(this::toggle);
     }
 
-    private int toggle(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int toggle(final CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         if (src.getPreference(Preferences.CHAT_VISIBILITY) == ServerChat.VisibilityPreference.ALL) {
             return this.set(src, ServerChat.VisibilityPreference.MENTIONS);
@@ -40,7 +40,7 @@ public class ToggleChatCommand extends EssentialCommand {
         }
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx, final String input) throws CommandSyntaxException {
+    private int execute(final CommandContext<CommandSourceStack> ctx, final String input) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         ServerChat.VisibilityPreference preference = ServerChat.VisibilityPreference.getByName(input);
         if (preference == null) {
@@ -57,8 +57,8 @@ public class ToggleChatCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(ServerChat.VisibilityPreference.names(), builder);
+    private CompletableFuture<Suggestions> listSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(ServerChat.VisibilityPreference.names(), builder);
     }
 
 }

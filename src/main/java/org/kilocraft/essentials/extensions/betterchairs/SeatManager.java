@@ -1,27 +1,30 @@
 package org.kilocraft.essentials.extensions.betterchairs;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.block.enums.BlockHalf;
-import net.minecraft.block.enums.SlabType;
-import net.minecraft.block.enums.StairShape;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.Half;
+import net.minecraft.world.level.block.state.properties.SlabType;
+import net.minecraft.world.level.block.state.properties.StairsShape;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -65,13 +68,11 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         KiloCommands.register(new SitCommand());
         PlayerEvents.STOP_RIDING.register(this::unseat);
         PlayerEvents.DEATH.register(this::unseat);
-        PlayerEvents.LEAVE.register(this::unseat);
-        PlayerEvents.INTERACT_BLOCK.register((player, world, stack, hand, hitResult) -> this.onInteractBlock(player, hitResult, hand) ? ActionResult.SUCCESS : ActionResult.PASS);
+        ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, entity, killedEntity) -> {
+        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> this.unseat(handler.getPlayer()));
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> this.onInteractBlock((ServerPlayer) player, hitResult, hand) ? InteractionResult.SUCCESS : InteractionResult.PASS);
         return true;
-    }
-
-    private boolean hasPermission(@NotNull final ServerPlayerEntity player) {
-        return KiloEssentials.hasPermissionNode(player.getCommandSource(), EssentialPermission.SIT_SELF);
     }
 
     @Override
@@ -79,24 +80,24 @@ public class SeatManager implements ConfigurableFeature, TickListener {
         Iterator<UUID> iterator = this.stands.iterator();
         while (iterator.hasNext()) {
             UUID uuid = iterator.next();
-            ArmorStandEntity armorStand = this.getArmorStand(uuid);
+            ArmorStand armorStand = this.getArmorStand(uuid);
             if (armorStand == null) {
                 iterator.remove();
                 continue;
             }
-            if (armorStand.hasPassengerType(entity -> entity instanceof ServerPlayerEntity) && armorStand.getPassengerList().get(0) instanceof ServerPlayerEntity playerEntity) {
+            if (armorStand.hasPassenger(entity -> entity instanceof ServerPlayer) && armorStand.getPassengers().get(0) instanceof ServerPlayer playerEntity) {
                 OnlineUser user = KiloEssentials.getUserManager().getOnline(playerEntity);
 
                 if (user != null) {
                     SummonType summonType = user.getPreference(Preferences.SITTING_TYPE);
-                    BlockPos pos = summonType == SummonType.COMMAND ? armorStand.getBlockPos().up() : armorStand.getBlockPos().up(2);
+                    BlockPos pos = summonType == SummonType.COMMAND ? armorStand.blockPosition().above() : armorStand.blockPosition().above(2);
 
-                    if (armorStand.getEntityWorld().getBlockState(pos).getBlock() == Blocks.AIR) {
+                    if (armorStand.getCommandSenderWorld().getBlockState(pos).getBlock() == Blocks.AIR) {
                         this.unseat(armorStand);
                     }
 
                     if (user.getPreference(Preferences.SITTING_TYPE) == SummonType.INTERACT_SLAB || user.getPreference(Preferences.SITTING_TYPE) == SummonType.COMMAND) {
-                        armorStand.setYaw(user.asPlayer().getYaw());
+                        armorStand.setYRot(user.asPlayer().getYRot());
                     }
                 }
             } else {
@@ -106,26 +107,26 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     }
 
     @Nullable
-    private ArmorStandEntity getArmorStand(UUID uuid) {
-        for (ServerWorld world : KiloEssentials.getMinecraftServer().getWorlds()) {
+    private ArmorStand getArmorStand(UUID uuid) {
+        for (ServerLevel world : KiloEssentials.getMinecraftServer().getAllLevels()) {
             Entity entity = world.getEntity(uuid);
-            if (entity instanceof ArmorStandEntity armorStandEntity) return armorStandEntity;
+            if (entity instanceof ArmorStand armorStandEntity) return armorStandEntity;
         }
         return null;
     }
 
-    public boolean onInteractBlock(@NotNull final ServerPlayerEntity player,
-                                   @NotNull final BlockHitResult hitResult, @NotNull final Hand hand) {
+    public boolean onInteractBlock(@NotNull final ServerPlayer player,
+                                   @NotNull final BlockHitResult hitResult, @NotNull final InteractionHand hand) {
         OnlineUser user = KiloEssentials.getUserManager().getOnline(player);
 
         if (
                 user == null ||
-                        hand != Hand.MAIN_HAND ||
-                        !player.getMainHandStack().equals(ItemStack.EMPTY) ||
+                        hand != InteractionHand.MAIN_HAND ||
+                        !player.getMainHandItem().equals(ItemStack.EMPTY) ||
                         player.getVehicle() != null ||
-                        !this.hasPermission(player) ||
-                        player.shouldCancelInteraction() ||
-                        hitResult.getSide() == Direction.DOWN ||
+                        !KiloEssentials.hasPermissionNode(player.createCommandSourceStack(), EssentialPermission.SIT_SELF) ||
+                        player.isSecondaryUseActive() ||
+                        hitResult.getDirection() == Direction.DOWN ||
                         !user.getPreference(Preferences.CAN_SEAT)
         ) {
             return false;
@@ -133,28 +134,28 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
         BlockPos pos = hitResult.getBlockPos();
 
-        if (player.squaredDistanceTo(pos.getX() + 0.5D, pos.getY() + 0.5, pos.getZ() + 0.5) > 3.85D) {
+        if (player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5, pos.getZ() + 0.5) > 3.85D) {
             return false;
         }
 
-        ServerWorld world = player.getServerWorld();
+        ServerLevel world = player.getLevel();
         BlockState state = world.getBlockState(pos);
 
-        if (world.getBlockState(pos.up()).getBlock() != Blocks.AIR) {
+        if (world.getBlockState(pos.above()).getBlock() != Blocks.AIR) {
             return false;
         }
 
         Vec3dLocation vec3dLoc = Vec3dLocation.of(pos.getX(), pos.getY() + 1, pos.getZ(),
-                player.getYaw(), player.getPitch(), RegistryUtils.toIdentifier(world.getDimension()));
+                player.getYRot(), player.getXRot(), RegistryUtils.toIdentifier(world.dimensionType()));
 
-        if (state.getBlock() instanceof StairsBlock && state.get(Properties.BLOCK_HALF) == BlockHalf.BOTTOM) {
+        if (state.getBlock() instanceof StairBlock && state.getValue(BlockStateProperties.HALF) == Half.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.40D);
             float newYaw = this.getYawForStand(state);
-            player.setYaw(newYaw);
+            player.setYRot(newYaw);
             return this.seat(user, this.getPosForStair(state, vec3dLoc.center()), SummonType.INTERACT_STAIR, newYaw);
         }
 
-        if (state.getBlock() instanceof SlabBlock && state.get(Properties.SLAB_TYPE) == SlabType.BOTTOM) {
+        if (state.getBlock() instanceof SlabBlock && state.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.BOTTOM) {
             vec3dLoc.setY(vec3dLoc.getY() - 0.45D);
             return this.seat(user, vec3dLoc.center(), SummonType.INTERACT_SLAB);
         }
@@ -165,69 +166,69 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     public boolean seat(@NotNull final OnlineUser user,
                         @NotNull final Vec3dLocation loc,
                         @NotNull final SummonType summonType) {
-        return this.seat(user, loc, summonType, user.asPlayer().getYaw());
+        return this.seat(user, loc, summonType, user.asPlayer().getYRot());
     }
 
     public boolean seat(@NotNull final OnlineUser user,
                         @NotNull final Vec3dLocation loc,
                         @NotNull final SummonType summonType, float yaw) {
-        ServerPlayerEntity player = user.asPlayer();
+        ServerPlayer player = user.asPlayer();
 
         if (player.isSpectator() || this.isSitting(player)) {
             return false;
         }
 
-        ArmorStandEntity stand = EntityType.ARMOR_STAND.create(
+        ArmorStand stand = EntityType.ARMOR_STAND.create(
                 loc.getWorld(), null,
-                new LiteralText("KE$SitStand#" + this.stands.size() + user.getUsername()), null, loc.toPos(),
-                SpawnReason.TRIGGERED, true, true
+                new TextComponent("KE$SitStand#" + this.stands.size() + user.getUsername()), null, loc.toPos(),
+                MobSpawnType.TRIGGERED, true, true
         );
 
         if (stand == null) {
             return false;
         }
 
-        player.swingHand(Hand.MAIN_HAND, true);
+        player.swing(InteractionHand.MAIN_HAND, true);
 
         stand.setInvisible(true);
         stand.setNoGravity(true);
         stand.setInvulnerable(true);
-        stand.addScoreboardTag("KE$SitStand#" + user.getUsername());
-        stand.addScoreboardTag("KESitStand");
-        stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
+        stand.addTag("KE$SitStand#" + user.getUsername());
+        stand.addTag("KESitStand");
+        stand.absMoveTo(loc.getX(), loc.getY() - 1.75, loc.getZ());
         user.getPreferences().set(Preferences.SITTING_TYPE, summonType);
-        stand.setYaw(yaw);
-        stand.updatePosition(loc.getX(), loc.getY() - 1.75, loc.getZ());
+        stand.setYRot(yaw);
+        stand.absMoveTo(loc.getX(), loc.getY() - 1.75, loc.getZ());
         assert loc.getWorld() != null;
-        loc.getWorld().spawnEntity(stand);
+        loc.getWorld().addFreshEntity(stand);
 
         player.startRiding(stand, true);
-        this.stands.add(stand.getUuid());
+        this.stands.add(stand.getUUID());
 
         return true;
     }
 
-    public void unseat(@NotNull final ServerPlayerEntity player) {
+    public void unseat(@NotNull final ServerPlayer player) {
         Entity vehicle = player.getVehicle();
-        if (vehicle instanceof ArmorStandEntity armorStand) {
+        if (vehicle instanceof ArmorStand armorStand) {
             this.unseat(armorStand);
         }
     }
 
-    private void unseat(ArmorStandEntity armorStandEntity) {
-        if (armorStandEntity.getScoreboardTags().contains("KESitStand")) {
+    private void unseat(ArmorStand armorStandEntity) {
+        if (armorStandEntity.getTags().contains("KESitStand")) {
             Entity passenger = armorStandEntity.getFirstPassenger();
-            if (passenger instanceof PlayerEntity playerEntity) {
+            if (passenger instanceof Player playerEntity) {
                 passenger.stopRiding();
                 armorStandEntity.kill();
-                playerEntity.sendMessage(StringText.of(true, "sit.stop_riding"), true);
+                playerEntity.displayClientMessage(StringText.of("sit.stop_riding"), true);
             }
         }
     }
 
     public void killAll() {
         for (UUID uuid : this.stands) {
-            ArmorStandEntity armorStand = this.getArmorStand(uuid);
+            ArmorStand armorStand = this.getArmorStand(uuid);
             if (armorStand != null) {
                 armorStand.kill();
             }
@@ -236,18 +237,18 @@ public class SeatManager implements ConfigurableFeature, TickListener {
 
     }
 
-    public boolean isSitting(@NotNull final ServerPlayerEntity player) {
-        if (!player.hasVehicle() || !(player.getVehicle() instanceof ArmorStandEntity stand)) {
+    public boolean isSitting(@NotNull final ServerPlayer player) {
+        if (!player.isPassenger() || !(player.getVehicle() instanceof ArmorStand stand)) {
             return false;
         }
 
-        return stand.hasPlayerRider() && stand.getScoreboardTags().contains("KE$SitStand#" + player.getEntityName());
+        return stand.hasExactlyOnePlayerPassenger() && stand.getTags().contains("KE$SitStand#" + player.getScoreboardName());
     }
 
     private Vec3dLocation getPosForStair(@NotNull final BlockState state, @NotNull final Vec3dLocation loc) {
         double offset = 0.205D;
-        Direction direction = state.get(Properties.HORIZONTAL_FACING);
-        StairShape shape = state.get(Properties.STAIR_SHAPE);
+        Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+        StairsShape shape = state.getValue(BlockStateProperties.STAIRS_SHAPE);
         switch (shape) {
             case OUTER_LEFT, INNER_LEFT -> {
                 switch (direction) {
@@ -277,7 +278,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
     }
 
     private float getYawForStand(@NotNull final BlockState state) {
-        Direction direction = state.get(Properties.HORIZONTAL_FACING).getOpposite();
+        Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite();
         float yaw;
         switch (direction) {
             case NORTH -> yaw = 180.0f;
@@ -285,7 +286,7 @@ public class SeatManager implements ConfigurableFeature, TickListener {
             case EAST -> yaw = -90.0f;
             default -> yaw = 0.0f;
         }
-        StairShape shape = state.get(Properties.STAIR_SHAPE);
+        StairsShape shape = state.getValue(BlockStateProperties.STAIRS_SHAPE);
         switch (shape) {
             case OUTER_LEFT, INNER_LEFT -> yaw -= 45;
             case OUTER_RIGHT, INNER_RIGHT -> yaw += 45;

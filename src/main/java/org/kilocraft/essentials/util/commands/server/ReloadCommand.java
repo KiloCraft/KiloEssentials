@@ -4,11 +4,11 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.world.SaveProperties;
+import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.world.level.storage.WorldData;
 import org.apache.commons.lang3.time.StopWatch;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
@@ -28,15 +28,15 @@ public class ReloadCommand extends EssentialCommand {
         super("reload", CommandPermission.RELOAD, new String[]{"rl"});
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> kiloessentials = this.literal("kiloessentials").executes(this::reloadKE);
-        LiteralArgumentBuilder<ServerCommandSource> vanilla = this.literal("vanilla").executes(this::reloadVanilla);
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> kiloessentials = this.literal("kiloessentials").executes(this::reloadKE);
+        LiteralArgumentBuilder<CommandSourceStack> vanilla = this.literal("vanilla").executes(this::reloadVanilla);
         this.argumentBuilder.then(vanilla);
         this.argumentBuilder.then(kiloessentials);
         this.argumentBuilder.executes(this::reload);
     }
 
-    private int reload(CommandContext<ServerCommandSource> ctx) {
+    private int reload(CommandContext<CommandSourceStack> ctx) {
         final CommandSourceUser src = this.getCommandSource(ctx);
         StopWatch watch = new StopWatch();
         src.sendLangMessage("command.reload.start");
@@ -54,7 +54,7 @@ public class ReloadCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private int reloadVanilla(CommandContext<ServerCommandSource> ctx) {
+    private int reloadVanilla(CommandContext<CommandSourceStack> ctx) {
         final CommandSourceUser src = this.getCommandSource(ctx);
         StopWatch watch = new StopWatch();
         src.sendLangMessage("command.reload.vanilla");
@@ -65,7 +65,7 @@ public class ReloadCommand extends EssentialCommand {
             watch.stop();
             String str = this.tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)));
             logger.error(str);
-            src.sendMessage(ComponentText.toText(this.tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)))).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText(throwable.getMessage())))));
+            src.sendMessage(ComponentText.toText(this.tl("command.reload.failed", ModConstants.DECIMAL_FORMAT.format(watch.getTime(TimeUnit.MILLISECONDS)))).withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texter.newText(throwable.getMessage())))));
             success.set(false);
         });
         if (success.get()) {
@@ -75,21 +75,21 @@ public class ReloadCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    public void reload(CommandContext<ServerCommandSource> ctx, Action<Throwable> fallback) {
+    public void reload(CommandContext<CommandSourceStack> ctx, Action<Throwable> fallback) {
         this.reloadKE(ctx);
         this.reloadMinecraftServer(ctx, fallback);
     }
 
-    public void reloadMinecraftServer(CommandContext<ServerCommandSource> ctx, Action<Throwable> fallback) {
+    public void reloadMinecraftServer(CommandContext<CommandSourceStack> ctx, Action<Throwable> fallback) {
         MinecraftServer server = ctx.getSource().getServer();
-        ResourcePackManager resourcePackManager = server.getDataPackManager();
-        SaveProperties saveProperties = server.getSaveProperties();
-        Collection<String> collection = resourcePackManager.getEnabledNames();
+        PackRepository resourcePackManager = server.getPackRepository();
+        WorldData saveProperties = server.getWorldData();
+        Collection<String> collection = resourcePackManager.getSelectedIds();
 
         Collection<String> modifiedCollection = Lists.newArrayList(collection);
-        resourcePackManager.scanPacks();
-        for (String string : resourcePackManager.getNames()) {
-            if (!saveProperties.getDataPackSettings().getDisabled().contains(string) && !modifiedCollection.contains(string)) {
+        resourcePackManager.reload();
+        for (String string : resourcePackManager.getAvailableIds()) {
+            if (!saveProperties.getDataPackConfig().getDisabled().contains(string) && !modifiedCollection.contains(string)) {
                 modifiedCollection.add(string);
             }
         }
@@ -100,7 +100,7 @@ public class ReloadCommand extends EssentialCommand {
         });
     }
 
-    private int reloadKE(CommandContext<ServerCommandSource> ctx) {
+    private int reloadKE(CommandContext<CommandSourceStack> ctx) {
         final CommandSourceUser src = this.getCommandSource(ctx);
         StopWatch watch = new StopWatch();
         watch.start();

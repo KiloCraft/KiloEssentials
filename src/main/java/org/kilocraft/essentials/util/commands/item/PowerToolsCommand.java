@@ -7,16 +7,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.CommandSource;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
@@ -26,37 +16,47 @@ import org.kilocraft.essentials.util.commands.KiloCommands;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 
 public class PowerToolsCommand {
-    private static final Predicate<ServerCommandSource> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS, 4);
+    private static final Predicate<CommandSourceStack> PERMISSION_CHECK = src -> KiloCommands.hasPermission(src, CommandPermission.ITEM_COMMANDS, 4);
 
-    public static void registerChild(LiteralArgumentBuilder<ServerCommandSource> builder) {
-        LiteralCommandNode<ServerCommandSource> rootCommand = literal("command")
+    public static void registerChild(LiteralArgumentBuilder<CommandSourceStack> builder) {
+        LiteralCommandNode<CommandSourceStack> rootCommand = literal("command")
                 .requires(PERMISSION_CHECK)
                 .executes(PowerToolsCommand::executeList)
                 .build();
 
-        LiteralArgumentBuilder<ServerCommandSource> resetArgument = literal("reset")
+        LiteralArgumentBuilder<CommandSourceStack> resetArgument = literal("reset")
                 .executes(PowerToolsCommand::executeReset);
 
-        LiteralArgumentBuilder<ServerCommandSource> removeArgument = literal("remove");
-        RequiredArgumentBuilder<ServerCommandSource, Integer> removeLineArgument = argument("line", integer(1, 10))
+        LiteralArgumentBuilder<CommandSourceStack> removeArgument = literal("remove");
+        RequiredArgumentBuilder<CommandSourceStack, Integer> removeLineArgument = argument("line", integer(1, 10))
                 .suggests(ArgumentSuggestions::noSuggestions)
                 .executes(PowerToolsCommand::executeRemove);
 
-        LiteralArgumentBuilder<ServerCommandSource> setArgument = literal("set");
+        LiteralArgumentBuilder<CommandSourceStack> setArgument = literal("set");
 
-        RequiredArgumentBuilder<ServerCommandSource, Integer> lineArgument = argument("line", integer(1, 10))
+        RequiredArgumentBuilder<CommandSourceStack, Integer> lineArgument = argument("line", integer(1, 10))
                 .suggests(ArgumentSuggestions::noSuggestions);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> textArgument = argument("command", greedyString())
+        RequiredArgumentBuilder<CommandSourceStack, String> textArgument = argument("command", greedyString())
                 .suggests(PowerToolsCommand::commandSuggestions)
                 .executes(PowerToolsCommand::execute);
 
@@ -69,10 +69,10 @@ public class PowerToolsCommand {
         builder.then(rootCommand);
     }
 
-    private static CompletableFuture<Suggestions> commandSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-        ItemStack item = context.getSource().getPlayer().getMainHandStack();
+    private static CompletableFuture<Suggestions> commandSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+        ItemStack item = context.getSource().getPlayerOrException().getMainHandItem();
 
-        if (item.isEmpty() || !item.hasNbt() || item.getNbt() == null || !item.getNbt().contains("NBTCommands"))
+        if (item.isEmpty() || !item.hasTag() || item.getTag() == null || !item.getTag().contains("NBTCommands"))
             return ArgumentSuggestions.noSuggestions(context, builder);
 
         int inputLine = 0;
@@ -86,15 +86,15 @@ public class PowerToolsCommand {
             }
         }
 
-        NbtList commands = item.getNbt().getList("NBTCommands", 8);
+        ListTag commands = item.getTag().getList("NBTCommands", 8);
         String[] strings = {commands.getString(inputLine)};
-        return CommandSource.suggestMatching(strings, builder);
+        return SharedSuggestionProvider.suggest(strings, builder);
     }
 
-    private static int executeRemove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private static int executeRemove(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         int inputLine = getInteger(ctx, "line") - 1;
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        ItemStack item = player.getMainHandStack();
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        ItemStack item = player.getMainHandItem();
         CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
@@ -102,12 +102,12 @@ public class PowerToolsCommand {
             return -1;
         }
 
-        if (!item.hasNbt() || item.getNbt() == null || !item.getNbt().contains("NBTCommands")) {
+        if (!item.hasTag() || item.getTag() == null || !item.getTag().contains("NBTCommands")) {
             user.sendLangMessage("command.item.nothing_to_reset");
             return -1;
         }
 
-        NbtList lore = item.getNbt().getList("NBTCommands", 8);
+        ListTag lore = item.getTag().getList("NBTCommands", 8);
 
         if (inputLine >= lore.size()) {
             user.sendLangMessage("command.item.nothing_to_reset");
@@ -120,8 +120,8 @@ public class PowerToolsCommand {
         return 1;
     }
 
-    private static int executeReset(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ItemStack item = ctx.getSource().getPlayer().getMainHandStack();
+    private static int executeReset(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ItemStack item = ctx.getSource().getPlayerOrException().getMainHandItem();
         CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
@@ -129,19 +129,19 @@ public class PowerToolsCommand {
             return -1;
         }
 
-        if (item.getNbt() == null) {
+        if (item.getTag() == null) {
             user.sendLangMessage("command.item.nothing_to_reset");
             return -1;
         }
 
-        Objects.requireNonNull(item.getNbt()).remove("NBTCommands");
+        Objects.requireNonNull(item.getTag()).remove("NBTCommands");
         user.sendLangMessage("command.item.reset", "command", "not-set");
         return 1;
     }
 
-    private static int executeList(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        ItemStack item = player.getMainHandStack();
+    private static int executeList(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        ItemStack item = player.getMainHandItem();
         CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
@@ -150,31 +150,31 @@ public class PowerToolsCommand {
             return -1;
         }
 
-        if (!item.hasNbt() || item.getNbt() == null || !item.getNbt().contains("NBTCommands")) {
+        if (!item.hasTag() || item.getTag() == null || !item.getTag().contains("NBTCommands")) {
             user.sendLangMessage("command.item.command.no_commands");
             return -1;
         }
 
-        NbtList commands = item.getNbt().getList("NBTCommands", 8);
+        ListTag commands = item.getTag().getList("NBTCommands", 8);
 
-        MutableText text = new LiteralText("PowerTool Commands:").formatted(Formatting.GOLD);
+        MutableComponent text = new TextComponent("PowerTool Commands:").withStyle(ChatFormatting.GOLD);
 
         for (int i = 0; i < commands.size(); i++) {
             if (commands.getString(i).equals(""))
                 continue;
 
-            text.append(new LiteralText("\n - ").formatted(Formatting.YELLOW))
-                    .append(new LiteralText(commands.getString(i)).formatted(Formatting.WHITE));
+            text.append(new TextComponent("\n - ").withStyle(ChatFormatting.YELLOW))
+                    .append(new TextComponent(commands.getString(i)).withStyle(ChatFormatting.WHITE));
         }
 
         user.sendMessage(text);
         return 1;
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private static int execute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         String inputString = getString(ctx, "command").replaceFirst("/", "");
-        ItemStack item = player.getMainHandStack();
+        ItemStack item = player.getMainHandItem();
         CommandSourceUser user = CommandSourceServerUser.of(ctx);
 
         if (item.isEmpty()) {
@@ -182,21 +182,21 @@ public class PowerToolsCommand {
             return -1;
         }
 
-        NbtCompound itemTag = item.getNbt();
+        CompoundTag itemTag = item.getTag();
 
-        if (!item.hasNbt()) {
-            itemTag = new NbtCompound();
+        if (!item.hasTag()) {
+            itemTag = new CompoundTag();
         }
 
         if (!itemTag.contains("NBTCommands")) {
-            itemTag.put("NBTCommands", new NbtCompound());
+            itemTag.put("NBTCommands", new CompoundTag());
         }
 
-        NbtList command = itemTag.getList("NBTCommands", 8);
+        ListTag command = itemTag.getList("NBTCommands", 8);
         int inputLine = getInteger(ctx, "line") - 1;
 
         if (command == null) {
-            command = new NbtList();
+            command = new ListTag();
         }
 
         if (inputLine > command.size() - 1) {
@@ -204,13 +204,13 @@ public class PowerToolsCommand {
                 if (!command.getString(i).isEmpty())
                     continue;
 
-                command.add(NbtString.of(inputString));
+                command.add(StringTag.valueOf(inputString));
             }
         }
 
-        command.set(inputLine, NbtString.of(inputString));
+        command.set(inputLine, StringTag.valueOf(inputString));
         itemTag.put("NBTCommands", command);
-        item.setNbt(itemTag);
+        item.setTag(itemTag);
 
         user.sendLangMessage("command.item.set", "command", inputLine + 1, "&e:\n &7" + inputLine);
         return 1;

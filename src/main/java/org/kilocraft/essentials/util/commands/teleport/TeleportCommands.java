@@ -5,11 +5,11 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.argument.DimensionArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -20,37 +20,37 @@ import org.kilocraft.essentials.util.CommandPermission;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
-import static net.minecraft.command.argument.DimensionArgumentType.dimension;
-import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
-import static net.minecraft.command.argument.EntityArgumentType.player;
-import static net.minecraft.command.argument.Vec3ArgumentType.getVec3;
-import static net.minecraft.command.argument.Vec3ArgumentType.vec3;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.arguments.DimensionArgument.dimension;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
+import static net.minecraft.commands.arguments.EntityArgument.player;
+import static net.minecraft.commands.arguments.coordinates.Vec3Argument.getVec3;
+import static net.minecraft.commands.arguments.coordinates.Vec3Argument.vec3;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 
 public class TeleportCommands {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> tpToCommand = dispatcher.register(literal("teleportto")
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralCommandNode<CommandSourceStack> tpToCommand = dispatcher.register(literal("teleportto")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTTO))
                 .then(argument("user", StringArgumentType.string())
                         .suggests(ArgumentSuggestions::users)
                         .executes(TeleportCommands::teleportTo))
         );
 
-        LiteralCommandNode<ServerCommandSource> tpPosCommand = dispatcher.register(literal("teleportpos")
+        LiteralCommandNode<CommandSourceStack> tpPosCommand = dispatcher.register(literal("teleportpos")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTPOS))
                 .then(argument("pos", vec3()).executes(TeleportCommands::teleportPos))
         );
 
-        LiteralCommandNode<ServerCommandSource> tpHereCommand = dispatcher.register(literal("teleporthere")
+        LiteralCommandNode<CommandSourceStack> tpHereCommand = dispatcher.register(literal("teleporthere")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTHERE))
                 .then(argument("target", player()).executes(TeleportCommands::teleportHere))
         );
 
-        LiteralCommandNode<ServerCommandSource> tpInCommand = dispatcher.register(literal("teleportin")
+        LiteralCommandNode<CommandSourceStack> tpInCommand = dispatcher.register(literal("teleportin")
                 .requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN))
                 .then(argument("dimension", dimension()).suggests(ArgumentSuggestions::dimensions).then(argument("pos", vec3())
-                                .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayer()))
+                                .executes(ctx -> teleportIn(ctx, ctx.getSource().getPlayerOrException()))
                                 .then(argument("target", player())
                                         .executes(ctx -> teleportIn(ctx, getPlayer(ctx, "target"))))
                         )
@@ -63,7 +63,7 @@ public class TeleportCommands {
         dispatcher.register(literal("tpin").requires(src -> KiloCommands.hasPermission(src, CommandPermission.TELEPORTIN)).redirect(tpInCommand));
     }
 
-    private static int teleportTo(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private static int teleportTo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser src = KiloEssentials.getUserManager().getOnline(ctx.getSource());
         String input = StringArgumentType.getString(ctx, "user");
 
@@ -80,58 +80,58 @@ public class TeleportCommands {
         return 0;
     }
 
-    private static int teleportPos(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
-        Vec3d vec = getVec3(ctx, "pos");
+    private static int teleportPos(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        Vec3 vec = getVec3(ctx, "pos");
 
         KiloEssentials.getUserManager().getOnline(player).saveLocation();
-        ctx.getSource().getPlayer().teleport(
-                player.getServerWorld(),
-                vec.getX(), vec.getY(), vec.getZ(),
-                player.getYaw(), player.getPitch()
+        ctx.getSource().getPlayerOrException().teleportTo(
+                player.getLevel(),
+                vec.x(), vec.y(), vec.z(),
+                player.getYRot(), player.getXRot()
         );
 
         ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendLangMessage("template.#1", "position",
-                getFormattedMessage(player), player.getName().asString());
+                getFormattedMessage(player), player.getName().getContents());
 
         return 1;
     }
 
-    private static int teleportHere(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity target = getPlayer(ctx, "target");
-        ServerPlayerEntity sender = ctx.getSource().getPlayer();
+    private static int teleportHere(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer target = getPlayer(ctx, "target");
+        ServerPlayer sender = ctx.getSource().getPlayerOrException();
 
         KiloEssentials.getUserManager().getOnline(target).saveLocation();
-        target.teleport(
-                sender.getServerWorld(),
-                sender.getPos().getX(), sender.getPos().getY(), sender.getPos().getZ(),
-                sender.getYaw(), sender.getPitch()
+        target.teleportTo(
+                sender.getLevel(),
+                sender.position().x(), sender.position().y(), sender.position().z(),
+                sender.getYRot(), sender.getXRot()
         );
 
         ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendLangMessage("template.#1", "position",
-                getFormattedMessage(target), target.getName().asString());
+                getFormattedMessage(target), target.getName().getContents());
 
         return 1;
     }
 
-    private static int teleportIn(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) throws CommandSyntaxException {
-        ServerWorld targetWorld = KiloEssentials.getMinecraftServer().getWorld(RegistryUtils.toWorldKey(DimensionArgumentType.getDimensionArgument(ctx, "dimension").getDimension()));
-        Vec3d vec = getVec3(ctx, "pos");
+    private static int teleportIn(CommandContext<CommandSourceStack> ctx, ServerPlayer target) throws CommandSyntaxException {
+        ServerLevel targetWorld = KiloEssentials.getMinecraftServer().getLevel(RegistryUtils.toWorldKey(DimensionArgument.getDimension(ctx, "dimension").dimensionType()));
+        Vec3 vec = getVec3(ctx, "pos");
 
         KiloEssentials.getUserManager().getOnline(target).saveLocation();
-        target.teleport(
+        target.teleportTo(
                 targetWorld,
-                vec.getX(), vec.getY(), vec.getZ(),
-                target.getYaw(), target.getPitch()
+                vec.x(), vec.y(), vec.z(),
+                target.getYRot(), target.getXRot()
         );
 
         ((CommandSourceUser) CommandSourceServerUser.of(ctx)).sendLangMessage("template.#1", "position",
-                getFormattedMessage(target), target.getName().asString());
+                getFormattedMessage(target), target.getName().getContents());
 
         return 1;
     }
 
-    private static String getFormattedMessage(ServerPlayerEntity target) {
+    private static String getFormattedMessage(ServerPlayer target) {
         return Vec3dLocation.of(target).toString();
     }
 

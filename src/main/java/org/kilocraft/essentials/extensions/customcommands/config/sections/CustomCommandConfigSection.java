@@ -1,8 +1,8 @@
 package org.kilocraft.essentials.extensions.customcommands.config.sections;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.kilocraft.essentials.config.main.sections.PermissionRequirementConfigSection;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class CustomCommandConfigSection {
     public String label = "example";
 
     @Setting("runs")
-    public List<String> executablesList = new ArrayList<String>() {{
+    public List<String> executablesList = new ArrayList<>() {{
         this.add("!tellraw ${source.name} {\"text\":\"Example runnable!\"}");
     }};
 

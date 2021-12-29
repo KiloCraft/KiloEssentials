@@ -9,18 +9,11 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ChunkTicketType;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.ChunkPos;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.command.IEssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextInput;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
@@ -32,6 +25,7 @@ import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarp;
 import org.kilocraft.essentials.extensions.warps.playerwarps.PlayerWarpsManager;
 import org.kilocraft.essentials.util.CommandPermission;
+import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
@@ -45,11 +39,17 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.world.level.ChunkPos;
 
 public class PlayerWarpCommand extends EssentialCommand {
     private static final String HEADER = ModConstants.translation("command.playerwarp.header");
 
-    public PlayerWarpCommand(String label, Predicate<ServerCommandSource> predicate, String[] alias) {
+    public PlayerWarpCommand(String label, Predicate<CommandSourceStack> predicate, String[] alias) {
         super(label, predicate, alias);
         this.withUsage("command.playerwarp.usage", "add", "name", "type", "description");
     }
@@ -60,7 +60,7 @@ public class PlayerWarpCommand extends EssentialCommand {
             int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
 
             if (PlayerWarpsManager.getWarps(user.getUuid()).size() + 1 <= allowed &&
-                    KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
+                    KiloEssentials.hasPermissionNode(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
                 return true;
             }
         }
@@ -69,15 +69,15 @@ public class PlayerWarpCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         {
-            LiteralArgumentBuilder<ServerCommandSource> addArgument = this.literal("add");
-            RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = this.argument("name", StringArgumentType.word())
+            LiteralArgumentBuilder<CommandSourceStack> addArgument = this.literal("add");
+            RequiredArgumentBuilder<CommandSourceStack, String> nameArgument = this.argument("name", StringArgumentType.word())
                     .executes((ctx) -> this.sendUsage(ctx, "command.playerwarp.usage.provide_type"));
-            RequiredArgumentBuilder<ServerCommandSource, String> typeArgument = this.argument("type", StringArgumentType.word())
+            RequiredArgumentBuilder<CommandSourceStack, String> typeArgument = this.argument("type", StringArgumentType.word())
                     .suggests(this::typeSuggestions)
                     .executes((ctx) -> this.sendUsage(ctx, "command.playerwarp.usage.provide_desc"));
-            RequiredArgumentBuilder<ServerCommandSource, String> descArgument = this.argument("description", StringArgumentType.greedyString())
+            RequiredArgumentBuilder<CommandSourceStack, String> descArgument = this.argument("description", StringArgumentType.greedyString())
                     .executes(this::add);
 
             typeArgument.then(descArgument);
@@ -87,8 +87,8 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> removeArgument = this.literal("remove");
-            RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = this.argument("name", StringArgumentType.word())
+            LiteralArgumentBuilder<CommandSourceStack> removeArgument = this.literal("remove");
+            RequiredArgumentBuilder<CommandSourceStack, String> nameArgument = this.argument("name", StringArgumentType.word())
                     .suggests(this::personalWarpSuggestions)
                     .executes(this::remove);
 
@@ -97,11 +97,11 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> listArgument = this.literal("list")
+            LiteralArgumentBuilder<CommandSourceStack> listArgument = this.literal("list")
                     .executes((ctx) -> this.list(ctx, 1, null));
-            RequiredArgumentBuilder<ServerCommandSource, String> userArgument = this.getUserArgument("user")
+            RequiredArgumentBuilder<CommandSourceStack, String> userArgument = this.getUserArgument("user")
                     .executes((ctx) -> this.list(ctx, 1, this.getUserArgumentInput(ctx, "user")));
-            RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = this.argument("page", IntegerArgumentType.integer(1))
+            RequiredArgumentBuilder<CommandSourceStack, Integer> pageArgument = this.argument("page", IntegerArgumentType.integer(1))
                     .executes((ctx) -> this.list(ctx, IntegerArgumentType.getInteger(ctx, "page"), this.getUserArgumentInput(ctx, "user")));
 
             userArgument.then(pageArgument);
@@ -110,11 +110,11 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> setOwnerArgument = this.literal("setowner")
+            LiteralArgumentBuilder<CommandSourceStack> setOwnerArgument = this.literal("setowner")
                     .requires(src -> KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_ADMIN));
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
+            RequiredArgumentBuilder<CommandSourceStack, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions);
-            RequiredArgumentBuilder<ServerCommandSource, String> ownerArgument = this.getUserArgument("owner")
+            RequiredArgumentBuilder<CommandSourceStack, String> ownerArgument = this.getUserArgument("owner")
                     .executes(this::setOwner);
 
             warpArgument.then(ownerArgument);
@@ -123,11 +123,11 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> setNameArgument = this.literal("setname")
+            LiteralArgumentBuilder<CommandSourceStack> setNameArgument = this.literal("setname")
                     .requires(src -> KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_ADMIN));
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
+            RequiredArgumentBuilder<CommandSourceStack, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions);
-            RequiredArgumentBuilder<ServerCommandSource, String> nameArgument = this.argument("name", StringArgumentType.word())
+            RequiredArgumentBuilder<CommandSourceStack, String> nameArgument = this.argument("name", StringArgumentType.word())
                     .executes(this::setName);
 
             warpArgument.then(nameArgument);
@@ -136,11 +136,11 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> setDescriptionArgument = this.literal("setdescription")
+            LiteralArgumentBuilder<CommandSourceStack> setDescriptionArgument = this.literal("setdescription")
                     .requires(src -> KiloCommands.hasPermission(src, CommandPermission.PLAYER_WARP_ADMIN));
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
+            RequiredArgumentBuilder<CommandSourceStack, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions);
-            RequiredArgumentBuilder<ServerCommandSource, String> descriptionArgument = this.argument("description", StringArgumentType.greedyString())
+            RequiredArgumentBuilder<CommandSourceStack, String> descriptionArgument = this.argument("description", StringArgumentType.greedyString())
                     .executes(this::setDescription);
 
             warpArgument.then(descriptionArgument);
@@ -149,8 +149,8 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> listArgument = this.literal("info");
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
+            LiteralArgumentBuilder<CommandSourceStack> listArgument = this.literal("info");
+            RequiredArgumentBuilder<CommandSourceStack, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions)
                     .executes(this::info);
 
@@ -159,8 +159,8 @@ public class PlayerWarpCommand extends EssentialCommand {
         }
 
         {
-            LiteralArgumentBuilder<ServerCommandSource> teleportArgument = this.literal("teleport");
-            RequiredArgumentBuilder<ServerCommandSource, String> warpArgument = this.argument("warp", StringArgumentType.word())
+            LiteralArgumentBuilder<CommandSourceStack> teleportArgument = this.literal("teleport");
+            RequiredArgumentBuilder<CommandSourceStack, String> warpArgument = this.argument("warp", StringArgumentType.word())
                     .suggests(this::allWarpSuggestions)
                     .executes(this::teleport);
 
@@ -170,18 +170,18 @@ public class PlayerWarpCommand extends EssentialCommand {
 
     }
 
-    private int add(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int add(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(ctx);
         String name = StringArgumentType.getString(ctx, "name");
         PlayerWarp warp = PlayerWarpsManager.getWarp(name);
 
         if (!canSet(user) && !user.hasPermission(CommandPermission.PLAYER_WARP_LIMIT_BYPASS)) {
-            user.sendMessage(this.messages.commands().playerWarp().limitReached);
+            user.sendLangMessage("command.playerwarp.limit");
             return FAILED;
         }
 
         if (warp != null && !warp.getOwner().equals(user.getUuid())) {
-            user.sendLangMessage(this.messages.commands().playerWarp().nameAlreadyTaken);
+            user.sendLangMessage("command.playerwarp.name_taken");
             return FAILED;
         }
 
@@ -210,11 +210,11 @@ public class PlayerWarpCommand extends EssentialCommand {
             PlayerWarpsManager.addWarp(new PlayerWarp(name, user.getLocation(), user.getUuid(), type, desc));
         }
 
-        user.sendMessage(this.messages.commands().playerWarp().warpSet.replace("{NAME}", name));
+        user.sendLangMessage("command.playerwarp.set", name);
         return SUCCESS;
     }
 
-    private int remove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int remove(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(ctx);
         String input = StringArgumentType.getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
@@ -238,11 +238,11 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         PlayerWarpsManager.removeWarp(name);
 
-        user.sendMessage(this.messages.commands().playerWarp().warpRemoved.replace("{NAME}", name));
+        user.sendLangMessage("command.playerwarp.remove", name);
         return SUCCESS;
     }
 
-    private int list(CommandContext<ServerCommandSource> ctx, int page, @Nullable String inputName) {
+    private int list(CommandContext<CommandSourceStack> ctx, int page, @Nullable String inputName) {
         final CommandSourceUser src = this.getCommandSource(ctx);
 
         if (PlayerWarpsManager.getWarps().isEmpty()) {
@@ -272,7 +272,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private int setOwner(CommandContext<ServerCommandSource> ctx) {
+    private int setOwner(CommandContext<CommandSourceStack> ctx) {
         final CommandSourceUser src = this.getCommandSource(ctx);
 
         String name = StringArgumentType.getString(ctx, "warp");
@@ -297,7 +297,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private int setName(CommandContext<ServerCommandSource> ctx) {
+    private int setName(CommandContext<CommandSourceStack> ctx) {
         final CommandSourceUser src = this.getCommandSource(ctx);
 
         String name = StringArgumentType.getString(ctx, "warp");
@@ -316,7 +316,7 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         String warpName = StringArgumentType.getString(ctx, "name");
         if (!warpName.matches("[\\w]{4,20}")) {
-            src.sendLangError("command.playerwarp.name_invalid");
+            src.sendLangMessage("command.playerwarp.name_invalid");
             return FAILED;
         }
 
@@ -326,7 +326,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int setDescription(CommandContext<ServerCommandSource> ctx) {
+    private int setDescription(CommandContext<CommandSourceStack> ctx) {
         final CommandSourceUser src = this.getCommandSource(ctx);
 
         String name = StringArgumentType.getString(ctx, "warp");
@@ -356,7 +356,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private int info(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int info(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         String inputName = StringArgumentType.getString(ctx, "warp");
 
@@ -371,7 +371,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private int teleport(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int teleport(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         String inputName = StringArgumentType.getString(ctx, "warp");
         String warpName = inputName.replaceFirst("-confirmed-", "");
@@ -383,20 +383,14 @@ public class PlayerWarpCommand extends EssentialCommand {
             return FAILED;
         }
 
-//        try {
-//            LocationUtil.validateIsSafe(warp.getLocation());
-//        } catch (InsecureDestinationException e) {
-//            if (!inputName.startsWith("-confirmed-")) {
-//                src.sendMessage(getTeleportConfirmationText(warpName));
-//                return -1;
-//            }
-//        }
-        //Add a custom ticket to gradually preload chunks
-        warp.getLocation().getWorld().getChunkManager().addTicket(ChunkTicketType.create("pwarp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), ServerSettings.getViewDistance() + 1, src.asPlayer().getId());
+        if (LocationUtil.isDestinationToClose(src, warp.getLocation())) {
+            return IEssentialCommand.FAILED;
+        }
+
+        // Add a custom ticket to gradually preload chunks
+        warp.getLocation().getWorld().getChunkSource().addRegionTicket(TicketType.create("pwarp", Integer::compareTo, (KiloConfig.main().server().cooldown + 1) * 20), new ChunkPos(warp.getLocation().toPos()), 1, src.asPlayer().getId());
         new SinglePlayerScheduler(src, 1, KiloConfig.main().server().cooldown, () -> {
-            src.sendMessage(
-                    KiloConfig.messages().commands().warp().teleportTo
-                            .replace("{WARP_NAME}", warp.getName()));
+            src.sendLangMessage("command.playerwarp.teleport", warp.getName());
             src.teleport(warp.getLocation(), true);
         });
         return SUCCESS;
@@ -411,7 +405,7 @@ public class PlayerWarpCommand extends EssentialCommand {
         src.sendMessage(text.build());
     }
 
-    private void sendList(ServerCommandSource src, User user, int page) {
+    private void sendList(CommandSourceStack src, User user, int page) {
         final String LINE_FORMAT = ModConstants.translation("command.playerwarp.format");
         List<PlayerWarp> warps = PlayerWarpsManager.getWarps(user.getUuid());
         Collections.sort(warps);
@@ -420,62 +414,49 @@ public class PlayerWarpCommand extends EssentialCommand {
 
         for (int i = 0; i < warps.size(); i++) {
             PlayerWarp warp = warps.get(i);
-            //1. (type) Name - The Dimension
             input.append(String.format(LINE_FORMAT, i + 1, warp.getName(), warp.getType(), RegistryUtils.dimensionToName(warp.getLocation().getDimensionType())));
         }
 
         ListedText.Page paged = ListedText.getPageFromStrings(ListedText.Options.builder().setPageIndex(page - 1).build(), input.getLines());
-        paged.send(src, "Player Warps: " + user.getNameTag(), "/playerwarps " + src.getName() + " %page%");
+        paged.send(src, "Player Warps: " + user.getNameTag(), "/playerwarps " + src.getTextName() + " %page%");
     }
 
-    private CompletableFuture<Suggestions> personalWarpSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+    private CompletableFuture<Suggestions> personalWarpSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         if (CommandUtils.isPlayer(context.getSource())) {
             List<String> strings = new ArrayList<>();
-            UUID uuid = context.getSource().getPlayer().getUuid();
+            UUID uuid = context.getSource().getPlayerOrException().getUUID();
             for (PlayerWarp warp : KiloCommands.hasPermission(context.getSource(), CommandPermission.PLAYER_WARP_ADMIN) ? PlayerWarpsManager.getWarps() : PlayerWarpsManager.getWarps(uuid)) {
                 strings.add(warp.getName());
             }
 
-            return CommandSource.suggestMatching(strings, builder);
+            return SharedSuggestionProvider.suggest(strings, builder);
         }
 
         return builder.buildFuture();
     }
 
-    private CompletableFuture<Suggestions> allWarpSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+    private CompletableFuture<Suggestions> allWarpSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         if (CommandUtils.isPlayer(context.getSource())) {
             List<String> strings = new ArrayList<>();
             for (PlayerWarp warp : PlayerWarpsManager.getWarps()) {
                 strings.add(warp.getName());
             }
 
-            return CommandSource.suggestMatching(strings, builder);
+            return SharedSuggestionProvider.suggest(strings, builder);
         }
 
         return builder.buildFuture();
     }
 
-    private CompletableFuture<Suggestions> typeSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(new ArrayList<>(PlayerWarp.Type.getTypes()), builder);
+    private CompletableFuture<Suggestions> typeSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(new ArrayList<>(PlayerWarp.Type.getTypes()), builder);
     }
 
-    private Text getRemoveConfirmationText(String warpName) {
+    private Component getRemoveConfirmationText(String warpName) {
         return Texter.confirmationMessage(
                 "command.playerwarp.remove.confirmation_message",
-                Texter.getButton("&7[&eClick here to Confirm&7]", "/pwarp remove -confirmed-" + warpName, Texter.newText("Click").formatted(Formatting.GREEN))
+                Texter.getButton("&7[&eClick here to Confirm&7]", "/pwarp remove -confirmed-" + warpName, Texter.newText("Click").withStyle(ChatFormatting.GREEN))
         );
-    }
-
-    private Text getTeleportConfirmationText(String warpName) {
-        return new LiteralText("")
-                .append(StringText.of(true, "general.loc.unsafe.confirmation")
-                        .formatted(Formatting.YELLOW))
-                .append(new LiteralText(" [").formatted(Formatting.GRAY)
-                        .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
-                        .append(new LiteralText("]").formatted(Formatting.GRAY))
-                        .styled((style) -> {
-                            return style.withFormatting(Formatting.GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pwarp teleport -confirmed-" + warpName));
-                        }));
     }
 
 }

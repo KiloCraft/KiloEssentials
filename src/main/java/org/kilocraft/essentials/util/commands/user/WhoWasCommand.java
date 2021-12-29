@@ -5,9 +5,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.argument.GameProfileArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
@@ -27,6 +24,9 @@ import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.network.chat.Component;
 
 public class WhoWasCommand extends EssentialCommand {
     private static final String LINE_FORMAT = ModConstants.translation("command.whowas.format");
@@ -39,12 +39,12 @@ public class WhoWasCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> usernameArgument = this.getUserArgument("username")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> usernameArgument = this.getUserArgument("username")
                 .suggests(ArgumentSuggestions::allPlayers)
                 .executes(ctx -> this.executeOthers(ctx, 1));
 
-        RequiredArgumentBuilder<ServerCommandSource, Integer> pageArgument = this.argument("page", IntegerArgumentType.integer(1))
+        RequiredArgumentBuilder<CommandSourceStack, Integer> pageArgument = this.argument("page", IntegerArgumentType.integer(1))
                 .executes(ctx -> this.executeOthers(ctx, IntegerArgumentType.getInteger(ctx, "page")));
 
         this.argumentBuilder.executes(this::executeSelf);
@@ -52,12 +52,12 @@ public class WhoWasCommand extends EssentialCommand {
         this.commandNode.addChild(usernameArgument.build());
     }
 
-    private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeSelf(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(ctx);
         return this.send(user, user.getUsername(), 1);
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx, int page) throws CommandSyntaxException {
+    private int executeOthers(CommandContext<CommandSourceStack> ctx, int page) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         String input = this.getUserArgumentInput(ctx, "username");
 
@@ -93,7 +93,7 @@ public class WhoWasCommand extends EssentialCommand {
             return FAILED;
         }
         if (uuid == null) {
-            throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
+            throw GameProfileArgument.ERROR_UNKNOWN_PLAYER.create();
         }
 
         if (CacheManager.isPresent(getCacheId(uuid))) {
@@ -126,12 +126,12 @@ public class WhoWasCommand extends EssentialCommand {
         int i = 0;
         for (NameLookup.PreviousPlayerNameEntry entry : nameEntries) {
             i++;
-            Text dateText;
+            Component dateText;
             if (entry.isPlayersInitialName()) {
                 dateText = Texter.newText(INITIAL_FORMAT);
             } else {
                 dateText = Texter.newText(String.format(DATE_FORMAT, TimeDifferenceUtil.formatDateDiff(entry.getChangeTime())))
-                        .styled((style) ->
+                        .withStyle((style) ->
                                 style.withHoverEvent(Texter.Events.onHover("&d" + ModConstants.DATE_FORMAT.format(new Date(entry.getChangeTime()))))
                         );
             }

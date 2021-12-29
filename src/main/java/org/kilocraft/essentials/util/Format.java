@@ -1,11 +1,7 @@
 package org.kilocraft.essentials.util;
 
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.kilocraft.essentials.api.text.ComponentText;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
@@ -26,15 +22,11 @@ public enum Format {
         this.regex = regex;
     }
 
-    public static String validatePermission(OnlineUser user, String input, String permissionPrefix) throws CommandSyntaxException {
+    public static String validatePermission(OnlineUser user, String input, String permissionPrefix) {
         for (Format format : Format.values()) {
-            String s = input;
-            if (!KiloCommands.hasPermission(user.getCommandSource(), permissionPrefix + format.perm, 2)) {
+            if (!KiloEssentials.hasPermissionNode(user.getCommandSource(), permissionPrefix.concat(".").concat(format.perm))) {
                 for (String regex : format.regex) {
-                    s = s.toLowerCase().replaceAll(regex, "");
-                }
-                if (!s.equals(input.toLowerCase())) {
-                    throw new SimpleCommandExceptionType(ComponentText.toText(Component.text("You don't have permission to use " + format.toString().toLowerCase()).color(NamedTextColor.RED))).create();
+                    input = input.replaceAll("(?i)" + regex, "");
                 }
             }
         }

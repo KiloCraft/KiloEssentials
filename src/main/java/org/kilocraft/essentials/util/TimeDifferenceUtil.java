@@ -4,18 +4,19 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.server.command.ServerCommandSource;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static org.kilocraft.essentials.api.ModConstants.translation;
 
@@ -36,6 +37,26 @@ public class TimeDifferenceUtil {
                 ((hour != 0) ? "&" + numFormat + hour + "&" + typeFormat + " Hours " : "") +
                 ((min != 0) ? "&" + numFormat + min + "&" + typeFormat + " Minutes " : "") +
                 ("&" + numFormat + seconds + "&" + typeFormat + " Sec");
+    }
+
+    public static TextComponent convertSecondsToComponent(int seconds, TextColor numFormat, TextColor typeFormat) {
+        int day = seconds / (24 * 3600);
+        seconds = seconds % (24 * 3600);
+        int hour = seconds / 3600;
+        seconds %= 3600;
+        int min = seconds / 60;
+        seconds %= 60;
+        TextComponent.Builder builder = Component.text();
+
+        if (day > 0) builder.append(Component.text(day).color(numFormat), formatComponent("Day", day).color(typeFormat));
+        if (hour > 0) builder.append(Component.text(hour).color(numFormat), formatComponent("Hour", hour).color(typeFormat));
+        if (min > 0) builder.append(Component.text(min).color(numFormat), formatComponent("Minute", min).color(typeFormat));
+        if (seconds > 0) builder.append(Component.text(seconds).color(numFormat), formatComponent("Second", seconds).color(typeFormat));
+        return builder.build();
+    }
+
+    private static TextComponent formatComponent(String baseName, int value) {
+        return Component.text(" " + baseName + (value != 1 ? "s" : "") + " ");
     }
 
     public static String removeTimePattern(String input) {
@@ -198,41 +219,13 @@ public class TimeDifferenceUtil {
         return sb.toString().trim();
     }
 
-    public static CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    public static CompletableFuture<Suggestions> listSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         String inputChar = String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context)));
-        if (inputChar.matches(RegexLib.START_WITH_DIGITS.get())) {
+        if (inputChar.matches("^\\d+")) {
             return ArgumentSuggestions.suggestAtCursor(VALID_UNITS, context);
         }
 
         return builder.buildFuture();
     }
 
-    public static CompletableFuture<Suggestions> listSuggestionsOLD(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        Stream<String> stream = Arrays.stream(VALID_UNITS).filter((it) -> {
-            String inputChar = String.valueOf(context.getInput().charAt(ArgumentSuggestions.getPendingCursor(context)));
-            boolean containsValidUnit = it.equals(inputChar);
-
-            return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
-        });
-
-
-//        return ArgumentCompletions.suggestAtCursor(
-//                Arrays.stream(VALID_UNITS).filter((it) ->{
-//                    String inputChar = String.valueOf(context.getInput().charAt(ArgumentCompletions.getPendingCursor(context)));
-//                    boolean containsValidUnit = it.equals(inputChar);
-//
-//                    return inputChar.matches(RegexLib.START_WITH_DIGITS.get()) || containsValidUnit;
-//                }),
-//                context
-//        );
-
-        return ArgumentSuggestions.suggestAtCursor(
-                Arrays.stream(VALID_UNITS).filter((it) -> {
-                    //String input = String.valueOf(ArgumentCompletions.)
-
-                    return true;
-                }),
-                context
-        );
-    }
 }

@@ -5,161 +5,226 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ChunkTicketType;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.ArgumentSuggestions;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.preference.Preference;
-import org.kilocraft.essentials.api.util.schedule.SinglePlayerScheduler;
+import org.kilocraft.essentials.api.util.schedule.AbstractScheduler;
+import org.kilocraft.essentials.api.world.location.exceptions.InsecureDestinationException;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.config.KiloConfig;
 import org.kilocraft.essentials.config.main.sections.RtpSpecsConfigSection;
+import org.kilocraft.essentials.patch.ChunkManager;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.EssentialPermission;
-import org.kilocraft.essentials.util.SimpleProcess;
-import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
-import org.kilocraft.essentials.util.settings.ServerSettings;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.util.Random;
 import java.util.function.Predicate;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.chunk.ChunkAccess;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
-import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
 
 public class RtpCommand extends EssentialCommand {
-    private static final SimpleProcess<Void> PROCESS = new SimpleProcess<>("rtp_process");
-    private static final Predicate<ServerCommandSource> PERMISSION_CHECK_SELF = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_SELF);
-    private static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHERS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERS);
-    private static final Predicate<ServerCommandSource> PERMISSION_CHECK_IGNORE_LIMIT = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_BYPASS);
-    private static final Predicate<ServerCommandSource> PERMISSION_CHECK_OTHER_DIMENSIONS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERDIMENSIONS);
-    private static final Predicate<ServerCommandSource> PERMISSION_CHECK_MANAGE = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_MANAGE);
+    private static final Predicate<CommandSourceStack> PERMISSION_CHECK_SELF = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_SELF);
+    private static final Predicate<CommandSourceStack> PERMISSION_CHECK_OTHERS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERS);
+    private static final Predicate<CommandSourceStack> PERMISSION_CHECK_IGNORE_LIMIT = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_BYPASS);
+    private static final Predicate<CommandSourceStack> PERMISSION_CHECK_OTHER_DIMENSIONS = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_OTHERDIMENSIONS);
+    private static final Predicate<CommandSourceStack> PERMISSION_CHECK_MANAGE = (src) -> KiloEssentials.hasPermissionNode(src, EssentialPermission.RTP_MANAGE);
     private static final Preference<Integer> RTP_LEFT = Preferences.RANDOM_TELEPORTS_LEFT;
 
     public RtpCommand() {
         super("rtp", PERMISSION_CHECK_SELF, new String[]{"wilderness", "wild"});
     }
 
-    void teleport(ServerCommandSource src, ServerPlayerEntity target) {
+    private void teleport(CommandSourceStack src, ServerPlayer target, ServerLevel targetWorld) {
         OnlineUser targetUser = this.getUserManager().getOnline(target);
         RtpSpecsConfigSection cfg = KiloConfig.main().rtpSpecs();
         if (targetUser.getPreference(RTP_LEFT) < 0) {
             targetUser.getPreferences().set(RTP_LEFT, 0);
         }
 
-        //Check if the player has any rtps left or permission to ignore the limit
-        if (CommandUtils.areTheSame(src, target) && targetUser.getPreference(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
-            targetUser.sendMessage(KiloConfig.messages().commands().rtp().empty);
+        // Check if the player has any rtps left or permission to ignore the limit
+        if (targetUser.getPreference(RTP_LEFT) <= 0 && !PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
+            targetUser.sendLangMessage("command.rtp.empty");
             return;
         }
 
-        //Check if the target is in the correct dimension or has permission to perform the command in other dimensions
-        if (RegistryUtils.dimensionTypeToRegistryKey(target.getServerWorld().getDimension()) != World.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
-            targetUser.sendMessage(KiloConfig.messages().commands().rtp().dimensionException);
+        // Check if the target is in the correct dimension or has permission to perform the command in other dimensions
+        if (RegistryUtils.dimensionTypeToRegistryKey(targetWorld.dimensionType()) != Level.OVERWORLD && !PERMISSION_CHECK_OTHER_DIMENSIONS.test(src)) {
+            targetUser.sendLangMessage("command.rtp.dimension_exception");
             return;
         }
+
         if (!cfg.broadcastMessage.isEmpty()) {
             KiloChat.broadCast(String.format(cfg.broadcastMessage, targetUser.getFormattedDisplayName()));
         }
 
-        if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
-            targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
+        this.attemptTeleport(src, targetUser, targetWorld);
+    }
+
+    private void attemptTeleport(CommandSourceStack src, OnlineUser targetUser, ServerLevel targetWorld) {
+        targetUser.sendLangMessage("command.rtp.searching");
+        final BlockPos blockPos = this.getBlockPos(targetWorld);
+        if (blockPos != null) {
+            ServerPlayer target = targetUser.asPlayer();
+            targetUser.sendLangMessage("command.rtp.loading");
+            // Add a custom ticket to gradually preload chunks
+            targetWorld.getChunkSource().addRegionTicket(TicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(blockPos), 1, target.getId()); // Lag reduction
+            this.teleport(src, targetUser, targetWorld, blockPos.mutable(), 0);
+        } else {
+            targetUser.sendLangMessage("command.rtp.failed.invalid_biome");
         }
-        boolean done = false;
-        BlockPos pos = null;
-        int x = 0;
-        int z = 0;
-        int tries = 0;
-        while (!done) {
-            if (tries >= cfg.maxTries) {
-                targetUser.sendLangMessage("command.rtp.failed");
-                return;
-            }
-            Random r = new Random();
-            x = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
-            x += cfg.centerX;
-            z = r.nextInt(cfg.max - cfg.min) + cfg.min * (r.nextBoolean() ? 1 : -1);
-            z += cfg.centerZ;
+    }
+
+    @Nullable
+    private BlockPos getBlockPos(ServerLevel world) {
+        Random random = new Random();
+        RtpSpecsConfigSection config = KiloConfig.main().rtpSpecs();
+        BlockPos pos;
+        for (int i = 0; i < config.maxTries; i++) {
+            int x = random.nextInt(config.max - config.min) + config.min * (random.nextBoolean() ? 1 : -1);
+            x += config.centerX;
+            int z = random.nextInt(config.max - config.min) + config.min * (random.nextBoolean() ? 1 : -1);
+            z += config.centerZ;
             pos = new BlockPos(x, 64, z);
-            Biome biome = target.getServerWorld().getBiome(pos);
-            tries++;
-            String biomeId = src.getRegistryManager().get(Registry.BIOME_KEY).getId(biome).toString();
-            done = true;
-            for (String blackListedBiome : cfg.blackListedBiomes) {
-                if (biomeId.equals(blackListedBiome)) {
-                    done = false;
+            Biome biome = world.getBiome(pos);
+            final ResourceLocation identifier = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(biome);
+            assert identifier != null;
+            boolean invalidBiome = false;
+            for (final String blackListed : config.blackListedBiomes) {
+                if (identifier.toString().equals(blackListed)) {
+                    invalidBiome = true;
                     break;
                 }
             }
+            if (!invalidBiome) {
+                return pos;
+            }
         }
-        //Add a custom ticket to gradually preload chunks
-        target.getServerWorld().getChunkManager().addTicket(ChunkTicketType.create("rtp", Integer::compareTo, 300), new ChunkPos(pos), ServerSettings.getViewDistance() + 1, target.getId()); // Lag reduction
-        final int finalX = x;
-        final int finalZ = z;
-        new SinglePlayerScheduler(targetUser, -1, cfg.teleportCooldown, () -> {
-            target.teleport(target.getServerWorld(), finalX, target.getServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, finalX, finalZ) + 1, finalZ, target.getYaw(), target.getPitch());
+        return null;
+    }
+
+    private void teleport(final CommandSourceStack src, final OnlineUser targetUser, final ServerLevel world, final BlockPos.MutableBlockPos pos, int attempts) {
+        // Check every ~4 ticks
+        AbstractScheduler.start(175, () -> {
+            final ChunkAccess chunk = ChunkManager.getChunkIfLoaded(world, pos);
+            if (chunk == null) {
+                if (attempts > 70) {
+                    targetUser.sendLangMessage("command.rtp.failed.too_slow");
+                } else {
+                    this.teleport(src, targetUser, world, pos, attempts + 1);
+                }
+            } else {
+                try {
+                    ServerPlayer target = targetUser.asPlayer();
+                    if (target != null) {
+                        pos.setY(this.getY(world, pos.getX(), world.getMaxBuildHeight(), pos.getZ()));
+                        target.teleportTo(world, pos.getX(), pos.getY(), pos.getZ(), target.getYRot(), target.getXRot());
+                        if (!PERMISSION_CHECK_IGNORE_LIMIT.test(src)) {
+                            targetUser.getPreferences().set(RTP_LEFT, targetUser.getPreference(RTP_LEFT) - 1);
+                        }
+                        Biome biome = world.getBiome(pos);
+                        final ResourceLocation identifier = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(biome);
+                        assert identifier != null;
+                        targetUser.sendLangMessage("command.rtp.success", identifier.getPath(), pos.getX(), pos.getY(), pos.getZ(), RegistryUtils.dimensionToName(world.dimensionType()));
+                    }
+                } catch (InsecureDestinationException e) {
+                    targetUser.sendLangMessage("command.rtp.failed.unsafe");
+                }
+            }
         });
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> addArgument = this.literal("add")
+    private int getY(BlockGetter blockView, int x, int maxY, int z) throws InsecureDestinationException {
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(x, (double) (maxY + 1), z);
+        boolean isAir = blockView.getBlockState(mutable).isAir();
+        mutable.move(Direction.DOWN);
+
+        boolean bl3;
+        for (boolean bl2 = blockView.getBlockState(mutable).isAir(); mutable.getY() > blockView.getMinBuildHeight(); bl2 = bl3) {
+            mutable.move(Direction.DOWN);
+            bl3 = blockView.getBlockState(mutable).isAir();
+            if (!bl3 && bl2 && isAir) {
+                return mutable.getY() + 1;
+            }
+
+            isAir = bl2;
+        }
+        throw new InsecureDestinationException("The destination does not have any block at this position");
+    }
+
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> addArgument = this.literal("add")
                 .requires(PERMISSION_CHECK_MANAGE)
-                .then(this.argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgument.player())
                         .suggests(ArgumentSuggestions::allPlayers).then(
                                 this.argument("amount", IntegerArgumentType.integer(1))
                                         .executes(this::executeAdd)
                         )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> setArgument = this.literal("set")
+        LiteralArgumentBuilder<CommandSourceStack> setArgument = this.literal("set")
                 .requires(PERMISSION_CHECK_MANAGE)
-                .then(this.argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgument.player())
                         .suggests(ArgumentSuggestions::allPlayers).then(
                                 this.argument("amount", IntegerArgumentType.integer(1))
                                         .executes(this::executeSet)
                         )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> removeArgument = this.literal("remove")
+        LiteralArgumentBuilder<CommandSourceStack> removeArgument = this.literal("remove")
                 .requires(PERMISSION_CHECK_MANAGE)
-                .then(this.argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgument.player())
                         .suggests(ArgumentSuggestions::allPlayers).then(
                                 this.argument("amount", IntegerArgumentType.integer(1))
                                         .executes(this::executeRemove)
                         )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> sendArgument = this.literal("send")
+        LiteralArgumentBuilder<CommandSourceStack> sendArgument = this.literal("send")
                 .requires(PERMISSION_CHECK_MANAGE)
-                .then(this.argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgument.player())
                         .suggests(ArgumentSuggestions::allPlayers)
-                        .executes(this::executeOthers)
+                        .executes(ctx -> this.executeOthers(ctx, null))
+                        .then(this.argument("dimension", DimensionArgument.dimension())
+                                .executes(ctx -> this.executeOthers(ctx, DimensionArgument.getDimension(ctx, "dimension")))
+                        )
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> checkArgument = this.literal("check")
+        LiteralArgumentBuilder<CommandSourceStack> checkArgument = this.literal("check")
                 .executes(this::executeLeft)
-                .then(this.argument("target", EntityArgumentType.player())
+                .then(this.argument("target", EntityArgument.player())
                         .requires(PERMISSION_CHECK_OTHERS)
                         .suggests(ArgumentSuggestions::allPlayers)
                         .executes(this::executeGet)
                 );
 
-        LiteralArgumentBuilder<ServerCommandSource> performArgument = this.literal("perform")
-                .executes(this::executePerform);
+        LiteralArgumentBuilder<CommandSourceStack> performArgument = this.literal("perform")
+                .executes(ctx -> this.executePerform(ctx, null))
+                .then(this.argument("dimension", DimensionArgument.dimension())
+                        .executes(ctx -> this.executePerform(ctx, DimensionArgument.getDimension(ctx, "dimension")))
+                );
 
         this.commandNode.addChild(addArgument.build());
         this.commandNode.addChild(setArgument.build());
@@ -171,7 +236,7 @@ public class RtpCommand extends EssentialCommand {
         this.argumentBuilder.executes(this::executeSelf);
     }
 
-    private int executeLeft(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeLeft(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getUserManager().getOnline(ctx.getSource());
         CommandSourceServerUser.of(ctx)
                 .sendLangMessage("command.rtp.get", user.getDisplayName(), user.getPreference(RTP_LEFT));
@@ -179,7 +244,7 @@ public class RtpCommand extends EssentialCommand {
         return user.getPreference(RTP_LEFT);
     }
 
-    private int executeAdd(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeAdd(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         int amountToAdd = getInteger(ctx, "amount");
         user.getPreferences().set(RTP_LEFT, user.getPreference(RTP_LEFT) + amountToAdd);
@@ -189,7 +254,7 @@ public class RtpCommand extends EssentialCommand {
         return user.getPreference(RTP_LEFT);
     }
 
-    private int executeSet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeSet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         int amountToSet = getInteger(ctx, "amount");
         user.getPreferences().set(RTP_LEFT, amountToSet);
@@ -199,7 +264,7 @@ public class RtpCommand extends EssentialCommand {
         return user.getPreference(RTP_LEFT);
     }
 
-    private int executeGet(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeGet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         CommandSourceServerUser.of(ctx)
                 .sendLangMessage("command.rtp.get", user.getDisplayName(), user.getPreference(RTP_LEFT));
@@ -207,7 +272,7 @@ public class RtpCommand extends EssentialCommand {
         return user.getPreference(RTP_LEFT);
     }
 
-    private int executeRemove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int executeRemove(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser user = this.getUserManager().getOnline(getPlayer(ctx, "target"));
         int amountToRemove = getInteger(ctx, "amount");
 
@@ -221,28 +286,19 @@ public class RtpCommand extends EssentialCommand {
         return user.getPreference(RTP_LEFT);
     }
 
-    private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        Text text = Texter.confirmationMessage(
-                "command.rtp.confirm",
-                Texter.getButton("&8[&aClick Here to perform&8]", "/rtp perform", Texter.newText("&dConfirm"))
-        );
-        this.getOnlineUser(ctx).sendMessage(text);
+    private int executeSelf(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        this.getOnlineUser(ctx).sendLangMessage("command.rtp.notice");
         return SUCCESS;
     }
 
-    private int executePerform(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return this.execute(ctx.getSource(), ctx.getSource().getPlayer());
+    private int executePerform(CommandContext<CommandSourceStack> ctx, @Nullable ServerLevel world) throws CommandSyntaxException {
+        this.teleport(ctx.getSource(), ctx.getSource().getPlayerOrException(), world == null ? ctx.getSource().getLevel() : world);
+        return SUCCESS;
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser target = this.getUserManager().getOnline(getPlayer(ctx, "target"));
-
-        return this.execute(ctx.getSource(), target.asPlayer());
-    }
-
-    private int execute(ServerCommandSource source, ServerPlayerEntity target) {
-        this.getUserManager().getOnline(target).sendMessage(this.messages.commands().rtp().start);
-        this.teleport(source, target);
+    private int executeOthers(CommandContext<CommandSourceStack> ctx, @Nullable ServerLevel world) throws CommandSyntaxException {
+        final ServerPlayer player = getPlayer(ctx, "target");
+        this.teleport(ctx.getSource(), player, world == null ? player.getLevel() : world);
         return SUCCESS;
     }
 }

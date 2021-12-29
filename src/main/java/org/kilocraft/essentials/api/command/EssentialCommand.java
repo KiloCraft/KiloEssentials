@@ -9,12 +9,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.GameProfileArgumentType;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -24,14 +18,10 @@ import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.api.util.StringUtils;
-import org.kilocraft.essentials.config.KiloConfig;
-import org.kilocraft.essentials.config.main.Config;
-import org.kilocraft.essentials.config.messages.Messages;
 import org.kilocraft.essentials.user.CommandSourceServerUser;
 import org.kilocraft.essentials.user.ServerUserManager;
 import org.kilocraft.essentials.user.preference.Preferences;
 import org.kilocraft.essentials.util.CommandPermission;
-import org.kilocraft.essentials.util.EssentialPermission;
 import org.kilocraft.essentials.util.NameLookup;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 import org.kilocraft.essentials.util.text.Texter;
@@ -42,6 +32,11 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.server.level.ServerPlayer;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
@@ -50,12 +45,10 @@ public abstract class EssentialCommand implements IEssentialCommand {
     protected static final transient Logger logger = LogManager.getLogger();
     private static final DynamicCommandExceptionType PROFILE_RESOLVE_EXCEPTION = new DynamicCommandExceptionType((obj) -> Texter.newText("Unexpected error while resolving the requested profile\n" + obj));
     private final String label;
-    public Config config = KiloConfig.main();
-    public Messages messages = KiloConfig.messages();
     protected transient String[] alias;
-    protected transient LiteralArgumentBuilder<ServerCommandSource> argumentBuilder;
-    protected transient LiteralCommandNode<ServerCommandSource> commandNode;
-    protected transient Predicate<ServerCommandSource> PERMISSION_CHECK_ROOT;
+    protected transient LiteralArgumentBuilder<CommandSourceStack> argumentBuilder;
+    protected transient LiteralCommandNode<CommandSourceStack> commandNode;
+    protected transient Predicate<CommandSourceStack> PERMISSION_CHECK_ROOT;
     protected transient CommandPermission permission;
     protected transient int MIN_OP_LEVEL;
     private transient String descriptionId = null;
@@ -77,14 +70,14 @@ public abstract class EssentialCommand implements IEssentialCommand {
         this.commandNode = this.argumentBuilder.build();
     }
 
-    public EssentialCommand(final String label, final Predicate<ServerCommandSource> predicate) {
+    public EssentialCommand(final String label, final Predicate<CommandSourceStack> predicate) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = predicate;
         this.argumentBuilder = this.literal(label).requires(this.PERMISSION_CHECK_ROOT);
         this.commandNode = this.argumentBuilder.build();
     }
 
-    public EssentialCommand(final String label, final Predicate<ServerCommandSource> predicate, final String[] alias) {
+    public EssentialCommand(final String label, final Predicate<CommandSourceStack> predicate, final String[] alias) {
         this.label = label;
         this.PERMISSION_CHECK_ROOT = predicate;
         this.alias = alias;
@@ -142,15 +135,15 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.alias;
     }
 
-    public LiteralCommandNode<ServerCommandSource> getCommandNode() {
+    public LiteralCommandNode<CommandSourceStack> getCommandNode() {
         return this.commandNode;
     }
 
-    public LiteralArgumentBuilder<ServerCommandSource> getArgumentBuilder() {
+    public LiteralArgumentBuilder<CommandSourceStack> getArgumentBuilder() {
         return this.argumentBuilder;
     }
 
-    public Predicate<ServerCommandSource> getRootPermissionPredicate() {
+    public Predicate<CommandSourceStack> getRootPermissionPredicate() {
         return this.PERMISSION_CHECK_ROOT;
     }
 
@@ -179,30 +172,18 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.usageArguments != null || this.descriptionId != null;
     }
 
-    public boolean hasPermission(final ServerCommandSource src, final CommandPermission cmdPerm) {
-        return KiloCommands.hasPermission(src, cmdPerm);
-    }
-
-    public boolean hasPermission(final ServerCommandSource src, final CommandPermission cmdPerm, final int minOpLevel) {
-        return KiloCommands.hasPermission(src, cmdPerm, minOpLevel);
-    }
-
-    public boolean hasPermission(final ServerCommandSource src, final EssentialPermission essPerm) {
-        return Permissions.check(src, essPerm.getNode(), 2);
-    }
-
-    public boolean hasPermission(final ServerCommandSource src, final EssentialPermission essPerm, final int minOpLevel) {
-        return Permissions.check(src, essPerm.getNode(), minOpLevel);
+    public boolean hasPermission(final CommandSourceStack src, final CommandPermission cmdPerm) {
+        return KiloEssentials.hasPermissionNode(src, cmdPerm);
     }
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> literal(final String label) {
-        return CommandManager.literal(label);
+    public LiteralArgumentBuilder<CommandSourceStack> literal(final String label) {
+        return Commands.literal(label);
     }
 
     @Override
-    public <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(final String label, final ArgumentType<T> argumentType) {
-        return CommandManager.argument(label, argumentType);
+    public <T> RequiredArgumentBuilder<CommandSourceStack, T> argument(final String label, final ArgumentType<T> argumentType) {
+        return Commands.argument(label, argumentType);
     }
 
     @Override
@@ -210,11 +191,11 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.getUserManager().getOnline(name);
     }
 
-    public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        return this.getOnlineUser(ctx.getSource().getPlayer());
+    public OnlineUser getOnlineUser(final CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        return this.getOnlineUser(ctx.getSource().getPlayerOrException());
     }
 
-    public CommandSourceUser getCommandSource(final CommandContext<ServerCommandSource> ctx) {
+    public CommandSourceUser getCommandSource(final CommandContext<CommandSourceStack> ctx) {
         return CommandSourceServerUser.of(ctx);
     }
 
@@ -223,18 +204,18 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.getUserManager().getOnline(uuid);
     }
 
-    public OnlineUser getOnlineUser(final ServerPlayerEntity player) {
+    public OnlineUser getOnlineUser(final ServerPlayer player) {
         return this.getUserManager().getOnline(player);
     }
 
-    public String getUserArgumentInput(final CommandContext<ServerCommandSource> ctx, final String label) {
+    public String getUserArgumentInput(final CommandContext<CommandSourceStack> ctx, final String label) {
         return getString(ctx, label);
     }
 
-    public OnlineUser getOnlineUser(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
+    public OnlineUser getOnlineUser(final CommandContext<CommandSourceStack> ctx, final String label) throws CommandSyntaxException {
         OnlineUser user = this.getOnlineUser(StringArgumentType.getString(ctx, label));
         if (user == null || (user.getPreference(Preferences.VANISH) && !this.hasPermission(ctx.getSource(), CommandPermission.VANISH)))
-            throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
+            throw EntityArgument.NO_PLAYERS_FOUND.create();
 
         return user;
     }
@@ -259,19 +240,19 @@ public abstract class EssentialCommand implements IEssentialCommand {
         return this.getUserManager().getOnline(name) != null;
     }
 
-    public RequiredArgumentBuilder<ServerCommandSource, String> getUserArgument(final String label) {
+    public RequiredArgumentBuilder<CommandSourceStack, String> getUserArgument(final String label) {
         return this.argument(label, string()).suggests(ArgumentSuggestions::users);
     }
 
-    public RequiredArgumentBuilder<ServerCommandSource, String> getOnlineUserArgument(final String label) {
+    public RequiredArgumentBuilder<CommandSourceStack, String> getOnlineUserArgument(final String label) {
         return this.argument(label, string()).suggests(ArgumentSuggestions::users);
     }
 
-    public CompletableFuture<GameProfile> resolveAndGetProfileAsync(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
+    public CompletableFuture<GameProfile> resolveAndGetProfileAsync(final CommandContext<CommandSourceStack> ctx, final String label) throws CommandSyntaxException {
         return CompletableFuture.completedFuture(this.resolveAndGetProfile(ctx, label));
     }
 
-    public GameProfile resolveAndGetProfile(final CommandContext<ServerCommandSource> ctx, final String label) throws CommandSyntaxException {
+    public GameProfile resolveAndGetProfile(final CommandContext<CommandSourceStack> ctx, final String label) throws CommandSyntaxException {
         try {
             final String input = ctx.getArgument(label, String.class);
             Matcher idMatcher = StringUtils.UUID_PATTERN.matcher(input);
@@ -298,7 +279,7 @@ public abstract class EssentialCommand implements IEssentialCommand {
                 try {
                     String id = NameLookup.getPlayerUUID(input);
                     if (id == null) {
-                        throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
+                        throw GameProfileArgument.ERROR_UNKNOWN_PLAYER.create();
                     }
                     UUID uuid = UUID.fromString(id);
                     return new GameProfile(uuid, id);
@@ -310,10 +291,10 @@ public abstract class EssentialCommand implements IEssentialCommand {
             e.printStackTrace();
         }
 
-        throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
+        throw GameProfileArgument.ERROR_UNKNOWN_PLAYER.create();
     }
 
-    public int sendUsage(CommandContext<ServerCommandSource> ctx, String key, Object... objects) {
+    public int sendUsage(CommandContext<CommandSourceStack> ctx, String key, Object... objects) {
         this.getCommandSource(ctx).sendLangMessage(key, objects);
         return AWAIT;
     }

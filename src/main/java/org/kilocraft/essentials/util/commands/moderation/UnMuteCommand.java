@@ -7,8 +7,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.CommandSourceUser;
 import org.kilocraft.essentials.api.user.punishment.Punishment;
@@ -16,6 +14,8 @@ import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.util.CommandPermission;
 
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 public class UnMuteCommand extends EssentialCommand {
     public UnMuteCommand() {
@@ -23,19 +23,19 @@ public class UnMuteCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> user = this.getUserArgument("victim")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> user = this.getUserArgument("victim")
                 .suggests(this::listSuggestions)
                 .executes((ctx) -> this.execute(ctx, false));
 
-        LiteralArgumentBuilder<ServerCommandSource> silent = this.literal("-silent")
+        LiteralArgumentBuilder<CommandSourceStack> silent = this.literal("-silent")
                 .executes((ctx) -> this.execute(ctx, true));
 
         user.then(silent);
         this.argumentBuilder.then(user);
     }
 
-    private int execute(final CommandContext<ServerCommandSource> ctx, boolean silent) throws CommandSyntaxException {
+    private int execute(final CommandContext<CommandSourceStack> ctx, boolean silent) throws CommandSyntaxException {
         CommandSourceUser src = this.getCommandSource(ctx);
 
         super.resolveAndGetProfileAsync(ctx, "victim").thenAcceptAsync((victim) -> {
@@ -46,7 +46,7 @@ public class UnMuteCommand extends EssentialCommand {
         return AWAIT;
     }
 
-    private CompletableFuture<Suggestions> listSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(this.getUserManager().getMutedPlayerList().getNames(), builder);
+    private CompletableFuture<Suggestions> listSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(this.getUserManager().getMutedPlayerList().getUserList(), builder);
     }
 }

@@ -4,12 +4,12 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.util.settings.values.util.ConfigurableSetting;
 import org.kilocraft.essentials.util.settings.values.util.RangeSetting;
 
 import java.util.function.Consumer;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
 
 public class FloatSetting extends ConfigurableSetting<Float> implements RangeSetting<Float> {
 
@@ -31,7 +31,7 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
     }
 
     @Override
-    public void setValueFromCommand(CommandContext<ServerCommandSource> ctx) {
+    public void setValueFromCommand(CommandContext<CommandSourceStack> ctx) {
         this.setValue(Float.parseFloat(StringArgumentType.getString(ctx, commandArgumentValue)));
     }
 
@@ -41,12 +41,12 @@ public class FloatSetting extends ConfigurableSetting<Float> implements RangeSet
     }
 
     @Override
-    protected void setValue(NbtCompound tag) {
+    protected void setValue(CompoundTag tag) {
         tag.putFloat("value", this.getValue());
     }
 
     @Override
-    protected Float getValue(NbtCompound tag) {
+    protected Float getValue(CompoundTag tag) {
         return tag.getFloat("value");
     }
 

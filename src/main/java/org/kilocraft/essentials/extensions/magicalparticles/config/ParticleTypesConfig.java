@@ -1,9 +1,10 @@
 package org.kilocraft.essentials.extensions.magicalparticles.config;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.config.main.Config;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +27,8 @@ public class ParticleTypesConfig {
         this.put("default:dragon_breath", new ParticleTypeConfigSection());
     }};
 
-    @Setting(value = "pps", comment = "Particle per second, you can set how fast you want the particles to show up\n" +
+    @Setting(value = "pps")
+    @Comment("Particle per second, you can set how fast you want the particles to show up\n" +
             "Recommended (Default): 4, the Value must be between 0 to 20")
     private int pps = 4;
 

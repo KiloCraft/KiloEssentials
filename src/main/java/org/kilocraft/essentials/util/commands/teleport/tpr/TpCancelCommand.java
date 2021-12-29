@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.player.UserUtils;
@@ -15,14 +15,14 @@ public class TpCancelCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("target")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> selectorArgument = this.getOnlineUserArgument("target")
                 .executes(this::cancel);
 
         this.commandNode.addChild(selectorArgument.build());
     }
 
-    private int cancel(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int cancel(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         OnlineUser target = this.getOnlineUser(ctx, "target");
 

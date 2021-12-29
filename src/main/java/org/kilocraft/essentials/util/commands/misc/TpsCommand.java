@@ -2,7 +2,7 @@ package org.kilocraft.essentials.util.commands.misc;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.util.TickManager;
@@ -12,11 +12,11 @@ public class TpsCommand extends EssentialCommand {
         super("tps");
     }
 
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         this.argumentBuilder.executes(this::run);
     }
 
-    private int run(CommandContext<ServerCommandSource> ctx) {
+    private int run(CommandContext<CommandSourceStack> ctx) {
         this.getCommandSource(ctx).sendMessage(String.format(
                 "<gold>TPS %s <dark_gray>(<gray>%s ms<dark_gray>) <dark_gray>(<gray>1m<dark_gray>/<gray>5m<dark_gray>/<gray>15m<dark_gray>/<gray>1h<dark_gray>) %s<dark_gray>, %s<dark_gray>, %s<dark_gray>, %s<reset>",
                 ComponentText.formatTps(TickManager.tps[0]),

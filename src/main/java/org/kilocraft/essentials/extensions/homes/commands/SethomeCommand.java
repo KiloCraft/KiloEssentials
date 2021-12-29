@@ -4,14 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
@@ -25,6 +18,14 @@ import org.kilocraft.essentials.util.commands.CommandUtils;
 import org.kilocraft.essentials.util.commands.KiloCommands;
 
 import java.io.IOException;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -36,11 +37,11 @@ public class SethomeCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> homeArgument = this.argument("name", word())
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> homeArgument = this.argument("name", word())
                 .executes(this::executeSelf);
 
-        RequiredArgumentBuilder<ServerCommandSource, String> targetArgument = this.getUserArgument("user")
+        RequiredArgumentBuilder<CommandSourceStack, String> targetArgument = this.getUserArgument("user")
                 .requires(src -> this.hasPermission(src, CommandPermission.HOME_OTHERS_SET))
                 .executes(this::executeOthers);
 
@@ -48,8 +49,8 @@ public class SethomeCommand extends EssentialCommand {
         this.commandNode.addChild(homeArgument.build());
     }
 
-    private int executeSelf(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int executeSelf(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         OnlineUser user = this.getOnlineUser(player);
         UserHomeHandler homeHandler = user.getHomesHandler();
         String input = getString(ctx, "name");
@@ -60,7 +61,7 @@ public class SethomeCommand extends EssentialCommand {
             return FAILED;
         }
 
-        if (!World.isValid(player.getBlockPos())) {
+        if (!Level.isInSpawnableBounds(player.blockPosition())) {
             user.sendLangError("general.position_out_of_world");
             return FAILED;
         }
@@ -72,20 +73,20 @@ public class SethomeCommand extends EssentialCommand {
             homeHandler.removeHome(name);
         }
 
-        homeHandler.addHome(new Home(player.getUuid(), name, Vec3dLocation.of(player).shortDecimals()));
+        homeHandler.addHome(new Home(player.getUUID(), name, Vec3dLocation.of(player).shortDecimals()));
         user.sendLangMessage("command.sethome.self", name);
 
         return SUCCESS;
     }
 
-    private int executeOthers(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayer();
+    private int executeOthers(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
         OnlineUser source = this.getOnlineUser(player);
         String inputName = getString(ctx, "user");
         String input = getString(ctx, "name");
         String name = input.replaceFirst("-confirmed-", "");
 
-        if (!World.isValid(player.getBlockPos())) {
+        if (!Level.isInSpawnableBounds(player.blockPosition())) {
             source.sendLangError("general.position_out_of_world");
             return FAILED;
         }
@@ -123,28 +124,43 @@ public class SethomeCommand extends EssentialCommand {
     }
 
     private static boolean canSet(User user) {
-        for (int i = 0; i < KiloConfig.main().homesLimit; i++) {
-            String thisPerm = "kiloessentials.command.home.limit." + i;
-            int allowed = Integer.parseInt(thisPerm.split("\\.")[4]);
+        if (KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS))
+            return true;
 
-            if (user.getHomesHandler().homes() + 1 <= allowed &&
-                    KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), thisPerm, 3)) {
-                return true;
-            }
-        }
-
-        return KiloCommands.hasPermission(((OnlineUser) user).getCommandSource(), CommandPermission.HOME_SET_LIMIT_BYPASS);
+        return user.getHomesHandler().homes() < getHomeLimit(user);
     }
 
-    private Text getConfirmationText(String homeName, String user) {
-        return new LiteralText("")
-                .append(StringText.of(true, "command.sethome.confirmation_message")
-                        .formatted(Formatting.YELLOW))
-                .append(new LiteralText(" [").formatted(Formatting.GRAY)
-                        .append(new LiteralText("Click here to Confirm").formatted(Formatting.GREEN))
-                        .append(new LiteralText("]").formatted(Formatting.GRAY))
-                        .styled((style) -> {
-                            return style.withFormatting(Formatting.GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Confirm").formatted(Formatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome -confirmed-" + homeName + " " + user));
+    /**
+     * TODO: If this feature is more needed, a different solution to this would be a "path" system
+     * kiloessentials.command.home.limit.<path>.x
+     * Example:
+     * Playtime earned homes = kiloessentials.command.home.limit.playtime.x
+     * Donation earned homes = kiloessentials.command.home.limit.donate.x
+    * */
+    private static int getHomeLimit(User user) {
+        return getHomePermissionLimit(user, "kiloessentials.command.home.limit.") +
+                getHomePermissionLimit(user, "kiloessentials.command.home.limit.add.");
+    }
+
+    private static int getHomePermissionLimit(User user, String permission) {
+        int homeLimit = 0;
+        for (int i = 1; i <= KiloConfig.main().homesLimit; i++) {
+            if (KiloEssentials.hasPermissionNode(((OnlineUser) user).getCommandSource(), permission + i)) {
+                homeLimit = i;
+            }
+        }
+        return homeLimit;
+    }
+
+    private Component getConfirmationText(String homeName, String user) {
+        return new TextComponent("")
+                .append(StringText.of("command.sethome.confirmation_message")
+                        .withStyle(ChatFormatting.YELLOW))
+                .append(new TextComponent(" [").withStyle(ChatFormatting.GRAY)
+                        .append(new TextComponent("Click here to Confirm").withStyle(ChatFormatting.GREEN))
+                        .append(new TextComponent("]").withStyle(ChatFormatting.GRAY))
+                        .withStyle((style) -> {
+                            return style.applyFormat(ChatFormatting.GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Confirm").withStyle(ChatFormatting.YELLOW))).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome -confirmed-" + homeName + " " + user));
                         }));
     }
 

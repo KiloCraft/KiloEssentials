@@ -4,8 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Texts;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ComponentUtils;
 import org.kilocraft.essentials.api.ModConstants;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -22,14 +22,14 @@ public class TpaHereCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        RequiredArgumentBuilder<ServerCommandSource, String> selectorArgument = this.getOnlineUserArgument("victim")
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RequiredArgumentBuilder<CommandSourceStack, String> selectorArgument = this.getOnlineUserArgument("victim")
                 .executes(this::request);
 
         this.commandNode.addChild(selectorArgument.build());
     }
 
-    private int request(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private int request(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         OnlineUser src = this.getOnlineUser(ctx);
         OnlineUser target = this.getOnlineUser(ctx, "victim");
 
@@ -37,7 +37,7 @@ public class TpaHereCommand extends EssentialCommand {
             throw KiloCommands.getException("exception.source_is_target").create();
         }
 
-        if (target.ignored(src.getUuid()) || target.getPreference(Preferences.DON_NOT_DISTURB) || !target.hasPermission(TpaCommand.PERMISSION)) {
+        if (target.getPreference(Preferences.DON_NOT_DISTURB) || !target.hasPermission(TpaCommand.PERMISSION)) {
             throw KiloCommands.getException("exception.ignored", target.getFormattedDisplayName()).create();
         }
 
@@ -51,15 +51,15 @@ public class TpaHereCommand extends EssentialCommand {
         src.sendMessage(
                 Texter.newText(ModConstants.translation("command.tpa.sent", target.getFormattedDisplayName()))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText("&cCancel"))))
+                        .append(ComponentUtils.wrapInSquareBrackets(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpcancel " + target.getUsername(), Texter.newText("&cCancel"))))
         );
 
         target.sendMessage(
                 Texter.newText(ModConstants.translation("command.tpa.receive.here", src.getFormattedDisplayName()))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText("&aClick to accept"))))
+                        .append(ComponentUtils.wrapInSquareBrackets(Texter.getButton(" &a" + '\u2714' + "&r ", "/tpaccept " + src.getUsername(), Texter.newText("&aClick to accept"))))
                         .append(" ")
-                        .append(Texts.bracketed(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText("&cClick to deny"))))
+                        .append(ComponentUtils.wrapInSquareBrackets(Texter.getButton(" &c" + '\u00d7' + "&r ", "/tpdeny " + src.getUsername(), Texter.newText("&cClick to deny"))))
         );
 
         if (target.getPreference(Preferences.SOUNDS)) {

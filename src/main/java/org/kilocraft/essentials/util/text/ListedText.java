@@ -1,9 +1,5 @@
 package org.kilocraft.essentials.util.text;
 
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.text.ComponentText;
 
@@ -11,6 +7,10 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 
 
 public class ListedText {
@@ -19,7 +19,7 @@ public class ListedText {
      * Returns the wanted page.
      * <p>
      * The different language keys are explained here:
-     * {@link Page#send(ServerCommandSource, String, String)}
+     * {@link Page#send(CommandSourceStack, String, String)}
      *
      * @param options The options.
      * @param all     All the Strings
@@ -34,7 +34,7 @@ public class ListedText {
         return getPageFromFilterable(options, all.stream().map(StringFilterable::new).collect(Collectors.toList()));
     }
 
-    public static Page getPageFromText(@NotNull Options options, @NotNull List<MutableText> all) {
+    public static Page getPageFromText(@NotNull Options options, @NotNull List<MutableComponent> all) {
         Objects.requireNonNull(options, "Options can not be null");
         Objects.requireNonNull(all, "'all' can not be null");
 
@@ -45,7 +45,7 @@ public class ListedText {
      * Returns the wanted page.
      * <p>
      * The different language keys are explained here:
-     * {@link Page#send(ServerCommandSource, String, String)}
+     * {@link Page#send(CommandSourceStack, String, String)}
      *
      * @param options The options.
      * @param all     All the Strings
@@ -179,7 +179,7 @@ public class ListedText {
          * @return All the lines this object has
          */
         @NotNull
-        List<MutableText> getAllLines();
+        List<MutableComponent> getAllLines();
     }
 
     /**
@@ -215,12 +215,12 @@ public class ListedText {
      * A small wrapper for a normal String
      */
     private static class TextFilterable implements MutableTextPagerFilterable {
-        private final MutableText text;
+        private final MutableComponent text;
 
         /**
-         * @param text The {@link MutableText}
+         * @param text The {@link MutableComponent}
          */
-        private TextFilterable(MutableText text) {
+        private TextFilterable(MutableComponent text) {
             Objects.requireNonNull(text, "MutableText cannot be null!");
 
             this.text = text;
@@ -235,7 +235,7 @@ public class ListedText {
 
         @NotNull
         @Override
-        public List<MutableText> getAllLines() {
+        public List<MutableComponent> getAllLines() {
             return Collections.singletonList(this.text);
         }
     }
@@ -540,14 +540,14 @@ public class ListedText {
         private final int maxPages;
         private final int pageIndex;
         private List<String> entries;
-        private List<MutableText> textEntries;
+        private List<MutableComponent> textEntries;
         private String stickyHeader;
         private String stickyFooter;
-        private Formatting[] formattings;
+        private ChatFormatting[] formattings;
 
         /**
          * The language Keys can be found in the
-         * {@link #send(ServerCommandSource, String, String)}
+         * {@link #send(CommandSourceStack, String, String)}
          *
          * @param maxPages  The amount of pages it would give, at this depth
          * @param pageIndex The page number of this page
@@ -560,13 +560,13 @@ public class ListedText {
             this(maxPages, pageIndex, entries, "", "");
         }
 
-        private Page(@NotNull List<MutableText> entries, int maxPages, int pageIndex) {
+        private Page(@NotNull List<MutableComponent> entries, int maxPages, int pageIndex) {
             this(entries, maxPages, pageIndex, "", "");
         }
 
         /**
          * The language Keys can be found in the
-         * {@link #send(ServerCommandSource, String, String)}
+         * {@link #send(CommandSourceStack, String, String)}
          *
          * @param maxPages  The amount of pages it would give, at this depth
          * @param pageIndex The page number of this page
@@ -588,7 +588,7 @@ public class ListedText {
             this.stickyFooter = footerKey;
         }
 
-        private Page(@NotNull List<MutableText> entries, int maxPages, int pageIndex, @NotNull String headerKey, @NotNull
+        private Page(@NotNull List<MutableComponent> entries, int maxPages, int pageIndex, @NotNull String headerKey, @NotNull
                 String footerKey) {
             Objects.requireNonNull(entries, "Entries can not be null");
             Objects.requireNonNull(headerKey, "The header key can not be null");
@@ -642,8 +642,8 @@ public class ListedText {
             return this;
         }
 
-        public ListedText.Page setFormattings(@NotNull Formatting borders, @NotNull Formatting primary, @NotNull Formatting secondary) {
-            this.formattings = new Formatting[]{borders, primary, secondary};
+        public ListedText.Page setFormattings(@NotNull ChatFormatting borders, @NotNull ChatFormatting primary, @NotNull ChatFormatting secondary) {
+            this.formattings = new ChatFormatting[]{borders, primary, secondary};
             return this;
         }
 
@@ -672,71 +672,71 @@ public class ListedText {
          * </li>
          * </ul>
          *
-         * @param source The {@link ServerCommandSource} to send to
+         * @param source The {@link CommandSourceStack} to send to
          * @throws NullPointerException if sender or language is null
          */
 
         @SuppressWarnings({"unused", "WeakerAccess"})
-        public void send(@NotNull ServerCommandSource source, final String title, final String command) {
+        public void send(@NotNull CommandSourceStack source, final String title, final String command) {
             Objects.requireNonNull(source, "Sender can not be null");
-            Formatting f1 = Formatting.GOLD;
-            Formatting f2 = Formatting.YELLOW;
-            Formatting f3 = Formatting.GRAY;
+            ChatFormatting f1 = ChatFormatting.GOLD;
+            ChatFormatting f2 = ChatFormatting.YELLOW;
+            ChatFormatting f3 = ChatFormatting.GRAY;
             int prevPage = this.pageIndex;
             int nextPage = this.pageIndex + 2;
 
             String SEPARATOR = "-----------------------------------------------------";
-            MutableText header = new LiteralText("")
-                    .append(new LiteralText("- [ ").formatted(f3))
-                    .append(Texter.newText(title).formatted(f1))
+            MutableComponent header = new TextComponent("")
+                    .append(new TextComponent("- [ ").withStyle(f3))
+                    .append(Texter.newText(title).withStyle(f1))
                     .append(" ] ")
                     .append(SEPARATOR.substring(ComponentText.clearFormatting(title).length() + 4))
-                    .formatted(f3);
+                    .withStyle(f3);
 
             if (!this.stickyHeader.isEmpty()) {
                 header.append("\n").append(ComponentText.toText(this.stickyHeader)).append("\n");
             }
 
-            MutableText button_prev = new LiteralText("")
-                    .append(new LiteralText("<-").formatted(Formatting.WHITE, Formatting.BOLD))
-                    .append(" ").append(new LiteralText("Prev").formatted(f1))
-                    .styled((style) ->
-                            style.withHoverEvent(Texter.Events.onHover(new LiteralText((prevPage > 0) ? "<<<" : "|<").formatted(f3)))
+            MutableComponent button_prev = new TextComponent("")
+                    .append(new TextComponent("<-").withStyle(ChatFormatting.WHITE, ChatFormatting.BOLD))
+                    .append(" ").append(new TextComponent("Prev").withStyle(f1))
+                    .withStyle((style) ->
+                            style.withHoverEvent(Texter.Events.onHover(new TextComponent((prevPage > 0) ? "<<<" : "|<").withStyle(f3)))
                                     .withClickEvent(prevPage > 0 ? Texter.Events.onClickRun(command.replace("%page%", String.valueOf(prevPage))) : null)
                     );
 
-            MutableText button_next = new LiteralText("")
-                    .append(new LiteralText("Next").formatted(f1))
-                    .append(" ").append(new LiteralText("->").formatted(Formatting.WHITE, Formatting.BOLD)).append(" ")
-                    .styled((style) ->
-                            style.withHoverEvent(Texter.Events.onHover(new LiteralText((nextPage <= this.maxPages) ? ">>>" : ">|").formatted(f3)))
+            MutableComponent button_next = new TextComponent("")
+                    .append(new TextComponent("Next").withStyle(f1))
+                    .append(" ").append(new TextComponent("->").withStyle(ChatFormatting.WHITE, ChatFormatting.BOLD)).append(" ")
+                    .withStyle((style) ->
+                            style.withHoverEvent(Texter.Events.onHover(new TextComponent((nextPage <= this.maxPages) ? ">>>" : ">|").withStyle(f3)))
                                     .withClickEvent(nextPage <= this.maxPages ? Texter.Events.onClickRun(command.replace("%page%", String.valueOf(nextPage))) : null)
                     );
 
-            MutableText buttons = new LiteralText("")
-                    .append(new LiteralText("[ ").formatted(Formatting.GRAY))
+            MutableComponent buttons = new TextComponent("")
+                    .append(new TextComponent("[ ").withStyle(ChatFormatting.GRAY))
                     .append(button_prev)
                     .append(" ")
                     .append(
-                            new LiteralText(String.valueOf(this.pageIndex + 1)).formatted(Formatting.GREEN)
-                                    .append(new LiteralText("/").formatted(f3))
-                                    .append(new LiteralText(String.valueOf(this.maxPages)).formatted(Formatting.GREEN))
+                            new TextComponent(String.valueOf(this.pageIndex + 1)).withStyle(ChatFormatting.GREEN)
+                                    .append(new TextComponent("/").withStyle(f3))
+                                    .append(new TextComponent(String.valueOf(this.maxPages)).withStyle(ChatFormatting.GREEN))
                     )
                     .append(" ")
                     .append(button_next)
-                    .append(new LiteralText("] ").formatted(f3));
+                    .append(new TextComponent("] ").withStyle(f3));
 
-            MutableText footer = new LiteralText("- ")
-                    .formatted(Formatting.GRAY)
-                    .append(buttons).append(new LiteralText(" ------------------------------".substring(buttons.asString().length() + 3)).formatted(Formatting.GRAY));
+            MutableComponent footer = new TextComponent("- ")
+                    .withStyle(ChatFormatting.GRAY)
+                    .append(buttons).append(new TextComponent(" ------------------------------".substring(buttons.getContents().length() + 3)).withStyle(ChatFormatting.GRAY));
 
-            MutableText text = new LiteralText("");
+            MutableComponent text = new TextComponent("");
             if (this.textEntries == null && this.entries != null) {
                 for (String entry : this.entries) {
                     text.append(ComponentText.toText(entry)).append("\n");
                 }
             } else if (this.textEntries != null && this.entries == null) {
-                for (MutableText textEntry : this.textEntries) {
+                for (MutableComponent textEntry : this.textEntries) {
                     text.append(textEntry).append("\n");
                 }
             }
@@ -744,7 +744,7 @@ public class ListedText {
             if (!this.stickyFooter.isEmpty()) {
                 text.append(ComponentText.toText(this.stickyFooter)).append("\n");
             }
-            source.sendFeedback(header.append("\n").append(text).append(footer), false);
+            source.sendSuccess(header.append("\n").append(text).append(footer), false);
         }
     }
 }

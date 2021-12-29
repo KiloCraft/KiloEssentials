@@ -1,15 +1,15 @@
 package org.kilocraft.essentials.config.main.sections;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 public class PermissionRequirementConfigSection {
 
     @Setting(value = "op")
-    public int op = 2;
+    public int op = 0;
 
     @Setting(value = "perm")
-    public String permission = "myserver.custom.permission.node";
+    public String permission = "kiloessentials.magicparticles.permission.node";
 
 }

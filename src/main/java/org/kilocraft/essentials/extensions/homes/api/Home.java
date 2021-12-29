@@ -1,14 +1,6 @@
 package org.kilocraft.essentials.extensions.homes.api;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ChunkTicketType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.world.location.Location;
 import org.kilocraft.essentials.api.world.location.Vec3dLocation;
@@ -16,6 +8,10 @@ import org.kilocraft.essentials.util.LocationUtil;
 import org.kilocraft.essentials.util.registry.RegistryUtils;
 
 import java.util.UUID;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 
 public class Home {
     private UUID owner_uuid;
@@ -31,28 +27,28 @@ public class Home {
     public Home() {
     }
 
-    public Home(NbtCompound NbtCompound) {
+    public Home(CompoundTag NbtCompound) {
         this.fromTag(NbtCompound);
     }
 
-    public NbtCompound toTag() {
-        NbtCompound NbtCompound = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag NbtCompound = new CompoundTag();
         NbtCompound.put("loc", this.location.toTag());
 
         return NbtCompound;
     }
 
-    public void fromTag(NbtCompound NbtCompound) {
+    public void fromTag(CompoundTag NbtCompound) {
         if (this.location == null)
             this.location = Vec3dLocation.dummy();
 
-        if (NbtCompound.contains("pos")) { //OLD Format
-            this.location.setDimension(new Identifier(NbtCompound.getString("dimension")));
+        if (NbtCompound.contains("pos")) { // Old format
+            this.location.setDimension(new ResourceLocation(NbtCompound.getString("dimension")));
 
-            NbtCompound pos = NbtCompound.getCompound("pos");
-            ((Vec3dLocation) this.location).setVector(new Vec3d(pos.getDouble("x"), pos.getDouble("y"), pos.getDouble("z")));
+            CompoundTag pos = NbtCompound.getCompound("pos");
+            ((Vec3dLocation) this.location).setVector(new Vec3(pos.getDouble("x"), pos.getDouble("y"), pos.getDouble("z")));
 
-            NbtCompound dir = NbtCompound.getCompound("dir");
+            CompoundTag dir = NbtCompound.getCompound("dir");
             this.location.setRotation(dir.getFloat("dY"), dir.getFloat("dX"));
             return;
         }
@@ -80,19 +76,12 @@ public class Home {
         return this.location;
     }
 
-    public static void teleportTo(OnlineUser user, Home home) {
-        ServerPlayerEntity player = user.asPlayer();
-        DimensionType type = RegistryUtils.toDimension(home.getLocation().getDimension());
-        if (type == null) {
-            return;
-        }
-
-        ServerWorld destinationWorld = RegistryUtils.toServerWorld(type);
-        Vec3d destination = new Vec3d(home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ());
+    public void teleportTo(OnlineUser user) {
+        ServerPlayer player = user.asPlayer();
         user.saveLocation();
-        destinationWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, new ChunkPos(new BlockPos(destination)), 1, player.getId()); // Lag reduction magic
-        player.teleport(destinationWorld, home.getLocation().getX(), home.getLocation().getY(), home.getLocation().getZ(),
-                home.getLocation().getRotation().getYaw(), home.getLocation().getRotation().getPitch());
+        Location loc = this.getLocation();
+        player.teleportTo(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(),
+                loc.getRotation().getYaw(), loc.getRotation().getPitch());
     }
 
     public boolean shouldTeleport() {

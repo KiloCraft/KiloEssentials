@@ -1,11 +1,11 @@
 package org.kilocraft.essentials.util.settings.values.util;
 
-import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import net.minecraft.nbt.CompoundTag;
 
 public class RootSetting implements Setting {
 
@@ -51,15 +51,15 @@ public class RootSetting implements Setting {
         }
     }
 
-    public NbtCompound toTag() {
-        NbtCompound root = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag root = new CompoundTag();
         for (AbstractSetting child : this.children) {
             child.toTag(root);
         }
         return root;
     }
 
-    public void fromTag(NbtCompound tag) {
+    public void fromTag(CompoundTag tag) {
         for (AbstractSetting child : this.children) {
             child.fromTag(tag);
         }
