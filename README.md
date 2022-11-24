@@ -1,5 +1,8 @@
 [![Release](https://jitpack.io/v/KiloCraft/KiloEssentials.svg)](https://jitpack.io/#KiloCraft/KiloEssentials)
 
+# !!! Archived !!!
+This repository has been archived, please use [FabricEssentials](https://github.com/Server-Utilities/FabricEssentials) instead!
+
 # KiloEssentials
 
 An essentials mod for fabric developed for the KiloCraft server
